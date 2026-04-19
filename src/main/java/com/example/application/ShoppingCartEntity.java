@@ -15,10 +15,8 @@ import java.util.function.Function;
 /**
  * Edge-facing event sourced entity that validates commands and returns error effects on failures.
  *
- * <p>
- * This example is intended for entities called directly from endpoint components. Unlike the flow-internal
- * {@code EventSourcedEntityTemplate}, this entity treats invalid commands as business rejections and returns
- * {@code effects().error(...)}.
+ * <p>This example is intended for entities called directly from endpoint components. Invalid
+ * commands are treated as business rejections and return {@code effects().error(...)}.
  */
 @Component(id = "shopping-cart")
 public class ShoppingCartEntity extends EventSourcedEntity<ShoppingCart.State, ShoppingCart.Event> {

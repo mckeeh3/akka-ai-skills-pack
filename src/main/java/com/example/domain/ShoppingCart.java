@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  * Shared domain model for the edge-facing shopping cart example.
  *
- * <p>This follows the same AI-friendly pattern as {@code EventSourcedTemplate}:
+ * <p>This follows an AI-friendly pattern:
  *
  * <ul>
  *   <li>state is a nested record</li>

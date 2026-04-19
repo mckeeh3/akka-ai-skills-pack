@@ -17,8 +17,7 @@ import java.util.List;
 /**
  * HTTP endpoint for the order entity example.
  *
- * <p>This endpoint demonstrates the remaining event sourced entity endpoint patterns that were
- * previously shown by {@code EventSourcedEntityTemplateEndpoint}:
+ * <p>This endpoint demonstrates key event sourced entity endpoint patterns:
  *
  * <ul>
  *   <li>validating requests before invoking a flow-internal entity</li>
