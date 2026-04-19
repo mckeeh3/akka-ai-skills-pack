@@ -47,6 +47,22 @@ public final class EventSourcedTemplateValidator {
     return List.copyOf(errors);
   }
 
+  public static List<String> validate(EventSourcedTemplate.Command.IncludeRegion command) {
+    if (isBlank(command.region())) {
+      return List.of("region must not be blank");
+    }
+
+    return List.of();
+  }
+
+  public static List<String> validate(EventSourcedTemplate.Command.ExcludeRegion command) {
+    if (isBlank(command.region())) {
+      return List.of("region must not be blank");
+    }
+
+    return List.of();
+  }
+
   public static List<String> validate(EventSourcedTemplate.Command.Delete command) {
     return List.of();
   }

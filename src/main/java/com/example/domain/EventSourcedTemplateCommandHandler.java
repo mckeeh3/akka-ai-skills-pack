@@ -6,15 +6,16 @@ import java.util.Objects;
 /**
  * Command-to-event logic for {@link EventSourcedTemplate}.
  *
- * <p>This handler models a flow-internal entity. Commands are assumed to be normalized and validated
- * upstream. As a result, stale or duplicate commands are usually handled as no-ops instead of
- * business rejections.
+ * <p>
+ * This handler models a flow-internal entity. Commands are assumed to be normalized and validated upstream. As a
+ * result, stale or duplicate commands are usually handled as no-ops instead of business rejections.
  */
 public final class EventSourcedTemplateCommandHandler {
 
-  private EventSourcedTemplateCommandHandler() {}
+  private EventSourcedTemplateCommandHandler() {
+  }
 
-  public static List<EventSourcedTemplate.Event> onCreate(
+  public static List<EventSourcedTemplate.Event> onCommand(
       EventSourcedTemplate.State state,
       String entityId,
       EventSourcedTemplate.Command.Create command) {
@@ -26,7 +27,7 @@ public final class EventSourcedTemplateCommandHandler {
     return List.of(new EventSourcedTemplate.Event.Created(entityId, command.name()));
   }
 
-  public static List<EventSourcedTemplate.Event> onRename(
+  public static List<EventSourcedTemplate.Event> onCommand(
       EventSourcedTemplate.State state,
       EventSourcedTemplate.Command.Rename command) {
 
@@ -40,10 +41,11 @@ public final class EventSourcedTemplateCommandHandler {
   /**
    * Example of delegating non-trivial business decisions to a separate class.
    *
-   * <p>The business logic class can normalize inputs, apply rules, and decide which facts should be
-   * persisted. The event handler must not repeat that logic during replay.
+   * <p>
+   * The business logic class can normalize inputs, apply rules, and decide which facts should be persisted. The event
+   * handler must not repeat that logic during replay.
    */
-  public static List<EventSourcedTemplate.Event> onUpdateDetails(
+  public static List<EventSourcedTemplate.Event> onCommand(
       EventSourcedTemplate.State state,
       EventSourcedTemplate.Command.UpdateDetails command) {
 
@@ -54,7 +56,7 @@ public final class EventSourcedTemplateCommandHandler {
     return EventSourcedTemplateBusinessLogic.decideUpdateDetails(state, command).events();
   }
 
-  public static List<EventSourcedTemplate.Event> onDelete(
+  public static List<EventSourcedTemplate.Event> onCommand(
       EventSourcedTemplate.State state,
       EventSourcedTemplate.Command.Delete command) {
 

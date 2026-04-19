@@ -24,4 +24,13 @@ class EventSourcedTemplateValidatorTest {
     assertEquals("description must not be blank", errors.get(0));
     assertEquals("quantity must be zero or greater", errors.get(1));
   }
+
+  @Test
+  void validateIncludeRegionCommand() {
+    var errors = EventSourcedTemplateValidator.validate(
+        new EventSourcedTemplate.Command.IncludeRegion(" "));
+
+    assertEquals(1, errors.size());
+    assertEquals("region must not be blank", errors.getFirst());
+  }
 }

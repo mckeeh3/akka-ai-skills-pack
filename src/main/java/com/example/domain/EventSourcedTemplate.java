@@ -5,18 +5,17 @@ import akka.javasdk.annotations.TypeName;
 /**
  * Shared domain model for the event sourced entity template.
  *
- * <p>This template is intentionally simple and AI-friendly:
+ * <p>
+ * This template is intentionally simple and AI-friendly:
  *
  * <ul>
- *   <li>The Akka entity id is the only source of truth for identity.</li>
- *   <li>Commands do not carry an id, which avoids id mismatches.</li>
- *   <li>State exposes {@code exists()} instead of relying on "empty string" checks.</li>
- *   <li>One command can emit multiple events to demonstrate event-sourced flows.</li>
+ * <li>The Akka entity id is the only source of truth for identity.</li>
+ * <li>Commands do not carry an id, which avoids id mismatches.</li>
+ * <li>State exposes {@code exists()} instead of relying on "empty string" checks.</li>
+ * <li>One command can emit multiple events to demonstrate event-sourced flows.</li>
  * </ul>
  */
 public final class EventSourcedTemplate {
-
-  private EventSourcedTemplate() {}
 
   public record State(String entityId, String name, String description, int quantity, boolean created) {
 
@@ -35,6 +34,10 @@ public final class EventSourcedTemplate {
     record Rename(String name) implements Command {}
 
     record UpdateDetails(String description, int quantity) implements Command {}
+
+    record IncludeRegion(String region) implements Command {}
+
+    record ExcludeRegion(String region) implements Command {}
 
     record Delete() implements Command {}
   }
