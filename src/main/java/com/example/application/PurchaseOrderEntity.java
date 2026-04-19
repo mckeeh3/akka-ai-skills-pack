@@ -13,8 +13,14 @@ import com.example.domain.PurchaseOrderValidator;
 /**
  * Key value entity that models order fulfillment after draft cart checkout.
  *
- * <p>This example is aimed at downstream or flow-internal use cases. Commands may be validated for
- * malformed input, while duplicate or stale commands are often treated as no-ops.
+ * <p>This example is aimed at downstream or flow-internal use cases and is intentionally the key
+ * value counterpart to the event sourced {@code OrderEntity} example.
+ *
+ * <p>Important difference from event sourcing: commands here replace the whole stored state in one
+ * update instead of emitting one or more durable events.
+ *
+ * <p>Commands may be validated for malformed input, while duplicate or stale commands are often
+ * treated as no-ops.
  */
 @Component(id = "purchase-order")
 @EnableReplicationFilter
@@ -45,6 +51,9 @@ public class PurchaseOrderEntity extends KeyValueEntity<PurchaseOrder.State> {
     return effects().reply(currentState());
   }
 
+  /**
+   * Idempotent create pattern: return success without updating state if the order already exists.
+   */
   public Effect<Done> createOrder(PurchaseOrder.Command.CreateOrder command) {
     var errors = PurchaseOrderValidator.validate(command);
     if (!errors.isEmpty()) {
@@ -59,6 +68,10 @@ public class PurchaseOrderEntity extends KeyValueEntity<PurchaseOrder.State> {
     return effects().updateState(updatedState.get()).thenReply(Done.getInstance());
   }
 
+  /**
+   * Downstream/internal update pattern: compute the next full state once, then replace stored
+   * state with a single {@code updateState(...)} call.
+   */
   public Effect<Done> lineItemReadyToShip(PurchaseOrder.Command.LineItemReadyToShip command) {
     var errors = PurchaseOrderValidator.validate(command);
     if (!errors.isEmpty()) {

@@ -20,6 +20,10 @@ import com.example.domain.PurchaseOrder;
  *   <li>the consumer transforms draft cart state into a {@code PurchaseOrder.Command.CreateOrder}</li>
  *   <li>the downstream {@code PurchaseOrderEntity} is created with idempotent command handling</li>
  * </ul>
+ *
+ * <p>AI-agent note: unlike {@code @Consume.FromEventSourcedEntity}, this consumer receives the
+ * latest updated state for a key value entity. A {@code @DeleteHandler} is included for delete
+ * notifications.
  */
 @Component(id = "draft-cart-checkout-consumer")
 @Consume.FromKeyValueEntity(DraftCartEntity.class)

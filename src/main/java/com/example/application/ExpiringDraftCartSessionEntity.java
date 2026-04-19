@@ -12,6 +12,9 @@ import java.time.Duration;
  *
  * <p>Each successful state update attaches a 30 day time-to-live. If no further updates are made
  * before that duration elapses, Akka automatically deletes the entity.
+ *
+ * <p>AI-agent note: for KVE, TTL is attached to {@code updateState(...)}. This is the key value
+ * counterpart to attaching TTL to a persist effect in an event sourced entity.
  */
 @Component(id = "expiring-draft-cart-session")
 public class ExpiringDraftCartSessionEntity

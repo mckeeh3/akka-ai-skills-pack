@@ -7,6 +7,9 @@ import java.util.Optional;
  *
  * <p>This class assumes validation has already happened. It can still inspect the current state to
  * decide that some commands should be treated as no-ops.
+ *
+ * <p>AI-agent note: for key value entities, this helper returns the next full state or a no-op
+ * decision. It does not return Akka effects and it does not emit events.
  */
 public final class DraftCartCommandHandler {
 

@@ -12,8 +12,15 @@ import com.example.domain.DraftCartValidator;
 /**
  * Edge-facing key value entity that validates commands and returns error effects on failures.
  *
- * <p>This example is intended for entities called directly from endpoint components. Invalid
- * commands are treated as business rejections and return {@code effects().error(...)}.
+ * <p>This example is intended for AI coding agents as the canonical key value counterpart to the
+ * event sourced {@code ShoppingCartEntity} example.
+ *
+ * <p>Key idea: unlike an event sourced entity, a key value entity does not persist facts as
+ * events. Each successful write computes the next full state and stores it with
+ * {@code effects().updateState(...)}.
+ *
+ * <p>Invalid commands are treated as business rejections and return
+ * {@code effects().error(...)}.
  */
 @Component(id = "draft-cart")
 public class DraftCartEntity extends KeyValueEntity<DraftCart.State> {
@@ -47,6 +54,9 @@ public class DraftCartEntity extends KeyValueEntity<DraftCart.State> {
     return notificationPublisher.stream();
   }
 
+  /**
+   * Edge-facing write pattern: validate, compute new full state, update state, then reply.
+   */
   public Effect<DraftCart.State> addItem(DraftCart.Command.AddItem command) {
     var errors = DraftCartValidator.validate(currentState(), command);
     if (!errors.isEmpty()) {
@@ -68,6 +78,10 @@ public class DraftCartEntity extends KeyValueEntity<DraftCart.State> {
             });
   }
 
+  /**
+   * No-op pattern for key value entities: if no state change is needed, reply without
+   * {@code updateState(...)}.
+   */
   public Effect<DraftCart.State> removeItem(DraftCart.Command.RemoveItem command) {
     var errors = DraftCartValidator.validate(currentState(), command);
     if (!errors.isEmpty()) {
@@ -109,6 +123,10 @@ public class DraftCartEntity extends KeyValueEntity<DraftCart.State> {
             });
   }
 
+  /**
+   * Delete pattern for key value entities: call {@code deleteEntity()} rather than updating to a
+   * new state snapshot.
+   */
   public Effect<String> delete(DraftCart.Command.Delete command) {
     var errors = DraftCartValidator.validate(currentState(), command);
     if (!errors.isEmpty()) {

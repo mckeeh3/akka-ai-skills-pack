@@ -7,6 +7,9 @@ import java.util.Optional;
  *
  * <p>This class demonstrates a downstream/internal key value entity where duplicate or stale
  * commands are often treated as no-ops.
+ *
+ * <p>AI-agent note: this is the key value counterpart to an event-sourced command handler. Instead
+ * of returning events to persist, it returns the next state snapshot or {@code Optional.empty()}.
  */
 public final class PurchaseOrderCommandHandler {
 

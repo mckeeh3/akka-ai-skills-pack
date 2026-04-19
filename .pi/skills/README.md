@@ -6,6 +6,9 @@ It is split into two parallel suites:
 - Event Sourced Entities
 - Key Value Entities
 
+If you have requirements but have not yet chosen the entity type, start with:
+- `akka-entity-type-selection`
+
 ## Event Sourced Entity skills
 
 Start with:
@@ -67,6 +70,12 @@ Use:
 - `akka-kve-integration-testing`
 
 ## Practical combinations
+
+### First decide between ESE and KVE
+Load:
+- `akka-entity-type-selection`
+
+Then continue with either the ESE or KVE suite.
 
 ### New endpoint-facing event sourced entity
 Load:
