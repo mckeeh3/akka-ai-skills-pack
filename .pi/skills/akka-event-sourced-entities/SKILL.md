@@ -52,12 +52,17 @@ Load the companion skill that matches the current task:
   - strongly consistent reads and replication filters
 - `akka-ese-edge-and-flow-patterns`
   - endpoint-facing entities, downstream/internal entities, consumers, idempotent no-op behavior
+- `akka-ese-doc-snippets`
+  - focused documentation snippets for teaching one ESE concept at a time
 - `akka-ese-unit-testing`
   - `EventSourcedTestKit` and entity unit tests
 - `akka-ese-integration-testing`
   - `TestKitSupport`, endpoint tests, consumer-driven flows
 
 If the task spans multiple areas, use this skill plus the relevant companion skills.
+
+For ESE vs KVE choice questions, also read:
+- `../references/akka-entity-comparison.md`
 
 ## Default package layout
 

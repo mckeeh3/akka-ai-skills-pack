@@ -19,6 +19,7 @@ Read these first if present:
 - `../../../src/main/java/com/example/application/OrderEntity.java`
 - `../../../src/main/java/com/example/application/DraftCartEntity.java`
 - `../../../src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../references/akka-entity-comparison.md`
 
 ## Decision rule
 

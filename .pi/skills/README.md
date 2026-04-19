@@ -9,6 +9,9 @@ It is split into two parallel suites:
 If you have requirements but have not yet chosen the entity type, start with:
 - `akka-entity-type-selection`
 
+You can also consult the comparison reference:
+- `references/akka-entity-comparison.md`
+
 ## Event Sourced Entity skills
 
 Start with:
@@ -33,6 +36,10 @@ Load these only when the task needs the feature:
 ### Flow selection
 Use when deciding how the entity participates in endpoint or internal flows.
 - `akka-ese-edge-and-flow-patterns`
+
+### Documentation snippets
+Use when writing or replacing docs with focused ESE examples.
+- `akka-ese-doc-snippets`
 
 ### Testing
 Use:
@@ -63,6 +70,10 @@ Load these only when the task needs the feature:
 ### Flow selection
 Use when deciding how the entity participates in endpoint or internal flows.
 - `akka-kve-edge-and-flow-patterns`
+
+### Documentation snippets
+Use when writing or replacing docs with focused KVE examples.
+- `akka-kve-doc-snippets`
 
 ### Testing
 Use:
