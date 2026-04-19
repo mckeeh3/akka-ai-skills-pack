@@ -1,0 +1,184 @@
+schemaVersion: akka.ai.pack.schema/v1alpha1
+kind: ResourcePackManifestSchema
+name: akka-ai-pack-manifest
+
+description: >-
+  Schema for a versioned Akka AI resource pack manifest. The manifest describes what the pack
+  installs, which bundles are available, where examples are exported, and which external docs are
+  intentionally excluded from the installed artifact.
+
+fields:
+  apiVersion:
+    type: string
+    required: true
+    example: akka.ai.pack/v1alpha1
+
+  kind:
+    type: string
+    required: true
+    example: ResourcePack
+
+  metadata:
+    type: map
+    required: true
+    fields:
+      name:
+        type: string
+        required: true
+        example: akka-ai-pack
+      version:
+        type: string
+        required: true
+        example: 0.1.0
+      sourceRepo:
+        type: string
+        required: true
+        example: https://github.com/example/akka-ai-pack
+      description:
+        type: string
+        required: true
+      compatibleAkkaSdk:
+        type: string
+        required: true
+        example: '3.5.x'
+
+  install:
+    type: map
+    required: true
+    fields:
+      rootDir:
+        type: string
+        required: true
+        example: .pi
+      skillsDir:
+        type: string
+        required: true
+        example: .pi/skills
+      manifestsDir:
+        type: string
+        required: true
+        example: .pi/manifests
+      examplesDir:
+        type: string
+        required: true
+        example: .pi/resources/examples/java
+
+  content:
+    type: map
+    required: true
+    fields:
+      skills:
+        type: list
+        required: true
+        itemType: map
+        itemFields:
+          id:
+            type: string
+            required: true
+          path:
+            type: string
+            required: true
+          category:
+            type: string
+            required: true
+          component:
+            type: string
+            required: false
+          dependsOn:
+            type: list
+            required: false
+            itemType: string
+      references:
+        type: list
+        required: false
+        itemType: string
+      examples:
+        type: map
+        required: true
+        fields:
+          exportFrom:
+            type: list
+            required: true
+            itemType: string
+          installAs:
+            type: string
+            required: true
+            example: .pi/resources/examples/java
+          includePom:
+            type: boolean
+            required: true
+          includeReadme:
+            type: boolean
+            required: true
+
+  bundles:
+    type: list
+    required: true
+    itemType: map
+    itemFields:
+      id:
+        type: string
+        required: true
+      description:
+        type: string
+        required: true
+      skills:
+        type: list
+        required: true
+        itemType: string
+      includeReferences:
+        type: boolean
+        required: true
+      includeExamples:
+        type: boolean
+        required: true
+
+  transforms:
+    type: map
+    required: true
+    fields:
+      rewriteExamplePaths:
+        type: boolean
+        required: true
+      rewriteAkkaContextReferences:
+        type: boolean
+        required: true
+      examplePathRules:
+        type: list
+        required: false
+        itemType: map
+        itemFields:
+          from:
+            type: string
+            required: true
+          to:
+            type: string
+            required: true
+      akkaContextRewriteMessage:
+        type: string
+        required: false
+
+  externalDocs:
+    type: map
+    required: true
+    fields:
+      bundled:
+        type: boolean
+        required: true
+        example: false
+      note:
+        type: string
+        required: true
+      sourcePath:
+        type: string
+        required: false
+        example: akka-context
+
+validationRules:
+  - metadata.name must be stable across releases
+  - install paths must stay project-local under .pi/
+  - each content.skills[].path must exist in the source repo
+  - each bundle.skills[] entry must match a declared content.skills[].id
+  - if externalDocs.bundled is false, transforms.rewriteAkkaContextReferences must be true
+  - exported example paths must exist in the source repo
+  - no installed skill may retain a broken local akka-context path
