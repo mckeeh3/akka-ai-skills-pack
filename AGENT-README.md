@@ -129,7 +129,13 @@ It also now has focused local skill and example coverage for:
 - replication
 - unit testing
 - integration testing
-- initial view component patterns
+- view component patterns
+  - event sourced views
+  - key value views
+  - workflow views
+  - topic-backed views
+  - streaming view queries
+  - delete handlers and snapshots
 
 Do not mistake current depth for final scope.
 
@@ -221,9 +227,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `38` skill directories under `.pi/skills`
-- `45` Java source files under `src/main/java`
-- `33` test files under `src/test/java`
+- `41` skill directories under `.pi/skills`
+- `50` Java source files under `src/main/java`
+- `37` test files under `src/test/java`
 
 Current strongest local example areas:
 - stateful entity comparison patterns
@@ -244,7 +250,13 @@ Current strongest local example areas:
 - TTL patterns
 - replication patterns
 - entity testing patterns
-- initial view source/query/testing patterns
+- view source/query/testing patterns
+  - event sourced views
+  - key value views
+  - workflow views
+  - topic-backed views
+  - non-updating and live-updating stream queries
+  - delete handlers and snapshot handlers
 
 These are important current references, but they are only the first part of the long-term repository shape.
 

@@ -25,6 +25,7 @@ Read these first if present:
 5. Keep Java field names aligned with query aliases exactly.
 6. Use a request record when a query needs multiple parameters.
 7. Add `ORDER BY` for stable pagination behavior.
+8. For streaming queries, keep the row shape simple and stable for downstream SSE or gRPC forwarding.
 
 ## Canonical patterns
 
@@ -64,7 +65,27 @@ public record DraftCartPage(List<DraftCartSummary> carts) {}
 Repository example:
 - `DraftCartsByCheckedOutView#getCartsPage`
 
-### 3. Offset pagination with total count
+### 3. Non-updating stream query
+
+Query:
+```sql
+SELECT *
+FROM shopping_cart_audit
+WHERE deleted = :deleted
+ORDER BY cartId
+```
+
+Java:
+```java
+public QueryStreamEffect<AuditRow> streamByDeleted(FindByDeleted request) {
+  return queryStreamResult();
+}
+```
+
+Repository example:
+- `ShoppingCartAuditView#streamByDeleted`
+
+### 4. Offset pagination with total count
 
 When the client needs total rows as well as a page slice, follow the same wrapper pattern and add an alias for `total_count()`.
 

@@ -21,6 +21,8 @@ Use `TestKitSupport` and configure mocked incoming messages for the source compo
 Patterns:
 - Event sourced source: `withEventSourcedEntityIncomingMessages(SourceEntity.class)`
 - Key value source: `withKeyValueEntityIncomingMessages(SourceEntity.class)`
+- Workflow source: `withWorkflowIncomingMessages(WorkflowClass.class)`
+- Topic source: `withTopicIncomingMessages("topic-name")`
 
 Then:
 1. get the source-specific incoming messages handle from `testKit`
@@ -39,17 +41,32 @@ For each reusable view example, cover at least:
 
 ## Repository examples
 
-### Event sourced view test
+### Event sourced view tests
 - `ShoppingCartsByCheckedOutViewIntegrationTest`
   - publishes shopping cart events
   - queries checked-out carts
   - verifies delete event removes the row
+- `ShoppingCartAuditViewIntegrationTest`
+  - verifies custom delete handling
+  - verifies `QueryStreamEffect` collection for current rows
 
-### Key value view test
+### Key value view tests
 - `DraftCartsByCheckedOutViewIntegrationTest`
   - publishes draft cart state snapshots
   - queries checked-out carts
   - verifies paginated response mapping
+- `DraftCartLifecycleViewIntegrationTest`
+  - verifies logical delete via `@DeleteHandler`
+
+### Workflow view test
+- `ReviewRequestsByStatusViewIntegrationTest`
+  - publishes workflow state snapshots
+  - queries workflow-derived rows
+
+### Topic view test
+- `ShoppingCartTopicViewIntegrationTest`
+  - publishes topic messages with `ce-subject` metadata
+  - verifies ignored and deleted message behavior
 
 ## Anti-patterns
 
@@ -64,6 +81,7 @@ Avoid:
 Before finishing, verify:
 - `TestKit.Settings` is configured for the correct source type
 - source updates are published through the matching incoming messages API
+- topic tests include `ce-subject` metadata when needed
 - assertions run inside `Awaitility.await()`
 - queries use `componentClient.forView()`
 - tests assert transformed row fields, not only result size

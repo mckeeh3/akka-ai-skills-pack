@@ -15,7 +15,9 @@
  *   <li>view-backed SSE endpoint tests with mocked incoming messages and {@code Awaitility}</li>
  *   <li>JWT-protected endpoint tests with injected bearer tokens</li>
  *   <li>internal-only ACL endpoint tests with impersonated service callers</li>
- *   <li>view integration tests with mocked incoming messages and {@code Awaitility}</li>
+ *   <li>view integration tests for event sourced, key value, workflow, and topic sources</li>
+ *   <li>view streaming tests for collected and live-update query streams</li>
+ *   <li>view delete-handler tests and snapshot-backed view examples</li>
  *   <li>end-to-end flows driven through endpoints and consumers</li>
  * </ul>
  */

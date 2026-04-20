@@ -28,9 +28,17 @@ Read these first if present:
 
 In this repository, prefer these examples:
 - `../../../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `../../../src/main/java/com/example/application/ShoppingCartAuditView.java`
 - `../../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../../src/main/java/com/example/application/DraftCartLifecycleView.java`
+- `../../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../../../src/main/java/com/example/application/ShoppingCartTopicView.java`
 - `../../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
 - `../../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
+- `../../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../../../src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -40,12 +48,18 @@ Load the companion skill that matches the current task:
   - views built from ESE events with `onEvent(...)`
 - `akka-view-from-key-value-entity`
   - views built from KVE state changes with `onUpdate(...)`
+- `akka-view-from-workflow`
+  - views built from workflow state changes with `onUpdate(...)`
+- `akka-view-from-topic`
+  - views built from topic messages with `ce-subject` metadata
 - `akka-view-query-patterns`
   - wrapper result records, aliases, pagination, and query shape
+- `akka-view-streaming`
+  - `QueryStreamEffect`, `queryStreamResult()`, and `streamUpdates = true`
 - `akka-view-testing`
   - `TestKitSupport`, mocked incoming messages, and `Awaitility`
 
-If the source is a Workflow or Topic, use this top-level skill plus `akka-context/sdk/views.html.md` and the reference docs directly until a focused local skill exists.
+If the source is another Akka service via service-to-service eventing, use this top-level skill plus `akka-context/sdk/views.html.md` and `akka-context/sdk/consuming-producing.html.md` until a focused local skill exists.
 
 ## Default package layout
 
@@ -71,7 +85,8 @@ Rules:
 7. Use `rowState()` for incremental updates and `updateContext().eventSubject()` for the source id.
 8. Use `effects().updateRow(...)`, `effects().deleteRow()`, or `effects().ignore()` explicitly.
 9. View tests should publish incoming updates and query through `componentClient.forView()`.
-10. Remember eventual consistency: assert view results with `Awaitility`.
+10. Streaming queries use `QueryStreamEffect` with `queryStreamResult()`.
+11. Remember eventual consistency: assert view results with `Awaitility`.
 
 ## Decision guide
 
@@ -84,33 +99,49 @@ Typical sources:
 - Key Value Entity
 - Workflow
 
-Repository example:
+Repository examples:
 - `DraftCartsByCheckedOutView`
+- `ReviewRequestsByStatusView`
 
 ### 2. Event-driven projection view
 Use when the source emits domain events and the view must rebuild row state incrementally.
 
-Typical source:
+Typical sources:
 - Event Sourced Entity
+- Topic
 
-Repository example:
+Repository examples:
 - `ShoppingCartsByCheckedOutView`
+- `ShoppingCartTopicView`
 
-### 3. Query-shaping task
-Use when the main problem is result mapping, aliases, pagination, or streaming.
+### 3. Query-shaping or streaming task
+Use when the main problem is result mapping, aliases, pagination, streaming current results, or streaming updates.
 
-Repository example:
+Repository examples:
 - `DraftCartsByCheckedOutView#getCartsPage`
+- `DraftCartsByCheckedOutView#streamCarts`
+- `ShoppingCartAuditView#streamByDeleted`
+
+## Advanced semantics to remember
+
+- Views are eventually consistent; do not assume entity writes are visible immediately.
+- ESE, KVE, and Workflow-backed views have built-in exactly-once deduplication.
+- KVE-backed views may skip intermediate state transitions and reflect only the latest guaranteed state.
+- Topic-backed views rely on topic delivery and metadata such as `ce-subject`.
+- For multi-region scenarios, `updateContext().hasLocalOrigin()`, `originRegion()`, and `selfRegion()` can drive origin-aware filtering.
+- For service-to-service eventing sources, use this skill plus `akka-context/sdk/consuming-producing.html.md` until a focused local skill exists.
+- View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.
 
 ## Final review checklist
 
 Before finishing, verify:
 - `@Component(id = ...)` is present and stable
 - the updater source annotation matches the source component type
-- ESE uses `onEvent(...)`, KVE/Workflow uses `onUpdate(...)`
+- ESE/Topic uses `onEvent(...)`, KVE/Workflow uses `onUpdate(...)`
 - query response records match the `SELECT` shape and aliases exactly
 - multi-row queries use a wrapper field alias such as `AS carts`
 - delete behavior is explicit when needed
+- snapshot handling is present when an ESE-backed view should start from snapshots
 - tests publish incoming messages from the correct source type
 - tests use `Awaitility` instead of assuming immediate view updates
 
@@ -120,3 +151,4 @@ When answering coding tasks:
 - name the files used or changed
 - call out the source type of each view explicitly
 - state whether the view stores direct state, a transformed row, or a paginated/query-specific projection
+- mention streaming, delete handling, snapshot handling, or origin-aware filtering when those features are present

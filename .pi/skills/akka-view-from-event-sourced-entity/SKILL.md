@@ -14,7 +14,9 @@ Read these first if present:
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `../../../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `../../../src/main/java/com/example/application/ShoppingCartAuditView.java`
 - `../../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
 
 ## Source-specific rules
 
@@ -23,8 +25,9 @@ Read these first if present:
 3. Handle the sealed event supertype when possible.
 4. Use `rowState()` to evolve the current row incrementally.
 5. Use `updateContext().eventSubject()` to recover the entity id for first-row creation.
-6. Model entity deletion explicitly in `onEvent(...)`, usually with `effects().deleteRow()`.
-7. If snapshots are relevant, add `@SnapshotHandler` with the entity state type.
+6. Model entity deletion explicitly in `onEvent(...)` when the delete is represented as a domain event.
+7. If the entity delete signal itself should be customized, add `@DeleteHandler`.
+8. If snapshots are relevant, add `@SnapshotHandler` with the entity state type.
 
 ## Recommended implementation pattern
 
@@ -38,8 +41,12 @@ Pattern:
 - delegate state evolution to a pure helper
 - map a delete event to `effects().deleteRow()`
 
-Repository example:
+Repository examples:
 - `ShoppingCartsByCheckedOutView`
+- `ShoppingCartAuditView`
+  - demonstrates `@SnapshotHandler`
+  - demonstrates `effects().ignore()` for an event not projected directly
+  - demonstrates custom `@DeleteHandler`
 
 ### 2. Maintain a smaller projection row
 Best when the query only needs a subset of fields or a transformed shape.
@@ -63,5 +70,6 @@ Before finishing, verify:
 - the updater uses `@Consume.FromEventSourcedEntity(...)`
 - `onEvent(...)` handles all relevant event subtypes
 - first-row creation handles missing `rowState()` safely
-- delete events remove or explicitly retain rows as intended
+- delete events or delete callbacks remove or explicitly retain rows as intended
+- snapshot handling uses the entity state type when present
 - queries index by a field other than entity id when that is the purpose of the view

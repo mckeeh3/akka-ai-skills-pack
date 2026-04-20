@@ -62,6 +62,17 @@ public class DraftCartsByCheckedOutView extends View {
   }
 
   @Query(
+      """
+      SELECT *
+      FROM draft_carts_by_checked_out
+      WHERE checkedOut = :checkedOut
+      ORDER BY cartId
+      """)
+  public QueryStreamEffect<DraftCartSummary> streamCarts(FindByCheckedOut request) {
+    return queryStreamResult();
+  }
+
+  @Query(
       value =
           """
           SELECT *

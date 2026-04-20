@@ -93,10 +93,16 @@ Then load the focused skill that matches the current task:
 Use the source-specific skill for the updater type you are implementing.
 - `akka-view-from-event-sourced-entity`
 - `akka-view-from-key-value-entity`
+- `akka-view-from-workflow`
+- `akka-view-from-topic`
 
 ### Query design
 Use when designing wrapper records, aliases, or pagination.
 - `akka-view-query-patterns`
+
+### Streaming
+Use when the view query should stream current rows or live updates.
+- `akka-view-streaming`
 
 ### Testing
 Use when validating projections with mocked incoming messages.
@@ -258,6 +264,26 @@ Load:
 - `akka-view-query-patterns`
 - `akka-view-testing`
 
+### Create a view from a workflow
+Load:
+- `akka-views`
+- `akka-view-from-workflow`
+- `akka-view-query-patterns`
+- `akka-view-testing`
+
+### Create a view from a topic
+Load:
+- `akka-views`
+- `akka-view-from-topic`
+- `akka-view-query-patterns`
+- `akka-view-testing`
+
+### Add view streaming
+Load:
+- `akka-views`
+- `akka-view-streaming`
+- `akka-view-testing`
+
 ## Repository reference examples
 
 ### Event sourced entities
@@ -295,11 +321,19 @@ Testing examples:
 ### Views
 Core view examples:
 - `../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `../src/main/java/com/example/application/ShoppingCartAuditView.java`
 - `../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../src/main/java/com/example/application/DraftCartLifecycleView.java`
+- `../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../src/main/java/com/example/application/ShoppingCartTopicView.java`
 
 Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
 - `../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
+- `../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ### HTTP endpoints
 Core endpoint examples:

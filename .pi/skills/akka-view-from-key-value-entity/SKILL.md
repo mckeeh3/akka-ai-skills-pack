@@ -14,7 +14,9 @@ Read these first if present:
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
 - `../../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../../src/main/java/com/example/application/DraftCartLifecycleView.java`
 - `../../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
 
 ## Source-specific rules
 
@@ -35,8 +37,10 @@ Pattern:
 - compute that row from the latest state in `onUpdate(...)`
 - query using wrapper records such as `List<Row> carts`
 
-Repository example:
+Repository examples:
 - `DraftCartsByCheckedOutView`
+- `DraftCartLifecycleView`
+  - demonstrates `@DeleteHandler` for logical deletion
 
 ## Delete guidance
 
@@ -64,3 +68,4 @@ Before finishing, verify:
 - the row type contains only fields needed by the queries
 - query wrappers and aliases match exactly
 - tests simulate updates with key value incoming messages
+- delete handlers are present only when custom delete behavior is required
