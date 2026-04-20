@@ -6,6 +6,7 @@ Current local suites:
 - Event Sourced Entities
 - Key Value Entities
 - Workflows
+- Timed Actions
 - Consumers
 - Views
 - HTTP Endpoints
@@ -19,6 +20,7 @@ You can also consult the comparison/reference files:
 - `references/akka-entity-comparison.md`
 - `references/akka-grpc-jwt-patterns.md`
 - `../docs/workflow-endpoint-pattern.md`
+- `../docs/timer-pattern-selection.md`
 
 ## Event Sourced Entity skills
 
@@ -114,6 +116,25 @@ Use when the workflow must wait for an approval or later input.
 ### Testing
 Use:
 - `akka-workflow-testing`
+
+## Timed action skills
+
+Start with:
+- `akka-timed-actions`
+
+Then load the focused skill that matches the current task:
+
+### Component structure
+Use when writing the `TimedAction` class itself.
+- `akka-timed-action-component`
+
+### Timer scheduling
+Use when the main work is `TimerScheduler.createSingleTimer(...)`, timer naming, replacement, or deletion.
+- `akka-timers-scheduling`
+
+### Testing
+Use:
+- `akka-timed-action-testing`
 
 ## Consumer skills
 
@@ -333,6 +354,27 @@ Load:
 - `akka-workflow-component`
 - `akka-workflow-pausing`
 - `akka-workflow-testing`
+
+### New timer-backed expiry or reminder flow
+Load:
+- `akka-timed-actions`
+- `akka-timers-scheduling`
+- `akka-timed-action-component`
+- `akka-timed-action-testing`
+
+Add one of these if the timer targets broader component work:
+- `akka-http-endpoint-component-client`
+- `akka-key-value-entities`
+- `akka-event-sourced-entities`
+- `akka-workflows`
+
+### New workflow-triggered timer flow
+Load:
+- `akka-workflows`
+- `akka-workflow-component`
+- `akka-timed-actions`
+- `akka-timers-scheduling`
+- `akka-timed-action-testing`
 
 ### New consumer reacting to event sourced events
 Load:
@@ -566,6 +608,32 @@ Testing examples:
 - `../src/test/java/com/example/application/WalletEntityTest.java`
 - `../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 - `../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+
+### Timed actions
+Core timer examples:
+- `../src/main/java/com/example/domain/TicketReservation.java`
+- `../src/main/java/com/example/application/TicketReservationEntity.java`
+- `../src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../src/main/java/com/example/api/TicketReservationEndpoint.java`
+- `../src/main/java/com/example/domain/ReminderJob.java`
+- `../src/main/java/com/example/application/ReminderJobEntity.java`
+- `../src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `../src/main/java/com/example/api/ReminderJobEndpoint.java`
+- `../src/main/java/com/example/domain/ApprovalDeadlineState.java`
+- `../src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `../src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
+
+Testing examples:
+- `../src/test/java/com/example/application/TicketReservationEntityTest.java`
+- `../src/test/java/com/example/application/TicketReservationTimedActionTest.java`
+- `../src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/ReminderJobEntityTest.java`
+- `../src/test/java/com/example/application/ReminderJobTimedActionTest.java`
+- `../src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
+- `../src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
 
 ### Consumers
 Core consumer examples:

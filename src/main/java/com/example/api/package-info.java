@@ -5,6 +5,7 @@
  *
  * <ul>
  *   <li>map API requests to entity commands</li>
+ *   <li>schedule and delete timers from endpoints when future work must be coordinated explicitly</li>
  *   <li>translate entity validation failures to HTTP responses</li>
  *   <li>use request context for query parameters, request headers, principals, and JWT claims</li>
  *   <li>serve packaged static HTML, static subtrees, and OpenAPI files from endpoint routes</li>

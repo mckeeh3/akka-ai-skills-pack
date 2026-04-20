@@ -11,10 +11,13 @@ Use this skill when the task is mainly about the workflow class itself.
 
 Read these first if present:
 - `akka-context/sdk/workflows.html.md`
+- `../../../docs/timer-pattern-selection.md`
 - `../../../src/main/java/com/example/application/TransferWorkflow.java`
 - `../../../src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../../../src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
 - `../../../src/main/java/com/example/domain/TransferState.java`
 - `../../../src/main/java/com/example/domain/ApprovalState.java`
+- `../../../src/main/java/com/example/domain/ApprovalDeadlineState.java`
 
 ## Core pattern
 
@@ -35,6 +38,9 @@ Read these first if present:
 - `ApprovalWorkflow`
   - start command transitions to a pause step
   - read handler exposes current approval state
+- `ApprovalDeadlineWorkflow`
+  - start command registers a timer from the workflow and then pauses
+  - timer-triggered timeout is routed back into the workflow through a timed action
 
 ## Design guidance
 

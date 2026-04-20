@@ -144,6 +144,14 @@ It also now has focused local skill and example coverage for:
   - prompt templates with explicit parameter descriptions
   - request-context and JWT-aware MCP endpoints
   - direct method testing for MCP tools, resources, and prompts
+- timed actions
+  - timer registration and deletion patterns
+  - timer-safe target command handling for obsolete executions
+  - stateless timed action components that call entities or workflows through `ComponentClient`
+  - self-rescheduling timed actions via `timers()` inside the handler
+  - workflow-triggered timeout timers that feed timeout commands back into paused workflows
+  - unit testing with `TimedActionTestkit`
+  - integration testing of timer-triggered expiry flows
 - consumers
   - event sourced entity consumers
   - key value entity consumers
@@ -259,9 +267,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `68` skill directories under `.pi/skills`
-- `68` Java source files under `src/main/java`
-- `50` test files under `src/test/java`
+- `72` skill directories under `.pi/skills`
+- `80` Java source files under `src/main/java`
+- `59` test files under `src/test/java`
 
 Current strongest local example areas:
 - stateful entity comparison patterns
@@ -298,6 +306,14 @@ Current strongest local example areas:
   - workflow notification streams exposed through HTTP SSE
   - pause/resume approval flows
   - workflow integration testing through `componentClient.forWorkflow(...)`
+- timed action and timer patterns
+  - endpoint-driven timer registration and deletion
+  - workflow-driven timeout registration from workflow command handlers
+  - timed action components that normalize obsolete executions to `done()`
+  - self-rescheduling timers driven from `timers()` inside a timed action
+  - timer-safe entity and workflow command design for at-least-once execution
+  - unit testing with `TimedActionTestkit`
+  - end-to-end expiry verification with `Awaitility`
 - focused consumer component patterns
   - event sourced consumers that trigger downstream entities
   - key value consumers driven by latest-state updates and delete handlers
