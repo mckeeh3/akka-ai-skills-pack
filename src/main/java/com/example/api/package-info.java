@@ -17,6 +17,10 @@
  *   <li>use {@code AbstractGrpcEndpoint} for principals, metadata, and JWT-aware request context</li>
  *   <li>secure gRPC endpoints with {@code @JWT} bearer-token validation, including regex-based claim patterns</li>
  *   <li>stream protobuf replies over gRPC from view-backed sources</li>
+ *   <li>implement MCP endpoint classes that expose tools, resources, and prompts for LLM clients</li>
+ *   <li>use {@code AbstractMcpEndpoint} for MCP request headers, principals, and JWT-aware request context</li>
+ *   <li>adapt component state into compact JSON tool responses instead of leaking internal state directly</li>
+ *   <li>serve packaged MCP resources and dynamic URI-template resources</li>
  *   <li>avoid exposing internal domain state directly as public API types</li>
  *   <li>expose notification streams as SSE with API-specific response records</li>
  * </ul>

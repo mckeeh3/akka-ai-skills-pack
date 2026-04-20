@@ -131,6 +131,12 @@ It also now has focused local skill and example coverage for:
   - server-streaming endpoints
   - gRPC integration testing
   - protobuf evolution and common-type examples
+- MCP endpoints
+  - component-calling tools that adapt Akka state into LLM-friendly JSON
+  - packaged static resources and dynamic URI-template resources
+  - prompt templates with explicit parameter descriptions
+  - request-context and JWT-aware MCP endpoints
+  - direct method testing for MCP tools, resources, and prompts
 - consumers
 - notifications
 - TTL
@@ -235,9 +241,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `41` skill directories under `.pi/skills`
-- `50` Java source files under `src/main/java`
-- `37` test files under `src/test/java`
+- `53` skill directories under `.pi/skills`
+- `52` Java source files under `src/main/java`
+- `39` test files under `src/test/java`
 
 Current strongest local example areas:
 - stateful entity comparison patterns
@@ -262,6 +268,12 @@ Current strongest local example areas:
   - server-streaming responses
   - gRPC integration testing with generated clients
   - schema-evolution and common protobuf type examples
+- focused MCP endpoint component patterns
+  - component-backed tools returning compact JSON summaries for LLMs
+  - packaged markdown resources and dynamic structured resources
+  - prompt templates with explicit parameter descriptions and model-friendly structure
+  - class-level JWT and request-context-aware MCP endpoints
+  - direct method tests with stubbed `McpRequestContext`
 - downstream consumer flows
 - TTL patterns
 - replication patterns

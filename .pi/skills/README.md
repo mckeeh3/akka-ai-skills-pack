@@ -8,6 +8,7 @@ Current local suites:
 - Views
 - HTTP Endpoints
 - gRPC Endpoints
+- MCP Endpoints
 
 If you have requirements but have not yet chosen the entity type, start with:
 - `akka-entity-type-selection`
@@ -188,6 +189,29 @@ Use when the main task is `.proto` structure, schema evolution, or common/extern
 Use:
 - `akka-grpc-endpoint-testing`
 
+## MCP endpoint skills
+
+Start with:
+- `akka-mcp-endpoints`
+
+Then load the focused skill that matches the current task:
+
+### Component-calling MCP endpoints
+Use when MCP tools or resources need current Akka component state.
+- `akka-mcp-endpoint-component-client`
+
+### Request-context MCP endpoints
+Use when the MCP endpoint depends on headers, principals, JWT claims, or tracing.
+- `akka-mcp-endpoint-request-context`
+
+### MCP resources and prompts
+Use when the task is mainly about resource URIs, URI templates, packaged resources, or prompt templates.
+- `akka-mcp-endpoint-resources-prompts`
+
+### Testing
+Use:
+- `akka-mcp-endpoint-testing`
+
 ## Practical combinations
 
 ### First decide between ESE and KVE
@@ -311,6 +335,24 @@ Load:
 Load:
 - `akka-grpc-endpoints`
 - `akka-grpc-proto-design`
+
+### New MCP endpoint that calls components
+Load:
+- `akka-mcp-endpoints`
+- `akka-mcp-endpoint-component-client`
+- `akka-mcp-endpoint-testing`
+
+### New MCP endpoint using request context or JWTs
+Load:
+- `akka-mcp-endpoints`
+- `akka-mcp-endpoint-request-context`
+- `akka-mcp-endpoint-testing`
+
+### New MCP resource or prompt endpoint
+Load:
+- `akka-mcp-endpoints`
+- `akka-mcp-endpoint-resources-prompts`
+- `akka-mcp-endpoint-testing`
 
 ### Create a view from an event sourced entity
 Load:
@@ -445,3 +487,13 @@ Testing examples:
 - `../src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
+
+### MCP endpoints
+Core endpoint examples:
+- `../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
+- `../src/main/resources/mcp/checkout-guidelines.md`
+
+Testing examples:
+- `../src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
+- `../src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`

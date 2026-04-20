@@ -19,6 +19,8 @@
  *   <li>gRPC ACL tests with simulated caller principals</li>
  *   <li>gRPC JWT tests with bearer tokens injected through generated clients, including regex claim validation</li>
  *   <li>gRPC streaming tests that collect protobuf replies with the test materializer</li>
+ *   <li>MCP endpoint tests via direct method invocation with component-backed setup</li>
+ *   <li>MCP request-context tests with stubbed {@code McpRequestContext} instances</li>
  *   <li>view integration tests for event sourced, key value, workflow, and topic sources</li>
  *   <li>view streaming tests for collected and live-update query streams</li>
  *   <li>view delete-handler tests and snapshot-backed view examples</li>
