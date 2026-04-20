@@ -111,6 +111,13 @@ At the moment, the repository has the deepest local coverage for:
 - Key Value Entities
 
 It also now has focused local skill and example coverage for:
+- workflows
+  - straight-through orchestration
+  - compensating flows with retry-safe downstream command ids
+  - workflow notification streams and SSE endpoint exposure
+  - pause/resume approval flows
+  - workflow integration testing via `componentClient.forWorkflow(...)`
+  - workflow-backed consumers and views
 - HTTP endpoints
   - component-calling endpoints
   - request-context endpoints
@@ -252,9 +259,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `62` skill directories under `.pi/skills`
-- `60` Java source files under `src/main/java`
-- `45` test files under `src/test/java`
+- `68` skill directories under `.pi/skills`
+- `68` Java source files under `src/main/java`
+- `50` test files under `src/test/java`
 
 Current strongest local example areas:
 - stateful entity comparison patterns
@@ -285,6 +292,12 @@ Current strongest local example areas:
   - prompt templates with explicit parameter descriptions and model-friendly structure
   - class-level JWT and request-context-aware MCP endpoints
   - direct method tests with stubbed `McpRequestContext`
+- workflow component patterns
+  - straight-through step orchestration
+  - compensation with explicit result types and idempotent downstream commands
+  - workflow notification streams exposed through HTTP SSE
+  - pause/resume approval flows
+  - workflow integration testing through `componentClient.forWorkflow(...)`
 - focused consumer component patterns
   - event sourced consumers that trigger downstream entities
   - key value consumers driven by latest-state updates and delete handlers

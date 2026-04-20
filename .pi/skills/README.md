@@ -5,6 +5,7 @@ This directory contains AI-focused skills for generating and reviewing Akka Java
 Current local suites:
 - Event Sourced Entities
 - Key Value Entities
+- Workflows
 - Consumers
 - Views
 - HTTP Endpoints
@@ -17,6 +18,7 @@ If you have requirements but have not yet chosen the entity type, start with:
 You can also consult the comparison/reference files:
 - `references/akka-entity-comparison.md`
 - `references/akka-grpc-jwt-patterns.md`
+- `../docs/workflow-endpoint-pattern.md`
 
 ## Event Sourced Entity skills
 
@@ -85,6 +87,33 @@ Use when writing or replacing docs with focused KVE examples.
 Use:
 - `akka-kve-unit-testing`
 - `akka-kve-integration-testing`
+
+## Workflow skills
+
+Start with:
+- `akka-workflows`
+
+Then load the focused skill that matches the current task:
+
+### Component structure
+Use when writing the workflow class, state transitions, and `WorkflowSettings`.
+- `akka-workflow-component`
+
+### Compensation
+Use when a later step must undo earlier work.
+- `akka-workflow-compensation`
+
+### Notifications
+Use when clients should subscribe to workflow progress.
+- `akka-workflow-notifications`
+
+### Pause/resume
+Use when the workflow must wait for an approval or later input.
+- `akka-workflow-pausing`
+
+### Testing
+Use:
+- `akka-workflow-testing`
 
 ## Consumer skills
 
@@ -277,6 +306,33 @@ Load either:
 Load either:
 - `akka-ese-application-entity` + `akka-ese-replication`
 - `akka-kve-application-entity` + `akka-kve-replication`
+
+### New workflow component
+Load:
+- `akka-workflows`
+- `akka-workflow-component`
+- `akka-workflow-testing`
+
+### New workflow with compensation
+Load:
+- `akka-workflows`
+- `akka-workflow-component`
+- `akka-workflow-compensation`
+- `akka-workflow-testing`
+
+### New workflow with notifications
+Load:
+- `akka-workflows`
+- `akka-workflow-component`
+- `akka-workflow-notifications`
+- `akka-workflow-testing`
+
+### New workflow with pause/resume behavior
+Load:
+- `akka-workflows`
+- `akka-workflow-component`
+- `akka-workflow-pausing`
+- `akka-workflow-testing`
 
 ### New consumer reacting to event sourced events
 Load:
@@ -490,6 +546,27 @@ Testing examples:
 - `../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
 - `../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
 
+### Workflows
+Core workflow examples:
+- `../src/main/java/com/example/application/TransferWorkflow.java`
+- `../src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../src/main/java/com/example/application/ReviewWorkflow.java`
+- `../src/main/java/com/example/application/WalletEntity.java`
+- `../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../src/main/java/com/example/domain/TransferState.java`
+- `../src/main/java/com/example/domain/ApprovalState.java`
+- `../src/main/java/com/example/domain/Wallet.java`
+
+Testing examples:
+- `../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
+- `../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
+- `../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/WalletEntityTest.java`
+- `../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+
 ### Consumers
 Core consumer examples:
 - `../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
@@ -541,6 +618,8 @@ Core endpoint examples:
 - `../src/main/java/com/example/api/DraftCartEndpoint.java`
 - `../src/main/java/com/example/api/OrderEndpoint.java`
 - `../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
 
 Testing examples:
 - `../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
@@ -556,6 +635,8 @@ Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
 - `../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ### gRPC endpoints
 Core endpoint examples:

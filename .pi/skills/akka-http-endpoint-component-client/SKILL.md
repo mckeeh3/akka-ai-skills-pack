@@ -16,9 +16,14 @@ Read these first if present:
 - `../../../src/main/java/com/example/api/DraftCartEndpoint.java`
 - `../../../src/main/java/com/example/api/OrderEndpoint.java`
 - `../../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../../../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../../../docs/workflow-endpoint-pattern.md`
 - `../../../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
 - `../../../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../../../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -53,6 +58,14 @@ Read these first if present:
   - mirrors the event sourced shopping cart endpoint shape for KVE comparison
 - `PurchaseOrderEndpoint`
   - mirrors the order endpoint shape for KVE comparison
+
+### Workflow endpoint examples
+- `TransferWorkflowEndpoint`
+  - starts, reads, and streams workflow progress
+- `ApprovalWorkflowEndpoint`
+  - starts, resumes, reads, and streams paused workflow progress
+- `docs/workflow-endpoint-pattern.md`
+  - tiny shared reference for workflow-specific route shapes and HTTP mappings
 
 ## Mapping rules
 
