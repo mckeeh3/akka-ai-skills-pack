@@ -7,6 +7,7 @@
  *   <li>event sourced entity unit tests with {@code EventSourcedTestKit}</li>
  *   <li>key value entity unit tests with {@code KeyValueEntityTestKit}</li>
  *   <li>integration tests with {@code TestKitSupport}</li>
+ *   <li>view integration tests with mocked incoming messages and {@code Awaitility}</li>
  *   <li>end-to-end flows driven through endpoints and consumers</li>
  * </ul>
  */

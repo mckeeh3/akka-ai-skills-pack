@@ -1,10 +1,11 @@
-# Akka Entity Skills
+# Akka Component Skills
 
-This directory contains AI-focused skills for generating and reviewing Akka Java SDK entity code.
+This directory contains AI-focused skills for generating and reviewing Akka Java SDK component code.
 
-It is split into two parallel suites:
+Current local suites:
 - Event Sourced Entities
 - Key Value Entities
+- Views
 
 If you have requirements but have not yet chosen the entity type, start with:
 - `akka-entity-type-selection`
@@ -80,6 +81,26 @@ Use:
 - `akka-kve-unit-testing`
 - `akka-kve-integration-testing`
 
+## View skills
+
+Start with:
+- `akka-views`
+
+Then load the focused skill that matches the current task:
+
+### Source selection
+Use the source-specific skill for the updater type you are implementing.
+- `akka-view-from-event-sourced-entity`
+- `akka-view-from-key-value-entity`
+
+### Query design
+Use when designing wrapper records, aliases, or pagination.
+- `akka-view-query-patterns`
+
+### Testing
+Use when validating projections with mocked incoming messages.
+- `akka-view-testing`
+
 ## Practical combinations
 
 ### First decide between ESE and KVE
@@ -121,6 +142,20 @@ Load either:
 - `akka-ese-application-entity` + `akka-ese-replication`
 - `akka-kve-application-entity` + `akka-kve-replication`
 
+### Create a view from an event sourced entity
+Load:
+- `akka-views`
+- `akka-view-from-event-sourced-entity`
+- `akka-view-query-patterns`
+- `akka-view-testing`
+
+### Create a view from a key value entity
+Load:
+- `akka-views`
+- `akka-view-from-key-value-entity`
+- `akka-view-query-patterns`
+- `akka-view-testing`
+
 ## Repository reference examples
 
 ### Event sourced entities
@@ -154,3 +189,12 @@ Testing examples:
 - `../src/test/java/com/example/application/DraftCartEntityTest.java`
 - `../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
 - `../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
+
+### Views
+Core view examples:
+- `../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+
+Testing examples:
+- `../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`

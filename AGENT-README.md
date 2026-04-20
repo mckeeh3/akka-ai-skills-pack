@@ -118,6 +118,7 @@ It also contains related examples around:
 - replication
 - unit testing
 - integration testing
+- initial view component patterns
 
 Do not mistake current depth for final scope.
 
@@ -209,9 +210,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `22` skill directories under `.pi/skills`
-- `33` Java source files under `src/main/java`
-- `21` test files under `src/test/java`
+- `27` skill directories under `.pi/skills`
+- `35` Java source files under `src/main/java`
+- `23` test files under `src/test/java`
 
 Current strongest local example areas:
 - stateful entity comparison patterns
@@ -220,6 +221,7 @@ Current strongest local example areas:
 - TTL patterns
 - replication patterns
 - entity testing patterns
+- initial view source/query/testing patterns
 
 These are important current references, but they are only the first part of the long-term repository shape.
 
