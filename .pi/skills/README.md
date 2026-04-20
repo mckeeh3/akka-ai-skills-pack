@@ -7,6 +7,7 @@ Current local suites:
 - Key Value Entities
 - Views
 - HTTP Endpoints
+- gRPC Endpoints
 
 If you have requirements but have not yet chosen the entity type, start with:
 - `akka-entity-type-selection`
@@ -155,6 +156,37 @@ Use when the endpoint should only be callable by services or needs method-level 
 Use:
 - `akka-http-endpoint-testing`
 
+## gRPC endpoint skills
+
+Start with:
+- `akka-grpc-endpoints`
+
+Then load the focused skill that matches the current task:
+
+### Component-calling endpoints
+Use when the endpoint maps protobuf requests to Akka component calls.
+- `akka-grpc-endpoint-component-client`
+
+### Request-context endpoints
+Use when the endpoint depends on principals, gRPC metadata, JWT claims, or tracing.
+- `akka-grpc-endpoint-request-context`
+
+### Streaming endpoints
+Use when the endpoint returns server-streamed protobuf replies.
+- `akka-grpc-endpoint-streaming`
+
+### JWT-secured endpoints
+Use when the endpoint validates bearer tokens and reads claims.
+- `akka-grpc-endpoint-jwt`
+
+### Proto design
+Use when the main task is `.proto` structure, schema evolution, or common/external protobuf types.
+- `akka-grpc-proto-design`
+
+### Testing
+Use:
+- `akka-grpc-endpoint-testing`
+
 ## Practical combinations
 
 ### First decide between ESE and KVE
@@ -249,6 +281,35 @@ Load:
 - `akka-http-endpoints`
 - `akka-http-endpoint-acl-internal`
 - `akka-http-endpoint-testing`
+
+### New gRPC endpoint that calls components
+Load:
+- `akka-grpc-endpoints`
+- `akka-grpc-endpoint-component-client`
+- `akka-grpc-endpoint-testing`
+
+### New gRPC endpoint using request context or ACLs
+Load:
+- `akka-grpc-endpoints`
+- `akka-grpc-endpoint-request-context`
+- `akka-grpc-endpoint-testing`
+
+### New streaming gRPC endpoint
+Load:
+- `akka-grpc-endpoints`
+- `akka-grpc-endpoint-streaming`
+- `akka-grpc-endpoint-testing`
+
+### New JWT-secured gRPC endpoint
+Load:
+- `akka-grpc-endpoints`
+- `akka-grpc-endpoint-jwt`
+- `akka-grpc-endpoint-testing`
+
+### New gRPC protobuf contract
+Load:
+- `akka-grpc-endpoints`
+- `akka-grpc-proto-design`
 
 ### Create a view from an event sourced entity
 Load:
@@ -366,3 +427,17 @@ Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
 - `../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+
+### gRPC endpoints
+Core endpoint examples:
+- `../src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
+- `../src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
+- `../src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
+- `../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `../src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
+- `../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+
+Testing examples:
+- `../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`

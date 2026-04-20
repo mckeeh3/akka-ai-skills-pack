@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.api.grpc";
+
+package com.example.api.grpc;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+message CallerResponse {
+  string origin = 1;
+  string local_service = 2;
+  bool internet = 3;
+  google.protobuf.StringValue jwt_subject = 4;
+  google.protobuf.StringValue request_id = 5;
+  int32 metadata_entry_count = 6;
+  reserved 7;
+  reserved "legacy_note";
+}
+
+service InternalStatusGrpcEndpoint {
+  rpc WhoAmI(google.protobuf.Empty) returns (CallerResponse) {}
+}

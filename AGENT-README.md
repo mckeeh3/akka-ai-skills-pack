@@ -123,6 +123,14 @@ It also now has focused local skill and example coverage for:
   - JWT-protected endpoints and bearer-token test patterns
   - internal-only ACL endpoints and method-level overrides
   - endpoint integration testing
+- gRPC endpoints
+  - unary protobuf endpoints
+  - component-calling endpoints
+  - request-context and ACL-aware endpoints
+  - JWT-protected endpoints and bearer-token test patterns
+  - server-streaming endpoints
+  - gRPC integration testing
+  - protobuf evolution and common-type examples
 - consumers
 - notifications
 - TTL
@@ -246,6 +254,14 @@ Current strongest local example areas:
   - WebSocket routes and tests
   - internal-only ACL examples
   - endpoint integration testing
+- focused gRPC endpoint component patterns
+  - protobuf-first contract design
+  - unary request/reply mapping
+  - service-only ACLs and request-context access
+  - JWT claim validation and request-context claim access
+  - server-streaming responses
+  - gRPC integration testing with generated clients
+  - schema-evolution and common protobuf type examples
 - downstream consumer flows
 - TTL patterns
 - replication patterns

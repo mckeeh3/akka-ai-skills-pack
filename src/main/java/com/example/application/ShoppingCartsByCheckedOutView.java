@@ -48,4 +48,15 @@ public class ShoppingCartsByCheckedOutView extends View {
   public QueryEffect<ShoppingCartSummaries> getCarts(FindByCheckedOut request) {
     return queryResult();
   }
+
+  @Query(
+      """
+      SELECT *
+      FROM shopping_carts_by_checked_out
+      WHERE checkedOut = :checkedOut
+      ORDER BY cartId
+      """)
+  public QueryStreamEffect<ShoppingCart.State> streamCarts(FindByCheckedOut request) {
+    return queryStreamResult();
+  }
 }

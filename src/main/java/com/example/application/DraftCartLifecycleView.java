@@ -19,7 +19,7 @@ public class DraftCartLifecycleView extends View {
 
   public record LifecycleRow(String cartId, int itemCount, boolean deleted) {}
 
-  public record LifecycleRows(List<LifecycleRow> rows) {}
+  public record LifecycleRows(List<LifecycleRow> items) {}
 
   @Consume.FromKeyValueEntity(DraftCartEntity.class)
   public static class DraftCartLifecycleUpdater extends TableUpdater<LifecycleRow> {
@@ -38,7 +38,7 @@ public class DraftCartLifecycleView extends View {
 
   @Query(
       """
-      SELECT * AS rows
+      SELECT * AS items
       FROM draft_cart_lifecycle
       WHERE deleted = :deleted
       ORDER BY cartId

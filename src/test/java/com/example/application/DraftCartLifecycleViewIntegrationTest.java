@@ -42,9 +42,9 @@ class DraftCartLifecycleViewIntegrationTest extends TestKitSupport {
                       .method(DraftCartLifecycleView::getByDeleted)
                       .invoke(new DraftCartLifecycleView.FindByDeleted(true));
 
-              assertEquals(1, result.rows().size());
-              assertEquals("draft-lifecycle-1", result.rows().getFirst().cartId());
-              assertTrue(result.rows().getFirst().deleted());
+              assertEquals(1, result.items().size());
+              assertEquals("draft-lifecycle-1", result.items().getFirst().cartId());
+              assertTrue(result.items().getFirst().deleted());
             });
   }
 }
