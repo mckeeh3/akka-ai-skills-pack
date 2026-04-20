@@ -111,6 +111,16 @@ At the moment, the repository has the deepest local coverage for:
 - Key Value Entities
 
 It also now has focused local skill and example coverage for:
+- agents
+  - single-purpose agents with explicit prompts and one public command handler
+  - structured responses with `responseConformsTo(...)` and fallback handling
+  - function tools via `@FunctionTool` and external tool classes
+  - bounded session memory and shared workflow-backed session ids
+  - streaming token responses exposed through HTTP endpoints
+  - workflow-supervised multi-agent orchestration
+  - custom guardrail implementations and config-driven runtime enforcement
+  - evaluator agents implementing `EvaluationResult`
+  - deterministic testing with `TestModelProvider`
 - workflows
   - straight-through orchestration
   - compensating flows with retry-safe downstream command ids
@@ -267,11 +277,22 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `72` skill directories under `.pi/skills`
-- `80` Java source files under `src/main/java`
-- `59` test files under `src/test/java`
+- `83` skill directories under `.pi/skills`
+- `111` Java source files under `src/main/java`
+- `73` test files under `src/test/java`
 
 Current strongest local example areas:
+- focused agent component patterns
+  - single-purpose prompt-driven agents
+  - structured responses and fallback mapping
+  - external and agent-local function tools
+  - bounded session memory
+  - streaming agent replies through HTTP endpoints
+  - prompt-template-backed agents, prompt history views, and prompt management endpoints
+  - workflow-supervised multi-agent coordination, including dynamic planning and endpoint exposure
+  - session-memory consumers, views, compaction flows, topic audit events, and alert SSE endpoints
+  - evaluator agents and guardrail examples
+  - deterministic testing with `TestModelProvider`
 - stateful entity comparison patterns
 - endpoint-to-entity flows
 - focused HTTP endpoint component patterns

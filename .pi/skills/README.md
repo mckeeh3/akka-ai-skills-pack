@@ -3,6 +3,7 @@
 This directory contains AI-focused skills for generating and reviewing Akka Java SDK component code.
 
 Current local suites:
+- Agents
 - Event Sourced Entities
 - Key Value Entities
 - Workflows
@@ -21,6 +22,53 @@ You can also consult the comparison/reference files:
 - `references/akka-grpc-jwt-patterns.md`
 - `../docs/workflow-endpoint-pattern.md`
 - `../docs/timer-pattern-selection.md`
+
+## Agent skills
+
+Start with:
+- `akka-agents`
+
+Then load the focused skill that matches the current task:
+
+### Component structure
+Use when writing the agent class itself.
+- `akka-agent-component`
+
+### Structured responses
+Use when the agent should return typed JSON-mapped output.
+- `akka-agent-structured-responses`
+
+### Tools
+Use when the agent should call function tools, Akka component tools, or MCP tools.
+- `akka-agent-tools`
+
+### Memory
+Use when the main concern is session ids, bounded history, or filtered memory.
+- `akka-agent-memory`
+
+### Streaming
+Use when the agent should stream tokens to HTTP or notifications.
+- `akka-agent-streaming`
+
+### Orchestration
+Use when workflows or other components should call agents reliably.
+- `akka-agent-orchestration`
+
+### Guardrails
+Use when runtime safety controls are the main concern.
+- `akka-agent-guardrails`
+
+### Evaluation
+Use when LLM-as-judge or evaluator agents are the main concern.
+- `akka-agent-evaluation`
+
+### Runtime state
+Use when the task involves built-in PromptTemplate or SessionMemoryEntity state, including views, endpoints, analytics, or compaction flows.
+- `akka-agent-runtime-state`
+
+### Testing
+Use:
+- `akka-agent-testing`
 
 ## Event Sourced Entity skills
 
@@ -288,6 +336,54 @@ Use:
 - `akka-mcp-endpoint-testing`
 
 ## Practical combinations
+
+### New single-purpose agent
+Load:
+- `akka-agents`
+- `akka-agent-component`
+- `akka-agent-structured-responses`
+- `akka-agent-testing`
+
+### New tool-using agent
+Load:
+- `akka-agents`
+- `akka-agent-component`
+- `akka-agent-tools`
+- `akka-agent-testing`
+
+### New streaming agent exposed through HTTP
+Load:
+- `akka-agents`
+- `akka-agent-streaming`
+- `akka-http-endpoints`
+- `akka-http-endpoint-component-client`
+- `akka-agent-testing`
+- `akka-http-endpoint-testing`
+
+### New workflow-supervised agent flow
+Load:
+- `akka-agents`
+- `akka-agent-orchestration`
+- `akka-workflows`
+- `akka-workflow-component`
+- `akka-agent-testing`
+- `akka-workflow-testing`
+
+### Add guardrails to an agent
+Load:
+- `akka-agents`
+- `akka-agent-guardrails`
+
+### Add evaluator agents or LLM-as-judge checks
+Load:
+- `akka-agents`
+- `akka-agent-evaluation`
+- `akka-agent-testing`
+
+### Work with prompt templates or session-memory runtime state
+Load:
+- `akka-agents`
+- `akka-agent-runtime-state`
 
 ### First decide between ESE and KVE
 Load:
@@ -587,6 +683,51 @@ Testing examples:
 - `../src/test/java/com/example/application/DraftCartEntityTest.java`
 - `../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
 - `../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
+
+### Agents
+Core agent examples:
+- `../src/main/java/com/example/application/ActivityAgent.java`
+- `../src/main/java/com/example/application/TemplateBackedActivityAgent.java`
+- `../src/main/java/com/example/application/WeatherAgent.java`
+- `../src/main/java/com/example/application/WeatherForecastTools.java`
+- `../src/main/java/com/example/application/StreamingActivityAgent.java`
+- `../src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `../src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
+- `../src/main/java/com/example/application/SelectorAgent.java`
+- `../src/main/java/com/example/application/PlannerAgent.java`
+- `../src/main/java/com/example/application/SummarizerAgent.java`
+- `../src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
+- `../src/main/java/com/example/application/SessionMemoryByComponentView.java`
+- `../src/main/java/com/example/application/SessionMemoryAlertView.java`
+- `../src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
+- `../src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
+- `../src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
+- `../src/main/java/com/example/application/PromptTemplateHistoryView.java`
+- `../src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
+- `../src/main/java/com/example/application/CompetitorMentionGuard.java`
+- `../src/main/java/com/example/api/ActivityAgentEndpoint.java`
+- `../src/main/java/com/example/api/ActivityPromptEndpoint.java`
+- `../src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
+- `../src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
+- `../src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
+- `../src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java`
+- `../src/main/resources/application.conf`
+
+Testing examples:
+- `../src/test/java/com/example/application/ActivityAgentTest.java`
+- `../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
+- `../src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
+- `../src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
+- `../src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/SessionMemoryViewEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
+- `../src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
+- `../src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
+- `../src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ### Workflows
 Core workflow examples:
