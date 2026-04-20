@@ -138,12 +138,23 @@ It also now has focused local skill and example coverage for:
   - request-context and JWT-aware MCP endpoints
   - direct method testing for MCP tools, resources, and prompts
 - consumers
+  - event sourced entity consumers
+  - key value entity consumers
+  - workflow consumers
+  - topic-ingesting consumers
+  - producing consumers for broker topics and service streams
+  - service-to-service subscriber consumer patterns
+  - dedicated service-to-service consumer reference docs
+  - dedicated service-to-service view reference docs
+  - consumer integration testing
 - notifications
 - TTL
 - replication
 - unit testing
 - integration testing
 - view component patterns
+  - service-to-service subscriber view docs
+  - focused local service-stream view skill routing
   - event sourced views
   - key value views
   - workflow views
@@ -241,9 +252,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `53` skill directories under `.pi/skills`
-- `52` Java source files under `src/main/java`
-- `39` test files under `src/test/java`
+- `62` skill directories under `.pi/skills`
+- `60` Java source files under `src/main/java`
+- `45` test files under `src/test/java`
 
 Current strongest local example areas:
 - stateful entity comparison patterns
@@ -274,7 +285,15 @@ Current strongest local example areas:
   - prompt templates with explicit parameter descriptions and model-friendly structure
   - class-level JWT and request-context-aware MCP endpoints
   - direct method tests with stubbed `McpRequestContext`
-- downstream consumer flows
+- focused consumer component patterns
+  - event sourced consumers that trigger downstream entities
+  - key value consumers driven by latest-state updates and delete handlers
+  - topic consumers that route CloudEvent messages into entities
+  - consumers that publish to broker topics with `ce-subject` metadata
+  - service-stream producer consumers with explicit public contracts and ACLs
+  - service-to-service subscriber consumer snippets using `@Consume.FromServiceStream`
+  - workflow consumers that publish completion notifications
+  - consumer integration tests using mocked incoming and outgoing eventing hooks
 - TTL patterns
 - replication patterns
 - entity testing patterns

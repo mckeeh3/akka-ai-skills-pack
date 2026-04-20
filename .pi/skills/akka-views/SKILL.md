@@ -33,6 +33,7 @@ In this repository, prefer these examples:
 - `../../../src/main/java/com/example/application/DraftCartLifecycleView.java`
 - `../../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
 - `../../../src/main/java/com/example/application/ShoppingCartTopicView.java`
+- `../../../docs/service-to-service-views.md`
 - `../../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
 - `../../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
@@ -52,6 +53,8 @@ Load the companion skill that matches the current task:
   - views built from workflow state changes with `onUpdate(...)`
 - `akka-view-from-topic`
   - views built from topic messages with `ce-subject` metadata
+- `akka-view-from-service-stream`
+  - views built from public streams of another Akka service
 - `akka-view-query-patterns`
   - wrapper result records, aliases, pagination, and query shape
 - `akka-view-streaming`
@@ -59,7 +62,11 @@ Load the companion skill that matches the current task:
 - `akka-view-testing`
   - `TestKitSupport`, mocked incoming messages, and `Awaitility`
 
-If the source is another Akka service via service-to-service eventing, use this top-level skill plus `akka-context/sdk/views.html.md` and `akka-context/sdk/consuming-producing.html.md` until a focused local skill exists.
+If the source is another Akka service via service-to-service eventing, use this top-level skill plus:
+- `akka-view-from-service-stream`
+- `../../../docs/service-to-service-views.md`
+- `akka-context/sdk/views.html.md`
+- `akka-context/sdk/consuming-producing.html.md`
 
 ## Default package layout
 
@@ -129,7 +136,7 @@ Repository examples:
 - KVE-backed views may skip intermediate state transitions and reflect only the latest guaranteed state.
 - Topic-backed views rely on topic delivery and metadata such as `ce-subject`.
 - For multi-region scenarios, `updateContext().hasLocalOrigin()`, `originRegion()`, and `selfRegion()` can drive origin-aware filtering.
-- For service-to-service eventing sources, use this skill plus `akka-context/sdk/consuming-producing.html.md` until a focused local skill exists.
+- For service-to-service eventing sources, also use `docs/service-to-service-views.md` and `akka-context/sdk/consuming-producing.html.md`.
 - View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.
 
 ## Final review checklist

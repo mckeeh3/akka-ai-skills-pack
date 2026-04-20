@@ -5,6 +5,7 @@ This directory contains AI-focused skills for generating and reviewing Akka Java
 Current local suites:
 - Event Sourced Entities
 - Key Value Entities
+- Consumers
 - Views
 - HTTP Endpoints
 - gRPC Endpoints
@@ -85,6 +86,29 @@ Use:
 - `akka-kve-unit-testing`
 - `akka-kve-integration-testing`
 
+## Consumer skills
+
+Start with:
+- `akka-consumers`
+
+Then load the focused skill that matches the current task:
+
+### Source selection
+Use the source-specific skill for the upstream you are consuming.
+- `akka-consumer-from-event-sourced-entity`
+- `akka-consumer-from-key-value-entity`
+- `akka-consumer-from-workflow`
+- `akka-consumer-from-topic`
+- `akka-consumer-from-service-stream`
+
+### Producing
+Use when the consumer republishes or transforms messages into a topic or service stream.
+- `akka-consumer-producing`
+
+### Testing
+Use when validating consumer flows with TestKit incoming or outgoing eventing hooks.
+- `akka-consumer-testing`
+
 ## View skills
 
 Start with:
@@ -98,6 +122,7 @@ Use the source-specific skill for the updater type you are implementing.
 - `akka-view-from-key-value-entity`
 - `akka-view-from-workflow`
 - `akka-view-from-topic`
+- `akka-view-from-service-stream`
 
 ### Query design
 Use when designing wrapper records, aliases, or pagination.
@@ -253,6 +278,43 @@ Load either:
 - `akka-ese-application-entity` + `akka-ese-replication`
 - `akka-kve-application-entity` + `akka-kve-replication`
 
+### New consumer reacting to event sourced events
+Load:
+- `akka-consumers`
+- `akka-consumer-from-event-sourced-entity`
+- `akka-consumer-testing`
+
+### New consumer reacting to key value updates
+Load:
+- `akka-consumers`
+- `akka-consumer-from-key-value-entity`
+- `akka-consumer-testing`
+
+### New consumer reacting to workflow updates
+Load:
+- `akka-consumers`
+- `akka-consumer-from-workflow`
+- `akka-consumer-producing`
+- `akka-consumer-testing`
+
+### New topic-ingesting consumer
+Load:
+- `akka-consumers`
+- `akka-consumer-from-topic`
+- `akka-consumer-testing`
+
+### New service-to-service subscriber consumer
+Load:
+- `akka-consumers`
+- `akka-consumer-from-service-stream`
+- `akka-consumer-producing`
+
+### New topic or service-stream producer consumer
+Load:
+- `akka-consumers`
+- `akka-consumer-producing`
+- `akka-consumer-testing`
+
 ### New HTTP endpoint that calls components
 Load:
 - `akka-http-endpoints`
@@ -382,6 +444,12 @@ Load:
 - `akka-view-query-patterns`
 - `akka-view-testing`
 
+### Create a view from another Akka service stream
+Load:
+- `akka-views`
+- `akka-view-from-service-stream`
+- `akka-view-query-patterns`
+
 ### Add view streaming
 Load:
 - `akka-views`
@@ -422,6 +490,23 @@ Testing examples:
 - `../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
 - `../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
 
+### Consumers
+Core consumer examples:
+- `../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
+- `../src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
+- `../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
+- `../docs/consumer-reference.md`
+- `../docs/service-to-service-consumers.md`
+
+Testing examples:
+- `../src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
+- `../src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `../src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+
 ### Views
 Core view examples:
 - `../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
@@ -430,6 +515,7 @@ Core view examples:
 - `../src/main/java/com/example/application/DraftCartLifecycleView.java`
 - `../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
 - `../src/main/java/com/example/application/ShoppingCartTopicView.java`
+- `../docs/service-to-service-views.md`
 
 Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
