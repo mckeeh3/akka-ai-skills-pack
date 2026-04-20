@@ -13,9 +13,13 @@ Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
 - `akka-context/sdk/auth-with-jwts.html.md`
 - `akka-context/reference/jwts.html.md`
+- `../references/akka-grpc-jwt-patterns.md`
 - `../../../src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
+- `../../../src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
 - `../../../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `../../../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
 - `../../../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -39,6 +43,9 @@ Read these first if present:
   - validates bearer token issuers
   - requires a static `role` claim
   - reads issuer, subject, role, and optional audience from `requestContext().getJwtClaims()`
+- `PatternSecureGreetingGrpcEndpointImpl`
+  - validates regex-based claims with `@JWT.StaticClaim(pattern = ...)`
+  - demonstrates role, UUID subject, and non-blank name validation
 
 ## Integration test rule
 
@@ -62,5 +69,6 @@ Before finishing, verify:
 - `@JWT` is present where authentication is required
 - `bearerTokenIssuers` matches the intended issuer contract
 - required static claims are explicit when needed
+- regex-based `pattern = ...` claims are used when values are not fixed in advance
 - claim access uses `requestContext().getJwtClaims()`
 - integration tests inject a bearer token header through the generated gRPC client

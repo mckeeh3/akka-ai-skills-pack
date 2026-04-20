@@ -17,7 +17,7 @@
  *   <li>internal-only ACL endpoint tests with impersonated service callers</li>
  *   <li>gRPC endpoint integration tests using generated gRPC clients</li>
  *   <li>gRPC ACL tests with simulated caller principals</li>
- *   <li>gRPC JWT tests with bearer tokens injected through generated clients</li>
+ *   <li>gRPC JWT tests with bearer tokens injected through generated clients, including regex claim validation</li>
  *   <li>gRPC streaming tests that collect protobuf replies with the test materializer</li>
  *   <li>view integration tests for event sourced, key value, workflow, and topic sources</li>
  *   <li>view streaming tests for collected and live-update query streams</li>

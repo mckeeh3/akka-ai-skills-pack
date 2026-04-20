@@ -12,8 +12,9 @@ Current local suites:
 If you have requirements but have not yet chosen the entity type, start with:
 - `akka-entity-type-selection`
 
-You can also consult the comparison reference:
+You can also consult the comparison/reference files:
 - `references/akka-entity-comparison.md`
+- `references/akka-grpc-jwt-patterns.md`
 
 ## Event Sourced Entity skills
 
@@ -433,11 +434,14 @@ Core endpoint examples:
 - `../src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
 - `../src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
 - `../src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
+- `../src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
 - `../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
 - `../src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
 - `../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
 
 Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`

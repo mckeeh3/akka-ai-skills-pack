@@ -32,9 +32,11 @@ In this repository, prefer these examples:
 - `../../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
 - `../../../src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
 - `../../../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `../../../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
 - `../../../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Companion skills
 

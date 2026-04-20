@@ -15,7 +15,7 @@
  *   <li>apply internal-only ACLs with method-level overrides where needed</li>
  *   <li>implement gRPC endpoint classes that map protobuf contracts to component calls</li>
  *   <li>use {@code AbstractGrpcEndpoint} for principals, metadata, and JWT-aware request context</li>
- *   <li>secure gRPC endpoints with {@code @JWT} bearer-token validation and claim-aware replies</li>
+ *   <li>secure gRPC endpoints with {@code @JWT} bearer-token validation, including regex-based claim patterns</li>
  *   <li>stream protobuf replies over gRPC from view-backed sources</li>
  *   <li>avoid exposing internal domain state directly as public API types</li>
  *   <li>expose notification streams as SSE with API-specific response records</li>
