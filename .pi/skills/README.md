@@ -6,6 +6,7 @@ Current local suites:
 - Event Sourced Entities
 - Key Value Entities
 - Views
+- HTTP Endpoints
 
 If you have requirements but have not yet chosen the entity type, start with:
 - `akka-entity-type-selection`
@@ -101,6 +102,53 @@ Use when designing wrapper records, aliases, or pagination.
 Use when validating projections with mocked incoming messages.
 - `akka-view-testing`
 
+## HTTP endpoint skills
+
+Start with:
+- `akka-http-endpoints`
+
+Then load the focused skill that matches the current task:
+
+### Component-calling endpoints
+Use when the endpoint maps HTTP requests to Akka component calls.
+- `akka-http-endpoint-component-client`
+
+### Request-context endpoints
+Use when the endpoint depends on query params, headers, principals, or other request metadata.
+- `akka-http-endpoint-request-context`
+
+### Static content endpoints
+Use when the endpoint serves packaged HTML, CSS, OpenAPI files, or other assets.
+- `akka-http-endpoint-static-content`
+
+### Low-level HTTP endpoints
+Use when the endpoint needs `HttpResponse`, `HttpEntity.Strict`, or other lower-level HTTP model APIs.
+- `akka-http-endpoint-low-level`
+
+### HTTP client provider endpoints
+Use when the endpoint calls another HTTP service through `HttpClientProvider`.
+- `akka-http-endpoint-http-client-provider`
+
+### SSE endpoints
+Use when the endpoint streams server-sent events or must support reconnects.
+- `akka-http-endpoint-sse`
+
+### WebSocket endpoints
+Use when the endpoint needs bidirectional streaming over `@WebSocket`.
+- `akka-http-endpoint-websocket`
+
+### JWT-secured endpoints
+Use when the endpoint validates bearer tokens and reads claims.
+- `akka-http-endpoint-jwt`
+
+### Internal-only ACL endpoints
+Use when the endpoint should only be callable by services or needs method-level ACL overrides.
+- `akka-http-endpoint-acl-internal`
+
+### Testing
+Use:
+- `akka-http-endpoint-testing`
+
 ## Practical combinations
 
 ### First decide between ESE and KVE
@@ -141,6 +189,60 @@ Load either:
 Load either:
 - `akka-ese-application-entity` + `akka-ese-replication`
 - `akka-kve-application-entity` + `akka-kve-replication`
+
+### New HTTP endpoint that calls components
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-component-client`
+- `akka-http-endpoint-testing`
+
+### New HTTP endpoint using request context only
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-request-context`
+- `akka-http-endpoint-testing`
+
+### New HTTP endpoint serving static content
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-static-content`
+- `akka-http-endpoint-testing`
+
+### New low-level HTTP endpoint
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-low-level`
+- `akka-http-endpoint-testing`
+
+### New HTTP endpoint calling another HTTP service
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-http-client-provider`
+- `akka-http-endpoint-testing`
+
+### New HTTP endpoint streaming SSE
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-sse`
+- `akka-http-endpoint-testing`
+
+### New WebSocket endpoint
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-websocket`
+- `akka-http-endpoint-testing`
+
+### New HTTP endpoint secured with JWTs
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-jwt`
+- `akka-http-endpoint-testing`
+
+### New internal-only HTTP endpoint
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-acl-internal`
+- `akka-http-endpoint-testing`
 
 ### Create a view from an event sourced entity
 Load:
@@ -198,3 +300,35 @@ Core view examples:
 Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
 - `../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+
+### HTTP endpoints
+Core endpoint examples:
+- `../src/main/java/com/example/api/GreetingEndpoint.java`
+- `../src/main/java/com/example/api/StaticContentEndpoint.java`
+- `../src/main/java/com/example/api/LowLevelHttpEndpoint.java`
+- `../src/main/java/com/example/api/ProxyGreetingEndpoint.java`
+- `../src/main/java/com/example/api/PingWebSocketEndpoint.java`
+- `../src/main/java/com/example/api/CounterStreamEndpoint.java`
+- `../src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
+- `../src/main/java/com/example/api/RequestHeadersEndpoint.java`
+- `../src/main/java/com/example/api/SecureGreetingEndpoint.java`
+- `../src/main/java/com/example/api/InternalStatusEndpoint.java`
+- `../src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../src/main/java/com/example/api/OrderEndpoint.java`
+- `../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+
+Testing examples:
+- `../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
+- `../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`

@@ -110,8 +110,19 @@ At the moment, the repository has the deepest local coverage for:
 - Event Sourced Entities
 - Key Value Entities
 
-It also contains related examples around:
+It also now has focused local skill and example coverage for:
 - HTTP endpoints
+  - component-calling endpoints
+  - request-context endpoints
+  - static content endpoints
+  - low-level request/response endpoints
+  - endpoint-to-HTTP-service delegation via `HttpClientProvider`
+  - SSE endpoints and reconnect testing
+  - view-backed SSE endpoints
+  - WebSocket endpoints
+  - JWT-protected endpoints and bearer-token test patterns
+  - internal-only ACL endpoints and method-level overrides
+  - endpoint integration testing
 - consumers
 - notifications
 - TTL
@@ -210,13 +221,25 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `27` skill directories under `.pi/skills`
-- `35` Java source files under `src/main/java`
-- `23` test files under `src/test/java`
+- `38` skill directories under `.pi/skills`
+- `45` Java source files under `src/main/java`
+- `33` test files under `src/test/java`
 
 Current strongest local example areas:
 - stateful entity comparison patterns
 - endpoint-to-entity flows
+- focused HTTP endpoint component patterns
+  - request mapping and validation
+  - request-context access
+  - request headers and JWT claims
+  - packaged static content and OpenAPI publication
+  - low-level request/response handling
+  - endpoint-to-HTTP-service delegation
+  - SSE streaming and reconnect tests
+  - view-backed SSE streaming
+  - WebSocket routes and tests
+  - internal-only ACL examples
+  - endpoint integration testing
 - downstream consumer flows
 - TTL patterns
 - replication patterns

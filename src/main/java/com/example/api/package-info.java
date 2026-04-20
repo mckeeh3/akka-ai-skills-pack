@@ -6,6 +6,13 @@
  * <ul>
  *   <li>map API requests to entity commands</li>
  *   <li>translate entity validation failures to HTTP responses</li>
+ *   <li>use request context for query parameters, request headers, principals, and JWT claims</li>
+ *   <li>serve packaged static HTML, static subtrees, and OpenAPI files from endpoint routes</li>
+ *   <li>use low-level HTTP request and response APIs when higher-level helpers are not enough</li>
+ *   <li>delegate to other HTTP services through {@code HttpClientProvider}</li>
+ *   <li>stream SSE responses with explicit ids, reconnect behavior, and view-backed updates</li>
+ *   <li>expose bidirectional WebSocket flows</li>
+ *   <li>apply internal-only ACLs with method-level overrides where needed</li>
  *   <li>avoid exposing internal domain state directly as public API types</li>
  *   <li>expose notification streams as SSE with API-specific response records</li>
  * </ul>

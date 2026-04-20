@@ -1,0 +1,17 @@
+openapi: 3.1.0
+info:
+  title: HTTP Endpoint Example API
+  version: 1.0.0
+paths:
+  /greetings/hello/{name}:
+    get:
+      summary: Return a greeting
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: greeting returned
