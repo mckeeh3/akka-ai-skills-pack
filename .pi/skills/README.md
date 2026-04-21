@@ -20,6 +20,8 @@ If you have requirements but have not yet chosen the entity type, start with:
 You can also consult the comparison/reference files:
 - `references/akka-entity-comparison.md`
 - `references/akka-grpc-jwt-patterns.md`
+- `../docs/agent-coverage-matrix.md`
+- `../docs/agent-runtime-state-reference.md`
 - `../docs/workflow-endpoint-pattern.md`
 - `../docs/timer-pattern-selection.md`
 
@@ -39,8 +41,20 @@ Use when the agent should return typed JSON-mapped output.
 - `akka-agent-structured-responses`
 
 ### Tools
-Use when the agent should call function tools, Akka component tools, or MCP tools.
+Use when the agent should call local or external function tools.
 - `akka-agent-tools`
+
+### Component tools
+Use when the agent should call Akka Views, entities, or workflows as tools.
+- `akka-agent-component-tools`
+
+### MCP tools
+Use when the agent should call remote MCP-hosted tools.
+- `akka-agent-mcp-tools`
+
+### Multimodal
+Use when the agent should send images or PDFs, or needs a custom content loader.
+- `akka-agent-multimodal`
 
 ### Memory
 Use when the main concern is session ids, bounded history, or filtered memory.

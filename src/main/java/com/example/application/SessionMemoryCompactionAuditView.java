@@ -26,7 +26,7 @@ public class SessionMemoryCompactionAuditView extends View {
   @Consume.FromTopic("session-memory-compactions")
   public static class SessionMemoryCompactionAuditUpdater extends TableUpdater<AuditRow> {
 
-    public Effect<AuditRow> onEvent(SessionMemoryCompactionAuditConsumer.SessionMemoryCompactionAudit event) {
+    public Effect<AuditRow> onEvent(SessionMemoryCompactionAudit event) {
       var sessionId = updateContext().eventSubject().orElse("");
       return effects()
           .updateRow(

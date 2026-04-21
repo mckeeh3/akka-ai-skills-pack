@@ -13,9 +13,6 @@ import akka.javasdk.consumer.Consumer;
 @Produce.ToTopic("session-memory-compactions")
 public class SessionMemoryCompactionAuditConsumer extends Consumer {
 
-  public record SessionMemoryCompactionAudit(
-      String sessionId, String compactedBy, long compactedHistorySizeInBytes, String reason) {}
-
   public Effect onEvent(SessionMemoryEntity.Event event) {
     return switch (event) {
       case SessionMemoryEntity.Event.AiMessageAdded aiMessage

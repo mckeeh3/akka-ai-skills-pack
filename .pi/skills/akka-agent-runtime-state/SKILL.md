@@ -27,6 +27,8 @@ Read these first if present:
 - `../../../src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
 - `../../../src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
 - `../../../src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
+- `../../../src/main/java/com/example/application/SessionMemoryCompactionAuditView.java`
+- `../../../src/main/java/com/example/api/SessionMemoryCompactionStreamEndpoint.java`
 - `../../../src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
 - `../../../src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
@@ -81,6 +83,10 @@ Read these first if present:
   - trigger compaction from `SessionMemoryEntity` events
 - `SessionMemoryCompactionAuditConsumer`
   - publish topic audit events after compaction completes
+- `SessionMemoryCompactionAuditView`
+  - query and stream compaction audit rows by session id
+- `SessionMemoryCompactionStreamEndpoint`
+  - SSE over compaction audit updates for one session
 
 ## Review checklist
 
@@ -90,4 +96,5 @@ Before finishing, verify:
 - endpoints expose API-facing types rather than view rows directly when appropriate
 - compaction consumers avoid recursive compaction loops
 - compaction agents do not accidentally write their own interaction history into session memory
+- compaction audit views and SSE endpoints are routed when observability is required
 - topic-producing audit consumers attach `ce-subject` metadata

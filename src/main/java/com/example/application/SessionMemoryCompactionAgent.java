@@ -46,9 +46,24 @@ public class SessionMemoryCompactionAgent extends Agent {
       case SessionMessage.UserMessage user -> "USER: " + user.text();
       case SessionMessage.MultimodalUserMessage user ->
           "USER: " + user.text().orElse("[multimodal message]");
-      case SessionMessage.AiMessage ai -> "AI: " + ai.text();
+      case SessionMessage.AiMessage ai -> formatAiMessage(ai);
       case SessionMessage.ToolCallResponse tool ->
           "TOOL_CALL_RESPONSE[" + tool.name() + "]: " + tool.text();
     };
+  }
+
+  private static String formatAiMessage(SessionMessage.AiMessage ai) {
+    var formatted = new StringBuilder("AI: ").append(ai.text());
+    for (var request : ai.toolCallRequests()) {
+      formatted
+          .append("\nTOOL_CALL_REQUEST[id=")
+          .append(request.id())
+          .append(", name=")
+          .append(request.name())
+          .append(", args=")
+          .append(request.arguments())
+          .append(']');
+    }
+    return formatted.toString();
   }
 }

@@ -14,6 +14,7 @@ Read these first if present:
 - `akka-context/sdk/agents/memory.html.md`
 - `../../../src/main/java/com/example/application/ActivityAgent.java`
 - `../../../src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `../../../src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
 - `../../../src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
 - `../../../src/main/java/com/example/application/SessionMemoryByComponentView.java`
 - `../../../src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
@@ -36,9 +37,11 @@ Read these first if present:
 1. Treat the session id as a first-class design choice.
 2. Use `componentClient.forAgent().inSession(sessionId)` on every caller.
 3. Use `MemoryProvider.limitedWindow()` for bounded context.
-4. Use `MemoryProvider.none()` for evaluators, compaction, or stateless judging agents.
-5. Use memory filters only when a multi-agent session needs visibility rules.
-6. Prefer workflow id as session id when a workflow supervises agents.
+4. Use `readOnly()` when the agent should consume history without writing to it.
+5. Use `writeOnly()` when the agent should append interactions but not read prior context.
+6. Use `MemoryProvider.none()` for evaluators, compaction, or stateless judging agents.
+7. Use memory filters when a multi-agent session needs visibility rules.
+8. Prefer workflow id as session id when a workflow supervises agents.
 
 ## Repository examples
 
@@ -46,6 +49,8 @@ Read these first if present:
   - bounded memory with `readLast(6)`
 - `AgentTeamWorkflow`
   - shared session id derived from `workflowId()`
+- `WorkerMemorySummaryAgent`
+  - read-only filtered memory that includes only worker-role messages and excludes `debug-agent`
 - `ActivityAnswerEvaluatorAgent`
   - memory disabled for evaluation
 - `SessionMemoryAlertsConsumer`
@@ -66,3 +71,4 @@ Before finishing, verify:
 - memory reads and writes are intentional
 - evaluators or compaction agents do not accidentally retain session history
 - workflow-supervised agents reuse the same session id when collaboration is intended
+- filtered memory examples use `MemoryFilter` explicitly when visibility rules matter

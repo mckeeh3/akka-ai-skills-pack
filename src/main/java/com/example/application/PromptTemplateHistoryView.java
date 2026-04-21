@@ -32,7 +32,11 @@ public class PromptTemplateHistoryView extends View {
           yield effects()
               .updateRow(new PromptTemplateHistoryRow(templateId, updated.prompt(), count, false));
         }
-        case PromptTemplate.Event.Deleted ignored -> effects().ignore();
+        case PromptTemplate.Event.Deleted ignored -> {
+          var count = current == null ? 0 : current.updateCount();
+          var prompt = current == null ? "" : current.currentPrompt();
+          yield effects().updateRow(new PromptTemplateHistoryRow(templateId, prompt, count, true));
+        }
       };
     }
 

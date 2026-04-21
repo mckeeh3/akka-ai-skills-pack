@@ -53,7 +53,7 @@ class SessionMemoryCompactionAuditConsumerIntegrationTest extends TestKitSupport
 
     var message =
         compactionTopic.expectOneTyped(
-            SessionMemoryCompactionAuditConsumer.SessionMemoryCompactionAudit.class);
+            SessionMemoryCompactionAudit.class);
 
     assertEquals(sessionId, message.getPayload().sessionId());
     assertEquals(SessionMemoryCompactionAgent.COMPONENT_ID, message.getPayload().compactedBy());

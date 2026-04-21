@@ -5,6 +5,7 @@ Use this file as a **startup instruction set** for AI coding agents working in t
 Also read:
 - `AGENTS.md` for detailed project rules and Akka coding constraints
 - `.pi/skills/README.md` for local task routing
+- `docs/agent-coverage-matrix.md` when the task touches agent coverage, gaps, or local example selection
 
 ---
 
@@ -366,16 +367,17 @@ At the start of a new session:
 1. Read `AGENTS.md`.
 2. Read this file.
 3. Read `.pi/skills/README.md`.
-4. Classify the task before choosing files:
+4. If the task is agent-related, also read `docs/agent-coverage-matrix.md`.
+5. Classify the task before choosing files:
    - component implementation
    - testing
    - docs/snippet generation
    - cross-cutting topic
    - repo structure / skill design
-5. Check whether a focused local skill already exists.
-6. Read the smallest relevant local skill set first.
-7. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
-8. Prefer local agent-optimized patterns when generating code or new repository guidance.
+6. Check whether a focused local skill already exists.
+7. Read the smallest relevant local skill set first.
+8. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
+9. Prefer local agent-optimized patterns when generating code or new repository guidance.
 
 ---
 

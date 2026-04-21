@@ -3,6 +3,7 @@ package com.example.application;
 import akka.javasdk.NotificationPublisher;
 import akka.javasdk.NotificationPublisher.NotificationStream;
 import akka.javasdk.annotations.Component;
+import akka.javasdk.annotations.FunctionTool;
 import akka.javasdk.eventsourcedentity.EventSourcedEntity;
 import akka.javasdk.eventsourcedentity.EventSourcedEntityContext;
 import com.example.domain.ShoppingCart;
@@ -36,6 +37,9 @@ public class ShoppingCartEntity extends EventSourcedEntity<ShoppingCart.State, S
     return ShoppingCart.State.empty(cartId);
   }
 
+  @FunctionTool(
+      description =
+          "Return the current shopping cart state for the given uniqueId cart id, including items, quantities, and checkout status.")
   public ReadOnlyEffect<ShoppingCart.State> getCart() {
     return effects().reply(currentState());
   }

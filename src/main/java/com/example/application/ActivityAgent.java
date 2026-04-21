@@ -1,6 +1,7 @@
 package com.example.application;
 
 import akka.javasdk.agent.Agent;
+import akka.javasdk.agent.JsonParsingException;
 import akka.javasdk.agent.MemoryProvider;
 import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.Description;
@@ -44,7 +45,16 @@ public class ActivityAgent extends Agent {
         .systemMessage(SYSTEM_MESSAGE)
         .userMessage(message)
         .responseConformsTo(ActivitySuggestion.class)
-        .onFailure(__ -> ActivitySuggestion.fallback())
+        .onFailure(
+            error -> {
+              if (error instanceof JsonParsingException) {
+                return ActivitySuggestion.fallback();
+              } else if (error instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+              } else {
+                throw new RuntimeException(error);
+              }
+            })
         .thenReply();
   }
 }

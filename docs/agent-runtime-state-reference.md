@@ -21,6 +21,7 @@ Local executable examples:
 - `src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
 - `src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
 - `src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
+- `src/main/java/com/example/application/SessionMemoryCompactionAudit.java`
 - `src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
 - `src/main/java/com/example/application/SessionMemoryCompactionAuditView.java`
 - `src/main/java/com/example/api/SessionMemoryCompactionStreamEndpoint.java`
@@ -178,6 +179,7 @@ public class SessionMemoryCompactionAuditConsumer extends Consumer {}
 ```
 
 References:
+- `src/main/java/com/example/application/SessionMemoryCompactionAudit.java`
 - `src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
 - `src/main/java/com/example/application/SessionMemoryCompactionAuditView.java`
 - `src/main/java/com/example/api/SessionMemoryCompactionStreamEndpoint.java`

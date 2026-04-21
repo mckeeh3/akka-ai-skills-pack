@@ -32,12 +32,19 @@ Read these first if present:
 - `akka-context/sdk/agents/llm_eval.html.md`
 - `akka-context/sdk/agents/testing.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../../../docs/agent-coverage-matrix.md`
+- `../../../docs/agent-runtime-state-reference.md`
 
 In this repository, prefer these examples:
 - `../../../src/main/java/com/example/application/ActivityAgent.java`
+- `../../../src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
 - `../../../src/main/java/com/example/application/TemplateBackedActivityAgent.java`
 - `../../../src/main/java/com/example/application/WeatherAgent.java`
 - `../../../src/main/java/com/example/application/WeatherForecastTools.java`
+- `../../../src/main/java/com/example/application/CartInspectorAgent.java`
+- `../../../src/main/java/com/example/application/RemoteShoppingCartAgent.java`
+- `../../../src/main/java/com/example/application/DocumentAnalysisAgent.java`
+- `../../../src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
 - `../../../src/main/java/com/example/application/StreamingActivityAgent.java`
 - `../../../src/main/java/com/example/application/AgentTeamWorkflow.java`
 - `../../../src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
@@ -54,12 +61,19 @@ In this repository, prefer these examples:
 - `../../../src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
 - `../../../src/main/java/com/example/application/CompetitorMentionGuard.java`
 - `../../../src/main/java/com/example/api/ActivityAgentEndpoint.java`
+- `../../../src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java`
 - `../../../src/main/java/com/example/api/ActivityPromptEndpoint.java`
 - `../../../src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
 - `../../../src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
 - `../../../src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
 - `../../../src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java`
 - `../../../src/test/java/com/example/application/ActivityAgentTest.java`
+- `../../../src/test/java/com/example/application/ActivityAgentGuardrailIntegrationTest.java`
+- `../../../src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
+- `../../../src/test/java/com/example/application/CartInspectorAgentTest.java`
+- `../../../src/test/java/com/example/application/RemoteShoppingCartAgentTest.java`
+- `../../../src/test/java/com/example/application/DocumentAnalysisAgentTest.java`
+- `../../../src/test/java/com/example/application/WorkerMemorySummaryAgentTest.java`
 - `../../../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
 - `../../../src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
@@ -83,9 +97,15 @@ Load the companion skill that matches the current task:
 - `akka-agent-structured-responses`
   - `responseConformsTo(...)`, `responseAs(...)`, field descriptions, and fallback mapping
 - `akka-agent-tools`
-  - `@FunctionTool`, external tool classes, Akka component tools, and MCP tool registration
+  - local `@FunctionTool` methods and external tool classes registered with `.tools(...)`
+- `akka-agent-component-tools`
+  - Views, entities, and workflows used as tools through `.tools(ComponentClass.class)`
+- `akka-agent-mcp-tools`
+  - remote MCP server tools added with `.mcpTools(...)`
+- `akka-agent-multimodal`
+  - `UserMessage.from(...)`, image/PDF content, and `contentLoader(...)`
 - `akka-agent-memory`
-  - session ids, `MemoryProvider`, limited windows, and filtered memory reads
+  - session ids, `MemoryProvider`, limited windows, `readOnly()`, and filtered memory reads
 - `akka-agent-streaming`
   - `StreamEffect`, `tokenStream(...)`, streaming endpoints, and grouped token delivery
 - `akka-agent-orchestration`
