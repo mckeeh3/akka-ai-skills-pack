@@ -115,16 +115,17 @@ That keeps installed skills free of broken local file references while still rem
 
 ## Maintainer flow
 
-Recommended future release flow:
+Recommended release flow:
 1. validate all skill references in CI
 2. generate a release bundle from repo content
 3. rewrite install-time paths in copied skill files
-4. publish the bundle as a GitHub release asset
-5. install from the release asset with `install.sh` or `install.ps1`
+4. publish both `akka-ai-pack-<version>.tar.gz` and `install-akka-ai-pack-<version>.sh` as GitHub release assets
+5. install from the versioned release installer with `curl ... | bash` or unpack the archive and run `install.sh`
 
 ## Installer UX
 
-- if `--location project` is provided, install into `<project-root>/.agents` without prompting
-- if `--location global` is provided, install into `~/.agents` without prompting
-- if `--location` is omitted, prompt the user to choose between those two modes
+- the versioned GitHub release installer installs into `<target-dir>/.agents`; `--target-dir` defaults to the current directory
+- if `--location project` is provided, `install.sh` installs into `<project-root>/.agents` without prompting
+- if `--location global` is provided, `install.sh` installs into `~/.agents` without prompting
+- if `--location` is omitted, `install.sh` prompts the user to choose between those two modes
 - `--project <dir>` can be used to set the project root for project mode; otherwise the current directory is used
