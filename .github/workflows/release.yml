@@ -1,0 +1,129 @@
+name: Create draft release assets
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Git tag to release, for example v0.1.0
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and upload draft release assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check manifest and docs version consistency
+        run: bash tools/check-version-consistency.sh
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Resolve release metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            RELEASE_TAG="${{ inputs.release_tag }}"
+          else
+            RELEASE_TAG="${GITHUB_REF_NAME}"
+          fi
+
+          PACK_NAME="$(awk '
+            $0 ~ /^metadata:/ { in_metadata=1; next }
+            in_metadata && $0 ~ /^  name:/ { print $2; exit }
+          ' pack/manifest.yaml)"
+
+          PACK_VERSION="$(awk '
+            $0 ~ /^metadata:/ { in_metadata=1; next }
+            in_metadata && $0 ~ /^  version:/ { print $2; exit }
+          ' pack/manifest.yaml)"
+
+          EXPECTED_TAG="v${PACK_VERSION}"
+
+          [[ -n "${PACK_NAME}" ]] || { echo 'Missing metadata.name in pack/manifest.yaml' >&2; exit 1; }
+          [[ -n "${PACK_VERSION}" ]] || { echo 'Missing metadata.version in pack/manifest.yaml' >&2; exit 1; }
+          [[ "${RELEASE_TAG}" == "${EXPECTED_TAG}" ]] || {
+            echo "Release tag ${RELEASE_TAG} does not match manifest version ${PACK_VERSION} (${EXPECTED_TAG})" >&2
+            exit 1
+          }
+
+          echo "release_tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "pack_name=${PACK_NAME}" >> "$GITHUB_OUTPUT"
+          echo "pack_version=${PACK_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "archive_path=dist/${PACK_NAME}-${PACK_VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
+          echo "installer_path=dist/install-${PACK_NAME}-${PACK_VERSION}.sh" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure tag exists for workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse "refs/tags/${{ steps.meta.outputs.release_tag }}" >/dev/null 2>&1 || {
+            echo "Tag not found: ${{ steps.meta.outputs.release_tag }}" >&2
+            exit 1
+          }
+
+      - name: Ensure no published release already exists for tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = `${{ steps.meta.outputs.release_tag }}`;
+            try {
+              const { data } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag
+              });
+
+              if (!data.draft) {
+                core.setFailed(`A published release already exists for ${tag}. Refusing to overwrite it.`);
+                return;
+              }
+
+              core.info(`Draft release already exists for ${tag}; assets will be updated.`);
+            } catch (error) {
+              if (error.status === 404) {
+                core.info(`No existing release found for ${tag}; continuing.`);
+                return;
+              }
+              throw error;
+            }
+
+      - name: Verify Maven build
+        run: mvn verify --no-transfer-progress
+
+      - name: Build versioned release assets
+        run: bash tools/build-pack.sh --clean --github-repo "${{ github.repository }}"
+
+      - name: Create draft GitHub release with assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.release_tag }}
+          draft: true
+          generate_release_notes: true
+          files: |
+            ${{ steps.meta.outputs.archive_path }}
+            ${{ steps.meta.outputs.installer_path }}

@@ -1,0 +1,93 @@
+name: Cut release tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: Branch or commit SHA to tag
+        required: false
+        default: main
+        type: string
+      release_version:
+        description: Pack version to tag, for example 0.1.0. Defaults to manifest version.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cut-tag-${{ github.workflow }}-${{ inputs.target_ref || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cut-tag:
+    name: Validate version and push tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout target ref
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.target_ref || 'main' }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Resolve release version
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          MANIFEST_VERSION="$(awk '
+            $0 ~ /^metadata:/ { in_metadata=1; next }
+            in_metadata && $0 ~ /^  version:/ { print $2; exit }
+          ' pack/manifest.yaml)"
+
+          [[ -n "${MANIFEST_VERSION}" ]] || {
+            echo 'Missing metadata.version in pack/manifest.yaml' >&2
+            exit 1
+          }
+
+          INPUT_VERSION="${{ inputs.release_version }}"
+          if [[ -n "${INPUT_VERSION}" && "${INPUT_VERSION}" != "${MANIFEST_VERSION}" ]]; then
+            echo "Requested version ${INPUT_VERSION} does not match manifest version ${MANIFEST_VERSION}" >&2
+            exit 1
+          fi
+
+          RELEASE_VERSION="${INPUT_VERSION:-${MANIFEST_VERSION}}"
+          RELEASE_TAG="v${RELEASE_VERSION}"
+
+          echo "release_version=${RELEASE_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "release_tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify Maven build
+        run: mvn verify --no-transfer-progress
+
+      - name: Ensure tag does not already exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse "refs/tags/${{ steps.meta.outputs.release_tag }}" >/dev/null 2>&1 && {
+            echo "Tag already exists locally: ${{ steps.meta.outputs.release_tag }}" >&2
+            exit 1
+          }
+          git ls-remote --exit-code --tags origin "refs/tags/${{ steps.meta.outputs.release_tag }}" >/dev/null 2>&1 && {
+            echo "Tag already exists on origin: ${{ steps.meta.outputs.release_tag }}" >&2
+            exit 1
+          }
+
+      - name: Create and push annotated tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.meta.outputs.release_tag }}" -m "Release ${{ steps.meta.outputs.release_tag }}"
+          git push origin "refs/tags/${{ steps.meta.outputs.release_tag }}"

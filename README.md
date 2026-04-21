@@ -261,6 +261,22 @@ With the current manifest, the output names are:
    - `dist/akka-ai-pack-0.1.0.tar.gz`
    - `dist/install-akka-ai-pack-0.1.0.sh`
 
+GitHub Actions automation is included:
+- `.github/workflows/build-test.yml` checks `README.md` and `pack/README.md` pack-version references, runs `mvn verify`, and runs `tools/build-pack.sh` on PRs, pushes to `main`, and manual dispatch
+- `.github/workflows/cut-tag.yml` creates and pushes tag `v<manifest-version>` from a selected ref after validating the manifest version and running `mvn verify`
+- `.github/workflows/release.yml` reruns the docs/version consistency check, refuses to overwrite an already published release for the same tag, and attaches the versioned archive and installer to an automatically created **draft** GitHub Release when tag `v<manifest-version>` is pushed
+
+#### How to use it
+
+1. Update `pack/manifest.yaml` to the version you want to release.
+2. Merge that change to `main`.
+3. Run the **Cut release tag** workflow, or manually push matching tag `v<manifest-version>`.
+4. The **Create draft release assets** workflow builds:
+   - `akka-ai-pack-<version>.tar.gz`
+   - `install-akka-ai-pack-<version>.sh`
+5. Review and publish the draft GitHub Release.
+6. After the draft release is published, the curl-based installer URLs become publicly usable.
+
 The build refuses to overwrite an existing staged directory, archive, or generated release installer unless you pass `--clean`.
 
 ### Build options
