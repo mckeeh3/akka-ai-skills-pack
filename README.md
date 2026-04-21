@@ -42,10 +42,12 @@ Agent-routing and implementation skills for:
 - gRPC endpoints
 - MCP endpoints
 
-Start with:
-- `AGENT-README.md`
-- `AGENTS.md`
+If you are using this repository as a pack source or reference library, start with:
 - `skills/README.md`
+- `pack/README.md` (for bundle/install layout)
+- this `README.md` for repository-level build and install flow
+
+`AGENT-README.md` is intentionally **not** part of the general usage flow. It is a repo-internal startup brief for AI coding agents that are contributing to this repository itself.
 
 ### 2. Executable examples: `src/`
 Reference Akka Java SDK code organized as:
@@ -92,18 +94,21 @@ It is **not bundled into installable distributions**.
 ## Related README files in this repository
 
 This repository contains several README files with different roles:
-- `README.md` - this top-level repository overview
-- `AGENT-README.md` - startup guidance for AI coding agents working in this repo
+- `README.md` - this top-level repository overview and the primary human-facing build/install guide
+- `AGENT-README.md` - **development-only** startup guidance for AI coding agents contributing changes to this repository; it is not end-user usage documentation for the pack
 - `skills/README.md` - skill routing map across all local skill suites
 - `pack/README.md` - install target layout, bundle model, and path rewrite rules
 - `akka-specify-plugin/akka/README.md` - `/akka:*` command workflow for the Akka specify plugin
 - `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a bundle is built locally
 
+If your goal is to build, install, or consume the resource pack, use this `README.md` and `pack/README.md`.
+Only open `AGENT-README.md` if you are starting a new AI-agent development session for work on this repository.
+
 ## Top-level repository layout
 
 ```text
 .
-├── AGENT-README.md          # agent startup instructions
+├── AGENT-README.md          # repo-development startup brief for AI coding agents
 ├── AGENTS.md                # detailed project coding constraints
 ├── skills/                  # source skill library
 ├── akka-context/            # maintainer/reference Akka docs (not bundled)
@@ -416,13 +421,18 @@ The nested plugin README at `akka-specify-plugin/akka/README.md` documents a sep
 
 That workflow is related to Akka development ergonomics, but it is separate from the resource-pack build and install flow described above.
 
-## Recommended reading order for maintainers and coding agents
+## Recommended reading order when developing this repository with AI agents
+
+This section is for contributors working on this repository itself.
+It is **not** the recommended reading order for pack consumers.
 
 1. `AGENT-README.md`
 2. `AGENTS.md`
 3. `skills/README.md`
 4. the focused skill(s) for the task at hand
 5. `akka-context/sdk/...` when official Akka semantics or API confirmation is needed
+
+If you are here to use the pack rather than develop it, skip `AGENT-README.md` and follow the build/install sections in this `README.md` instead.
 
 ## License
 
