@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Akka Web UI WebSocket Example</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      main {
+        max-width: 48rem;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: #111827;
+        border: 1px solid #334155;
+        border-radius: 1rem;
+      }
+
+      button {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: #38bdf8;
+        color: #082f49;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      code {
+        background: #1e293b;
+        padding: 0.1rem 0.35rem;
+        border-radius: 0.35rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main data-socket-path="/websockets/ping">
+      <h1>Browser page using Akka WebSocket</h1>
+      <p id="websocket-status">Connecting to <code>/websockets/ping</code>…</p>
+      <p>
+        This packaged page is served by Akka and opens a WebSocket to
+        <code>/websockets/ping</code>.
+      </p>
+      <button id="send-ping" type="button">Send ping</button>
+      <ul id="websocket-log"></ul>
+    </main>
+
+    <script src="/ui/websocket/app.js"></script>
+  </body>
+</html>

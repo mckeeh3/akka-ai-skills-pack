@@ -263,8 +263,12 @@ Use when the endpoint maps HTTP requests to Akka component calls.
 Use when the endpoint depends on query params, headers, principals, or other request metadata.
 - `akka-http-endpoint-request-context`
 
+### Web UI endpoints
+Use when the service should host a packaged browser UI, especially with co-hosted JSON APIs, SSE pages, or WebSocket pages.
+- `akka-http-endpoint-web-ui`
+
 ### Static content endpoints
-Use when the endpoint serves packaged HTML, CSS, OpenAPI files, or other assets.
+Use when the endpoint serves packaged HTML, CSS, OpenAPI files, or other assets without broader interactive browser behavior.
 - `akka-http-endpoint-static-content`
 
 ### Low-level HTTP endpoints
@@ -534,6 +538,19 @@ Load:
 - `akka-http-endpoints`
 - `akka-http-endpoint-request-context`
 - `akka-http-endpoint-testing`
+
+### New Akka-served web UI
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-web-ui`
+- `akka-http-endpoint-testing`
+
+Then add one or more focused companions as needed:
+- `akka-http-endpoint-static-content`
+- `akka-http-endpoint-sse`
+- `akka-http-endpoint-websocket`
+- `akka-http-endpoint-jwt`
+- `akka-http-endpoint-acl-internal`
 
 ### New HTTP endpoint serving static content
 Load:
@@ -829,6 +846,10 @@ Testing examples:
 Core endpoint examples:
 - `../src/main/java/com/example/api/GreetingEndpoint.java`
 - `../src/main/java/com/example/api/StaticContentEndpoint.java`
+- `../src/main/java/com/example/api/WebUiHomeEndpoint.java`
+- `../src/main/java/com/example/api/WebUiDataEndpoint.java`
+- `../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
+- `../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
 - `../src/main/java/com/example/api/LowLevelHttpEndpoint.java`
 - `../src/main/java/com/example/api/ProxyGreetingEndpoint.java`
 - `../src/main/java/com/example/api/PingWebSocketEndpoint.java`
@@ -847,6 +868,10 @@ Core endpoint examples:
 Testing examples:
 - `../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`

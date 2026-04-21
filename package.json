@@ -1,0 +1,11 @@
+{
+  "name": "akka-ai-skills-pack-web-ui",
+  "private": true,
+  "scripts": {
+    "build:web-ui": "tsc --project tsconfig.web-ui.json",
+    "check:web-ui": "tsc --project tsconfig.web-ui.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

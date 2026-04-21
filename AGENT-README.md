@@ -133,11 +133,14 @@ It also now has focused local skill and example coverage for:
   - component-calling endpoints
   - request-context endpoints
   - static content endpoints
+  - co-hosted web UI pages with minimal TypeScript-authored browser logic
   - low-level request/response endpoints
   - endpoint-to-HTTP-service delegation via `HttpClientProvider`
   - SSE endpoints and reconnect testing
+  - browser-facing SSE pages backed by Akka streams
   - view-backed SSE endpoints
   - WebSocket endpoints
+  - browser-facing WebSocket pages backed by packaged assets
   - JWT-protected endpoints and bearer-token test patterns
   - internal-only ACL endpoints and method-level overrides
   - endpoint integration testing
@@ -306,11 +309,15 @@ Current strongest local example areas:
   - request-context access
   - request headers and JWT claims
   - packaged static content and OpenAPI publication
+  - co-hosted web UI pages with packaged HTML/CSS/JS assets
+  - TypeScript-authored browser code served as packaged JavaScript assets
   - low-level request/response handling
   - endpoint-to-HTTP-service delegation
   - SSE streaming and reconnect tests
+  - browser-facing SSE pages wired to Akka stream routes
   - view-backed SSE streaming
   - WebSocket routes and tests
+  - browser-facing WebSocket pages wired to packaged UI routes
   - internal-only ACL examples
   - endpoint integration testing
 - focused gRPC endpoint component patterns

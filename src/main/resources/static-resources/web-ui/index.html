@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Co-hosted Akka Web UI</title>
+    <link rel="stylesheet" href="/ui/app.css" />
+  </head>
+  <body>
+    <main class="app-shell" data-api-path="/api/web-ui/summary">
+      <p class="eyebrow">Akka HTTP endpoint web UI example</p>
+      <h1 id="status-title">Loading web UI summary…</h1>
+      <p id="status-message">
+        This packaged page loads JSON from <code>/api/web-ui/summary</code>.
+      </p>
+
+      <section>
+        <h2>Capabilities</h2>
+        <ul id="capabilities">
+          <li>Waiting for the browser fetch call…</li>
+        </ul>
+      </section>
+
+      <section class="route-panel">
+        <h2>Route split</h2>
+        <ul>
+          <li><code>/ui</code> serves the packaged page.</li>
+          <li><code>/ui/app.css</code> and <code>/ui/app.js</code> serve packaged assets.</li>
+          <li><code>/api/web-ui/summary</code> serves the JSON payload for the page.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="/ui/app.js"></script>
+  </body>
+</html>

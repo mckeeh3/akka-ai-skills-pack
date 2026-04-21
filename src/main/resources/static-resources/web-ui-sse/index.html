@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Akka Web UI SSE Example</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: #f8fafc;
+        color: #0f172a;
+      }
+
+      main {
+        max-width: 48rem;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 1rem;
+      }
+
+      code {
+        background: #e2e8f0;
+        padding: 0.1rem 0.35rem;
+        border-radius: 0.35rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main data-stream-path="/counter-stream/numbers">
+      <h1>Browser page using Akka SSE</h1>
+      <p id="sse-status">Connecting to <code>/counter-stream/numbers</code>…</p>
+      <p>
+        This packaged page is served by Akka and its browser script listens to the
+        <code>/counter-stream/numbers</code> SSE endpoint.
+      </p>
+      <ol id="sse-events"></ol>
+    </main>
+
+    <script src="/ui/sse/app.js"></script>
+  </body>
+</html>
