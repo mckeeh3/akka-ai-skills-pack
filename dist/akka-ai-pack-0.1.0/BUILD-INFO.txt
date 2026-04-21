@@ -1,6 +1,0 @@
-pack_name=akka-ai-pack
-pack_version=0.1.0
-built_at_utc=2026-04-20T08:55:56Z
-source_repo=/home/hxmc/ai/akka-code-init
-archive_path=/home/hxmc/ai/akka-code-init/dist/akka-ai-pack-0.1.0.tar.gz
-external_docs_bundled=false

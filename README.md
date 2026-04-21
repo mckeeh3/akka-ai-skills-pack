@@ -97,7 +97,7 @@ This repository contains several README files with different roles:
 - `skills/README.md` - skill routing map across all local skill suites
 - `pack/README.md` - install target layout, bundle model, and path rewrite rules
 - `akka-specify-plugin/akka/README.md` - `/akka:*` command workflow for the Akka specify plugin
-- `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions
+- `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a bundle is built locally
 
 ## Top-level repository layout
 
@@ -113,7 +113,7 @@ This repository contains several README files with different roles:
 ├── src/                     # executable Akka Java SDK examples
 ├── tools/build-pack.sh      # distribution builder
 ├── install.sh               # installer for source checkout or unpacked bundle
-└── dist/                    # generated release artifacts
+└── dist/                    # generated release artifacts (not source-controlled)
 ```
 
 ## Prerequisites
@@ -210,6 +210,8 @@ bash tools/build-pack.sh --clean
 This creates:
 - an expanded bundle directory under `dist/`
 - a `.tar.gz` archive for the bundle
+
+`dist/` is generated output and is not intended to be source-controlled.
 
 With the current manifest, the output names are:
 - `dist/akka-ai-pack-0.1.0/`
