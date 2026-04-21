@@ -64,7 +64,7 @@ done
 
 [[ -f "$REPO_ROOT/pack/manifest.yaml" ]] || fail "Missing pack/manifest.yaml"
 [[ -f "$REPO_ROOT/install.sh" ]] || fail "Missing install.sh"
-[[ -d "$REPO_ROOT/.pi/skills" ]] || fail "Missing .pi/skills"
+[[ -d "$REPO_ROOT/skills" ]] || fail "Missing skills"
 [[ -d "$REPO_ROOT/src" ]] || fail "Missing src"
 
 if [[ -n "$OUTPUT_DIR" ]]; then
@@ -100,8 +100,8 @@ fi
 
 validate_source_tree() {
   local required_paths=(
-    "$REPO_ROOT/.pi/skills/README.md"
-    "$REPO_ROOT/.pi/skills/references/akka-entity-comparison.md"
+    "$REPO_ROOT/skills/README.md"
+    "$REPO_ROOT/skills/references/akka-entity-comparison.md"
     "$REPO_ROOT/pom.xml"
     "$REPO_ROOT/README.md"
     "$REPO_ROOT/LICENSE"
@@ -116,7 +116,7 @@ validate_source_tree() {
   while IFS= read -r skill_dir; do
     [[ -n "$skill_dir" ]] || continue
     [[ -f "$skill_dir/SKILL.md" ]] || fail "Skill directory missing SKILL.md: $skill_dir"
-  done < <(find "$REPO_ROOT/.pi/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
+  done < <(find "$REPO_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
 }
 
 copy_tree() {
@@ -135,7 +135,7 @@ This is a build artifact for the Akka AI resource pack.
 ## Included
 - install.sh
 - pack manifests
-- Pi skills under .pi/skills
+- repository skills under skills/
 - Akka SDK Java reference examples exported from src/
 - repository pom.xml and README.md for the example set
 
@@ -191,7 +191,7 @@ validate_source_tree
 log "Building $BUNDLE_DIR_NAME"
 mkdir -p "$STAGE_DIR"
 
-copy_tree "$REPO_ROOT/.pi" "$STAGE_DIR/.pi"
+copy_tree "$REPO_ROOT/skills" "$STAGE_DIR/skills"
 copy_tree "$REPO_ROOT/pack" "$STAGE_DIR/pack"
 copy_tree "$REPO_ROOT/src" "$STAGE_DIR/src"
 cp "$REPO_ROOT/install.sh" "$STAGE_DIR/install.sh"

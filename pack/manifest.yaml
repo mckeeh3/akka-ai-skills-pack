@@ -6,7 +6,7 @@ metadata:
   version: 0.1.0
   sourceRepo: https://github.com/hxmc/akka-code-init
   description: >-
-    Versioned Akka AI resource pack containing installable Pi skills and Akka SDK Java reference
+    Versioned Akka AI resource pack containing installable skills and Akka SDK Java reference
     examples for entity-focused coding workflows.
   compatibleAkkaSdk: '3.5.x'
 
@@ -26,91 +26,91 @@ install:
 content:
   skills:
     - id: akka-entity-type-selection
-      path: .pi/skills/akka-entity-type-selection
+      path: skills/akka-entity-type-selection
       category: selection
     - id: akka-event-sourced-entities
-      path: .pi/skills/akka-event-sourced-entities
+      path: skills/akka-event-sourced-entities
       category: component-suite
       component: event-sourced-entity
     - id: akka-ese-domain-modeling
-      path: .pi/skills/akka-ese-domain-modeling
+      path: skills/akka-ese-domain-modeling
       category: focused
       component: event-sourced-entity
     - id: akka-ese-application-entity
-      path: .pi/skills/akka-ese-application-entity
+      path: skills/akka-ese-application-entity
       category: focused
       component: event-sourced-entity
     - id: akka-ese-edge-and-flow-patterns
-      path: .pi/skills/akka-ese-edge-and-flow-patterns
+      path: skills/akka-ese-edge-and-flow-patterns
       category: focused
       component: event-sourced-entity
     - id: akka-ese-doc-snippets
-      path: .pi/skills/akka-ese-doc-snippets
+      path: skills/akka-ese-doc-snippets
       category: focused
       component: event-sourced-entity
     - id: akka-ese-unit-testing
-      path: .pi/skills/akka-ese-unit-testing
+      path: skills/akka-ese-unit-testing
       category: testing
       component: event-sourced-entity
     - id: akka-ese-integration-testing
-      path: .pi/skills/akka-ese-integration-testing
+      path: skills/akka-ese-integration-testing
       category: testing
       component: event-sourced-entity
     - id: akka-ese-notifications
-      path: .pi/skills/akka-ese-notifications
+      path: skills/akka-ese-notifications
       category: feature
       component: event-sourced-entity
     - id: akka-ese-replication
-      path: .pi/skills/akka-ese-replication
+      path: skills/akka-ese-replication
       category: feature
       component: event-sourced-entity
     - id: akka-ese-ttl
-      path: .pi/skills/akka-ese-ttl
+      path: skills/akka-ese-ttl
       category: feature
       component: event-sourced-entity
     - id: akka-key-value-entities
-      path: .pi/skills/akka-key-value-entities
+      path: skills/akka-key-value-entities
       category: component-suite
       component: key-value-entity
     - id: akka-kve-domain-modeling
-      path: .pi/skills/akka-kve-domain-modeling
+      path: skills/akka-kve-domain-modeling
       category: focused
       component: key-value-entity
     - id: akka-kve-application-entity
-      path: .pi/skills/akka-kve-application-entity
+      path: skills/akka-kve-application-entity
       category: focused
       component: key-value-entity
     - id: akka-kve-edge-and-flow-patterns
-      path: .pi/skills/akka-kve-edge-and-flow-patterns
+      path: skills/akka-kve-edge-and-flow-patterns
       category: focused
       component: key-value-entity
     - id: akka-kve-doc-snippets
-      path: .pi/skills/akka-kve-doc-snippets
+      path: skills/akka-kve-doc-snippets
       category: focused
       component: key-value-entity
     - id: akka-kve-unit-testing
-      path: .pi/skills/akka-kve-unit-testing
+      path: skills/akka-kve-unit-testing
       category: testing
       component: key-value-entity
     - id: akka-kve-integration-testing
-      path: .pi/skills/akka-kve-integration-testing
+      path: skills/akka-kve-integration-testing
       category: testing
       component: key-value-entity
     - id: akka-kve-notifications
-      path: .pi/skills/akka-kve-notifications
+      path: skills/akka-kve-notifications
       category: feature
       component: key-value-entity
     - id: akka-kve-replication
-      path: .pi/skills/akka-kve-replication
+      path: skills/akka-kve-replication
       category: feature
       component: key-value-entity
     - id: akka-kve-ttl
-      path: .pi/skills/akka-kve-ttl
+      path: skills/akka-kve-ttl
       category: feature
       component: key-value-entity
   references:
-    - .pi/skills/README.md
-    - .pi/skills/references/akka-entity-comparison.md
+    - skills/README.md
+    - skills/references/akka-entity-comparison.md
   examples:
     exportFrom:
       - pom.xml

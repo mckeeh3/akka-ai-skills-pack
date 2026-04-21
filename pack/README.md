@@ -5,7 +5,7 @@ This directory defines the installable packaging model for the Akka AI skills an
 ## Scope
 
 This pack intentionally includes:
-- `.pi/skills/**`
+- `skills/**`
 - reference examples exported from `src/**`
 - pack manifests
 - installer scripts

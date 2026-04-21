@@ -168,7 +168,7 @@ EOF
   exit 0
 fi
 
-[[ -d "$REPO_ROOT/.pi/skills" ]] || fail "Expected skills at $REPO_ROOT/.pi/skills"
+[[ -d "$REPO_ROOT/skills" ]] || fail "Expected skills at $REPO_ROOT/skills"
 [[ -f "$REPO_ROOT/pack/manifest.yaml" ]] || fail "Expected manifest at $REPO_ROOT/pack/manifest.yaml"
 [[ -d "$REPO_ROOT/src" ]] || fail "Expected examples under $REPO_ROOT/src"
 
@@ -313,13 +313,13 @@ ensure_dir "$MANIFESTS_DIR"
 ensure_dir "$EXAMPLES_DIR"
 
 copy_file "$REPO_ROOT/pack/manifest.yaml" "$PACK_MANIFEST_TARGET"
-copy_file "$REPO_ROOT/.pi/skills/README.md" "$SKILLS_DIR/README.md"
-copy_dir_replace "$REPO_ROOT/.pi/skills/references" "$SKILLS_DIR/references"
+copy_file "$REPO_ROOT/skills/README.md" "$SKILLS_DIR/README.md"
+copy_dir_replace "$REPO_ROOT/skills/references" "$SKILLS_DIR/references"
 
 while IFS= read -r skill; do
   [[ -n "$skill" ]] || continue
-  [[ -d "$REPO_ROOT/.pi/skills/$skill" ]] || fail "Missing skill directory: $skill"
-  copy_dir_replace "$REPO_ROOT/.pi/skills/$skill" "$SKILLS_DIR/$skill"
+  [[ -d "$REPO_ROOT/skills/$skill" ]] || fail "Missing skill directory: $skill"
+  copy_dir_replace "$REPO_ROOT/skills/$skill" "$SKILLS_DIR/$skill"
 done <<< "$selected_skills"
 
 copy_file "$REPO_ROOT/pom.xml" "$EXAMPLES_DIR/pom.xml"

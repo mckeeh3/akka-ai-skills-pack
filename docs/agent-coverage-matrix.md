@@ -47,12 +47,12 @@ Small, high-value follow-ups for the next sprint:
 
 ## Fast routing guide
 
-- Need a plain agent class: start with `.pi/skills/akka-agent-component/SKILL.md`
-- Need tools: read `.pi/skills/akka-agent-tools/SKILL.md`
-- Need Akka component tools: read `.pi/skills/akka-agent-component-tools/SKILL.md`
-- Need MCP tools: read `.pi/skills/akka-agent-mcp-tools/SKILL.md`
-- Need multimodal: read `.pi/skills/akka-agent-multimodal/SKILL.md`
-- Need memory/runtime state: read `.pi/skills/akka-agent-memory/SKILL.md` and `.pi/skills/akka-agent-runtime-state/SKILL.md`
-- Need workflow orchestration: read `.pi/skills/akka-agent-orchestration/SKILL.md`
-- Need guardrails or evaluators: read `.pi/skills/akka-agent-guardrails/SKILL.md` or `.pi/skills/akka-agent-evaluation/SKILL.md`
-- Need tests: read `.pi/skills/akka-agent-testing/SKILL.md`
+- Need a plain agent class: start with `skills/akka-agent-component/SKILL.md`
+- Need tools: read `skills/akka-agent-tools/SKILL.md`
+- Need Akka component tools: read `skills/akka-agent-component-tools/SKILL.md`
+- Need MCP tools: read `skills/akka-agent-mcp-tools/SKILL.md`
+- Need multimodal: read `skills/akka-agent-multimodal/SKILL.md`
+- Need memory/runtime state: read `skills/akka-agent-memory/SKILL.md` and `skills/akka-agent-runtime-state/SKILL.md`
+- Need workflow orchestration: read `skills/akka-agent-orchestration/SKILL.md`
+- Need guardrails or evaluators: read `skills/akka-agent-guardrails/SKILL.md` or `skills/akka-agent-evaluation/SKILL.md`
+- Need tests: read `skills/akka-agent-testing/SKILL.md`

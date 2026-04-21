@@ -3,11 +3,14 @@
 This repository packages **Akka SDK knowledge for AI coding agents**.
 
 It combines:
-- **agent-optimized skills** under `.pi/skills/`
+- **agent-optimized skills** under `skills/`
 - **executable Akka Java SDK examples** under `src/`
 - **tests that double as reference patterns** under `src/test/`
 - **packaging and installer tooling** for shipping those resources as an installable distribution
 - a local copy of **official Akka reference material** under `akka-context/` for maintainers and source verification
+
+In this repository, `skills/` is the canonical authored source path.
+When installed into a target project or user profile, those files land under `.agents/skills/`.
 
 ## What this project is for
 
@@ -26,7 +29,7 @@ A useful mental model is:
 
 ## What is included
 
-### 1. Skill library: `.pi/skills/`
+### 1. Source skill library: `skills/`
 Agent-routing and implementation skills for:
 - Agents
 - Event Sourced Entities
@@ -42,7 +45,7 @@ Agent-routing and implementation skills for:
 Start with:
 - `AGENT-README.md`
 - `AGENTS.md`
-- `.pi/skills/README.md`
+- `skills/README.md`
 
 ### 2. Executable examples: `src/`
 Reference Akka Java SDK code organized as:
@@ -91,7 +94,7 @@ It is **not bundled into installable distributions**.
 This repository contains several README files with different roles:
 - `README.md` - this top-level repository overview
 - `AGENT-README.md` - startup guidance for AI coding agents working in this repo
-- `.pi/skills/README.md` - skill routing map across all local skill suites
+- `skills/README.md` - skill routing map across all local skill suites
 - `pack/README.md` - install target layout, bundle model, and path rewrite rules
 - `akka-specify-plugin/akka/README.md` - `/akka:*` command workflow for the Akka specify plugin
 - `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions
@@ -102,7 +105,7 @@ This repository contains several README files with different roles:
 .
 ├── AGENT-README.md          # agent startup instructions
 ├── AGENTS.md                # detailed project coding constraints
-├── .pi/skills/              # agent skill library
+├── skills/                  # source skill library
 ├── akka-context/            # maintainer/reference Akka docs (not bundled)
 ├── akka-specify-plugin/     # plugin-specific workflow docs
 ├── docs/                    # focused local reference docs
@@ -165,13 +168,15 @@ Current manifest version:
 - `0.1.0`
 
 The distribution includes:
-- `.pi/skills/**`
+- `skills/**`
 - selected pack metadata
 - exported examples from `src/main` and `src/test`
 - the repository `pom.xml`
 - this `README.md`
 - `install.sh`
 - `LICENSE`
+
+Source skills are authored under `skills/` in this repository and installed into `.agents/skills/` by the installer.
 
 The distribution intentionally excludes:
 - `akka-context/**`
@@ -259,8 +264,8 @@ bash tools/build-pack.sh --help
 ### What `tools/build-pack.sh` validates
 
 Before building, the script checks that key source inputs exist, including:
-- `.pi/skills/README.md`
-- `.pi/skills/references/...`
+- `skills/README.md`
+- `skills/references/...`
 - `pom.xml`
 - `README.md`
 - `LICENSE`
@@ -413,7 +418,7 @@ That workflow is related to Akka development ergonomics, but it is separate from
 
 1. `AGENT-README.md`
 2. `AGENTS.md`
-3. `.pi/skills/README.md`
+3. `skills/README.md`
 4. the focused skill(s) for the task at hand
 5. `akka-context/sdk/...` when official Akka semantics or API confirmation is needed
 

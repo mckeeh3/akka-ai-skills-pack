@@ -4,7 +4,7 @@ Use this file as a **startup instruction set** for AI coding agents working in t
 
 Also read:
 - `AGENTS.md` for detailed project rules and Akka coding constraints
-- `.pi/skills/README.md` for local task routing
+- `skills/README.md` for local task routing
 - `docs/agent-coverage-matrix.md` when the task touches agent coverage, gaps, or local example selection
 
 ---
@@ -223,9 +223,14 @@ Therefore:
 
 ---
 
-## 6. How to interpret `.pi/skills`
+## 6. How to interpret `skills`
 
-`.pi/skills` is the repository's **agent routing layer**.
+`skills/` is the repository's **source-of-truth skill library** and agent routing layer.
+
+Interpret it this way:
+- in this repository, `skills/` is the authored source path
+- in installed target projects, these files are copied into `.agents/skills/`
+- do not treat `skills/` as Pi-specific runtime state for this repository
 
 A skill should help answer:
 - what kind of task is this?
@@ -278,9 +283,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `83` skill directories under `.pi/skills`
-- `111` Java source files under `src/main/java`
-- `73` test files under `src/test/java`
+- `86` skill directories under `skills`
+- `118` Java source files under `src/main/java`
+- `85` test files under `src/test/java`
 
 Current strongest local example areas:
 - focused agent component patterns
@@ -366,7 +371,7 @@ At the start of a new session:
 
 1. Read `AGENTS.md`.
 2. Read this file.
-3. Read `.pi/skills/README.md`.
+3. Read `skills/README.md`.
 4. If the task is agent-related, also read `docs/agent-coverage-matrix.md`.
 5. Classify the task before choosing files:
    - component implementation
