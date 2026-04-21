@@ -98,7 +98,6 @@ This repository contains several README files with different roles:
 - `AGENT-README.md` - **development-only** startup guidance for AI coding agents contributing changes to this repository; it is not end-user usage documentation for the pack
 - `skills/README.md` - skill routing map across all local skill suites
 - `pack/README.md` - install target layout, bundle model, and path rewrite rules
-- `akka-specify-plugin/akka/README.md` - `/akka:*` command workflow for the Akka specify plugin
 - `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a bundle is built locally
 
 If your goal is to build, install, or consume the resource pack, use this `README.md` and `pack/README.md`.
@@ -112,7 +111,6 @@ Only open `AGENT-README.md` if you are starting a new AI-agent development sessi
 ├── AGENTS.md                # detailed project coding constraints
 ├── skills/                  # source skill library
 ├── akka-context/            # maintainer/reference Akka docs (not bundled)
-├── akka-specify-plugin/     # plugin-specific workflow docs
 ├── docs/                    # focused local reference docs
 ├── pack/                    # pack manifest and packaging docs
 ├── src/                     # executable Akka Java SDK examples
@@ -405,21 +403,6 @@ bash install.sh --location global --bundle all
 ```
 
 In both cases, the installer performs the same target layout and path rewriting behavior.
-
-## Akka specify plugin note
-
-The nested plugin README at `akka-specify-plugin/akka/README.md` documents a separate command-driven workflow:
-- `/akka:setup`
-- `/akka:specify`
-- `/akka:clarify`
-- `/akka:plan`
-- `/akka:tasks`
-- `/akka:implement`
-- `/akka:build`
-- `/akka:deploy`
-- `/akka:review`
-
-That workflow is related to Akka development ergonomics, but it is separate from the resource-pack build and install flow described above.
 
 ## Recommended reading order when developing this repository with AI agents
 
