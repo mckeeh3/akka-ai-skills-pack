@@ -10,6 +10,9 @@ This pack intentionally includes:
 - pack manifests
 - installer scripts
 
+The source repository covers a broader Akka application architecture story than the smaller optional subset bundles.
+Use bundle `all` when you want the full currently packaged library; use the narrower entity bundles only when you intentionally want a reduced install.
+
 This pack intentionally does **not** include:
 - `akka-context/**`
 
@@ -43,13 +46,17 @@ Installed layout:
     README.md
     references/
       akka-entity-comparison.md
-    akka-entity-type-selection/
+    akka-solution-decomposition/
+      SKILL.md
+    akka-workflows/
+      SKILL.md
+    akka-views/
+      SKILL.md
+    akka-http-endpoints/
+      SKILL.md
+    akka-agents/
       SKILL.md
     akka-event-sourced-entities/
-      SKILL.md
-    akka-ese-domain-modeling/
-      SKILL.md
-    akka-ese-application-entity/
       SKILL.md
     ...
 ```
@@ -60,13 +67,14 @@ Where `<agents-root>` is either `<project-root>/.agents` or `~/.agents`.
 
 The pack is versioned as one release artifact, but installation can target smaller bundles.
 
-Current planned bundles:
-- `all`
-- `entities-core`
-- `ese-core`
-- `kve-core`
+Current available bundles:
+- `all` — the full currently packaged skill library, references, and examples across the broader Akka application architecture coverage in this repo
+- `entities-core` — a focused entity-oriented subset
+- `ese-core` — an Event Sourced Entity subset
+- `kve-core` — a Key Value Entity subset
 
-Future bundles can add the remaining Akka component families and cross-cutting topics such as:
+The optional reduced bundles are still entity-oriented today, but they no longer define the story of the repository as a whole.
+Future bundles can add more family-specific or cross-cutting slices such as:
 - `components-agents`
 - `components-views`
 - `components-workflows`

@@ -6,7 +6,7 @@ PACK_VERSION="__PACK_VERSION__"
 GITHUB_REPO="__GITHUB_REPO__"
 RELEASE_TAG="v${PACK_VERSION}"
 TARGET_DIR="$(pwd)"
-BUNDLE="entities-core"
+BUNDLE="all"
 ARCHIVE_URL=""
 DRY_RUN=false
 FORCE=false
@@ -22,7 +22,7 @@ Usage:
 
 Options:
   --target-dir <dir>  Project directory that will receive .agents/. Default: current directory
-  --bundle <name>     Bundle to install. Default: entities-core
+  --bundle <name>     Bundle to install. Default: all
   --force             Forward --force to the bundled installer
   --dry-run           Forward --dry-run to the bundled installer
   --list-bundles      Download the bundle and print supported bundle ids
@@ -37,6 +37,9 @@ Defaults:
 
 Example:
   curl -fsSL https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/install-${PACK_NAME}-${PACK_VERSION}.sh | bash -s -- --target-dir /path/to/project --bundle ${BUNDLE}
+
+Tip:
+  Use --list-bundles to inspect the bundle ids defined by the packaged manifest.
 EOF
 }
 

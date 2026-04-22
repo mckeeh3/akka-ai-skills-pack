@@ -6,8 +6,9 @@ metadata:
   version: 0.1.0
   sourceRepo: https://github.com/hxmc/akka-code-init
   description: >-
-    Versioned Akka AI resource pack containing installable skills and Akka SDK Java reference
-    examples for entity-focused coding workflows.
+    Versioned Akka AI resource pack containing installable skills for intent-driven Akka
+    application design, decomposition, and code generation, plus Akka SDK Java reference
+    examples.
   compatibleAkkaSdk: '3.5.x'
 
 install:
@@ -25,92 +26,271 @@ install:
 
 content:
   skills:
+    - id: akka-agent-component
+      path: skills/akka-agent-component
+      category: focused
+    - id: akka-agent-component-tools
+      path: skills/akka-agent-component-tools
+      category: focused
+    - id: akka-agent-evaluation
+      path: skills/akka-agent-evaluation
+      category: focused
+    - id: akka-agent-guardrails
+      path: skills/akka-agent-guardrails
+      category: focused
+    - id: akka-agent-mcp-tools
+      path: skills/akka-agent-mcp-tools
+      category: focused
+    - id: akka-agent-memory
+      path: skills/akka-agent-memory
+      category: focused
+    - id: akka-agent-multimodal
+      path: skills/akka-agent-multimodal
+      category: focused
+    - id: akka-agent-orchestration
+      path: skills/akka-agent-orchestration
+      category: focused
+    - id: akka-agent-runtime-state
+      path: skills/akka-agent-runtime-state
+      category: focused
+    - id: akka-agent-streaming
+      path: skills/akka-agent-streaming
+      category: focused
+    - id: akka-agent-structured-responses
+      path: skills/akka-agent-structured-responses
+      category: focused
+    - id: akka-agent-testing
+      path: skills/akka-agent-testing
+      category: testing
+    - id: akka-agent-tools
+      path: skills/akka-agent-tools
+      category: focused
+    - id: akka-agents
+      path: skills/akka-agents
+      category: component-suite
+    - id: akka-consumer-from-event-sourced-entity
+      path: skills/akka-consumer-from-event-sourced-entity
+      category: focused
+    - id: akka-consumer-from-key-value-entity
+      path: skills/akka-consumer-from-key-value-entity
+      category: focused
+    - id: akka-consumer-from-service-stream
+      path: skills/akka-consumer-from-service-stream
+      category: focused
+    - id: akka-consumer-from-topic
+      path: skills/akka-consumer-from-topic
+      category: focused
+    - id: akka-consumer-from-workflow
+      path: skills/akka-consumer-from-workflow
+      category: focused
+    - id: akka-consumer-producing
+      path: skills/akka-consumer-producing
+      category: focused
+    - id: akka-consumer-testing
+      path: skills/akka-consumer-testing
+      category: testing
+    - id: akka-consumers
+      path: skills/akka-consumers
+      category: component-suite
     - id: akka-entity-type-selection
       path: skills/akka-entity-type-selection
       category: selection
-    - id: akka-event-sourced-entities
-      path: skills/akka-event-sourced-entities
-      category: component-suite
-      component: event-sourced-entity
-    - id: akka-ese-domain-modeling
-      path: skills/akka-ese-domain-modeling
-      category: focused
-      component: event-sourced-entity
     - id: akka-ese-application-entity
       path: skills/akka-ese-application-entity
       category: focused
-      component: event-sourced-entity
-    - id: akka-ese-edge-and-flow-patterns
-      path: skills/akka-ese-edge-and-flow-patterns
-      category: focused
-      component: event-sourced-entity
     - id: akka-ese-doc-snippets
       path: skills/akka-ese-doc-snippets
       category: focused
-      component: event-sourced-entity
-    - id: akka-ese-unit-testing
-      path: skills/akka-ese-unit-testing
-      category: testing
-      component: event-sourced-entity
+    - id: akka-ese-domain-modeling
+      path: skills/akka-ese-domain-modeling
+      category: focused
+    - id: akka-ese-edge-and-flow-patterns
+      path: skills/akka-ese-edge-and-flow-patterns
+      category: focused
     - id: akka-ese-integration-testing
       path: skills/akka-ese-integration-testing
       category: testing
-      component: event-sourced-entity
     - id: akka-ese-notifications
       path: skills/akka-ese-notifications
-      category: feature
-      component: event-sourced-entity
+      category: focused
     - id: akka-ese-replication
       path: skills/akka-ese-replication
-      category: feature
-      component: event-sourced-entity
+      category: focused
     - id: akka-ese-ttl
       path: skills/akka-ese-ttl
-      category: feature
-      component: event-sourced-entity
+      category: focused
+    - id: akka-ese-unit-testing
+      path: skills/akka-ese-unit-testing
+      category: testing
+    - id: akka-event-sourced-entities
+      path: skills/akka-event-sourced-entities
+      category: component-suite
+    - id: akka-grpc-endpoint-component-client
+      path: skills/akka-grpc-endpoint-component-client
+      category: focused
+    - id: akka-grpc-endpoint-jwt
+      path: skills/akka-grpc-endpoint-jwt
+      category: focused
+    - id: akka-grpc-endpoint-request-context
+      path: skills/akka-grpc-endpoint-request-context
+      category: focused
+    - id: akka-grpc-endpoint-streaming
+      path: skills/akka-grpc-endpoint-streaming
+      category: focused
+    - id: akka-grpc-endpoint-testing
+      path: skills/akka-grpc-endpoint-testing
+      category: testing
+    - id: akka-grpc-endpoints
+      path: skills/akka-grpc-endpoints
+      category: component-suite
+    - id: akka-grpc-proto-design
+      path: skills/akka-grpc-proto-design
+      category: focused
+    - id: akka-http-endpoint-acl-internal
+      path: skills/akka-http-endpoint-acl-internal
+      category: focused
+    - id: akka-http-endpoint-component-client
+      path: skills/akka-http-endpoint-component-client
+      category: focused
+    - id: akka-http-endpoint-http-client-provider
+      path: skills/akka-http-endpoint-http-client-provider
+      category: focused
+    - id: akka-http-endpoint-jwt
+      path: skills/akka-http-endpoint-jwt
+      category: focused
+    - id: akka-http-endpoint-low-level
+      path: skills/akka-http-endpoint-low-level
+      category: focused
+    - id: akka-http-endpoint-request-context
+      path: skills/akka-http-endpoint-request-context
+      category: focused
+    - id: akka-http-endpoint-sse
+      path: skills/akka-http-endpoint-sse
+      category: focused
+    - id: akka-http-endpoint-static-content
+      path: skills/akka-http-endpoint-static-content
+      category: focused
+    - id: akka-http-endpoint-testing
+      path: skills/akka-http-endpoint-testing
+      category: testing
+    - id: akka-http-endpoint-web-ui
+      path: skills/akka-http-endpoint-web-ui
+      category: focused
+    - id: akka-http-endpoint-websocket
+      path: skills/akka-http-endpoint-websocket
+      category: focused
+    - id: akka-http-endpoints
+      path: skills/akka-http-endpoints
+      category: component-suite
     - id: akka-key-value-entities
       path: skills/akka-key-value-entities
       category: component-suite
-      component: key-value-entity
-    - id: akka-kve-domain-modeling
-      path: skills/akka-kve-domain-modeling
-      category: focused
-      component: key-value-entity
     - id: akka-kve-application-entity
       path: skills/akka-kve-application-entity
       category: focused
-      component: key-value-entity
-    - id: akka-kve-edge-and-flow-patterns
-      path: skills/akka-kve-edge-and-flow-patterns
-      category: focused
-      component: key-value-entity
     - id: akka-kve-doc-snippets
       path: skills/akka-kve-doc-snippets
       category: focused
-      component: key-value-entity
-    - id: akka-kve-unit-testing
-      path: skills/akka-kve-unit-testing
-      category: testing
-      component: key-value-entity
+    - id: akka-kve-domain-modeling
+      path: skills/akka-kve-domain-modeling
+      category: focused
+    - id: akka-kve-edge-and-flow-patterns
+      path: skills/akka-kve-edge-and-flow-patterns
+      category: focused
     - id: akka-kve-integration-testing
       path: skills/akka-kve-integration-testing
       category: testing
-      component: key-value-entity
     - id: akka-kve-notifications
       path: skills/akka-kve-notifications
-      category: feature
-      component: key-value-entity
+      category: focused
     - id: akka-kve-replication
       path: skills/akka-kve-replication
-      category: feature
-      component: key-value-entity
+      category: focused
     - id: akka-kve-ttl
       path: skills/akka-kve-ttl
-      category: feature
-      component: key-value-entity
+      category: focused
+    - id: akka-kve-unit-testing
+      path: skills/akka-kve-unit-testing
+      category: testing
+    - id: akka-mcp-endpoint-component-client
+      path: skills/akka-mcp-endpoint-component-client
+      category: focused
+    - id: akka-mcp-endpoint-request-context
+      path: skills/akka-mcp-endpoint-request-context
+      category: focused
+    - id: akka-mcp-endpoint-resources-prompts
+      path: skills/akka-mcp-endpoint-resources-prompts
+      category: focused
+    - id: akka-mcp-endpoint-testing
+      path: skills/akka-mcp-endpoint-testing
+      category: testing
+    - id: akka-mcp-endpoints
+      path: skills/akka-mcp-endpoints
+      category: component-suite
+    - id: akka-solution-decomposition
+      path: skills/akka-solution-decomposition
+      category: architecture
+    - id: akka-timed-action-component
+      path: skills/akka-timed-action-component
+      category: focused
+    - id: akka-timed-action-testing
+      path: skills/akka-timed-action-testing
+      category: testing
+    - id: akka-timed-actions
+      path: skills/akka-timed-actions
+      category: component-suite
+    - id: akka-timers-scheduling
+      path: skills/akka-timers-scheduling
+      category: focused
+    - id: akka-view-from-event-sourced-entity
+      path: skills/akka-view-from-event-sourced-entity
+      category: focused
+    - id: akka-view-from-key-value-entity
+      path: skills/akka-view-from-key-value-entity
+      category: focused
+    - id: akka-view-from-service-stream
+      path: skills/akka-view-from-service-stream
+      category: focused
+    - id: akka-view-from-topic
+      path: skills/akka-view-from-topic
+      category: focused
+    - id: akka-view-from-workflow
+      path: skills/akka-view-from-workflow
+      category: focused
+    - id: akka-view-query-patterns
+      path: skills/akka-view-query-patterns
+      category: focused
+    - id: akka-view-streaming
+      path: skills/akka-view-streaming
+      category: focused
+    - id: akka-view-testing
+      path: skills/akka-view-testing
+      category: testing
+    - id: akka-views
+      path: skills/akka-views
+      category: component-suite
+    - id: akka-workflow-compensation
+      path: skills/akka-workflow-compensation
+      category: focused
+    - id: akka-workflow-component
+      path: skills/akka-workflow-component
+      category: focused
+    - id: akka-workflow-notifications
+      path: skills/akka-workflow-notifications
+      category: focused
+    - id: akka-workflow-pausing
+      path: skills/akka-workflow-pausing
+      category: focused
+    - id: akka-workflow-testing
+      path: skills/akka-workflow-testing
+      category: testing
+    - id: akka-workflows
+      path: skills/akka-workflows
+      category: component-suite
   references:
     - skills/README.md
     - skills/references/akka-entity-comparison.md
+    - skills/references/akka-grpc-jwt-patterns.md
   examples:
     exportFrom:
       - pom.xml
@@ -123,33 +303,99 @@ content:
 
 bundles:
   - id: all
-    description: Install all currently packaged skills, references, and examples.
+    description: Install the full currently packaged skill library, references, and examples across the repo's broader Akka application architecture coverage.
     includeReferences: true
     includeExamples: true
     skills:
+      - akka-agent-component
+      - akka-agent-component-tools
+      - akka-agent-evaluation
+      - akka-agent-guardrails
+      - akka-agent-mcp-tools
+      - akka-agent-memory
+      - akka-agent-multimodal
+      - akka-agent-orchestration
+      - akka-agent-runtime-state
+      - akka-agent-streaming
+      - akka-agent-structured-responses
+      - akka-agent-testing
+      - akka-agent-tools
+      - akka-agents
+      - akka-consumer-from-event-sourced-entity
+      - akka-consumer-from-key-value-entity
+      - akka-consumer-from-service-stream
+      - akka-consumer-from-topic
+      - akka-consumer-from-workflow
+      - akka-consumer-producing
+      - akka-consumer-testing
+      - akka-consumers
       - akka-entity-type-selection
-      - akka-event-sourced-entities
-      - akka-ese-domain-modeling
       - akka-ese-application-entity
-      - akka-ese-edge-and-flow-patterns
       - akka-ese-doc-snippets
-      - akka-ese-unit-testing
+      - akka-ese-domain-modeling
+      - akka-ese-edge-and-flow-patterns
       - akka-ese-integration-testing
       - akka-ese-notifications
       - akka-ese-replication
       - akka-ese-ttl
+      - akka-ese-unit-testing
+      - akka-event-sourced-entities
+      - akka-grpc-endpoint-component-client
+      - akka-grpc-endpoint-jwt
+      - akka-grpc-endpoint-request-context
+      - akka-grpc-endpoint-streaming
+      - akka-grpc-endpoint-testing
+      - akka-grpc-endpoints
+      - akka-grpc-proto-design
+      - akka-http-endpoint-acl-internal
+      - akka-http-endpoint-component-client
+      - akka-http-endpoint-http-client-provider
+      - akka-http-endpoint-jwt
+      - akka-http-endpoint-low-level
+      - akka-http-endpoint-request-context
+      - akka-http-endpoint-sse
+      - akka-http-endpoint-static-content
+      - akka-http-endpoint-testing
+      - akka-http-endpoint-web-ui
+      - akka-http-endpoint-websocket
+      - akka-http-endpoints
       - akka-key-value-entities
-      - akka-kve-domain-modeling
       - akka-kve-application-entity
-      - akka-kve-edge-and-flow-patterns
       - akka-kve-doc-snippets
-      - akka-kve-unit-testing
+      - akka-kve-domain-modeling
+      - akka-kve-edge-and-flow-patterns
       - akka-kve-integration-testing
       - akka-kve-notifications
       - akka-kve-replication
       - akka-kve-ttl
+      - akka-kve-unit-testing
+      - akka-mcp-endpoint-component-client
+      - akka-mcp-endpoint-request-context
+      - akka-mcp-endpoint-resources-prompts
+      - akka-mcp-endpoint-testing
+      - akka-mcp-endpoints
+      - akka-solution-decomposition
+      - akka-timed-action-component
+      - akka-timed-action-testing
+      - akka-timed-actions
+      - akka-timers-scheduling
+      - akka-view-from-event-sourced-entity
+      - akka-view-from-key-value-entity
+      - akka-view-from-service-stream
+      - akka-view-from-topic
+      - akka-view-from-workflow
+      - akka-view-query-patterns
+      - akka-view-streaming
+      - akka-view-testing
+      - akka-views
+      - akka-workflow-compensation
+      - akka-workflow-component
+      - akka-workflow-notifications
+      - akka-workflow-pausing
+      - akka-workflow-testing
+      - akka-workflows
   - id: entities-core
-    description: Install the full entity-oriented skill suite for event sourced and key value entities.
+    description: Install the focused entity-oriented subset for event sourced and key value entities, plus shared references and examples.
     includeReferences: true
     includeExamples: true
     skills:

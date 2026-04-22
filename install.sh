@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$SCRIPT_DIR"
 PROJECT_ROOT="$(pwd)"
-BUNDLE="entities-core"
+BUNDLE="all"
 LOCATION=""
 DRY_RUN=false
 FORCE=false
@@ -23,17 +23,16 @@ Options:
                       global  -> ~/.agents
                       If omitted, the installer prompts interactively.
   --project <dir>     Project root used for project mode. Default: current directory
-  --bundle <name>     Bundle to install. Default: entities-core
+  --bundle <name>     Bundle to install. Default: all
   --force             Replace existing pack-owned files for the selected bundle
   --dry-run           Show planned actions without writing files
   --list-bundles      Print supported bundles and exit
   --help              Show this help text
 
-Current bundles:
-  all
-  entities-core
-  ese-core
-  kve-core
+Bundle discovery:
+  - Use --list-bundles to print bundle ids from pack/manifest.yaml
+  - Bundle 'all' installs the full currently packaged skill library
+  - Smaller bundles may intentionally install narrower subsets, such as entity-focused suites
 
 Notes:
   - This installer uses cross-harness locations, not project-local .pi directories
@@ -56,67 +55,72 @@ fail() {
   exit 1
 }
 
+manifest_bundle_ids() {
+  python3 - "$REPO_ROOT/pack/manifest.yaml" <<'PY'
+import re
+import sys
+
+lines = open(sys.argv[1]).read().splitlines()
+in_bundles = False
+for line in lines:
+    if line.strip() == 'bundles:':
+        in_bundles = True
+        continue
+    if not in_bundles:
+        continue
+    match = re.match(r'  - id: (.+)$', line)
+    if match:
+        print(match.group(1))
+PY
+}
+
 bundle_skills() {
-  case "$1" in
-    all|entities-core)
-      cat <<'EOF'
-akka-entity-type-selection
-akka-event-sourced-entities
-akka-ese-domain-modeling
-akka-ese-application-entity
-akka-ese-edge-and-flow-patterns
-akka-ese-doc-snippets
-akka-ese-unit-testing
-akka-ese-integration-testing
-akka-ese-notifications
-akka-ese-replication
-akka-ese-ttl
-akka-key-value-entities
-akka-kve-domain-modeling
-akka-kve-application-entity
-akka-kve-edge-and-flow-patterns
-akka-kve-doc-snippets
-akka-kve-unit-testing
-akka-kve-integration-testing
-akka-kve-notifications
-akka-kve-replication
-akka-kve-ttl
-EOF
-      ;;
-    ese-core)
-      cat <<'EOF'
-akka-entity-type-selection
-akka-event-sourced-entities
-akka-ese-domain-modeling
-akka-ese-application-entity
-akka-ese-edge-and-flow-patterns
-akka-ese-doc-snippets
-akka-ese-unit-testing
-akka-ese-integration-testing
-akka-ese-notifications
-akka-ese-replication
-akka-ese-ttl
-EOF
-      ;;
-    kve-core)
-      cat <<'EOF'
-akka-entity-type-selection
-akka-key-value-entities
-akka-kve-domain-modeling
-akka-kve-application-entity
-akka-kve-edge-and-flow-patterns
-akka-kve-doc-snippets
-akka-kve-unit-testing
-akka-kve-integration-testing
-akka-kve-notifications
-akka-kve-replication
-akka-kve-ttl
-EOF
-      ;;
-    *)
-      fail "Unsupported bundle: $1"
-      ;;
-  esac
+  python3 - "$REPO_ROOT/pack/manifest.yaml" "$1" <<'PY'
+import re
+import sys
+
+manifest_path, target_bundle = sys.argv[1], sys.argv[2]
+lines = open(manifest_path).read().splitlines()
+in_bundles = False
+current_bundle = None
+collect_skills = False
+found_bundle = False
+skills = []
+
+for line in lines:
+    if line.strip() == 'bundles:':
+        in_bundles = True
+        continue
+    if not in_bundles:
+        continue
+
+    bundle_match = re.match(r'  - id: (.+)$', line)
+    if bundle_match:
+        current_bundle = bundle_match.group(1)
+        collect_skills = False
+        if current_bundle == target_bundle:
+            found_bundle = True
+        continue
+
+    if current_bundle == target_bundle and re.match(r'    skills:\s*$', line):
+        collect_skills = True
+        continue
+
+    if collect_skills:
+        skill_match = re.match(r'      - (.+)$', line)
+        if skill_match:
+            skills.append(skill_match.group(1))
+            continue
+        if line.startswith('    ') and not line.startswith('      '):
+            collect_skills = False
+
+if not found_bundle:
+    sys.stderr.write(f'Unsupported bundle: {target_bundle}\n')
+    sys.exit(1)
+
+for skill in skills:
+    print(skill)
+PY
 }
 
 while [[ $# -gt 0 ]]; do
@@ -158,19 +162,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$LIST_BUNDLES" == true ]]; then
-  cat <<'EOF'
-all
-entities-core
-ese-core
-kve-core
-EOF
-  exit 0
-fi
-
 [[ -d "$REPO_ROOT/skills" ]] || fail "Expected skills at $REPO_ROOT/skills"
 [[ -f "$REPO_ROOT/pack/manifest.yaml" ]] || fail "Expected manifest at $REPO_ROOT/pack/manifest.yaml"
 [[ -d "$REPO_ROOT/src" ]] || fail "Expected examples under $REPO_ROOT/src"
+command -v python3 >/dev/null 2>&1 || fail "python3 is required"
+
+if [[ "$LIST_BUNDLES" == true ]]; then
+  manifest_bundle_ids
+  exit 0
+fi
 
 resolve_location() {
   case "$1" in

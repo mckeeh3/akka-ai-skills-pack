@@ -71,15 +71,16 @@ Primary Stage 2 skill:
 ### Stage 3: Focused component implementation
 Use this stage when the architecture is already clear enough to write code and tests from the solution plan's implementation contract.
 
-Stage 3 includes the focused implementation skill families for:
-- entities
+Stage 3 includes focused implementation skill families for peer building blocks such as:
 - workflows
 - views
 - consumers
 - timed actions
-- endpoints
+- endpoints and web UI delivery
 - agents
+- entities
 
+Entities are one Stage 3 family among several peers, not the default front door for every task.
 Not every task starts at Stage 3.
 If all you have is a requirements artifact or other broad specification input, start at Stage 1.
 Even if the problem sounds stateful, use Stage 1 first when the overall component set is still unknown.
@@ -103,16 +104,16 @@ A useful mental model is:
 Agent-routing and implementation skills for:
 - Stage 1 solution decomposition
 - Stage 2 structural decision support, including entity type selection
+- Workflows
+- Views
+- Consumers
+- Timed Actions
+- HTTP endpoints and web UI delivery
+- gRPC endpoints
+- MCP endpoints
 - Agents
 - Event Sourced Entities
 - Key Value Entities
-- Views
-- Workflows
-- Consumers
-- Timed Actions
-- HTTP endpoints
-- gRPC endpoints
-- MCP endpoints
 
 These skills are meant to support the same staged flow used throughout this repository:
 - Stage 1: start from requirements or specification input
@@ -136,13 +137,14 @@ Reference Akka Java SDK code organized as:
 - `src/test/java` - unit and integration tests
 
 The examples cover patterns such as:
-- Event Sourced Entity and Key Value Entity design
+- workflows, compensation, pause/resume, and orchestration
 - views and query models
 - consumers and topic/service-stream integration
-- workflows, compensation, pause/resume, and orchestration
 - timed actions and timer-backed flows
-- agents, tools, structured responses, memory, streaming, guardrails, and evaluation
 - HTTP, gRPC, and MCP endpoints
+- Akka-served web UI, static content, SSE pages, and WebSocket pages
+- agents, tools, structured responses, memory, streaming, guardrails, and evaluation
+- Event Sourced Entity and Key Value Entity design
 - deterministic testing patterns for each component family
 
 ### 3. Reference docs: `docs/`
@@ -280,8 +282,8 @@ The installer currently supports these bundle ids:
 - `ese-core`
 - `kve-core`
 
-Use `entities-core` if you want the current packaged entity-focused suite.
-Use `all` if you want everything currently included in the manifest.
+Use `all` for the full currently packaged library across the repo's broader Akka application architecture coverage.
+The narrower `entities-core`, `ese-core`, and `kve-core` bundles remain available as smaller entity-focused subsets when you intentionally want a reduced install.
 
 ## How to build a distribution
 
@@ -419,7 +421,7 @@ curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1
 Install into a specific target directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project --bundle entities-core
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project --bundle all
 ```
 
 The release installer downloads `akka-ai-pack-0.1.0.tar.gz`, unpacks it in a temporary directory, and runs the bundled `install.sh` in project mode.
@@ -455,7 +457,7 @@ bash install.sh --list-bundles
 bash install.sh \
   --location project \
   --project /path/to/your/project \
-  --bundle entities-core
+  --bundle all
 ```
 
 This installs into:
@@ -466,7 +468,7 @@ This installs into:
 ### 5. Install globally for your user account
 
 ```bash
-bash install.sh --location global --bundle entities-core
+bash install.sh --location global --bundle all
 ```
 
 This installs into:
@@ -479,7 +481,7 @@ This installs into:
 If you omit `--location`, the installer prompts you to choose project or global mode:
 
 ```bash
-bash install.sh --bundle entities-core
+bash install.sh --bundle all
 ```
 
 ### Useful installer options
@@ -515,7 +517,10 @@ After installation, the target directory looks like this:
 └── skills/
     ├── README.md
     ├── references/
-    ├── akka-entity-type-selection/
+    ├── akka-solution-decomposition/
+    ├── akka-workflows/
+    ├── akka-http-endpoints/
+    ├── akka-agents/
     ├── akka-event-sourced-entities/
     └── ...
 ```

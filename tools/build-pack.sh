@@ -90,7 +90,7 @@ notes instead of repo-local akka-context paths.
 After publishing these files as GitHub release assets:
 
 \`\`\`bash
-curl -fsSL https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/install-${PACK_NAME}-${PACK_VERSION}.sh | bash -s -- --target-dir /path/to/project --bundle entities-core
+curl -fsSL https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/install-${PACK_NAME}-${PACK_VERSION}.sh | bash -s -- --target-dir /path/to/project --bundle all
 \`\`\`
 
 If \`--target-dir\` is omitted, the current directory is used.
@@ -104,13 +104,13 @@ The bundled installer uses cross-harness locations:
 From inside the unpacked bundle:
 
 \`\`\`bash
-bash install.sh --location project --project /path/to/project --bundle entities-core
+bash install.sh --location project --project /path/to/project --bundle all
 \`\`\`
 
 Or:
 
 \`\`\`bash
-bash install.sh --location global --bundle entities-core
+bash install.sh --location global --bundle all
 \`\`\`
 
 If \`--location\` is omitted, the installer prompts interactively.
@@ -121,6 +121,9 @@ If project mode is selected, the current directory is used as the project root u
 - entities-core
 - ese-core
 - kve-core
+
+\`all\` is the full currently packaged library.
+The smaller optional bundles are narrower subsets, including entity-focused installs.
 EOF
 }
 

@@ -39,15 +39,16 @@ Start with:
 ### Stage 3: Focused component implementation
 Use this stage only after the architecture is settled enough to write code.
 
-This stage contains the focused implementation skill families for:
-- entities
+This stage contains focused implementation skill families for peer building blocks such as:
 - workflows
 - views
 - consumers
 - timed actions
-- endpoints
+- endpoints and web UI delivery
 - agents
+- entities
 
+Entities are one Stage 3 family among several peers.
 Do not assume every task starts at Stage 3.
 Requirements-first tasks begin at Stage 1.
 If the broader component set is still unknown, begin at Stage 1 even when the problem appears stateful.
@@ -167,11 +168,10 @@ When creating or revising repository content, optimize in this order:
 
 ### Current scope
 
-At the moment, the repository has the deepest local coverage for:
-- Event Sourced Entities
-- Key Value Entities
+At the moment, the repository has broad local skill and example coverage across the Akka application stack.
+Stateful entity guidance is still one of the most mature areas, but it is no longer the only dominant entry point.
 
-It also now has focused local skill and example coverage for:
+Current strong local coverage includes peer component families such as:
 - agents
   - single-purpose agents with explicit prompts and one public command handler
   - structured responses with `responseConformsTo(...)` and fallback handling
@@ -236,6 +236,10 @@ It also now has focused local skill and example coverage for:
   - dedicated service-to-service consumer reference docs
   - dedicated service-to-service view reference docs
   - consumer integration testing
+- stateful entities and state-model selection
+  - event sourced entity patterns
+  - key value entity patterns
+  - focused entity-type routing for stateful cores
 - notifications
 - TTL
 - replication
@@ -259,15 +263,15 @@ This repository is intended to become a broader Akka SDK reference set for codin
 
 Expected Akka component coverage includes:
 - Agents
-- Event Sourced Entities
-- Key Value Entities
-- Views
 - Workflows
+- Views
 - Consumers
 - Timed Actions
-- HTTP Endpoints
+- HTTP Endpoints and web UI delivery patterns
 - gRPC Endpoints
 - MCP Endpoints
+- Event Sourced Entities
+- Key Value Entities
 - service setup / bootstrap patterns
 
 Expected cross-cutting coverage includes topics such as:

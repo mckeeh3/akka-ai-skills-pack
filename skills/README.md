@@ -38,15 +38,16 @@ Primary Stage 2 skill currently available:
 Use this stage only after the solution shape is already clear enough to generate code.
 This is the downstream implementation phase driven by the accepted solution plan.
 
-Stage 3 is the family of focused implementation skills for:
-- entities
+Stage 3 is the family of focused implementation skills for peer building blocks such as:
 - workflows
 - views
 - consumers
 - timed actions
-- endpoints
+- endpoints and web UI delivery
 - agents
+- entities
 
+Entities are one Stage 3 family among several peers.
 Not every task starts at Stage 3.
 If all you have is a requirements artifact or other broad specification input, start at Stage 1.
 Even if the problem sounds stateful, use Stage 1 first when the overall component set is still unknown.
@@ -61,15 +62,15 @@ Primary flow:
 
 Current local Stage 3 suites:
 - Agents
-- Event Sourced Entities
-- Key Value Entities
 - Workflows
-- Timed Actions
-- Consumers
 - Views
-- HTTP Endpoints
+- Consumers
+- Timed Actions
+- HTTP Endpoints and web UI patterns
 - gRPC Endpoints
 - MCP Endpoints
+- Event Sourced Entities
+- Key Value Entities
 
 If you have high-level requirements, a prompt, or a specification file and do not yet know the Akka component set, start with Stage 1:
 - `akka-solution-decomposition`
@@ -100,7 +101,6 @@ It is the implementation contract for downstream work:
 - it can also route endpoint generation, web UI generation, and documentation/snippet generation when those are part of the task
 
 This skill routes to:
-- `akka-entity-type-selection` for EventSourcedEntity vs KeyValueEntity decisions
 - `akka-workflows` for durable multi-step orchestration
 - `akka-views` for list/search/reporting read models
 - `akka-consumers` for async reactions, integrations, and republishing
@@ -109,6 +109,7 @@ This skill routes to:
 - `akka-grpc-endpoints` for protobuf-first service APIs
 - `akka-mcp-endpoints` for LLM-facing tools, resources, and prompts
 - `akka-agents` when the solution genuinely needs LLM-driven behavior
+- `akka-entity-type-selection` for EventSourcedEntity vs KeyValueEntity decisions when the plan includes a stateful core but the entity style is still undecided
 
 ## Planning-to-implementation handoff
 
