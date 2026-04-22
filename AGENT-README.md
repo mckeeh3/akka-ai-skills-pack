@@ -30,6 +30,7 @@ Start with:
 
 ### Stage 2: Structural decisions
 Use this when the task already points toward a certain solution area, but one architecture choice is still open.
+This is a narrower follow-on stage, not the default entry for broad requirements.
 
 Start with:
 - `akka-entity-type-selection` when you know you need state but have not yet chosen Event Sourced Entity vs Key Value Entity
@@ -48,7 +49,8 @@ This stage contains the focused implementation skill families for:
 
 Do not assume every task starts at Stage 3.
 Requirements-first tasks begin at Stage 1.
-Stateful-core selection tasks often begin at Stage 2.
+If the broader component set is still unknown, begin at Stage 1 even when the problem appears stateful.
+Stateful-core selection tasks begin at Stage 2 only after that broader decomposition is already clear or unnecessary.
 Only start at Stage 3 when the current task is already concrete component work.
 
 ---
@@ -440,11 +442,12 @@ At the start of a new session:
    - cross-cutting topic
    - repo structure / skill design
 6. If the task starts from high-level requirements, a prompt, or a specification file and the component set is not yet known, start with Stage 1 via `akka-solution-decomposition`.
-7. If the task already clearly needs a stateful component but the entity type is still unknown, start with Stage 2 via `akka-entity-type-selection`.
-8. Otherwise, check whether the task is already in Stage 3 and whether a focused local implementation skill already exists.
-9. Read the smallest relevant local skill set first.
-10. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
-11. Prefer local agent-optimized patterns when generating code or new repository guidance.
+7. If the task seems stateful but the broader component set is still unknown, still start with Stage 1.
+8. Use Stage 2 via `akka-entity-type-selection` only when the task is already narrowed to a stateful core and the remaining open question is Event Sourced Entity vs Key Value Entity.
+9. Otherwise, check whether the task is already in Stage 3 and whether a focused local implementation skill already exists.
+10. Read the smallest relevant local skill set first.
+11. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
+12. Prefer local agent-optimized patterns when generating code or new repository guidance.
 
 ---
 

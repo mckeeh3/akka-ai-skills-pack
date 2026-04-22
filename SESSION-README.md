@@ -405,11 +405,12 @@ At the start of a new session:
    - cross-cutting topic
    - repo structure / skill design
 6. If the task starts from high-level requirements, a prompt, or a specification file and the component set is not yet known, start with `akka-solution-decomposition`.
-7. If the task already clearly needs a stateful component but the entity type is still unknown, load `akka-entity-type-selection`.
-8. Otherwise, check whether a focused local skill already exists.
-9. Read the smallest relevant local skill set first.
-10. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
-11. Prefer local agent-optimized patterns when generating code or new repository guidance.
+7. If the task seems stateful but the broader component set is still unknown, still start with `akka-solution-decomposition`.
+8. Use `akka-entity-type-selection` only when the task is already narrowed to a stateful core and the remaining open question is Event Sourced Entity vs Key Value Entity.
+9. Otherwise, check whether a focused local skill already exists.
+10. Read the smallest relevant local skill set first.
+11. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
+12. Prefer local agent-optimized patterns when generating code or new repository guidance.
 
 ---
 

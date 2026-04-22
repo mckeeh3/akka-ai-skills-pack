@@ -45,6 +45,7 @@ Primary Stage 1 skill:
 
 ### Stage 2: Structural decisions
 Use this stage when the high-level shape is partly known, but one important architecture choice is still unresolved.
+This is a narrower follow-on stage, not the default front door for broad requirements.
 
 Primary Stage 2 skill:
 - `skills/akka-entity-type-selection/SKILL.md`
@@ -62,8 +63,9 @@ Stage 3 includes the focused implementation skill families for:
 - agents
 
 Not every task starts at Stage 3.
-If all you have is a requirements artifact, start at Stage 1.
-If you already know you need state but have not yet chosen between Event Sourced Entity and Key Value Entity, start at Stage 2.
+If all you have is a requirements artifact or other broad specification input, start at Stage 1.
+Even if the problem sounds stateful, use Stage 1 first when the overall component set is still unknown.
+Use Stage 2 only when the task is already narrowed to a stateful core and you have not yet chosen between Event Sourced Entity and Key Value Entity.
 Move to Stage 3 only when planning has narrowed the task to concrete component work.
 
 The repository exists to make that workflow efficient for AI agents through:

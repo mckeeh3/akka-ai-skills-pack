@@ -14,6 +14,7 @@ Primary Stage 1 entry skill:
 
 ### Stage 2: Structural decisions
 Use this stage when you already know part of the architecture, but still need to resolve a focused design choice before coding.
+This is a narrower follow-on stage, not the default front door for broad requirements.
 
 Primary Stage 2 skill currently available:
 - `akka-entity-type-selection` — choose between Event Sourced Entity and Key Value Entity when you know you need state but not which state model
@@ -31,8 +32,9 @@ Stage 3 is the family of focused implementation skills for:
 - agents
 
 Not every task starts at Stage 3.
-If all you have is a requirements artifact, start at Stage 1.
-If you already know you need state but still need to choose the entity style, start at Stage 2.
+If all you have is a requirements artifact or other broad specification input, start at Stage 1.
+Even if the problem sounds stateful, use Stage 1 first when the overall component set is still unknown.
+Use Stage 2 only when the task is already narrowed to a stateful core and you still need to choose the entity style.
 Move to Stage 3 when the architecture is settled enough to write code and tests.
 
 Primary flow:
@@ -56,7 +58,7 @@ Current local Stage 3 suites:
 If you have high-level requirements, a prompt, or a specification file and do not yet know the Akka component set, start with Stage 1:
 - `akka-solution-decomposition`
 
-If the task already clearly needs a stateful component but you have not yet chosen the entity type, start with Stage 2:
+If the task is already narrowed to a stateful component and you have not yet chosen the entity type, start with Stage 2:
 - `akka-entity-type-selection`
 
 You can also consult the comparison/reference files:
@@ -463,10 +465,11 @@ Load:
 - `akka-agents`
 - `akka-agent-runtime-state`
 
-### First decide between ESE and KVE
+### Stateful core is already known; now decide between ESE and KVE
 Load:
 - `akka-entity-type-selection`
 
+Use this only when the broader Akka component set is already clear enough that the remaining question is ESE vs KVE.
 Then continue with either the ESE or KVE suite.
 
 ### New endpoint-facing event sourced entity

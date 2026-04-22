@@ -1,14 +1,15 @@
 ---
 name: akka-entity-type-selection
-description: Decide whether an Akka Java SDK stateful use case should be implemented as an EventSourcedEntity or a KeyValueEntity, then load the matching skill suite. Use when the requirements already imply a stateful component but the entity type is not yet fixed.
+description: Decide whether an Akka Java SDK stateful use case should be implemented as an EventSourcedEntity or a KeyValueEntity, then load the matching skill suite. Use only when the task is already narrowed to a stateful component and the entity type is not yet fixed.
 ---
 
 # Akka Entity Type Selection
 
-Use this skill when the requirements already imply a stateful component but the user has not yet chosen between:
+Use this skill only when the task is already narrowed to a stateful component but the user has not yet chosen between:
 - `EventSourcedEntity`
 - `KeyValueEntity`
 
+This is not the general front door for broad requirements, prompts, PDRs, or specification files.
 If the broader Akka component set is still unknown, start with:
 - `akka-solution-decomposition`
 
