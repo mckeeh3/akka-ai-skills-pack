@@ -356,7 +356,7 @@ Document and minimally demonstrate the boundary between a public UI shell and no
    - `package.json`
    - `tsconfig.web-ui.json`
 5. Update any HTTP endpoint routing docs that should link to the new family
-6. Update `AGENT-README.md` coverage text only if the new family materially changes the stated strong areas
+6. Update `CONTEXT-WARMUP.md` coverage text only if the new family materially changes the stated strong areas
 
 ## Suggested content for the new broad skill
 

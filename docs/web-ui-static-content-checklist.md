@@ -241,7 +241,7 @@ Goal: make the new family discoverable from the repo’s routing layer.
 
 ### Update first
 
-- [ ] `AGENT-README.md`
+- [ ] `CONTEXT-WARMUP.md`
 - [ ] `skills/README.md`
 - [ ] any affected HTTP endpoint skill docs
 
@@ -252,7 +252,7 @@ Goal: make the new family discoverable from the repo’s routing layer.
 
 ### Tasks
 
-- [ ] Update `AGENT-README.md` only if the web-ui family materially changes the stated strong local coverage
+- [ ] Update `CONTEXT-WARMUP.md` only if the web-ui family materially changes the stated strong local coverage
 - [ ] Update `skills/README.md` so future agents can find the new broad skill quickly
 - [ ] Add links from related HTTP endpoint skills where useful
 

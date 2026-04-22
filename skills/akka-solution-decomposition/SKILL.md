@@ -42,7 +42,7 @@ If the user provides a filename or path:
 ## Required reading
 
 Read these first if present:
-- `../../../AGENT-README.md`
+- `../../../CONTEXT-WARMUP.md`
 - `../../../AGENTS.md`
 - `../../../skills/README.md`
 - `../../../docs/agent-coverage-matrix.md`

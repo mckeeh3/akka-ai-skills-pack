@@ -126,7 +126,7 @@ If you are using this repository as a pack source or reference library, start wi
 - `pack/README.md` (for install layout and packaging details)
 - this `README.md` for repository-level build and install flow
 
-`AGENT-README.md` is intentionally **not** part of the general usage flow. It is a repo-internal startup brief for AI coding agents that are contributing to this repository itself.
+`CONTEXT-WARMUP.md` is intentionally **not** part of the general pack-consumer usage flow. It is a repo-internal session bootstrap/context warmup for AI coding agents contributing to this repository itself.
 
 ### 2. Executable examples: `src/`
 Reference Akka Java SDK code organized as:
@@ -172,24 +172,25 @@ It is used to:
 
 It is **not bundled into installable distributions**.
 
-## Related README files in this repository
+## Related guidance files in this repository
 
-This repository contains several README files with different roles:
-- `README.md` - this top-level repository overview and the primary human-facing build/install guide
-- `AGENT-README.md` - **development-only** startup guidance for AI coding agents contributing changes to this repository; it is not end-user usage documentation for the pack
+This repository contains several guidance files with different roles:
+- `README.md` - top-level repository overview and the primary human-facing build/install guide
+- `CONTEXT-WARMUP.md` - development-only session bootstrap and context warmup for AI coding agents contributing changes to this repository
+- `AGENTS.md` - authoritative project rules, Akka implementation constraints, and testing expectations
 - `skills/README.md` - skill routing map across all local skill suites
 - `pack/README.md` - install target layout, packaging model, and path rewrite rules
 - `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a pack is built locally
 
-If your goal is to build, install, or consume the resource pack, use this `README.md` and `pack/README.md`.
-Only open `AGENT-README.md` if you are starting a new AI-agent development session for work on this repository.
+If your goal is to build, install, or consume the resource pack, use this `README.md`, `pack/README.md`, and the installed `skills/...` files.
+Only open `CONTEXT-WARMUP.md` and `AGENTS.md` if you are starting a new AI-agent development session for work on this repository.
 
 ## Top-level repository layout
 
 ```text
 .
-├── AGENT-README.md          # repo-development startup brief for AI coding agents
-├── AGENTS.md                # detailed project coding constraints
+├── CONTEXT-WARMUP.md        # repo-development session bootstrap/context warmup
+├── AGENTS.md                # authoritative project rules and coding constraints
 ├── skills/                  # source skill library
 ├── akka-context/            # maintainer/reference Akka docs (not bundled)
 ├── docs/                    # focused local reference docs
@@ -539,13 +540,13 @@ In both cases, the installer performs the same target layout and path rewriting 
 This section is for contributors working on this repository itself.
 It is **not** the recommended reading order for pack consumers.
 
-1. `AGENT-README.md`
-2. `AGENTS.md`
-3. `skills/README.md`
+1. `CONTEXT-WARMUP.md` for session bootstrap, repo mental model, and routing approach
+2. `AGENTS.md` for authoritative project rules and Akka coding constraints
+3. `skills/README.md` for skill routing
 4. the focused skill(s) for the task at hand
 5. `akka-context/sdk/...` when official Akka semantics or API confirmation is needed
 
-If you are here to use the pack rather than develop it, skip `AGENT-README.md` and follow the build/install sections in this `README.md` instead.
+If you are here to use the pack rather than develop it, skip `CONTEXT-WARMUP.md` and `AGENTS.md` and follow the build/install sections in this `README.md` instead.
 
 ## License
 
