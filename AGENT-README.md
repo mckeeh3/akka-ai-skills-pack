@@ -11,11 +11,45 @@ Treat this repository as a **requirements-first, intent-driven Akka pack for AI 
 
 Default repository story:
 1. read a high-level input such as a PDR, requirements doc, user story, process description, API sketch, or UI brief
-2. decompose it into the right Akka architecture
-3. route to the focused skills needed for each part of the solution
-4. generate code and tests component by component
+2. use Stage 1 to decompose it into the right Akka architecture
+3. use Stage 2 when a focused architecture decision is still unresolved
+4. use Stage 3 to route to the focused implementation skills needed for each part of the solution
+5. generate code and tests component by component
 
 Component-family skills are important, but they are **downstream implementation assets**, not the only front door.
+
+## Visible 3-stage skill model
+
+Treat the repository skill system as a visible 3-stage hierarchy:
+
+### Stage 1: Intent and architecture
+Use this when the task starts from requirements, a prompt, or a specification file and the Akka solution shape is not yet known.
+
+Start with:
+- `akka-solution-decomposition`
+
+### Stage 2: Structural decisions
+Use this when the task already points toward a certain solution area, but one architecture choice is still open.
+
+Start with:
+- `akka-entity-type-selection` when you know you need state but have not yet chosen Event Sourced Entity vs Key Value Entity
+
+### Stage 3: Focused component implementation
+Use this stage only after the architecture is settled enough to write code.
+
+This stage contains the focused implementation skill families for:
+- entities
+- workflows
+- views
+- consumers
+- timed actions
+- endpoints
+- agents
+
+Do not assume every task starts at Stage 3.
+Requirements-first tasks begin at Stage 1.
+Stateful-core selection tasks often begin at Stage 2.
+Only start at Stage 3 when the current task is already concrete component work.
 
 ---
 
@@ -36,7 +70,7 @@ This is the most important distinction in the project:
 Therefore:
 - external docs are important for Akka semantics, API correctness, and feature coverage
 - local skills and local examples are the preferred source for **agent-oriented implementation patterns**
-- component-specific skills should usually be reached **after** intent analysis and solution decomposition
+- component-specific skills should usually be reached **after** Stage 1 intent analysis and any needed Stage 2 structural decisions
 
 If there is a choice between:
 - a human-friendly explanation style, and
@@ -398,15 +432,16 @@ At the start of a new session:
 3. Read `skills/README.md`.
 4. If the task is agent-related, also read `docs/agent-coverage-matrix.md`.
 5. Classify the task before choosing files:
-   - requirements decomposition / architecture selection
-   - component implementation
+   - Stage 1: requirements decomposition / architecture selection
+   - Stage 2: focused structural decision
+   - Stage 3: component implementation
    - testing
    - docs/snippet generation
    - cross-cutting topic
    - repo structure / skill design
-6. If the task starts from high-level requirements, a prompt, or a specification file and the component set is not yet known, start with `akka-solution-decomposition`.
-7. If the task already clearly needs a stateful component but the entity type is still unknown, load `akka-entity-type-selection`.
-8. Otherwise, check whether a focused local skill already exists.
+6. If the task starts from high-level requirements, a prompt, or a specification file and the component set is not yet known, start with Stage 1 via `akka-solution-decomposition`.
+7. If the task already clearly needs a stateful component but the entity type is still unknown, start with Stage 2 via `akka-entity-type-selection`.
+8. Otherwise, check whether the task is already in Stage 3 and whether a focused local implementation skill already exists.
 9. Read the smallest relevant local skill set first.
 10. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
 11. Prefer local agent-optimized patterns when generating code or new repository guidance.

@@ -1,14 +1,47 @@
-# Akka Component Skills
+# Akka Skill Routing Map
 
 This directory contains AI-focused skills for turning high-level requirements into the right Akka Java SDK solution, then generating and reviewing the concrete component code.
 
+## Visible 3-stage skill model
+
+Use the skill library as a 3-stage hierarchy:
+
+### Stage 1: Intent and architecture
+Start here when you have a PDR, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape.
+
+Primary Stage 1 entry skill:
+- `akka-solution-decomposition`
+
+### Stage 2: Structural decisions
+Use this stage when you already know part of the architecture, but still need to resolve a focused design choice before coding.
+
+Primary Stage 2 skill currently available:
+- `akka-entity-type-selection` — choose between Event Sourced Entity and Key Value Entity when you know you need state but not which state model
+
+### Stage 3: Focused component implementation
+Use this stage only after the solution shape is already clear enough to generate code.
+
+Stage 3 is the family of focused implementation skills for:
+- entities
+- workflows
+- views
+- consumers
+- timed actions
+- endpoints
+- agents
+
+Not every task starts at Stage 3.
+If all you have is a requirements artifact, start at Stage 1.
+If you already know you need state but still need to choose the entity style, start at Stage 2.
+Move to Stage 3 when the architecture is settled enough to write code and tests.
+
 Primary flow:
 1. start from a PDR, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input
-2. decompose that input into the right Akka component set
-3. load only the focused implementation skills needed for the chosen components
+2. use Stage 1 to decompose that input into the right Akka component set
+3. use Stage 2 when a focused architecture decision is still unresolved
+4. use Stage 3 to load only the implementation skills needed for the chosen components
 
-Current local suites:
-- Solution decomposition
+Current local Stage 3 suites:
 - Agents
 - Event Sourced Entities
 - Key Value Entities
@@ -20,10 +53,10 @@ Current local suites:
 - gRPC Endpoints
 - MCP Endpoints
 
-If you have high-level requirements, a prompt, or a specification file and do not yet know the Akka component set, start with:
+If you have high-level requirements, a prompt, or a specification file and do not yet know the Akka component set, start with Stage 1:
 - `akka-solution-decomposition`
 
-If the task already clearly needs a stateful component but you have not yet chosen the entity type, start with:
+If the task already clearly needs a stateful component but you have not yet chosen the entity type, start with Stage 2:
 - `akka-entity-type-selection`
 
 You can also consult the comparison/reference files:

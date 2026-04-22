@@ -27,10 +27,44 @@ It is a **requirements-first system for AI coding agents** that need to start fr
 The primary usage flow is:
 1. read a high-level input
 2. decompose it into the right Akka components and boundaries
-3. route to the focused skills needed for each implementation task
-4. generate code and tests component by component
+3. resolve any focused architecture decisions that are still open
+4. route to the focused skills needed for each implementation task
+5. generate code and tests component by component
 
 The component-family skills in `skills/` are therefore **downstream implementation assets**, not the only front door.
+
+## Visible 3-stage skill model
+
+This repository uses a visible 3-stage routing model:
+
+### Stage 1: Intent and architecture
+Start here when the input is still a PDR, requirements doc, user story, process description, API sketch, UI brief, or other high-level specification.
+
+Primary Stage 1 skill:
+- `skills/akka-solution-decomposition/SKILL.md`
+
+### Stage 2: Structural decisions
+Use this stage when the high-level shape is partly known, but one important architecture choice is still unresolved.
+
+Primary Stage 2 skill:
+- `skills/akka-entity-type-selection/SKILL.md`
+
+### Stage 3: Focused component implementation
+Use this stage when the architecture is already clear enough to write code and tests.
+
+Stage 3 includes the focused implementation skill families for:
+- entities
+- workflows
+- views
+- consumers
+- timed actions
+- endpoints
+- agents
+
+Not every task starts at Stage 3.
+If all you have is a requirements artifact, start at Stage 1.
+If you already know you need state but have not yet chosen between Event Sourced Entity and Key Value Entity, start at Stage 2.
+Move to Stage 3 only when planning has narrowed the task to concrete component work.
 
 The repository exists to make that workflow efficient for AI agents through:
 - small, focused skills
@@ -47,7 +81,8 @@ A useful mental model is:
 
 ### 1. Source skill library: `skills/`
 Agent-routing and implementation skills for:
-- Solution decomposition
+- Stage 1 solution decomposition
+- Stage 2 structural decision support, including entity type selection
 - Agents
 - Event Sourced Entities
 - Key Value Entities
@@ -59,10 +94,10 @@ Agent-routing and implementation skills for:
 - gRPC endpoints
 - MCP endpoints
 
-These skills are meant to support a staged flow:
-- start from requirements or specification input
-- decompose into the right Akka architecture
-- load only the focused implementation skills that match the chosen components
+These skills are meant to support the same staged flow used throughout this repository:
+- Stage 1: start from requirements or specification input
+- Stage 2: resolve focused structural decisions that are still open
+- Stage 3: load only the focused implementation skills that match the chosen components
 
 If you are using this repository as a pack source or reference library, start with:
 - `skills/README.md`
