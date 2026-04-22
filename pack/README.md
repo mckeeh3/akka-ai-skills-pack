@@ -6,17 +6,24 @@ This directory defines the installable packaging model for the Akka AI skills an
 
 This pack intentionally includes:
 - `skills/**`
+- selected pack-facing docs under `docs/**`
 - reference examples exported from `src/**`
 - pack manifests
 - installer scripts
+- a pack-facing `AGENTS.md` that is installed as `<agents-root>/AGENTS.md`
 
 The installable pack always includes the full currently packaged skill library, shared references, and exported examples.
 There is no bundle selection during install.
 
 This pack intentionally does **not** include:
 - `akka-context/**`
+- the repository-internal maintainer guidance files from the repo root
 
 `akka-context` is kept in this repository only as a maintainer/reference input. Installed packs must not depend on local `akka-context` files being present.
+
+The installed pack uses `pack/AGENTS.md` as the source for `<agents-root>/AGENTS.md`.
+It also uses `pack/EXAMPLES-README.md` as the source for `<agents-root>/resources/examples/java/README.md`.
+Those installed files are for pack users and are distinct from the repository-internal maintainer guidance files.
 
 ## Install target layout
 
@@ -29,6 +36,16 @@ Installed layout:
 
 ```text
 <agents-root>/
+  AGENTS.md
+  docs/
+    agent-coverage-matrix.md
+    prd-to-akka-flow.md
+    timer-pattern-selection.md
+    workflow-endpoint-pattern.md
+    examples/
+      purchase-request-prd.md
+      purchase-request-solution-plan.md
+    ...
   manifests/
     akka-ai-skills-pack.yaml
   resources/
@@ -85,6 +102,11 @@ to:
 ```text
 ../../resources/examples/java/src/main/java/com/example/application/ShoppingCartEntity.java
 ```
+
+### Repo-internal guidance rewrite
+
+Installed skill files must not reference repository-internal maintainer guidance files from the source repository.
+When needed, repo-internal `AGENTS.md` references should be rewritten to the installed `<agents-root>/AGENTS.md` guidance file.
 
 ### Akka docs reference rewrite
 

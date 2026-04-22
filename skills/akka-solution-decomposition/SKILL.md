@@ -5,7 +5,7 @@ description: Decompose high-level requirements, prompts, or specification files 
 
 # Akka Solution Decomposition
 
-Use this as the top-level starting skill when the task begins from requirements rather than from a fixed Akka component type.
+Use this as the top-level starting skill when the task begins from high-level intent rather than from a fixed Akka component type.
 
 ## Goal
 
@@ -32,6 +32,7 @@ Use this skill when the input is one or more of:
 - a business process description
 - an API sketch or contract draft
 - a UI brief
+- a feature request or change request
 - a filename or path containing requirements or specifications
 
 If the user provides a filename or path:
@@ -42,10 +43,10 @@ If the user provides a filename or path:
 ## Required reading
 
 Read these first if present:
-- `../../../CONTEXT-WARMUP.md`
-- `../../../AGENTS.md`
-- `../../../skills/README.md`
-- `../../../docs/agent-coverage-matrix.md`
+- `../../../CONTEXT-WARMUP.md` for repo mental model and session bootstrap
+- `../../../AGENTS.md` for authoritative project rules and Akka coding constraints
+- `../../../skills/README.md` for local routing across skill families
+- `../../../docs/agent-coverage-matrix.md` when the task is agent-related
 - `../references/akka-entity-comparison.md`
 - `../../../docs/workflow-endpoint-pattern.md`
 - `../../../docs/timer-pattern-selection.md`

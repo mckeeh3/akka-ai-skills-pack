@@ -177,13 +177,14 @@ It is **not bundled into installable distributions**.
 This repository contains several guidance files with different roles:
 - `README.md` - top-level repository overview and the primary human-facing build/install guide
 - `CONTEXT-WARMUP.md` - development-only session bootstrap and context warmup for AI coding agents contributing changes to this repository
-- `AGENTS.md` - authoritative project rules, Akka implementation constraints, and testing expectations
+- `AGENTS.md` - repository-internal authoritative project rules, Akka implementation constraints, and testing expectations
+- `pack/AGENTS.md` - source file for the installed pack-facing `.agents/AGENTS.md` guidance
 - `skills/README.md` - skill routing map across all local skill suites
 - `pack/README.md` - install target layout, packaging model, and path rewrite rules
 - `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a pack is built locally
 
-If your goal is to build, install, or consume the resource pack, use this `README.md`, `pack/README.md`, and the installed `skills/...` files.
-Only open `CONTEXT-WARMUP.md` and `AGENTS.md` if you are starting a new AI-agent development session for work on this repository.
+If your goal is to build, install, or consume the resource pack, use this `README.md`, `pack/README.md`, the installed `.agents/AGENTS.md`, and the installed `skills/...` files.
+Only open `CONTEXT-WARMUP.md` and the repository root `AGENTS.md` if you are starting a new AI-agent development session for work on this repository.
 
 ## Top-level repository layout
 
@@ -255,24 +256,31 @@ Current manifest version:
 
 The distribution includes:
 - `skills/**`
+- selected pack-facing docs under `docs/**`
 - selected pack metadata
 - exported examples from `src/main` and `src/test`
 - the repository `pom.xml`
 - this `README.md`
 - `install.sh`
 - `LICENSE`
+- `pack/AGENTS.md` as the source for the installed `.agents/AGENTS.md` guidance file
+- `pack/EXAMPLES-README.md` as the source for the installed `.agents/resources/examples/java/README.md` file
 
 The build also generates a versioned GitHub release installer script alongside the archive:
 - `dist/install-akka-ai-skills-pack-0.1.0.sh`
 
 Source skills are authored under `skills/` in this repository and installed into `.agents/skills/` by the installer.
 
-The distribution intentionally excludes:
+The distribution intentionally excludes the repository-internal maintainer-only guidance files from the installed pack experience, including:
 - `akka-context/**`
+- the repository root `AGENTS.md`
+- `CONTEXT-WARMUP.md`
 
 During installation, skill files are rewritten so they:
 - point to installed example paths under `.agents/resources/examples/java/...`
 - no longer contain broken repo-local `akka-context/...` references
+- no longer contain broken references to repository-internal `CONTEXT-WARMUP.md`
+- use the installed `.agents/AGENTS.md` guidance file where appropriate
 - instead reference official Akka SDK docs generically
 
 The installer always installs the full packaged skill library, shared references, and exported examples.
@@ -386,6 +394,8 @@ Before building, the script checks that key source inputs exist, including:
 - `README.md`
 - `LICENSE`
 - `pack/README.md`
+- `pack/AGENTS.md`
+- `pack/EXAMPLES-README.md`
 - `pack/manifest.schema.yaml`
 - every skill directory having a `SKILL.md`
 
@@ -444,6 +454,8 @@ bash install.sh \
 ```
 
 This installs into:
+- `/path/to/your/project/.agents/AGENTS.md`
+- `/path/to/your/project/.agents/docs`
 - `/path/to/your/project/.agents/skills`
 - `/path/to/your/project/.agents/manifests`
 - `/path/to/your/project/.agents/resources/examples/java`
@@ -455,6 +467,8 @@ bash install.sh --location global
 ```
 
 This installs into:
+- `~/.agents/AGENTS.md`
+- `~/.agents/docs`
 - `~/.agents/skills`
 - `~/.agents/manifests`
 - `~/.agents/resources/examples/java`
@@ -487,6 +501,13 @@ After installation, the target directory looks like this:
 
 ```text
 .agents/
+├── AGENTS.md
+├── docs/
+│   ├── agent-coverage-matrix.md
+│   ├── prd-to-akka-flow.md
+│   ├── timer-pattern-selection.md
+│   ├── workflow-endpoint-pattern.md
+│   └── examples/
 ├── manifests/
 │   └── akka-ai-skills-pack.yaml
 ├── resources/

@@ -2,12 +2,15 @@
 
 This directory contains AI-focused skills for turning high-level requirements into the right Akka Java SDK solution, then turning that solution plan into the downstream implementation phase for concrete component code, tests, and related delivery assets.
 
+These skills are primarily an **internal routing layer for the harness**.
+Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
+
 ## Intent-driven usage flow
 
 Use the skills in this order:
 
-1. read the requirements, PRD, spec, prompt, API sketch, or UI brief
-2. use Stage 1 decomposition via `akka-solution-decomposition`
+1. read the requirements, PRD, spec, prompt, API sketch, UI brief, feature request, or change request
+2. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear
 3. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
 4. move to Stage 3 to load only the focused implementation skills for the chosen components
 5. use the accepted solution plan as the implementation contract for the downstream coding phase
@@ -19,7 +22,7 @@ Short reusable version:
 
 ## Visible 3-stage skill model
 
-Use the skill library as a 3-stage hierarchy:
+Use the skill library as a visible 3-stage hierarchy:
 
 ### Stage 1: Intent and architecture
 Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape.

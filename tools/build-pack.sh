@@ -26,7 +26,7 @@ Options:
 
 Notes:
   - akka-context is intentionally excluded from the bundle
-  - the bundle contains install.sh, manifests, skills, and reference examples
+  - the bundle contains install.sh, manifests, selected pack-facing docs, skills, a pack-facing AGENTS source file, and reference examples
   - installed skill rewriting still happens at install time via install.sh
   - a versioned GitHub release installer script is generated alongside the archive
 EOF
@@ -74,9 +74,12 @@ This is a build artifact for the Akka AI skills pack.
 ## Included
 - install.sh
 - pack manifests
+- selected pack-facing docs under docs/
+- pack-facing AGENTS guidance source under pack/AGENTS.md
+- example-set README source under pack/EXAMPLES-README.md
 - repository skills under skills/
 - Akka SDK Java reference examples exported from src/
-- repository pom.xml and README.md for the example set
+- repository pom.xml and example-set README
 
 ## Excluded
 - akka-context/
@@ -158,6 +161,22 @@ PY
   chmod +x "$INSTALLER_PATH"
 }
 
+PACK_DOC_FILES=(
+  docs/agent-coverage-matrix.md
+  docs/agent-runtime-state-reference.md
+  docs/consumer-reference.md
+  docs/examples/purchase-request-prd.md
+  docs/examples/purchase-request-solution-plan.md
+  docs/intent-driven-usage-flow.md
+  docs/prd-to-akka-flow.md
+  docs/service-to-service-consumers.md
+  docs/service-to-service-views.md
+  docs/solution-plan-to-implementation-queue.md
+  docs/timer-pattern-selection.md
+  docs/web-ui-pattern-selection.md
+  docs/workflow-endpoint-pattern.md
+)
+
 validate_source_tree() {
   local required_paths=(
     "$REPO_ROOT/skills/README.md"
@@ -166,6 +185,8 @@ validate_source_tree() {
     "$REPO_ROOT/README.md"
     "$REPO_ROOT/LICENSE"
     "$REPO_ROOT/pack/README.md"
+    "$REPO_ROOT/pack/AGENTS.md"
+    "$REPO_ROOT/pack/EXAMPLES-README.md"
     "$REPO_ROOT/pack/manifest.schema.yaml"
     "$INSTALLER_TEMPLATE"
   )
@@ -178,6 +199,10 @@ validate_source_tree() {
     [[ -n "$skill_dir" ]] || continue
     [[ -f "$skill_dir/SKILL.md" ]] || fail "Skill directory missing SKILL.md: $skill_dir"
   done < <(find "$REPO_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
+
+  for path in "${PACK_DOC_FILES[@]}"; do
+    [[ -f "$REPO_ROOT/$path" ]] || fail "Required pack doc not found: $REPO_ROOT/$path"
+  done
 }
 
 copy_tree() {
@@ -275,6 +300,12 @@ cp "$REPO_ROOT/install.sh" "$STAGE_DIR/install.sh"
 cp "$REPO_ROOT/pom.xml" "$STAGE_DIR/pom.xml"
 cp "$REPO_ROOT/README.md" "$STAGE_DIR/README.md"
 cp "$REPO_ROOT/LICENSE" "$STAGE_DIR/LICENSE"
+
+mkdir -p "$STAGE_DIR/docs"
+for path in "${PACK_DOC_FILES[@]}"; do
+  mkdir -p "$STAGE_DIR/$(dirname "$path")"
+  cp "$REPO_ROOT/$path" "$STAGE_DIR/$path"
+done
 
 rm -rf "$STAGE_DIR/akka-context"
 
