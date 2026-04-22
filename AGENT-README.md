@@ -1,4 +1,4 @@
-# SESSION-README
+# AGENT-README
 
 Use this file as a **startup instruction set** for AI coding agents working in this repository.
 

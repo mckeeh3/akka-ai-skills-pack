@@ -1,6 +1,11 @@
 # Akka Component Skills
 
-This directory contains AI-focused skills for generating and reviewing Akka Java SDK component code.
+This directory contains AI-focused skills for turning high-level requirements into the right Akka Java SDK solution, then generating and reviewing the concrete component code.
+
+Primary flow:
+1. start from a PDR, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input
+2. decompose that input into the right Akka component set
+3. load only the focused implementation skills needed for the chosen components
 
 Current local suites:
 - Solution decomposition

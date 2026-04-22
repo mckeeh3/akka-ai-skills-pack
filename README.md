@@ -1,6 +1,12 @@
 # Akka AI Resource Pack
 
-This repository packages **Akka SDK knowledge for AI coding agents**.
+This repository packages **Akka SDK knowledge for AI coding agents** into an **intent-driven flow**.
+
+Its primary job is to help an agent go from:
+- **PDR, requirements doc, user story, process description, API sketch, or UI brief**
+- to **Akka solution decomposition**
+- to **focused skill selection**
+- to **code and test generation**
 
 It combines:
 - **agent-optimized skills** under `skills/`
@@ -16,7 +22,17 @@ When installed into a target project or user profile, those files land under `.a
 
 This is **not just an Akka sample service** and **not just a docs mirror**.
 
-The project exists to translate Akka SDK concepts into forms that AI coding agents can use efficiently:
+It is a **requirements-first system for AI coding agents** that need to start from high-level intent and derive the correct Akka architecture before coding.
+
+The primary usage flow is:
+1. read a high-level input
+2. decompose it into the right Akka components and boundaries
+3. route to the focused skills needed for each implementation task
+4. generate code and tests component by component
+
+The component-family skills in `skills/` are therefore **downstream implementation assets**, not the only front door.
+
+The repository exists to make that workflow efficient for AI agents through:
 - small, focused skills
 - predictable naming and routing
 - example code organized by component type
@@ -25,7 +41,7 @@ The project exists to translate Akka SDK concepts into forms that AI coding agen
 
 A useful mental model is:
 - `akka-context/` explains Akka for humans and serves as a semantic reference
-- this repository repackages that knowledge for **AI-agent-oriented implementation workflows**
+- this repository repackages that knowledge for **requirements-to-architecture-to-code workflows for AI agents**
 
 ## What is included
 
@@ -42,6 +58,11 @@ Agent-routing and implementation skills for:
 - HTTP endpoints
 - gRPC endpoints
 - MCP endpoints
+
+These skills are meant to support a staged flow:
+- start from requirements or specification input
+- decompose into the right Akka architecture
+- load only the focused implementation skills that match the chosen components
 
 If you are using this repository as a pack source or reference library, start with:
 - `skills/README.md`
