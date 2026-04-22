@@ -33,6 +33,20 @@ The primary usage flow is:
 
 The component-family skills in `skills/` are therefore **downstream implementation assets**, not the only front door.
 
+## Intent-driven usage flow
+
+Use the repository in this order:
+
+1. **Read the requirements input first** — start from the PDR, spec, user story, API sketch, UI brief, or other high-level artifact.
+2. **Decompose the solution before coding** — use `skills/akka-solution-decomposition/SKILL.md` to identify the needed Akka components and boundaries.
+3. **Resolve any remaining structural choices** — use focused decision help such as `skills/akka-entity-type-selection/SKILL.md` when one architecture choice is still open.
+4. **Load only the focused implementation skills** — use `skills/README.md` to route to the exact Stage 3 skills for entities, workflows, views, consumers, endpoints, timed actions, or agents.
+5. **Generate code and tests last** — implement component by component using the selected skills plus the example patterns in `src/` and focused references in `docs/`.
+
+**Important:** code generation is a downstream phase. Do **not** start writing Akka components until decomposition is complete and any key structural decisions are resolved.
+
+For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md`.
+
 ## Visible 3-stage skill model
 
 This repository uses a visible 3-stage routing model:

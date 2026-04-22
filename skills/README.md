@@ -2,6 +2,19 @@
 
 This directory contains AI-focused skills for turning high-level requirements into the right Akka Java SDK solution, then generating and reviewing the concrete component code.
 
+## Intent-driven usage flow
+
+Use the skills in this order:
+
+1. read the requirements, PDR, spec, prompt, API sketch, or UI brief
+2. use Stage 1 decomposition via `akka-solution-decomposition`
+3. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
+4. move to Stage 3 to load only the focused implementation skills for the chosen components
+5. generate code and tests only after decomposition and structural selection are done
+
+Short reusable version:
+- `../docs/intent-driven-usage-flow.md`
+
 ## Visible 3-stage skill model
 
 Use the skill library as a 3-stage hierarchy:
