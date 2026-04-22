@@ -1,6 +1,6 @@
 # Akka Skill Routing Map
 
-This directory contains AI-focused skills for turning high-level requirements into the right Akka Java SDK solution, then generating and reviewing the concrete component code.
+This directory contains AI-focused skills for turning high-level requirements into the right Akka Java SDK solution, then turning that solution plan into the downstream implementation phase for concrete component code, tests, and related delivery assets.
 
 ## Intent-driven usage flow
 
@@ -10,7 +10,8 @@ Use the skills in this order:
 2. use Stage 1 decomposition via `akka-solution-decomposition`
 3. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
 4. move to Stage 3 to load only the focused implementation skills for the chosen components
-5. generate code and tests only after decomposition and structural selection are done
+5. use the accepted solution plan as the implementation contract for the downstream coding phase
+6. generate code and tests only after decomposition and structural selection are done
 
 Short reusable version:
 - `../docs/intent-driven-usage-flow.md`
@@ -35,6 +36,7 @@ Primary Stage 2 skill currently available:
 
 ### Stage 3: Focused component implementation
 Use this stage only after the solution shape is already clear enough to generate code.
+This is the downstream implementation phase driven by the accepted solution plan.
 
 Stage 3 is the family of focused implementation skills for:
 - entities
@@ -90,6 +92,13 @@ Start with:
 
 Use when the task begins from a product requirement, user story, process description, API sketch, UI brief, or a filename containing specifications and you need to decide the Akka component set before coding.
 
+The output of this skill is not the final answer by itself.
+It is the implementation contract for downstream work:
+- it identifies the chosen components
+- it defines implementation order
+- it maps each component to the exact code-generation and test-generation skills to load next
+- it can also route endpoint generation, web UI generation, and documentation/snippet generation when those are part of the task
+
 This skill routes to:
 - `akka-entity-type-selection` for EventSourcedEntity vs KeyValueEntity decisions
 - `akka-workflows` for durable multi-step orchestration
@@ -100,6 +109,18 @@ This skill routes to:
 - `akka-grpc-endpoints` for protobuf-first service APIs
 - `akka-mcp-endpoints` for LLM-facing tools, resources, and prompts
 - `akka-agents` when the solution genuinely needs LLM-driven behavior
+
+## Planning-to-implementation handoff
+
+Once a solution plan is accepted, treat it as the work queue for coding:
+1. take the chosen components in implementation order
+2. load only the Stage 3 skills named for the next component
+3. generate that component's code and its corresponding tests
+4. repeat for each remaining component
+5. finish any downstream endpoint, web UI, or documentation/snippet work called out by the plan
+
+Decomposition is complete only when it enables focused implementation work with low ambiguity.
+For a lightweight template, see `../docs/solution-plan-to-implementation-queue.md`.
 
 ## Agent skills
 

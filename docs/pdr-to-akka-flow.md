@@ -35,7 +35,9 @@ then produce an Akka solution plan with:
 ```
 
 ### As a coding handoff
-Once the solution plan is accepted, load only the Stage 3 skills named in the plan and generate code component by component.
+Once the solution plan is accepted, treat it as the implementation contract.
+Load only the Stage 3 skills named in the plan and generate code component by component, with corresponding tests for each component family.
+For a lightweight queue template, see `solution-plan-to-implementation-queue.md`.
 
 ## What the example demonstrates
 

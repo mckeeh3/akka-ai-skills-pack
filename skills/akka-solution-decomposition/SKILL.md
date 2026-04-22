@@ -15,6 +15,7 @@ Generate or review an Akka solution plan that:
 - makes write model, read model, orchestration, timing, integration, and edge concerns explicit
 - routes to the smallest relevant local skill set
 - gives a safe implementation order before code generation starts
+- acts as the implementation contract for the downstream coding phase
 
 ## Supported inputs
 
@@ -87,6 +88,14 @@ Before any coding, produce a component plan with these sections:
 6. Open questions and assumptions
 7. Recommended implementation order
 8. Required tests
+
+Treat sections 5, 7, and 8 as the implementation handoff.
+The plan is not complete if it only names components.
+It must also tell the downstream implementation phase:
+- which skills to load for code generation
+- which skills to load for test generation
+- what order to implement the components
+- whether endpoint generation, web UI generation, or documentation/snippet generation belong downstream
 
 ## Decomposition workflow
 
@@ -232,11 +241,16 @@ Choose one or more of:
 ## Routing rules
 
 After decomposition, load the minimal next skill set.
+The routing output should feed code generation directly, not serve as a purely informational appendix.
+For every chosen component, list the implementation skills and the corresponding testing skill when one exists.
 
 ### If the core decision is still entity type
 
 Load:
 - `akka-entity-type-selection`
+
+This is still part of the planning handoff, not the final coding step.
+Only move into entity code generation after this decision is resolved.
 
 ### If the plan includes event-sourced state
 
@@ -383,6 +397,17 @@ Then add only what is needed:
 - `akka-agent-runtime-state`
 - `akka-agent-testing`
 
+## Planning-to-implementation handoff
+
+After producing the solution plan, convert it into a concrete work queue:
+1. take the recommended implementation order
+2. for each component in that order, load only the named implementation skills
+3. generate that component's code before moving to the next major component
+4. generate the corresponding tests for that component family
+5. generate endpoints, web UI, or documentation/snippets when the plan explicitly includes them
+
+Decomposition has succeeded only when a future agent can follow the plan mechanically into focused implementation work.
+
 ## Standard output template
 
 Use this exact response shape whenever the task starts from requirements:
@@ -458,6 +483,7 @@ Before moving from planning to coding, verify:
 - edge and API surfaces are explicit
 - required tests are listed for each component family
 - the next skills to load are listed in implementation order
+- the plan clearly feeds the downstream implementation phase instead of stopping at decomposition
 - open questions and assumptions are called out separately
 
 ## Response style
@@ -467,5 +493,6 @@ When answering:
 - then list the proposed Akka components
 - justify each component in one line
 - list the exact next skills to load
+- make the implementation order read like a downstream coding handoff
 - state open questions before coding
 - do not jump into code until the component plan is explicit

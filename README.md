@@ -28,10 +28,11 @@ The primary usage flow is:
 1. read a high-level input
 2. decompose it into the right Akka components and boundaries
 3. resolve any focused architecture decisions that are still open
-4. route to the focused skills needed for each implementation task
+4. turn that plan into an implementation contract and route to the focused skills needed for each implementation task
 5. generate code and tests component by component
 
 The component-family skills in `skills/` are therefore **downstream implementation assets**, not the only front door.
+The decomposition output is not the final deliverable by itself; it is the implementation contract that feeds the downstream coding phase.
 
 ## Intent-driven usage flow
 
@@ -40,13 +41,15 @@ Use the repository in this order:
 1. **Read the requirements input first** — start from the PDR, spec, user story, API sketch, UI brief, or other high-level artifact.
 2. **Decompose the solution before coding** — use `skills/akka-solution-decomposition/SKILL.md` to identify the needed Akka components and boundaries.
 3. **Resolve any remaining structural choices** — use focused decision help such as `skills/akka-entity-type-selection/SKILL.md` when one architecture choice is still open.
-4. **Load only the focused implementation skills** — use `skills/README.md` to route to the exact Stage 3 skills for entities, workflows, views, consumers, endpoints, timed actions, or agents.
+4. **Load only the focused implementation skills** — use `skills/README.md` to route from the accepted solution plan to the exact Stage 3 skills for entities, workflows, views, consumers, endpoints, timed actions, or agents.
 5. **Generate code and tests last** — implement component by component using the selected skills plus the example patterns in `src/` and focused references in `docs/`.
 
 **Important:** code generation is a downstream phase. Do **not** start writing Akka components until decomposition is complete and any key structural decisions are resolved.
+Treat the accepted solution plan as the handoff artifact for coding: each chosen component should map to corresponding implementation skills, test-generation skills, and any endpoint, web UI, or documentation/snippet work that belongs downstream.
 
 For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md`.
 For a concrete requirements-to-plan example, see `docs/pdr-to-akka-flow.md` and `docs/examples/purchase-request-pdr.md`.
+For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implementation-queue.md`.
 
 ## Visible 3-stage skill model
 
@@ -66,7 +69,7 @@ Primary Stage 2 skill:
 - `skills/akka-entity-type-selection/SKILL.md`
 
 ### Stage 3: Focused component implementation
-Use this stage when the architecture is already clear enough to write code and tests.
+Use this stage when the architecture is already clear enough to write code and tests from the solution plan's implementation contract.
 
 Stage 3 includes the focused implementation skill families for:
 - entities

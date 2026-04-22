@@ -24,6 +24,7 @@ Use the repository in this sequence:
    - read only the Stage 3 skills that match the chosen components
 
 5. **Generate code and tests last**
+   - treat the accepted solution plan as the implementation contract for downstream work
    - implement component by component
    - use `../src/` examples and focused `../docs/` references as pattern support
 
@@ -38,3 +39,7 @@ For a small canonical requirements-to-plan example, see:
 
 Code generation is a downstream phase.
 Do not start writing Akka components until decomposition is complete and any key structural decisions are resolved.
+Use the accepted plan to drive the coding work queue.
+
+For a lightweight handoff template, see:
+- `solution-plan-to-implementation-queue.md`

@@ -13,10 +13,11 @@ Default repository story:
 1. read a high-level input such as a PDR, requirements doc, user story, process description, API sketch, or UI brief
 2. use Stage 1 to decompose it into the right Akka architecture
 3. use Stage 2 when a focused architecture decision is still unresolved
-4. use Stage 3 to route to the focused implementation skills needed for each part of the solution
+4. use Stage 3 to turn the accepted plan into a focused implementation queue and load the exact skills needed for each part of the solution
 5. generate code and tests component by component
 
 Component-family skills are important, but they are **downstream implementation assets**, not the only front door.
+A decomposition result is only successful when it clearly feeds the downstream implementation phase.
 
 ## Visible 3-stage skill model
 
@@ -85,6 +86,13 @@ prefer the **agent-friendly structure**.
 ## 2. Core operating principle
 
 Decompose before implementation. Optimize for agents, not humans.
+
+Treat the decomposition output as an implementation contract, not as a stopping point.
+A good plan should make the downstream coding phase mechanical:
+- each chosen component routes to the exact implementation skills
+- each chosen component routes to corresponding test-generation skills
+- endpoint, web UI, and documentation/snippet work are called out when they belong downstream
+- implementation order becomes the coding work queue
 
 That means favor:
 - requirements-first routing
@@ -445,9 +453,11 @@ At the start of a new session:
 7. If the task seems stateful but the broader component set is still unknown, still start with Stage 1.
 8. Use Stage 2 via `akka-entity-type-selection` only when the task is already narrowed to a stateful core and the remaining open question is Event Sourced Entity vs Key Value Entity.
 9. Otherwise, check whether the task is already in Stage 3 and whether a focused local implementation skill already exists.
-10. Read the smallest relevant local skill set first.
-11. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
-12. Prefer local agent-optimized patterns when generating code or new repository guidance.
+10. If Stage 1 produced a solution plan, use that plan as the implementation contract for the downstream coding phase.
+11. Map each chosen component to the smallest relevant implementation and testing skill set.
+12. Read the smallest relevant local skill set first.
+13. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
+14. Prefer local agent-optimized patterns when generating code or new repository guidance.
 
 ---
 
