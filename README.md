@@ -31,6 +31,7 @@ A useful mental model is:
 
 ### 1. Source skill library: `skills/`
 Agent-routing and implementation skills for:
+- Solution decomposition
 - Agents
 - Event Sourced Entities
 - Key Value Entities
@@ -44,6 +45,7 @@ Agent-routing and implementation skills for:
 
 If you are using this repository as a pack source or reference library, start with:
 - `skills/README.md`
+- `skills/akka-solution-decomposition/SKILL.md` when the task begins from high-level requirements or a specification file
 - `pack/README.md` (for bundle/install layout)
 - this `README.md` for repository-level build and install flow
 

@@ -28,7 +28,7 @@ dist/
 #local db
 db.mv.db
 
-# akka-context/
+akka-context/
 .claude/settings.local.json
 
 

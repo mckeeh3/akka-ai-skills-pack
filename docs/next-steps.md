@@ -226,7 +226,8 @@ This is a high-value cross-cutting layer: helping agents choose the right Akka b
 
 ### Suggested artifacts
 
-- extend `skills/akka-entity-type-selection/`
+- add `skills/akka-solution-decomposition/`
+- keep `skills/akka-entity-type-selection/` as the narrower stateful-core sub-decision
 - add `docs/interface-selection.md`
 - add `docs/web-delivery-selection.md`
 

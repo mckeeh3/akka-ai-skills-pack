@@ -4,7 +4,7 @@ Use this file as a **startup instruction set** for AI coding agents working in t
 
 Also read:
 - `AGENTS.md` for detailed project rules and Akka coding constraints
-- `skills/README.md` for local task routing
+- `skills/README.md` for local task routing, especially requirements-first decomposition through `akka-solution-decomposition`
 - `docs/agent-coverage-matrix.md` when the task touches agent coverage, gaps, or local example selection
 
 ---
@@ -243,6 +243,7 @@ A skill should help answer:
 
 Design expectations for skills:
 - one broad entry skill per area
+- one requirements-first decomposition skill for solution architecture selection
 - smaller companion skills for narrow topics
 - explicit "when to use" guidance
 - exact file references where possible
@@ -286,9 +287,9 @@ They should demonstrate:
 ## 8. Current repository status
 
 Current footprint during this review:
-- `86` skill directories under `skills`
-- `118` Java source files under `src/main/java`
-- `85` test files under `src/test/java`
+- `88` skill directories under `skills`
+- `122` Java source files under `src/main/java`
+- `89` test files under `src/test/java`
 
 Current strongest local example areas:
 - focused agent component patterns
@@ -381,15 +382,18 @@ At the start of a new session:
 3. Read `skills/README.md`.
 4. If the task is agent-related, also read `docs/agent-coverage-matrix.md`.
 5. Classify the task before choosing files:
+   - requirements decomposition / architecture selection
    - component implementation
    - testing
    - docs/snippet generation
    - cross-cutting topic
    - repo structure / skill design
-6. Check whether a focused local skill already exists.
-7. Read the smallest relevant local skill set first.
-8. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
-9. Prefer local agent-optimized patterns when generating code or new repository guidance.
+6. If the task starts from high-level requirements, a prompt, or a specification file and the component set is not yet known, start with `akka-solution-decomposition`.
+7. If the task already clearly needs a stateful component but the entity type is still unknown, load `akka-entity-type-selection`.
+8. Otherwise, check whether a focused local skill already exists.
+9. Read the smallest relevant local skill set first.
+10. Use `akka-context/sdk/...` when you need official semantics, API confirmation, or a feature not yet well represented locally.
+11. Prefer local agent-optimized patterns when generating code or new repository guidance.
 
 ---
 

@@ -3,6 +3,7 @@
 This directory contains AI-focused skills for generating and reviewing Akka Java SDK component code.
 
 Current local suites:
+- Solution decomposition
 - Agents
 - Event Sourced Entities
 - Key Value Entities
@@ -14,7 +15,10 @@ Current local suites:
 - gRPC Endpoints
 - MCP Endpoints
 
-If you have requirements but have not yet chosen the entity type, start with:
+If you have high-level requirements, a prompt, or a specification file and do not yet know the Akka component set, start with:
+- `akka-solution-decomposition`
+
+If the task already clearly needs a stateful component but you have not yet chosen the entity type, start with:
 - `akka-entity-type-selection`
 
 You can also consult the comparison/reference files:
@@ -24,6 +28,24 @@ You can also consult the comparison/reference files:
 - `../docs/agent-runtime-state-reference.md`
 - `../docs/workflow-endpoint-pattern.md`
 - `../docs/timer-pattern-selection.md`
+
+## Solution decomposition skill
+
+Start with:
+- `akka-solution-decomposition`
+
+Use when the task begins from a product requirement, user story, process description, API sketch, UI brief, or a filename containing specifications and you need to decide the Akka component set before coding.
+
+This skill routes to:
+- `akka-entity-type-selection` for EventSourcedEntity vs KeyValueEntity decisions
+- `akka-workflows` for durable multi-step orchestration
+- `akka-views` for list/search/reporting read models
+- `akka-consumers` for async reactions, integrations, and republishing
+- `akka-timed-actions` for deadlines, reminders, and expiry
+- `akka-http-endpoints` for REST, SSE, WebSocket, static content, and browser-hosted UI
+- `akka-grpc-endpoints` for protobuf-first service APIs
+- `akka-mcp-endpoints` for LLM-facing tools, resources, and prompts
+- `akka-agents` when the solution genuinely needs LLM-driven behavior
 
 ## Agent skills
 
