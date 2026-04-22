@@ -1,4 +1,4 @@
-# Purchase request approval PDR
+# Purchase request approval PRD
 
 ## Summary
 Build an internal service for employees to submit purchase requests for software or equipment and track them through approval and fulfillment.

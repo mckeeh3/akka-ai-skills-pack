@@ -3,7 +3,7 @@
 This repository packages **Akka SDK knowledge for AI coding agents** into an **intent-driven flow**.
 
 Its primary job is to help an agent go from:
-- **PDR, requirements doc, user story, process description, API sketch, or UI brief**
+- **PRD, requirements doc, user story, process description, API sketch, or UI brief**
 - to **Akka solution decomposition**
 - to **focused skill selection**
 - to **code and test generation**
@@ -38,7 +38,7 @@ The decomposition output is not the final deliverable by itself; it is the imple
 
 Use the repository in this order:
 
-1. **Read the requirements input first** — start from the PDR, spec, user story, API sketch, UI brief, or other high-level artifact.
+1. **Read the requirements input first** — start from the PRD, spec, user story, API sketch, UI brief, or other high-level artifact.
 2. **Decompose the solution before coding** — use `skills/akka-solution-decomposition/SKILL.md` to identify the needed Akka components and boundaries.
 3. **Resolve any remaining structural choices** — use focused decision help such as `skills/akka-entity-type-selection/SKILL.md` when one architecture choice is still open.
 4. **Load only the focused implementation skills** — use `skills/README.md` to route from the accepted solution plan to the exact Stage 3 skills for entities, workflows, views, consumers, endpoints, timed actions, or agents.
@@ -48,7 +48,7 @@ Use the repository in this order:
 Treat the accepted solution plan as the handoff artifact for coding: each chosen component should map to corresponding implementation skills, test-generation skills, and any endpoint, web UI, or documentation/snippet work that belongs downstream.
 
 For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md`.
-For a concrete requirements-to-plan example, see `docs/pdr-to-akka-flow.md` and `docs/examples/purchase-request-pdr.md`.
+For a concrete requirements-to-plan example, see `docs/prd-to-akka-flow.md` and `docs/examples/purchase-request-prd.md`.
 For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implementation-queue.md`.
 
 ## Visible 3-stage skill model
@@ -56,7 +56,7 @@ For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implem
 This repository uses a visible 3-stage routing model:
 
 ### Stage 1: Intent and architecture
-Start here when the input is still a PDR, requirements doc, user story, process description, API sketch, UI brief, or other high-level specification.
+Start here when the input is still a PRD, requirements doc, user story, process description, API sketch, UI brief, or other high-level specification.
 
 Primary Stage 1 skill:
 - `skills/akka-solution-decomposition/SKILL.md`

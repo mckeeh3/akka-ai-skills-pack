@@ -20,8 +20,8 @@ Generate or review an Akka solution plan that:
 ## Supported inputs
 
 For a small canonical example of the intended output shape, see:
-- `../../../docs/pdr-to-akka-flow.md`
-- `../../../docs/examples/purchase-request-pdr.md`
+- `../../../docs/prd-to-akka-flow.md`
+- `../../../docs/examples/purchase-request-prd.md`
 - `../../../docs/examples/purchase-request-solution-plan.md`
 
 

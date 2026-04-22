@@ -1,4 +1,4 @@
-# PDR-to-Akka flow
+# PRD-to-Akka flow
 
 Use this mini-example set when you want a concrete pattern for the repository's intended workflow:
 
@@ -10,7 +10,7 @@ Use this mini-example set when you want a concrete pattern for the repository's 
 ## Canonical example pair
 
 Requirements input:
-- `examples/purchase-request-pdr.md`
+- `examples/purchase-request-prd.md`
 
 Resulting solution plan:
 - `examples/purchase-request-solution-plan.md`
@@ -18,13 +18,13 @@ Resulting solution plan:
 ## How to use the pair
 
 ### As a learning example
-Read the PDR first, then compare it with the solution plan.
+Read the PRD first, then compare it with the solution plan.
 
 ### As a reusable prompt pattern
 Use a prompt like:
 
 ```text
-read docs/examples/purchase-request-pdr.md,
+read docs/examples/purchase-request-prd.md,
 then produce an Akka solution plan with:
 - capability summary
 - chosen components

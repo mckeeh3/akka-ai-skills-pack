@@ -98,7 +98,7 @@ Before starting code generation, verify that the solution plan already answers:
 ## Related docs
 
 - `intent-driven-usage-flow.md`
-- `pdr-to-akka-flow.md`
+- `prd-to-akka-flow.md`
 - `examples/purchase-request-solution-plan.md`
 - `../skills/README.md`
 - `../skills/akka-solution-decomposition/SKILL.md`

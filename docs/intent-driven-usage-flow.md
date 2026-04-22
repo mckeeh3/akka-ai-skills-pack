@@ -3,7 +3,7 @@
 Use the repository in this sequence:
 
 1. **Read the input artifact first**
-   - PDR
+   - PRD
    - requirements doc
    - user story
    - process description
@@ -31,8 +31,8 @@ Use the repository in this sequence:
 ## Concrete example
 
 For a small canonical requirements-to-plan example, see:
-- `pdr-to-akka-flow.md`
-- `examples/purchase-request-pdr.md`
+- `prd-to-akka-flow.md`
+- `examples/purchase-request-prd.md`
 - `examples/purchase-request-solution-plan.md`
 
 ## Rule of thumb

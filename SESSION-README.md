@@ -10,7 +10,7 @@ Also read:
 Treat this repository as a **requirements-first, intent-driven Akka pack for AI coding agents**.
 
 Default repository story:
-1. read a high-level input such as a PDR, requirements doc, user story, process description, API sketch, or UI brief
+1. read a high-level input such as a PRD, requirements doc, user story, process description, API sketch, or UI brief
 2. decompose it into the right Akka architecture
 3. route to the focused skills needed for each part of the solution
 4. generate code and tests component by component

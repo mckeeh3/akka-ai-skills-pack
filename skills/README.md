@@ -6,7 +6,7 @@ This directory contains AI-focused skills for turning high-level requirements in
 
 Use the skills in this order:
 
-1. read the requirements, PDR, spec, prompt, API sketch, or UI brief
+1. read the requirements, PRD, spec, prompt, API sketch, or UI brief
 2. use Stage 1 decomposition via `akka-solution-decomposition`
 3. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
 4. move to Stage 3 to load only the focused implementation skills for the chosen components
@@ -15,14 +15,14 @@ Use the skills in this order:
 
 Short reusable version:
 - `../docs/intent-driven-usage-flow.md`
-- `../docs/pdr-to-akka-flow.md`
+- `../docs/prd-to-akka-flow.md`
 
 ## Visible 3-stage skill model
 
 Use the skill library as a 3-stage hierarchy:
 
 ### Stage 1: Intent and architecture
-Start here when you have a PDR, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape.
+Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape.
 
 Primary Stage 1 entry skill:
 - `akka-solution-decomposition`
@@ -55,7 +55,7 @@ Use Stage 2 only when the task is already narrowed to a stateful core and you st
 Move to Stage 3 when the architecture is settled enough to write code and tests.
 
 Primary flow:
-1. start from a PDR, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input
+1. start from a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input
 2. use Stage 1 to decompose that input into the right Akka component set
 3. use Stage 2 when a focused architecture decision is still unresolved
 4. use Stage 3 to load only the implementation skills needed for the chosen components

@@ -2,7 +2,7 @@
 
 ## Inputs
 - source:
-  - `docs/examples/purchase-request-pdr.md`
+  - `docs/examples/purchase-request-prd.md`
 - assumptions:
   - reminder delivery itself can be delegated to downstream infrastructure after the service emits the reminder trigger
   - procurement handoff can be modeled as publishing to a topic rather than making a synchronous external API call
@@ -25,12 +25,12 @@
 - `HTTP endpoint`: `PurchaseRequestEndpoint` — internal REST surface for submit, approve, reject, get, and list operations
 
 ## Why each component exists
-- `PurchaseRequestEntity`: the PDR explicitly requires full lifecycle history and auditability, which makes event sourcing the best fit over latest-state-only storage
+- `PurchaseRequestEntity`: the PRD explicitly requires full lifecycle history and auditability, which makes event sourcing the best fit over latest-state-only storage
 - `PurchaseRequestApprovalWorkflow`: the approval path is a durable multi-step process with branching, waits, and terminal rejection/expiry behavior
 - `PurchaseRequestApprovalTimedAction`: reminder and 72-hour expiry requirements need scheduled callbacks that survive restarts and can safely no-op on stale timers
 - `PurchaseRequestsByStatusView`: operations queries are list/search oriented and should not be served directly from the write model
 - `ApprovedPurchaseRequestConsumer`: downstream procurement handoff should be asynchronous and isolated from core approval commands
-- `PurchaseRequestEndpoint`: the PDR explicitly asks for an HTTP API for both command and queue/query use cases
+- `PurchaseRequestEndpoint`: the PRD explicitly asks for an HTTP API for both command and queue/query use cases
 
 ## Skill routing
 - `akka-solution-decomposition`
