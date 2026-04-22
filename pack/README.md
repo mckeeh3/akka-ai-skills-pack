@@ -1,4 +1,4 @@
-# Akka AI Resource Pack Layout
+# Akka AI Skills Pack Layout
 
 This directory defines the installable packaging model for the Akka AI skills and reference examples in this repository.
 
@@ -10,8 +10,8 @@ This pack intentionally includes:
 - pack manifests
 - installer scripts
 
-The source repository covers a broader Akka application architecture story than the smaller optional subset bundles.
-Use bundle `all` when you want the full currently packaged library; use the narrower entity bundles only when you intentionally want a reduced install.
+The installable pack always includes the full currently packaged skill library, shared references, and exported examples.
+There is no bundle selection during install.
 
 This pack intentionally does **not** include:
 - `akka-context/**`
@@ -30,7 +30,7 @@ Installed layout:
 ```text
 <agents-root>/
   manifests/
-    akka-ai-pack.yaml
+    akka-ai-skills-pack.yaml
   resources/
     examples/
       java/
@@ -63,29 +63,10 @@ Installed layout:
 
 Where `<agents-root>` is either `<project-root>/.agents` or `~/.agents`.
 
-## Bundle model
+## Install model
 
-The pack is versioned as one release artifact, but installation can target smaller bundles.
-
-Current available bundles:
-- `all` — the full currently packaged skill library, references, and examples across the broader Akka application architecture coverage in this repo
-- `entities-core` — a focused entity-oriented subset
-- `ese-core` — an Event Sourced Entity subset
-- `kve-core` — a Key Value Entity subset
-
-The optional reduced bundles are still entity-oriented today, but they no longer define the story of the repository as a whole.
-Future bundles can add more family-specific or cross-cutting slices such as:
-- `components-agents`
-- `components-views`
-- `components-workflows`
-- `components-http-endpoints`
-- `components-grpc-endpoints`
-- `components-consumers`
-- `components-timed-actions`
-- `security`
-- `local-testing`
-- `deployment`
-- `observability`
+The pack is versioned as one release artifact.
+Each install copies the full packaged skill library, shared references, and exported examples.
 
 ## Path rewrite rules
 
@@ -127,7 +108,7 @@ Recommended release flow:
 1. validate all skill references in CI
 2. generate a release bundle from repo content
 3. rewrite install-time paths in copied skill files
-4. publish both `akka-ai-pack-<version>.tar.gz` and `install-akka-ai-pack-<version>.sh` as GitHub release assets
+4. publish both `akka-ai-skills-pack-<version>.tar.gz` and `install-akka-ai-skills-pack-<version>.sh` as GitHub release assets
 5. install from the versioned release installer with `curl ... | bash` or unpack the archive and run `install.sh`
 
 ## Installer UX

@@ -11,7 +11,7 @@ GITHUB_REPO=""
 
 print_help() {
   cat <<'EOF'
-Build a versioned Akka AI resource pack release bundle.
+Build a versioned Akka AI skills pack release bundle.
 
 Usage:
   bash tools/build-pack.sh [options]
@@ -69,7 +69,7 @@ write_bundle_readme() {
   cat > "$STAGE_DIR/BUNDLE-README.md" <<EOF
 # ${PACK_NAME} ${PACK_VERSION}
 
-This is a build artifact for the Akka AI resource pack.
+This is a build artifact for the Akka AI skills pack.
 
 ## Included
 - install.sh
@@ -90,7 +90,7 @@ notes instead of repo-local akka-context paths.
 After publishing these files as GitHub release assets:
 
 \`\`\`bash
-curl -fsSL https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/install-${PACK_NAME}-${PACK_VERSION}.sh | bash -s -- --target-dir /path/to/project --bundle all
+curl -fsSL https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/install-${PACK_NAME}-${PACK_VERSION}.sh | bash -s -- --target-dir /path/to/project
 \`\`\`
 
 If \`--target-dir\` is omitted, the current directory is used.
@@ -104,26 +104,22 @@ The bundled installer uses cross-harness locations:
 From inside the unpacked bundle:
 
 \`\`\`bash
-bash install.sh --location project --project /path/to/project --bundle all
+bash install.sh --location project --project /path/to/project
 \`\`\`
 
 Or:
 
 \`\`\`bash
-bash install.sh --location global --bundle all
+bash install.sh --location global
 \`\`\`
 
 If \`--location\` is omitted, the installer prompts interactively.
 If project mode is selected, the current directory is used as the project root unless \`--project\` is provided.
 
-## Bundles
-- all
-- entities-core
-- ese-core
-- kve-core
+## Install contents
 
-\`all\` is the full currently packaged library.
-The smaller optional bundles are narrower subsets, including entity-focused installs.
+The built archive always contains the full packaged skill library, references, and examples.
+There is no bundle selection during install.
 EOF
 }
 
@@ -138,6 +134,7 @@ source_repo=${REPO_ROOT}
 archive_path=${ARCHIVE_PATH}
 installer_path=${INSTALLER_PATH}
 external_docs_bundled=false
+install_profile=full
 EOF
 }
 

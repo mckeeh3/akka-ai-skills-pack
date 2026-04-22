@@ -1,10 +1,10 @@
 schemaVersion: akka.ai.pack.schema/v1alpha1
 kind: ResourcePackManifestSchema
-name: akka-ai-pack-manifest
+name: akka-ai-skills-pack-manifest
 
 description: >-
   Schema for a versioned Akka AI resource pack manifest. The manifest describes what the pack
-  installs, which bundles are available, where examples are exported, and which external docs are
+  installs, the full packaged content profile, where examples are exported, and which external docs are
   intentionally excluded from the installed artifact.
 
 fields:
@@ -25,7 +25,7 @@ fields:
       name:
         type: string
         required: true
-        example: akka-ai-pack
+        example: akka-ai-skills-pack
       version:
         type: string
         required: true
@@ -33,7 +33,7 @@ fields:
       sourceRepo:
         type: string
         required: true
-        example: https://github.com/example/akka-ai-pack
+        example: https://github.com/example/akka-ai-skills-pack
       description:
         type: string
         required: true

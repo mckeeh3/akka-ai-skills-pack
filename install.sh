@@ -4,15 +4,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$SCRIPT_DIR"
 PROJECT_ROOT="$(pwd)"
-BUNDLE="all"
 LOCATION=""
 DRY_RUN=false
 FORCE=false
-LIST_BUNDLES=false
 
 print_help() {
   cat <<'EOF'
-Install the Akka AI resource pack into a cross-harness agents directory.
+Install the Akka AI skills pack into a cross-harness agents directory.
 
 Usage:
   ./install.sh [options]
@@ -23,18 +21,12 @@ Options:
                       global  -> ~/.agents
                       If omitted, the installer prompts interactively.
   --project <dir>     Project root used for project mode. Default: current directory
-  --bundle <name>     Bundle to install. Default: all
-  --force             Replace existing pack-owned files for the selected bundle
+  --force             Replace existing pack-owned files
   --dry-run           Show planned actions without writing files
-  --list-bundles      Print supported bundles and exit
   --help              Show this help text
 
-Bundle discovery:
-  - Use --list-bundles to print bundle ids from pack/manifest.yaml
-  - Bundle 'all' installs the full currently packaged skill library
-  - Smaller bundles may intentionally install narrower subsets, such as entity-focused suites
-
 Notes:
+  - This installer always installs the full packaged skill library, references, and examples
   - This installer uses cross-harness locations, not project-local .pi directories
   - project mode installs into <project-root>/.agents
   - akka-context is intentionally NOT installed
@@ -55,74 +47,6 @@ fail() {
   exit 1
 }
 
-manifest_bundle_ids() {
-  python3 - "$REPO_ROOT/pack/manifest.yaml" <<'PY'
-import re
-import sys
-
-lines = open(sys.argv[1]).read().splitlines()
-in_bundles = False
-for line in lines:
-    if line.strip() == 'bundles:':
-        in_bundles = True
-        continue
-    if not in_bundles:
-        continue
-    match = re.match(r'  - id: (.+)$', line)
-    if match:
-        print(match.group(1))
-PY
-}
-
-bundle_skills() {
-  python3 - "$REPO_ROOT/pack/manifest.yaml" "$1" <<'PY'
-import re
-import sys
-
-manifest_path, target_bundle = sys.argv[1], sys.argv[2]
-lines = open(manifest_path).read().splitlines()
-in_bundles = False
-current_bundle = None
-collect_skills = False
-found_bundle = False
-skills = []
-
-for line in lines:
-    if line.strip() == 'bundles:':
-        in_bundles = True
-        continue
-    if not in_bundles:
-        continue
-
-    bundle_match = re.match(r'  - id: (.+)$', line)
-    if bundle_match:
-        current_bundle = bundle_match.group(1)
-        collect_skills = False
-        if current_bundle == target_bundle:
-            found_bundle = True
-        continue
-
-    if current_bundle == target_bundle and re.match(r'    skills:\s*$', line):
-        collect_skills = True
-        continue
-
-    if collect_skills:
-        skill_match = re.match(r'      - (.+)$', line)
-        if skill_match:
-            skills.append(skill_match.group(1))
-            continue
-        if line.startswith('    ') and not line.startswith('      '):
-            collect_skills = False
-
-if not found_bundle:
-    sys.stderr.write(f'Unsupported bundle: {target_bundle}\n')
-    sys.exit(1)
-
-for skill in skills:
-    print(skill)
-PY
-}
-
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --location)
@@ -135,21 +59,12 @@ while [[ $# -gt 0 ]]; do
       PROJECT_ROOT="$2"
       shift 2
       ;;
-    --bundle)
-      [[ $# -ge 2 ]] || fail "Missing value for --bundle"
-      BUNDLE="$2"
-      shift 2
-      ;;
     --force)
       FORCE=true
       shift
       ;;
     --dry-run)
       DRY_RUN=true
-      shift
-      ;;
-    --list-bundles)
-      LIST_BUNDLES=true
       shift
       ;;
     --help|-h)
@@ -166,11 +81,6 @@ done
 [[ -f "$REPO_ROOT/pack/manifest.yaml" ]] || fail "Expected manifest at $REPO_ROOT/pack/manifest.yaml"
 [[ -d "$REPO_ROOT/src" ]] || fail "Expected examples under $REPO_ROOT/src"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required"
-
-if [[ "$LIST_BUNDLES" == true ]]; then
-  manifest_bundle_ids
-  exit 0
-fi
 
 resolve_location() {
   case "$1" in
@@ -297,10 +207,9 @@ AGENTS_ROOT="$(resolve_location "$LOCATION")"
 SKILLS_DIR="$AGENTS_ROOT/skills"
 MANIFESTS_DIR="$AGENTS_ROOT/manifests"
 EXAMPLES_DIR="$AGENTS_ROOT/resources/examples/java"
-PACK_MANIFEST_TARGET="$MANIFESTS_DIR/akka-ai-pack.yaml"
-selected_skills="$(bundle_skills "$BUNDLE")"
+PACK_MANIFEST_TARGET="$MANIFESTS_DIR/akka-ai-skills-pack.yaml"
 
-log "Installing bundle '$BUNDLE'"
+log "Installing full pack content"
 log "Install mode:      $LOCATION"
 if [[ "$LOCATION" == "project" ]]; then
   log "Project root:      $PROJECT_ROOT"
@@ -316,11 +225,11 @@ copy_file "$REPO_ROOT/pack/manifest.yaml" "$PACK_MANIFEST_TARGET"
 copy_file "$REPO_ROOT/skills/README.md" "$SKILLS_DIR/README.md"
 copy_dir_replace "$REPO_ROOT/skills/references" "$SKILLS_DIR/references"
 
-while IFS= read -r skill; do
-  [[ -n "$skill" ]] || continue
-  [[ -d "$REPO_ROOT/skills/$skill" ]] || fail "Missing skill directory: $skill"
-  copy_dir_replace "$REPO_ROOT/skills/$skill" "$SKILLS_DIR/$skill"
-done <<< "$selected_skills"
+while IFS= read -r skill_dir; do
+  [[ -n "$skill_dir" ]] || continue
+  skill_name="$(basename "$skill_dir")"
+  copy_dir_replace "$skill_dir" "$SKILLS_DIR/$skill_name"
+done < <(find "$REPO_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
 
 copy_file "$REPO_ROOT/pom.xml" "$EXAMPLES_DIR/pom.xml"
 copy_file "$REPO_ROOT/README.md" "$EXAMPLES_DIR/README.md"

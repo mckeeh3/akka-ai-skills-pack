@@ -1,4 +1,4 @@
-# Akka AI Resource Pack
+# Akka AI Skills Pack
 
 This repository packages **Akka SDK knowledge for AI coding agents** into an **intent-driven flow**.
 
@@ -92,7 +92,7 @@ The repository exists to make that workflow efficient for AI agents through:
 - predictable naming and routing
 - example code organized by component type
 - tests that show intended calling patterns
-- installable bundles that can be dropped into `.agents`
+- an installable pack that can be dropped into `.agents`
 
 A useful mental model is:
 - `akka-context/` explains Akka for humans and serves as a semantic reference
@@ -123,7 +123,7 @@ These skills are meant to support the same staged flow used throughout this repo
 If you are using this repository as a pack source or reference library, start with:
 - `skills/README.md`
 - `skills/akka-solution-decomposition/SKILL.md` when the task begins from high-level requirements or a specification file
-- `pack/README.md` (for bundle/install layout)
+- `pack/README.md` (for install layout and packaging details)
 - this `README.md` for repository-level build and install flow
 
 `AGENT-README.md` is intentionally **not** part of the general usage flow. It is a repo-internal startup brief for AI coding agents that are contributing to this repository itself.
@@ -157,10 +157,10 @@ Focused local reference material for recurring patterns, such as:
 
 ### 4. Pack metadata and release tooling
 - `pack/manifest.yaml` - versioned pack definition
-- `pack/README.md` - install layout and bundle model
+- `pack/README.md` - install layout and packaging model
 - `tools/build-pack.sh` - builds release assets under `dist/`
 - `tools/install-release-template.sh` - template used to generate a versioned GitHub release installer script
-- `install.sh` - installs a bundle into a cross-harness `.agents` directory
+- `install.sh` - installs the full pack into a cross-harness `.agents` directory
 
 ### 5. Maintainer-only Akka reference mirror: `akka-context/`
 This directory is intentionally kept in the repository as a **maintainer/reference input**.
@@ -178,8 +178,8 @@ This repository contains several README files with different roles:
 - `README.md` - this top-level repository overview and the primary human-facing build/install guide
 - `AGENT-README.md` - **development-only** startup guidance for AI coding agents contributing changes to this repository; it is not end-user usage documentation for the pack
 - `skills/README.md` - skill routing map across all local skill suites
-- `pack/README.md` - install target layout, bundle model, and path rewrite rules
-- `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a bundle is built locally
+- `pack/README.md` - install target layout, packaging model, and path rewrite rules
+- `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a pack is built locally
 
 If your goal is to build, install, or consume the resource pack, use this `README.md` and `pack/README.md`.
 Only open `AGENT-README.md` if you are starting a new AI-agent development session for work on this repository.
@@ -247,7 +247,7 @@ mvn clean install
 ## Distribution model
 
 This repository ships an installable resource pack named:
-- `akka-ai-pack`
+- `akka-ai-skills-pack`
 
 Current manifest version:
 - `0.1.0`
@@ -262,7 +262,7 @@ The distribution includes:
 - `LICENSE`
 
 The build also generates a versioned GitHub release installer script alongside the archive:
-- `dist/install-akka-ai-pack-0.1.0.sh`
+- `dist/install-akka-ai-skills-pack-0.1.0.sh`
 
 Source skills are authored under `skills/` in this repository and installed into `.agents/skills/` by the installer.
 
@@ -274,16 +274,7 @@ During installation, skill files are rewritten so they:
 - no longer contain broken repo-local `akka-context/...` references
 - instead reference official Akka SDK docs generically
 
-## Available install bundles
-
-The installer currently supports these bundle ids:
-- `all`
-- `entities-core`
-- `ese-core`
-- `kve-core`
-
-Use `all` for the full currently packaged library across the repo's broader Akka application architecture coverage.
-The narrower `entities-core`, `ese-core`, and `kve-core` bundles remain available as smaller entity-focused subsets when you intentionally want a reduced install.
+The installer always installs the full packaged skill library, shared references, and exported examples.
 
 ## How to build a distribution
 
@@ -296,16 +287,16 @@ bash tools/build-pack.sh --clean
 ```
 
 This creates:
-- an expanded bundle directory under `dist/`
-- a `.tar.gz` archive for the bundle
+- an expanded pack directory under `dist/`
+- a `.tar.gz` archive for the pack
 - a versioned GitHub release installer script
 
 `dist/` is generated output and is not intended to be source-controlled.
 
 With the current manifest, the output names are:
-- `dist/akka-ai-pack-0.1.0/`
-- `dist/akka-ai-pack-0.1.0.tar.gz`
-- `dist/install-akka-ai-pack-0.1.0.sh`
+- `dist/akka-ai-skills-pack-0.1.0/`
+- `dist/akka-ai-skills-pack-0.1.0.tar.gz`
+- `dist/install-akka-ai-skills-pack-0.1.0.sh`
 
 ### Recommended build flow
 
@@ -315,7 +306,7 @@ With the current manifest, the output names are:
    mvn test
    ```
 
-2. **Build the distribution bundle**
+2. **Build the distribution pack**
 
    ```bash
    bash tools/build-pack.sh --clean
@@ -323,23 +314,23 @@ With the current manifest, the output names are:
 
    CAUTION: the `--clean` option should only be used to overwrite an existing staged directory.  
 
-3. **Inspect the staged bundle**
+3. **Inspect the staged pack**
 
    ```bash
-   find dist/akka-ai-pack-0.1.0 -maxdepth 3 | sort
+   find dist/akka-ai-skills-pack-0.1.0 -maxdepth 3 | sort
    ```
 
 4. **Inspect the release assets**
 
    ```bash
-   ls -lh dist/akka-ai-pack-0.1.0.tar.gz dist/install-akka-ai-pack-0.1.0.sh
+   ls -lh dist/akka-ai-skills-pack-0.1.0.tar.gz dist/install-akka-ai-skills-pack-0.1.0.sh
    ```
 
 5. **Publish both files to the matching GitHub release tag**
 
    Publish these assets on release tag `v0.1.0`:
-   - `dist/akka-ai-pack-0.1.0.tar.gz`
-   - `dist/install-akka-ai-pack-0.1.0.sh`
+   - `dist/akka-ai-skills-pack-0.1.0.tar.gz`
+   - `dist/install-akka-ai-skills-pack-0.1.0.sh`
 
 GitHub Actions automation is included:
 - `.github/workflows/build-test.yml` checks `README.md` and `pack/README.md` pack-version references, runs `mvn verify`, and runs `tools/build-pack.sh` on PRs, pushes to `main`, and manual dispatch
@@ -352,8 +343,8 @@ GitHub Actions automation is included:
 2. Merge that change to `main`.
 3. Run the **Cut release tag** workflow, or manually push matching tag `v<manifest-version>`.
 4. The **Create draft release assets** workflow builds:
-   - `akka-ai-pack-<version>.tar.gz`
-   - `install-akka-ai-pack-<version>.sh`
+   - `akka-ai-skills-pack-<version>.tar.gz`
+   - `install-akka-ai-skills-pack-<version>.sh`
 5. Review and publish the draft GitHub Release.
 6. After the draft release is published, the curl-based installer URLs become publicly usable.
 
@@ -402,7 +393,7 @@ Before building, the script checks that key source inputs exist, including:
 You can install in three ways:
 - from a **GitHub release asset** using the versioned curl-based installer
 - from the **repository checkout** using the root `install.sh`
-- from an **unpacked distribution bundle** using the bundled `install.sh`
+- from an **unpacked distribution archive** using the bundled `install.sh`
 
 The installation target is always one of these cross-harness locations:
 - **project mode**: `<project-root>/.agents`
@@ -415,16 +406,16 @@ This installs into `<target-dir>/.agents`, where `--target-dir` defaults to the 
 Install into the current directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-pack-0.1.0.sh | bash -s --
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-skills-pack-0.1.0.sh | bash -s --
 ```
 
 Install into a specific target directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project --bundle all
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-skills-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project
 ```
 
-The release installer downloads `akka-ai-pack-0.1.0.tar.gz`, unpacks it in a temporary directory, and runs the bundled `install.sh` in project mode.
+The release installer downloads `akka-ai-skills-pack-0.1.0.tar.gz`, unpacks it in a temporary directory, and runs the bundled `install.sh` in project mode.
 
 ### 2. Build and unpack the distribution
 
@@ -437,27 +428,18 @@ bash tools/build-pack.sh --clean
 Then unpack it:
 
 ```bash
-tar -xzf dist/akka-ai-pack-0.1.0.tar.gz -C /tmp
-cd /tmp/akka-ai-pack-0.1.0
+tar -xzf dist/akka-ai-skills-pack-0.1.0.tar.gz -C /tmp
+cd /tmp/akka-ai-skills-pack-0.1.0
 ```
 
 If you already received a built archive from somewhere else, unpack that archive instead.
 
-### 3. Inspect available bundles
-
-From inside the unpacked bundle:
-
-```bash
-bash install.sh --list-bundles
-```
-
-### 4. Install to a project-specific `.agents` directory
+### 3. Install to a project-specific `.agents` directory
 
 ```bash
 bash install.sh \
   --location project \
-  --project /path/to/your/project \
-  --bundle all
+  --project /path/to/your/project
 ```
 
 This installs into:
@@ -465,10 +447,10 @@ This installs into:
 - `/path/to/your/project/.agents/manifests`
 - `/path/to/your/project/.agents/resources/examples/java`
 
-### 5. Install globally for your user account
+### 4. Install globally for your user account
 
 ```bash
-bash install.sh --location global --bundle all
+bash install.sh --location global
 ```
 
 This installs into:
@@ -476,12 +458,12 @@ This installs into:
 - `~/.agents/manifests`
 - `~/.agents/resources/examples/java`
 
-### 6. Interactive install
+### 5. Interactive install
 
 If you omit `--location`, the installer prompts you to choose project or global mode:
 
 ```bash
-bash install.sh --bundle all
+bash install.sh
 ```
 
 ### Useful installer options
@@ -489,7 +471,7 @@ bash install.sh --bundle all
 #### Dry run
 
 ```bash
-bash install.sh --location project --project /path/to/project --bundle all --dry-run
+bash install.sh --location project --project /path/to/project --dry-run
 ```
 
 #### Show help
@@ -505,7 +487,7 @@ After installation, the target directory looks like this:
 ```text
 .agents/
 ├── manifests/
-│   └── akka-ai-pack.yaml
+│   └── akka-ai-skills-pack.yaml
 ├── resources/
 │   └── examples/
 │       └── java/
@@ -531,23 +513,23 @@ After installation, the target directory looks like this:
 Useful during development:
 
 ```bash
-bash install.sh --location project --project /path/to/project --bundle all
+bash install.sh --location project --project /path/to/project
 ```
 
 ### Install from a built distribution
 Useful for release testing and sharing:
 
 ```bash
-tar -xzf akka-ai-pack-0.1.0.tar.gz
-cd akka-ai-pack-0.1.0
-bash install.sh --location global --bundle all
+tar -xzf akka-ai-skills-pack-0.1.0.tar.gz
+cd akka-ai-skills-pack-0.1.0
+bash install.sh --location global
 ```
 
 ### Install from a GitHub release in one step
 Useful for end users who want a version-pinned install into a project directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project --bundle all
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-skills-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project
 ```
 
 In both cases, the installer performs the same target layout and path rewriting behavior.
