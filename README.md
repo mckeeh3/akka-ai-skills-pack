@@ -46,6 +46,7 @@ Use the repository in this order:
 **Important:** code generation is a downstream phase. Do **not** start writing Akka components until decomposition is complete and any key structural decisions are resolved.
 
 For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md`.
+For a concrete requirements-to-plan example, see `docs/pdr-to-akka-flow.md` and `docs/examples/purchase-request-pdr.md`.
 
 ## Visible 3-stage skill model
 

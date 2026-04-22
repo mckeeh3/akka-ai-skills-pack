@@ -14,6 +14,7 @@ Use the skills in this order:
 
 Short reusable version:
 - `../docs/intent-driven-usage-flow.md`
+- `../docs/pdr-to-akka-flow.md`
 
 ## Visible 3-stage skill model
 

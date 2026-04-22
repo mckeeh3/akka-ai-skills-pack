@@ -27,6 +27,13 @@ Use the repository in this sequence:
    - implement component by component
    - use `../src/` examples and focused `../docs/` references as pattern support
 
+## Concrete example
+
+For a small canonical requirements-to-plan example, see:
+- `pdr-to-akka-flow.md`
+- `examples/purchase-request-pdr.md`
+- `examples/purchase-request-solution-plan.md`
+
 ## Rule of thumb
 
 Code generation is a downstream phase.
