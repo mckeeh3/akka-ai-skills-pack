@@ -1,6 +1,6 @@
 ---
 name: akka-kve-domain-modeling
-description: Model Akka key value entity domain code: immutable state, commands, validators, command-to-state handlers, and pure business-decision helpers. Use when creating or reviewing the domain package for a KeyValueEntity.
+description: "Model Akka key value entity domain code: immutable state, commands, validators, command-to-state handlers, and pure business-decision helpers. Use when creating or reviewing the domain package for a KeyValueEntity."
 ---
 
 # Akka KVE Domain Modeling

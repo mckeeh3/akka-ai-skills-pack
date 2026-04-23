@@ -350,5 +350,4 @@ else
   log "Installed manifest: $PACK_MANIFEST_TARGET"
   log "Installed skills:   $SKILLS_DIR"
   log "Installed examples: $EXAMPLES_DIR"
-  warn "akka-context was not installed. Installed skills now refer to official Akka docs rather than local akka-context files."
 fi

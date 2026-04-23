@@ -1,6 +1,6 @@
 ---
 name: akka-ese-domain-modeling
-description: Model Akka event sourced entity domain code: immutable state, commands, events, validators, command-to-event handlers, and pure event application. Use when creating or reviewing the domain package for an EventSourcedEntity.
+description: "Model Akka event sourced entity domain code: immutable state, commands, events, validators, command-to-event handlers, and pure event application. Use when creating or reviewing the domain package for an EventSourcedEntity."
 ---
 
 # Akka ESE Domain Modeling
