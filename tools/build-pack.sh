@@ -162,9 +162,41 @@ PY
 }
 
 PACK_DOC_FILES=(
+  docs/app-description-end-to-end-workflow-example.md
+  docs/app-description-maintenance-flow.md
+  docs/app-description-skills-plan-backlog.md
+  docs/description-first-application-doctrine.md
+  docs/internal-app-description-architecture.md
   docs/agent-coverage-matrix.md
   docs/agent-runtime-state-reference.md
   docs/consumer-reference.md
+  docs/examples/purchase-request-app-description/README.md
+  docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md
+  docs/examples/purchase-request-app-description/app-description/00-system/generation-policy.md
+  docs/examples/purchase-request-app-description/app-description/00-system/readiness-status.md
+  docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md
+  docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md
+  docs/examples/purchase-request-app-description/app-description/20-behavior/behavior-index.md
+  docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md
+  docs/examples/purchase-request-app-description/app-description/20-behavior/rules/01-edit-and-approval-rules.md
+  docs/examples/purchase-request-app-description/app-description/20-behavior/state-models/01-purchase-request-lifecycle.md
+  docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md
+  docs/examples/purchase-request-app-description/app-description/30-tests/negative/01-forbidden-actions.md
+  docs/examples/purchase-request-app-description/app-description/30-tests/operational/01-audit-and-diagnosability.md
+  docs/examples/purchase-request-app-description/app-description/30-tests/regression/01-repeat-actions.md
+  docs/examples/purchase-request-app-description/app-description/30-tests/test-index.md
+  docs/examples/purchase-request-app-description/app-description/40-auth-security/data-protection.md
+  docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md
+  docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md
+  docs/examples/purchase-request-app-description/app-description/60-generation/output-surfaces.md
+  docs/examples/purchase-request-app-description/app-description/60-generation/realization-scope.md
+  docs/examples/purchase-request-app-description/app-description/60-generation/regeneration-map.md
+  docs/examples/purchase-request-app-description/app-description/70-traceability/behavior-to-tests-map.md
+  docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md
+  docs/examples/purchase-request-app-description/app-description/70-traceability/change-impact-map.md
+  docs/examples/purchase-request-app-description/app-description/80-review/latest-change-summary.md
+  docs/examples/purchase-request-app-description/app-description/80-review/latest-readiness-summary.md
+  docs/examples/purchase-request-app-description/normalized-input-example.md
   docs/examples/purchase-request-prd.md
   docs/examples/purchase-request-solution-plan.md
   docs/intent-driven-usage-flow.md

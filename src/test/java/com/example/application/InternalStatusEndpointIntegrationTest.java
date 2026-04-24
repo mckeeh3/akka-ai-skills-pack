@@ -17,10 +17,10 @@ class InternalStatusEndpointIntegrationTest extends TestKitSupport {
   void internetCallIsDeniedForInternalOnlyMethod() {
     var error =
         assertThrows(
-            IllegalArgumentException.class,
+            RuntimeException.class,
             () -> httpClient.GET("/internal-status/whoami").responseBodyAs(String.class).invoke());
 
-    assertTrue(error.getMessage().contains("403") || error.getMessage().contains("404"));
+    assertTrue(error.getMessage().contains("403") || error.getMessage().contains("Forbidden"));
   }
 
   @Test

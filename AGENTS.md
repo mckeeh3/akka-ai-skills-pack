@@ -61,9 +61,9 @@ Treat this repository as a **requirements-first, intent-driven Akka pack for AI 
 
 Its job is to help an agent go from:
 1. high-level input
-2. to Akka solution decomposition
-3. to focused skill selection
-4. to component-by-component code and test generation
+2. either to authoritative app-description maintenance and review, or to Akka solution decomposition
+3. to focused skill selection and realization planning
+4. to component-by-component code and test generation when realization is requested
 
 Important distinction:
 - `akka-context/` contains official Akka reference material and semantic source-of-truth docs
@@ -79,7 +79,30 @@ prefer the **agent-friendly structure**.
 
 ## Default working model
 
-For most tasks, follow this flow:
+This repository now has two first-class operating modes.
+
+### Mode A: description-first application maintenance
+Use this when the user is primarily describing, revising, reviewing, or validating the app as a maintained internal description before realization.
+
+Typical entry skill:
+- `app-descriptions`
+
+In this source repository, description-first assets usually appear as one of:
+- skill source under `skills/app-description*/`
+- supporting doctrine/architecture docs under `docs/`
+- reference example app-description trees under `docs/examples/`
+
+If a user asks to create or revise an `app-description/` tree **in this repository**, interpret that by default as:
+- a reference example
+- a test fixture for the pack
+- a source asset that will be packaged for downstream use
+
+Do **not** silently treat a repo-local example app-description tree as the business source of truth for this repository itself.
+
+### Mode B: intent-driven Akka decomposition and implementation
+Use this when the goal is to derive the Akka solution shape and then write or revise concrete code/tests.
+
+For most Mode B tasks, follow this flow:
 1. read the user's input completely
 2. if the solution shape is not yet clear, decompose first
 3. resolve any focused architecture choice that remains open
@@ -93,6 +116,9 @@ It is an **implementation contract** for downstream coding.
 ---
 
 ## Visible 3-stage skill model
+
+The 3-stage model below applies to the **intent-driven Akka decomposition and implementation path**.
+It sits alongside the description-first `app-descriptions` path rather than replacing it.
 
 ### Stage 1: Intent and architecture
 Use when the task starts from requirements, a prompt, a PRD, a specification file, a feature request, or any other high-level input and the Akka solution shape is not yet known.
@@ -188,6 +214,7 @@ Focused local reference material for recurring patterns, comparisons, and routin
 ## Current strong local coverage
 
 The repository already has strong local patterns across much of the Akka application stack, especially:
+- description-first application doctrine, app-description architecture, maintenance flow, readiness, and review summaries
 - Event Sourced Entities and Key Value Entities
 - workflows, including compensation and pause/resume patterns
 - views across multiple source types
@@ -211,7 +238,13 @@ At the start of a new session:
 2. read this file
 3. read `skills/README.md`
 4. if the task is agent-related, read `docs/agent-coverage-matrix.md`
-5. classify the task before choosing files:
+5. if the task is app-description-related, read:
+   - `docs/description-first-application-doctrine.md`
+   - `docs/internal-app-description-architecture.md`
+   - `docs/app-description-maintenance-flow.md`
+   - the smallest relevant example under `docs/examples/purchase-request-app-description/`
+6. classify the task before choosing files:
+   - description-first app maintenance / review / realization
    - requirements decomposition / architecture selection
    - focused structural decision
    - component implementation
@@ -219,11 +252,12 @@ At the start of a new session:
    - docs/snippet generation
    - cross-cutting topic
    - repo structure / skill design
-6. if the task starts from high-level input and the component set is not yet known, start with `akka-solution-decomposition`
-7. if the task is narrowed to a stateful core but entity type is still open, use `akka-entity-type-selection`
-8. otherwise, load the smallest relevant local skill set first
-9. use `akka-context/sdk/...` when you need official semantics or a feature not yet well represented locally
-10. prefer local agent-optimized patterns when creating new repo content
+7. if the task starts from high-level input and the user wants description-first maintenance or realization, start with `app-descriptions`
+8. if the task starts from high-level input and the component set is not yet known, start with `akka-solution-decomposition`
+9. if the task is narrowed to a stateful core but entity type is still open, use `akka-entity-type-selection`
+10. otherwise, load the smallest relevant local skill set first
+11. use `akka-context/sdk/...` when you need official semantics or a feature not yet well represented locally
+12. prefer local agent-optimized patterns when creating new repo content
 
 ---
 

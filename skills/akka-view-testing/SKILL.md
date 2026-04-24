@@ -47,7 +47,7 @@ For each reusable view example, cover at least:
   - queries checked-out carts
   - verifies delete event removes the row
 - `ShoppingCartAuditViewIntegrationTest`
-  - verifies custom delete handling
+  - verifies logical delete event handling
   - verifies `QueryStreamEffect` collection for current rows
 
 ### Key value view tests

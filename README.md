@@ -1,12 +1,12 @@
 # Akka AI Skills Pack
 
-This repository packages **Akka SDK knowledge for AI coding agents** into an **intent-driven flow**.
+This repository packages **Akka SDK knowledge for AI coding agents** into an **intent-driven and description-first flow**.
 
 Its primary job is to help an agent go from:
-- **PRD, requirements doc, user story, process description, API sketch, or UI brief**
-- to **Akka solution decomposition**
-- to **focused skill selection**
-- to **code and test generation**
+- **PRD, requirements doc, user story, process description, API sketch, UI brief, or revision request**
+- to either **authoritative app-description maintenance/review** or **Akka solution decomposition**
+- to **focused skill selection and realization planning**
+- to **code and test generation when realization is requested**
 
 It combines:
 - **agent-optimized skills** under `skills/`
@@ -24,15 +24,54 @@ This is **not just an Akka sample service** and **not just a docs mirror**.
 
 It is a **requirements-first system for AI coding agents** that need to start from high-level intent and derive the correct Akka architecture before coding.
 
-The primary usage flow is:
-1. read a high-level input
-2. decompose it into the right Akka components and boundaries
-3. resolve any focused architecture decisions that are still open
-4. turn that plan into an implementation contract and route to the focused skills needed for each implementation task
-5. generate code and tests component by component
+The repository now supports two primary usage flows:
+
+1. **description-first application maintenance**
+   - read a high-level input or revision request
+   - maintain the authoritative internal app description
+   - assess change impact, readiness, security, observability, and tests
+   - realize outputs only when generation is requested or accepted
+2. **intent-driven Akka decomposition and implementation**
+   - read a high-level input
+   - decompose it into the right Akka components and boundaries
+   - resolve any focused architecture decisions that are still open
+   - turn that plan into an implementation contract and route to the focused skills needed for each implementation task
+   - generate code and tests component by component
 
 The component-family skills in `skills/` are therefore **downstream implementation assets**, not the only front door.
 The decomposition output is not the final deliverable by itself; it is the implementation contract that feeds the downstream coding phase.
+
+## Source-repo vs installed-pack usage
+
+This repository contains both:
+- the **source project** for developing the skills pack itself
+- the content that will be installed into real development projects under `.agents/`
+
+Keep these roles separate:
+- repository-root guidance such as `AGENTS.md` is for **maintaining this pack source project**
+- `pack/AGENTS.md` is the source for the installed `.agents/AGENTS.md` used in **real development projects**
+- example app-description trees under `docs/examples/` are **reference assets for the pack**, not the source of truth for this repository itself
+- when the installed pack is used in a real project, the project's maintained `app-description/` tree belongs in the **project workspace**, not inside `.agents/`, unless that project explicitly chooses another internal location
+
+## Description-first usage flow
+
+Use this flow when the user is primarily describing, revising, reviewing, or readiness-checking the app before realization:
+
+1. start with `skills/app-descriptions/SKILL.md`
+2. bootstrap with `skills/app-description-bootstrap/SKILL.md` when no usable app-description tree exists yet
+3. normalize broad or mixed requests with `skills/app-description-input-normalization/SKILL.md`
+4. route to the smallest relevant maintenance skill
+5. update capability, behavior, test, auth/security, observability, and traceability layers as needed
+6. assess readiness before generation
+7. use `skills/app-generate-app/SKILL.md` only when generation is requested or accepted
+
+Key supporting references:
+- `docs/description-first-application-doctrine.md`
+- `docs/app-description-skills-plan-backlog.md`
+- `docs/internal-app-description-architecture.md`
+- `docs/app-description-maintenance-flow.md`
+- `docs/app-description-end-to-end-workflow-example.md`
+- `docs/examples/purchase-request-app-description/README.md`
 
 ## Intent-driven usage flow
 
@@ -56,7 +95,7 @@ For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implem
 This repository uses a visible 3-stage routing model:
 
 ### Stage 1: Intent and architecture
-Start here when the input is still a PRD, requirements doc, user story, process description, API sketch, UI brief, or other high-level specification.
+Start here when the input is still a PRD, requirements doc, user story, process description, API sketch, UI brief, or other high-level specification **and you are taking the direct Akka decomposition path rather than the description-first path**.
 
 Primary Stage 1 skill:
 - `skills/akka-solution-decomposition/SKILL.md`
@@ -102,6 +141,7 @@ A useful mental model is:
 
 ### 1. Source skill library: `skills/`
 Agent-routing and implementation skills for:
+- description-first app-description maintenance, review, and generation
 - Stage 1 solution decomposition
 - Stage 2 structural decision support, including entity type selection
 - Workflows
@@ -149,6 +189,7 @@ The examples cover patterns such as:
 
 ### 3. Reference docs: `docs/`
 Focused local reference material for recurring patterns, such as:
+- description-first doctrine, app-description architecture, and maintenance flow
 - agent coverage
 - workflow/endpoint patterns
 - timer pattern selection
@@ -255,8 +296,8 @@ Current manifest version:
 - `0.1.0`
 
 The distribution includes:
-- `skills/**`
-- selected pack-facing docs under `docs/**`
+- `skills/**`, including description-first and implementation-routing skills
+- selected pack-facing docs under `docs/**`, including description-first doctrine/architecture references and examples
 - selected pack metadata
 - exported examples from `src/main` and `src/test`
 - the repository `pom.xml`
@@ -503,11 +544,18 @@ After installation, the target directory looks like this:
 .agents/
 ├── AGENTS.md
 ├── docs/
+│   ├── description-first-application-doctrine.md
+│   ├── app-description-skills-plan-backlog.md
+│   ├── internal-app-description-architecture.md
+│   ├── app-description-maintenance-flow.md
 │   ├── agent-coverage-matrix.md
 │   ├── prd-to-akka-flow.md
 │   ├── timer-pattern-selection.md
 │   ├── workflow-endpoint-pattern.md
 │   └── examples/
+│       ├── purchase-request-app-description/
+│       ├── purchase-request-prd.md
+│       └── purchase-request-solution-plan.md
 ├── manifests/
 │   └── akka-ai-skills-pack.yaml
 ├── resources/
@@ -521,6 +569,8 @@ After installation, the target directory looks like this:
 └── skills/
     ├── README.md
     ├── references/
+    ├── app-descriptions/
+    ├── app-description-bootstrap/
     ├── akka-solution-decomposition/
     ├── akka-workflows/
     ├── akka-http-endpoints/

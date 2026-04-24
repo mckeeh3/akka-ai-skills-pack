@@ -5,6 +5,10 @@ This directory contains AI-focused skills for turning high-level requirements in
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
 
+This file serves both:
+- the **source repository**, where app-description trees under `docs/examples/` are reference assets for the pack itself
+- the **installed pack** in a real development project, where the project's maintained `app-description/` tree belongs in the project workspace rather than under `.agents/`, unless that project explicitly chooses another internal location
+
 ## Description-first intake skills
 
 This repository now also includes an initial description-first skill path for maintaining **application descriptions as the source of truth** before app realization.
@@ -51,6 +55,11 @@ Reference docs:
 - `../docs/app-description-end-to-end-workflow-example.md`
 - `../docs/examples/purchase-request-app-description/README.md`
 - `../docs/examples/purchase-request-app-description/normalized-input-example.md`
+
+Important routing rule:
+- use the description-first path to maintain or review the app's authoritative description
+- use `app-generate-app` only when realization is actually requested or accepted
+- use the 3-stage Akka path when the user wants direct Akka solution decomposition and implementation
 
 ## Intent-driven usage flow
 

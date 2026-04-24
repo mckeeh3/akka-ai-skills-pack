@@ -3,11 +3,12 @@ package com.example.application;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import akka.javasdk.Metadata;
+import akka.javasdk.CloudEvent;
 import akka.javasdk.testkit.EventingTestKit;
 import akka.javasdk.testkit.TestKit;
 import akka.javasdk.testkit.TestKitSupport;
 import com.example.domain.ShoppingCart;
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,13 +36,14 @@ class ShoppingCartCommandsTopicConsumerIntegrationTest extends TestKitSupport {
   @Test
   void topicCommandsUpdateEntityAndPublishCartEvents() {
     var cartId = "cart-topic-consumer-1";
-    var metadata = Metadata.EMPTY.add("ce-subject", cartId);
+    var addItem = new ShoppingCartCommandsTopicConsumer.AddItem("sku-1", "Akka Hoodie", 2);
+    var checkout = new ShoppingCartCommandsTopicConsumer.Checkout();
+    var addItemMetadata = metadataFor("cmd-add", addItem, cartId);
+    var checkoutMetadata = metadataFor("cmd-checkout", checkout, cartId);
     var builder = testKit.getMessageBuilder();
 
-    commandsTopic.publish(
-        builder.of(
-            new ShoppingCartCommandsTopicConsumer.AddItem("sku-1", "Akka Hoodie", 2), metadata));
-    commandsTopic.publish(builder.of(new ShoppingCartCommandsTopicConsumer.Checkout(), metadata));
+    commandsTopic.publish(builder.of(addItem, addItemMetadata));
+    commandsTopic.publish(builder.of(checkout, checkoutMetadata));
 
     Awaitility.await()
         .ignoreExceptions()
@@ -66,5 +68,12 @@ class ShoppingCartCommandsTopicConsumerIntegrationTest extends TestKitSupport {
     assertEquals("sku-1", itemAdded.getPayload().item().productId());
     assertEquals(2, itemAdded.getPayload().item().quantity());
     assertEquals(cartId, checkedOut.getMetadata().get("ce-subject").orElseThrow());
+  }
+
+  private akka.javasdk.Metadata metadataFor(String id, Object payload, String subject) {
+    return CloudEvent.of(id, URI.create("ShoppingCartCommandsTopicConsumerIntegrationTest"), payload.getClass().getName())
+        .withSubject(subject)
+        .asMetadata()
+        .add("Content-Type", "application/json");
   }
 }

@@ -5,8 +5,8 @@ This directory defines the installable packaging model for the Akka AI skills an
 ## Scope
 
 This pack intentionally includes:
-- `skills/**`
-- selected pack-facing docs under `docs/**`
+- `skills/**`, including description-first and implementation-routing skills
+- selected pack-facing docs under `docs/**`, including description-first doctrine/architecture references and example app-description artifacts
 - reference examples exported from `src/**`
 - pack manifests
 - installer scripts
@@ -25,6 +25,10 @@ The installed pack uses `pack/AGENTS.md` as the source for `<agents-root>/AGENTS
 It also uses `pack/EXAMPLES-README.md` as the source for `<agents-root>/resources/examples/java/README.md`.
 Those installed files are for pack users and are distinct from the repository-internal maintainer guidance files.
 
+Important distinction for real development projects:
+- the installed pack under `<agents-root>/` provides skills, guidance, and examples
+- a project's maintained `app-description/` tree belongs in the **target project workspace**, not inside the pack itself, unless that project explicitly chooses another internal location
+
 ## Install target layout
 
 The installer places files into one of two cross-harness locations:
@@ -38,11 +42,17 @@ Installed layout:
 <agents-root>/
   AGENTS.md
   docs/
+    description-first-application-doctrine.md
+    app-description-skills-plan-backlog.md
+    internal-app-description-architecture.md
+    app-description-maintenance-flow.md
+    app-description-end-to-end-workflow-example.md
     agent-coverage-matrix.md
     prd-to-akka-flow.md
     timer-pattern-selection.md
     workflow-endpoint-pattern.md
     examples/
+      purchase-request-app-description/
       purchase-request-prd.md
       purchase-request-solution-plan.md
     ...
@@ -63,6 +73,14 @@ Installed layout:
     README.md
     references/
       akka-entity-comparison.md
+    app-descriptions/
+      SKILL.md
+    app-description-bootstrap/
+      SKILL.md
+    app-description-input-normalization/
+      SKILL.md
+    app-generate-app/
+      SKILL.md
     akka-solution-decomposition/
       SKILL.md
     akka-workflows/
@@ -83,7 +101,7 @@ Where `<agents-root>` is either `<project-root>/.agents` or `~/.agents`.
 ## Install model
 
 The pack is versioned as one release artifact.
-Each install copies the full packaged skill library, shared references, and exported examples.
+Each install copies the full packaged skill library, shared references, exported examples, and selected description-first reference docs.
 
 ## Path rewrite rules
 

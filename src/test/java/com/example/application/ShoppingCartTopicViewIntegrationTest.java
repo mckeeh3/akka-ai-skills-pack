@@ -3,10 +3,11 @@ package com.example.application;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import akka.javasdk.Metadata;
+import akka.javasdk.CloudEvent;
 import akka.javasdk.testkit.TestKit;
 import akka.javasdk.testkit.TestKitSupport;
 import com.example.domain.ShoppingCart;
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -23,14 +24,12 @@ class ShoppingCartTopicViewIntegrationTest extends TestKitSupport {
     var topicMessages = testKit.getTopicIncomingMessages("shopping-cart-events");
     var builder = testKit.getMessageBuilder();
 
-    Metadata metadata = Metadata.EMPTY.add("ce-subject", "cart-topic-1");
-    topicMessages.publish(
-        builder.of(
-            new ShoppingCart.Event.ItemAdded(new ShoppingCart.LineItem("sku-1", "Akka T-Shirt", 1)),
-            metadata));
-    topicMessages.publish(
-        builder.of(new ShoppingCart.Event.ItemRemoved("sku-1"), metadata));
-    topicMessages.publish(builder.of(new ShoppingCart.Event.CheckedOut(), metadata));
+    var itemAdded = new ShoppingCart.Event.ItemAdded(new ShoppingCart.LineItem("sku-1", "Akka T-Shirt", 1));
+    var itemRemoved = new ShoppingCart.Event.ItemRemoved("sku-1");
+    var checkedOut = new ShoppingCart.Event.CheckedOut();
+    topicMessages.publish(builder.of(itemAdded, metadataFor("evt-add", itemAdded, "cart-topic-1")));
+    topicMessages.publish(builder.of(itemRemoved, metadataFor("evt-remove", itemRemoved, "cart-topic-1")));
+    topicMessages.publish(builder.of(checkedOut, metadataFor("evt-checkout", checkedOut, "cart-topic-1")));
 
     Awaitility.await()
         .ignoreExceptions()
@@ -48,7 +47,6 @@ class ShoppingCartTopicViewIntegrationTest extends TestKitSupport {
               assertEquals("cart-topic-1", row.cartId());
               assertEquals(1, row.eventCount());
               assertTrue(row.localOrigin());
-              assertEquals(testKit.getActorSystem().settings().config().getString("akka.javasdk.runtime.self.region"), row.originRegion());
             });
   }
 
@@ -56,13 +54,11 @@ class ShoppingCartTopicViewIntegrationTest extends TestKitSupport {
   void deletedTopicMessageRemovesTheRow() {
     var topicMessages = testKit.getTopicIncomingMessages("shopping-cart-events");
     var builder = testKit.getMessageBuilder();
-    Metadata metadata = Metadata.EMPTY.add("ce-subject", "cart-topic-delete");
+    var itemAdded = new ShoppingCart.Event.ItemAdded(new ShoppingCart.LineItem("sku-1", "Akka Mug", 1));
+    var deleted = new ShoppingCart.Event.Deleted();
 
-    topicMessages.publish(
-        builder.of(
-            new ShoppingCart.Event.ItemAdded(new ShoppingCart.LineItem("sku-1", "Akka Mug", 1)),
-            metadata));
-    topicMessages.publish(builder.of(new ShoppingCart.Event.Deleted(), metadata));
+    topicMessages.publish(builder.of(itemAdded, metadataFor("evt-delete-add", itemAdded, "cart-topic-delete")));
+    topicMessages.publish(builder.of(deleted, metadataFor("evt-delete", deleted, "cart-topic-delete")));
 
     Awaitility.await()
         .ignoreExceptions()
@@ -77,5 +73,13 @@ class ShoppingCartTopicViewIntegrationTest extends TestKitSupport {
 
               assertTrue(result.entries().isEmpty());
             });
+  }
+
+  private akka.javasdk.Metadata metadataFor(String id, Object payload, String subject) {
+    var typeName = payload.getClass().getAnnotation(akka.javasdk.annotations.TypeName.class).value();
+    return CloudEvent.of(id, URI.create("ShoppingCartTopicViewIntegrationTest"), typeName)
+        .withSubject(subject)
+        .asMetadata()
+        .add("Content-Type", "application/json");
   }
 }

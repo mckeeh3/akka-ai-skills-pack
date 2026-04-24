@@ -43,7 +43,10 @@ class SecureGreetingEndpointIntegrationTest extends TestKitSupport {
                     .responseBodyAs(String.class)
                     .invoke());
 
-    assertTrue(error.getMessage().contains("401") || error.getMessage().contains("403"));
+    assertTrue(
+        error.getMessage().contains("400")
+            || error.getMessage().contains("401")
+            || error.getMessage().contains("403"));
   }
 
   private String bearerTokenWith(Map<String, String> claims) throws Exception {

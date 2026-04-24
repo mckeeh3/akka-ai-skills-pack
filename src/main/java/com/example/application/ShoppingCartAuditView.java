@@ -2,7 +2,6 @@ package com.example.application;
 
 import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.Consume;
-import akka.javasdk.annotations.DeleteHandler;
 import akka.javasdk.annotations.Query;
 import akka.javasdk.annotations.SnapshotHandler;
 import akka.javasdk.view.TableUpdater;
@@ -11,8 +10,8 @@ import com.example.domain.ShoppingCart;
 import java.util.List;
 
 /**
- * Event sourced view demonstrating snapshots, ignored events, custom delete handling, and
- * streaming query results.
+ * Event sourced view demonstrating snapshots, logical delete events, ignored events, and streaming
+ * query results.
  */
 @Component(id = "shopping-cart-audit")
 public class ShoppingCartAuditView extends View {
@@ -37,7 +36,8 @@ public class ShoppingCartAuditView extends View {
             effects().updateRow(new AuditRow(cartId, Math.max(0, current.itemCount() - 1), current.checkedOut(), false));
         case ShoppingCart.Event.CheckedOut ignored ->
             effects().updateRow(new AuditRow(cartId, current.itemCount(), true, false));
-        case ShoppingCart.Event.Deleted ignored -> effects().ignore();
+        case ShoppingCart.Event.Deleted ignored ->
+            effects().updateRow(new AuditRow(cartId, current.itemCount(), current.checkedOut(), true));
       };
     }
 
@@ -52,11 +52,6 @@ public class ShoppingCartAuditView extends View {
                   false));
     }
 
-    @DeleteHandler
-    public Effect<AuditRow> onDelete() {
-      var row = rowState();
-      return effects().updateRow(new AuditRow(row.cartId(), row.itemCount(), row.checkedOut(), true));
-    }
   }
 
   @Query(

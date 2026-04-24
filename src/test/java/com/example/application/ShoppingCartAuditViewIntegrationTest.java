@@ -21,13 +21,13 @@ class ShoppingCartAuditViewIntegrationTest extends TestKitSupport {
   }
 
   @Test
-  void deleteHandlerCanMarkTheRowAsDeleted() {
+  void logicalDeleteEventCanMarkTheRowAsDeleted() {
     IncomingMessages shoppingCartEvents = testKit.getEventSourcedEntityIncomingMessages(ShoppingCartEntity.class);
 
     shoppingCartEvents.publish(
         new ShoppingCart.Event.ItemAdded(new ShoppingCart.LineItem("sku-1", "Akka T-Shirt", 1)),
         "audit-cart-1");
-    shoppingCartEvents.publishDelete("audit-cart-1");
+    shoppingCartEvents.publish(new ShoppingCart.Event.Deleted(), "audit-cart-1");
 
     Awaitility.await()
         .ignoreExceptions()

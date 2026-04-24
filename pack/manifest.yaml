@@ -6,9 +6,9 @@ metadata:
   version: 0.1.0
   sourceRepo: https://github.com/mckeeh3/akka-ai-skills-pack
   description: >-
-    Versioned Akka AI resource pack containing installable skills for intent-driven Akka
-    application design, decomposition, and code generation, plus Akka SDK Java reference
-    examples.
+    Versioned Akka AI resource pack containing installable skills for description-first
+    application maintenance and realization, intent-driven Akka application design,
+    decomposition, and code generation, plus Akka SDK Java reference examples.
   compatibleAkkaSdk: '3.5.x'
 
 install:
@@ -26,6 +26,48 @@ install:
 
 content:
   skills:
+    - id: app-description-auth-security
+      path: skills/app-description-auth-security
+      category: focused
+    - id: app-description-behavior-specification
+      path: skills/app-description-behavior-specification
+      category: focused
+    - id: app-description-bootstrap
+      path: skills/app-description-bootstrap
+      category: focused
+    - id: app-description-capability-modeling
+      path: skills/app-description-capability-modeling
+      category: focused
+    - id: app-description-change-impact
+      path: skills/app-description-change-impact
+      category: focused
+    - id: app-description-change-summary
+      path: skills/app-description-change-summary
+      category: focused
+    - id: app-description-input-normalization
+      path: skills/app-description-input-normalization
+      category: focused
+    - id: app-description-intake-router
+      path: skills/app-description-intake-router
+      category: focused
+    - id: app-description-observability
+      path: skills/app-description-observability
+      category: focused
+    - id: app-description-readiness-assessment
+      path: skills/app-description-readiness-assessment
+      category: focused
+    - id: app-description-readiness-summary
+      path: skills/app-description-readiness-summary
+      category: focused
+    - id: app-description-test-specification
+      path: skills/app-description-test-specification
+      category: focused
+    - id: app-descriptions
+      path: skills/app-descriptions
+      category: architecture
+    - id: app-generate-app
+      path: skills/app-generate-app
+      category: focused
     - id: akka-agent-component
       path: skills/akka-agent-component
       category: focused
@@ -307,6 +349,20 @@ bundles:
     includeReferences: true
     includeExamples: true
     skills:
+      - app-description-auth-security
+      - app-description-behavior-specification
+      - app-description-bootstrap
+      - app-description-capability-modeling
+      - app-description-change-impact
+      - app-description-change-summary
+      - app-description-input-normalization
+      - app-description-intake-router
+      - app-description-observability
+      - app-description-readiness-assessment
+      - app-description-readiness-summary
+      - app-description-test-specification
+      - app-descriptions
+      - app-generate-app
       - akka-agent-component
       - akka-agent-component-tools
       - akka-agent-evaluation
