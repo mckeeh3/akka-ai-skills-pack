@@ -27,8 +27,9 @@ Use the skill library as a visible 3-stage hierarchy:
 ### Stage 1: Intent and architecture
 Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape.
 
-Primary Stage 1 entry skill:
+Primary Stage 1 entry skills:
 - `akka-solution-decomposition`
+- `akka-prd-to-specs-backlog` — use when the user wants repo-ready planning artifacts under `specs/`, not just a solution plan
 
 ### Stage 2: Structural decisions
 Use this stage when you already know part of the architecture, but still need to resolve a focused design choice before coding.
@@ -89,7 +90,39 @@ You can also consult the comparison/reference files:
 - `../docs/workflow-endpoint-pattern.md`
 - `../docs/timer-pattern-selection.md`
 
-## Solution decomposition skill
+## PRD planning entry skills
+
+### Solution decomposition skill
+
+Start with:
+- `akka-solution-decomposition`
+
+Use when the goal is to derive the Akka component set and implementation handoff, but not necessarily to materialize a full repository planning package.
+
+### PRD to specs/backlog skill
+
+Start with:
+- `akka-prd-to-specs-backlog`
+
+Use when the task starts from a PRD or high-level requirements and the user wants the result written as a repository planning structure under `specs/`, including:
+- `specs/akka-solution-plan.md`
+- cross-cutting specs
+- numbered slice specs
+- numbered build backlogs
+- execution-order readmes
+
+This skill builds on `akka-solution-decomposition` and continues into harness-friendly file generation for downstream implementation.
+
+### Slice spec to backlog skill
+
+Start with:
+- `akka-slice-spec-to-backlog`
+
+Use when a `specs/slices/*.md` file already exists and the next task is to generate or refine only the matching `specs/backlog/*-build-backlog.md` file.
+
+This is the narrow follow-on planning skill for turning one slice into an implementation-ready backlog without redoing the full PRD decomposition.
+
+### Solution decomposition details
 
 Start with:
 - `akka-solution-decomposition`
