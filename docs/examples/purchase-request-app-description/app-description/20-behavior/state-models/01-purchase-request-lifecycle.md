@@ -1,0 +1,23 @@
+# State Model: Purchase Request Lifecycle
+
+- states:
+  - draft
+  - submitted
+  - approved
+  - rejected
+- valid-transitions:
+  - draft -> submitted
+  - submitted -> approved
+  - submitted -> rejected
+- invalid-transitions:
+  - approved -> draft
+  - rejected -> approved
+  - approved -> rejected
+  - rejected -> submitted
+- invariants:
+  - approved and rejected are terminal states
+  - only submitted requests may be approved or rejected
+  - required fields must be present before submission
+- no-op semantics:
+  - repeated approval of an already approved request is a no-op success only if no duplicate side effect occurs
+  - repeated submission of a terminal request is forbidden

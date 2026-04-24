@@ -5,6 +5,53 @@ This directory contains AI-focused skills for turning high-level requirements in
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
 
+## Description-first intake skills
+
+This repository now also includes an initial description-first skill path for maintaining **application descriptions as the source of truth** before app realization.
+
+Start here when the user is primarily describing or revising the app rather than explicitly asking for code generation.
+
+Top-level app-description entry skill:
+- `app-descriptions` — orchestrate description-first work across intake, behavior, tests, security, observability, readiness, generation, and review
+
+Initial app-description skills:
+- `app-description-bootstrap` — create the initial internal app-description tree for a new app or sparse early app idea
+- `app-description-input-normalization` — convert flexible user input into a structured app-description delta envelope
+- `app-description-intake-router` — classify flexible user input and choose the next description-maintenance or realization path
+- `app-description-capability-modeling` — update the authoritative capability layer of the app description
+- `app-description-behavior-specification` — update the authoritative behavior layer of the app description
+- `app-description-test-specification` — update the authoritative test layer of the app description
+- `app-description-change-impact` — determine which layers, maps, readiness state, and generated outputs are affected by a change
+- `app-description-auth-security` — update the authoritative auth/security layer of the app description
+- `app-description-observability` — update the authoritative observability layer of the app description
+- `app-description-readiness-assessment` — assess whether the current app description is sufficiently complete for generation
+- `app-generate-app` — realize the current app description as generated outputs
+- `app-description-change-summary` — summarize what changed after a revision request
+- `app-description-readiness-summary` — summarize why the description is or is not ready for generation
+
+Default description-first flow:
+1. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet
+2. normalize the input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
+3. route the user input with `app-description-intake-router`
+4. update capabilities with `app-description-capability-modeling` when the request changes scope, actors, or business outcomes
+5. update behavior with `app-description-behavior-specification` when the request changes what the app should do
+6. update tests with `app-description-test-specification` when the request needs acceptance, regression, edge-case, or verification definition
+7. run `app-description-change-impact` to identify cross-layer and realization implications
+8. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, or data protection
+9. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
+10. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
+11. realize outputs with `app-generate-app` only when generation is requested or accepted
+12. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+
+Reference docs:
+- `../docs/description-first-application-doctrine.md`
+- `../docs/app-description-skills-plan-backlog.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
+- `../docs/app-description-end-to-end-workflow-example.md`
+- `../docs/examples/purchase-request-app-description/README.md`
+- `../docs/examples/purchase-request-app-description/normalized-input-example.md`
+
 ## Intent-driven usage flow
 
 Use the skills in this order:

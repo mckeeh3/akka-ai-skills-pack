@@ -1,0 +1,27 @@
+# Capability: Submit and Approve Purchase Requests
+
+- business-goal:
+  - support employee submission of purchase requests and manager approval or rejection for requests requiring approval
+- actors:
+  - employee submitter
+  - manager approver
+- in-scope outcomes:
+  - create draft request
+  - submit request
+  - approve or reject submitted request
+  - lock completed requests from further mutation
+- out-of-scope:
+  - vendor selection
+  - payment processing
+- linked-behavior:
+  - `../20-behavior/state-models/01-purchase-request-lifecycle.md`
+  - `../20-behavior/flows/01-submission-and-approval-flow.md`
+  - `../20-behavior/rules/01-edit-and-approval-rules.md`
+- linked-tests:
+  - `../30-tests/acceptance/01-purchase-request-acceptance.md`
+  - `../30-tests/regression/01-repeat-actions.md`
+  - `../30-tests/negative/01-forbidden-actions.md`
+- linked-security:
+  - `../40-auth-security/identity-and-authorization.md`
+- linked-observability:
+  - `../50-observability/logs-metrics-traces-and-alerts.md`
