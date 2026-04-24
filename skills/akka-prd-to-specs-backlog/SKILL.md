@@ -15,6 +15,7 @@ Generate a consistent planning package from a PRD, requirements document, or hig
 - produces a master Akka solution plan
 - splits the plan into bounded vertical slice specs
 - turns each slice into a build backlog suitable for one or more independent harness operations
+- optionally materializes leaf task briefs when a backlog item is still too large for a single focused harness run
 - writes index files that make execution order and dependencies explicit
 - keeps files small enough to support focused downstream coding sessions
 
@@ -50,6 +51,7 @@ Read these first if present:
 - `../akka-solution-decomposition/SKILL.md`
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
+- `../../specs/tasks/README.md`
 - `../../specs/akka-solution-plan.md` if it already exists
 - `../references/akka-entity-comparison.md`
 
@@ -90,12 +92,22 @@ Create matching numbered files such as:
 - `specs/backlog/02-<slice-name>-build-backlog.md`
 - `specs/backlog/03-<slice-name>-build-backlog.md`
 
+### Optional leaf task briefs
+Create these only when a backlog item would still be too large or too ambiguous for one focused harness run:
+- `specs/tasks/README.md`
+- `specs/tasks/01-<slice-name>/01-<task-name>.md`
+- `specs/tasks/01-<slice-name>/02-<task-name>.md`
+
 ## Output contract
 
 This skill is complete only when a future harness run can:
 - read a slice spec
 - read the matching backlog
 - implement a bounded piece of work without rereading the entire PRD
+
+If the backlog is still too broad for that, either:
+- tighten the backlog's harness task breakdown, or
+- create leaf task briefs under `specs/tasks/`
 
 If the output is still too broad for that, the skill has not decomposed far enough.
 
@@ -120,6 +132,11 @@ specs/
     01-....-build-backlog.md
     02-....-build-backlog.md
     ...
+  tasks/               # optional leaf layer for extra-large slices
+    README.md
+    01-<slice-name>/
+      01-<task-name>.md
+      02-<task-name>.md
 ```
 
 ## Decomposition workflow
@@ -188,7 +205,25 @@ For each slice, create a matching backlog file that includes:
 - done criteria
 - explicit defer list
 
-### 5. Create execution-order docs
+The suggested harness task breakdown is the default leaf layer.
+Each task item should be phrased as a bounded independent implementation prompt.
+
+### 5. Materialize optional leaf task briefs when needed
+
+Create physical task files under `specs/tasks/` only when at least one backlog task item is still too large, too ambiguous, or too cross-cutting for a single focused harness run.
+
+A good task brief should contain:
+- purpose
+- required reads
+- exact scope
+- explicit non-goals
+- Akka components involved
+- exact skills to load
+- expected outputs
+- required tests
+- done criteria
+
+### 6. Create execution-order docs
 
 Update or create:
 - `specs/README.md`
@@ -219,6 +254,8 @@ Within a backlog, prefer work items like:
 - one view family
 - one endpoint family
 - one test family
+
+If a work item still spans multiple unrelated component families or too many files, split it again into a task brief rather than handing it directly to code generation.
 
 ## Naming rules
 
@@ -295,8 +332,9 @@ Before finishing, verify:
 - backlog files exist and align by number with slice specs
 - cross-cutting concerns are not duplicated excessively across slices
 - each backlog supports bounded implementation work
+- optional task briefs exist when backlog items are still too broad
 - execution-order docs point to the correct files
-- naming is consistent across `specs/`, `slices/`, and `backlog/`
+- naming is consistent across `specs/`, `slices/`, `backlog/`, and optional `tasks/`
 
 ## Response style
 

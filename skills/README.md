@@ -110,6 +110,7 @@ Use when the task starts from a PRD or high-level requirements and the user want
 - numbered slice specs
 - numbered build backlogs
 - execution-order readmes
+- optional leaf task briefs when one backlog item is still too large for a single focused harness run
 
 This skill builds on `akka-solution-decomposition` and continues into harness-friendly file generation for downstream implementation.
 
@@ -121,6 +122,17 @@ Start with:
 Use when a `specs/slices/*.md` file already exists and the next task is to generate or refine only the matching `specs/backlog/*-build-backlog.md` file.
 
 This is the narrow follow-on planning skill for turning one slice into an implementation-ready backlog without redoing the full PRD decomposition.
+The backlog should expose bounded harness-sized task items; if one task item is still too large, continue decomposition before coding.
+
+### Backlog item to task brief skill
+
+Start with:
+- `akka-backlog-item-to-task-brief`
+
+Use when a backlog file already exists and one specific item from its `Suggested harness task breakdown` still needs to be turned into a smaller physical task brief under `specs/tasks/` before coding.
+
+This is the leaf-planning skill for converting one backlog item into a single focused implementation contract with exact reads, scope, non-goals, skills, outputs, tests, and done criteria.
+See `skills/akka-backlog-item-to-task-brief/SKILL.md` for example invocation patterns.
 
 ### Solution decomposition details
 

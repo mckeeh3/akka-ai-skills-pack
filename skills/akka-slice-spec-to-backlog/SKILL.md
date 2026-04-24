@@ -12,6 +12,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 ## Goal
 
 Create or update a single backlog file that is tightly aligned with one existing slice spec and is detailed enough to drive focused coding sessions.
+The backlog should end in bounded harness-sized task items, not just class lists and prose.
 
 ## Use this skill when
 
@@ -41,7 +42,9 @@ Read these first if present:
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
+- `../../specs/tasks/README.md`
 - `../../specs/templates/build-backlog-template.md`
+- `../../specs/templates/implementation-task-template.md`
 - the target slice spec file under `../../specs/slices/`
 - any cross-cutting spec files referenced or obviously relevant to the slice
 - `../../specs/akka-solution-plan.md`
@@ -75,6 +78,9 @@ The backlog file must include:
 11. Done criteria
 12. Explicit defer list
 
+The suggested harness task breakdown is the default leaf layer for implementation.
+Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
+
 ## Mapping rules
 
 ### Slice to backlog name mapping
@@ -96,6 +102,7 @@ Not allowed:
 
 ### Detail level
 The backlog should be detailed enough for several small harness runs, but not so detailed that it becomes source code.
+If one task item still spans multiple unrelated component families or too many files, call that out and recommend a further task-brief decomposition before coding.
 
 ## Sizing rules
 
@@ -125,6 +132,7 @@ Before finishing, verify:
 - the endpoint list fits the slice scope
 - the tests cover entity/workflow/view/endpoint behavior as applicable
 - the harness task breakdown is composed of bounded operations
+- any oversized task item is explicitly marked for further decomposition before coding
 - the defer list is explicit
 
 ## Response style
