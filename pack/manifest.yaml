@@ -281,6 +281,9 @@ content:
     - id: akka-backlog-item-to-task-brief
       path: skills/akka-backlog-item-to-task-brief
       category: planning
+    - id: akka-backlog-to-pending-tasks
+      path: skills/akka-backlog-to-pending-tasks
+      category: planning
     - id: akka-solution-decomposition
       path: skills/akka-solution-decomposition
       category: architecture
@@ -446,6 +449,7 @@ bundles:
       - akka-prd-to-specs-backlog
       - akka-slice-spec-to-backlog
       - akka-backlog-item-to-task-brief
+      - akka-backlog-to-pending-tasks
       - akka-solution-decomposition
       - akka-timed-action-component
       - akka-timed-action-testing

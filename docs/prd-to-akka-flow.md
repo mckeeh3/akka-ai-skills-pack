@@ -15,6 +15,9 @@ Requirements input:
 Resulting solution plan:
 - `examples/purchase-request-solution-plan.md`
 
+Example pending task queue:
+- `examples/purchase-request-pending-tasks.md`
+
 ## How to use the pair
 
 ### As a learning example

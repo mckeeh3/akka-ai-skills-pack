@@ -56,6 +56,7 @@ Installed layout:
       purchase-request-app-description/
       purchase-request-prd.md
       purchase-request-solution-plan.md
+      purchase-request-pending-tasks.md
     ...
   manifests/
     akka-ai-skills-pack.yaml
@@ -83,6 +84,8 @@ Installed layout:
     app-generate-app/
       SKILL.md
     akka-solution-decomposition/
+      SKILL.md
+    akka-backlog-to-pending-tasks/
       SKILL.md
     akka-do-next-pending-task/
       SKILL.md

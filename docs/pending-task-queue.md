@@ -32,6 +32,7 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 7. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
 8. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
 9. When a task is complete or blocked, report the next runnable pending task if one exists.
+10. At the end of ordinary harness responses, remind the user when runnable pending tasks remain, without automatically starting them.
 
 ## Status values
 
@@ -112,6 +113,24 @@ To choose the next task:
 4. Select the first task whose dependencies are empty or all refer to tasks with status `done`.
 5. If no task is runnable, report the earliest blocked dependency chain instead of coding.
 
+## End-of-response reminder
+
+When `specs/pending-tasks.md` exists and runnable pending tasks remain, end responses with a short reminder unless the response is only a trivial clarification or the user asked not to receive reminders.
+
+Use this shape:
+
+```md
+Pending tasks remain.
+
+Next runnable task:
+- <TASK-ID>: <title>
+
+To continue reliably, start a fresh context and ask:
+"Use akka-do-next-pending-task to execute the next pending task from specs/pending-tasks.md."
+```
+
+Do not automatically execute the next task unless the user asks to continue implementation.
+
 ## Fresh-context handoff prompt
 
 When the next task should be run in a new context, use a prompt like:
@@ -163,8 +182,10 @@ Preserve useful prior notes when adding blocked or completion notes.
 ## Related skills and docs
 
 - `../skills/akka-do-next-pending-task/SKILL.md`
+- `../skills/akka-backlog-to-pending-tasks/SKILL.md`
 - `../skills/akka-prd-to-specs-backlog/SKILL.md`
 - `../skills/akka-slice-spec-to-backlog/SKILL.md`
 - `../skills/akka-backlog-item-to-task-brief/SKILL.md`
+- `examples/purchase-request-pending-tasks.md`
 - `solution-plan-to-implementation-queue.md`
 - `intent-driven-usage-flow.md`

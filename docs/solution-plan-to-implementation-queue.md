@@ -105,6 +105,8 @@ Before starting code generation, verify that the solution plan already answers:
 - `intent-driven-usage-flow.md`
 - `prd-to-akka-flow.md`
 - `examples/purchase-request-solution-plan.md`
+- `examples/purchase-request-pending-tasks.md`
 - `../skills/README.md`
 - `../skills/akka-solution-decomposition/SKILL.md`
+- `../skills/akka-backlog-to-pending-tasks/SKILL.md`
 - `../skills/akka-do-next-pending-task/SKILL.md`

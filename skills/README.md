@@ -191,6 +191,15 @@ Use when a backlog file already exists and one specific item from its `Suggested
 This is the leaf-planning skill for converting one backlog item into a single focused implementation contract with exact reads, scope, non-goals, skills, outputs, tests, and done criteria, then updating the matching `specs/pending-tasks.md` entry.
 See `skills/akka-backlog-item-to-task-brief/SKILL.md` for example invocation patterns.
 
+### Pending task queue materialization skill
+
+Start with:
+- `akka-backlog-to-pending-tasks`
+
+Use when `specs/backlog/*.md` files already exist but `specs/pending-tasks.md` is missing, stale, incomplete, or needs to be synchronized with the current backlog.
+
+This is a repair/materialization skill. It creates queue entries from backlog `Suggested harness task breakdown` items without redoing the PRD decomposition and without implementing code.
+
 ### Pending task execution skill
 
 Start with:
@@ -200,8 +209,9 @@ Use when `specs/pending-tasks.md` exists and the user asks to continue, do the n
 
 This is the manual queue-consumption skill for downstream implementation work. It selects one runnable task, prefers a fresh context session, loads only that task's required reads and skills, updates the task status, and reports the next runnable pending task.
 
-Reference:
+References:
 - `../docs/pending-task-queue.md`
+- `../docs/examples/purchase-request-pending-tasks.md`
 
 ### Solution decomposition details
 

@@ -86,6 +86,35 @@ Prefer this pattern:
 - state assumptions clearly when requirements are ambiguous
 - ask clarifying questions when ambiguity materially affects architecture or component choice
 
+## Pending task reminders
+
+When the target project contains `specs/pending-tasks.md`, treat it as the durable follow-on implementation queue.
+
+At the end of each response, if pending runnable tasks remain, include a short reminder unless the response is only a trivial clarification or the user explicitly asks not to receive reminders.
+
+Reminder behavior:
+1. Inspect `specs/pending-tasks.md` when it is already in context or cheap to read.
+2. Identify the first task with `status: pending` whose `depends on` entries are empty or all `done`.
+3. Do not automatically start the task unless the user asked to continue implementation.
+4. Recommend a fresh context for the next task.
+5. Keep the reminder short: name the next task and provide a copyable continuation prompt.
+
+Use this reminder shape:
+
+```md
+Pending tasks remain.
+
+Next runnable task:
+- <TASK-ID>: <title>
+
+To continue reliably, start a fresh context and ask:
+"Use akka-do-next-pending-task to execute the next pending task from specs/pending-tasks.md."
+```
+
+If `specs/pending-tasks.md` exists but no pending task is runnable, mention the blocked/dependency state briefly instead of suggesting implementation.
+
+When executing a pending task, use `skills/akka-do-next-pending-task/SKILL.md` and execute exactly one queue item.
+
 ## Short routing rule
 
 When unsure:
