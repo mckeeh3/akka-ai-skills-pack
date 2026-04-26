@@ -134,6 +134,9 @@ content:
     - id: akka-consumers
       path: skills/akka-consumers
       category: component-suite
+    - id: akka-do-next-pending-task
+      path: skills/akka-do-next-pending-task
+      category: focused
     - id: akka-entity-type-selection
       path: skills/akka-entity-type-selection
       category: selection
@@ -269,6 +272,15 @@ content:
     - id: akka-mcp-endpoints
       path: skills/akka-mcp-endpoints
       category: component-suite
+    - id: akka-prd-to-specs-backlog
+      path: skills/akka-prd-to-specs-backlog
+      category: planning
+    - id: akka-slice-spec-to-backlog
+      path: skills/akka-slice-spec-to-backlog
+      category: planning
+    - id: akka-backlog-item-to-task-brief
+      path: skills/akka-backlog-item-to-task-brief
+      category: planning
     - id: akka-solution-decomposition
       path: skills/akka-solution-decomposition
       category: architecture
@@ -385,6 +397,7 @@ bundles:
       - akka-consumer-producing
       - akka-consumer-testing
       - akka-consumers
+      - akka-do-next-pending-task
       - akka-entity-type-selection
       - akka-ese-application-entity
       - akka-ese-doc-snippets
@@ -430,6 +443,9 @@ bundles:
       - akka-mcp-endpoint-resources-prompts
       - akka-mcp-endpoint-testing
       - akka-mcp-endpoints
+      - akka-prd-to-specs-backlog
+      - akka-slice-spec-to-backlog
+      - akka-backlog-item-to-task-brief
       - akka-solution-decomposition
       - akka-timed-action-component
       - akka-timed-action-testing

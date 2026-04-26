@@ -48,6 +48,7 @@ Installed layout:
     app-description-maintenance-flow.md
     app-description-end-to-end-workflow-example.md
     agent-coverage-matrix.md
+    pending-task-queue.md
     prd-to-akka-flow.md
     timer-pattern-selection.md
     workflow-endpoint-pattern.md
@@ -82,6 +83,8 @@ Installed layout:
     app-generate-app/
       SKILL.md
     akka-solution-decomposition/
+      SKILL.md
+    akka-do-next-pending-task/
       SKILL.md
     akka-workflows/
       SKILL.md

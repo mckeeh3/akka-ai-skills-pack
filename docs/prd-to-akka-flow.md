@@ -37,7 +37,8 @@ then produce an Akka solution plan with:
 ### As a coding handoff
 Once the solution plan is accepted, treat it as the implementation contract.
 Load only the Stage 3 skills named in the plan and generate code component by component, with corresponding tests for each component family.
-For a lightweight queue template, see `solution-plan-to-implementation-queue.md`.
+For reliable multi-session execution, materialize follow-on work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
+For queue templates, see `solution-plan-to-implementation-queue.md` and `pending-task-queue.md`.
 
 ## What the example demonstrates
 

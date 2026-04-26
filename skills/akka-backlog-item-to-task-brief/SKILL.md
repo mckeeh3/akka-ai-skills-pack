@@ -19,6 +19,7 @@ Create or update one small task brief under `specs/tasks/` that:
 - lists the exact Akka components and skills to load
 - lists expected code/test outputs
 - gives done criteria clear enough for a harness to stop at the right boundary
+- creates or updates the corresponding queue entry in `specs/pending-tasks.md`
 
 ## Use this skill when
 
@@ -55,6 +56,8 @@ Read these first if present:
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
 - `../../specs/tasks/README.md`
+- `../../specs/pending-tasks.md` if it already exists
+- `../../docs/pending-task-queue.md`
 - `../../specs/templates/implementation-task-template.md`
 - `../../specs/akka-solution-plan.md`
 - the target slice spec under `../../specs/slices/`
@@ -72,6 +75,9 @@ For one specific backlog item, produce one matching task brief such as:
 - source backlog: `specs/backlog/01-fleet-visibility-build-backlog.md`
 - target task brief: `specs/tasks/01-fleet-visibility-mvp/01-shared-foundations-and-tenant-settings.md`
 
+Also create or update the matching task entry in:
+- `specs/pending-tasks.md`
+
 The brief should normally correspond to:
 - one item from `Suggested harness task breakdown`
 - or one smaller child task split from an oversized backlog item
@@ -88,6 +94,8 @@ Each task brief must include:
 7. Expected outputs
 8. Required tests
 9. Done criteria
+
+The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, and done criteria from the brief.
 
 ## Mapping rules
 
@@ -132,6 +140,7 @@ A task brief is too large if it still spans:
 - unresolved architecture questions
 
 If that happens, split again before coding.
+Only add queue entries that are small enough for one focused harness run; if the work remains too broad, create multiple task briefs or mark the corresponding queue item `blocked` with the exact split needed.
 
 ## Naming rules
 
@@ -173,6 +182,8 @@ Before finishing, verify:
 - required tests are named clearly
 - the listed skills match the task's component type
 - done criteria define a clear stopping point
+- `specs/pending-tasks.md` has a matching entry or updated existing entry for this task brief
+- existing queue task IDs and statuses are preserved
 
 ## Example invocation patterns
 
@@ -194,5 +205,6 @@ When using this skill:
 - name the source backlog file and target backlog item first
 - summarize how you are narrowing it
 - then write the task brief file
-- clearly report which file was added or updated
+- update `specs/pending-tasks.md` for the narrowed task
+- clearly report which files were added or updated
 - do not jump into implementation code

@@ -2,6 +2,8 @@
 
 Use this lightweight template after Stage 1 decomposition is accepted.
 
+For durable multi-session execution with task status, use `pending-task-queue.md` and materialize the queue as `specs/pending-tasks.md`.
+
 Purpose:
 - turn the solution plan into a downstream implementation work queue
 - keep coding focused on one component family at a time
@@ -77,6 +79,8 @@ For each queue item:
 3. generate its corresponding tests before moving on
 4. keep later components out of context until their step begins
 
+For reliable follow-on work across sessions, convert this lightweight queue into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
+
 ## What belongs downstream
 
 The downstream implementation phase may include:
@@ -97,8 +101,10 @@ Before starting code generation, verify that the solution plan already answers:
 
 ## Related docs
 
+- `pending-task-queue.md`
 - `intent-driven-usage-flow.md`
 - `prd-to-akka-flow.md`
 - `examples/purchase-request-solution-plan.md`
 - `../skills/README.md`
 - `../skills/akka-solution-decomposition/SKILL.md`
+- `../skills/akka-do-next-pending-task/SKILL.md`

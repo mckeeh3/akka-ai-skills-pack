@@ -1,6 +1,6 @@
 ---
 name: akka-prd-to-specs-backlog
-description: Turn a PRD or other high-level requirements artifact into a repo-ready planning package: master Akka solution plan, cross-cutting specs, numbered slice specs, numbered build backlogs, and execution-order docs under specs/.
+description: Turn a PRD or other high-level requirements artifact into a repo-ready planning package; master Akka solution plan, cross-cutting specs, numbered slice specs, numbered build backlogs, and execution-order docs under specs/.
 ---
 
 # Akka PRD to Specs Backlog
@@ -15,6 +15,7 @@ Generate a consistent planning package from a PRD, requirements document, or hig
 - produces a master Akka solution plan
 - splits the plan into bounded vertical slice specs
 - turns each slice into a build backlog suitable for one or more independent harness operations
+- creates or updates `specs/pending-tasks.md` as the durable execution queue
 - optionally materializes leaf task briefs when a backlog item is still too large for a single focused harness run
 - writes index files that make execution order and dependencies explicit
 - keeps files small enough to support focused downstream coding sessions
@@ -52,6 +53,8 @@ Read these first if present:
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
 - `../../specs/tasks/README.md`
+- `../../specs/pending-tasks.md` if it already exists
+- `../../docs/pending-task-queue.md`
 - `../../specs/akka-solution-plan.md` if it already exists
 - `../references/akka-entity-comparison.md`
 
@@ -72,6 +75,7 @@ At minimum, create or update these files under `specs/`:
 ### Top-level
 - `specs/akka-solution-plan.md`
 - `specs/README.md`
+- `specs/pending-tasks.md`
 
 ### Cross-cutting specs
 Create only the ones justified by the PRD, but prefer these when broadly applicable:
@@ -101,6 +105,8 @@ Create these only when a backlog item would still be too large or too ambiguous 
 ## Output contract
 
 This skill is complete only when a future harness run can:
+- read `specs/pending-tasks.md`
+- select the next runnable task
 - read a slice spec
 - read the matching backlog
 - implement a bounded piece of work without rereading the entire PRD
@@ -119,6 +125,7 @@ Prefer this structure:
 specs/
   README.md
   akka-solution-plan.md
+  pending-tasks.md
   cross-cutting/
     00-common-domain-and-conventions.md
     01-auth-tenancy-audit.md
@@ -223,7 +230,27 @@ A good task brief should contain:
 - required tests
 - done criteria
 
-### 6. Create execution-order docs
+### 6. Create the pending task queue
+
+Create or update:
+- `specs/pending-tasks.md`
+
+Use `../../docs/pending-task-queue.md` as the queue contract.
+
+The queue must:
+- contain one task for each bounded item in each backlog's `Suggested harness task breakdown`
+- use stable task IDs such as `TASK-001`, `TASK-002`, `TASK-003`
+- preserve existing task IDs and statuses when updating an existing queue
+- set new tasks to `status: pending`
+- represent dependencies with `depends on: [...]`
+- include the smallest `required reads` needed for the task
+- include the exact implementation `skills` to load
+- include expected outputs, required checks, and done criteria
+- point to a task brief when one exists, or use `task brief: none`
+
+The queue is the durable follow-on execution index. A user should be able to start a fresh harness session and ask to run `akka-do-next-pending-task` without rereading the whole PRD.
+
+### 7. Create execution-order docs
 
 Update or create:
 - `specs/README.md`
@@ -234,6 +261,7 @@ These must explain:
 - slice/backlog numbering alignment
 - dependencies between slices
 - recommended harness execution style
+- how to continue implementation with `specs/pending-tasks.md` and `akka-do-next-pending-task`
 
 ## Sizing rules
 
@@ -312,6 +340,23 @@ Each `specs/backlog/*.md` file should contain:
 - Done criteria
 - Explicit defer list
 
+## Required content for the pending task queue
+
+`specs/pending-tasks.md` must follow `../../docs/pending-task-queue.md` and include, for each task:
+- task ID and title
+- status
+- source backlog path
+- task brief path or `none`
+- dependencies
+- required reads
+- skills
+- expected outputs
+- required checks
+- done criteria
+- notes when useful
+
+Create queue tasks from backlog `Suggested harness task breakdown` items, not from every class name. A queue task should be one focused harness implementation run.
+
 ## Anti-patterns
 
 Avoid:
@@ -321,6 +366,8 @@ Avoid:
 - mixing unrelated capabilities into one slice only because they are both "backend"
 - skipping tests in planning docs
 - numbering slices and backlogs inconsistently
+- omitting `specs/pending-tasks.md` when follow-on implementation work exists
+- generating queue tasks that are too broad for one fresh harness context
 - inventing new directory structures when `specs/` already has an established pattern
 
 ## Final review checklist
@@ -330,11 +377,14 @@ Before finishing, verify:
 - the solution plan exists
 - slice specs exist and are dependency-ordered
 - backlog files exist and align by number with slice specs
+- `specs/pending-tasks.md` exists when follow-on implementation work remains
+- pending tasks map to backlog task-breakdown items
+- pending tasks include required reads, skills, expected outputs, checks, and done criteria
 - cross-cutting concerns are not duplicated excessively across slices
 - each backlog supports bounded implementation work
 - optional task briefs exist when backlog items are still too broad
 - execution-order docs point to the correct files
-- naming is consistent across `specs/`, `slices/`, `backlog/`, and optional `tasks/`
+- naming is consistent across `specs/`, `slices/`, `backlog/`, optional `tasks/`, and `pending-tasks.md`
 
 ## Response style
 
@@ -342,5 +392,7 @@ When using this skill:
 - briefly summarize the proposed slice structure first
 - then create or update the files
 - clearly list which files were added or changed
+- include `specs/pending-tasks.md` in the changed-file summary when follow-on implementation tasks exist
+- name the first runnable pending task and recommend a fresh context with `akka-do-next-pending-task`
 - keep planning explicit and repo-oriented
 - do not jump straight into application code

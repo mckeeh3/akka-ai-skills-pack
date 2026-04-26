@@ -165,6 +165,7 @@ Use when the task starts from a PRD or high-level requirements and the user want
 - cross-cutting specs
 - numbered slice specs
 - numbered build backlogs
+- `specs/pending-tasks.md` as the durable follow-on execution queue
 - execution-order readmes
 - optional leaf task briefs when one backlog item is still too large for a single focused harness run
 
@@ -178,7 +179,7 @@ Start with:
 Use when a `specs/slices/*.md` file already exists and the next task is to generate or refine only the matching `specs/backlog/*-build-backlog.md` file.
 
 This is the narrow follow-on planning skill for turning one slice into an implementation-ready backlog without redoing the full PRD decomposition.
-The backlog should expose bounded harness-sized task items; if one task item is still too large, continue decomposition before coding.
+The backlog should expose bounded harness-sized task items and update `specs/pending-tasks.md`; if one task item is still too large, continue decomposition before coding.
 
 ### Backlog item to task brief skill
 
@@ -187,8 +188,20 @@ Start with:
 
 Use when a backlog file already exists and one specific item from its `Suggested harness task breakdown` still needs to be turned into a smaller physical task brief under `specs/tasks/` before coding.
 
-This is the leaf-planning skill for converting one backlog item into a single focused implementation contract with exact reads, scope, non-goals, skills, outputs, tests, and done criteria.
+This is the leaf-planning skill for converting one backlog item into a single focused implementation contract with exact reads, scope, non-goals, skills, outputs, tests, and done criteria, then updating the matching `specs/pending-tasks.md` entry.
 See `skills/akka-backlog-item-to-task-brief/SKILL.md` for example invocation patterns.
+
+### Pending task execution skill
+
+Start with:
+- `akka-do-next-pending-task`
+
+Use when `specs/pending-tasks.md` exists and the user asks to continue, do the next pending task, execute a named task ID, or use `/do-next-pending-task`.
+
+This is the manual queue-consumption skill for downstream implementation work. It selects one runnable task, prefers a fresh context session, loads only that task's required reads and skills, updates the task status, and reports the next runnable pending task.
+
+Reference:
+- `../docs/pending-task-queue.md`
 
 ### Solution decomposition details
 
@@ -224,8 +237,11 @@ Once a solution plan is accepted, treat it as the work queue for coding:
 4. repeat for each remaining component
 5. finish any downstream endpoint, web UI, or documentation/snippet work called out by the plan
 
+For durable multi-session execution, materialize the work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
+
 Decomposition is complete only when it enables focused implementation work with low ambiguity.
 For a lightweight template, see `../docs/solution-plan-to-implementation-queue.md`.
+For the durable queue contract, see `../docs/pending-task-queue.md`.
 
 ## Agent skills
 

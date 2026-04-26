@@ -89,6 +89,7 @@ Treat the accepted solution plan as the handoff artifact for coding: each chosen
 For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md`.
 For a concrete requirements-to-plan example, see `docs/prd-to-akka-flow.md` and `docs/examples/purchase-request-prd.md`.
 For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implementation-queue.md`.
+For durable multi-session task execution, see `docs/pending-task-queue.md` and `skills/akka-do-next-pending-task/SKILL.md`.
 
 ## Visible 3-stage skill model
 

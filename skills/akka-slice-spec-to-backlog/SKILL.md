@@ -13,6 +13,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 
 Create or update a single backlog file that is tightly aligned with one existing slice spec and is detailed enough to drive focused coding sessions.
 The backlog should end in bounded harness-sized task items, not just class lists and prose.
+Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
 
 ## Use this skill when
 
@@ -43,6 +44,8 @@ Read these first if present:
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
 - `../../specs/tasks/README.md`
+- `../../specs/pending-tasks.md` if it already exists
+- `../../docs/pending-task-queue.md`
 - `../../specs/templates/build-backlog-template.md`
 - `../../specs/templates/implementation-task-template.md`
 - the target slice spec file under `../../specs/slices/`
@@ -62,6 +65,9 @@ For one target slice file such as:
 produce the matching backlog file:
 - `specs/backlog/03-consumables-ordering-build-backlog.md`
 
+Also create or update:
+- `specs/pending-tasks.md`
+
 ## Required backlog content
 
 The backlog file must include:
@@ -80,6 +86,9 @@ The backlog file must include:
 
 The suggested harness task breakdown is the default leaf layer for implementation.
 Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
+
+For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`.
+Preserve existing task IDs and statuses when updating an existing queue.
 
 ## Mapping rules
 
@@ -103,6 +112,7 @@ Not allowed:
 ### Detail level
 The backlog should be detailed enough for several small harness runs, but not so detailed that it becomes source code.
 If one task item still spans multiple unrelated component families or too many files, call that out and recommend a further task-brief decomposition before coding.
+Do not add an oversized item to `specs/pending-tasks.md` as if it were ready; either split it into smaller pending tasks or mark the queue item `blocked` with a note that a task brief is required.
 
 ## Sizing rules
 
@@ -133,6 +143,8 @@ Before finishing, verify:
 - the tests cover entity/workflow/view/endpoint behavior as applicable
 - the harness task breakdown is composed of bounded operations
 - any oversized task item is explicitly marked for further decomposition before coding
+- `specs/pending-tasks.md` has matching queue entries for runnable harness tasks
+- existing queue task IDs and statuses are preserved
 - the defer list is explicit
 
 ## Response style
@@ -141,5 +153,7 @@ When using this skill:
 - name the target slice first
 - summarize the backlog sections you will create or update
 - then write the backlog file
-- clearly report which file was added or updated
+- clearly report which backlog file was added or updated
+- clearly report whether `specs/pending-tasks.md` was added or updated
+- name the first runnable pending task for the slice when one exists
 - do not jump into implementation code

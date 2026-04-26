@@ -25,6 +25,8 @@ Use the repository in this sequence:
 
 5. **Generate code and tests last**
    - treat the accepted solution plan as the implementation contract for downstream work
+   - for durable multi-session work, materialize follow-on tasks as `specs/pending-tasks.md`
+   - execute one pending task per fresh context with `../skills/akka-do-next-pending-task/SKILL.md`
    - implement component by component
    - use `../src/` examples and focused `../docs/` references as pattern support
 
@@ -40,6 +42,8 @@ For a small canonical requirements-to-plan example, see:
 Code generation is a downstream phase.
 Do not start writing Akka components until decomposition is complete and any key structural decisions are resolved.
 Use the accepted plan to drive the coding work queue.
+For reliable follow-on work across sessions, use `specs/pending-tasks.md` and run one task at a time with `akka-do-next-pending-task`.
 
-For a lightweight handoff template, see:
+For queue templates, see:
 - `solution-plan-to-implementation-queue.md`
+- `pending-task-queue.md`

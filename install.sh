@@ -328,6 +328,7 @@ PACK_DOC_FILES=(
   docs/examples/purchase-request-prd.md
   docs/examples/purchase-request-solution-plan.md
   docs/intent-driven-usage-flow.md
+  docs/pending-task-queue.md
   docs/prd-to-akka-flow.md
   docs/service-to-service-consumers.md
   docs/service-to-service-views.md
