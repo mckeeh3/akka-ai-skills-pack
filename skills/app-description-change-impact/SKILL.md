@@ -17,8 +17,9 @@ Analyze a requested or completed description change and produce an impact result
 - identifies impacted traceability artifacts
 - identifies whether readiness must be reassessed
 - identifies likely affected generated output areas
+- identifies whether existing specs, backlogs, task briefs, or pending tasks need reconciliation
 - recommends localized or broader regeneration scope
-- prevents stale description links or stale generated outputs from surviving a semantic change
+- prevents stale description links, stale planning artifacts, or stale generated outputs from surviving a semantic change
 
 ## Required reading
 
@@ -82,6 +83,7 @@ For each change, determine as applicable:
 - which traceability maps must change
 - whether `00-system/readiness-status.md` must be updated
 - which generation surfaces are likely affected
+- which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
 - whether regeneration can remain localized or should broaden
 
 ## Standard impact output shape
@@ -106,6 +108,7 @@ Use this response shape:
 - readiness:
 - generation maps:
 - review summaries:
+- specs/backlogs/pending tasks:
 
 ## Likely affected generated outputs
 - ...
@@ -165,6 +168,8 @@ Route onward as needed:
 - to `app-description-auth-security` when access, identity, boundary, or data-protection implications exist
 - to `app-description-observability` when logging, metrics, audit, trace, or diagnosability implications exist
 - to `app-description-readiness-assessment` when readiness likely changed
+- to `akka-change-request-to-spec-update` when existing specs/backlogs/pending tasks must be reconciled after a bounded change
+- to `akka-revised-prd-reconciliation` when the change basis is a revised/replacement PRD
 - to `app-generate-app` only after the impacted description layers are updated and readiness is acceptable
 
 ## Clarification policy

@@ -200,6 +200,27 @@ Use when `specs/backlog/*.md` files already exist but `specs/pending-tasks.md` i
 
 This is a repair/materialization skill. It creates queue entries from backlog `Suggested harness task breakdown` items without redoing the PRD decomposition and without implementing code.
 
+### Iterative change request to spec update skill
+
+Start with:
+- `akka-change-request-to-spec-update`
+
+Use when an existing app-description/spec/backlog/queue needs to absorb a bounded feature request, bug report, issue, or implementation discovery without redoing the full PRD decomposition. It updates authoritative meaning first, then affected specs/backlogs, then `specs/pending-tasks.md`.
+
+### Revised PRD reconciliation skill
+
+Start with:
+- `akka-revised-prd-reconciliation`
+
+Use when the user provides a revised or replacement PRD for a project that already has app-description/spec/backlog/queue artifacts. It compares the revised PRD with the maintained current state, preserves queue history, appends new work, blocks unresolved conflicts, and marks obsolete non-done tasks as `superseded`.
+
+### Pending task queue maintenance skill
+
+Start with:
+- `akka-pending-task-queue-maintenance`
+
+Use when a large or long-lived `specs/pending-tasks.md` needs audit, cleanup, stale-task detection, duplicate detection, blocked-task review, supersession, or next-runnable-task verification without implementing code.
+
 ### Pending task execution skill
 
 Start with:
@@ -212,6 +233,15 @@ This is the manual queue-consumption skill for downstream implementation work. I
 References:
 - `../docs/pending-task-queue.md`
 - `../docs/examples/purchase-request-pending-tasks.md`
+
+### Iterative planning quick routing
+
+Use this routing for ongoing development after the first PRD planning run:
+- Small feature request, bug report, issue, or implementation discovery: `akka-change-request-to-spec-update`
+- Full revised/replacement PRD: `akka-revised-prd-reconciliation`
+- Queue exists but may be stale/duplicated/blocked: `akka-pending-task-queue-maintenance`
+- Queue exists and user wants implementation: `akka-do-next-pending-task`
+- Backlogs exist but queue is missing/incomplete: `akka-backlog-to-pending-tasks`
 
 ### Solution decomposition details
 

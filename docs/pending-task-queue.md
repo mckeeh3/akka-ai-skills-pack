@@ -7,7 +7,7 @@ Purpose:
 - make the next runnable task obvious
 - keep each implementation run bounded to one task
 - support fresh-context execution for each task
-- record whether tasks are pending, blocked, deferred, or done
+- record whether tasks are pending, blocked, deferred, done, or superseded
 
 ## Canonical location
 
@@ -30,9 +30,10 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 5. Mark a task `done` only after its required checks pass or are explicitly reported as not runnable.
 6. Mark a task `blocked` when required decisions, inputs, dependencies, or build/runtime preconditions are missing.
 7. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
-8. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
-9. When a task is complete or blocked, report the next runnable pending task if one exists.
-10. At the end of ordinary harness responses, remind the user when runnable pending tasks remain, without automatically starting them.
+8. Mark a task `superseded` when a later app-description/spec/PRD change replaces the task and it should not be executed.
+9. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
+10. When a task is complete, blocked, or superseded, report the next runnable pending task if one exists.
+11. At the end of ordinary harness responses, remind the user when runnable pending tasks remain, without automatically starting them.
 
 ## Status values
 
@@ -43,6 +44,7 @@ Use these exact status values:
 - `blocked` — cannot proceed without a decision, dependency, missing input, or failed prerequisite
 - `done` — completed and validated as far as the task requires
 - `deferred` — intentionally postponed and not eligible for automatic next-task selection
+- `superseded` — replaced by a later requirement, spec, backlog, or task and not eligible for execution
 
 ## Task ID format
 
@@ -75,6 +77,7 @@ Use this structure:
 
 - Execute one task per fresh harness context.
 - Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
 - Update task status before finishing the harness response.
 
 ## Tasks
@@ -98,7 +101,11 @@ Use this structure:
 - done criteria:
   - <observable completion criterion>
 - notes:
-  - <optional assumptions, constraints, or links>
+  - <optional assumptions, constraints, provenance, or links>
+  - source requirement ids: <optional stable requirement IDs when available>
+  - source capability ids: <optional app-description capability IDs when available>
+  - supersedes: <optional task IDs this task replaces>
+  - superseded by: <optional replacement task ID when this task is superseded>
 ```
 
 If no separate task brief exists, omit `task brief:` or set it to `none` and make the `source` backlog item specific enough to execute.
@@ -108,7 +115,7 @@ If no separate task brief exists, omit `task brief:` or set it to `none` and mak
 To choose the next task:
 
 1. Read `specs/pending-tasks.md`.
-2. Ignore tasks with status `done`, `blocked`, or `deferred`.
+2. Ignore tasks with status `done`, `blocked`, `deferred`, or `superseded`.
 3. For each remaining `pending` task in file order, inspect `depends on`.
 4. Select the first task whose dependencies are empty or all refer to tasks with status `done`.
 5. If no task is runnable, report the earliest blocked dependency chain instead of coding.
@@ -169,7 +176,15 @@ If blocked, update to:
   - blocked: <reason and exact user decision/input needed>
 ```
 
-Preserve useful prior notes when adding blocked or completion notes.
+If replaced by later requirements or specs, update to:
+
+```md
+- status: superseded
+- notes:
+  - superseded: <replacement task/spec and why the old task should not run>
+```
+
+Preserve useful prior notes when adding blocked, superseded, or completion notes.
 
 ## Relationship to other planning artifacts
 
@@ -182,6 +197,9 @@ Preserve useful prior notes when adding blocked or completion notes.
 ## Related skills and docs
 
 - `../skills/akka-do-next-pending-task/SKILL.md`
+- `../skills/akka-pending-task-queue-maintenance/SKILL.md`
+- `../skills/akka-change-request-to-spec-update/SKILL.md`
+- `../skills/akka-revised-prd-reconciliation/SKILL.md`
 - `../skills/akka-backlog-to-pending-tasks/SKILL.md`
 - `../skills/akka-prd-to-specs-backlog/SKILL.md`
 - `../skills/akka-slice-spec-to-backlog/SKILL.md`

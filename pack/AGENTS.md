@@ -94,7 +94,7 @@ At the end of each response, if pending runnable tasks remain, include a short r
 
 Reminder behavior:
 1. Inspect `specs/pending-tasks.md` when it is already in context or cheap to read.
-2. Identify the first task with `status: pending` whose `depends on` entries are empty or all `done`.
+2. Identify the first task with `status: pending` whose `depends on` entries are empty or all `done`; ignore `done`, `blocked`, `deferred`, and `superseded` tasks.
 3. Do not automatically start the task unless the user asked to continue implementation.
 4. Recommend a fresh context for the next task.
 5. Keep the reminder short: name the next task and provide a copyable continuation prompt.
@@ -114,6 +114,11 @@ To continue reliably, start a fresh context and ask:
 If `specs/pending-tasks.md` exists but no pending task is runnable, mention the blocked/dependency state briefly instead of suggesting implementation.
 
 When executing a pending task, use `skills/akka-do-next-pending-task/SKILL.md` and execute exactly one queue item.
+
+For ongoing evolution after a queue exists:
+- use `skills/akka-change-request-to-spec-update/SKILL.md` for bounded feature requests, bug reports, issues, and implementation discoveries
+- use `skills/akka-revised-prd-reconciliation/SKILL.md` for revised or replacement PRDs
+- use `skills/akka-pending-task-queue-maintenance/SKILL.md` for queue audit, stale-task detection, duplicate cleanup, blocked-task review, and supersession
 
 ## Short routing rule
 

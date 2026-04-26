@@ -241,6 +241,7 @@ The queue must:
 - contain one task for each bounded item in each backlog's `Suggested harness task breakdown`
 - use stable task IDs such as `TASK-001`, `TASK-002`, `TASK-003`
 - preserve existing task IDs and statuses when updating an existing queue
+- mark obsolete non-done tasks as `superseded` instead of deleting them when requirements have replaced them
 - set new tasks to `status: pending`
 - represent dependencies with `depends on: [...]`
 - include the smallest `required reads` needed for the task

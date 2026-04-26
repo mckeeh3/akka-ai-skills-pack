@@ -98,6 +98,7 @@ If `specs/pending-tasks.md` already exists:
 - preserve statuses unless the user asks to reset them
 - preserve useful notes
 - do not delete completed tasks
+- mark obsolete non-done tasks as `superseded` when the matching backlog work was replaced
 - append missing tasks or update stale task metadata carefully
 - do not renumber tasks just to improve aesthetics
 
@@ -178,6 +179,7 @@ Before finishing, verify:
 - `specs/pending-tasks.md` exists
 - each runnable backlog task item has a queue entry
 - no obvious duplicate queue entries were created
+- obsolete non-done queue entries were superseded rather than deleted
 - existing task IDs and statuses were preserved where possible
 - dependencies are neither missing nor over-serialized
 - required reads are minimal and sufficient

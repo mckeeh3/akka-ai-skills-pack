@@ -90,6 +90,7 @@ For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md
 For a concrete requirements-to-plan example, see `docs/prd-to-akka-flow.md` and `docs/examples/purchase-request-prd.md`.
 For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implementation-queue.md`.
 For durable multi-session task execution, see `docs/pending-task-queue.md`, `docs/examples/purchase-request-pending-tasks.md`, `skills/akka-backlog-to-pending-tasks/SKILL.md`, and `skills/akka-do-next-pending-task/SKILL.md`.
+For ongoing iteration after a queue exists, use `skills/akka-change-request-to-spec-update/SKILL.md` for bounded changes, `skills/akka-revised-prd-reconciliation/SKILL.md` for revised PRDs, and `skills/akka-pending-task-queue-maintenance/SKILL.md` for queue hygiene.
 
 ## Visible 3-stage skill model
 

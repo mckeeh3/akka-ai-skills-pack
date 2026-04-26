@@ -81,6 +81,11 @@ For each queue item:
 
 For reliable follow-on work across sessions, convert this lightweight queue into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
 
+When requirements evolve after the queue exists:
+- use `akka-change-request-to-spec-update` for bounded feature requests, bugs, issues, or implementation discoveries
+- use `akka-revised-prd-reconciliation` for revised/replacement PRDs
+- use `akka-pending-task-queue-maintenance` to audit stale, duplicate, blocked, or superseded queue entries
+
 ## What belongs downstream
 
 The downstream implementation phase may include:
@@ -109,4 +114,7 @@ Before starting code generation, verify that the solution plan already answers:
 - `../skills/README.md`
 - `../skills/akka-solution-decomposition/SKILL.md`
 - `../skills/akka-backlog-to-pending-tasks/SKILL.md`
+- `../skills/akka-change-request-to-spec-update/SKILL.md`
+- `../skills/akka-revised-prd-reconciliation/SKILL.md`
+- `../skills/akka-pending-task-queue-maintenance/SKILL.md`
 - `../skills/akka-do-next-pending-task/SKILL.md`

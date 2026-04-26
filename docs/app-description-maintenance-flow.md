@@ -52,8 +52,9 @@ Prefer this default sequence:
 8. update observability if needed
 9. update traceability and impact understanding
 10. assess readiness
-11. either stop at description maintenance or proceed to generation
-12. answer review questions through summaries
+11. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
+12. either stop at description maintenance or proceed to generation
+13. answer review questions through summaries
 
 ## Change-only flow
 
@@ -162,6 +163,7 @@ The harness should ask:
 - are there new or changed observability implications?
 - does readiness status change?
 - would generation scope be localized or broad?
+- do any existing specs, backlogs, task briefs, or pending tasks need to be updated, blocked, deferred, or superseded?
 
 ## Readiness rule
 
@@ -232,6 +234,7 @@ A description change request is complete when:
 - linked verification expectations are updated
 - linked security and observability expectations are updated when needed
 - readiness has been reassessed or intentionally deferred
+- affected realization specs/backlogs/task briefs/pending tasks are reconciled when they already exist
 - the user can receive a coherent summary of what changed
 
 A generation request is complete when:

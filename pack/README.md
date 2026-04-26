@@ -87,6 +87,12 @@ Installed layout:
       SKILL.md
     akka-backlog-to-pending-tasks/
       SKILL.md
+    akka-change-request-to-spec-update/
+      SKILL.md
+    akka-revised-prd-reconciliation/
+      SKILL.md
+    akka-pending-task-queue-maintenance/
+      SKILL.md
     akka-do-next-pending-task/
       SKILL.md
     akka-workflows/

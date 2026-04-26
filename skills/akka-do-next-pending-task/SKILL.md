@@ -114,6 +114,7 @@ Status values:
 - `blocked`
 - `done`
 - `deferred`
+- `superseded`
 
 ## Task selection
 
@@ -125,9 +126,11 @@ If the user named a task ID:
 
 If the user did not name a task ID:
 1. read tasks in file order
-2. ignore `done`, `blocked`, and `deferred` tasks
+2. ignore `done`, `blocked`, `deferred`, and `superseded` tasks
 3. select the first `pending` task whose `depends on` list is empty or all dependencies are `done`
 4. if no task is runnable, report why and do not code
+
+If a task is `superseded`, do not execute it unless the user explicitly asks to inspect or replace it.
 
 If a task is `in-progress` from a previous interrupted run:
 - inspect notes and changed files if needed

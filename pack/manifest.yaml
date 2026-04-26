@@ -284,6 +284,15 @@ content:
     - id: akka-backlog-to-pending-tasks
       path: skills/akka-backlog-to-pending-tasks
       category: planning
+    - id: akka-change-request-to-spec-update
+      path: skills/akka-change-request-to-spec-update
+      category: planning
+    - id: akka-revised-prd-reconciliation
+      path: skills/akka-revised-prd-reconciliation
+      category: planning
+    - id: akka-pending-task-queue-maintenance
+      path: skills/akka-pending-task-queue-maintenance
+      category: planning
     - id: akka-solution-decomposition
       path: skills/akka-solution-decomposition
       category: architecture
@@ -450,6 +459,9 @@ bundles:
       - akka-slice-spec-to-backlog
       - akka-backlog-item-to-task-brief
       - akka-backlog-to-pending-tasks
+      - akka-change-request-to-spec-update
+      - akka-revised-prd-reconciliation
+      - akka-pending-task-queue-maintenance
       - akka-solution-decomposition
       - akka-timed-action-component
       - akka-timed-action-testing

@@ -41,6 +41,7 @@ then produce an Akka solution plan with:
 Once the solution plan is accepted, treat it as the implementation contract.
 Load only the Stage 3 skills named in the plan and generate code component by component, with corresponding tests for each component family.
 For reliable multi-session execution, materialize follow-on work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
+For iterative changes after the initial plan, use `akka-change-request-to-spec-update`; for revised PRDs, use `akka-revised-prd-reconciliation`; for stale or large queues, use `akka-pending-task-queue-maintenance`.
 For queue templates, see `solution-plan-to-implementation-queue.md` and `pending-task-queue.md`.
 
 ## What the example demonstrates

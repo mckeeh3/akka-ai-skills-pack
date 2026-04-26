@@ -43,6 +43,7 @@ Code generation is a downstream phase.
 Do not start writing Akka components until decomposition is complete and any key structural decisions are resolved.
 Use the accepted plan to drive the coding work queue.
 For reliable follow-on work across sessions, use `specs/pending-tasks.md` and run one task at a time with `akka-do-next-pending-task`.
+When requirements change after the queue exists, update the maintained specs before coding: use `akka-change-request-to-spec-update` for bounded changes, `akka-revised-prd-reconciliation` for revised PRDs, and `akka-pending-task-queue-maintenance` for queue hygiene.
 
 For queue templates, see:
 - `solution-plan-to-implementation-queue.md`
