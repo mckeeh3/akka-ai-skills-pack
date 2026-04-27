@@ -2,9 +2,10 @@
 
 Use this lightweight template after Stage 1 decomposition is accepted.
 
-For durable multi-session execution with task status, use `pending-task-queue.md` and materialize the queue as `specs/pending-tasks.md`.
+For durable multi-session execution with task status, use `pending-question-queue.md` for unresolved decisions and `pending-task-queue.md` for implementation work. Materialize them as `specs/pending-questions.md` and `specs/pending-tasks.md`.
 
 Purpose:
+- turn unresolved design decisions into a durable clarification queue when needed
 - turn the solution plan into a downstream implementation work queue
 - keep coding focused on one component family at a time
 - make code generation and test generation explicit follow-on work
@@ -79,12 +80,13 @@ For each queue item:
 3. generate its corresponding tests before moving on
 4. keep later components out of context until their step begins
 
-For reliable follow-on work across sessions, convert this lightweight queue into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
+For reliable follow-on work across sessions, first convert unresolved blocking decisions into `specs/pending-questions.md` and answer them with `akka-do-next-pending-question`. Then convert unblocked implementation work into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
 
 When requirements evolve after the queue exists:
 - use `akka-change-request-to-spec-update` for bounded feature requests, bugs, issues, or implementation discoveries
 - use `akka-revised-prd-reconciliation` for revised/replacement PRDs
-- use `akka-pending-task-queue-maintenance` to audit stale, duplicate, blocked, or superseded queue entries
+- use `akka-pending-question-queue-maintenance` to audit stale, duplicate, blocked, answered-but-unreconciled, or superseded question entries
+- use `akka-pending-task-queue-maintenance` to audit stale, duplicate, blocked, or superseded task entries
 
 ## What belongs downstream
 
@@ -103,9 +105,11 @@ Before starting code generation, verify that the solution plan already answers:
 - which tests belong with it
 - which later components depend on it
 - whether any open questions still block coding
+- whether blocking questions are resolved or explicitly deferred in `specs/pending-questions.md`
 
 ## Related docs
 
+- `pending-question-queue.md`
 - `pending-task-queue.md`
 - `intent-driven-usage-flow.md`
 - `prd-to-akka-flow.md`
@@ -113,6 +117,9 @@ Before starting code generation, verify that the solution plan already answers:
 - `examples/purchase-request-pending-tasks.md`
 - `../skills/README.md`
 - `../skills/akka-solution-decomposition/SKILL.md`
+- `../skills/akka-pending-question-generation/SKILL.md`
+- `../skills/akka-do-next-pending-question/SKILL.md`
+- `../skills/akka-pending-question-queue-maintenance/SKILL.md`
 - `../skills/akka-backlog-to-pending-tasks/SKILL.md`
 - `../skills/akka-change-request-to-spec-update/SKILL.md`
 - `../skills/akka-revised-prd-reconciliation/SKILL.md`

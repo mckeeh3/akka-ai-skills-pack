@@ -33,15 +33,17 @@ The skill must:
 - generate or update the requested outputs
 - run the task's required checks when possible
 - update the queue status before finishing
-- report the next runnable pending task
+- report any blocking pending question or the next runnable pending task
 
 ## Required reading
 
 Read these first if present:
 - `../README.md`
+- `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/intent-driven-usage-flow.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
+- the target project's `specs/pending-questions.md` if it exists
 - the target project's `specs/pending-tasks.md`
 
 Then read only the selected task's `required reads` and the listed implementation skills.
@@ -131,6 +133,8 @@ If the user did not name a task ID:
 4. if no task is runnable, report why and do not code
 
 If a task is `superseded`, do not execute it unless the user explicitly asks to inspect or replace it.
+
+If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
 
 If a task is `in-progress` from a previous interrupted run:
 - inspect notes and changed files if needed
@@ -245,7 +249,7 @@ If no pending tasks remain, say so clearly.
 Block instead of guessing when:
 - required reads are missing
 - the task has unsatisfied dependencies
-- required architecture choices are unresolved
+- required architecture choices or blocking pending questions are unresolved
 - the task conflicts with current code or specs
 - a required external credential/service is unavailable and no mock/test substitute is specified
 - the task cannot be completed without widening into another queue item

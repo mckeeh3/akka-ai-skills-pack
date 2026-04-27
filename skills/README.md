@@ -193,12 +193,33 @@ Use when a backlog file already exists and one specific item from its `Suggested
 This is the leaf-planning skill for converting one backlog item into a single focused implementation contract with exact reads, scope, non-goals, skills, outputs, tests, and done criteria, then updating the matching `specs/pending-tasks.md` entry.
 See `skills/akka-backlog-item-to-task-brief/SKILL.md` for example invocation patterns.
 
+### Pending question queue skills
+
+Use these before pending-task materialization when unresolved product, architecture, security, testing, or delivery decisions would otherwise force the harness to guess.
+
+Start with:
+- `akka-pending-question-generation`
+
+Use when a PRD, app-description, solution plan, slice spec, or backlog has open decisions that should be captured as `specs/pending-questions.md` and answered one at a time.
+
+Follow-on skills:
+- `akka-do-next-pending-question` — ask or reconcile exactly one actionable question from `specs/pending-questions.md`
+- `akka-pending-question-queue-maintenance` — audit, repair, deduplicate, unblock, supersede, or reconcile a long-lived question queue
+
+This queue is the clarification counterpart to `specs/pending-tasks.md`:
+- `specs/pending-questions.md` records unresolved decisions and user answers
+- `specs/pending-tasks.md` records implementation work
+
+Do not create or execute implementation tasks for work blocked by unresolved `blocking` questions unless the question is explicitly deferred with an accepted default or limitation.
+
 ### Pending task queue materialization skill
 
 Start with:
 - `akka-backlog-to-pending-tasks`
 
 Use when `specs/backlog/*.md` files already exist but `specs/pending-tasks.md` is missing, stale, incomplete, or needs to be synchronized with the current backlog.
+
+Before materializing tasks, check `specs/pending-questions.md` when present. If unresolved `blocking` questions affect backlog work, block or defer only the affected tasks instead of guessing.
 
 This is a repair/materialization skill. It creates queue entries from backlog `Suggested harness task breakdown` items without redoing the PRD decomposition and without implementing code.
 
@@ -241,9 +262,12 @@ References:
 Use this routing for ongoing development after the first PRD planning run:
 - Small feature request, bug report, issue, or implementation discovery: `akka-change-request-to-spec-update`
 - Full revised/replacement PRD: `akka-revised-prd-reconciliation`
-- Queue exists but may be stale/duplicated/blocked: `akka-pending-task-queue-maintenance`
-- Queue exists and user wants implementation: `akka-do-next-pending-task`
-- Backlogs exist but queue is missing/incomplete: `akka-backlog-to-pending-tasks`
+- Open design decisions need durable one-at-a-time clarification: `akka-pending-question-generation`
+- Question queue exists and user wants the next question: `akka-do-next-pending-question`
+- Question queue exists but may be stale/duplicated/blocked/unreconciled: `akka-pending-question-queue-maintenance`
+- Task queue exists but may be stale/duplicated/blocked: `akka-pending-task-queue-maintenance`
+- Task queue exists and user wants implementation: `akka-do-next-pending-task`
+- Backlogs exist but task queue is missing/incomplete: `akka-backlog-to-pending-tasks`
 
 ### Solution decomposition details
 

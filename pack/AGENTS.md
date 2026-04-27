@@ -50,8 +50,9 @@ Recommended flow:
 1. read the user's input completely
 2. if the Akka solution shape is still unclear, start with `skills/akka-solution-decomposition/SKILL.md`
 3. if one structural choice is still unresolved, use the focused decision skill such as `skills/akka-entity-type-selection/SKILL.md`
-4. once the architecture is clear, use `skills/README.md` to load only the smallest relevant implementation skill set
-5. generate code and tests component by component
+4. if unresolved decisions would make tasks speculative, create `specs/pending-questions.md` with `skills/akka-pending-question-generation/SKILL.md` and work through it one question at a time with `skills/akka-do-next-pending-question/SKILL.md`
+5. once the architecture is clear, use `skills/README.md` to load only the smallest relevant implementation skill set
+6. generate code and tests component by component
 
 Do not jump straight into a component family when the broader architecture is still unclear.
 
@@ -85,6 +86,33 @@ Prefer this pattern:
 - use examples and tests as implementation references
 - state assumptions clearly when requirements are ambiguous
 - ask clarifying questions when ambiguity materially affects architecture or component choice
+- prefer `specs/pending-questions.md` over a large ad hoc question list when clarification will take multiple turns or sessions
+
+## Pending question reminders
+
+When the target project contains `specs/pending-questions.md`, treat it as the durable clarification queue.
+
+At the end of planning responses, if actionable questions remain, include a short reminder unless the response is only a trivial clarification or the user explicitly asks not to receive reminders.
+
+Reminder behavior:
+1. Inspect `specs/pending-questions.md` when it is already in context or cheap to read.
+2. Prefer `answered` questions that need reconciliation, then the first askable `blocking`, `important`, or `optional` question whose dependencies are resolved.
+3. Do not ask multiple questions unless the user requests a batch.
+4. Recommend `skills/akka-do-next-pending-question/SKILL.md` for the next question.
+
+Use this reminder shape:
+
+```md
+Pending questions remain.
+
+Next question:
+- <Q-ID>: <title>
+
+To continue, ask:
+"Use akka-do-next-pending-question to ask the next pending question from specs/pending-questions.md."
+```
+
+If blocking questions remain, do not create or execute affected implementation tasks unless the question is explicitly deferred with an accepted default or limitation.
 
 ## Pending task reminders
 
@@ -118,7 +146,8 @@ When executing a pending task, use `skills/akka-do-next-pending-task/SKILL.md` a
 For ongoing evolution after a queue exists:
 - use `skills/akka-change-request-to-spec-update/SKILL.md` for bounded feature requests, bug reports, issues, and implementation discoveries
 - use `skills/akka-revised-prd-reconciliation/SKILL.md` for revised or replacement PRDs
-- use `skills/akka-pending-task-queue-maintenance/SKILL.md` for queue audit, stale-task detection, duplicate cleanup, blocked-task review, and supersession
+- use `skills/akka-pending-question-queue-maintenance/SKILL.md` for question queue audit, stale-question detection, duplicate cleanup, blocked-question review, unreconciled answers, and supersession
+- use `skills/akka-pending-task-queue-maintenance/SKILL.md` for task queue audit, stale-task detection, duplicate cleanup, blocked-task review, and supersession
 
 ## Short routing rule
 

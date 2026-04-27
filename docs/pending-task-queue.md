@@ -3,7 +3,7 @@
 Use this contract when PRD/spec planning creates follow-on implementation work that should be executed reliably across separate harness sessions.
 
 Purpose:
-- persist follow-on work after decomposition, backlog creation, or task-brief creation
+- persist follow-on work after decomposition, backlog creation, task-brief creation, and resolution or deferral of blocking questions
 - make the next runnable task obvious
 - keep each implementation run bounded to one task
 - support fresh-context execution for each task
@@ -28,7 +28,7 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 3. Do not combine adjacent tasks just because their files are nearby.
 4. Select the first `pending` task whose dependencies are `done` or empty.
 5. Mark a task `done` only after its required checks pass or are explicitly reported as not runnable.
-6. Mark a task `blocked` when required decisions, inputs, dependencies, or build/runtime preconditions are missing.
+6. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, or build/runtime preconditions are missing.
 7. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
 8. Mark a task `superseded` when a later app-description/spec/PRD change replaces the task and it should not be executed.
 9. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
@@ -186,6 +186,22 @@ If replaced by later requirements or specs, update to:
 
 Preserve useful prior notes when adding blocked, superseded, or completion notes.
 
+## Relationship to pending questions
+
+`specs/pending-questions.md` is the durable clarification queue for unresolved decisions.
+`specs/pending-tasks.md` is the durable implementation queue.
+
+Do not create or execute runnable implementation tasks for work blocked by unresolved `blocking` questions unless those questions have been explicitly deferred with an accepted default or limitation.
+
+When a task is blocked by a question, record the question ID in `notes`, for example:
+
+```md
+- notes:
+  - blocked by Q-003: approval deadline behavior is unresolved
+```
+
+If a task discovers an unresolved design decision during execution, block the task and add or update `specs/pending-questions.md` instead of guessing.
+
 ## Relationship to other planning artifacts
 
 - `specs/akka-solution-plan.md` defines the overall architecture and implementation order.
@@ -196,6 +212,9 @@ Preserve useful prior notes when adding blocked, superseded, or completion notes
 
 ## Related skills and docs
 
+- `../skills/akka-pending-question-generation/SKILL.md`
+- `../skills/akka-do-next-pending-question/SKILL.md`
+- `../skills/akka-pending-question-queue-maintenance/SKILL.md`
 - `../skills/akka-do-next-pending-task/SKILL.md`
 - `../skills/akka-pending-task-queue-maintenance/SKILL.md`
 - `../skills/akka-change-request-to-spec-update/SKILL.md`

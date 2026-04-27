@@ -80,8 +80,9 @@ Use the repository in this order:
 1. **Read the requirements input first** — start from the PRD, spec, user story, API sketch, UI brief, or other high-level artifact.
 2. **Decompose the solution before coding** — use `skills/akka-solution-decomposition/SKILL.md` to identify the needed Akka components and boundaries.
 3. **Resolve any remaining structural choices** — use focused decision help such as `skills/akka-entity-type-selection/SKILL.md` when one architecture choice is still open.
-4. **Load only the focused implementation skills** — use `skills/README.md` to route from the accepted solution plan to the exact Stage 3 skills for entities, workflows, views, consumers, endpoints, timed actions, or agents.
-5. **Generate code and tests last** — implement component by component using the selected skills plus the example patterns in `src/` and focused references in `docs/`.
+4. **Queue unresolved decisions when needed** — use `skills/akka-pending-question-generation/SKILL.md` to create `specs/pending-questions.md`, then `skills/akka-do-next-pending-question/SKILL.md` to work through questions one at a time.
+5. **Load only the focused implementation skills** — use `skills/README.md` to route from the accepted solution plan to the exact Stage 3 skills for entities, workflows, views, consumers, endpoints, timed actions, or agents.
+6. **Generate code and tests last** — implement component by component using the selected skills plus the example patterns in `src/` and focused references in `docs/`.
 
 **Important:** code generation is a downstream phase. Do **not** start writing Akka components until decomposition is complete and any key structural decisions are resolved.
 Treat the accepted solution plan as the handoff artifact for coding: each chosen component should map to corresponding implementation skills, test-generation skills, and any endpoint, web UI, or documentation/snippet work that belongs downstream.
@@ -89,8 +90,9 @@ Treat the accepted solution plan as the handoff artifact for coding: each chosen
 For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md`.
 For a concrete requirements-to-plan example, see `docs/prd-to-akka-flow.md` and `docs/examples/purchase-request-prd.md`.
 For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implementation-queue.md`.
+For durable one-at-a-time clarification, see `docs/pending-question-queue.md`, `skills/akka-pending-question-generation/SKILL.md`, `skills/akka-do-next-pending-question/SKILL.md`, and `skills/akka-pending-question-queue-maintenance/SKILL.md`.
 For durable multi-session task execution, see `docs/pending-task-queue.md`, `docs/examples/purchase-request-pending-tasks.md`, `skills/akka-backlog-to-pending-tasks/SKILL.md`, and `skills/akka-do-next-pending-task/SKILL.md`.
-For ongoing iteration after a queue exists, use `skills/akka-change-request-to-spec-update/SKILL.md` for bounded changes, `skills/akka-revised-prd-reconciliation/SKILL.md` for revised PRDs, and `skills/akka-pending-task-queue-maintenance/SKILL.md` for queue hygiene.
+For ongoing iteration after a queue exists, use `skills/akka-change-request-to-spec-update/SKILL.md` for bounded changes, `skills/akka-revised-prd-reconciliation/SKILL.md` for revised PRDs, `skills/akka-pending-question-queue-maintenance/SKILL.md` for question queue hygiene, and `skills/akka-pending-task-queue-maintenance/SKILL.md` for task queue hygiene.
 
 ## Visible 3-stage skill model
 

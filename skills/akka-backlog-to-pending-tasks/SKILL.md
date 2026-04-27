@@ -45,10 +45,12 @@ Do **not** use this skill when:
 
 Read these first if present:
 - `../README.md`
+- `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../../specs/README.md`
 - `../../specs/akka-solution-plan.md`
+- `../../specs/pending-questions.md` if it exists
 - `../../specs/pending-tasks.md` if it already exists
 - all relevant `../../specs/backlog/*-build-backlog.md` files
 - `../../specs/tasks/README.md` if present
@@ -74,6 +76,17 @@ Use the contract in `../../docs/pending-task-queue.md`.
 Derive queue tasks from each backlog file's `Suggested harness task breakdown` section.
 
 Do not create one queue task per class name unless the backlog explicitly frames each class as a separate harness-sized task.
+
+### Question gate
+
+If `specs/pending-questions.md` exists, inspect unresolved `blocking` questions before materializing tasks.
+
+Rules:
+- do not create runnable tasks for work blocked by unresolved `blocking` questions
+- if a backlog item is entirely blocked, create a `blocked` task only when useful for visibility and note the blocking question IDs
+- if only part of a backlog is blocked, create tasks for unblocked work and leave blocked work out or blocked with explicit question references
+- if a question is `answered` but not `resolved`, reconcile it or leave affected tasks blocked
+- do not silently choose defaults unless the question is `deferred` with an accepted default or limitation
 
 ### Task sizing
 
@@ -181,6 +194,7 @@ Before finishing, verify:
 - no obvious duplicate queue entries were created
 - obsolete non-done queue entries were superseded rather than deleted
 - existing task IDs and statuses were preserved where possible
+- unresolved blocking questions are reflected as blocked/omitted task work, not hidden assumptions
 - dependencies are neither missing nor over-serialized
 - required reads are minimal and sufficient
 - skills match the component family
@@ -192,6 +206,7 @@ Before finishing, verify:
 When using this skill:
 - summarize the backlog files used as input
 - report whether the queue was created or repaired
-- name the first runnable pending task
-- recommend continuing in a fresh context with `akka-do-next-pending-task`
+- name any blocking pending questions that prevented task materialization
+- name the first runnable pending task when one exists
+- recommend continuing with `akka-do-next-pending-question` if questions block the queue, or a fresh context with `akka-do-next-pending-task` when tasks are ready
 - do not implement code

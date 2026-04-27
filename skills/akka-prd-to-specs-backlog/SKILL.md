@@ -15,7 +15,8 @@ Generate a consistent planning package from a PRD, requirements document, or hig
 - produces a master Akka solution plan
 - splits the plan into bounded vertical slice specs
 - turns each slice into a build backlog suitable for one or more independent harness operations
-- creates or updates `specs/pending-tasks.md` as the durable execution queue
+- creates or updates `specs/pending-questions.md` when unresolved decisions should be answered before safe task generation
+- creates or updates `specs/pending-tasks.md` as the durable execution queue when follow-on implementation work is sufficiently unblocked
 - optionally materializes leaf task briefs when a backlog item is still too large for a single focused harness run
 - writes index files that make execution order and dependencies explicit
 - keeps files small enough to support focused downstream coding sessions
@@ -53,7 +54,9 @@ Read these first if present:
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
 - `../../specs/tasks/README.md`
+- `../../specs/pending-questions.md` if it already exists
 - `../../specs/pending-tasks.md` if it already exists
+- `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../specs/akka-solution-plan.md` if it already exists
 - `../references/akka-entity-comparison.md`
@@ -75,7 +78,8 @@ At minimum, create or update these files under `specs/`:
 ### Top-level
 - `specs/akka-solution-plan.md`
 - `specs/README.md`
-- `specs/pending-tasks.md`
+- `specs/pending-questions.md` when blocking or important unresolved decisions exist
+- `specs/pending-tasks.md` when follow-on implementation work is sufficiently unblocked
 
 ### Cross-cutting specs
 Create only the ones justified by the PRD, but prefer these when broadly applicable:
@@ -125,7 +129,8 @@ Prefer this structure:
 specs/
   README.md
   akka-solution-plan.md
-  pending-tasks.md
+  pending-questions.md  # when unresolved decisions should be queued
+  pending-tasks.md      # when implementation work is sufficiently unblocked
   cross-cutting/
     00-common-domain-and-conventions.md
     01-auth-tenancy-audit.md
@@ -230,7 +235,28 @@ A good task brief should contain:
 - required tests
 - done criteria
 
-### 6. Create the pending task queue
+### 6. Create the pending question queue when needed
+
+Create or update:
+- `specs/pending-questions.md`
+
+Use `../../docs/pending-question-queue.md` as the queue contract.
+
+Create this queue when unresolved decisions would otherwise make the solution plan, slice specs, backlogs, or task queue speculative. Questions should be one-at-a-time, dependency-aware, and tied to concrete design impact.
+
+The queue must:
+- use stable question IDs such as `Q-001`, `Q-002`, `Q-003`
+- preserve existing question IDs and statuses when updating an existing queue
+- distinguish `answered` from `resolved`
+- mark questions `blocking` only for the work they actually block
+- include why each question matters and what artifacts or decisions it affects
+- avoid dumping a large interrogation list into the chat response
+
+If unresolved `blocking` questions affect planned implementation work, either:
+- stop before creating blocked implementation tasks and recommend `akka-do-next-pending-question`, or
+- create tasks only for unblocked work and document blocked areas.
+
+### 7. Create the pending task queue
 
 Create or update:
 - `specs/pending-tasks.md`
@@ -238,11 +264,12 @@ Create or update:
 Use `../../docs/pending-task-queue.md` as the queue contract.
 
 The queue must:
-- contain one task for each bounded item in each backlog's `Suggested harness task breakdown`
+- contain one task for each bounded, unblocked item in each backlog's `Suggested harness task breakdown`
+- block or omit work still gated by unresolved `blocking` questions in `specs/pending-questions.md`
 - use stable task IDs such as `TASK-001`, `TASK-002`, `TASK-003`
 - preserve existing task IDs and statuses when updating an existing queue
 - mark obsolete non-done tasks as `superseded` instead of deleting them when requirements have replaced them
-- set new tasks to `status: pending`
+- set new tasks to `status: pending` unless a blocking question requires `status: blocked`
 - represent dependencies with `depends on: [...]`
 - include the smallest `required reads` needed for the task
 - include the exact implementation `skills` to load
@@ -251,7 +278,7 @@ The queue must:
 
 The queue is the durable follow-on execution index. A user should be able to start a fresh harness session and ask to run `akka-do-next-pending-task` without rereading the whole PRD.
 
-### 7. Create execution-order docs
+### 8. Create execution-order docs
 
 Update or create:
 - `specs/README.md`
@@ -262,6 +289,7 @@ These must explain:
 - slice/backlog numbering alignment
 - dependencies between slices
 - recommended harness execution style
+- how to resolve design blockers with `specs/pending-questions.md` and `akka-do-next-pending-question`
 - how to continue implementation with `specs/pending-tasks.md` and `akka-do-next-pending-task`
 
 ## Sizing rules
@@ -341,6 +369,24 @@ Each `specs/backlog/*.md` file should contain:
 - Done criteria
 - Explicit defer list
 
+## Required content for the pending question queue
+
+`specs/pending-questions.md` must follow `../../docs/pending-question-queue.md` and include, for each question:
+- question ID and title
+- status
+- priority
+- category
+- dependencies
+- blocked decisions/artifacts/work areas
+- source/provenance
+- focused question text
+- why it matters
+- options when useful
+- default if deferred
+- answer, decision, decision impact, reconciled-into, and notes fields
+
+Create this queue only when open decisions are meaningful enough to affect planning or implementation. Do not use it as a cosmetic preference checklist.
+
 ## Required content for the pending task queue
 
 `specs/pending-tasks.md` must follow `../../docs/pending-task-queue.md` and include, for each task:
@@ -367,7 +413,9 @@ Avoid:
 - mixing unrelated capabilities into one slice only because they are both "backend"
 - skipping tests in planning docs
 - numbering slices and backlogs inconsistently
-- omitting `specs/pending-tasks.md` when follow-on implementation work exists
+- omitting `specs/pending-questions.md` when unresolved blocking decisions would otherwise force guesses
+- creating `specs/pending-questions.md` as a tedious cosmetic questionnaire instead of a design-impact queue
+- omitting `specs/pending-tasks.md` when follow-on implementation work exists and is sufficiently unblocked
 - generating queue tasks that are too broad for one fresh harness context
 - inventing new directory structures when `specs/` already has an established pattern
 
@@ -378,7 +426,9 @@ Before finishing, verify:
 - the solution plan exists
 - slice specs exist and are dependency-ordered
 - backlog files exist and align by number with slice specs
-- `specs/pending-tasks.md` exists when follow-on implementation work remains
+- `specs/pending-questions.md` exists when unresolved decisions block safe task generation
+- unresolved `blocking` questions do not silently become implementation assumptions
+- `specs/pending-tasks.md` exists when follow-on implementation work remains and is sufficiently unblocked
 - pending tasks map to backlog task-breakdown items
 - pending tasks include required reads, skills, expected outputs, checks, and done criteria
 - cross-cutting concerns are not duplicated excessively across slices
@@ -393,7 +443,9 @@ When using this skill:
 - briefly summarize the proposed slice structure first
 - then create or update the files
 - clearly list which files were added or changed
+- include `specs/pending-questions.md` in the changed-file summary when unresolved decisions were queued
 - include `specs/pending-tasks.md` in the changed-file summary when follow-on implementation tasks exist
-- name the first runnable pending task and recommend a fresh context with `akka-do-next-pending-task`
+- name the next pending question when blocking decisions remain
+- name the first runnable pending task and recommend a fresh context with `akka-do-next-pending-task` when tasks are ready
 - keep planning explicit and repo-oriented
 - do not jump straight into application code

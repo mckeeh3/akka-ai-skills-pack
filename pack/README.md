@@ -48,6 +48,7 @@ Installed layout:
     app-description-maintenance-flow.md
     app-description-end-to-end-workflow-example.md
     agent-coverage-matrix.md
+    pending-question-queue.md
     pending-task-queue.md
     prd-to-akka-flow.md
     timer-pattern-selection.md

@@ -20,6 +20,7 @@ The skill should:
 - detect stale tasks whose source specs changed or disappeared
 - detect blocked tasks that may now be unblocked
 - detect pending tasks with missing dependencies, reads, skills, checks, or done criteria
+- detect tasks that are runnable only because unresolved pending questions were ignored
 - mark obsolete tasks as `superseded` when justified
 - append maintenance follow-up tasks only when needed
 - report the next runnable task
@@ -45,12 +46,14 @@ Use `akka-change-request-to-spec-update` when a specific feature/bug/change need
 
 Read these first if present:
 - `../README.md`
+- `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../akka-do-next-pending-task/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`
 - target project `specs/README.md` if present
 - target project `specs/akka-solution-plan.md` if present
+- target project `specs/pending-questions.md` if present
 - target project `specs/pending-tasks.md`
 - relevant `specs/backlog/*.md` files referenced by queue tasks
 - relevant `specs/tasks/**/*.md` task briefs referenced by queue tasks
@@ -109,7 +112,15 @@ For each `blocked` task:
 - if still blocked, preserve or clarify the blocker note
 - if the blocker was resolved by a replacement task, mark `superseded`
 
-### 5. Review stale pending tasks
+### 5. Review pending-question blockers
+
+If `specs/pending-questions.md` exists:
+- find unresolved `blocking` questions
+- identify non-done tasks whose source, expected outputs, or notes are blocked by those questions
+- mark affected tasks `blocked` or clarify their blocker notes
+- unblock tasks only when the relevant question is `resolved` or explicitly `deferred` with an accepted default
+
+### 6. Review stale pending tasks
 
 A pending task is stale when:
 - its source requirement changed
@@ -124,7 +135,7 @@ Actions:
 - block when a decision is needed
 - supersede when a replacement exists or must be appended
 
-### 6. Optional queue compaction guidance
+### 7. Optional queue compaction guidance
 
 Do not delete tasks by default.
 
@@ -136,7 +147,7 @@ specs/archive/pending-tasks-done-YYYY-MM.md
 
 Only archive if the user explicitly asks. Even then, preserve dependency references or leave a stub/index in `specs/pending-tasks.md`.
 
-### 7. Report next runnable task
+### 8. Report next runnable task
 
 Use the standard selection algorithm:
 1. ignore `done`, `blocked`, `deferred`, and `superseded`

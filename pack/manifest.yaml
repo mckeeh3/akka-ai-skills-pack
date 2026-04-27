@@ -137,6 +137,9 @@ content:
     - id: akka-consumers
       path: skills/akka-consumers
       category: component-suite
+    - id: akka-do-next-pending-question
+      path: skills/akka-do-next-pending-question
+      category: planning
     - id: akka-do-next-pending-task
       path: skills/akka-do-next-pending-task
       category: focused
@@ -293,6 +296,12 @@ content:
     - id: akka-revised-prd-reconciliation
       path: skills/akka-revised-prd-reconciliation
       category: planning
+    - id: akka-pending-question-generation
+      path: skills/akka-pending-question-generation
+      category: planning
+    - id: akka-pending-question-queue-maintenance
+      path: skills/akka-pending-question-queue-maintenance
+      category: planning
     - id: akka-pending-task-queue-maintenance
       path: skills/akka-pending-task-queue-maintenance
       category: planning
@@ -439,6 +448,7 @@ bundles:
       - akka-consumer-producing
       - akka-consumer-testing
       - akka-consumers
+      - akka-do-next-pending-question
       - akka-do-next-pending-task
       - akka-entity-type-selection
       - akka-ese-application-entity
@@ -491,6 +501,8 @@ bundles:
       - akka-backlog-to-pending-tasks
       - akka-change-request-to-spec-update
       - akka-revised-prd-reconciliation
+      - akka-pending-question-generation
+      - akka-pending-question-queue-maintenance
       - akka-pending-task-queue-maintenance
       - akka-solution-decomposition
       - akka-timed-action-component
