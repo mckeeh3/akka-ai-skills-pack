@@ -117,7 +117,7 @@ Stage 3 includes focused implementation skill families for peer building blocks 
 - views
 - consumers
 - timed actions
-- endpoints and web UI delivery
+- endpoints, web UI delivery, and fully capable lightweight frontend apps
 - agents
 - entities
 
@@ -150,7 +150,7 @@ Agent-routing and implementation skills for:
 - Views
 - Consumers
 - Timed Actions
-- HTTP endpoints and web UI delivery
+- HTTP endpoints, web UI delivery, and lightweight frontend app design/implementation
 - gRPC endpoints
 - MCP endpoints
 - Agents
@@ -184,7 +184,7 @@ The examples cover patterns such as:
 - consumers and topic/service-stream integration
 - timed actions and timer-backed flows
 - HTTP, gRPC, and MCP endpoints
-- Akka-served web UI, static content, SSE pages, and WebSocket pages
+- Akka-served web UI, static content, SSE pages, WebSocket pages, and complete lightweight TypeScript frontend app patterns
 - agents, tools, structured responses, memory, streaming, guardrails, and evaluation
 - Event Sourced Entity and Key Value Entity design
 - deterministic testing patterns for each component family

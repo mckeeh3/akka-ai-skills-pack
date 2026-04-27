@@ -84,6 +84,8 @@ done
 [[ -f "$REPO_ROOT/pack/EXAMPLES-README.md" ]] || fail "Expected examples README at $REPO_ROOT/pack/EXAMPLES-README.md"
 [[ -d "$REPO_ROOT/docs" ]] || fail "Expected docs at $REPO_ROOT/docs"
 [[ -d "$REPO_ROOT/src" ]] || fail "Expected examples under $REPO_ROOT/src"
+[[ -f "$REPO_ROOT/package.json" ]] || fail "Expected web UI package.json at $REPO_ROOT/package.json"
+[[ -f "$REPO_ROOT/tsconfig.web-ui.json" ]] || fail "Expected web UI tsconfig at $REPO_ROOT/tsconfig.web-ui.json"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required"
 
 resolve_location() {
@@ -335,7 +337,11 @@ PACK_DOC_FILES=(
   docs/service-to-service-views.md
   docs/solution-plan-to-implementation-queue.md
   docs/timer-pattern-selection.md
+  docs/web-ui-api-contract-patterns.md
+  docs/web-ui-frontend-decomposition.md
+  docs/web-ui-lightweight-typescript-architecture.md
   docs/web-ui-pattern-selection.md
+  docs/web-ui-quality-checklist.md
   docs/workflow-endpoint-pattern.md
 )
 
@@ -368,6 +374,8 @@ for doc_file in "${PACK_DOC_FILES[@]}"; do
 done
 
 copy_file "$REPO_ROOT/pom.xml" "$EXAMPLES_DIR/pom.xml"
+copy_file "$REPO_ROOT/package.json" "$EXAMPLES_DIR/package.json"
+copy_file "$REPO_ROOT/tsconfig.web-ui.json" "$EXAMPLES_DIR/tsconfig.web-ui.json"
 copy_file "$REPO_ROOT/pack/EXAMPLES-README.md" "$EXAMPLES_DIR/README.md"
 copy_dir_replace "$REPO_ROOT/src/main" "$EXAMPLES_DIR/src/main"
 copy_dir_replace "$REPO_ROOT/src/test" "$EXAMPLES_DIR/src/test"

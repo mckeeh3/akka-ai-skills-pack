@@ -111,7 +111,7 @@ List:
 - async integrations
 - human approval or pause points
 - edge and API channels
-- browser UI needs
+- browser UI needs, including screens, navigation, forms, frontend state, realtime behavior, accessibility, and responsive requirements
 - AI and LLM needs
 - security constraints
 
@@ -174,6 +174,7 @@ Do not introduce an agent for deterministic business rules that should stay in c
 
 Choose:
 - `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
+- `Akka-hosted web UI app` for fully capable lightweight browser applications with screens, typed API clients, forms, state, and frontend quality requirements
 - `gRPC endpoint` for protobuf-first service APIs
 - `MCP endpoint` for LLM-oriented tools, resources, or prompts
 
@@ -229,6 +230,7 @@ Choose one or more of:
 - `gRPC endpoint`
 - `MCP endpoint`
 - HTTP-hosted web UI via `akka-http-endpoint-web-ui`
+- fully capable lightweight frontend app via `akka-web-ui-apps`
 - SSE or WebSocket companions when live browser updates are required
 
 ### AI layer
@@ -336,7 +338,30 @@ Load:
 - `akka-timers-scheduling`
 - `akka-timed-action-testing`
 
-### If the plan includes HTTP APIs or browser UI
+### If the plan includes a complete browser app
+
+Load:
+- `akka-web-ui-apps`
+- `akka-http-endpoints`
+- `akka-http-endpoint-web-ui`
+
+Then add only what is needed:
+- `akka-web-ui-lightweight-typescript`
+- `akka-web-ui-api-client`
+- `akka-web-ui-state-rendering`
+- `akka-web-ui-forms-validation`
+- `akka-web-ui-realtime`
+- `akka-web-ui-accessibility-responsive`
+- `akka-web-ui-testing`
+- `akka-http-endpoint-component-client`
+- `akka-http-endpoint-sse`
+- `akka-http-endpoint-websocket`
+- `akka-http-endpoint-jwt`
+- `akka-http-endpoint-testing`
+
+The implementation handoff must include frontend screens, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, and tests.
+
+### If the plan includes HTTP APIs or simple browser UI delivery
 
 Load:
 - `akka-http-endpoints`

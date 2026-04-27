@@ -62,6 +62,9 @@ content:
     - id: app-description-test-specification
       path: skills/app-description-test-specification
       category: focused
+    - id: app-description-ui
+      path: skills/app-description-ui
+      category: focused
     - id: app-descriptions
       path: skills/app-descriptions
       category: architecture
@@ -335,6 +338,30 @@ content:
     - id: akka-views
       path: skills/akka-views
       category: component-suite
+    - id: akka-web-ui-accessibility-responsive
+      path: skills/akka-web-ui-accessibility-responsive
+      category: focused
+    - id: akka-web-ui-api-client
+      path: skills/akka-web-ui-api-client
+      category: focused
+    - id: akka-web-ui-apps
+      path: skills/akka-web-ui-apps
+      category: component-suite
+    - id: akka-web-ui-forms-validation
+      path: skills/akka-web-ui-forms-validation
+      category: focused
+    - id: akka-web-ui-lightweight-typescript
+      path: skills/akka-web-ui-lightweight-typescript
+      category: focused
+    - id: akka-web-ui-realtime
+      path: skills/akka-web-ui-realtime
+      category: focused
+    - id: akka-web-ui-state-rendering
+      path: skills/akka-web-ui-state-rendering
+      category: focused
+    - id: akka-web-ui-testing
+      path: skills/akka-web-ui-testing
+      category: testing
     - id: akka-workflow-compensation
       path: skills/akka-workflow-compensation
       category: focused
@@ -361,6 +388,8 @@ content:
     exportFrom:
       - pom.xml
       - README.md
+      - package.json
+      - tsconfig.web-ui.json
       - src/main
       - src/test
     installAs: '{agentsRoot}/resources/examples/java'
@@ -385,6 +414,7 @@ bundles:
       - app-description-readiness-assessment
       - app-description-readiness-summary
       - app-description-test-specification
+      - app-description-ui
       - app-descriptions
       - app-generate-app
       - akka-agent-component
@@ -476,6 +506,14 @@ bundles:
       - akka-view-streaming
       - akka-view-testing
       - akka-views
+      - akka-web-ui-accessibility-responsive
+      - akka-web-ui-api-client
+      - akka-web-ui-apps
+      - akka-web-ui-forms-validation
+      - akka-web-ui-lightweight-typescript
+      - akka-web-ui-realtime
+      - akka-web-ui-state-rendering
+      - akka-web-ui-testing
       - akka-workflow-compensation
       - akka-workflow-component
       - akka-workflow-notifications

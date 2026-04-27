@@ -22,6 +22,7 @@ That keeps the authored browser code and the served Akka asset paths easy to cor
 
 | Need | Use | First example |
 | --- | --- | --- |
+| Full frontend app with screens, state, forms, typed API clients, accessibility, and responsive behavior | Web UI app pattern | `skills/akka-web-ui-apps/SKILL.md` |
 | Packaged docs, HTML, CSS, OpenAPI, or simple file serving | Narrow static-content pattern | `src/main/java/com/example/api/StaticContentEndpoint.java` |
 | Co-hosted browser page calling JSON endpoints | UI + JSON API pattern | `src/main/java/com/example/api/WebUiHomeEndpoint.java` and `src/main/java/com/example/api/WebUiDataEndpoint.java` |
 | Browser page consuming live one-way updates | UI + SSE pattern | `src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `src/main/java/com/example/api/CounterStreamEndpoint.java` |
@@ -50,6 +51,16 @@ Use TypeScript when the browser page has real interaction logic, especially when
 - is likely to be copied by future agents as a reusable starting point
 
 In this repository, TypeScript is limited to browser-facing code only. Akka components, endpoints, and tests stay in Java.
+
+## Fully capable does not mean heavy framework
+
+For serious browser apps, use `akka-web-ui-apps` and its focused companion skills. They require frontend decomposition, typed API clients, explicit state, forms, accessibility, responsive layout, and tests while preserving the minimal stack.
+
+Read next:
+- `docs/web-ui-frontend-decomposition.md`
+- `docs/web-ui-lightweight-typescript-architecture.md`
+- `docs/web-ui-api-contract-patterns.md`
+- `docs/web-ui-quality-checklist.md`
 
 ## Why this repo avoids heavy frontend frameworks in this wave
 
@@ -135,7 +146,8 @@ That belongs with static assets, not with the interactive UI examples.
 
 Start with:
 
-- `skills/akka-http-endpoint-web-ui/SKILL.md`
+- `skills/akka-web-ui-apps/SKILL.md` for complete frontend apps
+- `skills/akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and simple web UI delivery
 
 Then load the focused companion skill you need:
 

@@ -7,25 +7,34 @@ description: Route Akka Java SDK tasks involving packaged browser UIs, co-hosted
 
 Use this skill when an Akka service should serve a browser-facing UI from packaged resources.
 
+For a complete user-facing frontend app, start with `akka-web-ui-apps` first, then return here for Akka HTTP hosting, route shape, packaged assets, and endpoint tests.
+
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `../../../docs/web-ui-pattern-selection.md`
+- `../../../docs/web-ui-frontend-decomposition.md`
+- `../../../docs/web-ui-lightweight-typescript-architecture.md`
+- `../../../docs/web-ui-quality-checklist.md`
 - `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiDataEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
+- `../../../src/main/java/com/example/api/FrontendReferenceUiEndpoint.java`
+- `../../../src/main/java/com/example/api/FrontendReferenceApiEndpoint.java`
 - `../../../src/main/java/com/example/api/CounterStreamEndpoint.java`
 - `../../../src/main/java/com/example/api/PingWebSocketEndpoint.java`
 - `../../../src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
+- `../../../src/test/java/com/example/application/FrontendReferenceWebUiIntegrationTest.java`
 
 ## Use this skill when
 
 - the service should bundle a small browser UI with Akka
+- `akka-web-ui-apps` has identified screens, frontend state, and browser API contracts
 - the UI calls JSON endpoints in the same service
 - the UI should consume SSE updates
 - the UI should consume a WebSocket endpoint
@@ -42,6 +51,21 @@ Read first:
 - `../../../src/main/java/com/example/api/StaticContentEndpoint.java`
 
 Use this when the task is mainly packaged HTML, CSS, OpenAPI, or file-serving.
+
+### Complete frontend app
+Use first:
+- `akka-web-ui-apps`
+
+Then add focused frontend companions as needed:
+- `akka-web-ui-lightweight-typescript`
+- `akka-web-ui-api-client`
+- `akka-web-ui-state-rendering`
+- `akka-web-ui-forms-validation`
+- `akka-web-ui-realtime`
+- `akka-web-ui-accessibility-responsive`
+- `akka-web-ui-testing`
+
+Use this when the browser UI has real user journeys, multiple states, forms, navigation, or frontend application logic.
 
 ### UI + JSON API
 Read first:
@@ -88,6 +112,8 @@ Tiny workflow note:
 
 Prefer TypeScript for interactive browser examples. Do not introduce a frontend framework for this skill family.
 
+For non-trivial apps, use the modular TypeScript layout in `docs/web-ui-lightweight-typescript-architecture.md` instead of putting all browser behavior in one `app.ts`.
+
 ## Route guidance
 
 Prefer clear route families:
@@ -110,6 +136,8 @@ Keep those route families separate so a future agent can infer intent from the p
   - packaged page consuming a WebSocket
 - `StaticContentEndpoint`
   - packaged files and OpenAPI publishing without interactive browser logic
+- `FrontendReferenceUiEndpoint` + `FrontendReferenceApiEndpoint`
+  - modular framework-free TypeScript frontend with typed API calls, forms, validation, state rendering, accessibility, and responsive layout
 
 ## Testing rule
 
@@ -128,6 +156,8 @@ Avoid:
 - introducing React, Angular, Vue, Vite, or bundler-specific assumptions in this repository wave
 - hiding the TypeScript source path or the served JavaScript path
 - relying on browser-only behavior without a route-level integration test
+- treating a complete frontend app as only a static-content concern
+- implementing only happy-path UI states
 
 ## Review checklist
 
@@ -137,3 +167,4 @@ Before finishing, verify:
 - SSE and WebSocket routes remain explicit and separate
 - TypeScript source and served JavaScript paths are easy to correlate
 - integration tests fetch the packaged page and asset routes through `httpClient`
+- non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md`

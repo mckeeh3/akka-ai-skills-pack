@@ -14,7 +14,7 @@ It is the description-first equivalent of project scaffolding, but for the autho
 
 Create a minimum viable internal app-description tree that:
 - gives the harness a stable root to maintain
-- establishes authoritative layers for capabilities, behavior, tests, auth/security, and observability
+- establishes authoritative layers for capabilities, behavior, tests, auth/security, observability, and UI when a frontend is in scope
 - records an initial readiness posture
 - defines a generation policy
 - creates enough cross-linking that later changes can stay localized and traceable
@@ -98,9 +98,12 @@ app-description/
     identity-and-trust.md
   50-observability/
     logs-and-audit.md
+  55-ui/                  # only when a browser frontend is in scope
+    ui-index.md
+    screens-and-navigation.md
 ```
 
-Add deeper files only when the user's input already justifies them.
+Add deeper files only when the user's input already justifies them. When the app has a meaningful browser UI, use `app-description-ui` to maintain the `55-ui` layer.
 
 ## What this skill must derive from input
 
@@ -112,6 +115,7 @@ From the initial user input, derive as applicable:
 - first acceptance scenarios
 - initial auth/security expectations
 - initial observability expectations
+- initial frontend/UI expectations when a browser app is in scope
 - initial non-goals
 - an initial readiness posture
 - a conservative generation policy

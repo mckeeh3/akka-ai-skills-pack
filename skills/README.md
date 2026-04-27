@@ -28,6 +28,7 @@ Initial app-description skills:
 - `app-description-change-impact` — determine which layers, maps, readiness state, and generated outputs are affected by a change
 - `app-description-auth-security` — update the authoritative auth/security layer of the app description
 - `app-description-observability` — update the authoritative observability layer of the app description
+- `app-description-ui` — update the authoritative frontend/UI layer of the app description
 - `app-description-readiness-assessment` — assess whether the current app description is sufficiently complete for generation
 - `app-generate-app` — realize the current app description as generated outputs
 - `app-description-change-summary` — summarize what changed after a revision request
@@ -43,9 +44,10 @@ Default description-first flow:
 7. run `app-description-change-impact` to identify cross-layer and realization implications
 8. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, or data protection
 9. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
-10. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
-11. realize outputs with `app-generate-app` only when generation is requested or accepted
-12. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+10. update UI with `app-description-ui` when the request changes screens, navigation, forms, frontend API contracts, realtime UI behavior, accessibility, or responsive behavior
+11. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
+12. realize outputs with `app-generate-app` only when generation is requested or accepted
+13. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 Reference docs:
 - `../docs/description-first-application-doctrine.md`
@@ -126,7 +128,7 @@ Current local Stage 3 suites:
 - Views
 - Consumers
 - Timed Actions
-- HTTP Endpoints and web UI patterns
+- HTTP Endpoints, Akka-hosted web UI apps, and web UI delivery patterns
 - gRPC Endpoints
 - MCP Endpoints
 - Event Sourced Entities
@@ -263,6 +265,7 @@ This skill routes to:
 - `akka-consumers` for async reactions, integrations, and republishing
 - `akka-timed-actions` for deadlines, reminders, and expiry
 - `akka-http-endpoints` for REST, SSE, WebSocket, static content, and browser-hosted UI
+- `akka-web-ui-apps` for fully capable lightweight frontend apps hosted by Akka HTTP endpoints
 - `akka-grpc-endpoints` for protobuf-first service APIs
 - `akka-mcp-endpoints` for LLM-facing tools, resources, and prompts
 - `akka-agents` when the solution genuinely needs LLM-driven behavior
@@ -505,6 +508,31 @@ Use when the view query should stream current rows or live updates.
 ### Testing
 Use when validating projections with mocked incoming messages.
 - `akka-view-testing`
+
+## Akka-hosted web UI app skills
+
+Start with:
+- `akka-web-ui-apps`
+
+Use when the browser UI is a real frontend application, not just a packaged page or static files. This family keeps the stack lightweight while requiring excellent frontend behavior: screens, navigation, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+
+Then load the focused skill that matches the current task:
+
+- `akka-web-ui-lightweight-typescript` — modular framework-free TypeScript structure
+- `akka-web-ui-api-client` — typed fetch clients and API error mapping
+- `akka-web-ui-state-rendering` — state model, DOM rendering, loading/empty/error/success states
+- `akka-web-ui-forms-validation` — form parsing, validation, submit state, server error mapping
+- `akka-web-ui-realtime` — browser SSE/WebSocket lifecycle and stale/reconnect behavior
+- `akka-web-ui-accessibility-responsive` — semantic HTML, keyboard, focus, responsive layout
+- `akka-web-ui-testing` — TypeScript checks, route/asset/API tests, optional frontend smoke checks
+
+Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP endpoint companion skills for JSON, SSE, WebSocket, JWT, or internal routes.
+
+Reference docs:
+- `../docs/web-ui-frontend-decomposition.md`
+- `../docs/web-ui-lightweight-typescript-architecture.md`
+- `../docs/web-ui-api-contract-patterns.md`
+- `../docs/web-ui-quality-checklist.md`
 
 ## HTTP endpoint skills
 
@@ -798,18 +826,37 @@ Load:
 - `akka-http-endpoint-request-context`
 - `akka-http-endpoint-testing`
 
-### New Akka-served web UI
+### New fully capable Akka-hosted web UI app
 Load:
+- `akka-web-ui-apps`
 - `akka-http-endpoints`
 - `akka-http-endpoint-web-ui`
+- `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-Then add one or more focused companions as needed:
+Then add one or more focused frontend companions as needed:
+- `akka-web-ui-lightweight-typescript`
+- `akka-web-ui-api-client`
+- `akka-web-ui-state-rendering`
+- `akka-web-ui-forms-validation`
+- `akka-web-ui-realtime`
+- `akka-web-ui-accessibility-responsive`
+
+Then add one or more Akka HTTP companions as needed:
+- `akka-http-endpoint-component-client`
 - `akka-http-endpoint-static-content`
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
 - `akka-http-endpoint-jwt`
 - `akka-http-endpoint-acl-internal`
+
+### New simple Akka-served web UI shell
+Load:
+- `akka-http-endpoints`
+- `akka-http-endpoint-web-ui`
+- `akka-http-endpoint-testing`
+
+Use this narrower path only when the UI is mainly a packaged page/asset delivery pattern, not a complete frontend app.
 
 ### New HTTP endpoint serving static content
 Load:
@@ -1109,6 +1156,8 @@ Core endpoint examples:
 - `../src/main/java/com/example/api/WebUiDataEndpoint.java`
 - `../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
 - `../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
+- `../src/main/java/com/example/api/FrontendReferenceUiEndpoint.java`
+- `../src/main/java/com/example/api/FrontendReferenceApiEndpoint.java`
 - `../src/main/java/com/example/api/LowLevelHttpEndpoint.java`
 - `../src/main/java/com/example/api/ProxyGreetingEndpoint.java`
 - `../src/main/java/com/example/api/PingWebSocketEndpoint.java`
@@ -1131,6 +1180,7 @@ Testing examples:
 - `../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
+- `../src/test/java/com/example/application/FrontendReferenceWebUiIntegrationTest.java`
 - `../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`

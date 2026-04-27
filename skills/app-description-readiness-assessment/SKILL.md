@@ -37,6 +37,7 @@ Read these first if present:
 - `../app-description-test-specification/SKILL.md`
 - `../app-description-auth-security/SKILL.md`
 - `../app-description-observability/SKILL.md`
+- `../app-description-ui/SKILL.md`
 
 ## Use this skill when
 
@@ -58,7 +59,7 @@ Readiness is about **semantic completeness**, not about whether code could be gu
 
 A description is ready only when it is clear enough that generation is likely to preserve intended behavior without hiding major unresolved decisions.
 
-This skill should resist premature generation when important behavior, test, security, or observability semantics are still undefined.
+This skill should resist premature generation when important behavior, test, security, observability, or in-scope frontend/UI semantics are still undefined.
 
 ## Readiness dimensions
 
@@ -98,7 +99,17 @@ Check whether required operational evidence is defined:
 - alert-worthy conditions
 - diagnosability expectations
 
-### 5. Generation stability
+### 5. Frontend/UI completeness
+Check this when a browser frontend is in scope:
+- user journeys and screens
+- navigation
+- forms/actions and validation behavior
+- frontend API contracts
+- loading, empty, error, submitting, success, and stale states
+- realtime behavior when needed
+- accessibility and responsive expectations
+
+### 6. Generation stability
 Check whether remaining ambiguity would likely cause incorrect or unstable generated outputs.
 
 ## Allowed outcomes

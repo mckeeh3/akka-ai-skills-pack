@@ -93,9 +93,10 @@ As applicable, generation may include:
 - generated tests
 - configuration or deployment assets
 - runtime startup commands or scripts
+- Akka-hosted web UI assets and TypeScript frontend modules when the app description includes `55-ui`
 - documentation or evaluation notes
 
-The exact realization set depends on the current repository and user request.
+The exact realization set depends on the current repository and user request. When a browser frontend is in scope, route realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as static content only.
 
 ## Standard generation output shape
 

@@ -6,6 +6,8 @@ This directory contains the Java example project exported with the installed Akk
 
 The examples are installed under:
 - `resources/examples/java/pom.xml`
+- `resources/examples/java/package.json`
+- `resources/examples/java/tsconfig.web-ui.json`
 - `resources/examples/java/src/main/...`
 - `resources/examples/java/src/test/...`
 
@@ -28,6 +30,8 @@ Typical usage:
 
 These examples are a reference set, not a complete application template.
 Use the smallest relevant example files for the current task.
+
+For Akka-hosted web UI examples, TypeScript source lives under `src/main/web-ui/...` and compiled browser assets live under `src/main/resources/static-resources/...`. Run `npm run build:web-ui` after editing TypeScript examples.
 
 ## Official Akka docs
 

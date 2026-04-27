@@ -90,6 +90,15 @@ app-description/
     traces-and-correlation.md
     health-and-alerts.md
 
+  55-ui/                  # when a browser frontend is in scope
+    ui-index.md
+    personas-and-journeys.md
+    screens-and-navigation.md
+    interactions-and-forms.md
+    frontend-api-contracts.md
+    states-and-realtime.md
+    accessibility-and-responsive.md
+
   60-generation/
     realization-scope.md
     regeneration-map.md
@@ -205,6 +214,19 @@ This layer answers:
 - what should alert operators
 - what evidence is needed to diagnose failures
 
+## `55-ui/`
+Authoritative frontend and browser interaction layer.
+
+This layer is present when a browser frontend is in scope.
+
+This layer answers:
+- who uses the UI and for which journeys
+- what screens and navigation paths exist
+- what forms, commands, and frontend validations exist
+- what browser API contracts are needed
+- what loading, empty, error, submitting, success, stale, and realtime states exist
+- what accessibility and responsive behavior is required
+
 ## `60-generation/`
 Realization policy and output mapping.
 
@@ -256,7 +278,7 @@ Do not treat this layer as the source of app meaning.
 Default ownership should be:
 
 - `app-description-bootstrap`
-  - creates the initial `00-system/`, `10-capabilities/`, `20-behavior/`, `30-tests/`, `40-auth-security/`, and `50-observability/` seed artifacts
+  - creates the initial `00-system/`, `10-capabilities/`, `20-behavior/`, `30-tests/`, `40-auth-security/`, and `50-observability/` seed artifacts, plus `55-ui/` when a browser frontend is in scope
   - establishes the first stable app-description root
 
 - `app-description-input-normalization`
@@ -287,6 +309,10 @@ Default ownership should be:
 - `app-description-observability`
   - primarily owns `50-observability/`
 
+- `app-description-ui`
+  - primarily owns `55-ui/`
+  - links UI screens, interactions, frontend API contracts, accessibility, and responsive behavior back to capabilities, behavior, tests, security, and observability
+
 - `app-description-readiness-assessment`
   - primarily owns `00-system/readiness-status.md`
   - may update `60-generation/realization-scope.md` references when readiness posture changes
@@ -311,7 +337,7 @@ The harness should maintain these invariants:
 2. Every important behavior change must link to one or more test artifacts.
 3. Security-sensitive behavior must link to relevant auth/security artifacts.
 4. Operationally important behavior must link to relevant observability artifacts.
-5. Readiness must be based on the actual state of behavior, tests, security, and observability layers.
+5. Readiness must be based on the actual state of behavior, tests, security, observability, and in-scope UI layers.
 6. Generation policy must never override description correctness.
 7. Review summaries must be derivable from authoritative layers.
 
@@ -355,9 +381,10 @@ When a change request arrives, the harness should:
 3. update linked test semantics
 4. update linked auth/security semantics if needed
 5. update linked observability semantics if needed
-6. update traceability links
-7. reassess readiness
-8. generate outputs only if requested or accepted
+6. update linked UI semantics if a browser frontend is in scope
+7. update traceability links
+8. reassess readiness
+9. generate outputs only if requested or accepted
 
 ## What is authoritative vs derived
 
@@ -368,6 +395,7 @@ These layers define the app:
 - `30-tests/`
 - `40-auth-security/`
 - `50-observability/`
+- `55-ui/` when a browser frontend is in scope
 - relevant control state in `00-system/`
 
 ### Derived
