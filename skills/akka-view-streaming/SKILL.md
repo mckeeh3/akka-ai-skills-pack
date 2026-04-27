@@ -38,8 +38,9 @@ Repository examples:
 2. Use `queryStreamResult()` in the method body.
 3. Add `streamUpdates = true` only when the stream should stay open for later matching updates.
 4. Keep row and query shapes stable so downstream SSE or gRPC endpoints can reuse them.
-5. Test non-updating streams by collecting the stream.
-6. Test updating streams through SSE or another consumer that can observe later updates.
+5. If the stream query uses `ORDER BY`, every ordered column must also appear in the same query's `WHERE` conditions.
+6. Test non-updating streams by collecting the stream.
+7. Test updating streams through SSE or another consumer that can observe later updates.
 
 ## Review checklist
 
@@ -47,4 +48,5 @@ Before finishing, verify:
 - the method returns `QueryStreamEffect<T>`
 - `streamUpdates = true` is present only for live-update streams
 - the query filter matches the intended stream behavior
+- any `ORDER BY` columns are also indexed by `WHERE` conditions
 - endpoints forwarding the stream preserve offset/reconnect semantics when relevant

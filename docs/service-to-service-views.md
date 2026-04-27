@@ -87,7 +87,7 @@ public class ShoppingCartPublicView extends View {
 
   public record CartSummary(String cartId, int itemCount, String status) {}
   public record CartSummaries(List<CartSummary> entries) {}
-  public record FindByStatus(String status) {}
+  public record FindByStatus(String status, String minCartId) {}
 
   @Consume.FromServiceStream(
       service = "shopping-cart-service",
@@ -111,6 +111,7 @@ public class ShoppingCartPublicView extends View {
       SELECT * AS entries
       FROM shopping_cart_public_view
       WHERE status = :status
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryEffect<CartSummaries> getByStatus(FindByStatus request) {
@@ -126,6 +127,7 @@ For service-stream views:
 - keep one handler per public message type when that is clearer
 - use `rowState()` for incremental projections
 - use a wrapper record such as `CartSummaries(List<CartSummary> entries)` for multi-row queries
+- include every `ORDER BY` column in the same query's `WHERE` conditions, for example `cartId >= :minCartId` when ordering by `cartId`
 
 ## Contract rules
 

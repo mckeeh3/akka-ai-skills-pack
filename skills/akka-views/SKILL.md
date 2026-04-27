@@ -22,6 +22,7 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/reference/views/concepts/result-mapping.html.md`
+- `akka-context/reference/views/syntax/order-by.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 - existing project view examples under `src/main/java/**/application/*View.java`
 - matching tests under `src/test/java/**`
@@ -94,6 +95,8 @@ Rules:
 9. View tests should publish incoming updates and query through `componentClient.forView()`.
 10. Streaming queries use `QueryStreamEffect` with `queryStreamResult()`.
 11. Remember eventual consistency: assert view results with `Awaitility`.
+12. For every query, each `ORDER BY` column must also be present in that query's `WHERE` conditions; otherwise Akka may reject the query with `AK-00101`.
+13. Prefer separate query methods over optional-filter `OR` expressions so each access path has explicit indexed fields.
 
 ## Decision guide
 
@@ -137,6 +140,7 @@ Repository examples:
 - Topic-backed views rely on topic delivery and metadata such as `ce-subject`.
 - For multi-region scenarios, `updateContext().hasLocalOrigin()`, `originRegion()`, and `selfRegion()` can drive origin-aware filtering.
 - For service-to-service eventing sources, also use `docs/service-to-service-views.md` and `akka-context/sdk/consuming-producing.html.md`.
+- `ORDER BY` is constrained by the View indexes inferred from the `WHERE` clause. If you need `ORDER BY lowestConsumablePercent, deviceId`, include conditions for both fields, such as `lowestConsumablePercent <= :maxPercent` and `deviceId >= :minDeviceId`.
 - View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.
 
 ## Final review checklist
@@ -147,6 +151,8 @@ Before finishing, verify:
 - ESE/Topic uses `onEvent(...)`, KVE/Workflow uses `onUpdate(...)`
 - query response records match the `SELECT` shape and aliases exactly
 - multi-row queries use a wrapper field alias such as `AS carts`
+- every `ORDER BY` column appears in the same query's `WHERE` conditions
+- optional filters are split into separate query methods rather than `OR` branches
 - delete behavior is explicit when needed
 - snapshot handling is present when an ESE-backed view should start from snapshots
 - tests publish incoming messages from the correct source type

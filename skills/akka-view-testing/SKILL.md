@@ -38,6 +38,7 @@ For each reusable view example, cover at least:
 3. transformed fields are mapped correctly
 4. delete or move-out-of-query behavior when relevant
 5. paginated result mapping when the view exposes a paginated query
+6. at least one invocation of every query method, including sorted and paginated queries, so unsupported query shapes such as invalid `ORDER BY` indexes fail during tests
 
 ## Repository examples
 
@@ -84,4 +85,5 @@ Before finishing, verify:
 - topic tests include `ce-subject` metadata when needed
 - assertions run inside `Awaitility.await()`
 - queries use `componentClient.forView()`
+- every View query method is invoked at least once, especially queries with `ORDER BY`, `OFFSET`, or `LIMIT`
 - tests assert transformed row fields, not only result size

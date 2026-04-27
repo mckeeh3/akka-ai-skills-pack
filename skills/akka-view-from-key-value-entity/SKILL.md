@@ -67,5 +67,6 @@ Before finishing, verify:
 - `onUpdate(...)` maps from the latest full state to the row type
 - the row type contains only fields needed by the queries
 - query wrappers and aliases match exactly
+- `ORDER BY` columns also appear in the same query's `WHERE` conditions
 - tests simulate updates with key value incoming messages
 - delete handlers are present only when custom delete behavior is required
