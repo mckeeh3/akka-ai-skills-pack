@@ -19,7 +19,7 @@ When installed into a target project or user profile, those files land under `.a
 
 ## What this project is for
 
-This is **not just an Akka sample service** and **not just a docs mirror**.
+This is **not an Akka sample service alone**.
 
 It is a **requirements-first system for AI coding agents** that need to start from high-level intent and derive the correct Akka architecture before coding.
 
@@ -137,8 +137,8 @@ The repository exists to make that workflow efficient for AI agents through:
 - an installable pack that can be dropped into `.agents`
 
 A useful mental model is:
-- `akka-context/` explains Akka for humans and serves as a semantic reference
-- this repository repackages that knowledge for **requirements-to-architecture-to-code workflows for AI agents**
+- official Akka SDK documentation remains the external semantic reference for Akka behavior and APIs
+- this repository packages learned patterns into **requirements-to-architecture-to-code workflows for AI agents**
 
 ## What is included
 
@@ -206,15 +206,10 @@ Focused local reference material for recurring patterns, such as:
 - `tools/install-release-template.sh` - template used to generate a versioned GitHub release installer script
 - `install.sh` - installs the full pack into a cross-harness `.agents` directory
 
-### 5. Maintainer-only Akka reference mirror: `akka-context/`
-This directory is intentionally kept in the repository as a **maintainer/reference input**.
+### 5. Upstream Akka documentation
+Official Akka SDK documentation is provided by Akka outside this pack. It was used as a reference during the initial development of these skills and examples, and it remains the authority for SDK semantics and API details.
 
-It is used to:
-- confirm official Akka semantics
-- resolve API details
-- fill local coverage gaps
-
-It is **not bundled into installable distributions**.
+This repository does not bundle the Akka documentation. The pack contains agent-focused skills, focused local guidance, and examples derived from that reference work.
 
 ## Related guidance files in this repository
 
@@ -237,7 +232,6 @@ Only open `CONTEXT-WARMUP.md` and the repository root `AGENTS.md` if you are sta
 ├── CONTEXT-WARMUP.md        # repo-development session bootstrap/context warmup
 ├── AGENTS.md                # authoritative project rules and coding constraints
 ├── skills/                  # source skill library
-├── akka-context/            # maintainer/reference Akka docs (not bundled)
 ├── docs/                    # focused local reference docs
 ├── pack/                    # pack manifest and packaging docs
 ├── src/                     # executable Akka Java SDK examples
@@ -316,13 +310,12 @@ The build also generates a versioned GitHub release installer script alongside t
 Source skills are authored under `skills/` in this repository and installed into `.agents/skills/` by the installer.
 
 The distribution intentionally excludes the repository-internal maintainer-only guidance files from the installed pack experience, including:
-- `akka-context/**`
 - the repository root `AGENTS.md`
 - `CONTEXT-WARMUP.md`
 
 During installation, skill files are rewritten so they:
 - point to installed example paths under `.agents/resources/examples/java/...`
-- no longer contain broken repo-local `akka-context/...` references
+- no longer contain stale local-path references to Akka reference material
 - no longer contain broken references to repository-internal `CONTEXT-WARMUP.md`
 - use the installed `.agents/AGENTS.md` guidance file where appropriate
 - instead reference official Akka SDK docs generically
@@ -618,7 +611,7 @@ It is **not** the recommended reading order for pack consumers.
 2. `AGENTS.md` for authoritative project rules and Akka coding constraints
 3. `skills/README.md` for skill routing
 4. the focused skill(s) for the task at hand
-5. `akka-context/sdk/...` when official Akka semantics or API confirmation is needed
+5. official Akka SDK documentation when SDK semantics or API confirmation is needed
 
 If you are here to use the pack rather than develop it, skip `CONTEXT-WARMUP.md` and `AGENTS.md` and follow the build/install sections in this `README.md` instead.
 
