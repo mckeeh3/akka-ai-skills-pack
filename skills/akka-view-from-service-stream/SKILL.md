@@ -34,7 +34,8 @@ If the subscriber should trigger side effects or downstream writes instead of ma
 5. Use `rowState()` for incremental projections.
 6. Return `effects().updateRow(...)`, `effects().deleteRow()`, or `effects().ignore()` explicitly.
 7. Keep query methods and wrapper aliases aligned with the projected row shape.
-8. For any `ORDER BY`, include each ordered column in the same query's `WHERE` conditions; split optional filters into separate query methods rather than using `OR` branches.
+8. For non-SSE `ORDER BY`, include each ordered column in the same query's `WHERE` conditions; split optional filters into separate query methods rather than using `OR` branches.
+9. For view queries exposed as SSE, do not include `ORDER BY`; SSE events are delivered in created/event order.
 
 ## Repository references
 
@@ -74,5 +75,6 @@ Before finishing, verify:
 - updater handlers accept only public event types
 - `updateContext().eventSubject()` is used when row identity depends on subject metadata
 - query wrappers and aliases match exactly
-- `ORDER BY` columns also appear in the query `WHERE` conditions
+- non-SSE `ORDER BY` columns also appear in the query `WHERE` conditions
+- view queries exposed as SSE do not include `ORDER BY`
 - tests and callers assume eventual consistency

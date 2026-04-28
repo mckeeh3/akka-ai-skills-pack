@@ -95,8 +95,9 @@ Rules:
 9. View tests should publish incoming updates and query through `componentClient.forView()`.
 10. Streaming queries use `QueryStreamEffect` with `queryStreamResult()`.
 11. Remember eventual consistency: assert view results with `Awaitility`.
-12. For every query, each `ORDER BY` column must also be present in that query's `WHERE` conditions; otherwise Akka may reject the query with `AK-00101`.
-13. Prefer separate query methods over optional-filter `OR` expressions so each access path has explicit indexed fields.
+12. For every non-SSE query, each `ORDER BY` column must also be present in that query's `WHERE` conditions; otherwise Akka may reject the query with `AK-00101`.
+13. For view queries exposed as SSE with `serverSentEventsForView(...)`, do **not** generate `ORDER BY`; SSE view events are delivered in created/event order.
+14. Prefer separate query methods over optional-filter `OR` expressions so each access path has explicit indexed fields.
 
 ## Decision guide
 
@@ -141,6 +142,7 @@ Repository examples:
 - For multi-region scenarios, `updateContext().hasLocalOrigin()`, `originRegion()`, and `selfRegion()` can drive origin-aware filtering.
 - For service-to-service eventing sources, also use `docs/service-to-service-views.md` and `akka-context/sdk/consuming-producing.html.md`.
 - `ORDER BY` is constrained by the View indexes inferred from the `WHERE` clause. If you need `ORDER BY lowestConsumablePercent, deviceId`, include conditions for both fields, such as `lowestConsumablePercent <= :maxPercent` and `deviceId >= :minDeviceId`.
+- Do not use `ORDER BY` on live view queries forwarded to SSE; create a separate unsorted `streamUpdates = true` query for SSE and keep sorted/paginated queries separate.
 - View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.
 
 ## Final review checklist
@@ -151,7 +153,8 @@ Before finishing, verify:
 - ESE/Topic uses `onEvent(...)`, KVE/Workflow uses `onUpdate(...)`
 - query response records match the `SELECT` shape and aliases exactly
 - multi-row queries use a wrapper field alias such as `AS carts`
-- every `ORDER BY` column appears in the same query's `WHERE` conditions
+- every non-SSE `ORDER BY` column appears in the same query's `WHERE` conditions
+- SSE-backed view queries do not contain `ORDER BY`
 - optional filters are split into separate query methods rather than `OR` branches
 - delete behavior is explicit when needed
 - snapshot handling is present when an ESE-backed view should start from snapshots

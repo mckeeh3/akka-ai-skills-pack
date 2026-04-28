@@ -26,11 +26,14 @@ Read these first if present:
 5. Keep Java field names aligned with query aliases exactly.
 6. Use a request record when a query needs multiple parameters.
 7. Add `ORDER BY` for stable pagination behavior, but only on columns that are indexed by the query.
-8. Every `ORDER BY` column must also appear in the same query method's `WHERE` conditions. Add an explicit equality/range condition such as `column >= :minColumn` when you need a deterministic tie-break sort column.
+8. Every non-SSE `ORDER BY` column must also appear in the same query method's `WHERE` conditions. Add an explicit equality/range condition such as `column >= :minColumn` when you need a deterministic tie-break sort column.
 9. Do not use optional-filter `OR` patterns such as `(:customerId = '' OR customerId = :customerId)`; create separate query methods for the filtered and unfiltered access paths so each query has explicit indexes.
-10. For streaming queries, keep the row shape simple and stable for downstream SSE or gRPC forwarding.
+10. For view queries consumed by SSE endpoints, do **not** include `ORDER BY`; SSE view events are delivered in created/event order. Use a dedicated unsorted `QueryStreamEffect` query for SSE and keep sorted/paginated `QueryEffect` methods separate.
+11. For streaming queries, keep the row shape simple and stable for downstream SSE or gRPC forwarding.
 
 ## ORDER BY and index rule
+
+This rule applies to non-SSE queries. For view queries that are forwarded to SSE with `serverSentEventsForView(...)`, omit `ORDER BY` entirely because SSE emits view events in created/event order.
 
 Akka can reject a View query at runtime with an error like:
 
@@ -89,7 +92,9 @@ public record DraftCartPage(List<DraftCartSummary> carts) {}
 Repository example:
 - `DraftCartsByCheckedOutView#getCartsPage`
 
-### 3. Non-updating stream query
+### 3. Non-updating non-SSE stream query
+
+Use this only when the stream is collected directly or forwarded through a protocol that supports sorted query streams. If the same data is exposed as SSE, create a separate no-`ORDER BY` stream query.
 
 Query:
 ```sql
@@ -186,7 +191,8 @@ Avoid:
 - aliases that do not match Java record fields
 - multiple scalar parameters when one request record is clearer
 - pagination without stable ordering
-- `ORDER BY` columns that are missing from the same query's `WHERE` conditions
+- `ORDER BY` in a view query consumed by SSE
+- `ORDER BY` columns that are missing from the same non-SSE query's `WHERE` conditions
 - optional-filter `OR` expressions instead of separate query methods per access path
 - exposing domain-only names when the API needs a query-specific result shape
 
@@ -196,6 +202,7 @@ Before finishing, verify:
 - the query aliases match the Java fields exactly
 - wrapper records are used for collections and pagination metadata
 - request records are used when more than one parameter is required
-- `ORDER BY` is present when using `OFFSET`/`LIMIT`
-- every `ORDER BY` column also appears in the same query's `WHERE` conditions
+- `ORDER BY` is present when using `OFFSET`/`LIMIT`, except for SSE-backed queries where `ORDER BY` must be omitted
+- every non-SSE `ORDER BY` column also appears in the same query's `WHERE` conditions
+- SSE-backed view queries have no `ORDER BY`
 - optional filters are represented as separate query methods, not `OR` branches

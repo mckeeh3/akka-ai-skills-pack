@@ -45,5 +45,6 @@ Before finishing, verify:
 - `@Consume.FromTopic` uses the intended topic name
 - published messages include `ce-subject`
 - ignored message types are explicit
-- `ORDER BY` columns also appear in the same query's `WHERE` conditions
+- non-SSE `ORDER BY` columns also appear in the same query's `WHERE` conditions
+- view queries exposed as SSE do not include `ORDER BY`
 - origin-aware logic is intentional when used

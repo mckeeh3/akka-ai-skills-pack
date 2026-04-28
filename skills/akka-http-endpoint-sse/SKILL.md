@@ -34,6 +34,7 @@ Read these first if present:
 4. If clients may reconnect, extract `requestContext().lastSeenSseEventId()` and resume from there.
 5. Prefer stable event ids and explicit event types when reconnect behavior matters.
 6. Map internal domain or notification types to API-facing records before streaming.
+7. For view-backed SSE via `serverSentEventsForView(...)`, use a dedicated view stream query without `ORDER BY`; view SSE events are emitted in created/event order.
 
 ## Repository examples
 
@@ -53,6 +54,7 @@ Read these first if present:
 ### View-backed SSE example
 - `DraftCartViewStreamEndpoint`
   - streams a view query with `streamUpdates = true`
+  - uses an SSE-specific view query with no `ORDER BY`
   - forwards `lastSeenSseEventId()` to the view stream offset
   - returns `HttpResponses.serverSentEventsForView(...)`
 
@@ -72,6 +74,7 @@ Avoid:
 - omitting event ids when reconnect support matters
 - using local mutable JVM state as the only source of truth for long-lived streams
 - assuming SSE connections are permanent
+- adding `ORDER BY` to view stream queries that are exposed as SSE
 
 ## Review checklist
 

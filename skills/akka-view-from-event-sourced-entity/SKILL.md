@@ -73,4 +73,5 @@ Before finishing, verify:
 - delete events or delete callbacks remove or explicitly retain rows as intended
 - snapshot handling uses the entity state type when present
 - queries index by a field other than entity id when that is the purpose of the view
-- `ORDER BY` columns also appear in the same query's `WHERE` conditions
+- non-SSE `ORDER BY` columns also appear in the same query's `WHERE` conditions
+- view queries exposed as SSE do not include `ORDER BY`

@@ -38,9 +38,22 @@ Repository examples:
 2. Use `queryStreamResult()` in the method body.
 3. Add `streamUpdates = true` only when the stream should stay open for later matching updates.
 4. Keep row and query shapes stable so downstream SSE or gRPC endpoints can reuse them.
-5. If the stream query uses `ORDER BY`, every ordered column must also appear in the same query's `WHERE` conditions.
-6. Test non-updating streams by collecting the stream.
-7. Test updating streams through SSE or another consumer that can observe later updates.
+5. For any view query that will be exposed as SSE with `serverSentEventsForView(...)`, do **not** include `ORDER BY`; SSE view events are delivered in created/event order and ordered queries are not supported for that use.
+6. If a non-SSE stream query uses `ORDER BY`, every ordered column must also appear in the same query's `WHERE` conditions.
+7. Test non-updating streams by collecting the stream.
+8. Test updating streams through SSE or another consumer that can observe later updates.
+
+## SSE-backed view stream pattern
+
+Use a dedicated live-update query without `ORDER BY` for SSE endpoints:
+
+```sql
+SELECT *
+FROM draft_carts_by_checked_out
+WHERE checkedOut = :checkedOut
+```
+
+Keep any sorted list or paginated query as a separate `QueryEffect` method. Do not reuse sorted `ORDER BY` queries for SSE.
 
 ## Review checklist
 
@@ -48,5 +61,6 @@ Before finishing, verify:
 - the method returns `QueryStreamEffect<T>`
 - `streamUpdates = true` is present only for live-update streams
 - the query filter matches the intended stream behavior
-- any `ORDER BY` columns are also indexed by `WHERE` conditions
+- view queries forwarded to SSE do not contain `ORDER BY`
+- any non-SSE `ORDER BY` columns are also indexed by `WHERE` conditions
 - endpoints forwarding the stream preserve offset/reconnect semantics when relevant

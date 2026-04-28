@@ -39,4 +39,5 @@ Before finishing, verify:
 - `onUpdate(...)` maps workflow state to a query-focused row
 - tests use `withWorkflowIncomingMessages(...)`
 - query wrappers and aliases match exactly
-- `ORDER BY` columns also appear in the same query's `WHERE` conditions
+- non-SSE `ORDER BY` columns also appear in the same query's `WHERE` conditions
+- view queries exposed as SSE do not include `ORDER BY`

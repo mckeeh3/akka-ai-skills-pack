@@ -67,7 +67,6 @@ public class SessionMemoryAlertView extends View {
           SELECT *
           FROM session_memory_alert_view
           WHERE componentId = :componentId
-          ORDER BY observedAt
           """,
       streamUpdates = true)
   public QueryStreamEffect<AlertRow> continuousByComponent(FindByComponent request) {

@@ -56,7 +56,6 @@ public class SessionMemoryCompactionAuditView extends View {
           SELECT *
           FROM session_memory_compaction_audit_view
           WHERE sessionId = :sessionId
-          ORDER BY observedAt
           """,
       streamUpdates = true)
   public QueryStreamEffect<AuditRow> continuousBySessionId(FindBySessionId request) {

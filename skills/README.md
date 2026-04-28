@@ -525,8 +525,9 @@ Use the source-specific skill for the updater type you are implementing.
 Use when designing wrapper records, aliases, pagination, optional filters, or sorted queries.
 - `akka-view-query-patterns`
 
-Critical query constraint:
-- every `ORDER BY` column must also appear in the same query's `WHERE` conditions, otherwise Akka may reject the View query with `AK-00101`
+Critical query constraints:
+- every non-SSE `ORDER BY` column must also appear in the same query's `WHERE` conditions, otherwise Akka may reject the View query with `AK-00101`
+- view queries exposed as SSE with `serverSentEventsForView(...)` must not include `ORDER BY`; SSE events are emitted in created/event order
 - avoid optional-filter `OR` patterns; use separate query methods for separate access paths
 
 ### Streaming

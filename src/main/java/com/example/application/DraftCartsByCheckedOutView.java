@@ -78,7 +78,6 @@ public class DraftCartsByCheckedOutView extends View {
           SELECT *
           FROM draft_carts_by_checked_out
           WHERE checkedOut = :checkedOut
-          ORDER BY cartId
           """,
       streamUpdates = true)
   public QueryStreamEffect<DraftCartSummary> continuousCarts(FindByCheckedOut request) {
