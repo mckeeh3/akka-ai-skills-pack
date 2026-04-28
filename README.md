@@ -13,7 +13,6 @@ It combines:
 - **executable Akka Java SDK examples** under `src/`
 - **tests that double as reference patterns** under `src/test/`
 - **packaging and installer tooling** for shipping those resources as an installable distribution
-- a local copy of **official Akka reference material** under `akka-context/` for maintainers and source verification
 
 In this repository, `skills/` is the canonical authored source path.
 When installed into a target project or user profile, those files land under `.agents/skills/`.
