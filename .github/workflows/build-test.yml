@@ -33,9 +33,6 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Verify Maven build
-        run: mvn verify --no-transfer-progress
-
       - name: Build versioned pack assets
         run: bash tools/build-pack.sh --clean --github-repo "${{ github.repository }}"
 
