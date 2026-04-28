@@ -58,6 +58,7 @@ For serious browser apps, use `akka-web-ui-apps` and its focused companion skill
 
 Read next:
 - `docs/web-ui-frontend-decomposition.md`
+- `docs/web-ui-style-guide.md`
 - `docs/web-ui-lightweight-typescript-architecture.md`
 - `docs/web-ui-api-contract-patterns.md`
 - `docs/web-ui-quality-checklist.md`
@@ -76,7 +77,7 @@ Avoid React, Angular, Vue, Vite, Webpack, or similar tools here because they:
 The goal in this wave is:
 
 - plain HTML
-- plain CSS
+- plain CSS driven by a selected style guide and centralized CSS variables
 - framework-free TypeScript
 - explicit Akka endpoint routes
 - integration tests that stay cheap and stable
@@ -146,6 +147,7 @@ That belongs with static assets, not with the interactive UI examples.
 
 Start with:
 
+- `docs/web-ui-style-guide.md` for theme/style-guide selection when browser UI styling is not yet selected
 - `skills/akka-web-ui-apps/SKILL.md` for complete frontend apps
 - `skills/akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and simple web UI delivery
 

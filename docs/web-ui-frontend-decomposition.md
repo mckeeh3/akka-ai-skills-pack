@@ -4,6 +4,8 @@ Use this doc when requirements include a user-facing browser app hosted by Akka 
 
 The goal is to make the frontend as intentionally designed as the backend while keeping the technical stack minimal: plain HTML, CSS, and framework-free TypeScript.
 
+Read `docs/web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
+
 ## Required output
 
 Before implementation, produce a frontend plan with these sections.
@@ -91,7 +93,19 @@ If the UI needs live updates, define:
 - merge/idempotency rules
 - cleanup behavior on navigation
 
-### 8. Accessibility and responsive behavior
+### 8. Style guide and theme
+
+Define:
+- selected theme id/name from `docs/web-ui-style-guide.md`, a custom style guide, or `unselected`
+- source reference and mode policy: light-only, dark-only, or system with both token sets
+- typography, spacing, radius, elevation, color, chart, and status tokens
+- layout density and shell/navigation treatment
+- component style rules for cards, buttons, forms, tables/lists, charts, loading/empty/error/success states
+- brand adaptations and a rule not to copy demo names/logos/data from reference images
+
+If the app has a browser UI and style is `unselected`, add a pending `category: ui` style-selection question before materializing web UI implementation tasks.
+
+### 9. Accessibility and responsive behavior
 
 Define:
 - semantic page landmarks
@@ -100,8 +114,9 @@ Define:
 - focus movement after major actions
 - field labels and error associations
 - narrow-screen layout strategy
+- style-guide accessibility constraints for contrast, focus rings, and color-not-alone status communication
 
-### 9. Implementation handoff
+### 10. Implementation handoff
 
 List exact skills to load:
 - `akka-web-ui-apps`
@@ -123,5 +138,6 @@ A web UI decomposition is ready for implementation when a coding agent can answe
 - what user actions are possible?
 - what happens while loading, empty, failed, unauthorized, or submitting?
 - what backend endpoints are required?
+- which style guide/theme and CSS tokens drive the generated HTML/CSS/TypeScript?
 - what frontend modules should be created?
 - what tests prove the browser app was delivered correctly?

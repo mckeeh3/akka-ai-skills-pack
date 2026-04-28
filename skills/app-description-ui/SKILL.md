@@ -15,6 +15,7 @@ Read these first if present:
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/web-ui-frontend-decomposition.md`
+- `../../docs/web-ui-style-guide.md`
 - `../../docs/web-ui-quality-checklist.md`
 - `../app-descriptions/SKILL.md`
 - existing `app-description/55-ui/**`
@@ -39,6 +40,7 @@ app-description/55-ui/
   frontend-api-contracts.md
   states-and-realtime.md
   accessibility-and-responsive.md
+  style-guide.md
 ```
 
 Create only files justified by the app. For a very small app, one `ui-index.md` plus `screens-and-navigation.md` may be enough. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata.
@@ -83,10 +85,21 @@ Create only files justified by the app. For a very small app, one `ui-index.md` 
 - labels and errors
 - narrow-screen layout expectations
 
+### Style guide and theme selection
+- selected theme id/name from `../../docs/web-ui-style-guide.md`, custom style reference, or `unselected`
+- source image/reference and light/dark/system mode policy
+- typography, spacing, radius, elevation, color, chart, status, and focus tokens
+- layout shell/density and navigation treatment
+- component rules for cards, buttons, forms, tables/lists, charts, and feedback states
+- brand adaptations and forbidden copied demo content from reference images
+- CSS variable/token expectations for generated `app.css`
+
+If a browser UI is in scope and no style is selected, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks only web UI implementation/generation tasks.
+
 ## Change handling
 
 For any UI change, update:
-1. affected UI description files
+1. affected UI description files, including `style-guide.md` when theme, branding, density, tokens, or component styling change
 2. behavior flows if user-visible behavior changes
 3. tests if acceptance criteria change
 4. auth/security if route visibility or roles change

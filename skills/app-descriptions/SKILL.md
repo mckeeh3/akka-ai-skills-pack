@@ -28,6 +28,7 @@ Read these first if present:
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-end-to-end-workflow-example.md`
+- `../../docs/web-ui-style-guide.md` when a browser UI is in scope
 
 Prefer these local examples and references:
 - `../../docs/examples/purchase-request-app-description/README.md`
@@ -107,6 +108,7 @@ The default internal app-description structure is:
 - `30-tests/`
 - `40-auth-security/`
 - `50-observability/`
+- `55-ui/` when a browser frontend is in scope, including `style-guide.md`
 - `60-generation/`
 - `70-traceability/`
 - `80-review/`
@@ -120,9 +122,10 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 3. Humans do not directly edit generated code or internal app-description artifacts.
 4. Tests are part of the app description, not only post-hoc verification.
 5. Auth/security and observability are first-class description concerns.
-6. Readiness must be assessed before generation.
-7. Localized regeneration is an optimization, not a conceptual requirement.
-8. Review should focus on semantic change, not only file churn.
+6. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
+7. Readiness must be assessed before generation.
+8. Localized regeneration is an optimization, not a conceptual requirement.
+9. Review should focus on semantic change, not only file churn.
 
 ## Decision guide
 

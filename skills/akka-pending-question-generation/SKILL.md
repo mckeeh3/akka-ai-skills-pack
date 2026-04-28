@@ -54,6 +54,7 @@ Read these first if present:
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/intent-driven-usage-flow.md`
+- `../../docs/web-ui-style-guide.md`
 - `../../specs/README.md`
 - `../../specs/pending-questions.md` if it already exists
 - `../../specs/akka-solution-plan.md` if present
@@ -74,11 +75,13 @@ Create questions only when the answer can change one or more of:
 - consumer/integration behavior
 - timer/reminder/expiry behavior
 - HTTP/gRPC/MCP/API contract
-- UI behavior or realtime requirements
+- UI behavior, realtime requirements, or web UI style-guide/theme selection
 - auth, tenancy, audit, retention, or privacy model
 - failure handling, retries, idempotency, or compensation
 - acceptance, regression, or edge-case tests
 - backlog slicing, dependencies, or task generation
+
+If a browser UI is in scope and no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the five default theme options from `../../docs/web-ui-style-guide.md`. Mark it `priority: blocking` only for web UI implementation/generation tasks; do not block unrelated backend work.
 
 Avoid questions that are:
 - cosmetic
@@ -141,6 +144,7 @@ If blocking questions exist:
 
 Before finishing, verify:
 - `specs/pending-questions.md` exists or no durable questions were needed
+- browser UI work has a selected style guide or a pending/deferred style-selection question that blocks only affected UI tasks
 - every question has a clear design impact
 - blocking questions name what they block
 - question dependencies are valid

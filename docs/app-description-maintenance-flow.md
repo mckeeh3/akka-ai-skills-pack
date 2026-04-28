@@ -50,11 +50,12 @@ Prefer this default sequence:
 6. update verification expectations
 7. update auth/security if needed
 8. update observability if needed
-9. update traceability and impact understanding
-10. assess readiness
-11. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
-12. either stop at description maintenance or proceed to generation
-13. answer review questions through summaries
+9. update UI descriptions, including `55-ui/style-guide.md`, when a browser frontend is in scope
+10. update traceability and impact understanding
+11. assess readiness
+12. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
+13. either stop at description maintenance or proceed to generation
+14. answer review questions through summaries
 
 ## Change-only flow
 
@@ -144,10 +145,11 @@ When multiple layers are affected, prefer this order:
 3. `30-tests/`
 4. `40-auth-security/`
 5. `50-observability/`
-6. `70-traceability/`
-7. `00-system/readiness-status.md`
-8. `60-generation/` derived generation notes
-9. `80-review/` optional summaries
+6. `55-ui/` when a browser frontend is in scope, including `style-guide.md`
+7. `70-traceability/`
+8. `00-system/readiness-status.md`
+9. `60-generation/` derived generation notes
+10. `80-review/` optional summaries
 
 This keeps the semantic source layers ahead of the derived layers.
 
@@ -161,6 +163,7 @@ The harness should ask:
 - which tests now need updates?
 - are there new or changed security implications?
 - are there new or changed observability implications?
+- if a browser UI is in scope, is a style guide selected and does `55-ui/style-guide.md` need to change?
 - does readiness status change?
 - would generation scope be localized or broad?
 - do any existing specs, backlogs, task briefs, or pending tasks need to be updated, blocked, deferred, or superseded?
@@ -175,6 +178,10 @@ The harness should reassess readiness after material description changes, especi
 - auth/security
 - observability
 - operational tests
+
+## UI style-selection rule
+
+When a browser UI is in scope, the app description or specs must contain a selected web UI style guide before web UI implementation or generation starts. If style is missing, add or update a `category: ui` entry in `specs/pending-questions.md` using `docs/web-ui-style-guide.md` rather than silently choosing a theme. This blocks only affected web UI work; unrelated backend description or implementation work can continue.
 
 ## Regeneration rule
 
@@ -234,6 +241,7 @@ A description change request is complete when:
 - linked verification expectations are updated
 - linked security and observability expectations are updated when needed
 - readiness has been reassessed or intentionally deferred
+- when a browser UI is in scope, the selected style guide is recorded or a pending style-selection question blocks only UI realization
 - affected realization specs/backlogs/task briefs/pending tasks are reconciled when they already exist
 - the user can receive a coherent summary of what changed
 

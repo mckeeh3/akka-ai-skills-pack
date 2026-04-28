@@ -48,6 +48,7 @@ Read these first if present:
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
+- `../../docs/web-ui-style-guide.md` when materializing browser UI tasks
 - `../../specs/README.md`
 - `../../specs/akka-solution-plan.md`
 - `../../specs/pending-questions.md` if it exists
@@ -87,6 +88,7 @@ Rules:
 - if only part of a backlog is blocked, create tasks for unblocked work and leave blocked work out or blocked with explicit question references
 - if a question is `answered` but not `resolved`, reconcile it or leave affected tasks blocked
 - do not silently choose defaults unless the question is `deferred` with an accepted default or limitation
+- if browser UI tasks exist and no selected style guide or pending style question exists, add/update `specs/pending-questions.md` with the style-selection question from `../../docs/web-ui-style-guide.md` and block only the affected UI tasks
 
 ### Task sizing
 
@@ -135,7 +137,7 @@ Each task should list the smallest useful reads, usually:
 - `specs/akka-solution-plan.md`
 - the source backlog file
 - the matching task brief when one exists
-- relevant cross-cutting spec files
+- relevant cross-cutting spec files, including `*ui-style-guide*.md` for browser UI tasks
 - relevant slice spec only when needed
 
 Do not list the original PRD by default.

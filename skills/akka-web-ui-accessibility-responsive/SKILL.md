@@ -10,6 +10,8 @@ Use this skill for user-facing browser UI quality. It is required for non-trivia
 ## Required reading
 
 - `../../../docs/web-ui-quality-checklist.md`
+- `../../../docs/web-ui-style-guide.md`
+- the selected `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when present
 - existing HTML/CSS under `src/main/resources/static-resources/**`
 
 ## Accessibility rules
@@ -24,6 +26,7 @@ Use this skill for user-facing browser UI quality. It is required for non-trivia
 8. Use `aria-*` only to supplement semantics, not replace them.
 9. Do not rely on color alone to convey status.
 10. Prefer `textContent` for dynamic text.
+11. Apply the selected style guide's contrast, focus, and status-color constraints; if they are missing, add or request the style-selection question in `specs/pending-questions.md` before completing affected UI implementation work.
 
 ## Responsive rules
 
@@ -38,7 +41,7 @@ Use this skill for user-facing browser UI quality. It is required for non-trivia
 
 - keep CSS plain and local to the static resource app
 - use meaningful class names tied to UI purpose
-- define reusable spacing/status/focus styles
+- define reusable spacing/status/focus styles from the selected style guide's CSS tokens
 - avoid framework-specific utility systems in this pack wave
 
 ## Completion checklist
@@ -49,4 +52,5 @@ Before finishing, verify:
 - form errors are announced or associated with inputs
 - content remains usable at narrow widths
 - status/error information is not color-only
+- light/dark mode, focus rings, and status colors satisfy the selected style guide and accessibility contrast expectations
 - page has a clear main landmark and title/heading

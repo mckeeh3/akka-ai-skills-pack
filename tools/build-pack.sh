@@ -210,6 +210,12 @@ PACK_DOC_FILES=(
   docs/timer-pattern-selection.md
   docs/web-ui-api-contract-patterns.md
   docs/web-ui-frontend-decomposition.md
+  docs/web-ui-style-guide.md
+  docs/images/web-ui-theme-1.png
+  docs/images/web-ui-theme-2.png
+  docs/images/web-ui-theme-3.png
+  docs/images/web-ui-theme-4.png
+  docs/images/web-ui-theme-5.png
   docs/web-ui-lightweight-typescript-architecture.md
   docs/web-ui-pattern-selection.md
   docs/web-ui-quality-checklist.md

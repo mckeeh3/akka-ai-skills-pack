@@ -24,13 +24,14 @@ This file belongs in the target project workspace, not inside the installed `.ag
 1. Ask one question at a time unless the user explicitly requests a batch.
 2. Preserve question IDs and history; do not renumber questions casually.
 3. Prefer questions that block architecture, specs, backlog, task generation, or safe implementation.
-4. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
-5. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
-6. Defer questions only when the plan can safely proceed without that answer.
-7. Mark questions `superseded` when later requirements or decisions make them irrelevant.
-8. Keep questions short enough to answer without rereading the full PRD.
-9. Include why the question matters and the expected design impact.
-10. At the end of planning responses, report the next pending or answered question that needs attention.
+4. If a browser UI is in scope and no style guide/theme is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block only web UI implementation/generation work.
+5. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
+6. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
+7. Defer questions only when the plan can safely proceed without that answer.
+8. Mark questions `superseded` when later requirements or decisions make them irrelevant.
+9. Keep questions short enough to answer without rereading the full PRD.
+10. Include why the question matters and the expected design impact.
+11. At the end of planning responses, report the next pending or answered question that needs attention.
 
 ## Status values
 
@@ -164,6 +165,7 @@ To continue, ask:
 
 ## Related skills and docs
 
+- `web-ui-style-guide.md`
 - `../skills/akka-pending-question-generation/SKILL.md`
 - `../skills/akka-do-next-pending-question/SKILL.md`
 - `../skills/akka-pending-question-queue-maintenance/SKILL.md`

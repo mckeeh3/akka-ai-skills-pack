@@ -58,6 +58,7 @@ Read these first if present:
 - `../../specs/pending-tasks.md` if it already exists
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
+- `../../docs/web-ui-style-guide.md` when browser UI is in scope
 - `../../specs/akka-solution-plan.md` if it already exists
 - `../references/akka-entity-comparison.md`
 
@@ -85,7 +86,8 @@ At minimum, create or update these files under `specs/`:
 Create only the ones justified by the PRD, but prefer these when broadly applicable:
 - `specs/cross-cutting/00-common-domain-and-conventions.md`
 - `specs/cross-cutting/01-auth-tenancy-audit.md`
-- `specs/cross-cutting/02-<integration-or-platform-concern>.md`
+- `specs/cross-cutting/02-ui-style-guide.md` when a browser UI is in scope and style is selected
+- `specs/cross-cutting/03-<integration-or-platform-concern>.md`
 
 ### Vertical slice specs
 Create numbered files such as:
@@ -178,6 +180,7 @@ Separate concerns that should not be duplicated across slices, such as:
 - audit rules
 - ERP integration model
 - notification delivery model
+- web UI style guide/theme, design tokens, mode policy, and brand adaptation when browser UI is in scope
 - export/reporting conventions
 
 Create one file per cross-cutting concern when it affects multiple slices.
@@ -251,6 +254,8 @@ The queue must:
 - mark questions `blocking` only for the work they actually block
 - include why each question matters and what artifacts or decisions it affects
 - avoid dumping a large interrogation list into the chat response
+
+If browser UI is in scope and no selected style guide exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec, create a `category: ui` style-selection question with the default theme options from `../../docs/web-ui-style-guide.md`. This blocks only web UI implementation/generation tasks.
 
 If unresolved `blocking` questions affect planned implementation work, either:
 - stop before creating blocked implementation tasks and recommend `akka-do-next-pending-question`, or
@@ -432,6 +437,7 @@ Before finishing, verify:
 - pending tasks map to backlog task-breakdown items
 - pending tasks include required reads, skills, expected outputs, checks, and done criteria
 - cross-cutting concerns are not duplicated excessively across slices
+- browser UI work has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created
 - each backlog supports bounded implementation work
 - optional task briefs exist when backlog items are still too broad
 - execution-order docs point to the correct files

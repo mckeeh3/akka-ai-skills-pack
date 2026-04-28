@@ -43,6 +43,7 @@ Read these first if present:
 - `../../docs/pending-task-queue.md`
 - `../../docs/intent-driven-usage-flow.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
+- `../../docs/web-ui-style-guide.md` when selected task includes browser UI work
 - the target project's `specs/pending-questions.md` if it exists
 - the target project's `specs/pending-tasks.md`
 
@@ -135,6 +136,8 @@ If the user did not name a task ID:
 If a task is `superseded`, do not execute it unless the user explicitly asks to inspect or replace it.
 
 If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
+
+If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing a theme.
 
 If a task is `in-progress` from a previous interrupted run:
 - inspect notes and changed files if needed

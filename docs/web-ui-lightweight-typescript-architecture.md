@@ -19,6 +19,8 @@ src/main/resources/static-resources/<app>/index.html
 src/main/resources/static-resources/<app>/app.css
 ```
 
+`app.css` should implement the app-specific selected style guide from `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` using plain CSS variables. Use `docs/web-ui-style-guide.md` only as the default theme catalog/template after a selection has been recorded. Do not hard-code a different visual style in TypeScript.
+
 Run:
 
 ```bash
@@ -82,6 +84,7 @@ export interface AppState {
 - Renderers do not call `fetch` or open streams.
 - Use `textContent` for dynamic user-controlled content.
 - Use semantic HTML in `index.html`; TypeScript should enhance it.
+- Apply visual state through documented classes and CSS tokens from the selected style guide.
 - Keep errors visible and actionable.
 
 ## API client pattern
@@ -132,3 +135,7 @@ Split a module when it contains more than one of:
 - navigation
 
 The objective is not ceremony; it is easy agent extension without accidental regressions.
+
+## Style token rule
+
+Before creating or changing `app.css`, confirm the selected web UI style guide. If no style is selected for an in-scope browser UI, add or request a pending style-selection question instead of inventing colors, spacing, typography, or component density during implementation.

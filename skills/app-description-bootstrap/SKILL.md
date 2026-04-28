@@ -101,9 +101,10 @@ app-description/
   55-ui/                  # only when a browser frontend is in scope
     ui-index.md
     screens-and-navigation.md
+    style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
-Add deeper files only when the user's input already justifies them. When the app has a meaningful browser UI, use `app-description-ui` to maintain the `55-ui` layer.
+Add deeper files only when the user's input already justifies them. When the app has a meaningful browser UI, use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and recommend adding a pending UI style-selection question before web UI generation.
 
 ## What this skill must derive from input
 
@@ -116,6 +117,7 @@ From the initial user input, derive as applicable:
 - initial auth/security expectations
 - initial observability expectations
 - initial frontend/UI expectations when a browser app is in scope
+- selected web UI style guide/theme when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
 - an initial readiness posture
 - a conservative generation policy

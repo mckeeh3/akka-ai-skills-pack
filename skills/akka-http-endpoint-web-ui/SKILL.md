@@ -15,6 +15,7 @@ Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `../../../docs/web-ui-pattern-selection.md`
 - `../../../docs/web-ui-frontend-decomposition.md`
+- `../../../docs/web-ui-style-guide.md`
 - `../../../docs/web-ui-lightweight-typescript-architecture.md`
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
@@ -40,6 +41,8 @@ Read these first if present:
 - the UI should consume a WebSocket endpoint
 - you need route-shape guidance for `/ui`, `/api`, stream, and socket paths
 - TypeScript-authored browser logic should stay minimal and framework-free
+- packaged CSS should apply the selected web UI style guide/theme
+- if a browser UI style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` before implementing affected UI assets
 
 ## Pattern selection
 
@@ -166,5 +169,5 @@ Before finishing, verify:
 - JSON API routes are under `/api/...`
 - SSE and WebSocket routes remain explicit and separate
 - TypeScript source and served JavaScript paths are easy to correlate
-- integration tests fetch the packaged page and asset routes through `httpClient`
-- non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md`
+- integration tests fetch the packaged page and CSS/JS asset routes through `httpClient`
+- non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md` and the selected style guide

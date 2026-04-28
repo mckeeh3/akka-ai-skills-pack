@@ -50,6 +50,7 @@ Read these first if present:
 - `../../specs/templates/implementation-task-template.md`
 - the target slice spec file under `../../specs/slices/`
 - any cross-cutting spec files referenced or obviously relevant to the slice
+- `../../specs/cross-cutting/*ui-style-guide*.md`, `../../app-description/55-ui/style-guide.md`, or equivalent style artifact when the slice includes browser UI work
 - `../../specs/akka-solution-plan.md`
 
 If a matching backlog file already exists:
@@ -78,16 +79,18 @@ The backlog file must include:
 5. Concrete endpoint list
 6. Write-model design decisions
 7. View/workflow/consumer/timer/integration design as relevant
-8. Test plan by file/class
-9. Implementation order
-10. Suggested harness task breakdown
-11. Done criteria
-12. Explicit defer list
+8. Web UI style-guide dependency and selected theme when the slice includes browser UI work
+9. Test plan by file/class
+10. Implementation order
+11. Suggested harness task breakdown
+12. Done criteria
+13. Explicit defer list
 
 The suggested harness task breakdown is the default leaf layer for implementation.
 Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
 
 For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`.
+If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
 Preserve existing task IDs and statuses when updating an existing queue.
 
 ## Mapping rules
@@ -140,6 +143,7 @@ Before finishing, verify:
 - the backlog references the right prerequisite specs
 - the class list fits the slice scope
 - the endpoint list fits the slice scope
+- UI tasks include the selected style guide in required reads, or are blocked by the style-selection question
 - the tests cover entity/workflow/view/endpoint behavior as applicable
 - the harness task breakdown is composed of bounded operations
 - any oversized task item is explicitly marked for further decomposition before coding

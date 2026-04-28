@@ -39,6 +39,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
+- `../../docs/web-ui-style-guide.md` when selected question is a UI style/theme question
 - target project `specs/pending-questions.md`
 
 Then read only the selected question's `source` and any artifacts needed to reconcile its answer.
@@ -110,13 +111,15 @@ For an `answered` question:
    - `specs/akka-solution-plan.md`
    - affected `specs/slices/*.md`
    - affected `specs/backlog/*.md`
+   - `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when reconciling a web UI style/theme answer
    - `specs/pending-tasks.md` only if it already exists and the decision changes tasks
-3. update the question:
+3. for web UI style/theme answers, write the selected theme id/name, source reference, mode policy, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
+4. update the question:
    - `status: resolved`
    - `decision:` final concise decision
    - `decision impact:` concrete artifact/component impact
    - `reconciled into:` list exact files updated
-4. if the answer creates new dependent questions, append them or recommend `akka-pending-question-generation`
+5. if the answer creates new dependent questions, append them or recommend `akka-pending-question-generation`
 
 ## Deferral and supersession
 

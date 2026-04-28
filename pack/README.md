@@ -51,6 +51,13 @@ Installed layout:
     pending-question-queue.md
     pending-task-queue.md
     prd-to-akka-flow.md
+    web-ui-style-guide.md
+    images/
+      web-ui-theme-1.png
+      web-ui-theme-2.png
+      web-ui-theme-3.png
+      web-ui-theme-4.png
+      web-ui-theme-5.png
     timer-pattern-selection.md
     workflow-endpoint-pattern.md
     examples/

@@ -28,7 +28,7 @@ Initial app-description skills:
 - `app-description-change-impact` — determine which layers, maps, readiness state, and generated outputs are affected by a change
 - `app-description-auth-security` — update the authoritative auth/security layer of the app description
 - `app-description-observability` — update the authoritative observability layer of the app description
-- `app-description-ui` — update the authoritative frontend/UI layer of the app description
+- `app-description-ui` — update the authoritative frontend/UI layer of the app description, including `55-ui/style-guide.md` when a browser UI is in scope
 - `app-description-readiness-assessment` — assess whether the current app description is sufficiently complete for generation
 - `app-generate-app` — realize the current app description as generated outputs
 - `app-description-change-summary` — summarize what changed after a revision request
@@ -44,7 +44,7 @@ Default description-first flow:
 7. run `app-description-change-impact` to identify cross-layer and realization implications
 8. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, or data protection
 9. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
-10. update UI with `app-description-ui` when the request changes screens, navigation, forms, frontend API contracts, realtime UI behavior, accessibility, or responsive behavior
+10. update UI with `app-description-ui` when the request changes screens, navigation, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style/theme
 11. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
 12. realize outputs with `app-generate-app` only when generation is requested or accepted
 13. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
@@ -543,7 +543,7 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just a packaged page or static files. This family keeps the stack lightweight while requiring excellent frontend behavior: screens, navigation, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just a packaged page or static files. This family keeps the stack lightweight while requiring excellent frontend behavior: screens, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
@@ -559,6 +559,7 @@ Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP
 
 Reference docs:
 - `../docs/web-ui-frontend-decomposition.md`
+- `../docs/web-ui-style-guide.md`
 - `../docs/web-ui-lightweight-typescript-architecture.md`
 - `../docs/web-ui-api-contract-patterns.md`
 - `../docs/web-ui-quality-checklist.md`
@@ -862,6 +863,8 @@ Load:
 - `akka-http-endpoint-web-ui`
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
+
+If no style guide/theme is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-lightweight-typescript`

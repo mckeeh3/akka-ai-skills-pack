@@ -10,6 +10,7 @@ Use this skill when browser code is more than a few lines and needs a maintainab
 ## Required reading
 
 - `../../../docs/web-ui-lightweight-typescript-architecture.md`
+- `../../../docs/web-ui-style-guide.md`
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../tsconfig.web-ui.json`
 - `../../../package.json`
@@ -38,6 +39,8 @@ Served assets remain under:
 src/main/resources/static-resources/<name>/
 ```
 
+Before authoring `app.css`, confirm the selected style guide in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If missing, add or request the pending style-selection question in `specs/pending-questions.md` rather than choosing colors, spacing, typography, or density implicitly.
+
 ## Rules
 
 1. Keep Akka backend code in Java; keep browser interaction code in TypeScript.
@@ -47,7 +50,8 @@ src/main/resources/static-resources/<name>/
 5. Keep DTO types in `types.ts`; do not duplicate incompatible shapes across files.
 6. Keep DOM lookup helpers in `dom.ts` and fail visibly when required elements are missing.
 7. Use explicit state transitions for loading, ready, empty, error, submitting, and stale states.
-8. Run `npm run check:web-ui` and `npm run build:web-ui` after changes.
+8. Implement selected theme tokens in plain CSS variables; TypeScript should toggle documented classes/states, not hard-code visual choices.
+9. Run `npm run check:web-ui` and `npm run build:web-ui` after changes.
 
 ## Minimal module responsibilities
 
@@ -69,3 +73,4 @@ Avoid:
 - combining API calls, validation, rendering, and realtime code in one function
 - mutating UI directly from API client functions
 - compiling TypeScript into a served path that is hard to correlate with source
+- selecting visual style in TypeScript or ad hoc CSS when the authoritative style guide is missing

@@ -98,6 +98,7 @@ app-description/
     frontend-api-contracts.md
     states-and-realtime.md
     accessibility-and-responsive.md
+    style-guide.md
 
   60-generation/
     realization-scope.md
@@ -226,6 +227,7 @@ This layer answers:
 - what browser API contracts are needed
 - what loading, empty, error, submitting, success, stale, and realtime states exist
 - what accessibility and responsive behavior is required
+- which visual style guide/theme is selected, including light/dark policy, CSS tokens, layout density, component styling, and brand adaptations for generated HTML/CSS/TypeScript
 
 ## `60-generation/`
 Realization policy and output mapping.
@@ -311,7 +313,7 @@ Default ownership should be:
 
 - `app-description-ui`
   - primarily owns `55-ui/`
-  - links UI screens, interactions, frontend API contracts, accessibility, and responsive behavior back to capabilities, behavior, tests, security, and observability
+  - links UI screens, interactions, frontend API contracts, accessibility, responsive behavior, and the selected `style-guide.md` back to capabilities, behavior, tests, security, and observability
 
 - `app-description-readiness-assessment`
   - primarily owns `00-system/readiness-status.md`
@@ -381,7 +383,7 @@ When a change request arrives, the harness should:
 3. update linked test semantics
 4. update linked auth/security semantics if needed
 5. update linked observability semantics if needed
-6. update linked UI semantics if a browser frontend is in scope
+6. update linked UI semantics, including `55-ui/style-guide.md`, if a browser frontend is in scope
 7. update traceability links
 8. reassess readiness
 9. generate outputs only if requested or accepted

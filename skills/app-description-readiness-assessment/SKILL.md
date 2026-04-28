@@ -38,6 +38,7 @@ Read these first if present:
 - `../app-description-auth-security/SKILL.md`
 - `../app-description-observability/SKILL.md`
 - `../app-description-ui/SKILL.md`
+- `../../docs/web-ui-style-guide.md`
 
 ## Use this skill when
 
@@ -108,6 +109,7 @@ Check this when a browser frontend is in scope:
 - loading, empty, error, submitting, success, and stale states
 - realtime behavior when needed
 - accessibility and responsive expectations
+- selected web UI style guide/theme, mode policy, core CSS tokens, component styling, and brand adaptation rules
 
 ### 6. Generation stability
 Check whether remaining ambiguity would likely cause incorrect or unstable generated outputs.
@@ -178,6 +180,8 @@ Missing auth/security or observability details may block readiness even if core 
 - explicit
 - low-risk
 - unlikely to distort the app's core behavior
+
+For browser UI generation, a missing style guide/theme is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
 
 ### 4. Consider manual evaluation intent
 If the user mainly wants a rough generated app for early evaluation, readiness may tolerate more assumptions than a production-grade generation step, but those assumptions must still be surfaced.

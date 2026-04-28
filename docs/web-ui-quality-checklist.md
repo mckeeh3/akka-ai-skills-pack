@@ -36,6 +36,14 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 - [ ] Submit buttons are disabled while submitting.
 - [ ] Duplicate-submit/idempotency behavior is clear.
 
+## Style guide and theme
+
+- [ ] A selected style guide/theme is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
+- [ ] `app.css` implements the selected theme through CSS variables/tokens rather than scattered hard-coded values.
+- [ ] Light/dark/system mode behavior matches the style guide.
+- [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
+- [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration.
+
 ## Accessibility
 
 - [ ] Page has a clear title/heading and main landmark.
@@ -44,6 +52,7 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 - [ ] Focus states are visible.
 - [ ] Focus moves intentionally after validation failure or major screen changes.
 - [ ] Errors are associated with fields or announced near the form.
+- [ ] Style-guide contrast requirements are met for text, controls, charts, badges, and status indicators.
 - [ ] Status is not conveyed by color alone.
 - [ ] Dynamic user-controlled content uses `textContent` rather than unsafe HTML injection.
 
@@ -74,6 +83,7 @@ If SSE/WebSocket is used:
 
 - [ ] `npm run check:web-ui` passes when TypeScript exists.
 - [ ] `npm run build:web-ui` has been run after TypeScript changes.
+- [ ] Served CSS corresponds to the selected web UI style guide.
 - [ ] Served JS corresponds to the TypeScript source.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.
 - [ ] Tests assert route references for API/SSE/WebSocket dependencies.

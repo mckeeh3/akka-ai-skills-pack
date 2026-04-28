@@ -15,6 +15,7 @@ This skill complements `akka-http-endpoint-web-ui`:
 
 Read these first if present:
 - `../../../docs/web-ui-frontend-decomposition.md`
+- `../../../docs/web-ui-style-guide.md`
 - `../../../docs/web-ui-lightweight-typescript-architecture.md`
 - `../../../docs/web-ui-api-contract-patterns.md`
 - `../../../docs/web-ui-quality-checklist.md`
@@ -43,6 +44,8 @@ Do not use this as the main skill for a single static page or OpenAPI file; use 
 
 ## Planning output before coding
 
+Before implementing, verify that a selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If a browser UI is in scope and style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
+
 Before implementing, produce a frontend plan with:
 1. User goals and personas
 2. Screens and navigation
@@ -51,10 +54,11 @@ Before implementing, produce a frontend plan with:
 5. Frontend state model, including loading/empty/error/success states
 6. Real-time behavior, if any
 7. Auth/session and authorization UX
-8. Accessibility and responsive requirements
-9. Akka HTTP endpoint route plan
-10. Implementation skills to load
-11. Required tests and quality checks
+8. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
+9. Accessibility and responsive requirements
+10. Akka HTTP endpoint route plan
+11. Implementation skills to load
+12. Required tests and quality checks
 
 ## Skill routing
 
@@ -81,7 +85,7 @@ Always pair with Akka hosting/API skills as needed:
 
 1. Define UI screens, states, and API contracts.
 2. Implement or adjust backend JSON/SSE/WebSocket endpoints.
-3. Add static HTML/CSS shell and accessible structure.
+3. Add static HTML/CSS shell and accessible structure using the selected style guide and CSS tokens.
 4. Add TypeScript modules: types, API client, state, render, actions/forms, realtime.
 5. Compile with `npm run build:web-ui`.
 6. Add/extend endpoint integration tests for page, assets, and API routes.
@@ -89,6 +93,8 @@ Always pair with Akka hosting/API skills as needed:
 8. Review with `docs/web-ui-quality-checklist.md`.
 
 ## Quality bar
+
+A complete web UI must apply the selected style guide without copying demo content from the reference images.
 
 A complete web UI must handle:
 - initial loading
@@ -111,4 +117,5 @@ Avoid:
 - assuming route tests are enough for frontend logic
 - adding React, Angular, Vue, Vite, Webpack, or heavy state libraries for this pack wave
 - hiding auth/session behavior from the UI plan
+- silently choosing colors/theme when app-description/specs have not selected a style guide
 - skipping accessible labels, focus behavior, or responsive layout

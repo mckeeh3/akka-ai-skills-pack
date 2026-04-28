@@ -42,6 +42,7 @@ Read these first if present:
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
+- `../../docs/web-ui-style-guide.md` when the change affects web UI style/theme
 - `../app-descriptions/SKILL.md`
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-intake-router/SKILL.md`
@@ -63,7 +64,7 @@ Classify the input as one or more of:
 - security/auth change
 - observability/operations change
 - integration contract change
-- UI/API surface change
+- UI/API surface change, including web UI style-guide/theme selection or token changes
 - implementation discovery
 - de-scope/removal
 - unclear change requiring clarification
@@ -92,7 +93,8 @@ If `app-description/` exists, update it before implementation specs:
 3. tests for acceptance, regression, negative, idempotency, security, or operational verification
 4. auth/security when identity, authorization, trust, or sensitive data changed
 5. observability when logs, metrics, traces, audit, health, or alerts changed
-6. traceability and readiness as needed
+6. UI style guide when a browser frontend theme, mode policy, density, brand treatment, or component styling changes
+7. traceability and readiness as needed
 
 Do not bury new semantics only in backlog text or generated code.
 
@@ -100,7 +102,7 @@ Do not bury new semantics only in backlog text or generated code.
 
 Update the smallest relevant `specs/` artifacts:
 - `specs/akka-solution-plan.md` only if architectural choices or global implementation order changed
-- `specs/cross-cutting/*.md` for shared conventions/policies
+- `specs/cross-cutting/*.md` for shared conventions/policies, including `*ui-style-guide*.md` for browser UI theme/style decisions
 - `specs/slices/*.md` for business slice meaning
 - `specs/backlog/*-build-backlog.md` for implementation breakdown
 - `specs/tasks/**/*.md` when one task brief must change or a new leaf task is needed
@@ -118,6 +120,7 @@ Rules:
 - mark obsolete pending/deferred/blocked tasks as `superseded` when a later spec change replaces them
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
 - update required reads and skills for affected pending tasks
+- block web UI tasks whose source spec has no selected style guide/theme and add or update the pending style-selection question
 - block tasks whose source spec is now ambiguous
 - avoid renumbering
 

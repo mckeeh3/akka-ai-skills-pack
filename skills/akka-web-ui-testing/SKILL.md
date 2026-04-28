@@ -10,6 +10,7 @@ Use this skill when adding or reviewing tests for Akka-hosted browser apps.
 ## Required reading
 
 - `../../../docs/web-ui-quality-checklist.md`
+- `../../../docs/web-ui-style-guide.md`
 - `../akka-http-endpoint-testing/SKILL.md`
 - existing `src/test/java/**WebUi*Test.java`
 - `../../../package.json`
@@ -33,7 +34,7 @@ Use this for DTO types, state unions, API client code, and DOM typing.
 Use `httpClient` to test:
 - page route returns packaged HTML
 - CSS and JS asset routes return expected content
-- page references the expected API/SSE/WebSocket routes
+- page references the expected CSS/JS assets and API/SSE/WebSocket routes
 - JSON APIs return browser-facing DTOs
 - command APIs cover success and validation failure
 - secured APIs return expected unauthorized/forbidden behavior when applicable
@@ -62,10 +63,11 @@ Optional. Add only when cheap and stable. Cover:
 A complete UI should have tests or explicit manual review notes for:
 - loading/empty/error/success states
 - form validation and server validation mapping
-- packaged asset delivery
+- packaged asset delivery, including the stylesheet implementing the selected style guide
 - API contract shape
 - realtime route references when used
 - protected-route behavior when used
+- CSS style-guide output staying aligned with the authoritative selected style
 - TypeScript build output staying in sync with source
 
 ## Anti-patterns
