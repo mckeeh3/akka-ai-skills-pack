@@ -1,524 +1,199 @@
 # Akka AI Skills Pack
 
-This repository packages **Akka SDK knowledge for AI coding agents** into an **intent-driven and description-first flow**.
+This repository produces the **Akka AI Skills Pack**: an installable `.agents/` resource pack that helps AI coding harnesses turn product intent into Akka application plans, code, tests, and supporting frontend/backend delivery assets.
 
-Its primary job is to help an agent go from:
-- **PRD, requirements doc, user story, process description, API sketch, UI brief, or revision request**
-- to either **authoritative app-description maintenance/review** or **Akka solution decomposition**
-- to **focused skill selection and realization planning**
-- to **code and test generation when realization is requested**
+The README is organized for two audiences:
 
-It combines:
-- **agent-optimized skills** under `skills/`
-- **executable Akka Java SDK examples** under `src/`
-- **tests that double as reference patterns** under `src/test/`
-- **packaging and installer tooling** for shipping those resources as an installable distribution
+1. **Skill-pack users** — developers who install the pack into an Akka application project or into `~/.agents` and then work with their AI harness naturally.
+2. **Skill-pack developers** — contributors who maintain this repository, its skill source, reference examples, docs, installer, and release artifacts.
 
-In this repository, `skills/` is the canonical authored source path.
-When installed into a target project or user profile, those files land under `.agents/skills/`.
+## 1. For skill-pack users
 
-## What this project is for
+Use this section when your goal is to install the pack and use it from an AI harness while building an Akka application.
 
-This is **not an Akka sample service alone**.
+### What the installed pack is
 
-It is a **requirements-first system for AI coding agents** that need to start from high-level intent and derive the correct Akka architecture before coding.
+After installation, the pack lives in one of these locations:
 
-The repository now supports two primary usage flows:
+- **Project install:** `<your-project>/.agents`
+- **Global install:** `~/.agents`
 
-1. **description-first application maintenance**
-   - read a high-level input or revision request
-   - maintain the authoritative internal app description
-   - assess change impact, readiness, security, observability, and tests
-   - realize outputs only when generation is requested or accepted
-2. **intent-driven Akka decomposition and implementation**
-   - read a high-level input
-   - decompose it into the right Akka components and boundaries
-   - resolve any focused architecture decisions that are still open
-   - turn that plan into an implementation contract and route to the focused skills needed for each implementation task
-   - generate code and tests component by component
+The `.agents/` directory is a support library for the AI harness. It contains guidance, routing files, documentation, and reference examples that the harness can load while helping you work on your own project.
 
-The component-family skills in `skills/` are therefore **downstream implementation assets**, not the only front door.
-The decomposition output is not the final deliverable by itself; it is the implementation contract that feeds the downstream coding phase.
+Your project artifacts normally stay outside `.agents/`, for example:
 
-## Source-repo vs installed-pack usage
+- application source under your normal source tree
+- PRDs, specs, issues, or design notes wherever your project keeps them
+- generated planning artifacts such as `specs/`, `app-description/`, `specs/pending-questions.md`, and `specs/pending-tasks.md` in the project workspace
 
-This repository contains both:
-- the **source project** for developing the skills pack itself
-- the content that will be installed into real development projects under `.agents/`
+Do **not** treat `.agents/` as your application source directory. It is the installed pack.
 
-Keep these roles separate:
-- repository-root guidance such as `AGENTS.md` is for **maintaining this pack source project**
-- `pack/AGENTS.md` is the source for the installed `.agents/AGENTS.md` used in **real development projects**
-- example app-description trees under `docs/examples/` are **reference assets for the pack**, not the source of truth for this repository itself
-- when the installed pack is used in a real project, the project's maintained `app-description/` tree belongs in the **project workspace**, not inside `.agents/`, unless that project explicitly chooses another internal location
+### You do not need to know which skill to use
 
-## Description-first usage flow
+The intent of this pack is **not** that you learn the internal skill names, stages, or routing model.
 
-Use this flow when the user is primarily describing, revising, reviewing, or readiness-checking the app before realization:
+As a skill-pack user, you should talk to your AI harness naturally:
 
-1. start with `skills/app-descriptions/SKILL.md`
-2. bootstrap with `skills/app-description-bootstrap/SKILL.md` when no usable app-description tree exists yet
-3. normalize broad or mixed requests with `skills/app-description-input-normalization/SKILL.md`
-4. route to the smallest relevant maintenance skill
-5. update capability, behavior, test, auth/security, observability, and traceability layers as needed
-6. assess readiness before generation
-7. use `skills/app-generate-app/SKILL.md` only when generation is requested or accepted
+- “Read this PRD and plan the implementation.”
+- “Here is a feature request; update the current plan.”
+- “This bug changes the behavior; reconcile it with the existing specs.”
+- “What is the next question?”
+- “Do the next task.”
 
-Key supporting references:
-- `docs/description-first-application-doctrine.md`
-- `docs/app-description-skills-plan-backlog.md`
-- `docs/internal-app-description-architecture.md`
-- `docs/app-description-maintenance-flow.md`
-- `docs/app-description-end-to-end-workflow-example.md`
-- `docs/examples/purchase-request-app-description/README.md`
+The harness decides which installed files under `.agents/` to load. The pack is designed so the harness can infer the right path from normal product, engineering, or support language.
 
-## Intent-driven usage flow
+### Typical usage pattern
 
-Use the repository in this order:
+The normal user flow is:
 
-1. **Read the requirements input first** — start from the PRD, spec, user story, API sketch, UI brief, or other high-level artifact.
-2. **Decompose the solution before coding** — use `skills/akka-solution-decomposition/SKILL.md` to identify the needed Akka components and boundaries.
-3. **Resolve any remaining structural choices** — use focused decision help such as `skills/akka-entity-type-selection/SKILL.md` when one architecture choice is still open.
-4. **Queue unresolved decisions when needed** — use `skills/akka-pending-question-generation/SKILL.md` to create `specs/pending-questions.md`, then `skills/akka-do-next-pending-question/SKILL.md` to work through questions one at a time.
-5. **Load only the focused implementation skills** — use `skills/README.md` to route from the accepted solution plan to the exact Stage 3 skills for entities, workflows, views, consumers, endpoints, timed actions, or agents.
-6. **Generate code and tests last** — implement component by component using the selected skills plus the example patterns in `src/` and focused references in `docs/`.
+1. **Install the pack** into your project or globally.
+2. **Provide intent or behavior-changing input** to the harness.
+3. **Let the harness create or update planning artifacts** in your project workspace.
+4. **Answer queued questions one at a time** when the harness needs clarification.
+5. **Work through queued implementation tasks one at a time** when planning is ready.
+6. **Repeat** as new PRDs, issues, fixes, or revisions arrive.
 
-**Important:** code generation is a downstream phase. Do **not** start writing Akka components until decomposition is complete and any key structural decisions are resolved.
-Treat the accepted solution plan as the handoff artifact for coding: each chosen component should map to corresponding implementation skills, test-generation skills, and any endpoint, web UI, or documentation/snippet work that belongs downstream.
+The input you provide can be any ordinary project artifact or prompt, including:
 
-For a reusable short version of this flow, see `docs/intent-driven-usage-flow.md`.
-For a concrete requirements-to-plan example, see `docs/prd-to-akka-flow.md` and `docs/examples/purchase-request-prd.md`.
-For a lightweight plan-to-work-queue template, see `docs/solution-plan-to-implementation-queue.md`.
-For durable one-at-a-time clarification, see `docs/pending-question-queue.md`, `skills/akka-pending-question-generation/SKILL.md`, `skills/akka-do-next-pending-question/SKILL.md`, and `skills/akka-pending-question-queue-maintenance/SKILL.md`.
-For durable multi-session task execution, see `docs/pending-task-queue.md`, `docs/examples/purchase-request-pending-tasks.md`, `skills/akka-backlog-to-pending-tasks/SKILL.md`, and `skills/akka-do-next-pending-task/SKILL.md`.
-For ongoing iteration after a queue exists, use `skills/akka-change-request-to-spec-update/SKILL.md` for bounded changes, `skills/akka-revised-prd-reconciliation/SKILL.md` for revised PRDs, `skills/akka-pending-question-queue-maintenance/SKILL.md` for question queue hygiene, and `skills/akka-pending-task-queue-maintenance/SKILL.md` for task queue hygiene.
+- PRDs
+- requirements documents
+- technical specs
+- issue descriptions
+- user stories
+- support tickets
+- bug reports
+- feature requests
+- API sketches
+- workflow descriptions
+- UI briefs or frontend design notes
+- behavior changes discovered during implementation or testing
 
-## Visible 3-stage skill model
+You can provide a complete document, point the harness at a file, paste a rough idea, or describe a change conversationally.
 
-This repository uses a visible 3-stage routing model:
+### Question queue flow
 
-### Stage 1: Intent and architecture
-Start here when the input is still a PRD, requirements doc, user story, process description, API sketch, UI brief, or other high-level specification **and you are taking the direct Akka decomposition path rather than the description-first path**.
-
-Primary Stage 1 skill:
-- `skills/akka-solution-decomposition/SKILL.md`
-
-### Stage 2: Structural decisions
-Use this stage when the high-level shape is partly known, but one important architecture choice is still unresolved.
-This is a narrower follow-on stage, not the default front door for broad requirements.
-
-Primary Stage 2 skill:
-- `skills/akka-entity-type-selection/SKILL.md`
-
-### Stage 3: Focused component implementation
-Use this stage when the architecture is already clear enough to write code and tests from the solution plan's implementation contract.
-
-Stage 3 includes focused implementation skill families for peer building blocks such as:
-- workflows
-- views
-- consumers
-- timed actions
-- endpoints, web UI delivery, and fully capable lightweight frontend apps
-- agents
-- entities
-
-Entities are one Stage 3 family among several peers, not the default front door for every task.
-Not every task starts at Stage 3.
-If all you have is a requirements artifact or other broad specification input, start at Stage 1.
-Even if the problem sounds stateful, use Stage 1 first when the overall component set is still unknown.
-Use Stage 2 only when the task is already narrowed to a stateful core and you have not yet chosen between Event Sourced Entity and Key Value Entity.
-Move to Stage 3 only when planning has narrowed the task to concrete component work.
-
-The repository exists to make that workflow efficient for AI agents through:
-- small, focused skills
-- predictable naming and routing
-- example code organized by component type
-- tests that show intended calling patterns
-- an installable pack that can be dropped into `.agents`
-
-A useful mental model is:
-- official Akka SDK documentation remains the external semantic reference for Akka behavior and APIs
-- this repository packages learned patterns into **requirements-to-architecture-to-code workflows for AI agents**
-
-## What is included
-
-### 1. Source skill library: `skills/`
-Agent-routing and implementation skills for:
-- description-first app-description maintenance, review, and generation
-- Stage 1 solution decomposition
-- Stage 2 structural decision support, including entity type selection
-- Workflows
-- Views
-- Consumers
-- Timed Actions
-- HTTP endpoints, web UI delivery, and lightweight frontend app design/implementation
-- gRPC endpoints
-- MCP endpoints
-- Agents
-- Event Sourced Entities
-- Key Value Entities
-
-These skills are meant to support the same staged flow used throughout this repository:
-- Stage 1: start from requirements or specification input
-- Stage 2: resolve focused structural decisions that are still open
-- Stage 3: load only the focused implementation skills that match the chosen components
-
-If you are using this repository as a pack source or reference library, start with:
-- `skills/README.md`
-- `skills/akka-solution-decomposition/SKILL.md` when the task begins from high-level requirements or a specification file
-- `pack/README.md` (for install layout and packaging details)
-- this `README.md` for repository-level build and install flow
-
-`CONTEXT-WARMUP.md` is intentionally **not** part of the general pack-consumer usage flow. It is a repo-internal session bootstrap/context warmup for AI coding agents contributing to this repository itself.
-
-### 2. Executable examples: `src/`
-Reference Akka Java SDK code organized as:
-- `src/main/java/com/example/domain` - domain logic and immutable models
-- `src/main/java/com/example/application` - Akka components
-- `src/main/java/com/example/api` - HTTP, gRPC, and MCP endpoints
-- `src/main/proto` - protobuf contracts
-- `src/test/java` - unit and integration tests
-
-The examples cover patterns such as:
-- workflows, compensation, pause/resume, and orchestration
-- views and query models
-- consumers and topic/service-stream integration
-- timed actions and timer-backed flows
-- HTTP, gRPC, and MCP endpoints
-- Akka-served web UI, static content, SSE pages, WebSocket pages, and complete lightweight TypeScript frontend app patterns
-- agents, tools, structured responses, memory, streaming, guardrails, and evaluation
-- Event Sourced Entity and Key Value Entity design
-- deterministic testing patterns for each component family
-
-### 3. Reference docs: `docs/`
-Focused local reference material for recurring patterns, such as:
-- description-first doctrine, app-description architecture, and maintenance flow
-- agent coverage
-- workflow/endpoint patterns
-- timer pattern selection
-- consumer references
-- service-to-service consumer and view patterns
-
-### 4. Pack metadata and release tooling
-- `pack/manifest.yaml` - versioned pack definition
-- `pack/README.md` - install layout and packaging model
-- `tools/build-pack.sh` - builds release assets under `dist/`
-- `tools/install-release-template.sh` - template used to generate a versioned GitHub release installer script
-- `install.sh` - installs the full pack into a cross-harness `.agents` directory
-
-### 5. Upstream Akka documentation
-Official Akka SDK documentation is provided by Akka outside this pack. It was used as a reference during the initial development of these skills and examples, and it remains the authority for SDK semantics and API details.
-
-This repository does not bundle the Akka documentation. The pack contains agent-focused skills, focused local guidance, and examples derived from that reference work.
-
-## Related guidance files in this repository
-
-This repository contains several guidance files with different roles:
-- `README.md` - top-level repository overview and the primary human-facing build/install guide
-- `CONTEXT-WARMUP.md` - development-only session bootstrap and context warmup for AI coding agents contributing changes to this repository
-- `AGENTS.md` - repository-internal authoritative project rules, Akka implementation constraints, and testing expectations
-- `pack/AGENTS.md` - source file for the installed pack-facing `.agents/AGENTS.md` guidance
-- `skills/README.md` - skill routing map across all local skill suites
-- `pack/README.md` - install target layout, packaging model, and path rewrite rules
-- `dist/.../README.md` and `dist/.../pack/README.md` - generated copies included in built distributions when a pack is built locally
-
-If your goal is to build, install, or consume the resource pack, use this `README.md`, `pack/README.md`, the installed `.agents/AGENTS.md`, and the installed `skills/...` files.
-Only open `CONTEXT-WARMUP.md` and the repository root `AGENTS.md` if you are starting a new AI-agent development session for work on this repository.
-
-## Top-level repository layout
+For non-trivial work, the harness may determine that it should not guess about open decisions. In that case it can create or update a question queue in the project workspace, typically:
 
 ```text
-.
-├── CONTEXT-WARMUP.md        # repo-development session bootstrap/context warmup
-├── AGENTS.md                # authoritative project rules and coding constraints
-├── skills/                  # source skill library
-├── docs/                    # focused local reference docs
-├── pack/                    # pack manifest and packaging docs
-├── src/                     # executable Akka Java SDK examples
-├── tools/build-pack.sh      # distribution builder
-├── tools/install-release-template.sh
-├── install.sh               # installer for source checkout or unpacked bundle
-└── dist/                    # generated release artifacts (not source-controlled)
+specs/pending-questions.md
 ```
 
-## Prerequisites
+You then handle the queue one question at a time. A typical interaction looks like:
 
-For day-to-day development and pack building, use:
-- **JDK 21**
-- **Maven 3.x**
-- **bash**
-- **python3** (used by `install.sh` to rewrite installed skill references)
-- standard archive tools such as `tar` and `gzip`
+```text
+User: Read docs/checkout-prd.md and plan the implementation.
+Harness: I found several decisions that need clarification. I created specs/pending-questions.md.
 
-The Maven project currently inherits from:
-- `io.akka:akka-javasdk-parent:3.5.18`
+User: What is the next question?
+Harness: Should guest checkout be allowed, or must every checkout have an authenticated account?
 
-## Working with the example project
+User: Guest checkout is allowed for digital goods only.
+Harness: Recorded. There are 3 questions remaining.
 
-If you want to compile or test the example Akka service contained in `src/`:
-
-### Compile
-
-```bash
-mvn compile
+User: What is the next question?
+...
 ```
 
-### Run tests
+Each question can be:
 
-```bash
-mvn test
+- answered
+- skipped when it is not important
+- deferred with an accepted default or limitation
+- superseded by newer input
+- marked blocked if it depends on another decision
+
+The goal is to reach a state where the harness can safely create or update the pending implementation work without making hidden product or architecture assumptions.
+
+### Pending task queue flow
+
+Once the app description, specs, or backlog are clear enough, the harness can create or update a task queue in the project workspace, typically:
+
+```text
+specs/pending-tasks.md
 ```
 
-### Start locally
+Then you can ask the harness to execute work in small, reviewable increments:
 
-```bash
-mvn compile exec:java
+```text
+User: Do the next task.
+Harness: I will implement the next runnable task from specs/pending-tasks.md.
 ```
 
-### Build the Maven artifact
+The harness should select one runnable task, load only the relevant installed `.agents/` guidance, change the project code/tests/docs for that task, update the task status, and report what remains.
 
-```bash
-mvn clean install
-```
+This gives you a durable multi-session workflow:
 
-> The Maven build validates the example service.
-> The **installable resource-pack distribution** is built separately with `tools/build-pack.sh`.
+1. provide intent
+2. clarify open questions
+3. generate or refresh the task queue
+4. ask “do the next task” until the queue is done
+5. provide the next change request or revised PRD
 
-## Distribution model
+### Backend and optional frontend work
 
-This repository ships an installable resource pack named:
-- `akka-ai-skills-pack`
+Akka applications built with this pack normally have an **Akka backend** and may also include an **optional frontend web UI**.
+
+You can provide PRDs, specs, issues, feature requests, or fixes for either side:
+
+- backend domain behavior
+- workflows and long-running processes
+- APIs and integration points
+- persistence and query behavior
+- security and authorization behavior
+- observability and audit behavior
+- frontend screens and navigation
+- forms and validation
+- typed frontend API expectations
+- realtime UI behavior such as SSE or WebSockets
+- accessibility and responsive layout requirements
+- UI tests or acceptance criteria
+
+You do not need to pre-classify the work as “backend skill” or “frontend skill.” Describe the desired user and system behavior. The harness uses the installed pack to decide how backend and frontend work should be decomposed and implemented.
+
+### Install the pack
 
 Current manifest version:
 - `0.1.0`
 
-The distribution includes:
-- `skills/**`, including description-first and implementation-routing skills
-- selected pack-facing docs under `docs/**`, including description-first doctrine/architecture references and examples
-- selected pack metadata
-- exported examples from `src/main` and `src/test`
-- the repository `pom.xml`
-- this `README.md`
-- `install.sh`
-- `LICENSE`
-- `pack/AGENTS.md` as the source for the installed `.agents/AGENTS.md` guidance file
-- `pack/EXAMPLES-README.md` as the source for the installed `.agents/resources/examples/java/README.md` file
+#### Project install from GitHub release
 
-The build also generates a versioned GitHub release installer script alongside the archive:
-- `dist/install-akka-ai-skills-pack-0.1.0.sh`
-
-Source skills are authored under `skills/` in this repository and installed into `.agents/skills/` by the installer.
-
-The distribution intentionally excludes the repository-internal maintainer-only guidance files from the installed pack experience, including:
-- the repository root `AGENTS.md`
-- `CONTEXT-WARMUP.md`
-
-During installation, skill files are rewritten so they:
-- point to installed example paths under `.agents/resources/examples/java/...`
-- no longer contain stale local-path references to Akka reference material
-- no longer contain broken references to repository-internal `CONTEXT-WARMUP.md`
-- use the installed `.agents/AGENTS.md` guidance file where appropriate
-- instead reference official Akka SDK docs generically
-
-The installer always installs the full packaged skill library, shared references, and exported examples.
-
-## How to build a distribution
-
-### Quick build
-
-From the repository root:
-
-```bash
-bash tools/build-pack.sh --clean
-```
-
-This creates:
-- an expanded pack directory under `dist/`
-- a `.tar.gz` archive for the pack
-- a versioned GitHub release installer script
-
-`dist/` is generated output and is not intended to be source-controlled.
-
-With the current manifest, the output names are:
-- `dist/akka-ai-skills-pack-0.1.0/`
-- `dist/akka-ai-skills-pack-0.1.0.tar.gz`
-- `dist/install-akka-ai-skills-pack-0.1.0.sh`
-
-### Recommended build flow
-
-1. **Verify the example project still builds**
-
-   ```bash
-   mvn test
-   ```
-
-2. **Build the distribution pack**
-
-   ```bash
-   bash tools/build-pack.sh --clean
-   ```
-
-   CAUTION: the `--clean` option should only be used to overwrite an existing staged directory.  
-
-3. **Inspect the staged pack**
-
-   ```bash
-   find dist/akka-ai-skills-pack-0.1.0 -maxdepth 3 | sort
-   ```
-
-4. **Inspect the release assets**
-
-   ```bash
-   ls -lh dist/akka-ai-skills-pack-0.1.0.tar.gz dist/install-akka-ai-skills-pack-0.1.0.sh
-   ```
-
-5. **Publish both files to the matching GitHub release tag**
-
-   Publish these assets on release tag `v0.1.0`:
-   - `dist/akka-ai-skills-pack-0.1.0.tar.gz`
-   - `dist/install-akka-ai-skills-pack-0.1.0.sh`
-
-GitHub Actions automation is included:
-- `.github/workflows/build-test.yml` checks `README.md` and `pack/README.md` pack-version references, runs `mvn verify`, and runs `tools/build-pack.sh` on PRs, pushes to `main`, and manual dispatch
-- `.github/workflows/cut-tag.yml` creates and pushes tag `v<manifest-version>` from a selected ref after validating the manifest version and running `mvn verify`
-- `.github/workflows/release.yml` reruns the docs/version consistency check, refuses to overwrite an already published release for the same tag, and attaches the versioned archive and installer to an automatically created **draft** GitHub Release when tag `v<manifest-version>` is pushed
-
-#### How to use it
-
-1. Update `pack/manifest.yaml` to the version you want to release.
-2. Merge that change to `main`.
-3. Run the **Cut release tag** workflow, or manually push matching tag `v<manifest-version>`.
-4. The **Create draft release assets** workflow builds:
-   - `akka-ai-skills-pack-<version>.tar.gz`
-   - `install-akka-ai-skills-pack-<version>.sh`
-5. Review and publish the draft GitHub Release.
-6. After the draft release is published, the curl-based installer URLs become publicly usable.
-
-The build refuses to overwrite an existing staged directory, archive, or generated release installer unless you pass `--clean`.
-
-### Build options
-
-#### Write output somewhere other than `dist/`
-
-```bash
-bash tools/build-pack.sh --clean --output-dir /tmp/akka-pack-builds
-```
-
-#### Override the GitHub release repo used in generated installer URLs
-
-```bash
-bash tools/build-pack.sh --clean --github-repo your-org/your-repo
-```
-
-#### Build only the expanded directory, no archive
-
-```bash
-bash tools/build-pack.sh --clean --no-archive
-```
-
-#### Show help
-
-```bash
-bash tools/build-pack.sh --help
-```
-
-### What `tools/build-pack.sh` validates
-
-Before building, the script checks that key source inputs exist, including:
-- `skills/README.md`
-- `skills/references/...`
-- `pom.xml`
-- `README.md`
-- `LICENSE`
-- `pack/README.md`
-- `pack/AGENTS.md`
-- `pack/EXAMPLES-README.md`
-- `pack/manifest.schema.yaml`
-- every skill directory having a `SKILL.md`
-
-## How to install a distribution
-
-You can install in three ways:
-- from a **GitHub release asset** using the versioned curl-based installer
-- from the **repository checkout** using the root `install.sh`
-- from an **unpacked distribution archive** using the bundled `install.sh`
-
-The installation target is always one of these cross-harness locations:
-- **project mode**: `<project-root>/.agents`
-- **global mode**: `~/.agents`
-
-### 1. Install directly from a GitHub release with `curl`
-
-This installs into `<target-dir>/.agents`, where `--target-dir` defaults to the current directory.
-
-Install into the current directory:
+This installs into `<current-directory>/.agents`:
 
 ```bash
 curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-skills-pack-0.1.0.sh | bash -s --
 ```
 
-Install into a specific target directory:
+Install into a specific project directory:
 
 ```bash
 curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-skills-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project
 ```
 
-The release installer downloads `akka-ai-skills-pack-0.1.0.tar.gz`, unpacks it in a temporary directory, and runs the bundled `install.sh` in project mode.
+The release installer downloads `akka-ai-skills-pack-0.1.0.tar.gz`, unpacks it in a temporary directory, and runs the bundled installer in project mode.
 
-### 2. Build and unpack the distribution
-
-If you are starting from this repository:
+#### Install from an unpacked archive
 
 ```bash
-bash tools/build-pack.sh --clean
+tar -xzf akka-ai-skills-pack-0.1.0.tar.gz
+cd akka-ai-skills-pack-0.1.0
+bash install.sh --location project --project /path/to/project
 ```
 
-Then unpack it:
-
-```bash
-tar -xzf dist/akka-ai-skills-pack-0.1.0.tar.gz -C /tmp
-cd /tmp/akka-ai-skills-pack-0.1.0
-```
-
-If you already received a built archive from somewhere else, unpack that archive instead.
-
-### 3. Install to a project-specific `.agents` directory
-
-```bash
-bash install.sh \
-  --location project \
-  --project /path/to/your/project
-```
-
-This installs into:
-- `/path/to/your/project/.agents/AGENTS.md`
-- `/path/to/your/project/.agents/docs`
-- `/path/to/your/project/.agents/skills`
-- `/path/to/your/project/.agents/manifests`
-- `/path/to/your/project/.agents/resources/examples/java`
-
-### 4. Install globally for your user account
+#### Global install
 
 ```bash
 bash install.sh --location global
 ```
 
-This installs into:
-- `~/.agents/AGENTS.md`
-- `~/.agents/docs`
-- `~/.agents/skills`
-- `~/.agents/manifests`
-- `~/.agents/resources/examples/java`
+This installs into `~/.agents`.
 
-### 5. Interactive install
-
-If you omit `--location`, the installer prompts you to choose project or global mode:
+#### Interactive install
 
 ```bash
 bash install.sh
 ```
 
-### Useful installer options
+If you omit `--location`, the installer prompts you to choose project or global mode.
 
 #### Dry run
 
@@ -526,32 +201,14 @@ bash install.sh
 bash install.sh --location project --project /path/to/project --dry-run
 ```
 
-#### Show help
+### Installed layout
 
-```bash
-bash install.sh --help
-```
-
-## Installed layout
-
-After installation, the target directory looks like this:
+A project install creates a directory like this:
 
 ```text
 .agents/
 ├── AGENTS.md
 ├── docs/
-│   ├── description-first-application-doctrine.md
-│   ├── app-description-skills-plan-backlog.md
-│   ├── internal-app-description-architecture.md
-│   ├── app-description-maintenance-flow.md
-│   ├── agent-coverage-matrix.md
-│   ├── prd-to-akka-flow.md
-│   ├── timer-pattern-selection.md
-│   ├── workflow-endpoint-pattern.md
-│   └── examples/
-│       ├── purchase-request-app-description/
-│       ├── purchase-request-prd.md
-│       └── purchase-request-solution-plan.md
 ├── manifests/
 │   └── akka-ai-skills-pack.yaml
 ├── resources/
@@ -560,61 +217,377 @@ After installation, the target directory looks like this:
 │           ├── pom.xml
 │           ├── README.md
 │           └── src/
-│               ├── main/
-│               └── test/
 └── skills/
     ├── README.md
     ├── references/
-    ├── app-descriptions/
-    ├── app-description-bootstrap/
-    ├── akka-solution-decomposition/
-    ├── akka-workflows/
-    ├── akka-http-endpoints/
-    ├── akka-agents/
-    ├── akka-event-sourced-entities/
     └── ...
 ```
 
-## Source install vs distribution install
+Important files and directories:
 
-### Install directly from a source checkout
-Useful during development:
+- `.agents/AGENTS.md` — installed guidance for the harness when working in a real Akka project
+- `.agents/docs/` — installed reference docs used by the harness
+- `.agents/skills/` — internal routing and implementation guidance loaded by the harness
+- `.agents/resources/examples/java/` — Akka Java SDK reference examples available to the harness
+- `.agents/manifests/akka-ai-skills-pack.yaml` — installed manifest metadata
 
-```bash
-bash install.sh --location project --project /path/to/project
+As a user, you usually interact with the harness rather than directly reading the installed skill files.
+
+### Example user prompts
+
+Initial planning from a PRD:
+
+```text
+Read docs/order-management-prd.md and create the implementation plan. If there are open decisions, queue them instead of guessing.
 ```
 
-### Install from a built distribution
-Useful for release testing and sharing:
+Clarify one question:
 
-```bash
-tar -xzf akka-ai-skills-pack-0.1.0.tar.gz
-cd akka-ai-skills-pack-0.1.0
-bash install.sh --location global
+```text
+What is the next question?
 ```
 
-### Install from a GitHub release in one step
-Useful for end users who want a version-pinned install into a project directory:
+Skip or defer a question:
 
-```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.0/install-akka-ai-skills-pack-0.1.0.sh | bash -s -- --target-dir /path/to/project
+```text
+Defer that question. Use the simplest safe default and mark the limitation in the queue.
 ```
 
-In both cases, the installer performs the same target layout and path rewriting behavior.
+Start implementation:
 
-## Recommended reading order when developing this repository with AI agents
+```text
+Do the next task.
+```
 
-This section is for contributors working on this repository itself.
-It is **not** the recommended reading order for pack consumers.
+Apply a change request:
 
-1. `CONTEXT-WARMUP.md` for session bootstrap, repo mental model, and routing approach
-2. `AGENTS.md` for authoritative project rules and Akka coding constraints
-3. `skills/README.md` for skill routing
-4. the focused skill(s) for the task at hand
+```text
+This issue changes refund behavior for partially shipped orders. Update the current specs and task queue before coding.
+```
+
+Provide frontend UI requirements:
+
+```text
+Here is a web UI brief for the support dashboard. Plan the frontend screens, backend APIs, realtime updates, and tests. Queue questions for anything ambiguous.
+```
+
+### What to read as a skill-pack user
+
+If you want to inspect the installed pack, start with:
+
+- `.agents/AGENTS.md`
+- `.agents/docs/`
+- `.agents/resources/examples/java/README.md`
+
+You normally do **not** need to choose or invoke individual files under `.agents/skills/` yourself.
+
+## 2. For skill-pack developers
+
+Use this section when your goal is to develop, test, package, or release this repository itself.
+
+This repository is the **source project for the `akka-ai-skills-pack`**. It is not primarily an Akka application product. The Akka code under `src/` is executable reference material used to validate and demonstrate the pack.
+
+### Development scope
+
+Skill-pack development includes work such as:
+
+- editing source skills under `skills/`
+- maintaining pack-facing docs under `docs/`
+- maintaining installed-pack guidance source under `pack/AGENTS.md`
+- maintaining packaging metadata under `pack/`
+- maintaining exported Java examples under `src/main` and `src/test`
+- maintaining installers and release scripts
+- improving routing, planning, question queue, task queue, and generation guidance
+- adding or revising examples that help downstream harnesses build Akka applications correctly
+
+When working in this repository, keep source and installed roles separate:
+
+- `AGENTS.md` is repository-internal maintainer guidance.
+- `pack/AGENTS.md` is installed as `.agents/AGENTS.md` for real downstream projects.
+- `skills/` is the authored source skill library.
+- Installed skill files are copied and rewritten into `.agents/skills/` during installation.
+- `docs/examples/` contains reference assets for this pack, not this repository’s own business app description.
+- `src/` contains executable examples and tests for the pack, not the main product of this repository.
+
+### Source repository layout
+
+```text
+.
+├── AGENTS.md                         # repository-internal maintainer guidance
+├── README.md                         # this file
+├── docs/                             # pack-facing reference docs and examples
+├── pack/                             # manifest, packaging docs, installed AGENTS source
+├── skills/                           # source skill library
+├── src/                              # executable Akka Java SDK reference examples
+├── tools/build-pack.sh               # distribution builder
+├── tools/check-version-consistency.sh
+├── tools/install-release-template.sh
+├── install.sh                        # installer for source checkout or unpacked bundle
+└── dist/                             # generated release artifacts, not source-controlled
+```
+
+### Development prerequisites
+
+Use:
+
+- JDK 21
+- Maven 3.x
+- bash
+- python3
+- standard archive tools such as `tar` and `gzip`
+
+The Maven example project currently inherits from:
+
+- `io.akka:akka-javasdk-parent:3.5.18`
+
+### Recommended development reading order
+
+For an AI-agent development session in this repository, read:
+
+1. `AGENTS.md`
+2. `skills/README.md`
+3. task-specific source skill files under `skills/`
+4. relevant local docs under `docs/`
 5. official Akka SDK documentation when SDK semantics or API confirmation is needed
 
-If you are here to use the pack rather than develop it, skip `CONTEXT-WARMUP.md` and `AGENTS.md` and follow the build/install sections in this `README.md` instead.
+### Source skill library
 
-## License
+The source skill library lives under `skills/`.
+
+It is designed as an internal routing and implementation layer for harnesses. Maintain it with these goals:
+
+- users can speak naturally without knowing skill names
+- broad intent is decomposed before coding
+- open decisions are queued instead of guessed
+- pending tasks are sized for focused harness runs
+- only the smallest relevant guidance is loaded for a task
+- backend, endpoint, integration, agent, and optional frontend concerns are represented without forcing everything into an entity-centric model
+
+When adding or revising skills, optimize for:
+
+1. agent usefulness
+2. token efficiency
+3. correct Akka semantics
+4. consistency with repo conventions
+5. human readability
+
+### Executable reference examples
+
+The `src/` tree is the executable example layer:
+
+```text
+src/main/java/com/example/domain        # pure domain logic and immutable models
+src/main/java/com/example/application   # Akka components and orchestration examples
+src/main/java/com/example/api           # HTTP, gRPC, and MCP endpoint examples
+src/main/proto                          # protobuf contracts
+src/test/java                           # unit and integration tests
+```
+
+Examples and tests should demonstrate reusable patterns for the installed pack, including:
+
+- workflows, compensation, pause/resume, and orchestration
+- views and query models
+- consumers and topic/service-stream integration
+- timed actions and timer-backed flows
+- HTTP, gRPC, and MCP endpoints
+- Akka-hosted web UI, static content, SSE, WebSocket, and lightweight TypeScript frontend patterns
+- agents, tools, structured responses, memory, streaming, guardrails, and evaluation
+- Event Sourced Entity and Key Value Entity design
+- deterministic testing patterns for each component family
+
+### Validate the example project
+
+Compile:
+
+```bash
+mvn compile
+```
+
+Run tests:
+
+```bash
+mvn test
+```
+
+Start locally:
+
+```bash
+mvn compile exec:java
+```
+
+Build the Maven artifact:
+
+```bash
+mvn clean install
+```
+
+The Maven build validates the executable example service. The installable resource-pack distribution is built separately.
+
+### Distribution model
+
+This repository ships an installable resource pack named:
+
+- `akka-ai-skills-pack`
+
+Current manifest version:
+- `0.1.0`
+
+The distribution includes:
+
+- source-authored skills copied from `skills/**`
+- selected pack-facing docs from `docs/**`
+- selected reference examples exported from `src/main` and `src/test`
+- `pom.xml` and example support files
+- `README.md`
+- `install.sh`
+- `LICENSE`
+- `pack/AGENTS.md` as the source for installed `.agents/AGENTS.md`
+- `pack/EXAMPLES-README.md` as the source for installed `.agents/resources/examples/java/README.md`
+- `pack/manifest.yaml` as installed manifest metadata
+
+The build also generates a versioned GitHub release installer script:
+
+- `dist/install-akka-ai-skills-pack-0.1.0.sh`
+
+The installed pack intentionally excludes repository-internal maintainer-only guidance, including:
+
+- root `AGENTS.md`
+- `akka-context/**`
+
+During installation, copied skill files are rewritten so installed references point to `.agents/` paths and do not depend on repository-local maintainer paths.
+
+### Build a distribution
+
+Quick build:
+
+```bash
+bash tools/build-pack.sh --clean
+```
+
+This creates:
+
+- `dist/akka-ai-skills-pack-0.1.0/`
+- `dist/akka-ai-skills-pack-0.1.0.tar.gz`
+- `dist/install-akka-ai-skills-pack-0.1.0.sh`
+
+Recommended release-prep flow:
+
+1. Verify examples and tests:
+
+   ```bash
+   mvn test
+   ```
+
+2. Check version references:
+
+   ```bash
+   bash tools/check-version-consistency.sh
+   ```
+
+3. Build the distribution:
+
+   ```bash
+   bash tools/build-pack.sh --clean
+   ```
+
+4. Inspect the staged pack:
+
+   ```bash
+   find dist/akka-ai-skills-pack-0.1.0 -maxdepth 3 | sort
+   ```
+
+5. Inspect release assets:
+
+   ```bash
+   ls -lh dist/akka-ai-skills-pack-0.1.0.tar.gz dist/install-akka-ai-skills-pack-0.1.0.sh
+   ```
+
+6. Publish both files to release tag `v0.1.0`:
+
+   - `dist/akka-ai-skills-pack-0.1.0.tar.gz`
+   - `dist/install-akka-ai-skills-pack-0.1.0.sh`
+
+The build refuses to overwrite an existing staged directory, archive, or generated release installer unless `--clean` is passed.
+
+### Build options
+
+Write output somewhere other than `dist/`:
+
+```bash
+bash tools/build-pack.sh --clean --output-dir /tmp/akka-pack-builds
+```
+
+Override the GitHub release repo used in generated installer URLs:
+
+```bash
+bash tools/build-pack.sh --clean --github-repo your-org/your-repo
+```
+
+Build only the expanded directory, no archive:
+
+```bash
+bash tools/build-pack.sh --clean --no-archive
+```
+
+Show help:
+
+```bash
+bash tools/build-pack.sh --help
+```
+
+### Development install for testing
+
+To test the current source checkout against a separate target project:
+
+```bash
+bash install.sh --location project --project /path/to/test/project
+```
+
+To test a built archive:
+
+```bash
+tar -xzf dist/akka-ai-skills-pack-0.1.0.tar.gz -C /tmp
+cd /tmp/akka-ai-skills-pack-0.1.0
+bash install.sh --location project --project /path/to/test/project
+```
+
+Use `--dry-run` when checking installer behavior without writing files.
+
+### GitHub Actions release flow
+
+Automation is included under `.github/workflows/`:
+
+- `build-test.yml` checks version references, runs Maven verification, and builds the pack on PRs, pushes to `main`, and manual dispatch.
+- `cut-tag.yml` creates and pushes tag `v<manifest-version>` from a selected ref after validation.
+- `release.yml` builds the versioned archive and installer and attaches them to a draft GitHub Release when the matching tag is pushed.
+
+Release checklist:
+
+1. Update `pack/manifest.yaml` to the intended version.
+2. Update versioned references in `README.md` and `pack/README.md`.
+3. Merge to `main`.
+4. Run the cut-tag workflow or manually push `v<manifest-version>`.
+5. Review the generated draft GitHub Release.
+6. Publish the draft release.
+
+### What the pack builder validates
+
+`tools/build-pack.sh` checks key source inputs before building, including:
+
+- `skills/README.md`
+- `skills/references/...`
+- every skill directory having a `SKILL.md`
+- `docs/...` files required by the pack manifest
+- `pom.xml`
+- `README.md`
+- `LICENSE`
+- `pack/README.md`
+- `pack/AGENTS.md`
+- `pack/EXAMPLES-README.md`
+- `pack/manifest.schema.yaml`
+
+`tools/check-version-consistency.sh` verifies that documented artifact and release references match the current manifest version.
+
+### License
 
 See `LICENSE`.
