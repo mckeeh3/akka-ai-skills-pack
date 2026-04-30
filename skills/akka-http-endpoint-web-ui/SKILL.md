@@ -7,7 +7,7 @@ description: Route Akka Java SDK tasks involving packaged browser UIs, co-hosted
 
 Use this skill when an Akka service should serve a browser-facing UI from packaged resources.
 
-For a complete user-facing frontend app, start with `akka-web-ui-apps` first, then return here for Akka HTTP hosting, route shape, packaged assets, and endpoint tests.
+For a complete user-facing frontend app, start with `akka-web-ui-apps` first, then return here for Akka HTTP hosting, route shape, packaged build assets, and endpoint tests.
 
 ## Required reading
 
@@ -16,6 +16,7 @@ Read these first if present:
 - `../../../docs/web-ui-pattern-selection.md`
 - `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-style-guide.md`
+- `../../../docs/web-ui-frontend-project-integration.md`
 - `../../../docs/web-ui-lightweight-typescript-architecture.md`
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
@@ -40,9 +41,10 @@ Read these first if present:
 - the UI should consume SSE updates
 - the UI should consume a WebSocket endpoint
 - you need route-shape guidance for `/ui`, `/api`, stream, and socket paths
-- TypeScript-authored browser logic should stay minimal and framework-free
+- a standard frontend project should build production assets into `src/main/resources/static-resources/`
 - packaged CSS should apply the selected web UI style guide/theme
 - if a browser UI style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` before implementing affected UI assets
+- auth/security implementation details are out of scope unless the user explicitly asks for them
 
 ## Pattern selection
 
@@ -60,6 +62,7 @@ Use first:
 - `akka-web-ui-apps`
 
 Then add focused frontend companions as needed:
+- `akka-web-ui-frontend-project`
 - `akka-web-ui-lightweight-typescript`
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
@@ -68,7 +71,7 @@ Then add focused frontend companions as needed:
 - `akka-web-ui-accessibility-responsive`
 - `akka-web-ui-testing`
 
-Use this when the browser UI has real user journeys, multiple states, forms, navigation, or frontend application logic.
+Use this when the browser UI has real user journeys, multiple states, forms, navigation, or frontend application logic. Prefer `akka-web-ui-frontend-project` for full React/Vite or similar app projects; use `akka-web-ui-lightweight-typescript` only when the UI is intentionally framework-free.
 
 ### UI + JSON API
 Read first:
@@ -101,32 +104,41 @@ Read next as needed:
 - `../akka-http-endpoint-acl-internal/SKILL.md`
 - `../../../src/main/java/com/example/api/InternalStatusEndpoint.java`
 
-## TypeScript guidance
+## Frontend asset guidance
 
-In this repository:
+Two frontend ownership models are valid:
 
-- TypeScript source lives under `src/main/web-ui/<example>/app.ts`
-- served JavaScript lives under `src/main/resources/static-resources/<example>/app.js`
+### Standard frontend project
+
+Use for full apps.
+
+- source lives under `frontend/**`
+- build output goes to `src/main/resources/static-resources/`
+- build with the frontend project's script, for example `cd frontend && npm run build`
+- do not hand-edit generated files in `static-resources/`
+- read `docs/web-ui-frontend-project-integration.md`
+
+### Lightweight framework-free TypeScript
+
+Use only for small Akka-focused examples or deliberately framework-free apps.
+
+- TypeScript source lives under `src/main/web-ui/<example>/`
+- served JavaScript/CSS/HTML lives under `src/main/resources/static-resources/<example>/`
 - build with `npm run build:web-ui`
-- Akka implementation and tests remain Java-based
+- read `docs/web-ui-lightweight-typescript-architecture.md`
 
-Tiny workflow note:
-- after editing any `src/main/web-ui/...` file, run `npm run build:web-ui` before packaging or running endpoint integration tests so the served `app.js` stays in sync
-
-Prefer TypeScript for interactive browser examples. Do not introduce a frontend framework for this skill family.
-
-For non-trivial apps, use the modular TypeScript layout in `docs/web-ui-lightweight-typescript-architecture.md` instead of putting all browser behavior in one `app.ts`.
+Akka implementation and tests remain Java-based in both models.
 
 ## Route guidance
 
 Prefer clear route families:
 
-- packaged UI shell and assets: `/ui...`
+- packaged UI shell and assets: `/`, `/assets/**`, `/ui...`, or explicit app-specific entry routes
 - JSON APIs: `/api/...`
-- SSE streams: explicit stream prefix such as `/counter-stream/...`
+- SSE streams: explicit stream prefix such as `/counter-stream/...` or `/streams/...`
 - WebSocket routes: `/websockets/...`
 
-Keep those route families separate so a future agent can infer intent from the path alone.
+Keep those route families separate so a future agent can infer intent from the path alone. Avoid a broad `/**` SPA fallback when it overlaps `/assets/**`; use hash routing or explicit entry routes for deep links.
 
 ## Repository examples
 
@@ -156,8 +168,8 @@ Add route-level assertions for:
 Avoid:
 - starting with the static-content skill when the main task is an interactive browser page
 - mixing UI routes and API routes under one ambiguous path family
-- introducing React, Angular, Vue, Vite, or bundler-specific assumptions in this repository wave
-- hiding the TypeScript source path or the served JavaScript path
+- treating generated frontend build output as source code
+- hiding the frontend source path or the served JavaScript/CSS path
 - relying on browser-only behavior without a route-level integration test
 - treating a complete frontend app as only a static-content concern
 - implementing only happy-path UI states
@@ -165,7 +177,7 @@ Avoid:
 ## Review checklist
 
 Before finishing, verify:
-- UI shell routes are under `/ui...`
+- UI shell routes are explicit and do not conflict with asset wildcards
 - JSON API routes are under `/api/...`
 - SSE and WebSocket routes remain explicit and separate
 - TypeScript source and served JavaScript paths are easy to correlate

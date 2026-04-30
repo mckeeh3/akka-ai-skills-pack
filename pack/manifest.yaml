@@ -359,6 +359,9 @@ content:
     - id: akka-web-ui-forms-validation
       path: skills/akka-web-ui-forms-validation
       category: focused
+    - id: akka-web-ui-frontend-project
+      path: skills/akka-web-ui-frontend-project
+      category: focused
     - id: akka-web-ui-lightweight-typescript
       path: skills/akka-web-ui-lightweight-typescript
       category: focused
@@ -522,6 +525,7 @@ bundles:
       - akka-web-ui-api-client
       - akka-web-ui-apps
       - akka-web-ui-forms-validation
+      - akka-web-ui-frontend-project
       - akka-web-ui-lightweight-typescript
       - akka-web-ui-realtime
       - akka-web-ui-state-rendering

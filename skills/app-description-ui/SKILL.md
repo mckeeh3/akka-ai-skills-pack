@@ -92,7 +92,9 @@ Create only files justified by the app. For a very small app, one `ui-index.md` 
 - layout shell/density and navigation treatment
 - component rules for cards, buttons, forms, tables/lists, charts, and feedback states
 - brand adaptations and forbidden copied demo content from reference images
-- CSS variable/token expectations for generated `app.css`
+- CSS variable/token expectations for frontend styling
+- frontend implementation shape: standard frontend project or lightweight TypeScript
+- static asset output and Akka hosting route expectations
 
 If a browser UI is in scope and no style is selected, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks only web UI implementation/generation tasks.
 
@@ -102,14 +104,15 @@ For any UI change, update:
 1. affected UI description files, including `style-guide.md` when theme, branding, density, tokens, or component styling change
 2. behavior flows if user-visible behavior changes
 3. tests if acceptance criteria change
-4. auth/security if route visibility or roles change
+4. auth/security if route visibility or roles change and security is in scope
 5. readiness status if generation completeness changes
 
 ## Realization routing
 
 When realization is requested, route UI work to:
 - `akka-web-ui-apps`
-- `akka-web-ui-lightweight-typescript`
+- `akka-web-ui-frontend-project` for standard frontend projects such as React/Vite
+- `akka-web-ui-lightweight-typescript` for deliberately framework-free apps
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
 - `akka-web-ui-forms-validation`

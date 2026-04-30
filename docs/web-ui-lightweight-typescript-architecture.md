@@ -1,12 +1,13 @@
 # Lightweight TypeScript architecture for Akka-hosted web UIs
 
-Use this doc for fully capable browser apps that should remain framework-free.
+Use this doc for browser apps that should deliberately remain framework-free. For full frontend projects such as React/Vite, use `docs/web-ui-frontend-project-integration.md` instead.
 
 ## Stack boundary
 
 - Backend: Akka Java SDK components and HTTP endpoints.
 - Frontend: plain HTML, CSS, and TypeScript compiled to browser JavaScript.
-- No React, Angular, Vue, Vite, Webpack, or runtime state libraries by default.
+- No React, Angular, Vue, Vite, Webpack, or runtime state libraries in this lightweight pattern.
+- If the UI needs those tools, switch to the frontend project pattern instead of forcing this layout.
 
 ## Source and served paths
 

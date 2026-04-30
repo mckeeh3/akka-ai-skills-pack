@@ -2,32 +2,37 @@
 
 Use this doc when an Akka service needs packaged browser-facing assets, not only JSON APIs.
 
-## Default conventions in this repository
+## Default conventions
 
-### Source-to-served asset mapping
+### Full frontend project mapping
 
-Use these paths:
+Use this for real web apps:
+
+- frontend source and tooling: `frontend/**`
+- production build output: `src/main/resources/static-resources/**`
+- build command: the frontend project's script, commonly `cd frontend && npm run build`
+
+The frontend build owns generated files under `static-resources/`. Edit `frontend/src/**`, then rebuild.
+
+### Lightweight TypeScript mapping
+
+Use this only for deliberately small framework-free examples:
 
 - TypeScript source: `src/main/web-ui/<example>/app.ts`
-- Served JavaScript asset: `src/main/resources/static-resources/<example>/app.js`
-- Packaged HTML/CSS: `src/main/resources/static-resources/<example>/...`
-
-Build the browser assets with:
-
-- `npm run build:web-ui`
-
-That keeps the authored browser code and the served Akka asset paths easy to correlate by file name alone.
+- served JavaScript asset: `src/main/resources/static-resources/<example>/app.js`
+- packaged HTML/CSS: `src/main/resources/static-resources/<example>/...`
+- build command: `npm run build:web-ui`
 
 ## Pattern selection
 
 | Need | Use | First example |
 | --- | --- | --- |
-| Full frontend app with screens, state, forms, typed API clients, accessibility, and responsive behavior | Web UI app pattern | `skills/akka-web-ui-apps/SKILL.md` |
+| Full frontend app with screens, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `skills/akka-web-ui-apps/SKILL.md` plus `skills/akka-web-ui-frontend-project/SKILL.md` |
 | Packaged docs, HTML, CSS, OpenAPI, or simple file serving | Narrow static-content pattern | `src/main/java/com/example/api/StaticContentEndpoint.java` |
 | Co-hosted browser page calling JSON endpoints | UI + JSON API pattern | `src/main/java/com/example/api/WebUiHomeEndpoint.java` and `src/main/java/com/example/api/WebUiDataEndpoint.java` |
 | Browser page consuming live one-way updates | UI + SSE pattern | `src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `src/main/java/com/example/api/CounterStreamEndpoint.java` |
 | Browser page needing two-way communication | UI + WebSocket pattern | `src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `src/main/java/com/example/api/PingWebSocketEndpoint.java` |
-| Route exposure and backend access boundaries | Public/protected/internal route split | `src/main/java/com/example/api/InternalStatusEndpoint.java` and `skills/akka-http-endpoint-jwt/SKILL.md` |
+| Route exposure and backend access boundaries | Defer to security-specific routing when in scope | `skills/akka-http-endpoint-jwt/SKILL.md` and `skills/akka-http-endpoint-acl-internal/SKILL.md` |
 
 ## When plain JavaScript is enough
 
@@ -40,102 +45,50 @@ Plain JavaScript is sufficient when:
 
 Use the narrow static-content pattern for those cases.
 
-## When TypeScript is preferred
+## When a frontend project is preferred
 
-Use TypeScript when the browser page has real interaction logic, especially when it:
+Use a standard frontend project when the browser app has real product surface area, especially when it:
 
-- calls JSON APIs with typed payloads
-- consumes SSE events and parses JSON data
-- opens WebSocket connections and manages browser-side state
-- updates multiple DOM elements based on structured responses
-- is likely to be copied by future agents as a reusable starting point
+- has multiple screens or complex navigation
+- needs React or another UI framework
+- needs Vite or another bundler for production assets
+- has componentized UI code, design-system styling, or frontend test tooling
+- should be developed independently from the Akka Java source tree
 
-In this repository, TypeScript is limited to browser-facing code only. Akka components, endpoints, and tests stay in Java.
+Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets.
 
-## Fully capable does not mean heavy framework
+## When lightweight TypeScript is preferred
 
-For serious browser apps, use `akka-web-ui-apps` and its focused companion skills. They require frontend decomposition, typed API clients, explicit state, forms, accessibility, responsive layout, and tests while preserving the minimal stack.
+Use lightweight framework-free TypeScript when the UI is small, Akka-pattern-focused, or intentionally dependency-light, especially when it:
+
+- calls a few JSON APIs with typed payloads
+- consumes SSE/WebSocket updates with simple state
+- has modest DOM updates and forms
+- would be harder to understand with a full framework scaffold
 
 Read next:
 - `docs/web-ui-frontend-decomposition.md`
+- `docs/web-ui-frontend-project-integration.md`
 - `docs/web-ui-style-guide.md`
 - `docs/web-ui-lightweight-typescript-architecture.md`
 - `docs/web-ui-api-contract-patterns.md`
 - `docs/web-ui-quality-checklist.md`
 
-## Why this repo avoids heavy frontend frameworks in this wave
-
-This repository is Akka-first and agent-oriented.
-
-Avoid React, Angular, Vue, Vite, Webpack, or similar tools here because they:
-
-- add routing and build-system noise unrelated to Akka endpoint patterns
-- increase the number of files an agent must read
-- make small browser examples harder to reuse mechanically
-- shift attention away from route shape, Akka APIs, and test patterns
-
-The goal in this wave is:
-
-- plain HTML
-- plain CSS driven by a selected style guide and centralized CSS variables
-- framework-free TypeScript
-- explicit Akka endpoint routes
-- integration tests that stay cheap and stable
-
 ## Recommended route shape
 
 Use route families with clear separation:
 
-- UI shell and packaged assets: `/ui...`
+- UI shell and packaged assets: `/`, `/assets/**`, `/ui...`, or explicit app entry routes
 - JSON API routes: `/api/...`
 - SSE streams: `/counter-stream/...`, `/view-streams/...`, or another explicit stream prefix
 - WebSocket routes: `/websockets/...`
 - internal-only routes: `/internal-...` or another clearly non-public prefix
 
-This keeps route intent visible from URL shape alone.
+This keeps route intent visible from URL shape alone. Avoid broad `/**` SPA fallbacks when they overlap asset wildcards; use hash routing or explicit frontend entry routes instead.
 
-## Public UI vs protected API vs internal-only routes
+## Security scope note
 
-Do not assume a public UI implies a public backend.
-
-### Public UI routes
-
-Use public ACLs for packaged pages and assets only when the page should be broadly reachable.
-
-Examples:
-
-- `/ui`
-- `/ui/app.js`
-- `/ui/sse`
-- `/ui/websocket`
-
-### Protected API routes
-
-Use JWT-secured routes when the browser or caller must present identity or claims.
-
-Read:
-
-- `skills/akka-http-endpoint-jwt/SKILL.md`
-
-Typical shape:
-
-- public page shell under `/ui...`
-- protected JSON or action endpoints under `/api/...`
-
-### Internal-only routes
-
-Use class-level service ACLs for routes that are not meant for internet callers.
-
-Read:
-
-- `skills/akka-http-endpoint-acl-internal/SKILL.md`
-- `src/main/java/com/example/api/InternalStatusEndpoint.java`
-
-Typical examples:
-
-- internal status endpoints
-- service-to-service control routes
-- operational routes not intended for browsers
+This pattern-selection doc focuses on web UI delivery and route integration. Public/protected/internal route policy, JWTs, identity-provider integration, and authorization UX should be handled by security-specific guidance when those tasks are in scope.
 
 ## OpenAPI publication
 
@@ -149,12 +102,13 @@ Start with:
 
 - `docs/web-ui-style-guide.md` for theme/style-guide selection when browser UI styling is not yet selected
 - `skills/akka-web-ui-apps/SKILL.md` for complete frontend apps
-- `skills/akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and simple web UI delivery
+- `skills/akka-web-ui-frontend-project/SKILL.md` for standard frontend project integration
+- `skills/akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and web UI delivery
 
 Then load the focused companion skill you need:
 
 - `skills/akka-http-endpoint-static-content/SKILL.md`
 - `skills/akka-http-endpoint-sse/SKILL.md`
 - `skills/akka-http-endpoint-websocket/SKILL.md`
-- `skills/akka-http-endpoint-jwt/SKILL.md`
-- `skills/akka-http-endpoint-acl-internal/SKILL.md`
+- `skills/akka-http-endpoint-jwt/SKILL.md` only when security is in scope
+- `skills/akka-http-endpoint-acl-internal/SKILL.md` only when internal-route security is in scope

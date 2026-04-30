@@ -23,7 +23,7 @@ Use this skill when a browser UI calls Akka HTTP JSON APIs.
 4. Normalize browser errors into a small union such as `network`, `unauthorized`, `forbidden`, `notFound`, `validation`, and `server`.
 5. Make loading and error states visible in UI state, not hidden in console logs.
 6. Do not assume every response is JSON; handle empty responses explicitly.
-7. Keep auth headers/session behavior explicit when protected endpoints are used.
+7. For web UI integration-only tasks, leave auth headers/session behavior to security guidance; only map unauthorized/forbidden responses if the backend contract already exposes them.
 
 ## Browser client shape
 
@@ -49,7 +49,7 @@ For every browser API call, verify:
 - request DTO
 - success response DTO
 - validation error shape
-- auth requirements
+- security/auth placeholders when already defined elsewhere
 - idempotency/retry expectations
 - matching endpoint integration tests
 

@@ -25,7 +25,7 @@ Goal: add the smallest possible TypeScript setup for browser-side examples.
   - generated JavaScript asset path convention
   - when plain JavaScript is sufficient
   - when TypeScript is preferred
-  - why this repo avoids heavy frontend frameworks in this wave
+  - why lightweight examples avoid heavy frontend frameworks, and when full apps should use the frontend project pattern
 
 ### Expected result
 
@@ -125,7 +125,7 @@ Goal: add the minimal co-hosted UI example with TypeScript-authored browser logi
 - [ ] Create `WebUiDataEndpoint.java` to return a small browser-consumable JSON payload
 - [ ] Author browser logic in `src/main/web-ui/web-ui/app.ts`
 - [ ] Compile or generate the served asset at `src/main/resources/static-resources/web-ui/app.js`
-- [ ] Keep `index.html` framework-free and explicit about API and asset paths
+- [ ] For lightweight examples, keep `index.html` framework-free and explicit about API and asset paths
 - [ ] Add integration tests for:
   - `GET /ui`
   - `GET /ui/app.css`

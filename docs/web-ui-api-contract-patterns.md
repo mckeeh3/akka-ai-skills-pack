@@ -60,7 +60,7 @@ The browser API client should normalize:
 
 For each browser API endpoint:
 - use `@HttpEndpoint` and explicit `@Acl`
-- choose public, JWT-protected, or internal exposure intentionally
+- record exposure assumptions or placeholders; choose JWT/internal security details only when security guidance is in scope
 - validate request bodies at the edge where HTTP-specific feedback is needed
 - call Akka components through `ComponentClient` when business state is involved
 - map domain/component failures to HTTP-oriented responses
@@ -81,7 +81,7 @@ Endpoint integration tests should verify:
 - success response shape
 - validation failure response shape
 - not-found behavior where relevant
-- unauthorized/forbidden behavior for protected APIs
+- unauthorized/forbidden behavior when security is in scope or already defined
 - route paths referenced by packaged HTML/JS
 
 TypeScript checks should verify frontend DTO usage against local types. If generated contracts are introduced in a future wave, keep them lightweight and explicit.

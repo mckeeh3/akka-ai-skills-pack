@@ -174,7 +174,7 @@ Do not introduce an agent for deterministic business rules that should stay in c
 
 Choose:
 - `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
-- `Akka-hosted web UI app` for fully capable lightweight browser applications with screens, typed API clients, forms, state, and frontend quality requirements
+- `Akka-hosted web UI app` for full browser applications with screens, typed API clients, forms, state, selected frontend project shape, and frontend quality requirements
 - `gRPC endpoint` for protobuf-first service APIs
 - `MCP endpoint` for LLM-oriented tools, resources, or prompts
 
@@ -230,7 +230,7 @@ Choose one or more of:
 - `gRPC endpoint`
 - `MCP endpoint`
 - HTTP-hosted web UI via `akka-http-endpoint-web-ui`
-- fully capable lightweight frontend app via `akka-web-ui-apps`
+- fully capable frontend app via `akka-web-ui-apps`, usually with `akka-web-ui-frontend-project` for full React/Vite-style apps
 - SSE or WebSocket companions when live browser updates are required
 
 ### AI layer
@@ -346,7 +346,8 @@ Load:
 - `akka-http-endpoint-web-ui`
 
 Then add only what is needed:
-- `akka-web-ui-lightweight-typescript`
+- `akka-web-ui-frontend-project` for standard frontend projects
+- `akka-web-ui-lightweight-typescript` for deliberately framework-free apps
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
 - `akka-web-ui-forms-validation`
@@ -356,10 +357,10 @@ Then add only what is needed:
 - `akka-http-endpoint-component-client`
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
-- `akka-http-endpoint-jwt`
+- `akka-http-endpoint-jwt` only when security implementation is in scope
 - `akka-http-endpoint-testing`
 
-The implementation handoff must include frontend screens, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, and tests.
+The implementation handoff must include frontend screens, frontend project shape, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, static asset route plan, SPA routing choice, and tests.
 
 ### If the plan includes HTTP APIs or simple browser UI delivery
 

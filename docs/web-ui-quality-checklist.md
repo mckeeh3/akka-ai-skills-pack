@@ -74,17 +74,18 @@ If SSE/WebSocket is used:
 
 ## Security/session UX
 
-- [ ] Public UI routes and protected API routes are intentionally separated.
-- [ ] Unauthorized/expired-session behavior is visible to the user.
-- [ ] Forbidden actions are hidden, disabled, or fail with clear messaging as appropriate.
+Security implementation is covered by separate security guidance. For web UI integration-only work, record any auth/session placeholders and do not invent identity-provider, JWT, or authorization behavior.
+
+- [ ] Public UI asset routes and backend API routes are intentionally separated.
 - [ ] Sensitive data is not embedded in static assets.
+- [ ] Unauthorized/expired-session and forbidden-action UX is covered when security is in scope.
 
 ## Build and tests
 
-- [ ] `npm run check:web-ui` passes when TypeScript exists.
-- [ ] `npm run build:web-ui` has been run after TypeScript changes.
+- [ ] Standard frontend project checks/build pass when `frontend/` exists.
+- [ ] `npm run check:web-ui` and `npm run build:web-ui` pass when using lightweight TypeScript.
 - [ ] Served CSS corresponds to the selected web UI style guide.
-- [ ] Served JS corresponds to the TypeScript source.
+- [ ] Served JS/CSS assets correspond to the frontend source build output.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.
 - [ ] Tests assert route references for API/SSE/WebSocket dependencies.
 - [ ] Backend tests pass for changed endpoint/component behavior.

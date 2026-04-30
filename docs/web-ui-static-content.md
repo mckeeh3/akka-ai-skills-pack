@@ -1,6 +1,6 @@
 # Web UI/static content family plan
 
-Purpose: define the next implementation wave for Akka-served web UI and static content coverage in this repository.
+Purpose: historical plan for the original Akka-served web UI and static content coverage wave. For current full web app integration guidance, prefer `docs/web-ui-frontend-project-integration.md`, `docs/web-ui-frontend-decomposition.md`, and `skills/akka-web-ui-apps/SKILL.md`.
 
 ## Goal
 
@@ -56,8 +56,8 @@ without turning the repository into a frontend-framework project.
 
 - Akka components, endpoints, workflows, entities, and tests remain Java-based
 - TypeScript is only for browser-side code that compiles to JavaScript assets served from Akka HTTP endpoints
-- do not introduce React, Angular, Vue, Vite, Webpack, or other large framework/bundler choices in this wave
-- keep the TypeScript toolchain minimal and obvious
+- for deliberately small examples, keep the TypeScript toolchain minimal and obvious
+- for full web apps, use the frontend project pattern instead of this historic lightweight wave guidance
 
 ### Minimal strategy
 
@@ -94,9 +94,6 @@ If build automation is added in this wave, keep it intentionally small:
 
 ## Out of scope for this wave
 
-- large frontend frameworks
-- complex bundler-driven frontend pipelines
-- separate frontend repository patterns
 - advanced auth flows beyond the minimum needed to explain public/private route separation
 - full browser-automation suites unless a lightweight example is clearly worth the added cost
 - turning this repository into a general frontend build-system reference
@@ -105,7 +102,7 @@ If build automation is added in this wave, keep it intentionally small:
 
 - keep examples small and executable
 - keep Akka implementation code in Java and browser-interaction code in TypeScript only where it adds real value
-- prefer plain HTML/CSS plus framework-free TypeScript for interactive examples
+- prefer plain HTML/CSS plus framework-free TypeScript for small interactive examples, and the frontend project pattern for full apps
 - keep one main idea per example
 - make route shapes obvious from file names
 - make TypeScript source paths and generated asset paths easy to correlate

@@ -289,7 +289,7 @@ This skill routes to:
 - `akka-consumers` for async reactions, integrations, and republishing
 - `akka-timed-actions` for deadlines, reminders, and expiry
 - `akka-http-endpoints` for REST, SSE, WebSocket, static content, and browser-hosted UI
-- `akka-web-ui-apps` for fully capable lightweight frontend apps hosted by Akka HTTP endpoints
+- `akka-web-ui-apps` for fully capable frontend apps hosted by Akka HTTP endpoints, including standard frontend projects
 - `akka-grpc-endpoints` for protobuf-first service APIs
 - `akka-mcp-endpoints` for LLM-facing tools, resources, and prompts
 - `akka-agents` when the solution genuinely needs LLM-driven behavior
@@ -543,11 +543,12 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just a packaged page or static files. This family keeps the stack lightweight while requiring excellent frontend behavior: screens, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just a packaged page or static files. This family supports standard frontend projects such as React/Vite as well as deliberately lightweight TypeScript apps, while requiring excellent frontend behavior: screens, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
-- `akka-web-ui-lightweight-typescript` — modular framework-free TypeScript structure
+- `akka-web-ui-frontend-project` — standard frontend project integration, build output, Akka static hosting, and SPA route shape
+- `akka-web-ui-lightweight-typescript` — modular framework-free TypeScript structure for small apps
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
 - `akka-web-ui-state-rendering` — state model, DOM rendering, loading/empty/error/success states
 - `akka-web-ui-forms-validation` — form parsing, validation, submit state, server error mapping
@@ -555,10 +556,11 @@ Then load the focused skill that matches the current task:
 - `akka-web-ui-accessibility-responsive` — semantic HTML, keyboard, focus, responsive layout
 - `akka-web-ui-testing` — TypeScript checks, route/asset/API tests, optional frontend smoke checks
 
-Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP endpoint companion skills for JSON, SSE, WebSocket, JWT, or internal routes.
+Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP endpoint companion skills for JSON, SSE, or WebSocket routes. Load JWT/internal security skills only when security implementation is in scope.
 
 Reference docs:
 - `../docs/web-ui-frontend-decomposition.md`
+- `../docs/web-ui-frontend-project-integration.md`
 - `../docs/web-ui-style-guide.md`
 - `../docs/web-ui-lightweight-typescript-architecture.md`
 - `../docs/web-ui-api-contract-patterns.md`
@@ -867,6 +869,7 @@ Load:
 If no style guide/theme is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
+- `akka-web-ui-frontend-project`
 - `akka-web-ui-lightweight-typescript`
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
@@ -879,8 +882,8 @@ Then add one or more Akka HTTP companions as needed:
 - `akka-http-endpoint-static-content`
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
-- `akka-http-endpoint-jwt`
-- `akka-http-endpoint-acl-internal`
+- `akka-http-endpoint-jwt` only when security is in scope
+- `akka-http-endpoint-acl-internal` only when internal-route security is in scope
 
 ### New simple Akka-served web UI shell
 Load:
