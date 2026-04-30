@@ -183,6 +183,9 @@ A single solution may expose more than one edge surface.
 ### 9. Add security and delivery concerns explicitly
 
 Check whether the requirements imply:
+- WorkOS or other end-user authentication
+- frontend-to-backend JWT bearer-token security
+- `/api/me`, account linking, roles, invites, or basic administration
 - JWT-protected endpoints
 - internal-only ACL endpoints
 - SSE reconnect support
@@ -361,6 +364,18 @@ Then add only what is needed:
 - `akka-http-endpoint-testing`
 
 The implementation handoff must include frontend screens, frontend project shape, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, static asset route plan, SPA routing choice, and tests.
+
+### If the plan includes WorkOS user authentication or basic administration
+
+Load as needed:
+- `akka-workos-user-auth` for WorkOS/AuthKit, JWT-secured browser APIs, `/api/me`, and account linking
+- `akka-basic-user-admin` for roles, admin bootstrap, invites, user management, disabling users, and tenant/customer scopes
+- `akka-http-endpoints`
+- `akka-http-endpoint-jwt`
+- `akka-http-endpoint-request-context`
+- `akka-http-endpoint-testing`
+
+Add `akka-web-ui-frontend-project` when implementing the frontend authentication shell. Add entity skills when local user/account state must be implemented.
 
 ### If the plan includes HTTP APIs or simple browser UI delivery
 

@@ -42,7 +42,7 @@ Default description-first flow:
 5. update behavior with `app-description-behavior-specification` when the request changes what the app should do
 6. update tests with `app-description-test-specification` when the request needs acceptance, regression, edge-case, or verification definition
 7. run `app-description-change-impact` to identify cross-layer and realization implications
-8. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, or data protection
+8. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, frontend/backend JWT security, WorkOS authentication, basic administration, or data protection
 9. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
 10. update UI with `app-description-ui` when the request changes screens, navigation, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style/theme
 11. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
@@ -609,6 +609,19 @@ Use when the endpoint needs bidirectional streaming over `@WebSocket`.
 Use when the endpoint validates bearer tokens and reads claims.
 - `akka-http-endpoint-jwt`
 
+Security references:
+- `../docs/security-pattern-selection.md`
+- `../docs/security-workos-auth-and-admin.md`
+- `../docs/security-review-checklist.md`
+
+### WorkOS user authentication
+Use when an Akka-hosted browser app uses WorkOS/AuthKit for sign-in and calls `/api/...` with bearer JWTs.
+- `akka-workos-user-auth`
+
+### Basic user administration
+Use when the app needs local user/account roles, `/api/me`, invites, startup admin bootstrap, role assignment, disable/activate, or tenant/customer admin scopes.
+- `akka-basic-user-admin`
+
 ### Internal-only ACL endpoints
 Use when the endpoint should only be callable by services or needs method-level ACL overrides.
 - `akka-http-endpoint-acl-internal`
@@ -928,6 +941,27 @@ Load:
 - `akka-http-endpoints`
 - `akka-http-endpoint-jwt`
 - `akka-http-endpoint-testing`
+
+### New WorkOS-authenticated web app APIs
+Load:
+- `akka-workos-user-auth`
+- `akka-http-endpoints`
+- `akka-http-endpoint-jwt`
+- `akka-http-endpoint-request-context`
+- `akka-http-endpoint-testing`
+
+Add `akka-web-ui-frontend-project` when implementing the frontend AuthKit shell. Add `akka-basic-user-admin` when `/api/me`, roles, invites, or admin APIs are in scope.
+
+### New basic user administration surface
+Load:
+- `akka-basic-user-admin`
+- `akka-workos-user-auth`
+- `akka-http-endpoints`
+- `akka-http-endpoint-jwt`
+- `akka-http-endpoint-component-client`
+- `akka-http-endpoint-testing`
+
+Add an entity skill (`akka-key-value-entities` or `akka-event-sourced-entities`) based on whether user/account state is current-state only or needs audit-grade event history.
 
 ### New internal-only HTTP endpoint
 Load:

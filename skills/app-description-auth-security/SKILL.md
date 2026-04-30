@@ -34,11 +34,14 @@ Read these first if present:
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 - `../app-description-test-specification/SKILL.md`
+- `../../docs/security-workos-auth-and-admin.md` when browser user authentication, WorkOS, JWT-secured APIs, or basic administration are in scope
 
 ## Use this skill when
 
 The input sounds like:
 - "require login for..."
+- "use WorkOS for sign-in..."
+- "secure frontend/backend calls with JWT..."
 - "only admins may..."
 - "tenants must not see each other's data"
 - "this endpoint should be internal-only"
@@ -47,10 +50,12 @@ The input sounds like:
 - "store or expose this data only under these conditions"
 
 Use it for:
-- authentication model changes
+- authentication model changes, including WorkOS or another identity provider
+- frontend-to-backend JWT bearer-token requirements
 - authorization rule changes
 - trust-boundary clarification
 - tenancy isolation requirements
+- basic user administration rules, including initial admin bootstrap, invitations, role assignment, and disabling users
 - secret or credential handling expectations
 - sensitive-data visibility rules
 - allowed and forbidden access paths
@@ -71,9 +76,13 @@ This skill should define:
 
 For each requested change, identify and describe as applicable:
 - caller identities or principal categories
-- authentication mechanism or trust source
+- authentication mechanism or trust source, including identity provider when known
+- frontend-to-backend token propagation expectations
+- local user/account linking rules
 - authorization rules by capability or operation
 - tenancy or ownership boundaries
+- admin roles and scopes when user administration is in scope
+- bootstrap/invite/first-login behavior when relevant
 - internal-only versus external access
 - sensitive-data categories
 - visibility, masking, redaction, or retention expectations
@@ -120,6 +129,27 @@ Use this response shape when updating or summarizing auth/security changes:
 ```
 
 ## Security modeling rules
+
+### WorkOS/JWT web app defaults
+
+When the app uses WorkOS with an Akka-hosted frontend, capture these explicitly:
+- public static frontend routes versus JWT-protected `/api/...` routes
+- WorkOS/AuthKit establishes browser user identity
+- frontend sends `Authorization: Bearer <token>` to Akka APIs
+- Akka endpoints use `@JWT` and read claims through request context
+- local Akka user/account/role state is the application authorization source unless specified otherwise
+- `/api/me` returns the current local account, status, roles, and scopes for UX
+- backend secrets such as `WORKOS_API_KEY` stay out of frontend env files and built assets
+
+### Basic administration defaults
+
+When basic administration is in scope, capture:
+- admin roles such as `APP_ADMIN`, `TENANT_ADMIN`, `CUSTOMER_ADMIN`, `USER`
+- scope boundaries such as all tenants, tenant id, customer id, or self
+- startup admin bootstrap source, such as `ADMIN_USERS`
+- invite and first-login account-linking behavior
+- disabled-user behavior
+- server-side checks for every admin operation
 
 ### 1. Define principals explicitly
 Do not say "authorized users" if the actual roles, identities, or caller classes matter.
@@ -168,6 +198,8 @@ When the auth/security update is established, route onward as needed:
 - to `app-description-test-specification` to define authorization, denial, redaction, and isolation verification cases
 - to `app-description-observability` if audit events, alerts, traces, or diagnosability expectations need explicit definition
 - to `app-description-readiness-assessment` when the user is asking whether the description is mature enough to realize
+- to `akka-workos-user-auth` when realization should implement WorkOS/AuthKit, JWT-secured APIs, or `/api/me`
+- to `akka-basic-user-admin` when realization should implement roles, invites, admin bootstrap, or user-management APIs
 
 ## Anti-patterns
 

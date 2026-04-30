@@ -290,6 +290,9 @@ content:
     - id: akka-backlog-to-pending-tasks
       path: skills/akka-backlog-to-pending-tasks
       category: planning
+    - id: akka-basic-user-admin
+      path: skills/akka-basic-user-admin
+      category: focused
     - id: akka-change-request-to-spec-update
       path: skills/akka-change-request-to-spec-update
       category: planning
@@ -389,6 +392,9 @@ content:
     - id: akka-workflow-testing
       path: skills/akka-workflow-testing
       category: testing
+    - id: akka-workos-user-auth
+      path: skills/akka-workos-user-auth
+      category: focused
     - id: akka-workflows
       path: skills/akka-workflows
       category: component-suite
@@ -502,6 +508,7 @@ bundles:
       - akka-slice-spec-to-backlog
       - akka-backlog-item-to-task-brief
       - akka-backlog-to-pending-tasks
+      - akka-basic-user-admin
       - akka-change-request-to-spec-update
       - akka-revised-prd-reconciliation
       - akka-pending-question-generation
@@ -535,6 +542,7 @@ bundles:
       - akka-workflow-notifications
       - akka-workflow-pausing
       - akka-workflow-testing
+      - akka-workos-user-auth
       - akka-workflows
 
 transforms:
