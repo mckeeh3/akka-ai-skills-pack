@@ -9,7 +9,7 @@ on:
         default: main
         type: string
       release_version:
-        description: Pack version to tag, for example 0.1.0. Defaults to manifest version.
+        description: Pack version to tag, for example 0.1.1. Defaults to manifest version.
         required: false
         type: string
 

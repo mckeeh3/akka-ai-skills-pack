@@ -29,7 +29,7 @@ fields:
       version:
         type: string
         required: true
-        example: 0.1.0
+        example: 0.1.1
       sourceRepo:
         type: string
         required: true
