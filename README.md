@@ -488,7 +488,7 @@ The release script:
 8. commits the version changes
 9. creates an annotated git release tag
 10. asks whether to push the release commit and tag
-11. when `gh` is installed and the tag was pushed, asks whether to create or update a draft GitHub release with the generated assets
+11. when `gh` is installed and the tag was pushed, asks whether to create/update the GitHub release and publish it so curl install URLs work
 
 The build refuses to overwrite an existing staged directory, archive, or generated release installer unless `--clean` is passed.
 

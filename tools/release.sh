@@ -36,7 +36,7 @@ Flow:
   7. commit the version changes
   8. create an annotated git tag
   9. optionally push the release commit/tag
- 10. if gh is installed, optionally create or update a draft GitHub release
+ 10. if gh is installed, optionally create/update and publish a GitHub release
 EOF
 }
 
@@ -169,16 +169,26 @@ ensure_tag_available() {
   esac
 }
 
+release_is_draft() {
+  local tag="$1"
+  gh release view "$tag" --json isDraft --jq .isDraft
+}
+
 create_or_update_github_release() {
   local tag="$1"
   local archive_path="$2"
   local installer_path="$3"
+  local is_draft
 
   [[ -f "$archive_path" ]] || fail "Missing archive asset: $archive_path"
   [[ -f "$installer_path" ]] || fail "Missing installer asset: $installer_path"
 
   if gh release view "$tag" >/dev/null 2>&1; then
-    log "GitHub release already exists for $tag; uploading assets with --clobber"
+    is_draft="$(release_is_draft "$tag")"
+    if [[ "$is_draft" != "true" ]]; then
+      fail "Published GitHub release already exists for $tag. Refusing to overwrite published assets."
+    fi
+    log "Draft GitHub release already exists for $tag; uploading assets with --clobber"
     gh release upload "$tag" "$archive_path" "$installer_path" --clobber
   else
     log "Creating draft GitHub release for $tag"
@@ -188,9 +198,19 @@ create_or_update_github_release() {
       --title "$tag"; then
       warn "Release creation failed; checking whether a release appeared concurrently"
       gh release view "$tag" >/dev/null 2>&1 || return 1
+      is_draft="$(release_is_draft "$tag")"
+      if [[ "$is_draft" != "true" ]]; then
+        fail "Published GitHub release appeared for $tag. Refusing to overwrite published assets."
+      fi
       gh release upload "$tag" "$archive_path" "$installer_path" --clobber
     fi
   fi
+}
+
+publish_github_release() {
+  local tag="$1"
+  log "Publishing GitHub release $tag"
+  gh release edit "$tag" --draft=false --latest
 }
 
 main() {
@@ -299,8 +319,13 @@ EOF
 
   if command -v gh >/dev/null 2>&1; then
     if [[ "$pushed" == true ]]; then
-      if confirm "Create or update a draft GitHub release with gh?" yes; then
+      if confirm "Create or update a GitHub release with gh?" yes; then
         create_or_update_github_release "$next_tag" "$archive_path" "$installer_path"
+        if confirm "Publish the GitHub release now so curl install URLs work?" yes; then
+          publish_github_release "$next_tag"
+        else
+          warn "Release remains a draft. Public curl install URLs will return 404 until it is published."
+        fi
       fi
     else
       warn "gh is installed, but GitHub release creation was skipped because the tag was not pushed."
