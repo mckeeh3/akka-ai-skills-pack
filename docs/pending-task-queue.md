@@ -56,7 +56,7 @@ TASK-002
 TASK-003
 ```
 
-For large multi-slice plans, a slice-prefixed ID is also acceptable:
+For large module/sprint or multi-slice plans, a sprint-prefixed or slice-prefixed ID is also acceptable:
 
 ```text
 TASK-01-001
@@ -64,7 +64,7 @@ TASK-01-002
 TASK-02-001
 ```
 
-Choose one format per project and keep it consistent.
+Choose one format per project and keep it consistent. When using module-oriented sprint planning, group tasks in file order by sprint/module or include the sprint number in the task ID so the next full-stack module increment is obvious.
 
 ## Required queue shape
 
@@ -205,8 +205,10 @@ If a task discovers an unresolved design decision during execution, block the ta
 ## Relationship to other planning artifacts
 
 - `specs/akka-solution-plan.md` defines the overall architecture and implementation order.
-- `specs/slices/*.md` define bounded business slices.
-- `specs/backlog/*-build-backlog.md` define implementation-ready slice work.
+- `specs/modules/*.md` define durable module boundaries for large plans.
+- `specs/sprints/*.md` define ordered vertical full-stack delivery increments for large plans.
+- `specs/slices/*.md` define bounded business slices for smaller or existing slice-based plans.
+- `specs/backlog/*-build-backlog.md` define implementation-ready sprint or slice work.
 - `specs/tasks/**/*.md` optionally narrow oversized backlog items.
 - `specs/pending-tasks.md` is the executable queue index across those artifacts.
 
@@ -224,5 +226,6 @@ If a task discovers an unresolved design decision during execution, block the ta
 - `../skills/akka-slice-spec-to-backlog/SKILL.md`
 - `../skills/akka-backlog-item-to-task-brief/SKILL.md`
 - `examples/purchase-request-pending-tasks.md`
+- `module-sprint-planning.md`
 - `solution-plan-to-implementation-queue.md`
 - `intent-driven-usage-flow.md`

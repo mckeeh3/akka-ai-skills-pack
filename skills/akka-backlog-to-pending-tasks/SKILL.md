@@ -48,6 +48,7 @@ Read these first if present:
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
+- `../../docs/module-sprint-planning.md` when `specs/modules/` or `specs/sprints/` exists
 - `../../docs/web-ui-style-guide.md` when materializing browser UI tasks
 - `../../specs/README.md`
 - `../../specs/akka-solution-plan.md`
@@ -56,6 +57,7 @@ Read these first if present:
 - all relevant `../../specs/backlog/*-build-backlog.md` files
 - `../../specs/tasks/README.md` if present
 - relevant `../../specs/tasks/**/*.md` task briefs if present
+- relevant `../../specs/modules/*.md` and `../../specs/sprints/*.md` files when present
 - relevant `../../specs/slices/*.md` files when needed to resolve dependencies or reads
 
 Do not reread the original PRD unless the existing backlogs are too ambiguous to create queue tasks.
@@ -127,7 +129,7 @@ Set dependencies conservatively:
 - views depend on their source component tasks
 - endpoint tasks depend on components they call
 - end-to-end tests depend on the components under test
-- later slice tasks depend only on earlier tasks that are genuinely required
+- later sprint or slice tasks depend only on earlier tasks that are genuinely required
 
 Avoid over-serializing independent work.
 
@@ -138,6 +140,7 @@ Each task should list the smallest useful reads, usually:
 - the source backlog file
 - the matching task brief when one exists
 - relevant cross-cutting spec files, including `*ui-style-guide*.md` for browser UI tasks
+- relevant module and sprint specs when module-oriented planning is present
 - relevant slice spec only when needed
 
 Do not list the original PRD by default.

@@ -1,6 +1,6 @@
 ---
 name: akka-prd-to-specs-backlog
-description: Turn a PRD or other high-level requirements artifact into a repo-ready planning package; master Akka solution plan, cross-cutting specs, numbered slice specs, numbered build backlogs, and execution-order docs under specs/.
+description: Turn a PRD or other high-level requirements artifact into a repo-ready planning package; master Akka solution plan, cross-cutting specs, module/sprint specs for large inputs or slice specs for smaller inputs, numbered build backlogs, and execution-order docs under specs/.
 ---
 
 # Akka PRD to Specs Backlog
@@ -13,8 +13,9 @@ This is a **project-specific planning skill** that builds on the ideas in `akka-
 
 Generate a consistent planning package from a PRD, requirements document, or high-level feature set that:
 - produces a master Akka solution plan
-- splits the plan into bounded vertical slice specs
-- turns each slice into a build backlog suitable for one or more independent harness operations
+- for large inputs, splits the plan into module-oriented vertical sprint specs
+- for smaller inputs, splits the plan into bounded vertical slice specs
+- turns each sprint or slice into a build backlog suitable for one or more independent harness operations
 - creates or updates `specs/pending-questions.md` when unresolved decisions should be answered before safe task generation
 - creates or updates `specs/pending-tasks.md` as the durable execution queue when follow-on implementation work is sufficiently unblocked
 - optionally materializes leaf task briefs when a backlog item is still too large for a single focused harness run
@@ -28,6 +29,7 @@ The task sounds like one of these:
 - "Turn this requirements doc into an implementation plan"
 - "Break this PRD into harness-friendly tasks"
 - "Create specs and backlogs from this product doc"
+- "Write a master plan plus module/sprint specs and backlog files"
 - "Write a master plan plus slice specs and backlog files"
 
 Do **not** use this skill when the user already has a settled slice/backlog and wants code directly. In that case, use the focused Stage 3 implementation skills.
@@ -58,6 +60,7 @@ Read these first if present:
 - `../../specs/pending-tasks.md` if it already exists
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
+- `../../docs/module-sprint-planning.md` when the input is large, multi-module, or includes backend plus frontend delivery
 - `../../docs/web-ui-style-guide.md` when browser UI is in scope
 - `../../specs/akka-solution-plan.md` if it already exists
 - `../references/akka-entity-comparison.md`
@@ -70,7 +73,7 @@ If the user provided a path to a PRD or requirements file:
 If `specs/` already exists:
 - preserve numbering consistency where possible
 - update indexes rather than duplicating them
-- keep names aligned with the existing slice/backlog naming pattern
+- keep names aligned with the existing module/sprint/backlog or slice/backlog naming pattern
 
 ## What this skill must produce
 
@@ -89,31 +92,42 @@ Create only the ones justified by the PRD, but prefer these when broadly applica
 - `specs/cross-cutting/02-ui-style-guide.md` when a browser UI is in scope and style is selected
 - `specs/cross-cutting/03-<integration-or-platform-concern>.md`
 
-### Vertical slice specs
-Create numbered files such as:
+### Module and sprint specs for larger PRDs
+When the input is large, multi-module, or includes meaningful backend plus frontend delivery, prefer:
+- `specs/modules/01-<module-name>.md`
+- `specs/modules/02-<module-name>.md`
+- `specs/sprints/01-<sprint-name>-sprint.md`
+- `specs/sprints/02-<sprint-name>-sprint.md`
+
+Module specs define durable boundaries. Sprint specs define ordered vertical full-stack delivery increments. See `../../docs/module-sprint-planning.md`.
+
+### Vertical slice specs for smaller plans
+For smaller plans, or when preserving an existing project shape, create numbered files such as:
 - `specs/slices/01-<slice-name>.md`
 - `specs/slices/02-<slice-name>.md`
 - `specs/slices/03-<slice-name>.md`
 
+Do not create both `specs/slices/` and `specs/sprints/` for new planning output unless project history requires it.
+
 ### Build backlogs
 Create matching numbered files such as:
 - `specs/backlog/README.md`
-- `specs/backlog/01-<slice-name>-build-backlog.md`
-- `specs/backlog/02-<slice-name>-build-backlog.md`
-- `specs/backlog/03-<slice-name>-build-backlog.md`
+- `specs/backlog/01-<sprint-or-slice-name>-build-backlog.md`
+- `specs/backlog/02-<sprint-or-slice-name>-build-backlog.md`
+- `specs/backlog/03-<sprint-or-slice-name>-build-backlog.md`
 
 ### Optional leaf task briefs
 Create these only when a backlog item would still be too large or too ambiguous for one focused harness run:
 - `specs/tasks/README.md`
-- `specs/tasks/01-<slice-name>/01-<task-name>.md`
-- `specs/tasks/01-<slice-name>/02-<task-name>.md`
+- `specs/tasks/01-<sprint-or-slice-name>/01-<task-name>.md`
+- `specs/tasks/01-<sprint-or-slice-name>/02-<task-name>.md`
 
 ## Output contract
 
 This skill is complete only when a future harness run can:
 - read `specs/pending-tasks.md`
 - select the next runnable task
-- read a slice spec
+- read the relevant module and sprint spec, or the relevant slice spec for smaller plans
 - read the matching backlog
 - implement a bounded piece of work without rereading the entire PRD
 
@@ -125,7 +139,7 @@ If the output is still too broad for that, the skill has not decomposed far enou
 
 ## Standard repository shape
 
-Prefer this structure:
+Prefer this structure, choosing either `modules/` + `sprints/` for large plans or `slices/` for smaller/existing slice-based plans:
 
 ```text
 specs/
@@ -137,7 +151,13 @@ specs/
     00-common-domain-and-conventions.md
     01-auth-tenancy-audit.md
     ...
-  slices/
+  modules/             # use with sprints for large multi-module PRDs
+    01-....md
+    02-....md
+  sprints/             # use with modules for vertical full-stack module sprints
+    01-....-sprint.md
+    02-....-sprint.md
+  slices/              # alternative to sprints for smaller plans or existing slice-based projects
     01-....md
     02-....md
     ...
@@ -146,9 +166,9 @@ specs/
     01-....-build-backlog.md
     02-....-build-backlog.md
     ...
-  tasks/               # optional leaf layer for extra-large slices
+  tasks/               # optional leaf layer for extra-large sprints or slices
     README.md
-    01-<slice-name>/
+    01-<sprint-or-slice-name>/
       01-<task-name>.md
       02-<task-name>.md
 ```
@@ -174,7 +194,7 @@ Write that to:
 
 ### 2. Identify cross-cutting concerns
 
-Separate concerns that should not be duplicated across slices, such as:
+Separate concerns that should not be duplicated across modules, sprints, or slices, such as:
 - ID and domain conventions
 - tenancy and auth rules
 - audit rules
@@ -183,30 +203,40 @@ Separate concerns that should not be duplicated across slices, such as:
 - web UI style guide/theme, design tokens, mode policy, and brand adaptation when browser UI is in scope
 - export/reporting conventions
 
-Create one file per cross-cutting concern when it affects multiple slices.
+Create one file per cross-cutting concern when it affects multiple modules, sprints, or slices.
 
-### 3. Split into harness-friendly slices
+### 3. Split into module-oriented sprints or harness-friendly slices
 
-Create vertical slices that are:
+For large PRDs, prefer module-oriented vertical sprint planning:
+1. identify durable app modules and write `specs/modules/NN-<module>.md` files
+2. define ordered vertical delivery sprints and write `specs/sprints/NN-<sprint>-sprint.md` files
+3. make each sprint testable through its backend and frontend surface when UI is in scope
+4. keep cross-cutting foundation work explicit rather than duplicating it in every module
+
+A good module spec contains boundaries, owned capabilities, actors, state ownership, UI area, integrations, and related sprints.
+
+A good sprint spec contains:
+- one module or tightly related module increment
+- backend scope: entities, workflows, views, consumers, timers, endpoints
+- frontend scope: screens, forms, navigation, API client calls, realtime behavior
+- acceptance behavior and module-level tests
+- pending questions and explicit defer list
+- done criteria that include full-stack smoke/integration validation when applicable
+
+For smaller plans, create vertical slices that are:
 - independently meaningful to the business
 - small enough for focused implementation
 - ordered by dependency
 - clear about what they intentionally exclude
 
-A good slice usually contains:
-- one capability family
-- one main write-model cluster
-- its read side
-- its endpoints
-- its tests
-
-Avoid slices that are either:
+Avoid increments that are either:
 - too broad: "build the whole platform"
 - too tiny: "add one enum"
+- layer-only for large PRDs: "all entities" or "all UI"
 
-### 4. Turn each slice into a build backlog
+### 4. Turn each sprint or slice into a build backlog
 
-For each slice, create a matching backlog file that includes:
+For each sprint or slice, create a matching backlog file that includes:
 - purpose
 - delivery goal
 - package layout additions if needed
@@ -221,7 +251,7 @@ For each slice, create a matching backlog file that includes:
 - explicit defer list
 
 The suggested harness task breakdown is the default leaf layer.
-Each task item should be phrased as a bounded independent implementation prompt.
+Each task item should be phrased as a bounded independent implementation prompt. For module sprints, include a final module-level full-stack smoke/integration task when backend plus frontend or multiple backend surfaces must work together.
 
 ### 5. Materialize optional leaf task briefs when needed
 
@@ -245,7 +275,7 @@ Create or update:
 
 Use `../../docs/pending-question-queue.md` as the queue contract.
 
-Create this queue when unresolved decisions would otherwise make the solution plan, slice specs, backlogs, or task queue speculative. Questions should be one-at-a-time, dependency-aware, and tied to concrete design impact.
+Create this queue when unresolved decisions would otherwise make the solution plan, module specs, sprint specs, slice specs, backlogs, or task queue speculative. Questions should be one-at-a-time, dependency-aware, and tied to concrete design impact.
 
 The queue must:
 - use stable question IDs such as `Q-001`, `Q-002`, `Q-003`
@@ -291,16 +321,25 @@ Update or create:
 
 These must explain:
 - read order
-- slice/backlog numbering alignment
-- dependencies between slices
+- sprint/backlog or slice/backlog numbering alignment
+- dependencies between modules, sprints, or slices
 - recommended harness execution style
 - how to resolve design blockers with `specs/pending-questions.md` and `akka-do-next-pending-question`
 - how to continue implementation with `specs/pending-tasks.md` and `akka-do-next-pending-task`
 
 ## Sizing rules
 
+### Module and sprint spec sizing
+A module spec should usually be stable and concise: module boundary, ownership, actors, state, UI area, integrations, and related sprints.
+
+A sprint spec should usually be:
+- 500 to 1500 words
+- one bounded full-stack delivery increment
+- understandable without the full PRD open beside it
+- testable at module level before moving to the next sprint
+
 ### Slice spec sizing
-A slice spec should usually be:
+For smaller plans, a slice spec should usually be:
 - 500 to 1500 words
 - one bounded capability area
 - understandable without the full PRD open beside it
@@ -322,18 +361,31 @@ If a work item still spans multiple unrelated component families or too many fil
 ## Naming rules
 
 Keep numbering aligned:
-- `slices/01-foo.md` ↔ `backlog/01-foo-build-backlog.md`
-- `slices/02-bar.md` ↔ `backlog/02-bar-build-backlog.md`
+- `sprints/01-foo-sprint.md` ↔ `backlog/01-foo-build-backlog.md`
+- `sprints/02-bar-sprint.md` ↔ `backlog/02-bar-build-backlog.md`
+- or, for smaller slice-based plans, `slices/01-foo.md` ↔ `backlog/01-foo-build-backlog.md`
 
 Use stable names:
-- slice names should describe business capability
-- backlog names should match slice names exactly plus `-build-backlog`
+- module names should describe durable app areas
+- sprint or slice names should describe business delivery capability
+- backlog names should match sprint or slice names exactly plus `-build-backlog`, dropping the `-sprint` suffix when present
 - endpoint names should be feature-family oriented
 - entity/workflow/view names should be explicit about their Akka role
 
+## Recommended module sprint pattern
+
+Prefer vertical module sprint order like this when the PRD supports it:
+1. foundation: common domain, auth/security, style guide, project/test harness setup
+2. first business module core: write model, endpoints, minimal UI, full-stack smoke test
+3. next module increment: workflow/read side/UI flow, full-stack smoke test
+4. operational reactions: consumers, timers, notifications, realtime UI if needed
+5. reporting/admin/export modules
+
+Adjust when domain dependencies clearly suggest another order. Avoid layer-only sprints for large PRDs.
+
 ## Recommended slice pattern
 
-Prefer an order like this when the PRD supports it:
+For smaller slice-based plans, prefer an order like this when the PRD supports it:
 1. foundational current-state visibility or core write model
 2. operational reactions and notifications
 3. orchestration-heavy business flow
@@ -341,6 +393,35 @@ Prefer an order like this when the PRD supports it:
 5. reporting/contracts/export layer
 
 Adjust only if the domain clearly suggests another order.
+
+## Required content for each module spec
+
+Each `specs/modules/*.md` file should contain:
+- Module boundary and purpose
+- Owned capabilities
+- Actors and authorization boundary
+- Domain objects and state ownership
+- Backend components likely owned by the module
+- Frontend screens/navigation areas owned by the module
+- Integrations and events in/out
+- Cross-cutting specs referenced
+- Out of scope
+- Related sprints/backlogs
+
+## Required content for each sprint spec
+
+Each `specs/sprints/*.md` file should contain:
+- Sprint goal
+- Parent module or modules
+- Dependencies and prerequisite questions
+- Backend scope
+- Frontend scope when UI is in scope
+- Acceptance behavior
+- Pending questions affecting the sprint
+- Implementation task groups
+- Module-level full-stack test plan
+- Done criteria
+- Explicit defer list
 
 ## Required content for each slice spec
 
@@ -413,11 +494,12 @@ Create queue tasks from backlog `Suggested harness task breakdown` items, not fr
 
 Avoid:
 - stopping at a single master plan when the user asked for implementation-ready planning artifacts
-- writing giant slice files that still require the whole PRD for context
-- generating backlog files that are just restatements of the slice title
-- mixing unrelated capabilities into one slice only because they are both "backend"
+- writing giant module, sprint, or slice files that still require the whole PRD for context
+- generating backlog files that are just restatements of the sprint or slice title
+- mixing unrelated capabilities into one sprint/slice only because they are both "backend"
+- creating layer-only large-PRD sprints such as "all entities" or "all frontend" instead of vertical module increments
 - skipping tests in planning docs
-- numbering slices and backlogs inconsistently
+- numbering sprints/slices and backlogs inconsistently
 - omitting `specs/pending-questions.md` when unresolved blocking decisions would otherwise force guesses
 - creating `specs/pending-questions.md` as a tedious cosmetic questionnaire instead of a design-impact queue
 - omitting `specs/pending-tasks.md` when follow-on implementation work exists and is sufficiently unblocked
@@ -429,24 +511,24 @@ Avoid:
 Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
-- slice specs exist and are dependency-ordered
-- backlog files exist and align by number with slice specs
+- module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered
+- backlog files exist and align by number with sprint or slice specs
 - `specs/pending-questions.md` exists when unresolved decisions block safe task generation
 - unresolved `blocking` questions do not silently become implementation assumptions
 - `specs/pending-tasks.md` exists when follow-on implementation work remains and is sufficiently unblocked
 - pending tasks map to backlog task-breakdown items
 - pending tasks include required reads, skills, expected outputs, checks, and done criteria
-- cross-cutting concerns are not duplicated excessively across slices
+- cross-cutting concerns are not duplicated excessively across modules, sprints, or slices
 - browser UI work has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created
 - each backlog supports bounded implementation work
 - optional task briefs exist when backlog items are still too broad
 - execution-order docs point to the correct files
-- naming is consistent across `specs/`, `slices/`, `backlog/`, optional `tasks/`, and `pending-tasks.md`
+- naming is consistent across `specs/`, `modules/`, `sprints/` or `slices/`, `backlog/`, optional `tasks/`, and `pending-tasks.md`
 
 ## Response style
 
 When using this skill:
-- briefly summarize the proposed slice structure first
+- briefly summarize the proposed module/sprint structure for large PRDs, or slice structure for smaller plans, first
 - then create or update the files
 - clearly list which files were added or changed
 - include `specs/pending-questions.md` in the changed-file summary when unresolved decisions were queued

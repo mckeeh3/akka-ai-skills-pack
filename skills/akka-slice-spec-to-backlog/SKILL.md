@@ -1,17 +1,17 @@
 ---
 name: akka-slice-spec-to-backlog
-description: Turn one existing specs/slices/*.md file into a matching specs/backlog/*-build-backlog.md file with package layout, class list, endpoint list, design notes, tests, implementation order, and harness-sized task breakdown.
+description: Turn one existing specs/slices/*.md or specs/sprints/*.md file into a matching specs/backlog/*-build-backlog.md file with package layout, class list, endpoint list, design notes, tests, implementation order, and harness-sized task breakdown.
 ---
 
 # Akka Slice Spec to Backlog
 
-Use this skill when the repository already has a slice spec and the next task is to convert that slice into a concrete build backlog for implementation.
+Use this skill when the repository already has a slice spec or module-oriented sprint spec and the next task is to convert that delivery increment into a concrete build backlog for implementation.
 
 This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 
 ## Goal
 
-Create or update a single backlog file that is tightly aligned with one existing slice spec and is detailed enough to drive focused coding sessions.
+Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and is detailed enough to drive focused coding sessions.
 The backlog should end in bounded harness-sized task items, not just class lists and prose.
 Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
 
@@ -19,8 +19,11 @@ Also create or update matching entries in `specs/pending-tasks.md` so follow-on 
 
 The task sounds like one of these:
 - "Turn this slice spec into an implementation backlog"
+- "Turn this sprint spec into an implementation backlog"
 - "Write the build backlog for slice 03"
+- "Write the build backlog for sprint 03"
 - "Expand this slice into class-level tasks"
+- "Expand this sprint into class-level tasks"
 - "Generate a harness-friendly backlog from this spec"
 
 Do **not** use this skill when the user is still at the PRD stage and needs the overall slice structure. Use `akka-prd-to-specs-backlog` for that.
@@ -30,7 +33,8 @@ Do **not** use this skill when the user is still at the PRD stage and needs the 
 This skill assumes these already exist or are mostly settled:
 - `specs/akka-solution-plan.md`
 - one or more `specs/cross-cutting/*.md` files
-- a target `specs/slices/*.md` file
+- a target `specs/slices/*.md` or `specs/sprints/*.md` file
+- the related `specs/modules/*.md` file when using module-oriented sprint planning
 
 This skill should be used after:
 - `../akka-prd-to-specs-backlog/SKILL.md`
@@ -48,9 +52,10 @@ Read these first if present:
 - `../../docs/pending-task-queue.md`
 - `../../specs/templates/build-backlog-template.md`
 - `../../specs/templates/implementation-task-template.md`
-- the target slice spec file under `../../specs/slices/`
-- any cross-cutting spec files referenced or obviously relevant to the slice
-- `../../specs/cross-cutting/*ui-style-guide*.md`, `../../app-description/55-ui/style-guide.md`, or equivalent style artifact when the slice includes browser UI work
+- the target slice spec file under `../../specs/slices/` or sprint spec file under `../../specs/sprints/`
+- the related module spec under `../../specs/modules/` when present
+- any cross-cutting spec files referenced or obviously relevant to the slice or sprint
+- `../../specs/cross-cutting/*ui-style-guide*.md`, `../../app-description/55-ui/style-guide.md`, or equivalent style artifact when the slice or sprint includes browser UI work
 - `../../specs/akka-solution-plan.md`
 
 If a matching backlog file already exists:
@@ -62,6 +67,12 @@ If a matching backlog file already exists:
 
 For one target slice file such as:
 - `specs/slices/03-consumables-ordering.md`
+
+produce the matching backlog file:
+- `specs/backlog/03-consumables-ordering-build-backlog.md`
+
+For one target sprint file such as:
+- `specs/sprints/03-consumables-ordering-sprint.md`
 
 produce the matching backlog file:
 - `specs/backlog/03-consumables-ordering-build-backlog.md`
@@ -95,12 +106,14 @@ Preserve existing task IDs and statuses when updating an existing queue.
 
 ## Mapping rules
 
-### Slice to backlog name mapping
+### Slice or sprint to backlog name mapping
 - `specs/slices/01-foo.md` -> `specs/backlog/01-foo-build-backlog.md`
 - `specs/slices/02-bar.md` -> `specs/backlog/02-bar-build-backlog.md`
+- `specs/sprints/01-foo-sprint.md` -> `specs/backlog/01-foo-build-backlog.md`
+- `specs/sprints/02-bar-sprint.md` -> `specs/backlog/02-bar-build-backlog.md`
 
 ### Scope preservation
-The backlog must not silently widen the slice.
+The backlog must not silently widen the slice or sprint.
 
 Allowed:
 - adding implementation detail
@@ -109,8 +122,8 @@ Allowed:
 - clarifying dependencies
 
 Not allowed:
-- pulling in adjacent product areas unless the slice already implies them
-- turning one slice into a whole-program backlog
+- pulling in adjacent product areas unless the slice or sprint already implies them
+- turning one slice or sprint into a whole-program backlog
 
 ### Detail level
 The backlog should be detailed enough for several small harness runs, but not so detailed that it becomes source code.
@@ -132,17 +145,17 @@ A good backlog usually supports independent tasks such as:
 Avoid:
 - restating the slice spec without implementation detail
 - omitting tests or done criteria
-- inventing classes unrelated to the slice's purpose
-- widening scope to future slices
-- breaking slice/backlog numbering consistency
+- inventing classes unrelated to the slice or sprint's purpose
+- widening scope to future slices or sprints
+- breaking sprint/backlog or slice/backlog numbering consistency
 
 ## Final review checklist
 
 Before finishing, verify:
-- the backlog filename matches the slice filename by number and stem
+- the backlog filename matches the slice filename by number and stem, or the sprint filename by number and stem after dropping `-sprint`
 - the backlog references the right prerequisite specs
-- the class list fits the slice scope
-- the endpoint list fits the slice scope
+- the class list fits the slice or sprint scope
+- the endpoint list fits the slice or sprint scope
 - UI tasks include the selected style guide in required reads, or are blocked by the style-selection question
 - the tests cover entity/workflow/view/endpoint behavior as applicable
 - the harness task breakdown is composed of bounded operations
@@ -154,7 +167,7 @@ Before finishing, verify:
 ## Response style
 
 When using this skill:
-- name the target slice first
+- name the target slice or sprint first
 - summarize the backlog sections you will create or update
 - then write the backlog file
 - clearly report which backlog file was added or updated

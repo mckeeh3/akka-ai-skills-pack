@@ -18,6 +18,9 @@ Resulting solution plan:
 Example pending task queue:
 - `examples/purchase-request-pending-tasks.md`
 
+Example module/sprint planning shape for larger PRDs:
+- `examples/purchase-request-module-sprint-plan.md`
+
 ## How to use the pair
 
 ### As a learning example
@@ -40,9 +43,9 @@ then produce an Akka solution plan with:
 ### As a coding handoff
 Once the solution plan is accepted, treat it as the implementation contract.
 Load only the Stage 3 skills named in the plan and generate code component by component, with corresponding tests for each component family.
-For reliable multi-session execution, materialize follow-on work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
+For reliable multi-session execution, materialize follow-on work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context. For larger PRDs, prefer module-oriented sprint planning with `specs/modules/` and `specs/sprints/` so each module increment can be built and tested full stack before the next sprint.
 For iterative changes after the initial plan, use `akka-change-request-to-spec-update`; for revised PRDs, use `akka-revised-prd-reconciliation`; for stale or large queues, use `akka-pending-task-queue-maintenance`.
-For queue templates, see `solution-plan-to-implementation-queue.md` and `pending-task-queue.md`.
+For queue templates, see `module-sprint-planning.md`, `solution-plan-to-implementation-queue.md`, and `pending-task-queue.md`.
 
 ## What the example demonstrates
 

@@ -77,6 +77,7 @@ Use the skills in this order:
 Short reusable version:
 - `../docs/intent-driven-usage-flow.md`
 - `../docs/prd-to-akka-flow.md`
+- `../docs/module-sprint-planning.md`
 
 ## Visible 3-stage skill model
 
@@ -165,13 +166,14 @@ Start with:
 Use when the task starts from a PRD or high-level requirements and the user wants the result written as a repository planning structure under `specs/`, including:
 - `specs/akka-solution-plan.md`
 - cross-cutting specs
-- numbered slice specs
-- numbered build backlogs
+- for large inputs, module specs under `specs/modules/` and vertical full-stack sprint specs under `specs/sprints/`
+- for smaller inputs, numbered slice specs under `specs/slices/`
+- numbered build backlogs aligned to sprints or slices
 - `specs/pending-tasks.md` as the durable follow-on execution queue
 - execution-order readmes
 - optional leaf task briefs when one backlog item is still too large for a single focused harness run
 
-This skill builds on `akka-solution-decomposition` and continues into harness-friendly file generation for downstream implementation.
+This skill builds on `akka-solution-decomposition` and continues into harness-friendly file generation for downstream implementation. For larger PRDs, it should prefer module-oriented vertical sprints so a team can finish, test, and review one module's backend and frontend stack before moving on.
 
 ### Slice spec to backlog skill
 

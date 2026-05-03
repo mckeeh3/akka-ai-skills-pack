@@ -470,42 +470,25 @@ This creates:
 - `dist/akka-ai-skills-pack-0.1.0.tar.gz`
 - `dist/install-akka-ai-skills-pack-0.1.0.sh`
 
-Recommended release-prep flow:
+Recommended release flow:
 
-1. Verify examples and tests:
+```bash
+bash tools/release.sh
+```
 
-   ```bash
-   mvn test
-   ```
+The release script:
 
-2. Check version references:
-
-   ```bash
-   bash tools/check-version-consistency.sh
-   ```
-
-3. Build the distribution:
-
-   ```bash
-   bash tools/build-pack.sh --clean
-   ```
-
-4. Inspect the staged pack:
-
-   ```bash
-   find dist/akka-ai-skills-pack-0.1.0 -maxdepth 3 | sort
-   ```
-
-5. Inspect release assets:
-
-   ```bash
-   ls -lh dist/akka-ai-skills-pack-0.1.0.tar.gz dist/install-akka-ai-skills-pack-0.1.0.sh
-   ```
-
-6. Publish both files to release tag `v0.1.0`:
-
-   - `dist/akka-ai-skills-pack-0.1.0.tar.gz`
-   - `dist/install-akka-ai-skills-pack-0.1.0.sh`
+1. requires a clean git working tree
+2. shows the current manifest version and latest local tag
+3. prompts for the next release version
+4. updates tracked text files that contain the current hardcoded version
+5. runs `tools/check-version-consistency.sh`
+6. runs `mvn verify --no-transfer-progress`
+7. builds the versioned archive and release installer under `dist/`
+8. commits the version changes
+9. creates an annotated git release tag
+10. asks whether to push the release commit and tag
+11. when `gh` is installed and the tag was pushed, asks whether to create or update a draft GitHub release with the generated assets
 
 The build refuses to overwrite an existing staged directory, archive, or generated release installer unless `--clean` is passed.
 
