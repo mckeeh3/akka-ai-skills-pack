@@ -138,8 +138,35 @@ current_branch() {
 
 ensure_tag_available() {
   local tag="$1"
+  local status
+
+  log "Checking local tag availability: $tag"
   git -C "$REPO_ROOT" rev-parse "refs/tags/$tag" >/dev/null 2>&1 && fail "Local tag already exists: $tag"
-  git -C "$REPO_ROOT" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1 && fail "Remote tag already exists on origin: $tag"
+
+  log "Checking origin tag availability: $tag"
+  set +e
+  if command -v timeout >/dev/null 2>&1; then
+    GIT_TERMINAL_PROMPT=0 timeout 20 git -C "$REPO_ROOT" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1
+  else
+    GIT_TERMINAL_PROMPT=0 git -C "$REPO_ROOT" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1
+  fi
+  status=$?
+  set -e
+
+  case "$status" in
+    0)
+      fail "Remote tag already exists on origin: $tag"
+      ;;
+    2)
+      log "Tag is available: $tag"
+      ;;
+    124)
+      fail "Timed out while checking origin for tag $tag"
+      ;;
+    *)
+      fail "Could not check origin for tag $tag. Verify remote access, then try again."
+      ;;
+  esac
 }
 
 create_or_update_github_release() {
