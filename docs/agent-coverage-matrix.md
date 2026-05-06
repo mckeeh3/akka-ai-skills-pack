@@ -22,6 +22,7 @@ Legend:
 | Structured responses with `responseConformsTo(...)` | `akka-context/sdk/agents/structured.html.md` | `akka-agent-structured-responses` | `ActivityAgent.java`, `SelectorAgent.java`, `PlannerAgent.java` | `ActivityAgentTest.java`, `SelectorAgentTest.java`, `PlannerAgentTest.java` | ✅ |
 | Failure handling and narrow fallback mapping | `akka-context/sdk/agents/failures.html.md` | `akka-agent-component`, `akka-agent-structured-responses` | `ActivityAgent.java` | `ActivityAgentTest.java` covers malformed JSON fallback and non-parsing failure propagation | ✅ |
 | Local `@FunctionTool` methods and external tool classes | `akka-context/sdk/agents/extending.html.md` | `akka-agent-tools` | `WeatherAgent.java`, `WeatherForecastTools.java` | `WeatherAgentTest.java` | ✅ |
+| Harness-like skill loading through `@FunctionTool` guidance tools | `akka-context/sdk/agents/extending.html.md`, `akka-context/sdk/agents/prompt.html.md` | `akka-agent-harness-skills`, `akka-agent-tools` | pattern documented in `skills/akka-agent-harness-skills/SKILL.md` | no executable local example yet | ◑ |
 | Akka component tools used as agent tools | `akka-context/sdk/agents/extending.html.md` | `akka-agent-component-tools`, `akka-agent-tools` | `CartInspectorAgent.java`, `src/main/java/com/example/application/ShoppingCartEntity.java` | `CartInspectorAgentTest.java` | ✅ |
 | Remote MCP tools | `akka-context/sdk/agents/extending.html.md` | `akka-agent-mcp-tools` | `RemoteShoppingCartAgent.java`, `src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java` | `RemoteShoppingCartAgentTest.java` | ✅ |
 | Multimodal inputs and custom content loading | `akka-context/sdk/agents/extending.html.md`, `akka-context/sdk/agents.html.md` | `akka-agent-multimodal` | `DocumentAnalysisAgent.java` | `DocumentAnalysisAgentTest.java` | ✅ |
@@ -43,12 +44,14 @@ Small, high-value follow-ups for the next sprint:
 
 1. Add focused coverage for `SessionMemoryCompactionStreamEndpoint`; current compaction coverage stops at agent + consumer + audit-view path.
 2. Add a minimal custom-model-provider reference only if the repository decides that hosted/local built-ins are no longer enough.
-3. Consider a direct stream-agent test if endpoint-level streaming coverage becomes too indirect for future agents.
+3. Add a small classpath-backed skill-tool example if harness-like runtime skill loading becomes a common application pattern.
+4. Consider a direct stream-agent test if endpoint-level streaming coverage becomes too indirect for future agents.
 
 ## Fast routing guide
 
 - Need a plain agent class: start with `skills/akka-agent-component/SKILL.md`
 - Need tools: read `skills/akka-agent-tools/SKILL.md`
+- Need harness-like model-loadable guidance through tools: read `skills/akka-agent-harness-skills/SKILL.md`
 - Need Akka component tools: read `skills/akka-agent-component-tools/SKILL.md`
 - Need MCP tools: read `skills/akka-agent-mcp-tools/SKILL.md`
 - Need multimodal: read `skills/akka-agent-multimodal/SKILL.md`

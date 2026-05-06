@@ -83,6 +83,9 @@ content:
     - id: akka-agent-guardrails
       path: skills/akka-agent-guardrails
       category: focused
+    - id: akka-agent-harness-skills
+      path: skills/akka-agent-harness-skills
+      category: focused
     - id: akka-agent-mcp-tools
       path: skills/akka-agent-mcp-tools
       category: focused

@@ -102,6 +102,8 @@ Load the companion skill that matches the current task:
   - Views, entities, and workflows used as tools through `.tools(ComponentClass.class)`
 - `akka-agent-mcp-tools`
   - remote MCP server tools added with `.mcpTools(...)`
+- `akka-agent-harness-skills`
+  - model-loadable internal guidance exposed through whitelisted `@FunctionTool` methods or MCP resources
 - `akka-agent-multimodal`
   - `UserMessage.from(...)`, image/PDF content, and `contentLoader(...)`
 - `akka-agent-memory`
@@ -142,9 +144,10 @@ Rules:
 5. Use explicit session ids with `componentClient.forAgent().inSession(...)`.
 6. Prefer `responseConformsTo(...)` for structured replies.
 7. Use `.onFailure(...)` for fallback handling instead of assuming model output is always valid.
-8. Keep agents stateless; use memory or Akka components for context instead of mutable fields.
-9. Use workflows to orchestrate multiple agents or to add retries, timeouts, and durable progress.
-10. Use `TestModelProvider` for deterministic tests.
+8. For harness-like runtime skills, expose only whitelisted packaged resources through focused `@FunctionTool` methods or MCP; do not read `.agents/skills` from the Akka runtime.
+9. Keep agents stateless; use memory or Akka components for context instead of mutable fields.
+10. Use workflows to orchestrate multiple agents or to add retries, timeouts, and durable progress.
+11. Use `TestModelProvider` for deterministic tests.
 
 ## Decision guide
 
@@ -155,11 +158,13 @@ Repository example:
 - `ActivityAgent`
 
 ### 2. Tool-using agent
-Use when the model must call functions to fetch data or trigger actions.
+Use when the model must call functions to fetch data, trigger actions, or load approved internal guidance.
 
 Repository examples:
 - `WeatherAgent`
 - `WeatherForecastTools`
+
+For model-loadable guidance that approximates harness skills inside an Akka service, load `akka-agent-harness-skills` in addition to `akka-agent-tools`.
 
 ### 3. Streaming agent
 Use when tokens should be returned incrementally to an endpoint or notification flow.
@@ -190,6 +195,7 @@ Before finishing, verify:
 - prompt and response type match each other
 - memory behavior is intentional
 - tools have rich `@FunctionTool` descriptions when used
+- harness-like skill tools are whitelisted and backed by packaged resources or MCP, not arbitrary filesystem reads
 - structured response records are small and descriptive
 - workflow orchestration is used instead of agent-to-agent tool chaining
 - tests replace real models with `TestModelProvider`

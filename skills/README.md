@@ -339,6 +339,10 @@ Use when the agent should call Akka Views, entities, or workflows as tools.
 Use when the agent should call remote MCP-hosted tools.
 - `akka-agent-mcp-tools`
 
+### Harness-like skills through tools
+Use when an Akka runtime agent should approximate harness skill loading by exposing approved guidance blocks through `@FunctionTool` methods or MCP-backed resources.
+- `akka-agent-harness-skills`
+
 ### Multimodal
 Use when the agent should send images or PDFs, or needs a custom content loader.
 - `akka-agent-multimodal`
@@ -700,6 +704,14 @@ Load:
 - `akka-agents`
 - `akka-agent-component`
 - `akka-agent-tools`
+- `akka-agent-testing`
+
+### Agent with model-loadable internal guidance
+Load:
+- `akka-agents`
+- `akka-agent-component`
+- `akka-agent-tools`
+- `akka-agent-harness-skills`
 - `akka-agent-testing`
 
 ### New streaming agent exposed through HTTP

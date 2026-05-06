@@ -1,6 +1,6 @@
 ---
 name: akka-agent-tools
-description: Implement Akka Java SDK agent function tools using @FunctionTool and external tool classes. Use companion skills for Akka component tools or remote MCP tool registration.
+description: Implement Akka Java SDK agent function tools using @FunctionTool and external tool classes. Use companion skills for Akka component tools, remote MCP tool registration, or harness-like skill loading through tools.
 ---
 
 # Akka Agent Tools
@@ -18,6 +18,7 @@ Read these first if present:
 If the main task is not local or external tool classes, load the focused companion skill instead:
 - `akka-agent-component-tools`
 - `akka-agent-mcp-tools`
+- `akka-agent-harness-skills` for model-loadable internal guidance backed by packaged resources
 
 ## Use this pattern when
 
@@ -25,6 +26,7 @@ If the main task is not local or external tool classes, load the focused compani
 - the model should choose between multiple helper functions
 - agent output depends on current date, lookup services, or component calls
 - tool descriptions materially affect model behavior
+- an agent should approximate harness skill loading by exposing approved guidance blocks as tools
 
 ## Core pattern
 
@@ -36,7 +38,8 @@ If the main task is not local or external tool classes, load the focused compani
 6. Handle tool failures with `.onFailure(...)` in the agent.
 7. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
 8. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
-9. Do not try to use one agent as a tool for another agent.
+9. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
+10. Do not try to use one agent as a tool for another agent.
 
 ## Repository examples
 
@@ -52,5 +55,6 @@ Before finishing, verify:
 - tool descriptions clearly say what the tool does and what side effects it has
 - parameters are documented when names alone are ambiguous
 - tools are explicit in the effect chain
-- component or MCP tool cases are routed to the focused companion skill when needed
+- component, MCP, or harness-skill tool cases are routed to the focused companion skill when needed
+- tools that return guidance do not expose arbitrary filesystem paths or unbounded resource content
 - agent-to-agent chaining is replaced with workflow orchestration when coordination is needed
