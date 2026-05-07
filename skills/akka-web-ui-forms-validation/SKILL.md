@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-forms-validation
-description: Implement lightweight TypeScript form handling for Akka-hosted web UIs, including client validation, submit state, server validation mapping, and accessible errors.
+description: Implement form handling for Akka-hosted web UIs, including client validation, submit state, server validation mapping, and accessible errors across frontend-project and lightweight implementations.
 ---
 
 # Akka Web UI Forms and Validation
@@ -26,13 +26,17 @@ Use this skill when the browser UI has forms, commands, mutations, approvals, up
 8. Do not lose user input after validation failure.
 9. Avoid optimistic updates unless the rollback behavior is explicit.
 
-## TypeScript structure
+## Frontend structure
 
-Prefer `forms.ts` with:
-- `read<FormName>Form(form: HTMLFormElement)`
-- `validate<FormName>Input(input)`
-- `render<FormName>Errors(errors)`
-- `wire<FormName>Form(elements, callbacks)`
+Keep form logic in the frontend source of record:
+- standard frontend project: use the project's component, hook, service, or form-module conventions under `frontend/src/**`
+- lightweight framework-free implementation: prefer a focused form module such as `forms.ts` under `src/main/web-ui/<app>/`
+
+Keep these responsibilities explicit in whichever structure the project uses:
+- read or bind form input
+- validate client-side input
+- render field-level and form-level errors
+- wire submit behavior and disabled/submitting state
 
 Represent validation errors structurally:
 

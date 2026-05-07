@@ -93,7 +93,7 @@ Create only files justified by the app. For a very small app, one `ui-index.md` 
 - component rules for cards, buttons, forms, tables/lists, charts, and feedback states
 - brand adaptations and forbidden copied demo content from reference images
 - CSS variable/token expectations for frontend styling
-- frontend implementation shape: standard frontend project or lightweight TypeScript
+- frontend implementation shape: standard frontend project or lightweight framework-free implementation
 - static asset output and Akka hosting route expectations
 
 If a browser UI is in scope and no style is selected, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks only web UI implementation/generation tasks.

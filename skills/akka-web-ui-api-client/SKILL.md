@@ -56,7 +56,7 @@ For every browser API call, verify:
 ## Anti-patterns
 
 Avoid:
-- calling raw `fetch` from render functions
+- calling raw `fetch` directly from rendering/component output code
 - ignoring non-2xx responses
 - throwing unhandled exceptions for normal validation errors
 - coupling UI directly to Akka component state classes

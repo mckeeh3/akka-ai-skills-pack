@@ -15,8 +15,8 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 ## Frontend state
 
 - [ ] UI state explicitly represents loading, ready, empty, error, submitting, success, and stale/reconnecting where relevant.
-- [ ] Render functions update the DOM from state without making API calls.
-- [ ] API calls do not directly mutate unrelated DOM regions.
+- [ ] Rendering/component code updates the view from state without making API calls.
+- [ ] API calls do not directly mutate unrelated view regions.
 - [ ] User input is preserved after validation errors.
 
 ## API contracts
@@ -39,7 +39,7 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 ## Style guide and theme
 
 - [ ] A selected style guide/theme is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
-- [ ] `app.css` implements the selected theme through CSS variables/tokens rather than scattered hard-coded values.
+- [ ] The authored stylesheet or component styling implements the selected theme through CSS variables/tokens or project-standard theme configuration rather than scattered hard-coded values.
 - [ ] Light/dark/system mode behavior matches the style guide.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration.
@@ -83,7 +83,7 @@ Security implementation is covered by separate security guidance. For web UI int
 ## Build and tests
 
 - [ ] Standard frontend project checks/build pass when `frontend/` exists.
-- [ ] `npm run check:web-ui` and `npm run build:web-ui` pass when using lightweight TypeScript.
+- [ ] `npm run check:web-ui` and `npm run build:web-ui` pass when using the lightweight framework-free web UI build.
 - [ ] Served CSS corresponds to the selected web UI style guide.
 - [ ] Served JS/CSS assets correspond to the frontend source build output.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.

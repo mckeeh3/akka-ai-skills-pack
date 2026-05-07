@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-testing
-description: Test Akka-hosted web UIs, including standard frontend projects and lightweight TypeScript apps, with frontend checks, Akka endpoint integration tests, route/asset assertions, and optional DOM or browser smoke tests.
+description: Test Akka-hosted web UIs, including standard frontend projects and lightweight framework-free apps, with frontend checks, Akka endpoint integration tests, route/asset assertions, and optional DOM or browser smoke tests.
 ---
 
 # Akka Web UI Testing
@@ -15,7 +15,7 @@ Use this skill when adding or reviewing tests for Akka-hosted browser apps.
 - existing `src/test/java/**WebUi*Test.java`
 - project `frontend/package.json` when present
 - project frontend test/build config when present
-- root `package.json` and `tsconfig.web-ui.json` when using lightweight TypeScript
+- root `package.json` and `tsconfig.web-ui.json` when using the lightweight framework-free web UI build
 
 ## Default test layers
 
@@ -29,14 +29,14 @@ npm test -- --run    # if configured
 npm run build
 ```
 
-For lightweight TypeScript, run:
+For the lightweight framework-free web UI build, run:
 
 ```bash
 npm run check:web-ui
 npm run build:web-ui
 ```
 
-Use these for DTO types, state unions, API client code, component/render logic, and DOM typing.
+Use these for DTO types, state models, API client code, component/render logic, and DOM typing where applicable.
 
 ### 2. Akka endpoint integration tests
 
@@ -50,7 +50,7 @@ Use `httpClient` to test:
 
 ### 3. Frontend logic tests
 
-If the project has a lightweight JS test setup, test pure TypeScript helpers:
+If the project has a frontend test setup, test focused frontend logic such as:
 - API response normalization
 - validation functions
 - state transitions

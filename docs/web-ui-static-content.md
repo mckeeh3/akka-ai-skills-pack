@@ -102,7 +102,7 @@ If build automation is added in this wave, keep it intentionally small:
 
 - keep examples small and executable
 - keep Akka implementation code in Java and browser-interaction code in TypeScript only where it adds real value
-- prefer plain HTML/CSS plus framework-free TypeScript for small interactive examples, and the frontend project pattern for full apps
+- prefer a small framework-free implementation for small interactive examples, and the frontend project pattern for full apps
 - keep one main idea per example
 - make route shapes obvious from file names
 - make TypeScript source paths and generated asset paths easy to correlate

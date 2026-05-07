@@ -35,7 +35,7 @@ Read these first if present:
 
 ## Use this skill when
 
-- the service should bundle a small browser UI with Akka
+- the service should serve packaged browser UI assets through Akka HTTP endpoints
 - `akka-web-ui-apps` has identified screens, frontend state, and browser API contracts
 - the UI calls JSON endpoints in the same service
 - the UI should consume SSE updates
@@ -118,11 +118,11 @@ Use for full apps.
 - do not hand-edit generated files in `static-resources/`
 - read `docs/web-ui-frontend-project-integration.md`
 
-### Lightweight framework-free TypeScript
+### Lightweight framework-free implementation
 
 Use only for small Akka-focused examples or deliberately framework-free apps.
 
-- TypeScript source lives under `src/main/web-ui/<example>/`
+- frontend source lives under `src/main/web-ui/<example>/`
 - served JavaScript/CSS/HTML lives under `src/main/resources/static-resources/<example>/`
 - build with `npm run build:web-ui`
 - read `docs/web-ui-lightweight-typescript-architecture.md`
@@ -152,7 +152,7 @@ Keep those route families separate so a future agent can infer intent from the p
 - `StaticContentEndpoint`
   - packaged files and OpenAPI publishing without interactive browser logic
 - `FrontendReferenceUiEndpoint` + `FrontendReferenceApiEndpoint`
-  - modular framework-free TypeScript frontend with typed API calls, forms, validation, state rendering, accessibility, and responsive layout
+  - modular lightweight framework-free frontend with typed API calls, forms, validation, state rendering, accessibility, and responsive layout
 
 ## Testing rule
 
@@ -180,6 +180,6 @@ Before finishing, verify:
 - UI shell routes are explicit and do not conflict with asset wildcards
 - JSON API routes are under `/api/...`
 - SSE and WebSocket routes remain explicit and separate
-- TypeScript source and served JavaScript paths are easy to correlate
+- frontend source paths and served JavaScript/CSS asset paths are easy to correlate
 - integration tests fetch the packaged page and CSS/JS asset routes through `httpClient`
 - non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md` and the selected style guide

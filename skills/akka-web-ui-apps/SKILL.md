@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-apps
-description: Plan and implement fully capable browser apps hosted by Akka HTTP endpoints, including standard frontend projects such as React/Vite and lightweight framework-free TypeScript apps. Use when the task is a user-facing web app, not merely static file serving.
+description: Plan and implement fully capable browser apps hosted by Akka HTTP endpoints, including standard frontend projects such as React/Vite and intentionally lightweight framework-free apps. Use when the task is a user-facing web app, not merely static file serving.
 ---
 
 # Akka Web UI Apps
@@ -10,7 +10,7 @@ Use this as the top-level skill for complete browser app work in Akka services.
 This skill complements `akka-http-endpoint-web-ui`:
 - `akka-web-ui-apps` designs the frontend application experience and chooses the frontend implementation shape.
 - `akka-web-ui-frontend-project` integrates a standard frontend project such as React/Vite with Akka static hosting.
-- `akka-web-ui-lightweight-typescript` remains available for small framework-free TypeScript apps.
+- `akka-web-ui-lightweight-typescript` remains available for small framework-free apps.
 - `akka-http-endpoint-web-ui` hosts packaged assets and connects UI routes to Akka HTTP endpoints.
 
 ## Required reading
@@ -32,7 +32,7 @@ Read these first if present:
 Canonical frontend project integration reference:
 - `../../../frontend-with-akka-backend.md` (use only web UI integration sections unless security is explicitly in scope)
 
-Canonical lightweight TypeScript reference example:
+Canonical lightweight framework-free reference example:
 - `../../../src/main/java/com/example/api/FrontendReferenceUiEndpoint.java`
 - `../../../src/main/java/com/example/api/FrontendReferenceApiEndpoint.java`
 - `../../../src/main/web-ui/frontend-reference/`
@@ -46,7 +46,7 @@ Canonical lightweight TypeScript reference example:
 - a UI brief must become implementation-ready frontend work
 - the frontend should be excellent and may need a standard frontend framework/build tool
 - browser code should live in a dedicated frontend project when the UI is a real app
-- plain TypeScript without a framework is still appropriate for intentionally lightweight apps
+- a framework-free implementation is still appropriate for intentionally lightweight apps
 
 Do not use this as the main skill for a single static page or OpenAPI file; use `akka-http-endpoint-static-content` instead.
 
@@ -61,7 +61,7 @@ Before implementing, produce a frontend plan with:
 4. Actions, forms, and validation rules
 5. Frontend state model, including loading/empty/error/success states
 6. Real-time behavior, if any
-7. Frontend implementation shape: standard frontend project (for example React/Vite) or lightweight framework-free TypeScript
+7. Frontend implementation shape: standard frontend project (for example React/Vite) or lightweight framework-free implementation
 8. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
 9. Accessibility and responsive requirements
 10. Akka HTTP endpoint route plan, including static asset and API route separation
@@ -76,13 +76,13 @@ For this skill family, defer auth/session/security implementation details unless
 Load only the focused companions needed:
 
 - `akka-web-ui-frontend-project` — standard frontend project integration, such as React/Vite build output hosted by Akka
-- `akka-web-ui-lightweight-typescript` — module structure and browser app architecture for framework-free apps
+- `akka-web-ui-lightweight-typescript` — module structure and browser app architecture for intentionally lightweight framework-free apps
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
-- `akka-web-ui-state-rendering` — state model, render functions, DOM update boundaries
+- `akka-web-ui-state-rendering` — state model and rendering/component update boundaries
 - `akka-web-ui-forms-validation` — forms, validation, submit state, server error mapping
 - `akka-web-ui-realtime` — SSE/WebSocket browser behavior
 - `akka-web-ui-accessibility-responsive` — semantic HTML, keyboard, focus, responsive layout
-- `akka-web-ui-testing` — TypeScript checks, endpoint tests, optional DOM/browser smoke checks
+- `akka-web-ui-testing` — frontend checks/builds, endpoint tests, optional DOM/browser smoke checks
 
 Always pair with Akka hosting/API skills as needed:
 - `akka-http-endpoints`
@@ -96,10 +96,10 @@ Always pair with Akka hosting/API skills as needed:
 ## Default implementation order
 
 1. Define UI screens, states, and API contracts.
-2. Choose frontend shape: standard frontend project for full apps, lightweight TypeScript only for deliberately small apps.
+2. Choose frontend shape: standard frontend project for full apps, lightweight framework-free implementation only for deliberately small apps.
 3. Implement or adjust backend JSON/SSE/WebSocket endpoints.
-4. Implement the frontend in its source root (`frontend/src/**` for frontend projects, or `src/main/web-ui/**` for lightweight TypeScript).
-5. Build frontend assets into `src/main/resources/static-resources/`.
+4. Implement the frontend in its source root (`frontend/src/**` for frontend projects, or `src/main/web-ui/**` for lightweight framework-free implementations).
+5. Build frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
 6. Add/extend endpoint integration tests for page, assets, explicit SPA entry routes, and API route separation.
 7. Run frontend checks/build and backend tests.
 8. Review with `docs/web-ui-quality-checklist.md`.
@@ -127,7 +127,7 @@ Avoid:
 - exposing internal domain objects directly to the browser
 - implementing only the happy path
 - assuming route tests are enough for frontend logic
-- using the lightweight TypeScript pattern for a UI that clearly needs a full frontend project
+- using the lightweight framework-free pattern for a UI that clearly needs a full frontend project
 - hand-editing generated frontend build output under `static-resources/`
 - mixing static asset wildcards and backend API routes under ambiguous catch-all paths
 - implementing auth/session/security details during a web UI integration-only pass

@@ -549,18 +549,18 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just a packaged page or static files. This family supports standard frontend projects such as React/Vite as well as deliberately lightweight TypeScript apps, while requiring excellent frontend behavior: screens, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just a packaged page or static files. This family supports standard frontend projects such as React/Vite as well as deliberately lightweight framework-free apps, while requiring excellent frontend behavior: screens, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
 - `akka-web-ui-frontend-project` — standard frontend project integration, build output, Akka static hosting, and SPA route shape
-- `akka-web-ui-lightweight-typescript` — modular framework-free TypeScript structure for small apps
+- `akka-web-ui-lightweight-typescript` — modular lightweight framework-free app structure for small apps
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
-- `akka-web-ui-state-rendering` — state model, DOM rendering, loading/empty/error/success states
+- `akka-web-ui-state-rendering` — state model, rendering/component update boundaries, loading/empty/error/success states
 - `akka-web-ui-forms-validation` — form parsing, validation, submit state, server error mapping
 - `akka-web-ui-realtime` — browser SSE/WebSocket lifecycle and stale/reconnect behavior
 - `akka-web-ui-accessibility-responsive` — semantic HTML, keyboard, focus, responsive layout
-- `akka-web-ui-testing` — TypeScript checks, route/asset/API tests, optional frontend smoke checks
+- `akka-web-ui-testing` — frontend checks/builds, route/asset/API tests, optional frontend smoke checks
 
 Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP endpoint companion skills for JSON, SSE, or WebSocket routes. Load JWT/internal security skills only when security implementation is in scope.
 

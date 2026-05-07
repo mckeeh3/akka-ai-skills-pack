@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-state-rendering
-description: Model frontend state and DOM rendering for lightweight Akka-hosted TypeScript web UIs, including loading, empty, error, success, and stale states.
+description: Model frontend state and rendering for Akka-hosted web UIs, including loading, empty, error, success, and stale states across frontend-project and lightweight implementations.
 ---
 
 # Akka Web UI State and Rendering
@@ -9,13 +9,13 @@ Use this skill when implementing browser state, screen rendering, DOM updates, o
 
 ## Required reading
 
-- `../../../docs/web-ui-lightweight-typescript-architecture.md`
+- `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-quality-checklist.md`
-- existing `src/main/web-ui/**/state.ts` and `render.ts` if present
+- existing frontend state/rendering code under `frontend/src/**` or `src/main/web-ui/**` if present
 
 ## State model rules
 
-Use explicit state shapes. Prefer discriminated unions for async data:
+Use explicit state shapes. In TypeScript code, prefer discriminated unions for async data:
 
 ```ts
 type RemoteData<T> =
@@ -31,18 +31,18 @@ Do not hide these states in booleans such as `isLoading` plus nullable data unle
 
 ## Rendering rules
 
-1. Rendering reads UI state and updates DOM; it should not call backend APIs.
+1. Rendering reads UI state and updates the view; it should not call backend APIs.
 2. Every async region needs loading, empty, ready, and error output.
 3. Preserve focus when rerendering interactive regions where possible.
 4. Use semantic HTML before ARIA.
-5. Escape user-provided content by assigning `textContent`, not `innerHTML`.
-6. Keep `innerHTML` only for static trusted templates or avoid it entirely.
+5. Escape user-provided content: use safe component text binding in frontend frameworks or `textContent` for direct DOM updates.
+6. Avoid unsafe HTML injection; keep `innerHTML`/dangerous HTML APIs only for static trusted templates or avoid them entirely.
 7. Disable controls while submitting and make progress visible.
 
 ## Navigation
 
 If the UI has more than one screen:
-- define screen IDs or route names in `routes.ts`
+- define screen IDs or route names in the project's router/navigation structure
 - expose active navigation state visibly
 - support meaningful URLs with hash or history routes when useful
 - render not-found states for unknown routes

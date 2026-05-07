@@ -57,9 +57,9 @@ Use a standard frontend project when the browser app has real product surface ar
 
 Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets.
 
-## When lightweight TypeScript is preferred
+## When a lightweight framework-free implementation is preferred
 
-Use lightweight framework-free TypeScript when the UI is small, Akka-pattern-focused, or intentionally dependency-light, especially when it:
+Use the lightweight framework-free path when the UI is small, Akka-pattern-focused, or intentionally dependency-light, especially when it:
 
 - calls a few JSON APIs with typed payloads
 - consumes SSE/WebSocket updates with simple state

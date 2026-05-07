@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-accessibility-responsive
-description: Apply accessibility, semantic HTML, keyboard, focus, and responsive layout guidance to lightweight Akka-hosted web UIs.
+description: Apply accessibility, semantic HTML, keyboard, focus, and responsive layout guidance to Akka-hosted web UIs across frontend-project and lightweight implementations.
 ---
 
 # Akka Web UI Accessibility and Responsive Layout
@@ -12,7 +12,8 @@ Use this skill for user-facing browser UI quality. It is required for non-trivia
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../docs/web-ui-style-guide.md`
 - the selected `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when present
-- existing HTML/CSS under `src/main/resources/static-resources/**`
+- existing frontend source under `frontend/src/**` when a frontend project owns the UI
+- existing lightweight UI source under `src/main/web-ui/**` and authored static assets under `src/main/resources/static-resources/**` when no frontend project owns those assets
 
 ## Accessibility rules
 
@@ -25,7 +26,7 @@ Use this skill for user-facing browser UI quality. It is required for non-trivia
 7. Move focus intentionally after navigation, validation failure, modal open/close, or major updates.
 8. Use `aria-*` only to supplement semantics, not replace them.
 9. Do not rely on color alone to convey status.
-10. Prefer `textContent` for dynamic text.
+10. For direct DOM updates, prefer `textContent` for dynamic text; in component frameworks, rely on normal safe text binding rather than unsafe HTML injection.
 11. Apply the selected style guide's contrast, focus, and status-color constraints; if they are missing, add or request the style-selection question in `specs/pending-questions.md` before completing affected UI implementation work.
 
 ## Responsive rules
@@ -37,12 +38,14 @@ Use this skill for user-facing browser UI quality. It is required for non-trivia
 5. Touch targets should be comfortably clickable.
 6. Loading/error/empty states must also work on narrow screens.
 
-## CSS conventions
+## Styling conventions
 
-- keep CSS plain and local to the static resource app
-- use meaningful class names tied to UI purpose
+- apply the selected style guide in the frontend source of record
+- for standard frontend projects, edit `frontend/src/**` and rebuild; do not hand-edit generated assets under `src/main/resources/static-resources/**`
+- for lightweight framework-free implementations, keep authored CSS local to the static resource app
+- use meaningful class names or project-established component/style conventions tied to UI purpose
 - define reusable spacing/status/focus styles from the selected style guide's CSS tokens
-- avoid framework-specific utility systems in this pack wave
+- do not introduce a new UI styling framework by default; if the frontend project already uses one, follow its conventions instead of replacing it
 
 ## Completion checklist
 

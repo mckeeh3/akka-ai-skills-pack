@@ -5,7 +5,7 @@ Use this doc for browser apps that should deliberately remain framework-free. Fo
 ## Stack boundary
 
 - Backend: Akka Java SDK components and HTTP endpoints.
-- Frontend: plain HTML, CSS, and TypeScript compiled to browser JavaScript.
+- Frontend: framework-free HTML/CSS plus TypeScript compiled to browser JavaScript.
 - No React, Angular, Vue, Vite, Webpack, or runtime state libraries in this lightweight pattern.
 - If the UI needs those tools, switch to the frontend project pattern instead of forcing this layout.
 
@@ -46,7 +46,7 @@ src/main/web-ui/<app>/
   types.ts     # DTOs and UI state types
   api.ts       # typed fetch client and error normalization
   state.ts     # initial state and state transition helpers
-  render.ts    # DOM rendering from state
+  render.ts    # direct DOM updates from state
   dom.ts       # DOM lookup and small DOM utilities
   routes.ts    # optional screen routing
   forms.ts     # optional form parsing and validation
@@ -82,7 +82,7 @@ export interface AppState {
 ## Rendering pattern
 
 - `render(state, elements)` updates the page from state.
-- Renderers do not call `fetch` or open streams.
+- Rendering code does not call `fetch` or open streams.
 - Use `textContent` for dynamic user-controlled content.
 - Use semantic HTML in `index.html`; TypeScript should enhance it.
 - Apply visual state through documented classes and CSS tokens from the selected style guide.

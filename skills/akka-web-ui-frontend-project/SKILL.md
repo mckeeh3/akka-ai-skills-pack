@@ -84,7 +84,7 @@ Test through Akka HTTP endpoints, not only the frontend dev server:
 ## Anti-patterns
 
 Avoid:
-- treating a React/Vite app as hand-authored static HTML/CSS/JS
+- treating a React/Vite app as unmanaged static files instead of editing frontend source and rebuilding
 - hand-editing generated files under `src/main/resources/static-resources/`
 - copying local frontend env files into served resources
 - mixing frontend assets and backend APIs under ambiguous route wildcards

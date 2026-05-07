@@ -5,7 +5,7 @@ description: Implement framework-free TypeScript browser app structure for Akka-
 
 # Akka Web UI Lightweight TypeScript
 
-Use this skill when browser code is more than a few lines and needs a maintainable plain-TypeScript structure.
+Use this skill when browser code is more than a few lines and needs a maintainable framework-free TypeScript structure.
 
 ## Required reading
 
@@ -59,7 +59,7 @@ Before authoring `app.css`, confirm the selected style guide in `app-description
 - `types.ts`: API DTOs, UI state, discriminated unions.
 - `api.ts`: typed HTTP calls and HTTP error normalization.
 - `state.ts`: initial state and transition helpers.
-- `render.ts`: pure-ish DOM rendering from state.
+- `render.ts`: direct DOM updates from state without backend calls.
 - `dom.ts`: element lookup, event helpers, small DOM utilities.
 - `forms.ts`: form parsing, client validation, submit behavior.
 - `realtime.ts`: SSE/WebSocket lifecycle and message mapping.
