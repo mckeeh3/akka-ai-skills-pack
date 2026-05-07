@@ -155,29 +155,29 @@ You do not need to pre-classify the work as “backend skill” or “frontend s
 ### Install the pack
 
 Current manifest version:
-- `0.1.3`
+- `0.1.4`
 
 #### Project install from GitHub release
 
 This installs into `<current-directory>/.agents`:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.3/install-akka-ai-skills-pack-0.1.3.sh | bash -s --
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.4/install-akka-ai-skills-pack-0.1.4.sh | bash -s --
 ```
 
 Install into a specific project directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.3/install-akka-ai-skills-pack-0.1.3.sh | bash -s -- --target-dir /path/to/project
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.4/install-akka-ai-skills-pack-0.1.4.sh | bash -s -- --target-dir /path/to/project
 ```
 
-The release installer downloads `akka-ai-skills-pack-0.1.3.tar.gz`, unpacks it in a temporary directory, and runs the bundled installer in project mode.
+The release installer downloads `akka-ai-skills-pack-0.1.4.tar.gz`, unpacks it in a temporary directory, and runs the bundled installer in project mode.
 
 #### Install from an unpacked archive
 
 ```bash
-tar -xzf akka-ai-skills-pack-0.1.3.tar.gz
-cd akka-ai-skills-pack-0.1.3
+tar -xzf akka-ai-skills-pack-0.1.4.tar.gz
+cd akka-ai-skills-pack-0.1.4
 bash install.sh --location project --project /path/to/project
 ```
 
@@ -433,7 +433,7 @@ This repository ships an installable resource pack named:
 - `akka-ai-skills-pack`
 
 Current manifest version:
-- `0.1.3`
+- `0.1.4`
 
 The distribution includes:
 
@@ -450,7 +450,7 @@ The distribution includes:
 
 The build also generates a versioned GitHub release installer script:
 
-- `dist/install-akka-ai-skills-pack-0.1.3.sh`
+- `dist/install-akka-ai-skills-pack-0.1.4.sh`
 
 The installed pack intentionally excludes repository-internal maintainer-only guidance, including:
 
@@ -469,9 +469,9 @@ bash tools/build-pack.sh --clean
 
 This creates:
 
-- `dist/akka-ai-skills-pack-0.1.3/`
-- `dist/akka-ai-skills-pack-0.1.3.tar.gz`
-- `dist/install-akka-ai-skills-pack-0.1.3.sh`
+- `dist/akka-ai-skills-pack-0.1.4/`
+- `dist/akka-ai-skills-pack-0.1.4.tar.gz`
+- `dist/install-akka-ai-skills-pack-0.1.4.sh`
 
 Recommended release flow:
 
@@ -532,8 +532,8 @@ bash install.sh --location project --project /path/to/test/project
 To test a built archive:
 
 ```bash
-tar -xzf dist/akka-ai-skills-pack-0.1.3.tar.gz -C /tmp
-cd /tmp/akka-ai-skills-pack-0.1.3
+tar -xzf dist/akka-ai-skills-pack-0.1.4.tar.gz -C /tmp
+cd /tmp/akka-ai-skills-pack-0.1.4
 bash install.sh --location project --project /path/to/test/project
 ```
 
