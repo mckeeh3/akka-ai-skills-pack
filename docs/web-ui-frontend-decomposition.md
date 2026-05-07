@@ -2,7 +2,7 @@
 
 Use this doc when requirements include a user-facing browser app hosted by Akka HTTP endpoints.
 
-The goal is to make the frontend as intentionally designed as the backend. For full product UIs, use a standard frontend project such as React/Vite when appropriate; use a framework-free implementation only for intentionally lightweight apps.
+The goal is to make the frontend as intentionally designed as the backend. For product UIs, use a standard frontend project such as React/Vite and route implementation through the full web app skill path.
 
 Read `docs/web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
 
@@ -153,12 +153,9 @@ Avoid generic copy such as `Error occurred`, `Invalid input`, `Submit`, or `Succ
 
 ### 11. Frontend integration shape
 
-Choose one:
+Use a standard frontend project: source under `frontend/**`, built assets under `src/main/resources/static-resources/**`.
 
-- standard frontend project: source under `frontend/**`, built assets under `src/main/resources/static-resources/**`
-- lightweight framework-free implementation: source under `src/main/web-ui/<app>/`, served assets under `src/main/resources/static-resources/<app>/`
-
-For standard frontend projects, also define:
+Also define:
 - framework/build tool, such as React/Vite
 - package manager and build command
 - generated asset ownership rule
@@ -169,13 +166,13 @@ For standard frontend projects, also define:
 List exact skills to load:
 - `akka-web-ui-apps`
 - `akka-web-ui-ux-design` for non-trivial browser app UX planning
-- `akka-web-ui-frontend-project` for standard frontend projects, or `akka-web-ui-lightweight-typescript` for intentionally lightweight framework-free apps
+- `akka-web-ui-frontend-project` for standard frontend projects
 - focused frontend companions
 - Akka HTTP endpoint companions
 - testing skills
 
 List files to create or update:
-- frontend project source under `frontend/**`, or lightweight framework-free source under `src/main/web-ui/<app>/`
+- frontend project source under `frontend/**`
 - built/static assets under `src/main/resources/static-resources/**`
 - endpoint classes under `src/main/java/**/api/`
 - endpoint tests under `src/test/java/**`
@@ -192,6 +189,6 @@ A web UI decomposition is ready for implementation when a coding agent can answe
 - what UX copy appears for buttons, empty states, validation, errors, and success?
 - what backend endpoints are required?
 - which style guide/theme and CSS tokens drive the frontend styling?
-- is this a standard frontend project or an intentionally lightweight framework-free app?
+- which standard frontend project/framework conventions apply?
 - what frontend modules/components should be created?
 - what tests prove the browser app was delivered correctly?

@@ -393,7 +393,7 @@ Examples and tests should demonstrate reusable patterns for the installed pack, 
 - consumers and topic/service-stream integration
 - timed actions and timer-backed flows
 - HTTP, gRPC, and MCP endpoints
-- Akka-hosted web UI, static content, SSE, WebSocket, and lightweight TypeScript frontend patterns
+- Akka-hosted full web UI apps, static content, SSE, and WebSocket frontend delivery patterns
 - agents, tools, structured responses, memory, streaming, guardrails, and evaluation
 - Event Sourced Entity and Key Value Entity design
 - deterministic testing patterns for each component family

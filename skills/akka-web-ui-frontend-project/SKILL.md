@@ -33,7 +33,7 @@ Reference example document:
 - Akka should serve `index.html` and built `/assets/**` files
 - backend APIs should be called through same-origin `/api/...` routes
 
-Use `akka-web-ui-lightweight-typescript` instead only for small framework-free browser apps that deliberately do not need a frontend project.
+For interactive web app work, prefer this full frontend project path. Use `akka-http-endpoint-static-content` only for non-app static assets or documentation pages.
 
 ## Integration contract
 

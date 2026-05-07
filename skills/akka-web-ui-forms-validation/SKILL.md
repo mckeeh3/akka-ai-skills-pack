@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-forms-validation
-description: Implement form handling for Akka-hosted web UIs, including client validation, submit state, server validation mapping, and accessible errors across frontend-project and lightweight implementations.
+description: Implement form handling for Akka-hosted full web apps, including client validation, submit state, server validation mapping, and accessible errors in standard frontend projects.
 ---
 
 # Akka Web UI Forms and Validation
@@ -28,9 +28,7 @@ Use this skill when the browser UI has forms, commands, mutations, approvals, up
 
 ## Frontend structure
 
-Keep form logic in the frontend source of record:
-- standard frontend project: use the project's component, hook, service, or form-module conventions under `frontend/src/**`
-- lightweight framework-free implementation: prefer a focused form module such as `forms.ts` under `src/main/web-ui/<app>/`
+Keep form logic in the frontend source of record: use the project's component, hook, service, or form-module conventions under `frontend/src/**`.
 
 Keep these responsibilities explicit in whichever structure the project uses:
 - read or bind form input

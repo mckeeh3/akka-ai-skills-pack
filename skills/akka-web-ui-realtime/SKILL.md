@@ -13,7 +13,7 @@ Use this skill when a browser UI consumes Akka SSE endpoints or WebSocket endpoi
 - `../akka-http-endpoint-websocket/SKILL.md`
 - `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-quality-checklist.md`
-- existing frontend realtime code under `frontend/src/**` or `src/main/web-ui/**` if present
+- existing frontend realtime code under `frontend/src/**` if present
 
 ## Choose SSE vs WebSocket
 
@@ -28,7 +28,7 @@ Use WebSocket when:
 
 ## Browser realtime rules
 
-1. Keep stream/socket lifecycle in a focused frontend module, hook, service, or lightweight implementation file; do not put it directly in rendering/component output code.
+1. Keep stream/socket lifecycle in a focused frontend module, hook, or service; do not put it directly in rendering/component output code.
 2. Convert incoming messages into state transitions.
 3. Show connection status: connecting, live, reconnecting, disconnected, stale.
 4. Handle malformed messages without crashing the whole app.

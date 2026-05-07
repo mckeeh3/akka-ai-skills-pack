@@ -93,7 +93,7 @@ Create only files justified by the app. For a very small app, one `ui-index.md` 
 - component rules for cards, buttons, forms, tables/lists, charts, and feedback states
 - brand adaptations and forbidden copied demo content from reference images
 - CSS variable/token expectations for frontend styling
-- frontend implementation shape: standard frontend project or lightweight framework-free implementation
+- frontend implementation shape: standard frontend project
 - UX handoff for each non-trivial screen: primary action, information hierarchy, UX copy, feedback/recovery states, responsive behavior, and keyboard/focus path
 - static asset output and Akka hosting route expectations
 
@@ -113,7 +113,6 @@ For any UI change, update:
 When realization is requested, route UI work to:
 - `akka-web-ui-apps`
 - `akka-web-ui-frontend-project` for standard frontend projects such as React/Vite
-- `akka-web-ui-lightweight-typescript` for deliberately framework-free apps
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
 - `akka-web-ui-forms-validation`

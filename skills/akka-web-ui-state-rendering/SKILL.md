@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-state-rendering
-description: Model frontend state and rendering for Akka-hosted web UIs, including loading, empty, error, success, and stale states across frontend-project and lightweight implementations.
+description: Model frontend state and rendering for Akka-hosted full web apps, including loading, empty, error, success, and stale states in standard frontend projects.
 ---
 
 # Akka Web UI State and Rendering
@@ -11,7 +11,7 @@ Use this skill when implementing browser state, screen rendering, DOM updates, o
 
 - `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-quality-checklist.md`
-- existing frontend state/rendering code under `frontend/src/**` or `src/main/web-ui/**` if present
+- existing frontend state/rendering code under `frontend/src/**` if present
 
 ## State model rules
 

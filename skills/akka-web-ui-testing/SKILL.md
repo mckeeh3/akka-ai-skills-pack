@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-testing
-description: Test Akka-hosted web UIs, including standard frontend projects and lightweight framework-free apps, with frontend checks, Akka endpoint integration tests, route/asset assertions, and optional DOM or browser smoke tests.
+description: Test Akka-hosted full web apps, including standard frontend project checks, Akka endpoint integration tests, route/asset assertions, and optional DOM or browser smoke tests.
 ---
 
 # Akka Web UI Testing
@@ -15,25 +15,17 @@ Use this skill when adding or reviewing tests for Akka-hosted browser apps.
 - existing `src/test/java/**WebUi*Test.java`
 - project `frontend/package.json` when present
 - project frontend test/build config when present
-- root `package.json` and `tsconfig.web-ui.json` when using the lightweight framework-free web UI build
 
 ## Default test layers
 
 ### 1. Frontend checks and build
 
-For a standard frontend project, run the project's configured checks/build, for example:
+Run the frontend project's configured checks/build, for example:
 
 ```bash
 cd frontend
 npm test -- --run    # if configured
 npm run build
-```
-
-For the lightweight framework-free web UI build, run:
-
-```bash
-npm run check:web-ui
-npm run build:web-ui
 ```
 
 Use these for DTO types, state models, API client code, component/render logic, and DOM typing where applicable.

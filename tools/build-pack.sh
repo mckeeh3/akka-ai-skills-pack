@@ -219,7 +219,6 @@ PACK_DOC_FILES=(
   docs/images/web-ui-theme-3.png
   docs/images/web-ui-theme-4.png
   docs/images/web-ui-theme-5.png
-  docs/web-ui-lightweight-typescript-architecture.md
   docs/web-ui-pattern-selection.md
   docs/web-ui-quality-checklist.md
   docs/workflow-endpoint-pattern.md
@@ -230,8 +229,6 @@ validate_source_tree() {
     "$REPO_ROOT/skills/README.md"
     "$REPO_ROOT/skills/references/akka-entity-comparison.md"
     "$REPO_ROOT/pom.xml"
-    "$REPO_ROOT/package.json"
-    "$REPO_ROOT/tsconfig.web-ui.json"
     "$REPO_ROOT/README.md"
     "$REPO_ROOT/LICENSE"
     "$REPO_ROOT/pack/README.md"
@@ -348,8 +345,6 @@ copy_tree "$REPO_ROOT/pack" "$STAGE_DIR/pack"
 copy_tree "$REPO_ROOT/src" "$STAGE_DIR/src"
 cp "$REPO_ROOT/install.sh" "$STAGE_DIR/install.sh"
 cp "$REPO_ROOT/pom.xml" "$STAGE_DIR/pom.xml"
-cp "$REPO_ROOT/package.json" "$STAGE_DIR/package.json"
-cp "$REPO_ROOT/tsconfig.web-ui.json" "$STAGE_DIR/tsconfig.web-ui.json"
 cp "$REPO_ROOT/README.md" "$STAGE_DIR/README.md"
 cp "$REPO_ROOT/LICENSE" "$STAGE_DIR/LICENSE"
 

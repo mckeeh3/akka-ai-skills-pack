@@ -549,13 +549,12 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just a packaged page or static files. This family supports standard frontend projects such as React/Vite as well as deliberately lightweight framework-free apps, while requiring excellent frontend behavior: screen intent, information hierarchy, UX copy, feedback/recovery states, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just a packaged page or static files. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: screen intent, information hierarchy, UX copy, feedback/recovery states, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
 - `akka-web-ui-ux-design` — screen intent, information hierarchy, UX copy, feedback/recovery, responsive behavior, and keyboard/focus path for non-trivial browser apps
 - `akka-web-ui-frontend-project` — standard frontend project integration, build output, Akka static hosting, and SPA route shape
-- `akka-web-ui-lightweight-typescript` — modular lightweight framework-free app structure for small apps
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
 - `akka-web-ui-state-rendering` — state model, rendering/component update boundaries, loading/empty/error/success states
 - `akka-web-ui-forms-validation` — form parsing, validation, submit state, server error mapping
@@ -569,7 +568,6 @@ Reference docs:
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-frontend-project-integration.md`
 - `../docs/web-ui-style-guide.md`
-- `../docs/web-ui-lightweight-typescript-architecture.md`
 - `../docs/web-ui-api-contract-patterns.md`
 - `../docs/web-ui-quality-checklist.md`
 
@@ -898,7 +896,6 @@ If no style guide/theme is selected in the app-description or specs, first add o
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`
-- `akka-web-ui-lightweight-typescript`
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
 - `akka-web-ui-forms-validation`
@@ -1240,8 +1237,6 @@ Core endpoint examples:
 - `../src/main/java/com/example/api/WebUiDataEndpoint.java`
 - `../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
 - `../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../src/main/java/com/example/api/FrontendReferenceUiEndpoint.java`
-- `../src/main/java/com/example/api/FrontendReferenceApiEndpoint.java`
 - `../src/main/java/com/example/api/LowLevelHttpEndpoint.java`
 - `../src/main/java/com/example/api/ProxyGreetingEndpoint.java`
 - `../src/main/java/com/example/api/PingWebSocketEndpoint.java`
@@ -1264,7 +1259,6 @@ Testing examples:
 - `../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/FrontendReferenceWebUiIntegrationTest.java`
 - `../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`

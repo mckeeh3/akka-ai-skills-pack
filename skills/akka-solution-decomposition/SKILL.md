@@ -349,8 +349,7 @@ Load:
 - `akka-http-endpoint-web-ui`
 
 Then add only what is needed:
-- `akka-web-ui-frontend-project` for standard frontend projects
-- `akka-web-ui-lightweight-typescript` for deliberately framework-free apps
+- `akka-web-ui-frontend-project` for full web app frontend implementation
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
 - `akka-web-ui-forms-validation`

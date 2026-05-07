@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-apps
-description: Plan and implement fully capable browser apps hosted by Akka HTTP endpoints, including standard frontend projects such as React/Vite and intentionally lightweight framework-free apps. Use when the task is a user-facing web app, not merely static file serving.
+description: Plan and implement fully capable browser apps hosted by Akka HTTP endpoints, using standard frontend projects such as React/Vite. Use when the task is a user-facing full web app, not merely static file serving.
 ---
 
 # Akka Web UI Apps
@@ -8,10 +8,9 @@ description: Plan and implement fully capable browser apps hosted by Akka HTTP e
 Use this as the top-level skill for complete browser app work in Akka services.
 
 This skill complements `akka-http-endpoint-web-ui`:
-- `akka-web-ui-apps` designs the frontend application experience and chooses the frontend implementation shape.
+- `akka-web-ui-apps` designs the frontend application experience and implementation plan.
 - `akka-web-ui-frontend-project` integrates a standard frontend project such as React/Vite with Akka static hosting.
-- `akka-web-ui-lightweight-typescript` remains available for small framework-free apps.
-- `akka-http-endpoint-web-ui` hosts packaged assets and connects UI routes to Akka HTTP endpoints.
+- `akka-http-endpoint-web-ui` hosts packaged build assets and connects UI routes to Akka HTTP endpoints.
 
 ## Required reading
 
@@ -20,25 +19,16 @@ Read these first if present:
 - `../../../docs/web-ui-style-guide.md`
 - `../../../docs/web-ui-ux-patterns.md`
 - `../../../docs/web-ui-frontend-project-integration.md`
-- `../../../docs/web-ui-lightweight-typescript-architecture.md`
 - `../../../docs/web-ui-api-contract-patterns.md`
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../docs/web-ui-pattern-selection.md`
 - `../akka-http-endpoint-web-ui/SKILL.md`
 - existing `frontend/**`
-- existing `src/main/web-ui/**`
 - existing `src/main/resources/static-resources/**`
 - matching endpoint and endpoint tests under `src/main/java/**/api` and `src/test/java/**`
 
 Canonical frontend project integration reference:
 - `../../../frontend-with-akka-backend.md` (use only web UI integration sections unless security is explicitly in scope)
-
-Canonical lightweight framework-free reference example:
-- `../../../src/main/java/com/example/api/FrontendReferenceUiEndpoint.java`
-- `../../../src/main/java/com/example/api/FrontendReferenceApiEndpoint.java`
-- `../../../src/main/web-ui/frontend-reference/`
-- `../../../src/main/resources/static-resources/frontend-reference/`
-- `../../../src/test/java/com/example/application/FrontendReferenceWebUiIntegrationTest.java`
 
 ## Use this skill when
 
@@ -46,9 +36,8 @@ Canonical lightweight framework-free reference example:
 - the UI needs multiple states, screens, forms, actions, or data dependencies
 - a UI brief must become implementation-ready frontend work
 - the frontend should provide excellent UX, not only correct static asset delivery
-- the frontend should be excellent and may need a standard frontend framework/build tool
+- the frontend should be excellent and use a standard frontend framework/build tool
 - browser code should live in a dedicated frontend project when the UI is a real app
-- a framework-free implementation is still appropriate for intentionally lightweight apps
 
 Do not use this as the main skill for a single static page or OpenAPI file; use `akka-http-endpoint-static-content` instead.
 
@@ -64,7 +53,7 @@ Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and pr
 5. Actions, forms, and validation rules
 6. Frontend state model, including loading/empty/error/success states
 7. Real-time behavior, if any
-8. Frontend implementation shape: standard frontend project (for example React/Vite) or lightweight framework-free implementation
+8. Frontend implementation shape: standard frontend project (for example React/Vite)
 9. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
 10. Accessibility and responsive requirements
 11. Akka HTTP endpoint route plan, including static asset and API route separation
@@ -80,7 +69,6 @@ Load only the focused companions needed:
 
 - `akka-web-ui-ux-design` — screen intent, hierarchy, UX copy, feedback, recovery, responsive behavior, and keyboard/focus path
 - `akka-web-ui-frontend-project` — standard frontend project integration, such as React/Vite build output hosted by Akka
-- `akka-web-ui-lightweight-typescript` — module structure and browser app architecture for intentionally lightweight framework-free apps
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
 - `akka-web-ui-state-rendering` — state model and rendering/component update boundaries
 - `akka-web-ui-forms-validation` — forms, validation, submit state, server error mapping
@@ -101,9 +89,9 @@ Always pair with Akka hosting/API skills as needed:
 
 1. Define UX handoff: user goals, screen purpose, primary actions, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path.
 2. Define UI screens, states, and API contracts.
-3. Choose frontend shape: standard frontend project for full apps, lightweight framework-free implementation only for deliberately small apps.
+3. Confirm frontend project framework/build tool and project conventions.
 4. Implement or adjust backend JSON/SSE/WebSocket endpoints.
-5. Implement the frontend in its source root (`frontend/src/**` for frontend projects, or `src/main/web-ui/**` for lightweight framework-free implementations).
+5. Implement the frontend in its source root (`frontend/src/**`).
 6. Build frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
 7. Add/extend endpoint integration tests for page, assets, explicit SPA entry routes, and API route separation.
 8. Run frontend checks/build and backend tests.
@@ -130,13 +118,12 @@ A complete web UI must handle:
 ## Anti-patterns
 
 Avoid:
-- treating a serious app UI as one inline `app.ts` file
+- treating a serious app UI as anything other than a real frontend project
 - exposing internal domain objects directly to the browser
 - implementing only the happy path
 - producing generic UX copy such as `Error occurred`, `Invalid input`, or `Success`
 - making all actions visually equal
 - assuming route tests are enough for frontend logic
-- using the lightweight framework-free pattern for a UI that clearly needs a full frontend project
 - hand-editing generated frontend build output under `static-resources/`
 - mixing static asset wildcards and backend API routes under ambiguous catch-all paths
 - implementing auth/session/security details during a web UI integration-only pass

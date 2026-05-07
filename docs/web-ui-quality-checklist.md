@@ -98,8 +98,7 @@ Security implementation is covered by separate security guidance. For web UI int
 
 ## Build and tests
 
-- [ ] Standard frontend project checks/build pass when `frontend/` exists.
-- [ ] `npm run check:web-ui` and `npm run build:web-ui` pass when using the lightweight framework-free web UI build.
+- [ ] The frontend project checks and production build pass.
 - [ ] Served CSS corresponds to the selected web UI style guide.
 - [ ] Served JS/CSS assets correspond to the frontend source build output.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.

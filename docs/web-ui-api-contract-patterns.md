@@ -2,12 +2,12 @@
 
 Use this doc when a browser UI calls Akka HTTP endpoints.
 
-## Canonical reference example
+## Canonical source locations
 
-Read:
-- `src/main/java/com/example/api/FrontendReferenceApiEndpoint.java`
-- `src/main/web-ui/frontend-reference/api.ts`
-- `src/test/java/com/example/application/FrontendReferenceWebUiIntegrationTest.java`
+Read or create the browser API contract in:
+- Akka HTTP endpoint classes under `src/main/java/**/api/`
+- frontend client modules under `frontend/src/**`, commonly `frontend/src/api/**`
+- endpoint integration tests under `src/test/java/**`
 
 ## Principle
 
@@ -84,4 +84,4 @@ Endpoint integration tests should verify:
 - unauthorized/forbidden behavior when security is in scope or already defined
 - route paths referenced by packaged HTML/JS
 
-TypeScript checks should verify frontend DTO usage against local types. If generated contracts are introduced in a future wave, keep them lightweight and explicit.
+TypeScript checks should verify frontend DTO usage against local types. If generated contracts are introduced in a future wave, keep them explicit and easy for agents to trace from endpoint DTO to frontend client type.

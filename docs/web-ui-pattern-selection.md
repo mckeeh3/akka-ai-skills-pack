@@ -14,15 +14,6 @@ Use this for real web apps:
 
 The frontend build owns generated files under `static-resources/`. Edit `frontend/src/**`, then rebuild.
 
-### Lightweight TypeScript mapping
-
-Use this only for deliberately small framework-free examples:
-
-- TypeScript source: `src/main/web-ui/<example>/app.ts`
-- served JavaScript asset: `src/main/resources/static-resources/<example>/app.js`
-- packaged HTML/CSS: `src/main/resources/static-resources/<example>/...`
-- build command: `npm run build:web-ui`
-
 ## Pattern selection
 
 | Need | Use | First example |
@@ -34,20 +25,9 @@ Use this only for deliberately small framework-free examples:
 | Browser page needing two-way communication | UI + WebSocket pattern | `src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `src/main/java/com/example/api/PingWebSocketEndpoint.java` |
 | Route exposure and backend access boundaries | Defer to security-specific routing when in scope | `skills/akka-http-endpoint-jwt/SKILL.md` and `skills/akka-http-endpoint-acl-internal/SKILL.md` |
 
-## When plain JavaScript is enough
+## Frontend project requirement for web apps
 
-Plain JavaScript is sufficient when:
-
-- the page is static or nearly static
-- the browser code is only a few lines
-- there is no meaningful client-side state
-- the example is teaching file serving rather than browser logic
-
-Use the narrow static-content pattern for those cases.
-
-## When a frontend project is preferred
-
-Use a standard frontend project when the browser app has real product surface area, especially when it:
+Use a standard frontend project when the browser app has product surface area, especially when it:
 
 - has multiple screens or complex navigation
 - needs React or another UI framework
@@ -57,20 +37,10 @@ Use a standard frontend project when the browser app has real product surface ar
 
 Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets.
 
-## When a lightweight framework-free implementation is preferred
-
-Use the lightweight framework-free path when the UI is small, Akka-pattern-focused, or intentionally dependency-light, especially when it:
-
-- calls a few JSON APIs with typed payloads
-- consumes SSE/WebSocket updates with simple state
-- has modest DOM updates and forms
-- would be harder to understand with a full framework scaffold
-
 Read next:
 - `docs/web-ui-frontend-decomposition.md`
 - `docs/web-ui-frontend-project-integration.md`
 - `docs/web-ui-style-guide.md`
-- `docs/web-ui-lightweight-typescript-architecture.md`
 - `docs/web-ui-api-contract-patterns.md`
 - `docs/web-ui-quality-checklist.md`
 

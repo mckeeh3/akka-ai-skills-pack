@@ -17,21 +17,17 @@ Read these first if present:
 - `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-style-guide.md`
 - `../../../docs/web-ui-frontend-project-integration.md`
-- `../../../docs/web-ui-lightweight-typescript-architecture.md`
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiDataEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../../../src/main/java/com/example/api/FrontendReferenceUiEndpoint.java`
-- `../../../src/main/java/com/example/api/FrontendReferenceApiEndpoint.java`
 - `../../../src/main/java/com/example/api/CounterStreamEndpoint.java`
 - `../../../src/main/java/com/example/api/PingWebSocketEndpoint.java`
 - `../../../src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/FrontendReferenceWebUiIntegrationTest.java`
 
 ## Use this skill when
 
@@ -63,7 +59,6 @@ Use first:
 
 Then add focused frontend companions as needed:
 - `akka-web-ui-frontend-project`
-- `akka-web-ui-lightweight-typescript`
 - `akka-web-ui-api-client`
 - `akka-web-ui-state-rendering`
 - `akka-web-ui-forms-validation`
@@ -71,31 +66,28 @@ Then add focused frontend companions as needed:
 - `akka-web-ui-accessibility-responsive`
 - `akka-web-ui-testing`
 
-Use this when the browser UI has real user journeys, multiple states, forms, navigation, or frontend application logic. Prefer `akka-web-ui-frontend-project` for full React/Vite or similar app projects; use `akka-web-ui-lightweight-typescript` only when the UI is intentionally framework-free.
+Use this when the browser UI has real user journeys, multiple states, forms, navigation, or frontend application logic. Use `akka-web-ui-frontend-project` for full React/Vite or similar app projects.
 
 ### UI + JSON API
 Read first:
 - `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiDataEndpoint.java`
-- `../../../src/main/web-ui/web-ui/app.ts`
 
-Use this when a page should load JSON through `fetch`.
+Use this when a page should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**`.
 
 ### UI + SSE
 Read first:
 - `../../../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
 - `../../../src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../../../src/main/web-ui/web-ui-sse/app.ts`
 
-Use this when the browser only needs server-to-client live updates.
+Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**`.
 
 ### UI + WebSocket
 Read first:
 - `../../../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
 - `../../../src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../../../src/main/web-ui/web-ui-websocket/app.ts`
 
-Use this when the browser needs two-way communication.
+Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**`.
 
 ### Public vs protected/internal routes
 Read next as needed:
@@ -106,11 +98,7 @@ Read next as needed:
 
 ## Frontend asset guidance
 
-Two frontend ownership models are valid:
-
-### Standard frontend project
-
-Use for full apps.
+Use a standard frontend project for full apps.
 
 - source lives under `frontend/**`
 - build output goes to `src/main/resources/static-resources/`
@@ -118,16 +106,7 @@ Use for full apps.
 - do not hand-edit generated files in `static-resources/`
 - read `docs/web-ui-frontend-project-integration.md`
 
-### Lightweight framework-free implementation
-
-Use only for small Akka-focused examples or deliberately framework-free apps.
-
-- frontend source lives under `src/main/web-ui/<example>/`
-- served JavaScript/CSS/HTML lives under `src/main/resources/static-resources/<example>/`
-- build with `npm run build:web-ui`
-- read `docs/web-ui-lightweight-typescript-architecture.md`
-
-Akka implementation and tests remain Java-based in both models.
+Akka implementation and tests remain Java-based.
 
 ## Route guidance
 
@@ -143,16 +122,13 @@ Keep those route families separate so a future agent can infer intent from the p
 ## Repository examples
 
 - `WebUiHomeEndpoint` + `WebUiDataEndpoint`
-  - packaged page plus JSON API
-  - browser code authored in TypeScript and served as `app.js`
+  - packaged page plus JSON API hosting pattern
 - `WebUiSsePageEndpoint` + `CounterStreamEndpoint`
   - packaged page consuming SSE
 - `WebUiWebSocketPageEndpoint` + `PingWebSocketEndpoint`
   - packaged page consuming a WebSocket
 - `StaticContentEndpoint`
   - packaged files and OpenAPI publishing without interactive browser logic
-- `FrontendReferenceUiEndpoint` + `FrontendReferenceApiEndpoint`
-  - modular lightweight framework-free frontend with typed API calls, forms, validation, state rendering, accessibility, and responsive layout
 
 ## Testing rule
 

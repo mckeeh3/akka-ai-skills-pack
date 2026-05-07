@@ -1,19 +1,18 @@
 ---
 name: akka-web-ui-accessibility-responsive
-description: Apply accessibility, semantic HTML, keyboard, focus, and responsive layout guidance to Akka-hosted web UIs across frontend-project and lightweight implementations.
+description: Apply accessibility, semantic HTML, keyboard, focus, and responsive layout guidance to Akka-hosted full web apps in standard frontend projects.
 ---
 
 # Akka Web UI Accessibility and Responsive Layout
 
-Use this skill for user-facing browser UI quality. It is required for non-trivial web apps, even with a minimal technical stack.
+Use this skill for user-facing browser UI quality. It is required for full web apps.
 
 ## Required reading
 
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../docs/web-ui-style-guide.md`
 - the selected `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when present
-- existing frontend source under `frontend/src/**` when a frontend project owns the UI
-- existing lightweight UI source under `src/main/web-ui/**` and authored static assets under `src/main/resources/static-resources/**` when no frontend project owns those assets
+- existing frontend source under `frontend/src/**`
 
 ## Accessibility rules
 
@@ -41,8 +40,7 @@ Use this skill for user-facing browser UI quality. It is required for non-trivia
 ## Styling conventions
 
 - apply the selected style guide in the frontend source of record
-- for standard frontend projects, edit `frontend/src/**` and rebuild; do not hand-edit generated assets under `src/main/resources/static-resources/**`
-- for lightweight framework-free implementations, keep authored CSS local to the static resource app
+- edit `frontend/src/**` and rebuild; do not hand-edit generated assets under `src/main/resources/static-resources/**`
 - use meaningful class names or project-established component/style conventions tied to UI purpose
 - define reusable spacing/status/focus styles from the selected style guide's CSS tokens
 - do not introduce a new UI styling framework by default; if the frontend project already uses one, follow its conventions instead of replacing it

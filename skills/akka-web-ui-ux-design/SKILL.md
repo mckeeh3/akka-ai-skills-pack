@@ -7,7 +7,7 @@ description: Design excellent user experience for Akka-hosted browser apps befor
 
 Use this skill before implementing any non-trivial browser app, dashboard, admin UI, console, portal, or workflow UI hosted by Akka.
 
-This skill is frontend-framework neutral. Use it before choosing or implementing details with `akka-web-ui-frontend-project` or `akka-web-ui-lightweight-typescript`.
+Use this skill before implementing details with `akka-web-ui-frontend-project` so the full web app has an explicit UX contract.
 
 ## Required reading
 
