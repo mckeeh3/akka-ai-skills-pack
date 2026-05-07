@@ -18,6 +18,7 @@ This skill complements `akka-http-endpoint-web-ui`:
 Read these first if present:
 - `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-style-guide.md`
+- `../../../docs/web-ui-ux-patterns.md`
 - `../../../docs/web-ui-frontend-project-integration.md`
 - `../../../docs/web-ui-lightweight-typescript-architecture.md`
 - `../../../docs/web-ui-api-contract-patterns.md`
@@ -44,6 +45,7 @@ Canonical lightweight framework-free reference example:
 - the user asks for a web app, dashboard, admin UI, console, portal, or browser workflow
 - the UI needs multiple states, screens, forms, actions, or data dependencies
 - a UI brief must become implementation-ready frontend work
+- the frontend should provide excellent UX, not only correct static asset delivery
 - the frontend should be excellent and may need a standard frontend framework/build tool
 - browser code should live in a dedicated frontend project when the UI is a real app
 - a framework-free implementation is still appropriate for intentionally lightweight apps
@@ -54,20 +56,21 @@ Do not use this as the main skill for a single static page or OpenAPI file; use 
 
 Before implementing, verify that a selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If a browser UI is in scope and style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
 
-Before implementing, produce a frontend plan with:
+Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and produce a frontend plan with:
 1. User goals and personas
-2. Screens and navigation
-3. Data dependencies and API contracts
-4. Actions, forms, and validation rules
-5. Frontend state model, including loading/empty/error/success states
-6. Real-time behavior, if any
-7. Frontend implementation shape: standard frontend project (for example React/Vite) or lightweight framework-free implementation
-8. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
-9. Accessibility and responsive requirements
-10. Akka HTTP endpoint route plan, including static asset and API route separation
-11. SPA routing choice: hash routing, explicit server entry routes, or in-app navigation only
-12. Implementation skills to load
-13. Required tests and quality checks
+2. UX handoff for each screen: primary action, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path
+3. Screens and navigation
+4. Data dependencies and API contracts
+5. Actions, forms, and validation rules
+6. Frontend state model, including loading/empty/error/success states
+7. Real-time behavior, if any
+8. Frontend implementation shape: standard frontend project (for example React/Vite) or lightweight framework-free implementation
+9. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
+10. Accessibility and responsive requirements
+11. Akka HTTP endpoint route plan, including static asset and API route separation
+12. SPA routing choice: hash routing, explicit server entry routes, or in-app navigation only
+13. Implementation skills to load
+14. Required tests and quality checks
 
 For this skill family, defer auth/session/security implementation details unless the user explicitly asks for them. Record any known auth-dependent UI states as placeholders for the later security pass.
 
@@ -75,6 +78,7 @@ For this skill family, defer auth/session/security implementation details unless
 
 Load only the focused companions needed:
 
+- `akka-web-ui-ux-design` — screen intent, hierarchy, UX copy, feedback, recovery, responsive behavior, and keyboard/focus path
 - `akka-web-ui-frontend-project` — standard frontend project integration, such as React/Vite build output hosted by Akka
 - `akka-web-ui-lightweight-typescript` — module structure and browser app architecture for intentionally lightweight framework-free apps
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
@@ -95,25 +99,28 @@ Always pair with Akka hosting/API skills as needed:
 
 ## Default implementation order
 
-1. Define UI screens, states, and API contracts.
-2. Choose frontend shape: standard frontend project for full apps, lightweight framework-free implementation only for deliberately small apps.
-3. Implement or adjust backend JSON/SSE/WebSocket endpoints.
-4. Implement the frontend in its source root (`frontend/src/**` for frontend projects, or `src/main/web-ui/**` for lightweight framework-free implementations).
-5. Build frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
-6. Add/extend endpoint integration tests for page, assets, explicit SPA entry routes, and API route separation.
-7. Run frontend checks/build and backend tests.
-8. Review with `docs/web-ui-quality-checklist.md`.
+1. Define UX handoff: user goals, screen purpose, primary actions, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path.
+2. Define UI screens, states, and API contracts.
+3. Choose frontend shape: standard frontend project for full apps, lightweight framework-free implementation only for deliberately small apps.
+4. Implement or adjust backend JSON/SSE/WebSocket endpoints.
+5. Implement the frontend in its source root (`frontend/src/**` for frontend projects, or `src/main/web-ui/**` for lightweight framework-free implementations).
+6. Build frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
+7. Add/extend endpoint integration tests for page, assets, explicit SPA entry routes, and API route separation.
+8. Run frontend checks/build and backend tests.
+9. Review with `docs/web-ui-quality-checklist.md` and `docs/web-ui-ux-patterns.md`.
 
 ## Quality bar
 
 A complete web UI must apply the selected style guide without copying demo content from the reference images.
 
 A complete web UI must handle:
+- first-five-seconds comprehension: where am I, what matters, what can I do?
+- clear primary action and subordinate secondary actions
 - initial loading
-- empty data
+- useful empty data state
 - successful data
-- validation failures
-- backend/API errors
+- validation failures with preserved input and focus behavior
+- backend/API errors with recovery copy
 - unauthorized/forbidden placeholders when security behavior is already defined
 - disabled/submitting states for actions
 - responsive layout at common viewport widths
@@ -126,6 +133,8 @@ Avoid:
 - treating a serious app UI as one inline `app.ts` file
 - exposing internal domain objects directly to the browser
 - implementing only the happy path
+- producing generic UX copy such as `Error occurred`, `Invalid input`, or `Success`
+- making all actions visually equal
 - assuming route tests are enough for frontend logic
 - using the lightweight framework-free pattern for a UI that clearly needs a full frontend project
 - hand-editing generated frontend build output under `static-resources/`

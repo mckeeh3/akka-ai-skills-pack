@@ -5,12 +5,17 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 ## UX completeness
 
 - [ ] Primary user goals are represented by screens and actions.
-- [ ] Navigation paths are clear.
-- [ ] Empty states explain what to do next.
-- [ ] Loading states are visible for async regions.
-- [ ] Success states are visible after actions.
-- [ ] Errors are visible and actionable.
+- [ ] Each screen communicates where the user is, what matters, and what they can do within the first five seconds.
+- [ ] Each screen has one clear purpose or an explicitly read-only purpose.
+- [ ] The primary action is visually obvious and uses specific action text.
+- [ ] Secondary actions are useful but visually subordinate.
+- [ ] Navigation paths are clear and show current location where relevant.
+- [ ] Empty states explain what happened and what to do next.
+- [ ] Loading states are visible and context-specific for async regions.
+- [ ] Success states confirm what changed and the next available action.
+- [ ] Errors are visible, actionable, and preserve user work when possible.
 - [ ] Destructive or irreversible actions have appropriate confirmation or recovery behavior.
+- [ ] Dense data has appropriate search, filter, sort, grouping, or progressive disclosure.
 
 ## Frontend state
 
@@ -26,6 +31,16 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 - [ ] Validation errors have a documented shape.
 - [ ] Unauthorized, forbidden, not-found, conflict, and server errors are handled.
 - [ ] Endpoint integration tests cover success and important failures.
+
+## UX copy
+
+- [ ] Button labels use specific verb phrases instead of generic `Submit` where possible.
+- [ ] Empty states explain the condition and next action.
+- [ ] Validation messages explain how to fix the input.
+- [ ] API/load error messages say what failed and how to recover.
+- [ ] Success messages confirm the concrete outcome.
+- [ ] Destructive confirmations name the object and consequence.
+- [ ] Disabled controls have visible explanation when the reason is not obvious.
 
 ## Forms and validation
 
@@ -50,7 +65,7 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 - [ ] Heading order is logical.
 - [ ] Interactive elements are keyboard-operable.
 - [ ] Focus states are visible.
-- [ ] Focus moves intentionally after validation failure or major screen changes.
+- [ ] Focus moves intentionally after validation failure, navigation, modal open/close, or major screen changes.
 - [ ] Errors are associated with fields or announced near the form.
 - [ ] Style-guide contrast requirements are met for text, controls, charts, badges, and status indicators.
 - [ ] Status is not conveyed by color alone.
@@ -59,8 +74,9 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 ## Responsive layout
 
 - [ ] Layout works on narrow screens.
+- [ ] The primary task remains possible and obvious on narrow screens.
 - [ ] Controls are comfortably clickable/tappable.
-- [ ] Tables or dense lists have a narrow-screen strategy.
+- [ ] Tables or dense lists have a narrow-screen strategy such as cards, reduced columns, or intentional horizontal scroll.
 - [ ] Loading, empty, and error states work responsively.
 
 ## Realtime behavior
@@ -88,4 +104,5 @@ Security implementation is covered by separate security guidance. For web UI int
 - [ ] Served JS/CSS assets correspond to the frontend source build output.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.
 - [ ] Tests assert route references for API/SSE/WebSocket dependencies.
+- [ ] UX review notes or tests cover key loading, empty, error, validation, and success states.
 - [ ] Backend tests pass for changed endpoint/component behavior.
