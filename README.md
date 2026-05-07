@@ -44,6 +44,8 @@ The harness decides which installed files under `.agents/` to load. The pack is 
 
 ### Typical usage pattern
 
+For a detailed end-to-end walkthrough, see [`docs/skills-pack-user-guide.md`](docs/skills-pack-user-guide.md).
+
 The normal user flow is:
 
 1. **Install the pack** into your project or globally.
@@ -275,6 +277,7 @@ Here is a web UI brief for the support dashboard. Plan the frontend screens, bac
 
 If you want to inspect the installed pack, start with:
 
+- [`docs/skills-pack-user-guide.md`](docs/skills-pack-user-guide.md) in this repository, or `.agents/docs/skills-pack-user-guide.md` after installation
 - `.agents/AGENTS.md`
 - `.agents/docs/`
 - `.agents/resources/examples/java/README.md`
