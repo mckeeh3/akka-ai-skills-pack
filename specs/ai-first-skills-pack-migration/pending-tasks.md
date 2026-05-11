@@ -123,7 +123,7 @@
 
 ### TASK-02-001: Create top-level AI-first SaaS skill
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/02-ai-first-routing-skill-family-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-001, TASK-01-003]
@@ -142,6 +142,9 @@
   - skill routes to app-description, decomposition, and implementation substrate skills without duplicating them
 - done criteria:
   - top-level AI-first SaaS entry skill exists and is concise
+- notes:
+  - completed: added concise top-level AI-first SaaS routing skill with interpretation workflow, anti-chatbot rule, downstream path selection, and Akka substrate mapping
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add top-level AI-first SaaS skill`
 
 ### TASK-02-002: Create object-model and agent-team companion skills
 
