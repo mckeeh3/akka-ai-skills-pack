@@ -93,7 +93,7 @@
 
 ### TASK-01-004: Document inbox provenance and cleanup plan
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/01-architectural-pivot-and-doctrine/04-inbox-provenance-cleanup-plan.md
 - depends on: [TASK-01-001]
@@ -117,6 +117,9 @@
   - no competing canonical destinations are introduced without explanation
 - done criteria:
   - future cleanup tasks can intentionally promote, merge, archive, or delete each inbox file
+- notes:
+  - completed: documented provenance and disposition for all current `skills/inbox/docs/*.md` files
+  - commit hash: not pre-recorded because the queue status update is included in the same task commit
 
 ### TASK-02-001: Create top-level AI-first SaaS skill
 
