@@ -663,7 +663,7 @@
 
 ### TASK-06-002: Create DCA product vision and operating model example
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-06-001]
@@ -681,6 +681,9 @@
   - operational delegation and retained human governance are explicit
 - done criteria:
   - example has clear AI-first product and operating model foundation
+- notes:
+  - completed: added DCA app manifest, capability/lifecycle foundation, durable goals, human roles, delegated work, retained human authority, agent-family placeholders, and fail-safe lifecycle behavior guidance
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Create DCA product vision and operating model`
 
 ### TASK-06-003: Create DCA agent team, policy, decisions, and workflow examples
 
