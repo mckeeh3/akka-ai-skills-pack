@@ -222,7 +222,7 @@
 
 ### TASK-02-005: Wire AI-first skills into routing map
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/02-ai-first-routing-skill-family-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001, TASK-02-002, TASK-02-003, TASK-02-004]
@@ -239,6 +239,9 @@
   - every linked AI-first skill exists
 - done criteria:
   - routing map exposes the new AI-first family cleanly
+- notes:
+  - completed: replaced the Sprint 2 transition note with the top-level AI-first SaaS skill and companion skill routing list in `skills/README.md`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Wire AI-first skills into routing map`
 
 ### TASK-03-001: Refactor app-description architecture docs for AI-first
 

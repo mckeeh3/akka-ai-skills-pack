@@ -16,8 +16,17 @@ For high-level product input, first interpret whether the product should be trea
 Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
 
-Transition note:
-- `ai-first-saas` is the planned top-level AI-first skill family for Sprint 2. Until that skill exists, do not link to a `skills/ai-first-saas/` file; use the canonical doctrine plus this routing map.
+Top-level AI-first entry skill:
+- `ai-first-saas` — interpret product intent as an AI-first SaaS operating model, identify delegated work and retained human authority, then route to app-description, decomposition, PRD planning, or focused implementation skills
+
+AI-first companion skills:
+- `ai-first-saas-object-model` — select durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects before choosing Akka components
+- `ai-first-saas-agent-team-design` — design bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision
+- `ai-first-saas-policy-governance` — model policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits
+- `ai-first-saas-decision-cards` — design recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions
+- `ai-first-saas-audit-trace` — design durable work, decision, policy, tool, data-access, approval, and outcome traces
+- `ai-first-saas-ui-surfaces` — select supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces and route to web UI/API skills
+- `ai-first-saas-outcomes-metrics` — define outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces
 
 After AI-first interpretation, choose the normal operating path:
 1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization
@@ -25,7 +34,7 @@ After AI-first interpretation, choose the normal operating path:
 3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts
 4. use focused Stage 3 component skills only after the operating model and solution shape are clear enough for implementation
 
-Existing Stage 3 skills are implementation substrate skills for the AI-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with AI-first narrative guidance; route to them after goals, plans, authority, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
+Use companion skills only for the AI-first concerns that are actually in scope. Existing Stage 3 skills remain implementation substrate skills for the AI-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with AI-first narrative guidance; route to them after goals, plans, authority, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
 
 ## Description-first intake skills
 
