@@ -10,3 +10,5 @@ Future downstream realization may split this into:
 - `health-and-alerts.md`
 
 Purpose: define work traces, decision traces, policy invocations, telemetry health, agent activity, audit evidence, and outcome metrics.
+
+Placement note: `15-operating-model/` states why traces and outcomes matter for delegated work and retained human authority; this layer states what must be emitted, projected, secured, measured, and tested.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This gap list records the missing reference examples and tests after the AI-first substrate skill reframing. It is a planning artifact for future example/test work only; it does not implement the examples.
+This gap list records remaining reference implementation and test gaps after the AI-first migration. It distinguishes completed non-runnable app-description coverage from executable examples that still need future planning and code.
 
 Use it to avoid hiding coverage gaps behind broad doctrine or retrofitting existing conventional examples into agentic ones without explicit intent.
 
@@ -13,25 +13,28 @@ The repository already has strong focused examples for individual Akka substrate
 - agents, structured responses, tools, guardrails, evaluation, orchestration, memory/runtime state, and streaming;
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
-- a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/`.
+- a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/`;
+- a completed non-runnable AI-first app-description reference under `docs/examples/agent-first-dca-app-description/`.
 
-These examples are valuable implementation substrate references, but they are not yet a cohesive AI-first SaaS worked example.
+The DCA app-description reference now covers durable goals, bounded agents, retained human authority, policies, approval gates, decision cards, audit/work/decision traces, supervision UI surfaces, outcome metrics, traceability, and realization slice sequencing. It is not runnable application code.
 
 ## Priority key
 
 - **P0 required**: needed for future agents to confidently generate AI-first SaaS apps without guessing core operating-model semantics.
-- **P1 important**: closes recurring implementation/test gaps once the P0 worked example exists.
+- **P1 important**: closes recurring implementation/test gaps once the first executable slice exists.
 - **P2 optional**: useful breadth examples, but not required before the first complete AI-first reference path.
 
-## Required gaps
+## Completed app-description coverage
 
-### P0: cohesive AI-first worked app-description example
+### DCA AI-first worked app-description
 
-Reference scaffold: `docs/examples/agent-first-dca-app-description/`.
+Status: **complete as a non-runnable reference asset**.
 
-Remaining required coverage:
+Reference: `docs/examples/agent-first-dca-app-description/`.
 
-- durable goals, constraints, success criteria, execution plans, and outcome links;
+Completed coverage:
+
+- durable goals, constraints, success criteria, execution-plan intent, and outcome links;
 - bounded coordinator/specialist/evaluator agent roles with explicit authority limits;
 - retained human authority, approvals, exceptions, and escalation rules;
 - policy clauses, thresholds, permissions, simulations, proposals, and human-governed commits;
@@ -40,20 +43,24 @@ Remaining required coverage:
 - supervision-oriented UI surfaces: goal-to-execution workbench, command center, decision review, governance/learning, digest, and audit/trace;
 - traceability from operating-model artifacts to behavior, tests, security, observability, UI, and realization slices.
 
-Owner path: Sprint 6 DCA tasks (`TASK-06-002` through `TASK-06-004` complete the scaffold created by `TASK-06-001`).
+Placement note: audit/trace/outcome meaning is introduced by `15-operating-model/`, while concrete trace events, metrics, privacy/access rules, and tests implied by observability live in `50-observability/audit-trace-and-outcomes.md`.
 
-### P0: AI-first implementation-slice examples derived from the worked app-description
+## Required executable gaps
 
-Missing reference: slice-level docs or specs showing how the DCA app-description becomes bounded Akka implementation tasks.
+### P0: first executable AI-first implementation slice derived from the worked app-description
+
+Missing reference: runnable or implementation-ready slice-level specs showing how the DCA app-description becomes bounded Akka implementation tasks.
+
+Candidate first slice: `docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md` Slice 1, Supplies autopilot foundation.
 
 Required coverage:
 
-- one vertical slice for goal intake → execution plan → workflow start;
-- one vertical slice for agent recommendation → decision card → human approval/rejection;
-- one vertical slice for policy gate → exception/escalation → trace update;
-- one vertical slice for audit/outcome projection → supervision UI/API surface.
-
-Each slice should name the minimal component skills to load and should avoid implementing unrelated substrate breadth.
+- durable goal/objective and trace vocabulary for supplies;
+- supply recommendation and decision-card write model;
+- workflow path for auto-ship, approval-required decision card, suppression, pause/resume, no-op, and idempotency behavior;
+- bounded agent/tool stubs or deterministic test doubles for forecast, entitlement/policy, and inventory checks;
+- views/endpoints/UI surfaces for supply risk, pending decisions, auto-ship history, suppressed shipments, and trace lookup;
+- tests for success, approval, suppression, missing evidence, stale decision, retry/idempotency, trace completeness, and outcome linkage.
 
 ### P0: explicit AI-first acceptance/evaluation test patterns
 
@@ -92,7 +99,7 @@ Needed when implementing P1:
 
 ### P1: AI-first web UI reference surface
 
-Current web UI guidance covers React/Vite integration and UI quality, but there is no concrete AI-first screen reference.
+Current web UI guidance covers React/Vite integration and UI quality, but there is no concrete executable AI-first screen reference.
 
 Needed when implementing P1:
 
@@ -137,4 +144,4 @@ Do not create duplicate examples just to restate existing focused mechanics for:
 - ordinary View query mechanics;
 - static HTTP hosting or generic frontend project setup.
 
-Only add new examples when they clarify AI-first semantics: durable goals, bounded authority, governed policy, evidence-backed decisions, audit traces, supervision surfaces, or outcome loops.
+Only add new examples when they clarify executable AI-first semantics: durable goals, bounded authority, governed policy, evidence-backed decisions, audit traces, supervision surfaces, or outcome loops.

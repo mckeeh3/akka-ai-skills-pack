@@ -12,4 +12,6 @@ Related cross-layer files:
 - `../55-ui/ui-surfaces.md`
 - `../60-generation/implementation-slices.md`
 
-Purpose: capture the AI-first operating model before Akka component choices: delegated work, retained human authority, policies, decisions, traces, and outcome loops.
+Purpose: capture the AI-first operating model before Akka component choices: delegated work, retained human authority, policies, decisions, trace obligations, and outcome loops.
+
+Placement note: this layer defines the business meaning of traces and outcomes; `50-observability/audit-trace-and-outcomes.md` owns the concrete audit, work-trace, decision-trace, metric, privacy, and access expectations for realization.

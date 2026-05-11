@@ -39,7 +39,7 @@ Non-goals for this reference example:
 
 ## Current structure
 
-The Sprint 6 worked example now includes product vision, operating model, agent-team, governance, decision-card, workflow, UI, audit/trace/outcome, and implementation-slice reference files. It remains a reference app-description asset, not runnable application code.
+The Sprint 6 worked example includes product vision, operating model, agent-team, governance, decision-card, workflow, UI, audit/trace/outcome, traceability, and implementation-slice reference files. It remains a reference app-description asset, not runnable application code.
 
 ```text
 app-description/
@@ -63,9 +63,13 @@ app-description/
   80-review/
 ```
 
-## Planned fill order
+## Current coverage
 
-1. `TASK-06-002`: product vision and operating model foundation.
-2. `TASK-06-003`: agent team, policies, decision cards, approvals, and workflows.
-3. `TASK-06-004`: UI surfaces, audit/trace/outcomes, and implementation-slice examples. (complete)
-4. `TASK-06-005`: inbox disposition after promoted material is represented in canonical docs/examples.
+The reference now covers:
+- durable goals, constraints, success criteria, delegated work, retained authority, and outcome loops;
+- bounded coordinator/specialist/evaluator agents and approval/escalation boundaries;
+- policy clauses, thresholds, governed policy changes, decision-card evidence, and exception handling;
+- supervision-oriented UI surfaces, audit/work/decision traces, outcome metrics, and traceability maps;
+- non-runnable realization slices that show how future Akka/React implementation work can be decomposed.
+
+Remaining work belongs in future executable reference slices and tests, not in this app-description reference.

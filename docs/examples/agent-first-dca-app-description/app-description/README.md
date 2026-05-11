@@ -1,7 +1,7 @@
-# Agent-First DCA App Description Scaffold
+# Agent-First DCA App Description
 
-This scaffold follows `docs/internal-app-description-architecture.md`.
-It is intentionally incomplete until Sprint 6 follow-on tasks fill the layer files.
+This reference app-description follows `docs/internal-app-description-architecture.md`.
+Sprint 6 populated the layer files as a non-runnable AI-first SaaS example; future work should use it as source material for executable reference slices rather than treating it as this repository's business app.
 
 Layer ownership for this example:
 - `00-system/`: app identity, readiness, and generation policy.

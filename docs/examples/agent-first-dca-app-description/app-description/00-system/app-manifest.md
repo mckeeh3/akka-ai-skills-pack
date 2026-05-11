@@ -31,7 +31,7 @@ The reference example covers:
 - modeling the product as a chatbot attached to static records;
 - allowing agents to expand their own authority without human-governed policy changes;
 - treating lifecycle state changes, billing-impacting records, customer-sensitive communications, data deletion, or unusual costs as invisible background automation;
-- generating runnable application code from this scaffold before readiness gaps are closed.
+- generating runnable application code from this reference before downstream realization questions are answered.
 
 ## Primary generation targets when realized
 

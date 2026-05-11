@@ -941,7 +941,7 @@
 
 ### TASK-07-006: Reconcile DCA example and AI-first gap docs
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-07-004, TASK-07-005]
@@ -967,6 +967,9 @@
 - done criteria:
   - DCA example and gap docs accurately reflect current AI-first coverage and remaining work
   - git commit created for this task
+- notes:
+  - completed: reconciled DCA app-description and gap docs to mark Sprint 6 reference-description coverage complete, distinguish remaining executable implementation/test gaps, remove stale planned-fill language, and clarify that trace/outcome meaning belongs in `15-operating-model/` while concrete audit/metric/test expectations live in `50-observability/`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Reconcile DCA example and gap docs`
 
 ### TASK-07-007: Plan the first executable AI-first reference implementation slice
 
