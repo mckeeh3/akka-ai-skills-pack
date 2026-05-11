@@ -368,15 +368,20 @@ PACK_DOC_FILES=(
   docs/examples/purchase-request-solution-plan.md
   docs/examples/purchase-request-pending-tasks.md
   docs/intent-driven-usage-flow.md
+  docs/module-sprint-planning.md
   docs/pending-question-queue.md
   docs/pending-task-queue.md
   docs/prd-to-akka-flow.md
   docs/service-to-service-consumers.md
+  docs/security-pattern-selection.md
+  docs/security-review-checklist.md
+  docs/security-workos-auth-and-admin.md
   docs/service-to-service-views.md
   docs/solution-plan-to-implementation-queue.md
   docs/timer-pattern-selection.md
   docs/web-ui-api-contract-patterns.md
   docs/web-ui-frontend-decomposition.md
+  docs/web-ui-frontend-project-integration.md
   docs/web-ui-style-guide.md
   docs/images/web-ui-theme-1.png
   docs/images/web-ui-theme-2.png
@@ -385,6 +390,7 @@ PACK_DOC_FILES=(
   docs/images/web-ui-theme-5.png
   docs/web-ui-pattern-selection.md
   docs/web-ui-quality-checklist.md
+  docs/web-ui-ux-patterns.md
   docs/workflow-endpoint-pattern.md
 )
 

@@ -52,7 +52,13 @@ Installed layout:
     pending-question-queue.md
     pending-task-queue.md
     prd-to-akka-flow.md
+    module-sprint-planning.md
+    security-pattern-selection.md
+    security-review-checklist.md
+    security-workos-auth-and-admin.md
+    web-ui-frontend-project-integration.md
     web-ui-style-guide.md
+    web-ui-ux-patterns.md
     images/
       web-ui-theme-1.png
       web-ui-theme-2.png

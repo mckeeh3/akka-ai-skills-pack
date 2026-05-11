@@ -1314,7 +1314,7 @@
 
 ### TASK-09-003: Package docs referenced by installed skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
 - task brief: none
 - depends on: [TASK-09-002]
@@ -1343,6 +1343,10 @@
 - done criteria:
   - installed pack includes all high-level docs referenced by installed skills
   - git commit created for this task
+- notes:
+  - completed: added module sprint planning, security pattern/checklist/WorkOS docs, frontend project integration, and UX pattern docs to the installer packaging list and documented them in the installed layout
+  - checks: skill doc-reference scan found no unpackaged referenced doc files; `./install.sh --location project --project "$TMP/project" --force` verified all six docs under installed `.agents/docs/`; `rg -n "specs/ai-first-skills-pack-migration/archive/inbox|archive/inbox" docs README.md pack/AGENTS.md pack/README.md skills/README.md install.sh pack/manifest.yaml`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Package installed skill reference docs`
 
 ### TASK-09-004: Regenerate or update release/dist metadata
 
