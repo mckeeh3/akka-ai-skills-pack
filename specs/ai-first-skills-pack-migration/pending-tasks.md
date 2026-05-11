@@ -1177,7 +1177,7 @@
 
 ### TASK-08-006: Implement supplies command-center and decision-card web UI
 
-- status: pending
+- status: blocked
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/06-supplies-command-center-ui.md
 - depends on: [TASK-08-005]
@@ -1213,6 +1213,7 @@
   - UI prioritizes supervision and decision quality over CRUD navigation
   - git commit created for this task
 - notes:
+  - blocked by Q-001 in `specs/ai-first-skills-pack-migration/pending-questions.md`: style selection is absent, and web UI implementation must not invent a visual theme.
   - future implementation task; block if style selection is absent rather than inventing a theme
 
 ### TASK-08-007: Add slice-level AI-first acceptance and trace/outcome tests
