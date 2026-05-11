@@ -555,7 +555,7 @@
 
 ### TASK-05-003: Reframe consumer, timer, and endpoint skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/05-substrate-implementation-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -581,6 +581,9 @@
   - component-specific implementation guidance remains focused
 - done criteria:
   - async, scheduled, and edge-delivery skills explain AI-first substrate roles
+- notes:
+  - completed: added concise AI-first substrate role sections to consumer, timed action, HTTP, gRPC, and MCP endpoint skills covering trace fanout, scheduled digests/replay, browser/service control surfaces, and authority-sensitive MCP exposure while preserving focused implementation guidance
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Reframe async timer and endpoint skills for AI-first`
 
 ### TASK-05-004: Reframe web UI implementation skills
 

@@ -15,6 +15,18 @@ Generate or review timer code that is:
 - safe under at-least-once execution and retries
 - easy for AI agents to extend without loading unrelated component families
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use timed actions for deadlines, reminders, expiries, periodic digests, stale-work rechecks, retry nudges, replay/simulation schedules, policy-review cadences, and outcome-measurement windows.
+
+Timers should trigger bounded follow-up rather than make hidden consequential decisions. When a timer affects delegated work, approval SLAs, exceptions, policy changes, or outcome reporting, make the target command idempotent and ensure the authoritative entity or workflow records the decision, timeout, escalation, or trace/outcome event.
+
+Pair AI-first timed actions with:
+- `akka-workflows` for approval deadlines, exception escalation, plan retries, and long-running automation checkpoints
+- `akka-consumers` for event-triggered scheduling and delayed integration follow-up
+- `akka-views` for digest inputs, overdue queues, and outcome windows
+- endpoint skills when humans or external clients schedule, cancel, or inspect timer-backed work
+
 ## Required reading before coding
 
 Read these first if present:

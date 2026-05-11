@@ -16,6 +16,18 @@ Generate or review Consumer code that is:
 - clear about whether the consumer ignores, completes, or produces
 - backed by executable examples and tests
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use consumers for asynchronous trace fanout, enrichment, notifications, downstream publication, integration with external signals, and curation of material events for supervision, audit, digest, or outcome loops.
+
+Keep consumers idempotent and side-effect boundaries explicit. Do not hide authority transitions, approval decisions, or policy commits inside consumers; route consequential state changes to entities or workflows, then use consumers to react, enrich, publish, or project follow-on work.
+
+Pair AI-first consumers with:
+- `akka-views` for command centers, decision queues, digests, and audit/outcome reporting
+- `akka-workflows` for durable follow-up, exception handling, retries, or compensations
+- `akka-timed-actions` for reminders, delayed rechecks, periodic digests, or replay/simulation schedules
+- endpoint skills when consumed events must surface to browser, service, or MCP clients
+
 ## Required reading before coding
 
 Read these first if present:

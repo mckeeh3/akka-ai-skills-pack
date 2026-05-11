@@ -16,6 +16,18 @@ Generate or review HTTP endpoint code that is:
 - easy for AI agents to extend without reading unrelated files
 - backed by integration tests that use `httpClient`
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use HTTP endpoints as browser-facing control and observation surfaces for goals, plans, approvals, exceptions, policy/governance changes, work traces, digests, and outcome dashboards.
+
+Keep endpoints as edge adapters: validate request shape, map authentication/authorization context, translate to component commands or queries, and return HTTP-appropriate responses. Do not encode agent authority, policy decisions, or approval outcomes only in endpoint code; pass them to entities, workflows, agents, views, or timed actions that can preserve durable state and traces.
+
+Pair AI-first HTTP endpoints with:
+- `akka-web-ui-apps` and focused web UI skills for command center, decision-card, governance, digest, and audit surfaces
+- `akka-http-endpoint-sse` or `akka-http-endpoint-websocket` for supervision streams and live work-trace updates
+- `akka-http-endpoint-jwt` and `akka-http-endpoint-request-context` when identity, tenant, permission, or reviewer context affects behavior
+- component-client endpoint skills for launching goals/plans, approving decisions, querying views, and invoking bounded agents
+
 ## Required reading before coding
 
 Read these first if present:

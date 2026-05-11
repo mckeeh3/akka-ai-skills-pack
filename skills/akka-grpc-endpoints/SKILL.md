@@ -16,6 +16,18 @@ Generate or review gRPC endpoint code that is:
 - easy for AI agents to extend without reading unrelated files
 - backed by integration tests that use `getGrpcEndpointClient(...)`
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use gRPC endpoints for typed service contracts around goal execution, plan control, approvals, exceptions, policy-governance APIs, audit/search APIs, streaming status, or cross-service outcome reporting when protobuf-first integration is preferred.
+
+Keep gRPC endpoints as contract adapters. Validate and map protobuf messages, identity, metadata, and status codes at the edge, but persist consequential AI-first facts through entities or workflows and project query/reporting shapes through views. Use explicit protobuf messages for evidence, risk, confidence, approval, trace, and outcome fields when those are part of the service boundary.
+
+Pair AI-first gRPC endpoints with:
+- `akka-grpc-proto-design` for stable contracts that expose authority, evidence, trace, and outcome fields deliberately
+- `akka-grpc-endpoint-request-context` or `akka-grpc-endpoint-jwt` when caller identity or service authority matters
+- `akka-grpc-endpoint-streaming` for live plan progress, supervision feeds, or audit/event streams
+- component-client endpoint skills for typed access to workflows, views, agents, and entities
+
 ## Required reading before coding
 
 Read these first if present:

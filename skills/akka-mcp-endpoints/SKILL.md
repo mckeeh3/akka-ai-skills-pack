@@ -16,6 +16,18 @@ Generate or review MCP endpoint code that is:
 - easy for AI agents to extend without loading unrelated files
 - backed by direct method tests and, when needed, raw MCP-over-HTTP tests
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use MCP endpoints to expose approved tools, resources, and prompts to LLM clients or external agent runtimes. Good MCP surfaces let agents inspect durable goals, plans, policies, decisions, traces, and outcome context or request bounded actions through component-backed tools.
+
+Treat MCP as an authority-sensitive edge. Tool descriptions, resource contents, prompts, input schemas, JWT/request context, and ACLs must match the caller's allowed actions and data access. Do not expose broad mutation tools that bypass workflow approvals, policy gates, trace recording, or human supervision.
+
+Pair AI-first MCP endpoints with:
+- `akka-mcp-endpoint-component-client` for tools/resources backed by entities, views, workflows, or agents
+- `akka-mcp-endpoint-request-context` when tool behavior depends on caller, tenant, or permission context
+- `akka-mcp-endpoint-resources-prompts` for versioned guidance, policy snippets, and prompt resources
+- `akka-agent-tools` or `akka-agent-mcp-tools` when Akka agents consume or expose MCP capabilities
+
 ## Required reading before coding
 
 Read these first if present:
