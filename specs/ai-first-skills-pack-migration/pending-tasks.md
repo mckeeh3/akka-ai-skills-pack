@@ -148,7 +148,7 @@
 
 ### TASK-02-002: Create object-model and agent-team companion skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/02-ai-first-routing-skill-family-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001]
@@ -166,6 +166,9 @@
   - companion skills route to existing Akka agent/entity/workflow/view skills where appropriate
 - done criteria:
   - durable objects and agent-team design have focused routing guidance
+- notes:
+  - completed: added focused object-model and agent-team design companion skills that route durable AI-first objects and bounded agent teams to existing Akka implementation families
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add AI-first object model and agent team skills`
 
 ### TASK-02-003: Create governance, decision-card, and audit companion skills
 
