@@ -401,7 +401,7 @@
 
 ### TASK-04-002: Refactor PRD-to-specs/backlog generation for AI-first outputs
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/04-prd-spec-backlog-intake-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -419,6 +419,9 @@
   - generated planning package includes AI-first sections when applicable
 - done criteria:
   - PRD planning outputs reflect agentic operating model before Akka tasks
+- notes:
+  - completed: updated PRD-to-specs/backlog generation to require AI-first interpretation in solution plans, cross-cutting specs, module/sprint or slice specs, backlogs, pending questions, and pending tasks before Akka task breakdown
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor PRD planning skill for AI-first`
 
 ### TASK-04-003: Refactor iterative change and revised PRD reconciliation
 

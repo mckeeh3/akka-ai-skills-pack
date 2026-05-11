@@ -12,11 +12,12 @@ This is a **project-specific planning skill** that builds on the ideas in `akka-
 ## Goal
 
 Generate a consistent planning package from a PRD, requirements document, or high-level feature set that:
-- produces a master Akka solution plan
+- interprets product intent through the AI-first SaaS operating model before ordinary CRUD or component decomposition when delegated work, decisions, governance, supervision, audit, or outcomes are in scope
+- produces a master Akka solution plan with explicit operating-model, governance, UI-surface, outcome, and substrate mapping sections when applicable
 - for large inputs, splits the plan into module-oriented vertical sprint specs
 - for smaller inputs, splits the plan into bounded vertical slice specs
 - turns each sprint or slice into a build backlog suitable for one or more independent harness operations
-- creates or updates `specs/pending-questions.md` when unresolved decisions should be answered before safe task generation
+- creates or updates `specs/pending-questions.md` when unresolved decisions should be answered before safe task generation, including AI-first authority, policy, evidence, risk, approval, trace, UI mode, and outcome blockers
 - creates or updates `specs/pending-tasks.md` as the durable execution queue when follow-on implementation work is sufficiently unblocked
 - optionally materializes leaf task briefs when a backlog item is still too large for a single focused harness run
 - writes index files that make execution order and dependencies explicit
@@ -52,7 +53,9 @@ Then continue into repo file generation.
 
 Read these first if present:
 - `../README.md`
+- `../ai-first-saas/SKILL.md` for high-level product, PRD, feature, governance, agentic, decision, supervision, audit, or outcome inputs
 - `../akka-solution-decomposition/SKILL.md`
+- `../../docs/ai-first-saas-application-architecture.md` for the canonical AI-first doctrine
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
 - `../../specs/tasks/README.md`
@@ -67,8 +70,9 @@ Read these first if present:
 
 If the user provided a path to a PRD or requirements file:
 1. read that file completely
-2. extract capabilities, actors, commands, queries, workflows, timers, integrations, security constraints, and UI needs
-3. then generate the file set
+2. first extract AI-first operating-model signals: delegated work, retained human authority, goals/plans, agents, policies, decisions, approvals, exceptions, evidence, risk, traces, outcome loops, and supervision/governance UI needs
+3. then extract capabilities, actors, commands, queries, workflows, timers, integrations, security constraints, and UI needs
+4. then generate the file set
 
 If `specs/` already exists:
 - preserve numbering consistency where possible
@@ -181,13 +185,14 @@ Start with the same architecture reasoning as `akka-solution-decomposition`.
 
 The master plan must include:
 1. Inputs
-2. Capability summary
-3. Chosen components
-4. Why each component exists
-5. Skill routing
-6. Open questions and assumptions
-7. Recommended implementation order
-8. Required tests
+2. AI-first interpretation: objective, delegated work, retained human authority, durable substrate objects, governance/approval needs, supervision UI, audit/trace needs, and outcome loop when applicable
+3. Capability summary
+4. Chosen components
+5. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
+6. Skill routing
+7. Open questions and assumptions
+8. Recommended implementation order
+9. Required tests
 
 Write that to:
 - `specs/akka-solution-plan.md`
@@ -196,11 +201,15 @@ Write that to:
 
 Separate concerns that should not be duplicated across modules, sprints, or slices, such as:
 - ID and domain conventions
-- tenancy and auth rules
-- audit rules
+- AI-first operating-model vocabulary: goals, plans, tasks, agent/team definitions, policy clauses, decisions, approvals, exceptions, traces, and outcomes when applicable
+- tenancy, auth, permission, and authority-boundary rules
+- policy, guardrail, approval-gate, and governance-versioning rules
+- audit, work-trace, decision-trace, tool-invocation, data-access, retention, and redaction rules
+- evaluation, replay, simulation, feedback, and outcome-metric conventions when agentic behavior or policy evolution is in scope
 - ERP integration model
 - notification delivery model
 - web UI style guide/theme, design tokens, mode policy, and brand adaptation when browser UI is in scope
+- supervision, decision-card, governance-center, digest, audit, and outcome UI-surface conventions when AI-first concerns are in scope
 - export/reporting conventions
 
 Create one file per cross-cutting concern when it affects multiple modules, sprints, or slices.
@@ -213,18 +222,20 @@ For large PRDs, prefer module-oriented vertical sprint planning:
 3. make each sprint testable through its backend and frontend surface when UI is in scope
 4. keep cross-cutting foundation work explicit rather than duplicating it in every module
 
-A good module spec contains boundaries, owned capabilities, actors, state ownership, UI area, integrations, and related sprints.
+A good module spec contains boundaries, owned capabilities, actors, human operating roles, delegated work and retained authority when applicable, state ownership, agent/team ownership if any, policy/audit/outcome ownership, UI area, integrations, and related sprints.
 
 A good sprint spec contains:
 - one module or tightly related module increment
+- AI-first scope when applicable: goals/plans, agents, policies, decisions, approvals/exceptions, traces, governance surfaces, and outcome loop delivered by the sprint
 - backend scope: entities, workflows, views, consumers, timers, endpoints
-- frontend scope: screens, forms, navigation, API client calls, realtime behavior
+- frontend scope: screens, forms, navigation, API client calls, realtime behavior, and supervision/decision/governance/audit/outcome surfaces when applicable
 - acceptance behavior and module-level tests
 - pending questions and explicit defer list
 - done criteria that include full-stack smoke/integration validation when applicable
 
 For smaller plans, create vertical slices that are:
 - independently meaningful to the business
+- explicit about AI-first operating-model scope when delegated work, decisions, governance, audit, or outcomes are in scope
 - small enough for focused implementation
 - ordered by dependency
 - clear about what they intentionally exclude
@@ -239,12 +250,13 @@ Avoid increments that are either:
 For each sprint or slice, create a matching backlog file that includes:
 - purpose
 - delivery goal
+- AI-first operating-model scope when applicable: delegated work, retained authority, durable objects, agent/team responsibilities, policy/approval/exception rules, evidence/risk/confidence/impact requirements, audit traces, UI surfaces, and outcomes
 - package layout additions if needed
 - class-by-class file list
 - endpoint list
 - write-model decisions
-- workflow/view/consumer/timer design notes as relevant
-- test plan by class/family
+- workflow/view/consumer/timer/agent design notes as relevant
+- test plan by class/family, including guardrail/evaluation/governance/audit/outcome tests when applicable
 - implementation order
 - suggested harness task breakdown
 - done criteria
@@ -277,6 +289,8 @@ Use `../../docs/pending-question-queue.md` as the queue contract.
 
 Create this queue when unresolved decisions would otherwise make the solution plan, module specs, sprint specs, slice specs, backlogs, or task queue speculative. Questions should be one-at-a-time, dependency-aware, and tied to concrete design impact.
 
+For AI-first inputs, create blocking or scoped questions when the plan would otherwise guess consequential semantics such as delegated authority, autonomous action limits, approval gates, exception ownership, policy/permission boundaries, required evidence, risk/confidence/impact thresholds, audit retention/redaction, supervision UI mode, governed policy changes, evaluation/replay needs, or outcome metrics.
+
 The queue must:
 - use stable question IDs such as `Q-001`, `Q-002`, `Q-003`
 - preserve existing question IDs and statuses when updating an existing queue
@@ -306,8 +320,8 @@ The queue must:
 - mark obsolete non-done tasks as `superseded` instead of deleting them when requirements have replaced them
 - set new tasks to `status: pending` unless a blocking question requires `status: blocked`
 - represent dependencies with `depends on: [...]`
-- include the smallest `required reads` needed for the task
-- include the exact implementation `skills` to load
+- include the smallest `required reads` needed for the task; include the AI-first doctrine and focused AI-first companion skills only when the task implements or verifies goals/plans, agents, policies, decisions, approvals, traces, UI surfaces, governance, or outcomes
+- include the exact implementation `skills` to load, pairing AI-first companion skills with the concrete Akka substrate skills rather than replacing them
 - include expected outputs, required checks, and done criteria
 - point to a task brief when one exists, or use `task brief: none`
 
@@ -399,10 +413,11 @@ Adjust only if the domain clearly suggests another order.
 Each `specs/modules/*.md` file should contain:
 - Module boundary and purpose
 - Owned capabilities
-- Actors and authorization boundary
-- Domain objects and state ownership
+- Actors, human operating roles, and authorization/authority boundary
+- Delegated work, retained human authority, and outcome responsibility when AI-first concerns exist
+- Domain objects, AI-first substrate objects, and state ownership
 - Backend components likely owned by the module
-- Frontend screens/navigation areas owned by the module
+- Frontend screens/navigation areas owned by the module, including supervision/decision/governance/audit surfaces when applicable
 - Integrations and events in/out
 - Cross-cutting specs referenced
 - Out of scope
@@ -414,12 +429,13 @@ Each `specs/sprints/*.md` file should contain:
 - Sprint goal
 - Parent module or modules
 - Dependencies and prerequisite questions
+- AI-first operating-model increment when applicable: goal/plan, agent/team, policy, decision, approval/exception, trace, UI-surface, and outcome scope
 - Backend scope
 - Frontend scope when UI is in scope
 - Acceptance behavior
 - Pending questions affecting the sprint
 - Implementation task groups
-- Module-level full-stack test plan
+- Module-level full-stack test plan, including evaluation, policy, trace, and outcome validation when applicable
 - Done criteria
 - Explicit defer list
 
@@ -428,6 +444,7 @@ Each `specs/sprints/*.md` file should contain:
 Each `specs/slices/*.md` file should contain:
 - Scope
 - Business goal
+- AI-first interpretation when applicable: delegated work, retained authority, durable substrate objects, policy/approval/exception rules, trace needs, UI surfaces, and outcome loop
 - Akka components involved
 - Domain shape or business objects
 - Commands and write operations
@@ -444,12 +461,13 @@ Each `specs/slices/*.md` file should contain:
 Each `specs/backlog/*.md` file should contain:
 - Purpose
 - Delivery goal
+- AI-first scope when applicable, including delegated work, retained authority, durable objects, agent/team boundaries, policies, approvals/exceptions, evidence/risk/confidence/impact, traces, UI surfaces, and outcomes
 - Recommended package layout additions
 - Class-by-class file list
 - Concrete endpoint list
 - Write-model design decisions
-- View/workflow/consumer/timer design as relevant
-- Test plan by file/class
+- Agent/workflow/view/consumer/timer design as relevant
+- Test plan by file/class, including guardrail/evaluation/policy/audit/outcome checks when applicable
 - Implementation order
 - Suggested harness task breakdown
 - Done criteria
@@ -511,13 +529,17 @@ Avoid:
 Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
+- high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition
+- AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
 - module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered
 - backlog files exist and align by number with sprint or slice specs
+- backlogs preserve AI-first operating-model, governance, audit, UI-surface, and outcome implications before Akka task breakdown
 - `specs/pending-questions.md` exists when unresolved decisions block safe task generation
 - unresolved `blocking` questions do not silently become implementation assumptions
 - `specs/pending-tasks.md` exists when follow-on implementation work remains and is sufficiently unblocked
 - pending tasks map to backlog task-breakdown items
 - pending tasks include required reads, skills, expected outputs, checks, and done criteria
+- AI-first pending tasks include relevant AI-first reads/skills plus concrete Akka substrate skills
 - cross-cutting concerns are not duplicated excessively across modules, sprints, or slices
 - browser UI work has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created
 - each backlog supports bounded implementation work
