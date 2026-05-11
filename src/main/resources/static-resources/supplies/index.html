@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Supplies autopilot command center</title>
+    <link rel="stylesheet" href="/ui/supplies/app.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to supplies supervision</a>
+    <div class="app-shell">
+      <nav class="sidebar" aria-label="Supplies autopilot navigation">
+        <div class="brand" aria-label="Agent-first DCA supplies autopilot">
+          <span class="brand-mark" aria-hidden="true">SA</span>
+          <span>Supplies Autopilot</span>
+        </div>
+        <a class="nav-link is-active" href="#command-center">Command center</a>
+        <a class="nav-link" href="#decision-card">Decision cards</a>
+        <a class="nav-link" href="#trace-panel">Trace lookup</a>
+      </nav>
+
+      <main id="main-content" class="main-content" tabindex="-1">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">GOAL-02 · timely and policy-safe fulfillment</p>
+            <h1>Supplies command center</h1>
+            <p class="lede">Supervise recommendations, approval gates, policy triggers, evidence, and trace context before human action.</p>
+          </div>
+          <button id="refresh-button" class="button secondary" type="button">Refresh queues</button>
+        </header>
+
+        <section class="state-banner" aria-live="polite" aria-atomic="true" id="status-region">Loading supplies supervision queues…</section>
+
+        <section id="command-center" class="dashboard-grid" aria-labelledby="command-heading">
+          <div class="section-header full-span">
+            <div>
+              <p class="eyebrow">Command center</p>
+              <h2 id="command-heading">Attention queues</h2>
+            </div>
+            <p class="section-note">Risk and pending-decision queues are read models backed by durable workflow and decision facts.</p>
+          </div>
+
+          <article class="card queue-card" aria-labelledby="pending-heading">
+            <h3 id="pending-heading">Pending decisions</h3>
+            <p class="card-note">Requires a reviewer when policy, cost, abnormal usage, or confidence thresholds need retained human authority.</p>
+            <div id="pending-decisions" class="stack" data-empty="No pending approval cards."></div>
+          </article>
+
+          <article class="card queue-card" aria-labelledby="risk-heading">
+            <h3 id="risk-heading">Supply risk rows</h3>
+            <p class="card-note">Operational risk signals with trace and outcome references for audit follow-up.</p>
+            <div id="risk-rows" class="stack" data-empty="No waiting supply risks."></div>
+          </article>
+
+          <article class="card full-span" aria-labelledby="history-heading">
+            <h3 id="history-heading">Recent auto or suppressed shipments</h3>
+            <p class="card-note">Reference slice surfaces the status query; production digest/history may use richer filters.</p>
+            <div id="history-rows" class="history-grid" data-empty="No recent auto or suppressed shipments loaded."></div>
+          </article>
+        </section>
+
+        <section id="decision-card" class="detail-layout" aria-labelledby="decision-heading">
+          <article class="card decision-card">
+            <div class="section-header">
+              <div>
+                <p class="eyebrow">Decision card</p>
+                <h2 id="decision-heading">Evidence, risk, policy, and action</h2>
+              </div>
+              <span id="decision-status" class="badge neutral">Select a decision</span>
+            </div>
+            <div id="decision-detail" class="decision-detail empty-state">
+              Select a pending decision to inspect recommendation, evidence, policy triggers, alternatives, trace events, and outcome references before acting.
+            </div>
+          </article>
+
+          <aside class="card action-card" aria-labelledby="action-heading">
+            <h3 id="action-heading">Reviewer action</h3>
+            <p class="card-note">Approval, rejection, or suppression remains disabled until a decision card is loaded with evidence, policy, risk/confidence, and trace context visible.</p>
+            <form id="decision-action-form" novalidate>
+              <label for="actor-input">Reviewer</label>
+              <input id="actor-input" name="actor" autocomplete="name" value="ops-supervisor" />
+              <p id="actor-error" class="field-error" role="alert"></p>
+
+              <label for="rationale-input">Rationale</label>
+              <textarea id="rationale-input" name="rationale" rows="4" placeholder="Explain why the evidence, policy, risk, and trace support this action."></textarea>
+              <p id="rationale-error" class="field-error" role="alert"></p>
+
+              <div class="action-buttons" role="group" aria-label="Decision actions">
+                <button class="button primary" type="submit" name="action" value="approve" disabled>Approve shipment</button>
+                <button class="button danger" type="submit" name="action" value="reject" disabled>Reject recommendation</button>
+                <button class="button secondary" type="submit" name="action" value="suppress" disabled>Suppress shipment</button>
+              </div>
+              <p id="action-message" class="form-message" aria-live="polite"></p>
+            </form>
+          </aside>
+        </section>
+
+        <section id="trace-panel" class="card" aria-labelledby="trace-heading">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Audit / work trace</p>
+              <h2 id="trace-heading">Trace context</h2>
+            </div>
+            <a id="trace-link" class="trace-link" href="#trace-panel" aria-disabled="true">No trace selected</a>
+          </div>
+          <ol id="trace-events" class="timeline" aria-label="Decision trace events"></ol>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/ui/supplies/app.js" data-api-base="/api/supplies"></script>
+  </body>
+</html>

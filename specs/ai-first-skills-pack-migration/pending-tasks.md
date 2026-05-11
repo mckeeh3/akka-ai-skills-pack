@@ -1177,7 +1177,7 @@
 
 ### TASK-08-006: Implement supplies command-center and decision-card web UI
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/06-supplies-command-center-ui.md
 - depends on: [TASK-08-005]
@@ -1215,7 +1215,9 @@
   - git commit created for this task
 - notes:
   - unblocked by Q-001 resolution: selected `theme-1-northpeak-analytics` and reconciled it into `docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md`.
-  - future implementation task; use the selected style guide rather than inventing a theme
+  - completed: added packaged supplies command-center and decision-card UI, typed browser API client behavior, accessible/loading/empty/error/action states, Northpeak style tokens, Akka static hosting endpoint, and route/asset smoke tests; no separate frontend project existed, so no frontend build command was run
+  - checks: `mvn -q -Dtest=com.example.application.supplies.SupplyAutopilotUiEndpointIntegrationTest test`; `mvn -q -DskipTests compile`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement supplies command center UI`
 
 ### TASK-08-007: Add slice-level AI-first acceptance and trace/outcome tests
 
