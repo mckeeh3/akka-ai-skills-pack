@@ -1144,7 +1144,7 @@
 
 ### TASK-08-005: Implement supplies HTTP APIs and endpoint tests
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/05-supplies-http-apis.md
 - depends on: [TASK-08-004]
@@ -1171,7 +1171,9 @@
   - APIs drive the slice without bypassing workflow/entity authority gates
   - git commit created for this task
 - notes:
-  - future implementation task; no production auth, gRPC, MCP, or frontend
+  - completed: added `/api/supplies` HTTP endpoints for telemetry intake, risk and pending-decision queues, decision detail, approve/reject/suppress actions, and trace lookup; endpoint code maps validation, missing decision, stale action, and workflow authority failures to HTTP responses while delegating policy/side-effect authority to the workflow/entity
+  - checks: `mvn -q -Dtest=com.example.application.supplies.SupplyAutopilotEndpointIntegrationTest test`; `mvn -q -DskipTests compile`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement supplies HTTP APIs`
 
 ### TASK-08-006: Implement supplies command-center and decision-card web UI
 
