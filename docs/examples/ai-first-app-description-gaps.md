@@ -22,10 +22,12 @@ Status: **completed non-runnable AI-first app-description reference**.
 
 Sprint 6 populated this worked example with product, operating-model, agent-team, policy, decision, workflow, UI, audit, outcome, traceability, and implementation-slice examples.
 
-Archived provenance inputs:
-- `specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md`
-- `specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md`
-- `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md`
+Source-repository provenance inputs:
+- archived DCA architectural reconstruction concept note
+- archived office-device lifecycle concept note
+- archived AI-first SaaS UI patterns concept note
+
+Installed-pack users do not need the source-only archive files; use the completed DCA reference tree and canonical docs as operative guidance.
 
 Current tree shape:
 

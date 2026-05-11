@@ -3,8 +3,8 @@
 ## Status and provenance
 
 This is the canonical AI-first SaaS architecture doctrine for this skills pack.
-It distills temporary concept material now archived under `../specs/ai-first-skills-pack-migration/archive/inbox/docs/`.
-Those archived inbox files are provenance only; this document is the authority for repository guidance and routing work.
+It distills temporary migration concept material retained only as source-repository provenance.
+Those archived source materials are not installed-pack guidance; this document is the authority for repository guidance and routing work.
 
 ## Default target architecture
 

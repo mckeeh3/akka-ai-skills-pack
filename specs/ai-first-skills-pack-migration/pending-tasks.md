@@ -1284,7 +1284,7 @@
 
 ### TASK-09-002: Remove source-only archive paths from installed-facing docs
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
 - task brief: none
 - depends on: [TASK-09-001]
@@ -1307,6 +1307,10 @@
 - done criteria:
   - installed users are not pointed at missing source-only archive files as operative guidance
   - git commit created for this task
+- notes:
+  - completed: removed direct source-only migration archive paths from installed-facing AI-first doctrine, DCA example, app-description gap note, and root README wording; retained provenance as generic source-maintainer context rather than operative installed-pack guidance
+  - checks: `rg -n "specs/ai-first-skills-pack-migration/archive/inbox|archive/inbox" docs README.md pack/AGENTS.md pack/README.md skills/README.md install.sh pack/manifest.yaml`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Remove source-only archive paths from installed docs`
 
 ### TASK-09-003: Package docs referenced by installed skills
 

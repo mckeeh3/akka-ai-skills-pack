@@ -10,13 +10,13 @@ In a downstream project, an installed skills pack would maintain that project's 
 
 ## Source material mapping
 
-This example intentionally promotes selected ideas from temporary inbox source material into the canonical app-description shape.
-The inbox files remain provenance until the migration cleanup task disposes of them.
+This example intentionally promotes selected ideas from temporary migration source material into the canonical app-description shape.
+Installed-pack users do not need those source-only provenance files; use this example and the canonical docs below as operative guidance.
 
 | Source | How this example uses it |
 |---|---|
-| `specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md` | Primary product/lifecycle source: customer, device, DCA collector states; agent team; workflows; UI surfaces; policy examples; decision-card fields. |
-| `specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md` | Architectural framing source: DCA-first slice, event-sourced substrate, policy network, agent ensemble, supervision surfaces, supplies-fulfillment first slice. |
+| Archived office-device lifecycle concept note | Primary product/lifecycle source: customer, device, DCA collector states; agent team; workflows; UI surfaces; policy examples; decision-card fields. |
+| Archived DCA architectural reconstruction concept note | Architectural framing source: DCA-first slice, event-sourced substrate, policy network, agent ensemble, supervision surfaces, supplies-fulfillment first slice. |
 | `docs/ai-first-saas-application-architecture.md` | Canonical doctrine: goals, bounded agents, policies, approvals, traces, outcomes, and Akka substrate mapping. |
 | `docs/internal-app-description-architecture.md` | Canonical layer structure and ownership rules for this tree. |
 
