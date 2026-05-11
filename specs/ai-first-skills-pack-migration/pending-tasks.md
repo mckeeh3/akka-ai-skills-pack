@@ -12,7 +12,7 @@
 
 ### TASK-01-001: Promote canonical AI-first SaaS doctrine
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/01-architectural-pivot-and-doctrine/01-canonical-doctrine-promotion.md
 - depends on: []
