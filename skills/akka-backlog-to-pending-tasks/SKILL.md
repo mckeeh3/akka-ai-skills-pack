@@ -19,6 +19,7 @@ Create or repair `specs/pending-tasks.md` so future harness runs can execute one
 
 The skill must:
 - read existing solution, slice, backlog, and task-brief artifacts
+- preserve AI-first SaaS operating-model, governance, audit, UI-surface, and outcome context from those artifacts when applicable
 - derive queue tasks from backlog `Suggested harness task breakdown` sections
 - preserve existing queue task IDs and statuses when a queue already exists
 - create stable task IDs for missing queue entries
@@ -45,6 +46,7 @@ Do **not** use this skill when:
 
 Read these first if present:
 - `../README.md`
+- `../../docs/ai-first-saas-application-architecture.md` when backlog work involves delegated operations, agents, governance, decisions, supervision, audit, or outcomes
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
@@ -60,7 +62,7 @@ Read these first if present:
 - relevant `../../specs/modules/*.md` and `../../specs/sprints/*.md` files when present
 - relevant `../../specs/slices/*.md` files when needed to resolve dependencies or reads
 
-Do not reread the original PRD unless the existing backlogs are too ambiguous to create queue tasks.
+Do not reread the original PRD unless the existing backlogs are too ambiguous to create queue tasks. Prefer carrying forward the AI-first interpretation already captured in solution, sprint, slice, backlog, task brief, app-description, and pending-question artifacts.
 
 ## Output
 
@@ -79,6 +81,14 @@ Use the contract in `../../docs/pending-task-queue.md`.
 Derive queue tasks from each backlog file's `Suggested harness task breakdown` section.
 
 Do not create one queue task per class name unless the backlog explicitly frames each class as a separate harness-sized task.
+
+### AI-first context preservation
+
+When source artifacts classify work as AI-first or include delegated operations, agents, policy governance, approvals, exceptions, audit traces, supervision UI, or outcome loops:
+- include `docs/ai-first-saas-application-architecture.md` in required reads unless a more focused AI-first task brief already contains the needed context
+- include the smallest relevant AI-first companion skill alongside component skills, such as `ai-first-saas-agent-team-design`, `ai-first-saas-policy-governance`, `ai-first-saas-decision-cards`, `ai-first-saas-audit-trace`, `ai-first-saas-ui-surfaces`, or `ai-first-saas-outcomes-metrics`
+- preserve authority, approval, policy, evidence, trace, and outcome constraints in task notes or done criteria when those constraints affect implementation
+- keep implementation tasks bounded to the Akka substrate component being built; do not create broad doctrine-reading tasks unless the backlog explicitly asks for planning or docs
 
 ### Question gate
 
@@ -139,6 +149,8 @@ Each task should list the smallest useful reads, usually:
 - `specs/akka-solution-plan.md`
 - the source backlog file
 - the matching task brief when one exists
+- relevant cross-cutting spec files, including AI-first operating-model, governance, audit, outcome, and UI-surface specs when they constrain the task
+- `docs/ai-first-saas-application-architecture.md` when the task must preserve AI-first semantics and the local specs do not fully capture them
 - relevant cross-cutting spec files, including `*ui-style-guide*.md` for browser UI tasks
 - relevant module and sprint specs when module-oriented planning is present
 - relevant slice spec only when needed
@@ -147,7 +159,7 @@ Do not list the original PRD by default.
 
 ### Skills
 
-List exact skills required for the task's component family.
+List exact skills required for the task's component family. Add `ai-first-saas` and the smallest relevant AI-first companion skill only when the task must implement or preserve agentic operating-model semantics; do not add the whole AI-first family by default.
 
 Examples:
 - entity task: `akka-event-sourced-entities`, `akka-ese-application-entity`, `akka-ese-unit-testing`
@@ -201,8 +213,8 @@ Before finishing, verify:
 - existing task IDs and statuses were preserved where possible
 - unresolved blocking questions are reflected as blocked/omitted task work, not hidden assumptions
 - dependencies are neither missing nor over-serialized
-- required reads are minimal and sufficient
-- skills match the component family
+- required reads are minimal and sufficient, including AI-first doctrine or specs only where they affect the task
+- skills match the component family plus any necessary AI-first companion skill
 - required checks and done criteria are concrete
 - no application code was changed
 

@@ -30,6 +30,7 @@ The skill must:
 - keep the task scope bounded
 - prefer fresh-context execution
 - load only the task's required reads and listed skills
+- preserve any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
 - generate or update the requested outputs
 - run the task's required checks when possible
 - update the queue status before finishing
@@ -39,6 +40,7 @@ The skill must:
 
 Read these first if present:
 - `../README.md`
+- `../../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/intent-driven-usage-flow.md`
@@ -47,9 +49,9 @@ Read these first if present:
 - the target project's `specs/pending-questions.md` if it exists
 - the target project's `specs/pending-tasks.md`
 
-Then read only the selected task's `required reads` and the listed implementation skills.
+Then read only the selected task's `required reads` and the listed implementation skills. If the selected task lists `ai-first-saas` or an AI-first companion skill, load only those listed AI-first skills, not the whole family.
 
-Do not reread the entire PRD unless the selected task explicitly lists it as a required read or the task is blocked without it.
+Do not reread the entire PRD unless the selected task explicitly lists it as a required read or the task is blocked without it. Prefer the AI-first interpretation already preserved in app-description, solution, sprint, slice, backlog, task brief, pending-question, or queue notes.
 
 ## Use this skill when
 
@@ -135,7 +137,7 @@ If the user did not name a task ID:
 
 If a task is `superseded`, do not execute it unless the user explicitly asks to inspect or replace it.
 
-If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
+If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. Treat unresolved AI-first authority, approval-gate, policy, evidence, risk-threshold, supervision UI, trace-obligation, evaluation, or outcome-metric questions as blockers for affected work. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
 
 If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing a theme.
 
@@ -170,6 +172,7 @@ Read only:
 - the task's `required reads`
 - the task's `task brief`, if present
 - focused skills listed under `skills`
+- the smallest AI-first doctrine or companion-skill context needed to preserve authority, governance, audit, supervision, or outcome constraints named by the task
 - source files directly needed to modify or test the expected outputs
 
 Avoid broad context loading.
@@ -188,6 +191,7 @@ Not allowed:
 - opportunistically implementing adjacent backlog items
 - changing architecture beyond the task contract
 - silently widening scope because more context is available
+- inventing agent authority, policy defaults, approval thresholds, audit obligations, UI style, or outcome metrics not established by the task or accepted specs
 
 ### 5. Run required checks
 
@@ -253,6 +257,7 @@ Block instead of guessing when:
 - required reads are missing
 - the task has unsatisfied dependencies
 - required architecture choices or blocking pending questions are unresolved
+- AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
 - the task conflicts with current code or specs
 - a required external credential/service is unavailable and no mock/test substitute is specified
 - the task cannot be completed without widening into another queue item
@@ -284,5 +289,6 @@ Before finishing, verify:
 - the queue status was updated
 - only the selected task's scope was implemented
 - required reads and skills were loaded narrowly
+- any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
 - the next runnable pending task was identified, or the absence of one was reported

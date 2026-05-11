@@ -475,7 +475,7 @@
 
 ### TASK-04-005: Refactor pending task materialization/execution guidance
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/04-prd-spec-backlog-intake-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-002, TASK-04-004]
@@ -495,6 +495,9 @@
   - AI-first required reads and skills flow into pending tasks
 - done criteria:
   - pending task execution remains bounded and AI-first-aware
+- notes:
+  - completed: updated backlog-to-pending and do-next-pending-task guidance so AI-first reads, companion skills, blockers, constraints, and no-guessing rules flow into materialized and executed tasks while preserving bounded one-task execution
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor pending task guidance for AI-first`
 
 ### TASK-05-001: Reframe agent and workflow implementation skills
 
