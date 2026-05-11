@@ -687,7 +687,7 @@
 
 ### TASK-06-003: Create DCA agent team, policy, decisions, and workflow examples
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-06-002]
@@ -708,6 +708,9 @@
   - examples map to Akka substrate concepts where useful
 - done criteria:
   - example demonstrates agentic governance and decision flow
+- notes:
+  - completed: added DCA agent-team design, policy/approval gate examples, decision-card and exception evidence schema, supplies autopilot flow, lifecycle/exception flows, and approval/fail-safe rules with Akka substrate mappings
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Create DCA governance and workflow examples`
 
 ### TASK-06-004: Create DCA UI, audit, outcomes, and implementation slices examples
 
