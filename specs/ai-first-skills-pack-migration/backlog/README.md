@@ -19,3 +19,4 @@ This directory contains sprint-aligned build backlogs for the AI-first skills pa
 4. `04-prd-spec-backlog-intake-refactor-build-backlog.md`
 5. `05-substrate-implementation-skill-reframing-build-backlog.md`
 6. `06-worked-example-and-inbox-cleanup-build-backlog.md`
+7. `07-ai-first-alignment-hardening-build-backlog.md`

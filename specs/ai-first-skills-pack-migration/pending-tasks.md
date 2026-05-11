@@ -761,3 +761,223 @@
 - notes:
   - completed: moved former `skills/inbox/` docs, images, and draft skills to `specs/ai-first-skills-pack-migration/archive/inbox/`, deleted `.DS_Store`, updated active guidance to treat archive material as provenance only, and refreshed final disposition documentation
   - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Archive temporary AI-first inbox material`
+
+### TASK-07-001: Align installed pack packaging and installed guidance
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-06-005]
+- required reads:
+  - AGENTS.md
+  - pack/AGENTS.md
+  - pack/README.md
+  - pack/manifest.yaml
+  - install.sh
+  - docs/ai-first-saas-application-architecture.md
+  - skills/README.md
+  - specs/ai-first-skills-pack-migration/sprints/07-ai-first-alignment-hardening-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - pack/AGENTS.md
+  - pack/README.md
+  - pack/manifest.yaml
+  - install.sh
+  - optional dist/release generation notes if needed
+- required checks:
+  - manifest includes all `ai-first-saas*` skill directories and any missing existing skill directory such as `akka-web-ui-ux-design`
+  - installer packages AI-first doctrine and DCA worked-example docs referenced by installed skills
+  - installed-pack guidance says AI-first SaaS is the default target architecture when applicable
+- done criteria:
+  - installed pack can provide AI-first docs, routing skills, and worked-example references needed by installed skills
+  - git commit created for this task
+
+### TASK-07-002: Audit and fix skill/doc relative paths
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-07-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - skills/ai-first-saas/SKILL.md
+  - skills/ai-first-saas-object-model/SKILL.md
+  - skills/ai-first-saas-agent-team-design/SKILL.md
+  - skills/ai-first-saas-policy-governance/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - skills/ai-first-saas-audit-trace/SKILL.md
+  - skills/ai-first-saas-ui-surfaces/SKILL.md
+  - skills/ai-first-saas-outcomes-metrics/SKILL.md
+  - skills/akka-solution-decomposition/SKILL.md
+  - install.sh
+  - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - corrected relative paths in affected `SKILL.md` files
+  - optional link/path audit note or command in task notes
+- required checks:
+  - source skill paths resolve relative to each skill directory
+  - install-time rewrite rules still produce installed-pack paths for `AGENTS.md`, `skills/README.md`, docs, and examples
+  - no new broken links to missing docs or skills are introduced
+- done criteria:
+  - AI-first and decomposition skill required-read paths are correct in source and compatible with install rewriting
+  - git commit created for this task
+
+### TASK-07-003: Align core flow docs with AI-first default
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-07-002]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/intent-driven-usage-flow.md
+  - docs/prd-to-akka-flow.md
+  - docs/module-sprint-planning.md
+  - docs/solution-plan-to-implementation-queue.md
+  - docs/pending-question-queue.md
+  - docs/pending-task-queue.md
+  - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- skills:
+  - ai-first-saas
+  - akka-solution-decomposition
+  - akka-prd-to-specs-backlog
+- expected outputs:
+  - updated core flow docs listed above
+- required checks:
+  - docs teach AI-first interpretation before CRUD/component decomposition when applicable
+  - docs preserve low-token utility and do not duplicate the full doctrine
+  - pending question/task docs mention AI-first blockers and context preservation where relevant
+- done criteria:
+  - core docs are consistent with AI-first routing in `skills/README.md` and `akka-solution-decomposition`
+  - git commit created for this task
+
+### TASK-07-004: Add AI-first checks to app-description lifecycle skills
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-07-003]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/internal-app-description-architecture.md
+  - docs/app-description-maintenance-flow.md
+  - skills/app-description-change-impact/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - skills/app-description-readiness-summary/SKILL.md
+  - skills/app-generate-app/SKILL.md
+  - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- skills:
+  - app-descriptions
+  - app-description-change-impact
+  - app-description-readiness-assessment
+  - app-description-readiness-summary
+  - app-generate-app
+  - ai-first-saas
+- expected outputs:
+  - updated app-description lifecycle skills listed above
+- required checks:
+  - readiness checks include `15-operating-model/` when delegated operations are in scope
+  - change impact detects authority, policy, decision, trace, outcome, and AI-first UI ripple effects
+  - generation blocks or surfaces missing AI-first semantics instead of inventing them
+- done criteria:
+  - app-description lifecycle cannot silently ignore AI-first operating-model completeness
+  - git commit created for this task
+
+### TASK-07-005: Preserve AI-first context in leaf planning and queue skills
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-07-003]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - skills/akka-slice-spec-to-backlog/SKILL.md
+  - skills/akka-backlog-item-to-task-brief/SKILL.md
+  - skills/akka-pending-task-queue-maintenance/SKILL.md
+  - skills/akka-pending-question-queue-maintenance/SKILL.md
+  - skills/akka-do-next-pending-question/SKILL.md
+  - skills/akka-entity-type-selection/SKILL.md
+  - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- skills:
+  - ai-first-saas
+  - akka-slice-spec-to-backlog
+  - akka-backlog-item-to-task-brief
+  - akka-pending-task-queue-maintenance
+  - akka-pending-question-queue-maintenance
+  - akka-do-next-pending-question
+  - akka-entity-type-selection
+- expected outputs:
+  - updated leaf planning and queue skills listed above
+- required checks:
+  - slice/backlog/task brief generation preserves delegated work, retained authority, policies, decisions, traces, UI surfaces, and outcomes when present
+  - queue maintenance treats unresolved AI-first authority, approval, policy, risk, trace, UI, evaluation, or outcome decisions as blockers for affected work
+  - entity type selection includes AI-first audit-grade object heuristics
+- done criteria:
+  - follow-on planning and queue maintenance no longer strip AI-first context
+  - git commit created for this task
+
+### TASK-07-006: Reconcile DCA example and AI-first gap docs
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-07-004, TASK-07-005]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/ai-first-examples-and-tests-gap-list.md
+  - docs/examples/ai-first-app-description-gaps.md
+  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/agent-first-dca-app-description/app-description/15-operating-model/README.md
+  - docs/examples/agent-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md
+  - docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- skills:
+  - ai-first-saas
+  - app-descriptions
+- expected outputs:
+  - updated DCA example README/layer notes and gap docs
+- required checks:
+  - gap docs distinguish completed DCA app-description coverage from remaining executable implementation/test gaps
+  - no stale “planned fill order” language remains for completed Sprint 6 tasks
+  - expected app-description file placement is consistent for audit/trace/outcome material
+- done criteria:
+  - DCA example and gap docs accurately reflect current AI-first coverage and remaining work
+  - git commit created for this task
+
+### TASK-07-007: Plan the first executable AI-first reference implementation slice
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-07-006]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/ai-first-examples-and-tests-gap-list.md
+  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  - specs/ai-first-skills-pack-migration/sprints/07-ai-first-alignment-hardening-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
+- skills:
+  - ai-first-saas
+  - akka-prd-to-specs-backlog
+  - akka-solution-decomposition
+- expected outputs:
+  - future sprint/backlog/task plan for one executable AI-first reference slice
+  - optional updates to `docs/ai-first-examples-and-tests-gap-list.md` pointing to the new plan
+- required checks:
+  - selected slice is small enough for follow-on implementation tasks
+  - plan names concrete Akka substrate components, web/API surfaces, and tests
+  - plan does not implement code
+- done criteria:
+  - a follow-on implementation plan exists for the first executable AI-first reference slice
+  - git commit created for this task
