@@ -144,6 +144,16 @@ Before calling a generated design AI-first, verify:
 
 ## Routing implications for future tasks
 
-When high-level product input arrives, route first through AI-first interpretation when the product includes delegated operational work or agentic behavior. Then choose among description-first maintenance, Akka solution decomposition, or focused implementation skills.
+When high-level product input arrives, route first through AI-first interpretation when the product includes delegated operational work or agentic behavior. Start with `../skills/ai-first-saas/SKILL.md`, then choose among description-first maintenance, Akka solution decomposition, PRD/spec/backlog planning, or focused implementation skills.
 
-Planned future AI-first skill files may provide more focused guidance for object modeling, agent-team design, governance, decision cards, audit traces, UI surfaces, outcomes, and related topics. Until those planned skills exist, use this document plus existing `../skills/README.md` routing and component skills.
+Use the existing AI-first companion skills only for concerns that are actually in scope:
+
+- `../skills/ai-first-saas-object-model/SKILL.md` for durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects.
+- `../skills/ai-first-saas-agent-team-design/SKILL.md` for bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision.
+- `../skills/ai-first-saas-policy-governance/SKILL.md` for policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits.
+- `../skills/ai-first-saas-decision-cards/SKILL.md` for recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions.
+- `../skills/ai-first-saas-audit-trace/SKILL.md` for durable work, decision, policy, tool, data-access, approval, and outcome traces.
+- `../skills/ai-first-saas-ui-surfaces/SKILL.md` for supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces.
+- `../skills/ai-first-saas-outcomes-metrics/SKILL.md` for outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces.
+
+These skills route to the existing Akka substrate implementation skills; they do not replace component-specific guidance for agents, workflows, entities, views, consumers, timed actions, endpoints, or web UI delivery.

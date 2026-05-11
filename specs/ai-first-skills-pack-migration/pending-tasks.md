@@ -1256,7 +1256,7 @@
 
 ### TASK-09-001: Refresh canonical doctrine skill references
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
 - task brief: none
 - depends on: [TASK-08-007]
@@ -1277,6 +1277,10 @@
 - done criteria:
   - canonical doctrine points to existing AI-first skill files instead of future/planned skills
   - git commit created for this task
+- notes:
+  - completed: replaced stale planned/future companion-skill wording in the canonical doctrine with direct references to the existing top-level AI-first SaaS skill and companion skill files
+  - checks: `rg -n "planned future AI-first skill files|Until those planned skills exist|future/planned|planned skills" docs/ai-first-saas-application-architecture.md`; verified referenced `../skills/ai-first-saas*/SKILL.md` paths exist
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refresh canonical doctrine skill references`
 
 ### TASK-09-002: Remove source-only archive paths from installed-facing docs
 
