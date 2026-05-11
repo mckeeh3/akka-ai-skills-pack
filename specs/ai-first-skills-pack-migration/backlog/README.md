@@ -6,6 +6,7 @@ This directory contains sprint-aligned build backlogs for the AI-first skills pa
 
 - Use `../pending-tasks.md` as the source of executable task order.
 - Execute one task per fresh Pi session.
+- Each task must make a git commit containing only that task's intended changes and its queue-status update before it is marked `done`.
 - Each backlog item should be small enough for one focused session or point to a task brief.
 - Sprint 1 has physical task briefs under `../tasks/01-architectural-pivot-and-doctrine/`.
 - Later sprint backlog items are intentionally detailed enough to guide future task-brief creation, but should be revalidated after earlier sprints complete.

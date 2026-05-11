@@ -49,6 +49,7 @@ Because the actual `skills/ai-first-saas` skill may not exist yet, avoid links t
 
 ## Done criteria
 
+- A git commit is created for this task before marking it `done`; include the commit hash in `pending-tasks.md` notes when possible.
 - Future agents can infer that high-level product inputs now need AI-first interpretation before CRUD/component decomposition.
 - The update is concise and does not bloat the routing map unnecessarily.
 - `pending-tasks.md` is updated to mark `TASK-01-003` done after completion.

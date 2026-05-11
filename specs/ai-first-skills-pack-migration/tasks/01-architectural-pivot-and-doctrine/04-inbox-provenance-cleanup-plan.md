@@ -54,6 +54,7 @@ For each inbox file, record:
 
 ## Done criteria
 
+- A git commit is created for this task before marking it `done`; include the commit hash in `pending-tasks.md` notes when possible.
 - Inbox files are no longer ambiguous to future agents.
 - Sprint 6 has enough guidance to clean up temporary material intentionally.
 - `pending-tasks.md` is updated to mark `TASK-01-004` done after completion.

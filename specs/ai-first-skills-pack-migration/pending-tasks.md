@@ -6,6 +6,8 @@
 - Select the first `pending` task whose dependencies are satisfied.
 - Preserve task IDs; supersede obsolete tasks rather than deleting them.
 - Update task status before finishing the harness response.
+- Each task must make one git commit before being marked `done`; the commit should include only that task's intended changes and its queue-status update.
+- Record the task commit hash in that task's `notes` when possible.
 - This queue is for the AI-first skills pack migration, rooted at `specs/ai-first-skills-pack-migration/`.
 
 ## Tasks

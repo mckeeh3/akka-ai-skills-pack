@@ -10,6 +10,8 @@ The migration is planning-only until individual pending tasks are executed in fr
 - Use `pending-tasks.md` as the durable queue.
 - Start with Sprint 1 tasks. Later sprint task briefs should be materialized or adjusted after earlier discoveries.
 - Do not edit implementation/source guidance outside the selected task scope.
+- Each task must end by making a git commit containing only that task's intended changes and the corresponding `pending-tasks.md` status update.
+- Record the commit hash in the task's `notes` before marking it `done` when possible.
 - Preserve task IDs; supersede obsolete tasks instead of renumbering.
 
 ## Read order

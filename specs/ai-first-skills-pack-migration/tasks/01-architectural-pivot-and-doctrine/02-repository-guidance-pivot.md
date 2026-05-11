@@ -54,6 +54,7 @@ The update should say:
 
 ## Done criteria
 
+- A git commit is created for this task before marking it `done`; include the commit hash in `pending-tasks.md` notes when possible.
 - A future session-start read of `AGENTS.md` makes the AI-first pivot clear.
 - Existing app-description and 3-stage Akka model guidance remains usable but is reframed as subordinate to AI-first intent interpretation for high-level product input.
 - `pending-tasks.md` is updated to mark `TASK-01-002` done after completion.

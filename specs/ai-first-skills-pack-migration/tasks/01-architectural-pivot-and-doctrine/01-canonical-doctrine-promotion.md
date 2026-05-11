@@ -54,6 +54,7 @@ The document should explain:
 
 ## Done criteria
 
+- A git commit is created for this task before marking it `done`; include the commit hash in `pending-tasks.md` notes when possible.
 - The new doc is concise enough for future routing tasks to use.
 - It clearly states the AI-first default and target stack.
 - It treats inbox content as source material, not authority.
