@@ -1104,7 +1104,7 @@
 
 ### TASK-08-004: Implement supplies views, trace fanout, and stale-decision timer
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/04-supplies-views-trace-timer.md
 - depends on: [TASK-08-003]
@@ -1138,7 +1138,9 @@
   - supervision queues and trace lookup are backed by durable facts
   - git commit created for this task
 - notes:
-  - future implementation task; avoid frontend and endpoint work
+  - completed: added workflow-backed supply risk supervision view, event-sourced pending decision and trace lookup views, stale-decision timed action callback, focused view/timer tests, and duplicate stale-timer idempotency coverage; no separate trace consumer was needed because trace lookup is projected directly from durable `SupplyDecisionEntity` events
+  - checks: `mvn -q -Dtest=com.example.application.supplies.SupplyViewsIntegrationTest,com.example.application.supplies.SupplyDecisionTimedActionTest,com.example.application.supplies.SupplyAutopilotWorkflowIntegrationTest test`; `mvn -q -DskipTests compile`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement supplies views and stale timer`
 
 ### TASK-08-005: Implement supplies HTTP APIs and endpoint tests
 

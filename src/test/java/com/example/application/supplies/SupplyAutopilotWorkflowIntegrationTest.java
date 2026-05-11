@@ -169,12 +169,14 @@ class SupplyAutopilotWorkflowIntegrationTest extends TestKitSupport {
         .untilAsserted(
             () -> assertEquals(SupplyAutopilotWorkflow.Status.WAITING_FOR_APPROVAL, getWorkflow("supply-stale-1").status()));
 
+    var staleCommand =
+        new SupplyAutopilotWorkflow.EscalateStaleDecision(
+            "idem-stale-supply-stale-1", "supply-decision-timer", "approval SLA elapsed");
+
     componentClient
         .forWorkflow("supply-stale-1")
         .method(SupplyAutopilotWorkflow::escalateStale)
-        .invoke(
-            new SupplyAutopilotWorkflow.EscalateStaleDecision(
-                "idem-stale-supply-stale-1", "supply-decision-timer", "approval SLA elapsed"));
+        .invoke(staleCommand);
 
     Awaitility.await()
         .ignoreExceptions()
@@ -186,6 +188,15 @@ class SupplyAutopilotWorkflowIntegrationTest extends TestKitSupport {
               assertFalse(state.shipmentPrepared());
               assertEquals(SupplyDecision.Status.STALE_ESCALATED, getDecision("supply-stale-1").status());
             });
+
+    var duplicateTimerCallback =
+        componentClient
+            .forWorkflow("supply-stale-1")
+            .method(SupplyAutopilotWorkflow::escalateStale)
+            .invoke(staleCommand);
+
+    assertEquals(SupplyAutopilotWorkflow.Status.STALE_ESCALATED, duplicateTimerCallback.status());
+    assertEquals(3, getDecision("supply-stale-1").traceEvents().size());
   }
 
   @Test
