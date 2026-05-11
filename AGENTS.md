@@ -59,7 +59,7 @@ Implications:
 
 Treat this repository as a **requirements-first, intent-driven Akka pack for AI coding agents** whose default generated-application target is now **AI-first SaaS on Akka**.
 
-The canonical doctrine is `docs/ai-first-saas-application-architecture.md`. Temporary concept files under `skills/inbox/` are provenance/source material only until explicit migration tasks promote, merge, archive, or delete them.
+The canonical doctrine is `docs/ai-first-saas-application-architecture.md`. Former temporary concept files are archived under `specs/ai-first-skills-pack-migration/archive/inbox/` as provenance/source material only.
 
 For high-level product input, first ask whether the product should be interpreted as an AI-first SaaS operating model: durable goals and plans, bounded agent or agent-team execution, policy/permission controls, human supervision, decision/exception handling, audit traces, and outcome loops. Then choose the description-first, decomposition, or focused implementation path.
 
@@ -188,7 +188,7 @@ In short:
 Use `docs/ai-first-saas-application-architecture.md` as the repository's canonical AI-first architecture doctrine.
 It defines the default target architecture for generated applications and the vocabulary for goals, agent teams, policies, decisions, traces, governance, UI surfaces, and outcome loops.
 
-`skills/inbox/` contains temporary source material gathered for the migration. Do not treat inbox docs as authoritative routing or implementation guidance unless a task explicitly says to use them for provenance. Do not delete or move inbox files until a dedicated cleanup task does so.
+`specs/ai-first-skills-pack-migration/archive/inbox/` contains archived source material gathered for the migration. Do not treat archived inbox docs or draft skills as authoritative routing or implementation guidance unless a task explicitly says to use them for provenance.
 
 ## How to interpret the main repo areas
 

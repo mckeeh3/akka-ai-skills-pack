@@ -15,7 +15,7 @@ Convert the temporary DCA/office-device concept material into a canonical AI-fir
 
 - Create a worked example app-description/spec tree for an AI-first DCA and office-device lifecycle application.
 - Use the example to demonstrate goals, agent teams, policies, decisions, traces, outcomes, UI surfaces, and Akka substrate mapping.
-- Decide final disposition for `skills/inbox/docs/*` files.
+- Decide final disposition for `specs/ai-first-skills-pack-migration/archive/inbox/docs/*` files.
 
 ## Candidate example location
 
@@ -37,10 +37,10 @@ Suggested files:
 
 ## Primary reference inputs
 
-- `skills/inbox/docs/cai-dca-agentic-reconstruction.md`
-- `skills/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md`
-- `skills/inbox/docs/oai-agent-first-operating-systems.md`
-- `skills/inbox/docs/cai-agent-first-saas-design-framework.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-operating-systems.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-agent-first-saas-design-framework.md`
 - canonical docs and skills created in earlier sprints
 
 ## Acceptance behavior

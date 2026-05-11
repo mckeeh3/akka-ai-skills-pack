@@ -6,15 +6,15 @@
 
 ## Objective
 
-Create the canonical AI-first SaaS architecture/doctrine document for this skills pack by distilling temporary concept material, primarily `skills/inbox/docs/ai-first-saas-coding-agent-framework.md`.
+Create the canonical AI-first SaaS architecture/doctrine document for this skills pack by distilling temporary concept material, primarily `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-coding-agent-framework.md`.
 
 ## Required reads
 
 - `AGENTS.md`
 - `skills/README.md`
-- `skills/inbox/docs/ai-first-saas-coding-agent-framework.md`
-- `skills/inbox/docs/skills-pack-tech-stack.md`
-- `skills/inbox/docs/ai-first-saas-ui-patterns.md` only for cross-reference awareness
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-coding-agent-framework.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/skills-pack-tech-stack.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md` only for cross-reference awareness
 - `specs/ai-first-skills-pack-migration/sprints/01-architectural-pivot-and-doctrine-sprint.md`
 - `specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md`
 

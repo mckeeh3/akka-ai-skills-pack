@@ -24,12 +24,12 @@ Sprint 6 adds a separate worked example rather than overloading the purchase-req
 docs/examples/agent-first-dca-app-description/
 ```
 
-Current status: initial scaffold and source mapping exist in `agent-first-dca-app-description/README.md`; later Sprint 6 tasks fill the authoritative app-description content.
+Current status: Sprint 6 populated the DCA scaffold with product, operating-model, agent-team, policy, decision, workflow, UI, audit, outcome, and implementation-slice examples.
 
-Planned source inputs:
-- `skills/inbox/docs/cai-dca-agentic-reconstruction.md`
-- `skills/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md`
-- `skills/inbox/docs/ai-first-saas-ui-patterns.md` for UI-surface provenance until promoted or replaced
+Archived provenance inputs:
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md`
 
 Expected minimum tree shape:
 

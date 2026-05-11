@@ -6,13 +6,13 @@
 
 ## Objective
 
-Document the provenance and intended disposition of temporary AI-first concept-development files under `skills/inbox/docs/`.
+Document the provenance and intended disposition of temporary AI-first concept-development files under `specs/ai-first-skills-pack-migration/archive/inbox/docs/`.
 
 ## Required reads
 
 - `AGENTS.md`
 - `docs/ai-first-saas-application-architecture.md`
-- all files under `skills/inbox/docs/*.md`
+- all files under `specs/ai-first-skills-pack-migration/archive/inbox/docs/*.md`
 - `specs/ai-first-skills-pack-migration/sprints/01-architectural-pivot-and-doctrine-sprint.md`
 - `specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md`
 
@@ -49,7 +49,7 @@ For each inbox file, record:
 
 ## Required checks
 
-- Confirm all current `skills/inbox/docs/*.md` files are listed.
+- Confirm all current `specs/ai-first-skills-pack-migration/archive/inbox/docs/*.md` files are listed.
 - Confirm the plan does not designate two different canonical docs for the same concept without explaining why.
 
 ## Done criteria

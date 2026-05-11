@@ -3,8 +3,8 @@
 ## Status and provenance
 
 This is the canonical AI-first SaaS architecture doctrine for this skills pack.
-It distills temporary concept material from `../skills/inbox/docs/ai-first-saas-coding-agent-framework.md`, `../skills/inbox/docs/skills-pack-tech-stack.md`, and `../skills/inbox/docs/ai-first-saas-ui-patterns.md`.
-Those inbox files remain source material until later cleanup tasks promote, merge, archive, or remove them; this document is the authority for repository guidance and routing work.
+It distills temporary concept material now archived under `../specs/ai-first-skills-pack-migration/archive/inbox/docs/`.
+Those archived inbox files are provenance only; this document is the authority for repository guidance and routing work.
 
 ## Default target architecture
 
@@ -77,7 +77,7 @@ AI-first products may include tables, forms, and detail pages, but the primary U
 | Async Digest / Executive Briefing | Compress routine activity while surfacing material events, pending decisions, outcomes, and trace links. |
 | Audit / Work Trace | Explain who/what/when/why/how-authorized for actions, decisions, tool calls, data access, approvals, and outcomes. |
 
-For UI composition patterns, use `../skills/inbox/docs/ai-first-saas-ui-patterns.md` as temporary reference material until promoted or replaced by later tasks.
+For UI composition and implementation routing, use `../skills/ai-first-saas-ui-surfaces/SKILL.md` together with the existing Akka web UI skills and `../docs/examples/agent-first-dca-app-description/`.
 
 ## Akka + React/Vite/TypeScript substrate
 

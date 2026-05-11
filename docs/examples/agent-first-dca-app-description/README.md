@@ -15,8 +15,8 @@ The inbox files remain provenance until the migration cleanup task disposes of t
 
 | Source | How this example uses it |
 |---|---|
-| `skills/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md` | Primary product/lifecycle source: customer, device, DCA collector states; agent team; workflows; UI surfaces; policy examples; decision-card fields. |
-| `skills/inbox/docs/cai-dca-agentic-reconstruction.md` | Architectural framing source: DCA-first slice, event-sourced substrate, policy network, agent ensemble, supervision surfaces, supplies-fulfillment first slice. |
+| `specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md` | Primary product/lifecycle source: customer, device, DCA collector states; agent team; workflows; UI surfaces; policy examples; decision-card fields. |
+| `specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md` | Architectural framing source: DCA-first slice, event-sourced substrate, policy network, agent ensemble, supervision surfaces, supplies-fulfillment first slice. |
 | `docs/ai-first-saas-application-architecture.md` | Canonical doctrine: goals, bounded agents, policies, approvals, traces, outcomes, and Akka substrate mapping. |
 | `docs/internal-app-description-architecture.md` | Canonical layer structure and ownership rules for this tree. |
 

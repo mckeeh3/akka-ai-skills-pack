@@ -33,7 +33,7 @@ Future agents should understand that this repository now evolves toward AI-first
 
 - task ID: `TASK-01-004`
 - task brief: `../tasks/01-architectural-pivot-and-doctrine/04-inbox-provenance-cleanup-plan.md`
-- output: documented inventory and disposition plan for `skills/inbox/docs/*`.
+- output: documented inventory and disposition plan for `specs/ai-first-skills-pack-migration/archive/inbox/docs/*`.
 
 ## Implementation order
 

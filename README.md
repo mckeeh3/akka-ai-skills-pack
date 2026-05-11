@@ -292,7 +292,7 @@ Use this section when your goal is to develop, test, package, or release this re
 
 This repository is the **source project for the `akka-ai-skills-pack`**. It is not primarily an Akka application product. The Akka code under `src/` is executable reference material used to validate and demonstrate the pack.
 
-The repository is evolving toward AI-first SaaS application generation by default. Use [`docs/ai-first-saas-application-architecture.md`](docs/ai-first-saas-application-architecture.md) as the canonical architecture doctrine for this pivot. Files under `skills/inbox/` are temporary source/provenance material until explicit migration tasks promote, merge, archive, or remove them.
+The repository targets AI-first SaaS application generation by default. Use [`docs/ai-first-saas-application-architecture.md`](docs/ai-first-saas-application-architecture.md) as the canonical architecture doctrine for this pivot. Former temporary inbox material is archived under `specs/ai-first-skills-pack-migration/archive/inbox/` for provenance only.
 
 ### Development scope
 

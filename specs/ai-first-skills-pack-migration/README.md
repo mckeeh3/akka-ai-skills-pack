@@ -2,7 +2,7 @@
 
 This planning package coordinates the migration of this repository from a general Akka application skills pack into an **AI-first SaaS Akka skills pack**.
 
-The migration is planning-only until individual pending tasks are executed in fresh Pi sessions. The temporary concept-development material under `skills/inbox/` is reference input, not authoritative pack content.
+The migration is planning-only until individual pending tasks are executed in fresh Pi sessions. The temporary concept-development material under `specs/ai-first-skills-pack-migration/archive/inbox/` is reference input, not authoritative pack content.
 
 ## Execution model
 
@@ -18,7 +18,7 @@ The migration is planning-only until individual pending tasks are executed in fr
 
 1. `AGENTS.md`
 2. `skills/README.md`
-3. `skills/inbox/docs/ai-first-saas-coding-agent-framework.md`
+3. `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-coding-agent-framework.md`
 4. This file
 5. The relevant sprint spec under `sprints/`
 6. The matching backlog under `backlog/`

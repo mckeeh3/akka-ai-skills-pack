@@ -37,7 +37,7 @@ Future agents can study one worked example to understand how AI-first doctrine, 
 ### 5. Archive or remove temporary inbox material
 
 - task ID: `TASK-06-005`
-- output: documented final disposition of `skills/inbox/docs/*` and repo cleanup edits.
+- output: documented final disposition of `specs/ai-first-skills-pack-migration/archive/inbox/docs/*` and repo cleanup edits.
 - scope: promote, merge, archive, or delete each inbox file intentionally.
 
 ## Done criteria

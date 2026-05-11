@@ -7,7 +7,7 @@ Declare the repository's target architecture shift: applications produced by thi
 ## Dependencies
 
 - User-approved direction to evolve this repository in place.
-- Temporary concept input in `skills/inbox/docs/`.
+- Temporary concept input in `specs/ai-first-skills-pack-migration/archive/inbox/docs/`.
 
 ## Scope
 
@@ -20,9 +20,9 @@ Declare the repository's target architecture shift: applications produced by thi
 
 - `AGENTS.md`
 - `skills/README.md`
-- `skills/inbox/docs/ai-first-saas-coding-agent-framework.md`
-- `skills/inbox/docs/skills-pack-tech-stack.md`
-- `skills/inbox/docs/ai-first-saas-ui-patterns.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-coding-agent-framework.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/skills-pack-tech-stack.md`
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md`
 
 ## Expected outputs
 

@@ -13,7 +13,7 @@ Update repository-level guidance so future agents understand this repository is 
 - `AGENTS.md`
 - `README.md`
 - `docs/ai-first-saas-application-architecture.md`
-- `skills/inbox/docs/ai-first-saas-coding-agent-framework.md` for provenance only
+- `specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-coding-agent-framework.md` for provenance only
 - `specs/ai-first-skills-pack-migration/sprints/01-architectural-pivot-and-doctrine-sprint.md`
 - `specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md`
 
@@ -33,7 +33,7 @@ The update should say:
 - The pack's target generated application architecture is now AI-first SaaS by default.
 - Existing Akka component skills remain the implementation substrate.
 - High-level user input should be interpreted through agentic operating model concepts before CRUD/component decomposition.
-- `skills/inbox/` content is temporary reference material until promoted/merged/archived/deleted by explicit tasks.
+- `specs/ai-first-skills-pack-migration/archive/inbox/` content is temporary reference material until promoted/merged/archived/deleted by explicit tasks.
 
 ## Non-goals
 

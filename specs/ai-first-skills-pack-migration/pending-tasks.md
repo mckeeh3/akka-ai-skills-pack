@@ -21,9 +21,9 @@
 - required reads:
   - AGENTS.md
   - skills/README.md
-  - skills/inbox/docs/ai-first-saas-coding-agent-framework.md
-  - skills/inbox/docs/skills-pack-tech-stack.md
-  - skills/inbox/docs/ai-first-saas-ui-patterns.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-coding-agent-framework.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/skills-pack-tech-stack.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md
   - specs/ai-first-skills-pack-migration/sprints/01-architectural-pivot-and-doctrine-sprint.md
   - specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md
   - specs/ai-first-skills-pack-migration/tasks/01-architectural-pivot-and-doctrine/01-canonical-doctrine-promotion.md
@@ -100,13 +100,13 @@
 - required reads:
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
-  - skills/inbox/docs/ai-first-saas-coding-agent-framework.md
-  - skills/inbox/docs/ai-first-saas-ui-patterns.md
-  - skills/inbox/docs/cai-agent-first-saas-design-framework.md
-  - skills/inbox/docs/cai-dca-agentic-reconstruction.md
-  - skills/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
-  - skills/inbox/docs/oai-agent-first-operating-systems.md
-  - skills/inbox/docs/skills-pack-tech-stack.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-coding-agent-framework.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-agent-first-saas-design-framework.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-operating-systems.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/skills-pack-tech-stack.md
   - specs/ai-first-skills-pack-migration/tasks/01-architectural-pivot-and-doctrine/04-inbox-provenance-cleanup-plan.md
 - skills:
   - none; use repository guidance and local docs
@@ -118,7 +118,7 @@
 - done criteria:
   - future cleanup tasks can intentionally promote, merge, archive, or delete each inbox file
 - notes:
-  - completed: documented provenance and disposition for all current `skills/inbox/docs/*.md` files
+  - completed: documented provenance and disposition for all current `specs/ai-first-skills-pack-migration/archive/inbox/docs/*.md` files
   - commit hash: not pre-recorded because the queue status update is included in the same task commit
 
 ### TASK-02-001: Create top-level AI-first SaaS skill
@@ -204,7 +204,7 @@
 - required reads:
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
-  - skills/inbox/docs/ai-first-saas-ui-patterns.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md
   - skills/ai-first-saas/SKILL.md
   - specs/ai-first-skills-pack-migration/backlog/02-ai-first-routing-skill-family-build-backlog.md
 - skills:
@@ -644,8 +644,8 @@
 - required reads:
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
-  - skills/inbox/docs/cai-dca-agentic-reconstruction.md
-  - skills/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
   - specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - skills:
   - app-descriptions
@@ -670,7 +670,7 @@
 - required reads:
   - AGENTS.md
   - docs/examples/agent-first-dca-app-description/README.md
-  - skills/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
   - specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - skills:
   - app-descriptions
@@ -694,8 +694,8 @@
 - required reads:
   - AGENTS.md
   - docs/examples/agent-first-dca-app-description/README.md
-  - skills/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
-  - skills/inbox/docs/cai-dca-agentic-reconstruction.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md
   - specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - skills:
   - ai-first-saas
@@ -722,7 +722,7 @@
   - AGENTS.md
   - docs/examples/agent-first-dca-app-description/README.md
   - docs/ai-first-saas-application-architecture.md
-  - skills/inbox/docs/ai-first-saas-ui-patterns.md
+  - specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md
   - specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - skills:
   - ai-first-saas-ui-surfaces
@@ -741,7 +741,7 @@
 
 ### TASK-06-005: Archive or remove temporary inbox material
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-004, TASK-06-004]
@@ -758,3 +758,6 @@
   - references to moved/deleted files are updated
 - done criteria:
   - `skills/inbox/` no longer contains unclassified temporary AI-first concept material
+- notes:
+  - completed: moved former `skills/inbox/` docs, images, and draft skills to `specs/ai-first-skills-pack-migration/archive/inbox/`, deleted `.DS_Store`, updated active guidance to treat archive material as provenance only, and refreshed final disposition documentation
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Archive temporary AI-first inbox material`

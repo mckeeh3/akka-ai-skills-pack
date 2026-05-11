@@ -15,7 +15,7 @@ Read first:
 - `../../../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
-Use `../../../skills/inbox/docs/ai-first-saas-ui-patterns.md` only as temporary pattern reference until promoted; the canonical doctrine remains `docs/ai-first-saas-application-architecture.md`.
+Use canonical doctrine plus this skill for surface selection. Use `../../../docs/examples/agent-first-dca-app-description/` as the worked AI-first UI reference when an example is useful. Archived inbox UI notes are provenance only, not operative guidance.
 
 Then load focused downstream implementation skills only for the selected UI, API, realtime, and backing component scope.
 
