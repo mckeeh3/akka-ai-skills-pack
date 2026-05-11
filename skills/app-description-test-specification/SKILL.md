@@ -19,6 +19,7 @@ The output should:
 - include edge cases and negative cases
 - make no-op and idempotency behavior testable
 - capture relevant security and observability verification expectations
+- preserve AI-first verification needs when delegated work, agent judgment, approvals, policies, traces, evaluations, or outcomes are in scope
 - identify remaining ambiguity that still needs clarification
 
 ## Required reading
@@ -28,6 +29,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
@@ -52,6 +54,7 @@ Use it for:
 - idempotency behavior
 - authorization/security expectations
 - observability verification expectations
+- agent output, evaluator, guardrail, policy, approval, trace, and outcome-loop verification expectations when AI-first semantics are in scope
 
 ## Core operating rule
 
@@ -93,6 +96,15 @@ Authentication, authorization, and restricted-access expectations.
 ### 6. Observability
 What evidence should exist for diagnosis, audit, alerts, or operational visibility.
 
+### 7. AI-first evaluation and governance
+When delegated work or agentic judgment is in scope, define how to prove:
+- agent responsibilities and authority boundaries are respected
+- policies, permissions, thresholds, guardrails, and approval gates are enforced mechanically
+- recommendations include required evidence, confidence, risk, impact, alternatives, and rationale
+- human approval, rejection, override, escalation, exception, and feedback paths behave correctly
+- work traces, decision traces, policy invocations, tool calls, data access, and outcome links are emitted
+- evaluator or regression checks cover quality, safety, drift, and learning-loop behavior where relevant
+
 ## Standard output shape
 
 Use this structure when updating or summarizing the test layer:
@@ -118,7 +130,10 @@ Use this structure when updating or summarizing the test layer:
 ## Security verification cases
 - ...
 
-## Observability verification cases
+## Observability / trace verification cases
+- ...
+
+## AI-first evaluation and outcome cases, if in scope
 - ...
 
 ## Open questions and assumptions
@@ -146,7 +161,14 @@ If a bug triggered the change, capture the old failure mode as a regression expe
 ### 5. Include security and observability when first-class
 If access control or operational evidence is part of the requested behavior, define it here explicitly.
 
-### 6. Leave ambiguity visible
+### 6. Test delegated authority, not just generated answers
+For AI-first behavior, include tests that prove what the agent/system may do, what it must only recommend, what requires approval, and what must be denied or escalated.
+Do not accept prompt wording as the only safety evidence.
+
+### 7. Include evaluation and outcome loops where meaningful
+When recommendations, classifications, summaries, policy proposals, or autonomous actions affect outcomes, specify evaluator, regression, feedback, replay/simulation, and later-outcome verification expectations.
+
+### 8. Leave ambiguity visible
 If expected behavior is still uncertain, record the ambiguity instead of inventing a test that overcommits.
 
 ## Handoff rules
@@ -154,7 +176,8 @@ If expected behavior is still uncertain, record the ambiguity instead of inventi
 Route onward as needed:
 - back to `app-description-behavior-specification` if the test work reveals missing behavioral semantics
 - to `app-description-auth-security` if security expectations need first-class refinement
-- to `app-description-observability` if logging, metrics, traces, auditability, or alerts need explicit definition
+- to `app-description-observability` if logging, metrics, work traces, decision traces, auditability, or alerts need explicit definition
+- to AI-first companion skills when tests reveal missing agent authority, policy, decision-card, audit-trace, UI-surface, evaluation, or outcome-loop semantics
 - to `app-description-readiness-assessment` when the user is asking whether the description is complete enough to realize
 
 ## Example scenario patterns
@@ -164,6 +187,8 @@ Good patterns include:
 - Given the request has already been applied, when the same request is repeated, then the system performs no duplicate side effect.
 - Given the caller lacks permission, when they attempt the action, then the system rejects it and exposes no protected data.
 - Given the downstream dependency fails, when the action is triggered, then the system preserves a diagnosable failure outcome and emits the required operational evidence.
+- Given an agent recommendation exceeds the configured risk threshold, when the recommendation is produced, then the system creates an approval or exception case rather than committing the action autonomously.
+- Given a human overrides an agent recommendation, when the decision is recorded, then the trace links the evidence, policy clause, reviewer, rationale, and later outcome measurement.
 
 ## Anti-patterns
 
@@ -173,6 +198,7 @@ Avoid:
 - binding tests too tightly to likely implementation details
 - forgetting regression coverage for behavior changes triggered by bugs
 - omitting security or observability verification when they are part of the requested behavior
+- testing only LLM text quality while ignoring authority boundaries, policy enforcement, trace emission, and outcome links
 - pretending ambiguous behavior is well-defined when it is not
 
 ## Final review checklist
@@ -184,6 +210,7 @@ Before finishing, verify:
 - repeated-request behavior is covered where relevant
 - security verification is included when relevant
 - observability verification is included when relevant
+- AI-first evaluation, policy, permission, approval, trace, and outcome cases are included when relevant
 - open questions are recorded instead of guessed
 - no code-generation step was assumed
 

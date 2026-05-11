@@ -19,6 +19,7 @@ Create or update auth/security-oriented app-description artifacts that:
 - define authorization boundaries and protected operations
 - define sensitive-data handling expectations
 - define allowed and forbidden access patterns
+- define AI-first authority boundaries for agents, tools, data access, approvals, and governed policy changes when in scope
 - define failure behavior for unauthorized and forbidden actions
 - identify linked impacts on behavior, tests, observability, and generation readiness
 
@@ -29,6 +30,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
@@ -48,6 +50,8 @@ The input sounds like:
 - "redact sensitive fields in responses or logs"
 - "unauthorized access should return..."
 - "store or expose this data only under these conditions"
+- "the agent may use this tool/data but may not commit changes without approval"
+- "policy changes must be simulated and human-approved before activation"
 
 Use it for:
 - authentication model changes, including WorkOS or another identity provider
@@ -57,6 +61,7 @@ Use it for:
 - tenancy isolation requirements
 - basic user administration rules, including initial admin bootstrap, invitations, role assignment, and disabling users
 - secret or credential handling expectations
+- agent, workflow, tool-use, data-access, and policy-commit permission boundaries
 - sensitive-data visibility rules
 - allowed and forbidden access paths
 - unauthorized and forbidden failure behavior
@@ -70,6 +75,7 @@ This skill should define:
 - how trust is established
 - what each actor may do
 - what each actor must never do
+- what agents, workflows, and automated tools may do autonomously versus only recommend
 - what evidence or behavior is required when access is denied
 
 ## What this skill must capture
@@ -84,6 +90,8 @@ For each requested change, identify and describe as applicable:
 - admin roles and scopes when user administration is in scope
 - bootstrap/invite/first-login behavior when relevant
 - internal-only versus external access
+- agent/tool/data/policy permission grants, autonomy thresholds, and approval gates
+- policy, prompt, skill, guardrail, and evaluator update authority
 - sensitive-data categories
 - visibility, masking, redaction, or retention expectations
 - secret-handling constraints
@@ -105,6 +113,9 @@ Use this response shape when updating or summarizing auth/security changes:
 - ...
 
 ## Authorization rules
+- ...
+
+## Agent/tool/data authority, if in scope
 - ...
 
 ## Trust boundaries and access surfaces
@@ -141,6 +152,17 @@ When the app uses WorkOS with an Akka-hosted frontend, capture these explicitly:
 - `/api/me` returns the current local account, status, roles, and scopes for UX
 - backend secrets such as `WORKOS_API_KEY` stay out of frontend env files and built assets
 
+### AI-first authority defaults
+
+When delegated work, agents, or governed automation are in scope, capture:
+- human roles that can delegate, supervise, approve, override, escalate, teach, or audit
+- agent identities or component principals where useful for permission and trace semantics
+- tool, dataset, action, tenant, and customer scopes available to each agent or workflow
+- decisions the system may commit autonomously versus decisions requiring approval, exception handling, or escalation
+- confidence, risk, impact, spend, data-sensitivity, or policy thresholds that restrict autonomy
+- who may create, simulate, approve, activate, or roll back prompt, skill, policy, guardrail, evaluator, and threshold changes
+- what trace or audit evidence is required for allowed, denied, approval, override, policy-change, and data-access paths
+
 ### Basic administration defaults
 
 When basic administration is in scope, capture:
@@ -176,7 +198,11 @@ Specify what must not be allowed, including cross-tenant reads, unauthorized mut
 State what happens on authentication failure or authorization failure.
 Do not leave it as an implicit framework detail if the app meaning depends on it.
 
-### 7. Flag observability implications
+### 7. Make AI-first permissions enforceable
+Do not rely on prompts to restrict consequential action.
+Represent tool access, data access, tenant/customer scope, approval gates, and policy-change authority as explicit permissions or thresholds that downstream implementation can enforce and test.
+
+### 8. Flag observability implications
 Security requirements often imply audit, alerts, or diagnostic traces.
 Call that out explicitly.
 
@@ -190,13 +216,16 @@ Good questions include:
 - "Should unauthorized callers learn that the resource exists, or should the system hide that fact?"
 - "Which fields are sensitive and must never appear in logs or responses?"
 - "Is this surface internal-service-only, or also callable by end users?"
+- "Which actions may the agent commit autonomously, and which must pause for human approval?"
+- "Who may approve, simulate, activate, or roll back policy, prompt, guardrail, evaluator, or threshold changes?"
 
 ## Handoff to other skills
 
 When the auth/security update is established, route onward as needed:
 - to `app-description-behavior-specification` if the security change alters core user-visible behavior
 - to `app-description-test-specification` to define authorization, denial, redaction, and isolation verification cases
-- to `app-description-observability` if audit events, alerts, traces, or diagnosability expectations need explicit definition
+- to `app-description-observability` if audit events, alerts, work traces, decision traces, policy invocations, tool/data access traces, or diagnosability expectations need explicit definition
+- to AI-first companion skills when authority, governance, decision, audit, or outcome semantics need focused modeling
 - to `app-description-readiness-assessment` when the user is asking whether the description is mature enough to realize
 - to `akka-workos-user-auth` when realization should implement WorkOS/AuthKit, JWT-secured APIs, or `/api/me`
 - to `akka-basic-user-admin` when realization should implement roles, invites, admin bootstrap, or user-management APIs
@@ -209,6 +238,7 @@ Avoid:
 - forgetting tenant or ownership isolation semantics
 - defining sensitive-data rules without mentioning logs, responses, or audit visibility
 - assuming denial behavior is irrelevant because a framework will handle it somehow
+- using prompt instructions as the only control for agent tool use, data access, policy commits, or high-impact actions
 - treating auth/security as optional polish after behavior is already fixed
 
 ## Final review checklist
@@ -219,6 +249,7 @@ Before finishing, verify:
 - authorization rules are explicit by action or surface
 - trust boundaries are called out
 - sensitive-data rules are included where relevant
+- agent/tool/data/policy authority boundaries are explicit when AI-first semantics are in scope
 - forbidden access behavior is explicit
 - denial outcomes are explicit where relevant
 - linked impacts on behavior, tests, and observability are called out
