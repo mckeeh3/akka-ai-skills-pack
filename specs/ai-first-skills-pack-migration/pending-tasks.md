@@ -587,7 +587,7 @@
 
 ### TASK-05-004: Reframe web UI implementation skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/05-substrate-implementation-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -609,6 +609,9 @@
   - UI surfaces align with AI-first doctrine and existing web UI quality guidance
 - done criteria:
   - web UI skills support command center, decision, governance, digest, and audit surfaces
+- notes:
+  - completed: added concise AI-first framing to web UI app, UX, state/rendering, realtime, and accessibility/responsive skills for command center, decision-card, governance, digest, audit/work-trace, outcome, stale-state, and human-authority surfaces
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Reframe web UI skills for AI-first`
 
 ### TASK-05-005: Identify missing AI-first examples and tests
 

@@ -12,6 +12,19 @@ This skill complements `akka-http-endpoint-web-ui`:
 - `akka-web-ui-frontend-project` integrates a standard frontend project such as React/Vite with Akka static hosting.
 - `akka-http-endpoint-web-ui` hosts packaged build assets and connects UI routes to Akka HTTP endpoints.
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use web UI apps as human supervision and governance surfaces, not CRUD dashboards with a chat panel. Prioritize command center, goal-to-execution workbench, decision card, policy/governance, async digest, audit/work-trace, and outcome review screens when the product includes delegated work, approvals, exceptions, policy changes, or accountability loops.
+
+Before implementation, make the UI contract explicit for:
+- delegated objective status, active plan progress, agent/team activity, exceptions, and pending approvals;
+- recommendation/decision evidence, risk, confidence, impact, alternatives, and action controls;
+- policy proposals, simulations, governed commits, learning feedback, and permission boundaries;
+- traceability from action or decision back to goal, policy, tool/data access, approver, and outcome;
+- realtime or stale-state behavior for live supervision surfaces.
+
+Pair AI-first web UI work with `ai-first-saas-ui-surfaces` when selecting surfaces, then route to endpoint, view, workflow, agent, realtime, state-rendering, accessibility, and testing skills without duplicating their implementation guidance.
+
 ## Required reading
 
 Read these first if present:
@@ -100,6 +113,8 @@ Always pair with Akka hosting/API skills as needed:
 ## Quality bar
 
 A complete web UI must apply the selected style guide without copying demo content from the reference images.
+
+For AI-first surfaces, a complete UI must make human authority obvious: what the system is doing, why it recommends or waits, what evidence and policy triggered the state, what the human can approve/reject/defer/escalate, and where the trace/outcome can be reviewed.
 
 A complete web UI must handle:
 - first-five-seconds comprehension: where am I, what matters, what can I do?

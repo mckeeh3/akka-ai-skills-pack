@@ -9,6 +9,19 @@ Use this skill before implementing any non-trivial browser app, dashboard, admin
 
 Use this skill before implementing details with `akka-web-ui-frontend-project` so the full web app has an explicit UX contract.
 
+## AI-first UX role
+
+For AI-first SaaS surfaces, design around supervision, judgment, teaching, and accountability before conventional record management. The first five seconds should answer: which objective or plan is active, what the agent/system is doing, what needs human attention, what authority the human retains, and how to inspect evidence or trace history.
+
+Include these AI-first screen patterns when in scope:
+- **Command center:** active goals, plan progress, agent activity, exceptions, approval queues, material events, and stale/reconnect status.
+- **Decision card / deviation review:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
+- **Policy/governance center:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.
+- **Async digest:** compressed routine activity with material events, pending decisions, outcome deltas, and trace links.
+- **Audit/work trace:** who/what/when/why/how-authorized, tool/data access, policy invocations, approvals, overrides, and outcomes.
+
+Do not hide consequential AI behavior behind generic dashboards or chat transcripts. Conversation may help intake or explanation, but the UX handoff should resolve consequential work into durable goals, plans, decisions, approvals, traces, policies, and outcomes.
+
 ## Required reading
 
 - `../../../docs/web-ui-frontend-decomposition.md`
@@ -101,6 +114,18 @@ Keyboard/focus behavior:
 Implementation notes:
 ```
 
+For AI-first screens, add:
+
+```text
+AI-first surface type:
+Human authority shown:
+Agent/system activity shown:
+Evidence/risk/policy shown:
+Approval/exception actions:
+Trace/outcome links:
+Realtime/stale behavior:
+```
+
 ## Review checklist
 
 Before coding or accepting UI work, verify:
@@ -113,3 +138,4 @@ Before coding or accepting UI work, verify:
 - mobile layout preserves the main task
 - keyboard-only flow reaches and completes primary actions
 - selected style guide tokens are used to reinforce hierarchy, focus, and status
+- AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope

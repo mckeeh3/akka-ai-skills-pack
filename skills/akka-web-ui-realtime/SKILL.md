@@ -7,6 +7,12 @@ description: Implement browser-side SSE and WebSocket behavior for Akka-hosted w
 
 Use this skill when a browser UI consumes Akka SSE endpoints or WebSocket endpoints.
 
+## AI-first realtime role
+
+For AI-first SaaS surfaces, realtime behavior supports human supervision and timely intervention. Use SSE or WebSocket updates for active plan progress, agent/team activity, approval queues, exceptions, policy simulation status, work-trace updates, digest readiness, and outcome signals when stale data could mislead a supervisor or reviewer.
+
+Realtime UX must make freshness visible. Show when the stream is connecting, live, reconnecting, stale, or disconnected; avoid presenting old recommendations, risk scores, policy status, or approval queues as current. Merge incoming trace/decision/work events idempotently so reconnects do not duplicate evidence or actions.
+
 ## Required reading
 
 - `../akka-http-endpoint-sse/SKILL.md`
@@ -44,6 +50,7 @@ Use WebSocket when:
 - reconnecting or stale
 - disconnected with retry guidance
 - stream error or unsupported browser behavior
+- for AI-first surfaces when applicable: agent activity updated, approval queue changed, exception raised/resolved, policy simulation completed, trace event appended, digest ready, outcome signal updated
 
 ## Testing expectations
 
@@ -51,5 +58,6 @@ At minimum:
 - endpoint integration tests validate stream/socket route availability
 - page route tests assert the UI references the stream/socket path
 - frontend checks validate message parsing and state mapping helpers
+- AI-first realtime helpers, when present, handle duplicate/replayed trace or decision events without creating duplicate user-visible actions
 
 Add browser-level smoke checks only when the project already has an appropriate browser test setup.
