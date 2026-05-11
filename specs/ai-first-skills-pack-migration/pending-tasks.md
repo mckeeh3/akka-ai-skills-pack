@@ -615,7 +615,7 @@
 
 ### TASK-05-005: Identify missing AI-first examples and tests
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/05-substrate-implementation-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-05-001, TASK-05-002, TASK-05-003, TASK-05-004]
@@ -631,6 +631,9 @@
   - distinguish required gaps from nice-to-have examples
 - done criteria:
   - future example/test work is explicit and prioritized
+- notes:
+  - completed: added `docs/ai-first-examples-and-tests-gap-list.md` with P0/P1/P2 gaps for the DCA worked example, implementation slices, acceptance/evaluation tests, AI-first ESE/View/UI/trace examples, and optional MCP/gRPC/outcome examples
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Identify AI-first example and test gaps`
 
 ### TASK-06-001: Design AI-first DCA example structure
 
