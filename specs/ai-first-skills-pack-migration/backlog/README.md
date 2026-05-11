@@ -11,6 +11,7 @@ This directory contains sprint-aligned build backlogs for the AI-first skills pa
 - Sprint 1 has physical task briefs under `../tasks/01-architectural-pivot-and-doctrine/`.
 - Later sprint backlog items are intentionally detailed enough to guide future task-brief creation, but should be revalidated after earlier sprints complete.
 - Sprint 8 is the planned future executable AI-first supplies autopilot reference slice; execute it only after Sprint 7 is complete.
+- Sprint 9 finalizes high-level packaging, release metadata, and AI-first terminology consistency before later component-skill revisions.
 
 ## Backlog files
 
@@ -22,3 +23,4 @@ This directory contains sprint-aligned build backlogs for the AI-first skills pa
 6. `06-worked-example-and-inbox-cleanup-build-backlog.md`
 7. `07-ai-first-alignment-hardening-build-backlog.md`
 8. `08-executable-ai-first-reference-slice-build-backlog.md`
+9. `09-ai-first-packaging-and-terminology-finalization-build-backlog.md`

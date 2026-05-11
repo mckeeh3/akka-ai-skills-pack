@@ -1253,3 +1253,161 @@
   - completed: added slice-level supplies acceptance tests covering auto-shipment, approval, rejection, suppression, missing evidence, stale escalation, duplicate telemetry/action/timer idempotency, decision-card completeness, trace projection, authority boundaries, and outcome linkage; also fixed recommendation-opening trace events to carry policy/outcome context and updated the AI-first gap list to mark the first executable slice complete
   - checks: `mvn -q -Dtest=com.example.application.supplies.SupplySliceAcceptanceIntegrationTest test`; `mvn -q -Dtest='com.example.domain.supplies.SupplyTest,com.example.application.supplies.*' test`; `mvn -q test`
   - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add supplies slice acceptance tests`
+
+### TASK-09-001: Refresh canonical doctrine skill references
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- task brief: none
+- depends on: [TASK-08-007]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - skills/README.md
+  - skills/ai-first-saas/SKILL.md
+  - specs/ai-first-skills-pack-migration/sprints/09-ai-first-packaging-and-terminology-finalization-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - docs/ai-first-saas-application-architecture.md
+- required checks:
+  - no stale “planned future AI-first skill files” wording remains in the canonical doctrine
+  - doctrine links or names the existing AI-first entry and companion skills accurately
+- done criteria:
+  - canonical doctrine points to existing AI-first skill files instead of future/planned skills
+  - git commit created for this task
+
+### TASK-09-002: Remove source-only archive paths from installed-facing docs
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- task brief: none
+- depends on: [TASK-09-001]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/ai-first-app-description-gaps.md
+  - README.md
+  - pack/AGENTS.md
+  - pack/README.md
+  - specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - updated installed-pack-facing docs that currently reference source-only archive/provenance paths
+- required checks:
+  - installed-facing docs do not require `specs/ai-first-skills-pack-migration/archive/inbox/...` paths
+  - source provenance remains available only in source-maintainer docs/specs where useful
+- done criteria:
+  - installed users are not pointed at missing source-only archive files as operative guidance
+  - git commit created for this task
+
+### TASK-09-003: Package docs referenced by installed skills
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- task brief: none
+- depends on: [TASK-09-002]
+- required reads:
+  - AGENTS.md
+  - install.sh
+  - pack/README.md
+  - skills/README.md
+  - docs/module-sprint-planning.md
+  - docs/security-pattern-selection.md
+  - docs/security-review-checklist.md
+  - docs/security-workos-auth-and-admin.md
+  - docs/web-ui-frontend-project-integration.md
+  - docs/web-ui-ux-patterns.md
+  - specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - install.sh
+  - pack/README.md
+  - optional packaging verification notes
+- required checks:
+  - installer includes docs referenced by installed skills
+  - install dry-run or project install check verifies packaged docs are present if practical
+  - no new source-only doc references are introduced into installed guidance
+- done criteria:
+  - installed pack includes all high-level docs referenced by installed skills
+  - git commit created for this task
+
+### TASK-09-004: Regenerate or update release/dist metadata
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- task brief: none
+- depends on: [TASK-09-003]
+- required reads:
+  - AGENTS.md
+  - pack/manifest.yaml
+  - pack/README.md
+  - dist/ if present and tracked as current release output
+  - README.md
+  - specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - pack/manifest.yaml version/release metadata updates as appropriate
+  - regenerated or clearly updated dist/release artifacts if this repository tracks them
+  - optional release note or build-info update if needed
+- required checks:
+  - current release metadata no longer represents pre-AI-first content as current
+  - generated dist artifacts, if updated, include AI-first skills and docs
+  - working tree contains only intended release/metadata changes
+- done criteria:
+  - pack version/release artifacts reflect the post-AI-first migration state or document regeneration requirements clearly
+  - git commit created for this task
+
+### TASK-09-005: Rename active `agent-first` files and directories to `ai-first`
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- task brief: none
+- depends on: [TASK-09-004]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/examples/agent-first-dca-app-description/README.md if still present
+  - install.sh
+  - pack/README.md
+  - skills/ai-first-saas-ui-surfaces/SKILL.md
+  - specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - active files/directories with `agent-first` in their names renamed to `ai-first`
+  - references to renamed paths updated across active docs, skills, installer, pack docs, and specs
+- required checks:
+  - `find . -path './specs/ai-first-skills-pack-migration/archive' -prune -o -iname '*agent-first*' -print` shows no active non-archive filenames unless intentionally documented
+  - references to old active paths are updated
+  - archived provenance files are not renamed unless explicitly justified
+- done criteria:
+  - active file and directory names consistently use `ai-first`
+  - git commit created for this task
+
+### TASK-09-006: Replace active `agent-first` wording with `ai-first`
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- task brief: none
+- depends on: [TASK-09-005]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - active docs, skills, pack files, installer, and specs updated to use AI-first terminology consistently
+- required checks:
+  - scan active files for `agent-first`, `Agent-first`, and `Agent-First`, excluding archived provenance and generated/build output as appropriate
+  - replace with `ai-first`, `AI-first`, or `AI-First` as grammatically appropriate
+  - preserve historical wording only in archived provenance/source material or explicitly documented exceptions
+- done criteria:
+  - active pack-facing and source-maintainer content consistently uses AI-first terminology
+  - git commit created for this task

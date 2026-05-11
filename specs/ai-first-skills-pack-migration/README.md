@@ -35,6 +35,7 @@ The migration is planning-only until individual pending tasks are executed in fr
 6. `sprints/06-worked-example-and-inbox-cleanup-sprint.md` — convert DCA concept material into a worked example and retire temporary inbox material.
 7. `sprints/07-ai-first-alignment-hardening-sprint.md` — close post-migration alignment gaps across packaging, paths, flow docs, lifecycle skills, examples, and future executable reference planning.
 8. `sprints/08-executable-ai-first-reference-slice-sprint.md` — planned future executable supplies autopilot reference slice derived from the DCA app-description example.
+9. `sprints/09-ai-first-packaging-and-terminology-finalization-sprint.md` — finalize high-level packaging, release, doctrine, and AI-first terminology consistency before component-skill revisions.
 
 ## Backlog alignment
 
@@ -48,6 +49,7 @@ Each sprint has a matching backlog:
 - `backlog/06-worked-example-and-inbox-cleanup-build-backlog.md`
 - `backlog/07-ai-first-alignment-hardening-build-backlog.md`
 - `backlog/08-executable-ai-first-reference-slice-build-backlog.md`
+- `backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md`
 
 Sprint 1 has detailed physical task briefs for the initial doctrine pivot. Sprint 8 now has future implementation task briefs for the first executable AI-first reference slice.
 
