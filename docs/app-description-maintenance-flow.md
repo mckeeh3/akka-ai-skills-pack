@@ -13,6 +13,7 @@ Reference example:
 
 The user interacts through flexible prompt/response.
 The harness interprets intent and updates internal description artifacts.
+For high-level product input, the harness first checks whether the product should be treated as AI-first SaaS: durable goals, delegated work, bounded agents, policy/permission controls, supervision, approvals/exceptions, traces, and outcome accountability.
 The user does not edit:
 - generated code
 - generated tests
@@ -46,16 +47,17 @@ Prefer this default sequence:
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
-5. update behavior-level meaning
-6. update verification expectations
-7. update auth/security if needed
-8. update observability if needed
-9. update UI descriptions, including `55-ui/style-guide.md`, when a browser frontend is in scope
-10. update traceability and impact understanding
-11. assess readiness
-12. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
-13. either stop at description maintenance or proceed to generation
-14. answer review questions through summaries
+5. update `15-operating-model/` when AI-first/delegated operations are in scope
+6. update behavior-level meaning
+7. update verification expectations
+8. update auth/security if needed
+9. update observability if needed
+10. update UI descriptions, including `55-ui/style-guide.md`, when a browser frontend is in scope
+11. update traceability and impact understanding
+12. assess readiness
+13. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
+14. either stop at description maintenance or proceed to generation
+15. answer review questions through summaries
 
 ## Change-only flow
 
@@ -75,26 +77,40 @@ Use `app-description-intake-router` to determine:
 
 ### Step 3. Update capabilities when scope changed
 Use `app-description-capability-modeling` when the request changes business scope, actors, or intended outcomes.
+For AI-first apps, connect capabilities to durable goals, delegated work, agent/team responsibilities, governance boundaries, decision surfaces, audit needs, and outcome loops.
 
-### Step 4. Update behavior first
+### Step 4. Update operating model when agentic semantics changed
+
+Update `15-operating-model/` when the request changes:
+- objectives, success criteria, constraints, or definitions of done
+- delegated work versus retained human authority
+- agent/team responsibilities, tools, data access, memory, thresholds, or escalation rules
+- policies, clauses, guardrails, permissions, approval gates, or governed policy changes
+- recommendations, decisions, exceptions, evidence, risk, confidence, impact, alternatives, or precedents
+- work traces, decision traces, policy invocations, feedback, learning, replay/simulation, or outcome metrics
+
+Route to focused AI-first companion skills only for the affected concerns; do not duplicate Akka implementation guidance in app-description artifacts.
+
+### Step 5. Update behavior
 Use `app-description-behavior-specification` to update the app's meaning.
 
-Behavior comes first because:
+Behavior follows the operating model because:
 - tests need something to verify
 - security needs something to protect
 - observability needs something meaningful to expose
+- agentic work needs concrete transitions, pause/resume points, and exception semantics
 
-### Step 5. Update tests
+### Step 6. Update tests
 Use `app-description-test-specification` to make the behavior explicit and verifiable.
 
-### Step 6. Analyze change impact
+### Step 7. Analyze change impact
 Use `app-description-change-impact` to determine:
 - which additional layers must move
 - which traceability artifacts must update
 - whether readiness should be reassessed
 - whether later regeneration can stay localized
 
-### Step 7. Update production-readiness layers
+### Step 8. Update production-readiness layers
 Update as needed:
 - `app-description-auth-security`
 - `app-description-observability`
@@ -102,10 +118,16 @@ Update as needed:
 These are not optional polish layers.
 They are part of the app definition.
 
-### Step 8. Update readiness
+### Step 9. Update UI when browser supervision is in scope
+
+When a browser frontend is in scope, update `55-ui/` after the operating model and behavior are clear enough to describe the user's work surfaces.
+For AI-first apps, prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over CRUD navigation unless the product intent is explicitly CRUD-centric.
+Keep the style-selection rule below in force.
+
+### Step 10. Update readiness
 Use `app-description-readiness-assessment` to reflect the new current state.
 
-### Step 9. Respond with review summaries when useful
+### Step 11. Respond with review summaries when useful
 Use:
 - `app-description-change-summary`
 - `app-description-readiness-summary`
@@ -141,15 +163,16 @@ Use generation and readiness summaries to explain what happened.
 When multiple layers are affected, prefer this order:
 
 1. `10-capabilities/`
-2. `20-behavior/`
-3. `30-tests/`
-4. `40-auth-security/`
-5. `50-observability/`
-6. `55-ui/` when a browser frontend is in scope, including `style-guide.md`
-7. `70-traceability/`
-8. `00-system/readiness-status.md`
-9. `60-generation/` derived generation notes
-10. `80-review/` optional summaries
+2. `15-operating-model/` when AI-first/delegated operations are in scope
+3. `20-behavior/`
+4. `30-tests/`
+5. `40-auth-security/`
+6. `50-observability/`
+7. `55-ui/` when a browser frontend is in scope, including `style-guide.md`
+8. `70-traceability/`
+9. `00-system/readiness-status.md`
+10. `60-generation/` derived generation notes
+11. `80-review/` optional summaries
 
 This keeps the semantic source layers ahead of the derived layers.
 
@@ -160,10 +183,11 @@ Every description change should trigger a mental or explicit change-impact pass.
 The harness should ask:
 - which capabilities changed?
 - which behavior artifacts changed?
+- which AI-first operating-model artifacts changed: goals, delegated work, retained authority, agents, policies, approvals, decisions, exceptions, traces, learning, or outcomes?
 - which tests now need updates?
-- are there new or changed security implications?
-- are there new or changed observability implications?
-- if a browser UI is in scope, is a style guide selected and does `55-ui/style-guide.md` need to change?
+- are there new or changed security implications, especially permission enforcement and authority boundaries?
+- are there new or changed observability implications, especially work traces, decision traces, policy invocations, audit events, and outcome metrics?
+- if a browser UI is in scope, is a style guide selected and do supervision, decision, governance, digest, or audit surfaces need to change?
 - does readiness status change?
 - would generation scope be localized or broad?
 - do any existing specs, backlogs, task briefs, or pending tasks need to be updated, blocked, deferred, or superseded?
@@ -175,6 +199,8 @@ Readiness is a maintained state, not a one-time milestone.
 The harness should reassess readiness after material description changes, especially when they affect:
 - state transitions
 - failure semantics
+- delegated authority, approvals, exceptions, or policy controls
+- audit trace and outcome requirements
 - auth/security
 - observability
 - operational tests
@@ -238,6 +264,7 @@ It must never preserve stale behavior that conflicts with the current descriptio
 
 A description change request is complete when:
 - the relevant authoritative layers are updated
+- when AI-first/delegated operations are in scope, `15-operating-model/` captures goals, delegated work, human authority, policies, decisions, traces, and outcomes sufficiently for the change
 - linked verification expectations are updated
 - linked security and observability expectations are updated when needed
 - readiness has been reassessed or intentionally deferred
@@ -261,6 +288,8 @@ Avoid:
 - using generated code as the primary explanation of what changed
 - leaving readiness stale after major description changes
 - silently burying semantic uncertainty inside generation results
+- converting delegated operational work into CRUD screens before modeling goals, authority, policies, decisions, traces, and outcomes
+- treating a chatbot or prompt as a substitute for durable goals, plans, approvals, and auditability
 
 ## Recommended next-doc usage
 

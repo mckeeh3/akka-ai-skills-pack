@@ -41,6 +41,8 @@ The internal description fully defines the app.
 If the description is complete, the app can be regenerated.
 If the app cannot be regenerated from the description, the description is incomplete.
 
+For AI-first SaaS apps, the description must define the operating model as well as domain behavior: durable goals, delegated work, retained human authority, agent/team responsibilities, policies, approvals, exceptions, evidence, traces, learning loops, and outcomes.
+
 ### 2. Code is a disposable projection
 Source code is an output artifact, not the definition of the system.
 Regenerating all code from the current description is always valid in principle.
@@ -78,6 +80,7 @@ It is a layered, interconnected collection of internal artifacts that together d
 - interfaces
 - tests
 - operational requirements
+- AI-first operating-model requirements when delegated work or agents are in scope
 - generation rules
 - change relationships
 
@@ -204,6 +207,7 @@ This doctrine rejects the following assumptions:
 - internal description artifacts should be optimized primarily for human reading
 - partial regeneration is required for conceptual correctness
 - production-readiness can be deferred until after implementation
+- agentic products can be fully described as CRUD screens plus a chatbot without durable goals, authority boundaries, policies, decisions, traces, and outcomes
 
 ## Standard of completeness
 

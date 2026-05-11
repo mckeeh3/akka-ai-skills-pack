@@ -245,7 +245,7 @@
 
 ### TASK-03-001: Refactor app-description architecture docs for AI-first
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/03-app-description-ai-first-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-005]
@@ -265,6 +265,9 @@
   - no contradiction between app-description doctrine and AI-first default
 - done criteria:
   - app-description architecture supports agentic substrate sections
+- notes:
+  - completed: added AI-first operating-model sections to app-description architecture, maintenance flow, and doctrine guidance without forcing them on clearly non-agentic apps
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor app-description docs for AI-first`
 
 ### TASK-03-002: Refactor app-description entry and bootstrap skills
 

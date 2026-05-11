@@ -17,6 +17,9 @@ The application description is the source of truth.
 Everything in this architecture exists to maintain that truth in a layered, interconnected, regenerable form.
 Generated code, tests, and runnable assets are downstream projections.
 
+For AI-first SaaS applications, the description must preserve the agentic operating model before implementation planning: durable goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, traces, and outcomes.
+Do not reduce agentic product intent to CRUD objects or chatbot screens.
+
 ## Default root
 
 Use a dedicated root such as:
@@ -57,6 +60,13 @@ app-description/
     capabilities-index.md
     01-<capability>.md
     02-<capability>.md
+
+  15-operating-model/      # when AI-first/delegated operations are in scope
+    goals-and-objectives.md
+    agent-roles-and-authority.md
+    policies-and-approval-gates.md
+    decisions-exceptions-and-evidence.md
+    audit-trace-and-outcomes.md
 
   20-behavior/
     behavior-index.md
@@ -107,6 +117,7 @@ app-description/
 
   70-traceability/
     capability-to-behavior-map.md
+    operating-model-to-behavior-map.md  # when 15-operating-model exists
     behavior-to-tests-map.md
     change-impact-map.md
 
@@ -160,6 +171,28 @@ This layer answers:
 
 Each capability file should be narrowly focused and should link to the corresponding behavior, tests, security, and observability artifacts.
 
+## `15-operating-model/`
+AI-first operating model and agentic substrate.
+
+Include this layer when the described app involves delegated operational work, agents, recommendations, approvals, exceptions, policy-governed automation, auditability, or outcome accountability.
+Do not create it for a clearly non-agentic app unless useful as an explicit non-goal.
+
+This layer answers:
+- what durable goals, objectives, success criteria, constraints, and outcome links exist?
+- what work is delegated to agents or agent teams, and what authority remains with humans?
+- what policies, clauses, guardrails, permissions, thresholds, and approval gates control behavior?
+- what recommendations, decisions, exceptions, evidence, risk, confidence, impact, and alternatives must be captured?
+- what work traces, decision traces, policy invocations, tool/data-access events, feedback, learning, replay, simulations, and outcome metrics are required?
+
+Default files:
+- `goals-and-objectives.md` for durable human objectives, success criteria, constraints, and definitions of done
+- `agent-roles-and-authority.md` for agent/team responsibilities, tools, data access, autonomous decisions, escalation rules, and non-responsibilities
+- `policies-and-approval-gates.md` for policies, clauses, guardrails, thresholds, approval rules, and governed policy-change semantics
+- `decisions-exceptions-and-evidence.md` for decision cards, exception handling, recommendation evidence, risk/confidence/impact, and alternatives
+- `audit-trace-and-outcomes.md` for trace requirements, feedback loops, replay/simulation needs, outcome metrics, and links between decisions and results
+
+These files describe operating semantics; Akka component choices remain downstream implementation decisions.
+
 ## `20-behavior/`
 Behavioral semantics.
 
@@ -169,6 +202,7 @@ This layer answers:
 - what state exists?
 - what transitions are valid or invalid?
 - what no-op or idempotent behavior is required?
+- when agentic work starts, pauses, escalates, retries, completes, learns, or requires human review?
 
 Subareas:
 - `state-models/` for durable state concepts and lifecycle semantics
@@ -258,8 +292,9 @@ Relationship mapping.
 This layer exists to support change impact analysis and localized regeneration.
 It should answer:
 - which capabilities depend on which behavior artifacts?
+- which AI-first goals, agents, policies, decisions, traces, and outcomes depend on which capabilities or behavior artifacts?
 - which behavior artifacts require which tests?
-- which security and observability rules attach to which capabilities or flows?
+- which security and observability rules attach to which capabilities, operating-model concerns, or flows?
 - what outputs are likely affected by a given description change?
 
 ## `80-review/`
@@ -280,7 +315,7 @@ Do not treat this layer as the source of app meaning.
 Default ownership should be:
 
 - `app-description-bootstrap`
-  - creates the initial `00-system/`, `10-capabilities/`, `20-behavior/`, `30-tests/`, `40-auth-security/`, and `50-observability/` seed artifacts, plus `55-ui/` when a browser frontend is in scope
+  - creates the initial `00-system/`, `10-capabilities/`, `20-behavior/`, `30-tests/`, `40-auth-security/`, and `50-observability/` seed artifacts, plus `15-operating-model/` when AI-first/delegated operations are in scope and `55-ui/` when a browser frontend is in scope
   - establishes the first stable app-description root
 
 - `app-description-input-normalization`
@@ -294,9 +329,11 @@ Default ownership should be:
 - `app-description-capability-modeling`
   - primarily owns `10-capabilities/`
   - maintains capability boundaries and links to downstream layers
+  - links AI-first capabilities to `15-operating-model/` when they depend on delegated work, goals, policies, decisions, or outcomes
 
 - `app-description-behavior-specification`
   - primarily owns `20-behavior/`
+  - may update `15-operating-model/` when behavior changes alter agent authority, approval gates, exception handling, or learning/outcome loops
 
 - `app-description-test-specification`
   - primarily owns `30-tests/`
@@ -307,13 +344,16 @@ Default ownership should be:
 
 - `app-description-auth-security`
   - primarily owns `40-auth-security/`
+  - links identity, authorization, tenant isolation, data protection, and permission enforcement to AI-first authority boundaries in `15-operating-model/` when present
 
 - `app-description-observability`
   - primarily owns `50-observability/`
+  - links logs, audit events, traces, metrics, alerts, and diagnostics to AI-first work traces, decision traces, policy invocations, and outcome loops when present
 
 - `app-description-ui`
   - primarily owns `55-ui/`
   - links UI screens, interactions, frontend API contracts, accessibility, responsive behavior, and the selected `style-guide.md` back to capabilities, behavior, tests, security, and observability
+  - when AI-first UI is in scope, prioritizes supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces over CRUD navigation by default
 
 - `app-description-readiness-assessment`
   - primarily owns `00-system/readiness-status.md`
@@ -336,12 +376,14 @@ Default ownership should be:
 The harness should maintain these invariants:
 
 1. Every in-scope capability must link to at least one behavior artifact.
-2. Every important behavior change must link to one or more test artifacts.
-3. Security-sensitive behavior must link to relevant auth/security artifacts.
-4. Operationally important behavior must link to relevant observability artifacts.
-5. Readiness must be based on the actual state of behavior, tests, security, observability, and in-scope UI layers.
-6. Generation policy must never override description correctness.
-7. Review summaries must be derivable from authoritative layers.
+2. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
+3. Every important behavior change must link to one or more test artifacts.
+4. Security-sensitive behavior must link to relevant auth/security artifacts.
+5. Operationally important behavior must link to relevant observability artifacts.
+6. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
+7. Readiness must be based on the actual state of operating model, behavior, tests, security, observability, and in-scope UI layers.
+8. Generation policy must never override description correctness.
+9. Review summaries must be derivable from authoritative layers.
 
 ## File sizing rules
 
@@ -352,6 +394,7 @@ Prefer files that are:
 
 Good file boundaries:
 - one capability
+- one operating-model concern such as goals, agent authority, policies, decisions, traces, or outcomes
 - one flow
 - one stateful area
 - one rule family
@@ -371,6 +414,7 @@ Prefer:
 
 Examples:
 - `10-capabilities/02-order-submission.md`
+- `15-operating-model/agent-roles-and-authority.md`
 - `20-behavior/flows/03-approval-escalation.md`
 - `30-tests/regression/02-duplicate-submission.md`
 - `40-auth-security/authorization-rules.md`
@@ -379,20 +423,22 @@ Examples:
 
 When a change request arrives, the harness should:
 1. identify impacted capabilities
-2. update behavior semantics first
-3. update linked test semantics
-4. update linked auth/security semantics if needed
-5. update linked observability semantics if needed
-6. update linked UI semantics, including `55-ui/style-guide.md`, if a browser frontend is in scope
-7. update traceability links
-8. reassess readiness
-9. generate outputs only if requested or accepted
+2. update AI-first operating-model semantics when delegated work, agents, policies, decisions, traces, or outcomes are affected
+3. update behavior semantics
+4. update linked test semantics
+5. update linked auth/security semantics if needed
+6. update linked observability semantics if needed
+7. update linked UI semantics, including `55-ui/style-guide.md`, if a browser frontend is in scope
+8. update traceability links
+9. reassess readiness
+10. generate outputs only if requested or accepted
 
 ## What is authoritative vs derived
 
 ### Authoritative
 These layers define the app:
 - `10-capabilities/`
+- `15-operating-model/` when AI-first/delegated operations are in scope
 - `20-behavior/`
 - `30-tests/`
 - `40-auth-security/`
@@ -419,6 +465,8 @@ app-description/
     readiness-status.md
   10-capabilities/
     capabilities-index.md
+  15-operating-model/      # only when AI-first/delegated operations are in scope
+    goals-and-objectives.md
   20-behavior/
     behavior-index.md
   30-tests/
