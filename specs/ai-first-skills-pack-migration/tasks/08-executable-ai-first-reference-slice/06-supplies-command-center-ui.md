@@ -9,7 +9,7 @@ Add a minimal AI-first supervision UI surface for the supplies autopilot referen
 - `AGENTS.md`
 - `docs/ai-first-saas-application-architecture.md`
 - `docs/web-ui-style-guide.md`
-- `docs/examples/agent-first-dca-app-description/app-description/55-ui/README.md`
+- `docs/examples/ai-first-dca-app-description/app-description/55-ui/README.md`
 - `specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md`
 - `specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md`
 - supplies endpoint/API files from `TASK-08-005`

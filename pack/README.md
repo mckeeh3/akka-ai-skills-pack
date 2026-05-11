@@ -69,7 +69,7 @@ Installed layout:
     timer-pattern-selection.md
     workflow-endpoint-pattern.md
     examples/
-      agent-first-dca-app-description/
+      ai-first-dca-app-description/
         app-description/55-ui/style-guide.md
       purchase-request-app-description/
       purchase-request-prd.md

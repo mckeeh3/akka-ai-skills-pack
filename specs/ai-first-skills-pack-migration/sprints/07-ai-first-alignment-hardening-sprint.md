@@ -9,7 +9,7 @@ Close post-migration alignment gaps so the source repository, installed pack, ro
 - Sprints 1 through 6 complete.
 - `docs/ai-first-saas-application-architecture.md` exists as canonical doctrine.
 - AI-first skill family exists under `skills/ai-first-saas*`.
-- DCA worked example exists under `docs/examples/agent-first-dca-app-description/`.
+- DCA worked example exists under `docs/examples/ai-first-dca-app-description/`.
 
 ## Scope
 

@@ -7,7 +7,7 @@ This file inventories the temporary AI-first concept-development material that o
 Authoritative guidance now lives in:
 - `docs/ai-first-saas-application-architecture.md` for doctrine
 - `skills/ai-first-saas*/SKILL.md` for AI-first routing and companion procedures
-- `docs/examples/agent-first-dca-app-description/` for the worked DCA reference example
+- `docs/examples/ai-first-dca-app-description/` for the worked DCA reference example
 - existing Akka component and web UI skill families for implementation details
 
 The former inbox material has been archived under `specs/ai-first-skills-pack-migration/archive/inbox/` for provenance only. It is not operative routing, doctrine, or implementation guidance.
@@ -43,7 +43,7 @@ The former inbox material has been archived under `specs/ai-first-skills-pack-mi
 
 - source role: domain-specific DCA reconstruction source for office-device DCA/CRM/ERP consolidation, with supplies fulfillment as recommended initial slice.
 - final disposition: archived for provenance.
-- promoted/mined into: `docs/examples/agent-first-dca-app-description/`.
+- promoted/mined into: `docs/examples/ai-first-dca-app-description/`.
 
 ### `specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md`
 

@@ -20,7 +20,7 @@ Convert the temporary DCA/office-device concept material into a canonical AI-fir
 ## Candidate example location
 
 ```text
-docs/examples/agent-first-dca-app-description/
+docs/examples/ai-first-dca-app-description/
 ```
 
 Suggested files:

@@ -53,7 +53,7 @@ For queue templates, see `module-sprint-planning.md`, `solution-plan-to-implemen
 ## What the example demonstrates
 
 The example is not an AI-first SaaS example; it intentionally stays close to a conventional approval workflow while still demonstrating decomposition.
-For AI-first reference structure, see `examples/agent-first-dca-app-description/README.md`.
+For AI-first reference structure, see `examples/ai-first-dca-app-description/README.md`.
 
 The purchase-request example intentionally includes enough scope to justify multiple component families:
 - one write model

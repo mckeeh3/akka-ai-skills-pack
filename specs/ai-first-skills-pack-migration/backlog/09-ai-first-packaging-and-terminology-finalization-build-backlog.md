@@ -38,7 +38,7 @@ The pack should present AI-first SaaS consistently in source and installed conte
 
 - task ID: `TASK-09-005`
 - output: renamed active files/directories whose names contain `agent-first`, plus reference updates.
-- scope: likely includes `docs/examples/agent-first-dca-app-description/` to `docs/examples/ai-first-dca-app-description/`; do not rename archived provenance files unless explicitly needed.
+- scope: likely includes `docs/examples/ai-first-dca-app-description/` to `docs/examples/ai-first-dca-app-description/`; do not rename archived provenance files unless explicitly needed.
 
 ### 6. Scan active content for `agent-first` wording and replace with `ai-first`
 

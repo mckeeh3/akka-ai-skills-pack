@@ -10,10 +10,10 @@ This sprint is a future implementation sprint. It must be executed as bounded pe
 
 - `docs/ai-first-saas-application-architecture.md`
 - `docs/ai-first-examples-and-tests-gap-list.md`
-- `docs/examples/agent-first-dca-app-description/README.md`
-- `docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md`
-- `docs/examples/agent-first-dca-app-description/app-description/15-operating-model/README.md`
-- `docs/examples/agent-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md`
+- `docs/examples/ai-first-dca-app-description/README.md`
+- `docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md`
+- `docs/examples/ai-first-dca-app-description/app-description/15-operating-model/README.md`
+- `docs/examples/ai-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md`
 
 ## Selected slice
 

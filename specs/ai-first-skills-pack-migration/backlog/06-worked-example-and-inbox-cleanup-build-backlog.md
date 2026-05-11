@@ -13,7 +13,7 @@ Future agents can study one worked example to understand how AI-first doctrine, 
 ### 1. Design example structure
 
 - task ID: `TASK-06-001`
-- output: example README and file tree under `docs/examples/agent-first-dca-app-description/`.
+- output: example README and file tree under `docs/examples/ai-first-dca-app-description/`.
 - scope: define example boundaries and source material mapping.
 
 ### 2. Create DCA product vision and operating model example

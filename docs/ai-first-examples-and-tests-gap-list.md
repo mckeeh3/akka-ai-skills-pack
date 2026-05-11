@@ -14,7 +14,7 @@ The repository already has strong focused examples for individual Akka substrate
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
 - a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/`;
-- a completed non-runnable AI-first app-description reference under `docs/examples/agent-first-dca-app-description/`.
+- a completed non-runnable AI-first app-description reference under `docs/examples/ai-first-dca-app-description/`.
 
 The DCA app-description reference now covers durable goals, bounded agents, retained human authority, policies, approval gates, decision cards, audit/work/decision traces, supervision UI surfaces, outcome metrics, traceability, and realization slice sequencing. It is not runnable application code.
 
@@ -30,7 +30,7 @@ The DCA app-description reference now covers durable goals, bounded agents, reta
 
 Status: **complete as a non-runnable reference asset**.
 
-Reference: `docs/examples/agent-first-dca-app-description/`.
+Reference: `docs/examples/ai-first-dca-app-description/`.
 
 Completed coverage:
 
@@ -56,7 +56,7 @@ References:
 - tests: `src/test/java/com/example/domain/supplies/`, `src/test/java/com/example/application/supplies/`
 - planning provenance: `specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md`, `specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md`, `specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/`
 
-Selected first slice: `docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md` Slice 1, Supplies autopilot foundation.
+Selected first slice: `docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md` Slice 1, Supplies autopilot foundation.
 
 Completed implementation coverage:
 

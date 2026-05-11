@@ -18,7 +18,7 @@
 - blocks:
   - TASK-08-006 web UI implementation and generation only
 - source:
-  - docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md is missing
+  - docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md is missing
   - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/06-supplies-command-center-ui.md says to block rather than invent a visual theme
   - docs/web-ui-style-guide.md requires a selected style before browser UI implementation
 - question: >
@@ -37,7 +37,7 @@
 - decision: selected `theme-1-northpeak-analytics` — clean blue SaaS analytics dashboard
 - decision impact: generated browser UI for the supplies command-center and decision-card reference UI must follow the Northpeak Analytics style guide, using centralized CSS tokens, system light/dark mode, blue primary actions, airy dashboard cards, accessible status semantics, and responsive supervision-oriented layouts.
 - reconciled into:
-  - `docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md`
+  - `docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md`
 - notes:
   - Resolved from user answer: "select theme-1".
   - TASK-08-006 is no longer blocked by style selection.

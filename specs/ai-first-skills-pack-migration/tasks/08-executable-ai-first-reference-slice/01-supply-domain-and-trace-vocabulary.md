@@ -8,7 +8,7 @@ Create the pure domain vocabulary for the executable supplies autopilot referenc
 
 - `AGENTS.md`
 - `docs/ai-first-saas-application-architecture.md`
-- `docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md`
+- `docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md`
 - `specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md`
 - `specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md`
 

@@ -651,7 +651,7 @@
   - app-descriptions
   - ai-first-saas
 - expected outputs:
-  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/README.md
   - initial example file tree
 - required checks:
   - example is clearly a reference asset, not this repo's business app
@@ -669,7 +669,7 @@
 - depends on: [TASK-06-001]
 - required reads:
   - AGENTS.md
-  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/README.md
   - specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
   - specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - skills:
@@ -693,7 +693,7 @@
 - depends on: [TASK-06-002]
 - required reads:
   - AGENTS.md
-  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/README.md
   - specs/ai-first-skills-pack-migration/archive/inbox/docs/oai-agent-first-dca-office-device-lifecycle.md
   - specs/ai-first-skills-pack-migration/archive/inbox/docs/cai-dca-agentic-reconstruction.md
   - specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
@@ -720,7 +720,7 @@
 - depends on: [TASK-06-003]
 - required reads:
   - AGENTS.md
-  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/README.md
   - docs/ai-first-saas-application-architecture.md
   - specs/ai-first-skills-pack-migration/archive/inbox/docs/ai-first-saas-ui-patterns.md
   - specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
@@ -950,10 +950,10 @@
   - docs/ai-first-saas-application-architecture.md
   - docs/ai-first-examples-and-tests-gap-list.md
   - docs/examples/ai-first-app-description-gaps.md
-  - docs/examples/agent-first-dca-app-description/README.md
-  - docs/examples/agent-first-dca-app-description/app-description/15-operating-model/README.md
-  - docs/examples/agent-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md
-  - docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  - docs/examples/ai-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/app-description/15-operating-model/README.md
+  - docs/examples/ai-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md
+  - docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md
   - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - skills:
   - ai-first-saas
@@ -981,8 +981,8 @@
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
   - docs/ai-first-examples-and-tests-gap-list.md
-  - docs/examples/agent-first-dca-app-description/README.md
-  - docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  - docs/examples/ai-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md
   - specs/ai-first-skills-pack-migration/sprints/07-ai-first-alignment-hardening-sprint.md
   - specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - skills:
@@ -1012,7 +1012,7 @@
 - required reads:
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
-  - docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  - docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md
   - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
   - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
   - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/01-supply-domain-and-trace-vocabulary.md
@@ -1185,8 +1185,8 @@
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
   - docs/web-ui-style-guide.md
-  - docs/examples/agent-first-dca-app-description/app-description/55-ui/README.md
-  - docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md
+  - docs/examples/ai-first-dca-app-description/app-description/55-ui/README.md
+  - docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md
   - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
   - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
   - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/06-supplies-command-center-ui.md
@@ -1214,7 +1214,7 @@
   - UI prioritizes supervision and decision quality over CRUD navigation
   - git commit created for this task
 - notes:
-  - unblocked by Q-001 resolution: selected `theme-1-northpeak-analytics` and reconciled it into `docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md`.
+  - unblocked by Q-001 resolution: selected `theme-1-northpeak-analytics` and reconciled it into `docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md`.
   - completed: added packaged supplies command-center and decision-card UI, typed browser API client behavior, accessible/loading/empty/error/action states, Northpeak style tokens, Akka static hosting endpoint, and route/asset smoke tests; no separate frontend project existed, so no frontend build command was run
   - checks: `mvn -q -Dtest=com.example.application.supplies.SupplyAutopilotUiEndpointIntegrationTest test`; `mvn -q -DskipTests compile`
   - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement supplies command center UI`
@@ -1291,7 +1291,7 @@
 - required reads:
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
-  - docs/examples/agent-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/README.md
   - docs/examples/ai-first-app-description-gaps.md
   - README.md
   - pack/AGENTS.md
@@ -1380,14 +1380,14 @@
 
 ### TASK-09-005: Rename active `agent-first` files and directories to `ai-first`
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
 - task brief: none
 - depends on: [TASK-09-004]
 - required reads:
   - AGENTS.md
   - docs/ai-first-saas-application-architecture.md
-  - docs/examples/agent-first-dca-app-description/README.md if still present
+  - docs/examples/ai-first-dca-app-description/README.md if still present
   - install.sh
   - pack/README.md
   - skills/ai-first-saas-ui-surfaces/SKILL.md
@@ -1404,6 +1404,10 @@
 - done criteria:
   - active file and directory names consistently use `ai-first`
   - git commit created for this task
+- notes:
+  - completed: renamed the active DCA worked example directory to `docs/examples/ai-first-dca-app-description/`, updated active docs, specs, installer packaging, build-pack metadata, and installed layout references to the new path, and left archived provenance filenames unchanged
+  - checks: active filename scan for `*agent-first*`; active old-DCA-path reference scan; verified DCA paths listed in `install.sh` and `tools/build-pack.sh` exist
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Rename DCA example paths to ai-first`
 
 ### TASK-09-006: Replace active `agent-first` wording with `ai-first`
 

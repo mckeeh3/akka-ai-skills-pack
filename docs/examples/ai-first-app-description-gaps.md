@@ -16,7 +16,7 @@ Keep this example focused on the existing purchase request workflow unless a lat
 
 Do **not** force-fit this example into a full AI-first SaaS operating model. It lacks durable delegated goals, bounded agent/team execution, governed policy learning, decision-card evidence, work traces, and outcome loops by design.
 
-### `agent-first-dca-app-description/`
+### `ai-first-dca-app-description/`
 
 Status: **completed non-runnable AI-first app-description reference**.
 
