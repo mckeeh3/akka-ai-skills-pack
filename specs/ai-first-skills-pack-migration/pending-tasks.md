@@ -1005,7 +1005,7 @@
 
 ### TASK-08-001: Implement supply domain and trace vocabulary
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/01-supply-domain-and-trace-vocabulary.md
 - depends on: [TASK-07-007]
@@ -1028,7 +1028,9 @@
   - domain vocabulary supports decision cards, policy refs, traces, and outcome refs
   - git commit created for this task
 - notes:
-  - future implementation task; do not expand into Akka components
+  - completed: added pure supplies domain vocabulary for objectives, telemetry, items, evidence, policy refs, recommendations, decision cards, trace events, outcome refs, validation helpers, and focused unit tests; no Akka components were added
+  - checks: `mvn -q -Dtest=com.example.domain.supplies.SupplyTest test`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement supply domain and trace vocabulary`
 
 ### TASK-08-002: Implement SupplyDecision event-sourced write model
 
