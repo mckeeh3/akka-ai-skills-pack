@@ -290,6 +290,7 @@ EXAMPLES_DIR="$AGENTS_ROOT/resources/examples/java"
 PACK_MANIFEST_TARGET="$MANIFESTS_DIR/akka-ai-skills-pack.yaml"
 
 PACK_DOC_FILES=(
+  docs/ai-first-saas-application-architecture.md
   docs/app-description-end-to-end-workflow-example.md
   docs/app-description-maintenance-flow.md
   docs/app-description-skills-plan-backlog.md
@@ -298,6 +299,41 @@ PACK_DOC_FILES=(
   docs/agent-coverage-matrix.md
   docs/agent-runtime-state-reference.md
   docs/consumer-reference.md
+  docs/examples/agent-first-dca-app-description/README.md
+  docs/examples/agent-first-dca-app-description/app-description/00-system/README.md
+  docs/examples/agent-first-dca-app-description/app-description/00-system/app-manifest.md
+  docs/examples/agent-first-dca-app-description/app-description/10-capabilities/README.md
+  docs/examples/agent-first-dca-app-description/app-description/10-capabilities/capabilities-index.md
+  docs/examples/agent-first-dca-app-description/app-description/15-operating-model/README.md
+  docs/examples/agent-first-dca-app-description/app-description/15-operating-model/agent-roles-and-authority.md
+  docs/examples/agent-first-dca-app-description/app-description/15-operating-model/agent-team-design.md
+  docs/examples/agent-first-dca-app-description/app-description/15-operating-model/decisions-exceptions-and-evidence.md
+  docs/examples/agent-first-dca-app-description/app-description/15-operating-model/goals-and-objectives.md
+  docs/examples/agent-first-dca-app-description/app-description/15-operating-model/policies-and-approval-gates.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/README.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/flows/01-supplies-autopilot-flow.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/flows/02-lifecycle-and-exception-flows.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/flows/README.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/rules/01-approval-and-fail-safe-rules.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/rules/README.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/state-models/01-lifecycle-foundation.md
+  docs/examples/agent-first-dca-app-description/app-description/20-behavior/state-models/README.md
+  docs/examples/agent-first-dca-app-description/app-description/30-tests/README.md
+  docs/examples/agent-first-dca-app-description/app-description/30-tests/acceptance/README.md
+  docs/examples/agent-first-dca-app-description/app-description/30-tests/negative/README.md
+  docs/examples/agent-first-dca-app-description/app-description/30-tests/operational/README.md
+  docs/examples/agent-first-dca-app-description/app-description/30-tests/regression/README.md
+  docs/examples/agent-first-dca-app-description/app-description/40-auth-security/README.md
+  docs/examples/agent-first-dca-app-description/app-description/50-observability/README.md
+  docs/examples/agent-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md
+  docs/examples/agent-first-dca-app-description/app-description/55-ui/README.md
+  docs/examples/agent-first-dca-app-description/app-description/55-ui/ui-surfaces.md
+  docs/examples/agent-first-dca-app-description/app-description/60-generation/README.md
+  docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  docs/examples/agent-first-dca-app-description/app-description/70-traceability/README.md
+  docs/examples/agent-first-dca-app-description/app-description/70-traceability/ai-first-coverage-map.md
+  docs/examples/agent-first-dca-app-description/app-description/80-review/README.md
+  docs/examples/agent-first-dca-app-description/app-description/README.md
   docs/examples/purchase-request-app-description/README.md
   docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md
   docs/examples/purchase-request-app-description/app-description/00-system/generation-policy.md

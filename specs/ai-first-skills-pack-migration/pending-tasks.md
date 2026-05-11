@@ -764,7 +764,7 @@
 
 ### TASK-07-001: Align installed pack packaging and installed guidance
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-06-005]
@@ -793,6 +793,9 @@
 - done criteria:
   - installed pack can provide AI-first docs, routing skills, and worked-example references needed by installed skills
   - git commit created for this task
+- notes:
+  - completed: aligned installed-pack guidance with the AI-first default, added AI-first skills and missing existing skill directories to the manifest/bundle, and packaged AI-first doctrine plus the DCA worked app-description docs in the installer
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Align installed pack with AI-first guidance`
 
 ### TASK-07-002: Audit and fix skill/doc relative paths
 

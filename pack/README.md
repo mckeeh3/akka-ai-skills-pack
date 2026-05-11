@@ -5,8 +5,8 @@ This directory defines the installable packaging model for the Akka AI skills an
 ## Scope
 
 This pack intentionally includes:
-- `skills/**`, including description-first and implementation-routing skills
-- selected pack-facing docs under `docs/**`, including description-first doctrine/architecture references and example app-description artifacts
+- `skills/**`, including AI-first SaaS routing, description-first, planning, and implementation skills
+- selected pack-facing docs under `docs/**`, including AI-first doctrine, description-first doctrine/architecture references, and example app-description artifacts
 - reference examples exported from `src/**`
 - pack manifests
 - installer scripts
@@ -42,6 +42,7 @@ Installed layout:
 <agents-root>/
   AGENTS.md
   docs/
+    ai-first-saas-application-architecture.md
     description-first-application-doctrine.md
     app-description-skills-plan-backlog.md
     internal-app-description-architecture.md
@@ -61,6 +62,7 @@ Installed layout:
     timer-pattern-selection.md
     workflow-endpoint-pattern.md
     examples/
+      agent-first-dca-app-description/
       purchase-request-app-description/
       purchase-request-prd.md
       purchase-request-solution-plan.md
@@ -83,6 +85,12 @@ Installed layout:
     README.md
     references/
       akka-entity-comparison.md
+    ai-first-saas/
+      SKILL.md
+    ai-first-saas-object-model/
+      SKILL.md
+    ai-first-saas-agent-team-design/
+      SKILL.md
     app-descriptions/
       SKILL.md
     app-description-bootstrap/
@@ -121,7 +129,7 @@ Where `<agents-root>` is either `<project-root>/.agents` or `~/.agents`.
 ## Install model
 
 The pack is versioned as one release artifact.
-Each install copies the full packaged skill library, shared references, exported examples, and selected description-first reference docs.
+Each install copies the full packaged skill library, shared references, exported examples, and selected AI-first and description-first reference docs.
 
 ## Path rewrite rules
 

@@ -6,9 +6,10 @@ metadata:
   version: 0.1.5
   sourceRepo: https://github.com/mckeeh3/akka-ai-skills-pack
   description: >-
-    Versioned Akka AI resource pack containing installable skills for description-first
-    application maintenance and realization, intent-driven Akka application design,
-    decomposition, and code generation, plus Akka SDK Java reference examples.
+    Versioned Akka AI resource pack containing installable skills for AI-first SaaS
+    interpretation, description-first application maintenance and realization,
+    intent-driven Akka application design, decomposition, and code generation,
+    plus Akka SDK Java reference examples.
   compatibleAkkaSdk: '3.5.x'
 
 install:
@@ -70,6 +71,30 @@ content:
       category: architecture
     - id: app-generate-app
       path: skills/app-generate-app
+      category: focused
+    - id: ai-first-saas
+      path: skills/ai-first-saas
+      category: architecture
+    - id: ai-first-saas-agent-team-design
+      path: skills/ai-first-saas-agent-team-design
+      category: focused
+    - id: ai-first-saas-audit-trace
+      path: skills/ai-first-saas-audit-trace
+      category: focused
+    - id: ai-first-saas-decision-cards
+      path: skills/ai-first-saas-decision-cards
+      category: focused
+    - id: ai-first-saas-object-model
+      path: skills/ai-first-saas-object-model
+      category: focused
+    - id: ai-first-saas-outcomes-metrics
+      path: skills/ai-first-saas-outcomes-metrics
+      category: focused
+    - id: ai-first-saas-policy-governance
+      path: skills/ai-first-saas-policy-governance
+      category: focused
+    - id: ai-first-saas-ui-surfaces
+      path: skills/ai-first-saas-ui-surfaces
       category: focused
     - id: akka-agent-component
       path: skills/akka-agent-component
@@ -368,6 +393,9 @@ content:
     - id: akka-web-ui-frontend-project
       path: skills/akka-web-ui-frontend-project
       category: focused
+    - id: akka-web-ui-ux-design
+      path: skills/akka-web-ui-ux-design
+      category: focused
     - id: akka-web-ui-realtime
       path: skills/akka-web-ui-realtime
       category: focused
@@ -433,10 +461,19 @@ bundles:
       - app-description-ui
       - app-descriptions
       - app-generate-app
+      - ai-first-saas
+      - ai-first-saas-agent-team-design
+      - ai-first-saas-audit-trace
+      - ai-first-saas-decision-cards
+      - ai-first-saas-object-model
+      - ai-first-saas-outcomes-metrics
+      - ai-first-saas-policy-governance
+      - ai-first-saas-ui-surfaces
       - akka-agent-component
       - akka-agent-component-tools
       - akka-agent-evaluation
       - akka-agent-guardrails
+      - akka-agent-harness-skills
       - akka-agent-mcp-tools
       - akka-agent-memory
       - akka-agent-multimodal
@@ -531,6 +568,7 @@ bundles:
       - akka-web-ui-apps
       - akka-web-ui-forms-validation
       - akka-web-ui-frontend-project
+      - akka-web-ui-ux-design
       - akka-web-ui-realtime
       - akka-web-ui-state-rendering
       - akka-web-ui-testing
