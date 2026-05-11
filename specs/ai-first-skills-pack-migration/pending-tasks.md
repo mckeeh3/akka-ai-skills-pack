@@ -297,7 +297,7 @@
 
 ### TASK-03-003: Refactor capability and behavior app-description skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/03-app-description-ai-first-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-001]
@@ -317,6 +317,9 @@
   - operational delegation and human governance are represented
 - done criteria:
   - capability/behavior layers can express AI-first operating semantics
+- notes:
+  - completed: updated capability and behavior app-description skills to preserve delegated work, retained human authority, policy/approval/exception semantics, audit traces, learning loops, and outcome accountability before implementation framing
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor capability and behavior skills for AI-first`
 
 ### TASK-03-004: Refactor test/security/observability/UI app-description skills
 

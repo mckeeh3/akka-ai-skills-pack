@@ -16,10 +16,11 @@ It turns input into authoritative behavioral meaning that downstream generation 
 Create or update behavior-oriented app-description artifacts that:
 - capture capabilities and scope clearly
 - express user-visible and system-visible behavior
+- preserve AI-first operating semantics when behavior involves delegated work, agent judgment, human governance, or outcome loops
 - define state changes, transitions, and invariants
 - make forbidden behavior explicit
 - separate confirmed facts from assumptions
-- identify the linked test, security, and observability implications
+- identify the linked operating-model, test, security, and observability implications
 
 ## Required reading
 
@@ -28,6 +29,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
@@ -48,6 +50,7 @@ Use this skill for:
 - behavior revisions
 - bug-fix semantics
 - workflow and process rules
+- goal, plan, agent-task, approval, exception, decision, or learning-loop semantics
 - invariants
 - edge-case behavior
 - no-op and idempotency semantics
@@ -72,8 +75,9 @@ It should avoid prematurely locking in code structure unless the behavior itself
 For each requested change, identify and describe as applicable:
 - capability or business purpose
 - actors or callers
-- triggers, commands, or requests
-- stateful concepts and lifecycle states
+- delegated work and retained human authority
+- triggers, commands, requests, agent actions, approvals, exceptions, or scheduled checks
+- stateful concepts and lifecycle states, including goals, plans, tasks, decisions, policy proposals, traces, or outcomes when in scope
 - valid transitions
 - invalid transitions
 - invariants
@@ -81,7 +85,9 @@ For each requested change, identify and describe as applicable:
 - failure outcomes
 - no-op or idempotent behavior
 - ordering or timing assumptions
-- dependencies on security or observability layers
+- evidence, risk, confidence, impact, and alternative requirements for decisions when applicable
+- learning, feedback, replay, simulation, or outcome-loop behavior when applicable
+- dependencies on operating-model, security, or observability layers
 
 ## Output contract
 
@@ -105,6 +111,13 @@ Use this response shape when updating or summarizing behavior changes:
 ## Capability or scope change
 - ...
 
+## AI-first operating semantics, if in scope
+- delegated work:
+- retained human authority:
+- approval / exception / decision semantics:
+- policy / permission semantics:
+- trace / feedback / outcome semantics:
+
 ## Behavioral rules
 - ...
 
@@ -124,6 +137,7 @@ Use this response shape when updating or summarizing behavior changes:
 - ...
 
 ## Affected linked layers
+- operating model:
 - tests:
 - auth/security:
 - observability:
@@ -150,6 +164,18 @@ Capture what the system must refuse, reject, or ignore.
 ### 6. Flag cross-layer impact
 If a behavior change implies new tests, tighter security, or more observability, say so explicitly.
 
+### 7. Preserve delegation and governance semantics
+When behavior involves agents, automation, recommendations, approvals, exceptions, or policy-bound action, define:
+- what the system or agent may do autonomously
+- where it must pause for human review
+- what evidence, risk, confidence, impact, and alternatives are required
+- what transitions are allowed after approval, rejection, override, timeout, or exception resolution
+- what must be recorded for audit and outcome learning
+
+### 8. Keep policy-controlled behavior mechanical
+Do not describe policy, permission, or approval behavior as prompt advice only.
+Behavior specs must identify enforceable rules, forbidden transitions, and escalation points, then link security and observability impacts.
+
 ## Clarification policy
 
 Ask only the smallest questions needed to resolve material ambiguity in behavior.
@@ -159,13 +185,16 @@ Good questions include:
 - "After approval, is this field immutable or still editable?"
 - "If the downstream action fails, should the request remain pending, fail permanently, or retry later?"
 - "Is this rule user-visible behavior or only an internal operational expectation?"
+- "May the agent take this action autonomously, or only recommend it for approval?"
+- "What evidence or confidence threshold is required before the action can proceed?"
 
 ## Handoff to other skills
 
 When the behavior update is established, route onward as needed:
-- to `app-description-test-specification` when the behavior needs concrete acceptance, regression, or edge-case tests
-- to `app-description-auth-security` when the change affects authentication, authorization, trust boundaries, or sensitive-data rules
-- to `app-description-observability` when the change affects logs, metrics, traces, audit events, or diagnosability
+- to AI-first companion skills when the behavior changes goals, agent authority, policies, decision cards, audit traces, or outcome loops
+- to `app-description-test-specification` when the behavior needs concrete acceptance, regression, evaluation, or edge-case tests
+- to `app-description-auth-security` when the change affects authentication, authorization, trust boundaries, sensitive-data rules, or enforceable agent/human permissions
+- to `app-description-observability` when the change affects logs, metrics, traces, audit events, work traces, decision traces, policy invocations, or diagnosability
 - to `app-description-readiness-assessment` only when the user is asking whether the description is ready to realize
 
 ## Anti-patterns
@@ -175,6 +204,8 @@ Avoid:
 - silently choosing implementation structure as if it were behavioral truth
 - omitting forbidden behavior and failure behavior
 - forgetting no-op or idempotency semantics for retries and repeated requests
+- treating delegated work as ordinary CRUD plus generated text
+- allowing agents to act without explicit authority, approval, exception, and trace semantics
 - treating a bug fix as only a patch instead of a corrected behavioral rule
 - mixing security or observability policy into behavior without identifying the cross-layer impact
 
@@ -186,7 +217,8 @@ Before finishing, verify:
 - invariants and forbidden behavior are included when relevant
 - no-op or idempotent behavior is included when relevant
 - assumptions are separated from confirmed facts
-- linked test, security, and observability impacts are called out
+- operational delegation and human governance are represented when in scope
+- linked operating-model, test, security, and observability impacts are called out
 - no code-generation step was assumed
 
 ## Response style
@@ -197,3 +229,4 @@ When answering:
 - keep implementation speculation minimal
 - call out open questions separately from confirmed behavior
 - make the downstream test implications explicit
+- when AI-first semantics are in scope, state delegated work, retained authority, and approval/exception/trace impacts explicitly
