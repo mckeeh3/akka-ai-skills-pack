@@ -22,6 +22,7 @@ The skill should:
 - find blocked questions that may now be unblocked
 - mark obsolete questions as `superseded` when justified
 - ensure `blocking` questions accurately identify what they block
+- preserve AI-first decisions about delegated authority, policies, decision cards, traces, UI surfaces, evaluation, and outcomes while repairing the queue
 - report whether pending task generation is safe
 
 ## Use this skill when
@@ -44,6 +45,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
+- `../../docs/ai-first-saas-application-architecture.md` when questions involve delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../akka-pending-question-generation/SKILL.md`
 - `../akka-do-next-pending-question/SKILL.md`
 - target project `specs/README.md` if present
@@ -105,7 +107,18 @@ Recommended actions:
 - if one question is a narrower dependency of another, add a dependency rather than deleting either
 - if a question is too broad, split it only when the split is necessary for one-at-a-time answering
 
-### 5. Validate relationship to pending tasks
+### 5. Validate AI-first blocker coverage
+
+For questions sourced from AI-first app-description, solution-plan, slice, backlog, or task artifacts, verify unresolved decisions are represented as actionable blockers when they affect:
+- delegated work or retained human authority
+- policy clauses, approval gates, permissions, thresholds, or escalation rules
+- decision-card evidence, risk, confidence, impact, alternatives, or actions
+- audit/work/decision traces, tool/data-access records, evaluation, replay, simulation, or outcome metrics
+- supervision, governance, digest, audit, decision, or outcome UI surfaces
+
+Do not downgrade these to optional cosmetic questions when implementation would otherwise guess consequential behavior.
+
+### 6. Validate relationship to pending tasks
 
 If `specs/pending-tasks.md` exists:
 - identify tasks that are blocked by unresolved `blocking` questions
@@ -132,6 +145,7 @@ Not allowed:
 - renumber existing questions
 - silently decide product behavior without a recorded answer or safe default
 - create implementation tasks that remain blocked by unresolved questions
+- strip AI-first operating-model context from question text, decisions, blocks, or reconciliation targets during cleanup
 
 ## Maintenance report shape
 
@@ -180,6 +194,7 @@ Before finishing, verify:
 - all statuses and priorities are valid
 - answered questions are reconciled or explicitly still awaiting reconciliation
 - blocking questions name the exact blocked area
+- AI-first authority, approval, policy, risk, trace, UI-surface, evaluation, and outcome questions remain blocking when implementation would otherwise guess
 - stale/duplicate questions are resolved, deferred, or superseded
 - question history is preserved
 - no implementation code was changed

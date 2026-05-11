@@ -58,6 +58,8 @@ Read these first if present:
 - `../../specs/tasks/README.md`
 - `../../specs/pending-tasks.md` if it already exists
 - `../../docs/pending-task-queue.md`
+- `../../docs/ai-first-saas-application-architecture.md` when the backlog item includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
 - `../../specs/templates/implementation-task-template.md`
 - `../../specs/akka-solution-plan.md`
 - the target slice spec under `../../specs/slices/`
@@ -96,6 +98,20 @@ Each task brief must include:
 9. Done criteria
 
 The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, and done criteria from the brief.
+
+## AI-first context preservation
+
+When the backlog item includes AI-first operating-model semantics, the task brief must preserve only the context needed for this focused implementation run.
+
+Carry forward, when applicable:
+- delegated work and retained human authority for the component boundary
+- relevant policies, permissions, approval gates, thresholds, and escalation rules
+- decision-card evidence, risk, confidence, impact, alternatives, and actions
+- audit/work/decision trace records, tool/data-access records, and outcome links produced or consumed by the task
+- supervision, governance, digest, and audit UI-surface expectations
+- evaluation, replay, simulation, or outcome-metric checks
+
+If any of these are required but unresolved, do not make the queue entry runnable. Add or reference a `specs/pending-questions.md` blocker and mark only the affected task `blocked`.
 
 ## Mapping rules
 
@@ -179,6 +195,8 @@ Before finishing, verify:
 - the reads are the minimum needed
 - non-goals are explicit
 - outputs are specific files or a tightly bounded file family
+- AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome context from the backlog item is either preserved in the brief or explicitly out of scope
+- unresolved AI-first blockers are captured as pending questions and block only affected queue entries
 - required tests are named clearly
 - the listed skills match the task's component type
 - done criteria define a clear stopping point

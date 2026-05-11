@@ -21,6 +21,7 @@ The skill should:
 - detect blocked tasks that may now be unblocked
 - detect pending tasks with missing dependencies, reads, skills, checks, or done criteria
 - detect tasks that are runnable only because unresolved pending questions were ignored
+- preserve AI-first operating-model context such as delegated authority, policies, decisions, traces, UI surfaces, evaluations, and outcomes across queue repairs
 - mark obsolete tasks as `superseded` when justified
 - append maintenance follow-up tasks only when needed
 - report the next runnable task
@@ -49,6 +50,7 @@ Read these first if present:
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
+- `../../docs/ai-first-saas-application-architecture.md` when the queue contains or references delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../akka-do-next-pending-task/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`
 - target project `specs/README.md` if present
@@ -117,10 +119,22 @@ For each `blocked` task:
 If `specs/pending-questions.md` exists:
 - find unresolved `blocking` questions
 - identify non-done tasks whose source, expected outputs, or notes are blocked by those questions
+- treat unresolved AI-first authority, approval, policy, risk, trace, UI-surface, evaluation, or outcome decisions as blockers for only the affected tasks
 - mark affected tasks `blocked` or clarify their blocker notes
 - unblock tasks only when the relevant question is `resolved` or explicitly `deferred` with an accepted default
 
-### 6. Review stale pending tasks
+### 6. Review AI-first context preservation
+
+For non-done tasks sourced from AI-first slices, backlogs, task briefs, or app-description operating-model sections, verify the task metadata still names relevant:
+- delegated work and retained authority
+- policies, approvals, exceptions, permissions, and thresholds
+- decision-card, audit trace, work trace, tool/data-access, and outcome obligations
+- supervision, governance, digest, audit, or outcome UI surfaces
+- agent evaluation, replay, simulation, or outcome-metric checks
+
+If source artifacts contain these obligations but the queue entry omits them, update required reads, skills, required checks, or done criteria. If the omission hides an unresolved decision, block the affected task and reference or append the pending question instead of guessing.
+
+### 7. Review stale pending tasks
 
 A pending task is stale when:
 - its source requirement changed
@@ -135,7 +149,7 @@ Actions:
 - block when a decision is needed
 - supersede when a replacement exists or must be appended
 
-### 7. Optional queue compaction guidance
+### 8. Optional queue compaction guidance
 
 Do not delete tasks by default.
 
@@ -147,7 +161,7 @@ specs/archive/pending-tasks-done-YYYY-MM.md
 
 Only archive if the user explicitly asks. Even then, preserve dependency references or leave a stub/index in `specs/pending-tasks.md`.
 
-### 8. Report next runnable task
+### 9. Report next runnable task
 
 Use the standard selection algorithm:
 1. ignore `done`, `blocked`, `deferred`, and `superseded`
@@ -227,6 +241,8 @@ Before finishing, verify:
 - task IDs and dependency references are valid
 - non-done tasks have usable required reads and skills
 - stale/duplicate tasks are blocked or superseded
+- AI-first task entries preserve authority, policy, decision, trace, UI-surface, evaluation, and outcome context when present in source artifacts
+- unresolved AI-first blockers are not left runnable
 - completed task history is preserved
 - no code was implemented
 - the next runnable task is reported

@@ -50,6 +50,8 @@ Read these first if present:
 - `../../specs/tasks/README.md`
 - `../../specs/pending-tasks.md` if it already exists
 - `../../docs/pending-task-queue.md`
+- `../../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
 - `../../specs/templates/build-backlog-template.md`
 - `../../specs/templates/implementation-task-template.md`
 - the target slice spec file under `../../specs/slices/` or sprint spec file under `../../specs/sprints/`
@@ -112,6 +114,20 @@ Preserve existing task IDs and statuses when updating an existing queue.
 - `specs/sprints/01-foo-sprint.md` -> `specs/backlog/01-foo-build-backlog.md`
 - `specs/sprints/02-bar-sprint.md` -> `specs/backlog/02-bar-build-backlog.md`
 
+### AI-first context preservation
+
+When the source slice or sprint includes AI-first operating-model content, the backlog must carry that context into implementation tasks instead of reducing the work to generic CRUD/component tickets.
+
+Preserve, when present:
+- delegated work and retained human authority
+- policies, clauses, approval gates, permissions, thresholds, and escalation rules
+- decision-card evidence, risk, confidence, impact, alternatives, and actions
+- audit/work/decision traces, tool/data-access records, and outcome links
+- supervision, governance, digest, and audit UI surfaces
+- evaluation, replay, simulation, or outcome-metric obligations
+
+If any of these are necessary but unresolved, create or update `specs/pending-questions.md` and mark only affected backlog or pending-task items blocked instead of guessing.
+
 ### Scope preservation
 The backlog must not silently widen the slice or sprint.
 
@@ -157,6 +173,8 @@ Before finishing, verify:
 - the class list fits the slice or sprint scope
 - the endpoint list fits the slice or sprint scope
 - UI tasks include the selected style guide in required reads, or are blocked by the style-selection question
+- AI-first delegated-work, authority, policy, decision, trace, UI-surface, evaluation, and outcome constraints from the source slice are preserved in backlog sections and pending-task entries when applicable
+- unresolved AI-first authority, approval, policy, risk, trace, UI, evaluation, or outcome decisions block only the affected tasks and are captured as pending questions
 - the tests cover entity/workflow/view/endpoint behavior as applicable
 - the harness task breakdown is composed of bounded operations
 - any oversized task item is explicitly marked for further decomposition before coding

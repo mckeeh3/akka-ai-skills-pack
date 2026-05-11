@@ -39,6 +39,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
+- `../../docs/ai-first-saas-application-architecture.md` when the selected question involves delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../../docs/web-ui-style-guide.md` when selected question is a UI style/theme question
 - target project `specs/pending-questions.md`
 
@@ -93,33 +94,35 @@ When the selected question is `pending` or `asked` and the user has not already 
 
 When the user provides an answer:
 1. identify the matching question from the prompt or conversation
-2. update:
+2. preserve AI-first meaning in the normalized answer when present: delegated work, retained authority, policies, approvals, risk thresholds, evidence, traces, UI surfaces, evaluations, and outcomes
+3. update:
    - `status: answered`
    - `answer: >` with the user's answer
    - `decision:` with the normalized decision if clear
    - `decision impact:` with the expected planning impact
    - `notes:` with provenance if useful
-3. if the affected artifacts can be updated safely in this run, reconcile immediately and mark `resolved`
-4. if reconciliation needs a separate planning pass, leave status `answered` and report what must be reconciled
+4. if the affected artifacts can be updated safely in this run, reconcile immediately and mark `resolved`
+5. if reconciliation needs a separate planning pass, leave status `answered` and report what must be reconciled
 
 ## Reconciliation workflow
 
 For an `answered` question:
 1. read the artifacts listed under `source`, `blocks`, and `reconciled into` if present
 2. update the smallest relevant authoritative artifacts:
-   - app-description files for description-first projects
+   - app-description files for description-first projects, including `15-operating-model/` when the answer changes delegated work, authority, policies, approvals, decisions, traces, UI supervision, or outcomes
    - `specs/akka-solution-plan.md`
    - affected `specs/slices/*.md`
    - affected `specs/backlog/*.md`
    - `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when reconciling a web UI style/theme answer
    - `specs/pending-tasks.md` only if it already exists and the decision changes tasks
-3. for web UI style/theme answers, write the selected theme id/name, source reference, mode policy, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
-4. update the question:
+3. when the answer resolves an AI-first blocker, carry the decision into affected backlog/task metadata so delegated authority, policy, decision-card, trace, UI-surface, evaluation, and outcome constraints remain visible to future implementation runs
+4. for web UI style/theme answers, write the selected theme id/name, source reference, mode policy, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
+5. update the question:
    - `status: resolved`
    - `decision:` final concise decision
    - `decision impact:` concrete artifact/component impact
    - `reconciled into:` list exact files updated
-5. if the answer creates new dependent questions, append them or recommend `akka-pending-question-generation`
+6. if the answer creates new dependent questions, append them or recommend `akka-pending-question-generation`
 
 ## Deferral and supersession
 
@@ -164,6 +167,7 @@ Before finishing, verify:
 - exactly one question was processed unless the user explicitly requested a batch
 - the queue status was updated
 - answers were not treated as resolved until reconciled
+- AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome semantics from the answer were preserved in reconciliation targets when relevant
 - only relevant planning artifacts were edited
 - no application implementation was started
 - the next actionable question or next planning step was reported

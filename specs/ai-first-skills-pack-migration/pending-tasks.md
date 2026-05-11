@@ -904,7 +904,7 @@
 
 ### TASK-07-005: Preserve AI-first context in leaf planning and queue skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-07-003]
@@ -935,6 +935,9 @@
 - done criteria:
   - follow-on planning and queue maintenance no longer strip AI-first context
   - git commit created for this task
+- notes:
+  - completed: updated leaf planning, question/task queue maintenance, next-question reconciliation, and entity selection skills to preserve delegated work, retained authority, policy, decision-card, audit/trace, UI-surface, evaluation, and outcome context; unresolved AI-first authority, approval, policy, risk, trace, UI, evaluation, or outcome decisions now block affected work instead of being guessed
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Preserve AI-first context in leaf planning skills`
 
 ### TASK-07-006: Reconcile DCA example and AI-first gap docs
 
