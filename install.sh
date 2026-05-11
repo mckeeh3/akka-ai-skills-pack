@@ -330,6 +330,7 @@ PACK_DOC_FILES=(
   docs/examples/agent-first-dca-app-description/app-description/50-observability/README.md
   docs/examples/agent-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md
   docs/examples/agent-first-dca-app-description/app-description/55-ui/README.md
+  docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md
   docs/examples/agent-first-dca-app-description/app-description/55-ui/ui-surfaces.md
   docs/examples/agent-first-dca-app-description/app-description/60-generation/README.md
   docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
@@ -368,6 +369,7 @@ PACK_DOC_FILES=(
   docs/examples/purchase-request-solution-plan.md
   docs/examples/purchase-request-pending-tasks.md
   docs/intent-driven-usage-flow.md
+  docs/skills-pack-user-guide.md
   docs/module-sprint-planning.md
   docs/pending-question-queue.md
   docs/pending-task-queue.md

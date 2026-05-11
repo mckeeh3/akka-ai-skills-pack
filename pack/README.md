@@ -43,6 +43,7 @@ Installed layout:
   AGENTS.md
   docs/
     ai-first-saas-application-architecture.md
+    skills-pack-user-guide.md
     description-first-application-doctrine.md
     app-description-skills-plan-backlog.md
     internal-app-description-architecture.md
@@ -69,6 +70,7 @@ Installed layout:
     workflow-endpoint-pattern.md
     examples/
       agent-first-dca-app-description/
+        app-description/55-ui/style-guide.md
       purchase-request-app-description/
       purchase-request-prd.md
       purchase-request-solution-plan.md

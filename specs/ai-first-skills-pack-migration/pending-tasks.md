@@ -1350,7 +1350,7 @@
 
 ### TASK-09-004: Regenerate or update release/dist metadata
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
 - task brief: none
 - depends on: [TASK-09-003]
@@ -1374,6 +1374,9 @@
 - done criteria:
   - pack version/release artifacts reflect the post-AI-first migration state or document regeneration requirements clearly
   - git commit created for this task
+- notes:
+  - completed: bumped pack metadata and README release references to `0.1.6`, aligned build-pack doc inclusion with installer-packaged AI-first docs, added missing installed `skills-pack-user-guide.md` and DCA UI style-guide packaging references, and regenerated ignored `dist/akka-ai-skills-pack-0.1.6*` artifacts locally
+  - checks: `bash tools/check-version-consistency.sh`; `bash tools/build-pack.sh --clean`; archive content check for AI-first doctrine, DCA example, DCA UI style guide, installed user guide, manifest, and AI-first skill; unpacked `dist/akka-ai-skills-pack-0.1.6.tar.gz` and ran bundled `install.sh` into a temp project verifying installed AI-first docs
 
 ### TASK-09-005: Rename active `agent-first` files and directories to `ai-first`
 
