@@ -49,43 +49,45 @@ Placement note: audit/trace/outcome meaning is introduced by `15-operating-model
 
 ### P0: first executable AI-first implementation slice derived from the worked app-description
 
-Status: **planned for future implementation**.
+Status: **complete as a runnable reference slice**.
 
-Planning references:
-- `specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md`
-- `specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md`
-- `specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/`
+References:
+- implementation: `src/main/java/com/example/domain/supplies/`, `src/main/java/com/example/application/supplies/`, `src/main/java/com/example/api/supplies/`, `src/main/resources/static-resources/supplies/`
+- tests: `src/test/java/com/example/domain/supplies/`, `src/test/java/com/example/application/supplies/`
+- planning provenance: `specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md`, `specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md`, `specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/`
 
 Selected first slice: `docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md` Slice 1, Supplies autopilot foundation.
 
-Required implementation coverage:
+Completed implementation coverage:
 
-- durable goal/objective and trace vocabulary for supplies;
-- supply recommendation and decision-card write model;
-- workflow path for auto-ship, approval-required decision card, suppression, pause/resume, no-op, and idempotency behavior;
-- bounded agent/tool stubs or deterministic test doubles for forecast, entitlement/policy, and inventory checks;
-- views/endpoints/UI surfaces for supply risk, pending decisions, auto-ship history, suppressed shipments, and trace lookup;
-- tests for success, approval, suppression, missing evidence, stale decision, retry/idempotency, trace completeness, and outcome linkage.
+- durable goal/objective, decision-card, trace, policy, evidence, and outcome vocabulary for supplies;
+- supply recommendation and audit-grade `SupplyDecisionEntity` write model;
+- workflow path for auto-ship, approval-required decision cards, suppression, rejection, stale escalation, missing evidence, no-op, and idempotency behavior;
+- bounded deterministic agent/tool stubs for forecast, entitlement/policy, and inventory checks;
+- views, HTTP APIs, and packaged UI surface for supply risk, pending decisions, decision detail, action controls, and trace lookup;
+- unit, integration, endpoint, UI route, and slice-level acceptance tests for success, approval, rejection, suppression, missing evidence, stale decision, retry/idempotency, trace completeness, authority boundaries, and outcome linkage.
 
 ### P0: explicit AI-first acceptance/evaluation test patterns
 
-Missing reference: test guidance or examples that verify AI-first semantics, not just component mechanics.
+Status: **complete for the first supplies reference slice**.
 
-Required coverage:
+Reference: `src/test/java/com/example/application/supplies/SupplySliceAcceptanceIntegrationTest.java`.
 
-- agent authority boundary tests: autonomous path allowed, approval-required path blocked, escalation path recorded;
-- decision-card completeness tests: evidence, risk, confidence, impact, alternatives, policy trigger, and trace link present;
-- workflow pause/resume tests for human approvals and exceptions;
-- audit-trace tests proving policy, tool/data access, decision, approval, and outcome identifiers are persisted or projected;
-- policy-change governance tests: simulation/proposal can be drafted, but commit requires authorized human action.
+Covered patterns:
+
+- agent/workflow authority boundary tests: autonomous path allowed only through workflow gates, approval-required path blocked until human action, safe escalation/suppression recorded;
+- decision-card completeness tests: evidence, risk, confidence, impact, alternatives, stable policy clauses, trace link, and outcome link present;
+- workflow pause/resume tests for human approval/rejection and stale pending decisions;
+- audit-trace tests proving policy, decision, approval/rejection/suppression, shipment-prepared, stale escalation, and outcome identifiers are persisted or projected;
+- idempotency tests proving duplicate telemetry/action/timer commands do not duplicate side effects.
 
 ## Important gaps
 
 ### P1: audit-grade Event Sourced Entity example for AI-first decisions or policies
 
-Current ESE examples demonstrate event-sourced state but not a purpose-built AI-first object such as `DecisionRecord`, `PolicyDocument`, or `WorkTrace`.
+Status: **covered for AI-first decisions by the supplies slice** (`SupplyDecisionEntity`). Future breadth may add policy or work-trace variants.
 
-Needed when implementing P1:
+Covered/remaining pattern notes:
 
 - domain events that preserve temporal reasoning and accountability;
 - command validation around authority, policy version, evidence references, and outcome links;
@@ -93,9 +95,9 @@ Needed when implementing P1:
 
 ### P1: command-center and decision-queue View examples
 
-Current View examples demonstrate projection mechanics, but not AI-first supervision queues.
+Status: **covered for the supplies command center by the supplies slice** (`SupplyRiskView`, `PendingSupplyDecisionView`, `SupplyTraceView`). Future breadth may add goal/plan-wide queues.
 
-Needed when implementing P1:
+Covered/remaining pattern notes:
 
 - active goals/plans by owner/status/risk;
 - pending approvals/exceptions sorted by urgency using valid Akka View query constraints;
@@ -104,9 +106,9 @@ Needed when implementing P1:
 
 ### P1: AI-first web UI reference surface
 
-Current web UI guidance covers React/Vite integration and UI quality, but there is no concrete executable AI-first screen reference.
+Status: **covered as a minimal packaged supplies UI** under `src/main/resources/static-resources/supplies/`. Future breadth may add a full React/Vite frontend project.
 
-Needed when implementing P1:
+Covered/remaining pattern notes:
 
 - command center state model with active work, attention-needed items, and stale/reconnecting states;
 - decision card component with evidence, policy trigger, risk/confidence, action controls, and trace link;
@@ -115,9 +117,9 @@ Needed when implementing P1:
 
 ### P1: trace fanout and digest examples
 
-Current consumer/timer examples cover mechanics, but not AI-first trace curation.
+Status: **partially covered** by direct decision-event trace projection and stale-decision timed action in the supplies slice. Future breadth may add digest curation or external trace publication.
 
-Needed when implementing P1:
+Covered/remaining pattern notes:
 
 - consumer that enriches or republishes material trace events for supervision/audit;
 - timed action that builds periodic digest inputs or triggers stale-goal rechecks;

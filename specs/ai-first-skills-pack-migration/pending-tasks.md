@@ -1221,7 +1221,7 @@
 
 ### TASK-08-007: Add slice-level AI-first acceptance and trace/outcome tests
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/07-supplies-slice-acceptance-tests.md
 - depends on: [TASK-08-006]
@@ -1250,4 +1250,6 @@
   - tests prove authority boundaries, decision-card completeness, trace completeness, idempotency, and outcome linkage
   - git commit created for this task
 - notes:
-  - future implementation task; do not add new product scope
+  - completed: added slice-level supplies acceptance tests covering auto-shipment, approval, rejection, suppression, missing evidence, stale escalation, duplicate telemetry/action/timer idempotency, decision-card completeness, trace projection, authority boundaries, and outcome linkage; also fixed recommendation-opening trace events to carry policy/outcome context and updated the AI-first gap list to mark the first executable slice complete
+  - checks: `mvn -q -Dtest=com.example.application.supplies.SupplySliceAcceptanceIntegrationTest test`; `mvn -q -Dtest='com.example.domain.supplies.SupplyTest,com.example.application.supplies.*' test`; `mvn -q test`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add supplies slice acceptance tests`

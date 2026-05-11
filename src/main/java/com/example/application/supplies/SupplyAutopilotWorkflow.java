@@ -359,16 +359,18 @@ public class SupplyAutopilotWorkflow extends Workflow<SupplyAutopilotWorkflow.St
   }
 
   private void openDecision(SupplyDecisionCard card) {
+    var idempotencyKey = "idem-open-" + currentState().decisionId();
     componentClient
         .forEventSourcedEntity(currentState().decisionId())
         .method(SupplyDecisionEntity::openRecommendation)
         .invoke(
             new SupplyDecision.Command.OpenRecommendation(
-                "idem-open-" + currentState().decisionId(),
+                idempotencyKey,
                 card,
-                traceEvent(
+                traceEventForCard(
+                    card,
                     TraceEventType.RECOMMENDATION_CREATED,
-                    "idem-open-" + currentState().decisionId(),
+                    idempotencyKey,
                     "supply-forecast-agent",
                     card.recommendation().rationale())));
   }
@@ -399,6 +401,11 @@ public class SupplyAutopilotWorkflow extends Workflow<SupplyAutopilotWorkflow.St
 
   private SupplyTraceEvent traceEvent(
       TraceEventType type, String idempotencyKey, String actor, String summary) {
+    return traceEventForCard(currentState().decisionCard(), type, idempotencyKey, actor, summary);
+  }
+
+  private SupplyTraceEvent traceEventForCard(
+      SupplyDecisionCard card, TraceEventType type, String idempotencyKey, String actor, String summary) {
     return new SupplyTraceEvent(
         "trace-event-" + idempotencyKey.substring("idem-".length()),
         type,
@@ -407,8 +414,8 @@ public class SupplyAutopilotWorkflow extends Workflow<SupplyAutopilotWorkflow.St
         Instant.now(),
         actor,
         summary,
-        currentState().decisionCard() == null ? List.of() : currentState().decisionCard().recommendation().policyClauses(),
-        currentState().decisionCard() == null ? null : currentState().decisionCard().outcome());
+        card == null ? List.of() : card.recommendation().policyClauses(),
+        card == null ? null : card.outcome());
   }
 
   private List<String> validateAuthorityCommand(String idempotencyKey, String actor, String rationale) {
