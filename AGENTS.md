@@ -57,13 +57,20 @@ Implications:
 
 ## What this repository is
 
-Treat this repository as a **requirements-first, intent-driven Akka pack for AI coding agents**.
+Treat this repository as a **requirements-first, intent-driven Akka pack for AI coding agents** whose default generated-application target is now **AI-first SaaS on Akka**.
+
+The canonical doctrine is `docs/ai-first-saas-application-architecture.md`. Temporary concept files under `skills/inbox/` are provenance/source material only until explicit migration tasks promote, merge, archive, or delete them.
+
+For high-level product input, first ask whether the product should be interpreted as an AI-first SaaS operating model: durable goals and plans, bounded agent or agent-team execution, policy/permission controls, human supervision, decision/exception handling, audit traces, and outcome loops. Then choose the description-first, decomposition, or focused implementation path.
+
+AI-first is the default interpretation for delegated operational work, autonomous or semi-autonomous decisions, human governance of automation, or outcome accountability. It is **not** a requirement that every app use every AI-first pattern; apply only the substrate objects, governance surfaces, and Akka components justified by the product intent.
 
 Its job is to help an agent go from:
 1. high-level input
-2. either to authoritative app-description maintenance and review, or to Akka solution decomposition
-3. to focused skill selection and realization planning
-4. to component-by-component code and test generation when realization is requested
+2. AI-first operating-model interpretation when applicable
+3. either to authoritative app-description maintenance and review, or to Akka solution decomposition
+4. to focused skill selection and realization planning
+5. to component-by-component code and test generation when realization is requested
 
 Important distinction:
 - `akka-context/` contains official Akka reference material and semantic source-of-truth docs
@@ -79,7 +86,9 @@ prefer the **agent-friendly structure**.
 
 ## Default working model
 
-This repository now has two first-class operating modes.
+This repository now has an AI-first SaaS interpretation layer followed by two first-class operating modes.
+
+For broad product input, inspect the intent through the AI-first architecture doctrine before decomposing into CRUD screens or isolated Akka components. Existing Akka component skills remain the implementation substrate; they are selected after the operating model, durable objects, governance needs, UI surfaces, and delivery path are clear enough.
 
 ### Mode A: description-first application maintenance
 Use this when the user is primarily describing, revising, reviewing, or validating the app as a maintained internal description before realization.
@@ -122,6 +131,8 @@ It sits alongside the description-first `app-descriptions` path rather than repl
 
 ### Stage 1: Intent and architecture
 Use when the task starts from requirements, a prompt, a PRD, a specification file, a feature request, or any other high-level input and the Akka solution shape is not yet known.
+
+For high-level product input, apply the AI-first SaaS default first when the product involves delegated work, agents, governance, decisions, supervision, audit, or outcomes; then decompose into the Akka substrate.
 
 Start with:
 - `akka-solution-decomposition`
@@ -171,6 +182,13 @@ In short:
 - this repository packages Akka knowledge for agent use
 
 ---
+
+## AI-first SaaS doctrine and inbox provenance
+
+Use `docs/ai-first-saas-application-architecture.md` as the repository's canonical AI-first architecture doctrine.
+It defines the default target architecture for generated applications and the vocabulary for goals, agent teams, policies, decisions, traces, governance, UI surfaces, and outcome loops.
+
+`skills/inbox/` contains temporary source material gathered for the migration. Do not treat inbox docs as authoritative routing or implementation guidance unless a task explicitly says to use them for provenance. Do not delete or move inbox files until a dedicated cleanup task does so.
 
 ## How to interpret the main repo areas
 
@@ -237,13 +255,15 @@ At the start of a new session:
 1. read `AGENTS.md`
 2. read this file
 3. read `skills/README.md`
-4. if the task is agent-related, read `docs/agent-coverage-matrix.md`
-5. if the task is app-description-related, read:
+4. read `docs/ai-first-saas-application-architecture.md` for high-level product, routing, doctrine, app-description, PRD/spec/backlog, or skill-design work
+5. if the task is agent-related, read `docs/agent-coverage-matrix.md`
+6. if the task is app-description-related, read:
    - `docs/description-first-application-doctrine.md`
    - `docs/internal-app-description-architecture.md`
    - `docs/app-description-maintenance-flow.md`
    - the smallest relevant example under `docs/examples/purchase-request-app-description/`
-6. classify the task before choosing files:
+7. classify the task before choosing files:
+   - AI-first SaaS doctrine / operating model / governance / routing
    - description-first app maintenance / review / realization
    - requirements decomposition / architecture selection
    - focused structural decision
@@ -252,12 +272,13 @@ At the start of a new session:
    - docs/snippet generation
    - cross-cutting topic
    - repo structure / skill design
-7. if the task starts from high-level input and the user wants description-first maintenance or realization, start with `app-descriptions`
-8. if the task starts from high-level input and the component set is not yet known, start with `akka-solution-decomposition`
-9. if the task is narrowed to a stateful core but entity type is still open, use `akka-entity-type-selection`
-10. otherwise, load the smallest relevant local skill set first
-11. use `akka-context/sdk/...` when you need official semantics or a feature not yet well represented locally
-12. prefer local agent-optimized patterns when creating new repo content
+8. for high-level product input, interpret agentic operating model needs before CRUD/component decomposition
+9. if the task starts from high-level input and the user wants description-first maintenance or realization, start with `app-descriptions`
+10. if the task starts from high-level input and the component set is not yet known, start with `akka-solution-decomposition`
+11. if the task is narrowed to a stateful core but entity type is still open, use `akka-entity-type-selection`
+12. otherwise, load the smallest relevant local skill set first
+13. use `akka-context/sdk/...` when you need official semantics or a feature not yet well represented locally
+14. prefer local agent-optimized patterns when creating new repo content
 
 ---
 
@@ -300,7 +321,7 @@ If local coverage is missing:
 
 The most important objective of this project is:
 
-> turn Akka SDK knowledge into skills, examples, and guidance that are optimized for AI coding agents rather than for human readers
+> turn Akka SDK knowledge into AI-first SaaS skills, examples, and guidance that are optimized for AI coding agents rather than for human readers
 
 Use `AGENTS.md` for detailed constraints.
 Use this file for startup orientation.

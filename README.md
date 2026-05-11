@@ -1,6 +1,6 @@
 # Akka AI Skills Pack
 
-This repository produces the **Akka AI Skills Pack**: an installable `.agents/` resource pack that helps AI coding harnesses turn product intent into Akka application plans, code, tests, and supporting frontend/backend delivery assets.
+This repository produces the **Akka AI Skills Pack**: an installable `.agents/` resource pack that helps AI coding harnesses turn product intent into AI-first SaaS application plans, Akka implementation code, tests, and supporting frontend/backend delivery assets.
 
 The README is organized for two audiences:
 
@@ -19,6 +19,8 @@ After installation, the pack lives in one of these locations:
 - **Global install:** `~/.agents`
 
 The `.agents/` directory is a support library for the AI harness. It contains guidance, routing files, documentation, and reference examples that the harness can load while helping you work on your own project.
+
+The pack now treats **AI-first SaaS on Akka** as its default generated-application architecture when the product involves delegated operational work, agents, policy-controlled automation, human supervision, auditability, or outcome accountability. This does not mean every project must use every AI-first pattern; the harness should select only the durable objects, governance paths, UI surfaces, and Akka components that fit the product intent.
 
 Your project artifacts normally stay outside `.agents/`, for example:
 
@@ -290,6 +292,8 @@ Use this section when your goal is to develop, test, package, or release this re
 
 This repository is the **source project for the `akka-ai-skills-pack`**. It is not primarily an Akka application product. The Akka code under `src/` is executable reference material used to validate and demonstrate the pack.
 
+The repository is evolving toward AI-first SaaS application generation by default. Use [`docs/ai-first-saas-application-architecture.md`](docs/ai-first-saas-application-architecture.md) as the canonical architecture doctrine for this pivot. Files under `skills/inbox/` are temporary source/provenance material until explicit migration tasks promote, merge, archive, or remove them.
+
 ### Development scope
 
 Skill-pack development includes work such as:
@@ -300,7 +304,7 @@ Skill-pack development includes work such as:
 - maintaining packaging metadata under `pack/`
 - maintaining exported Java examples under `src/main` and `src/test`
 - maintaining installers and release scripts
-- improving routing, planning, question queue, task queue, and generation guidance
+- improving AI-first SaaS doctrine, routing, planning, question queue, task queue, and generation guidance
 - adding or revising examples that help downstream harnesses build Akka applications correctly
 
 When working in this repository, keep source and installed roles separate:
@@ -360,6 +364,7 @@ The source skill library lives under `skills/`.
 It is designed as an internal routing and implementation layer for harnesses. Maintain it with these goals:
 
 - users can speak naturally without knowing skill names
+- broad intent is interpreted through AI-first operating-model concepts before CRUD or component decomposition when applicable
 - broad intent is decomposed before coding
 - open decisions are queued instead of guessed
 - pending tasks are sized for focused harness runs

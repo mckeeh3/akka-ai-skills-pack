@@ -42,7 +42,7 @@
 
 ### TASK-01-002: Pivot repository guidance to AI-first default
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/01-architectural-pivot-and-doctrine/02-repository-guidance-pivot.md
 - depends on: [TASK-01-001]
@@ -64,6 +64,8 @@
   - pending queue updated to done
 - notes:
   - source requirement: user approved evolving this repository in place
+  - completed: repository guidance pivots to AI-first default while preserving source-pack vs installed-pack distinction
+  - commit hash: not pre-recorded because the queue status update is included in the same task commit
 
 ### TASK-01-003: Add AI-first entry guidance to skill routing map
 
