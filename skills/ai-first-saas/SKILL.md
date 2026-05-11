@@ -27,9 +27,9 @@ Then choose the smallest downstream path that can implement or maintain that mod
 ## Required reading
 
 Read these first when using this skill:
-- `../../../AGENTS.md`
-- `../../../skills/README.md`
-- `../../../docs/ai-first-saas-application-architecture.md`
+- `../../AGENTS.md`
+- `../README.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 
 For description-first work, also read the app-description docs named by `skills/README.md`.
 For direct Akka implementation, load only the focused Stage 3 skills for the selected substrate components.

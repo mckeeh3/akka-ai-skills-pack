@@ -21,9 +21,9 @@ Generate or review an Akka solution plan that:
 ## Supported inputs
 
 For a small canonical example of the intended output shape, see:
-- `../../../docs/prd-to-akka-flow.md`
-- `../../../docs/examples/purchase-request-prd.md`
-- `../../../docs/examples/purchase-request-solution-plan.md`
+- `../../docs/prd-to-akka-flow.md`
+- `../../docs/examples/purchase-request-prd.md`
+- `../../docs/examples/purchase-request-solution-plan.md`
 
 
 Use this skill when the input is one or more of:
@@ -44,41 +44,40 @@ If the user provides a filename or path:
 ## Required reading
 
 Read these first if present:
-- `../../../CONTEXT-WARMUP.md` for repo mental model and session bootstrap
-- `../../../AGENTS.md` for authoritative project rules and Akka coding constraints
-- `../../../skills/README.md` for local routing across skill families
-- `../../../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
-- `../../../docs/agent-coverage-matrix.md` when the task is agent-related
+- `../../AGENTS.md` for authoritative project rules and Akka coding constraints
+- `../README.md` for local routing across skill families
+- `../../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
+- `../../docs/agent-coverage-matrix.md` when the task is agent-related
 - `../references/akka-entity-comparison.md`
-- `../../../docs/workflow-endpoint-pattern.md`
-- `../../../docs/timer-pattern-selection.md`
-- `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../../docs/workflow-endpoint-pattern.md`
+- `../../docs/timer-pattern-selection.md`
+- `../../akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 
 When requirements already suggest a likely component, also read the official Akka doc for that area before coding:
-- `akka-context/sdk/event-sourced-entities.html.md`
-- `akka-context/sdk/key-value-entities.html.md`
-- `akka-context/sdk/workflows.html.md`
-- `akka-context/sdk/views.html.md`
-- `akka-context/sdk/consuming-producing.html.md`
-- `akka-context/sdk/timed-actions.html.md`
-- `akka-context/sdk/http-endpoints.html.md`
-- `akka-context/sdk/grpc-endpoints.html.md`
-- `akka-context/sdk/agents.html.md`
+- `../../akka-context/sdk/event-sourced-entities.html.md`
+- `../../akka-context/sdk/key-value-entities.html.md`
+- `../../akka-context/sdk/workflows.html.md`
+- `../../akka-context/sdk/views.html.md`
+- `../../akka-context/sdk/consuming-producing.html.md`
+- `../../akka-context/sdk/timed-actions.html.md`
+- `../../akka-context/sdk/http-endpoints.html.md`
+- `../../akka-context/sdk/grpc-endpoints.html.md`
+- `../../akka-context/sdk/agents.html.md`
 
 In this repository, prefer these cross-component examples:
-- `../../../src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../../src/main/java/com/example/application/DraftCartEntity.java`
-- `../../../src/main/java/com/example/application/TransferWorkflow.java`
-- `../../../src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../../src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../../../src/main/java/com/example/application/ActivityAgent.java`
-- `../../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../../../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../../src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../../src/main/java/com/example/application/DraftCartEntity.java`
+- `../../src/main/java/com/example/application/TransferWorkflow.java`
+- `../../src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../../src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../../src/main/java/com/example/application/ActivityAgent.java`
+- `../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
+- `../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `../../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
 
 ## What this skill must produce
 

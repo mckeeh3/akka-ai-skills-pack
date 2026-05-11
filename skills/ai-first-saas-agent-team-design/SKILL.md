@@ -12,7 +12,7 @@ This is an operating-model and routing skill. It does not replace `akka-agents`,
 ## Required reading
 
 Read first:
-- `../../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
 For implementation, route to:

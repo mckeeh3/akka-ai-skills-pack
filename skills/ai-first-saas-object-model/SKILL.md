@@ -12,7 +12,7 @@ This is a modeling and routing skill. It does not replace domain modeling inside
 ## Required reading
 
 Read first:
-- `../../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
 Then load only the downstream component skills needed by the selected object types.

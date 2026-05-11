@@ -235,6 +235,7 @@ import sys
 skills_dir = Path(sys.argv[1])
 example_rewrites = [
     ("../../../src/", "../../resources/examples/java/src/"),
+    ("../../src/", "../../resources/examples/java/src/"),
     ("../../../docs/", "../../docs/"),
 ]
 
@@ -255,11 +256,13 @@ def normalize_repo_internal_reference(line: str):
     stripped = line.strip()
     indent = line[: len(line) - len(line.lstrip())]
 
-    if stripped.startswith("- `../../../") and "repo mental model and session bootstrap" in stripped:
+    if (
+        stripped.startswith("- `../../../") or stripped.startswith("- `../../")
+    ) and "repo mental model and session bootstrap" in stripped:
         return None
-    if "../../../AGENTS.md" in stripped:
+    if "../../../AGENTS.md" in stripped or "../../AGENTS.md" in stripped:
         return f"{indent}- `../../AGENTS.md` for installed-pack usage guidance and routing expectations"
-    if "../../../skills/README.md" in stripped:
+    if "../../../skills/README.md" in stripped or "../README.md" in stripped:
         return f"{indent}- `../README.md` for routing across the installed skill library"
     return line
 

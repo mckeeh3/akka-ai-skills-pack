@@ -799,7 +799,7 @@
 
 ### TASK-07-002: Audit and fix skill/doc relative paths
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-07-001]
@@ -829,6 +829,9 @@
 - done criteria:
   - AI-first and decomposition skill required-read paths are correct in source and compatible with install rewriting
   - git commit created for this task
+- notes:
+  - completed: corrected AI-first and solution-decomposition skill paths to resolve from each skill directory, removed the missing warmup read, updated installer rewrites to handle corrected source example paths, and audited affected source/installed path rewrites
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Audit AI-first skill relative paths`
 
 ### TASK-07-003: Align core flow docs with AI-first default
 
