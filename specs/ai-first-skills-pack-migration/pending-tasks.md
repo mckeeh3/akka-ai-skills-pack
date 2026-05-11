@@ -868,7 +868,7 @@
 
 ### TASK-07-004: Add AI-first checks to app-description lifecycle skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-07-003]
@@ -898,6 +898,9 @@
 - done criteria:
   - app-description lifecycle cannot silently ignore AI-first operating-model completeness
   - git commit created for this task
+- notes:
+  - completed: updated change-impact, readiness assessment/summary, and generation lifecycle skills to check `15-operating-model/`, delegated authority, policies, decisions, traces, outcomes, and AI-first UI surfaces when in scope; generation now blocks or surfaces missing operating-model semantics instead of inventing them
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add AI-first app-description lifecycle checks`
 
 ### TASK-07-005: Preserve AI-first context in leaf planning and queue skills
 

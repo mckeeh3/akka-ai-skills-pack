@@ -29,6 +29,7 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -38,6 +39,7 @@ Read these first if present:
 - `../app-description-auth-security/SKILL.md`
 - `../app-description-observability/SKILL.md`
 - `../app-description-ui/SKILL.md`
+- `../ai-first-saas/SKILL.md` when delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope
 - `../../docs/web-ui-style-guide.md`
 
 ## Use this skill when
@@ -60,13 +62,22 @@ Readiness is about **semantic completeness**, not about whether code could be gu
 
 A description is ready only when it is clear enough that generation is likely to preserve intended behavior without hiding major unresolved decisions.
 
-This skill should resist premature generation when important behavior, test, security, observability, or in-scope frontend/UI semantics are still undefined.
+This skill should resist premature generation when important behavior, test, security, observability, in-scope frontend/UI, or AI-first operating-model semantics are still undefined.
 
 ## Readiness dimensions
 
 Assess the current description across these dimensions:
 
-### 1. Behavior completeness
+### 1. AI-first operating-model completeness
+Check this when `15-operating-model/` exists or delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope:
+- durable goals, objectives, constraints, success criteria, and outcome links
+- delegated work versus retained human authority
+- agent/team responsibilities, tools, data access, thresholds, and escalation rules
+- policies, clauses, guardrails, permissions, and approval gates
+- decision/exception semantics with evidence, risk, confidence, impact, alternatives, and precedents
+- audit/work/decision traces, policy invocations, tool/data-access events, feedback, replay/simulation, and outcome metrics
+
+### 2. Behavior completeness
 Check whether the app meaning is sufficiently defined:
 - core capabilities
 - major flows and state changes
@@ -75,7 +86,7 @@ Check whether the app meaning is sufficiently defined:
 - forbidden behavior
 - no-op or idempotency rules where relevant
 
-### 2. Test completeness
+### 3. Test completeness
 Check whether important behavior is backed by explicit verification expectations:
 - acceptance cases
 - regression cases
@@ -83,15 +94,16 @@ Check whether important behavior is backed by explicit verification expectations
 - repeated-request behavior
 - failure-path expectations
 
-### 3. Auth/security completeness
+### 4. Auth/security completeness
 Check whether required production security semantics are defined:
 - identity and trust model
 - authorization rules
 - trust boundaries
 - sensitive-data rules
 - denial behavior
+- mechanical enforcement of agent/tool permissions and human authority boundaries when AI-first behavior is in scope
 
-### 4. Observability completeness
+### 5. Observability completeness
 Check whether required operational evidence is defined:
 - logs and audit events
 - metrics
@@ -99,8 +111,9 @@ Check whether required operational evidence is defined:
 - health signals
 - alert-worthy conditions
 - diagnosability expectations
+- AI-first work traces, decision traces, policy invocations, tool/data-access records, and outcome links when applicable
 
-### 5. Frontend/UI completeness
+### 6. Frontend/UI completeness
 Check this when a browser frontend is in scope:
 - user journeys and screens
 - navigation
@@ -110,8 +123,9 @@ Check this when a browser frontend is in scope:
 - realtime behavior when needed
 - accessibility and responsive expectations
 - selected web UI style guide/theme, mode policy, core CSS tokens, component styling, and brand adaptation rules
+- for AI-first apps, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces instead of only CRUD navigation
 
-### 6. Generation stability
+### 7. Generation stability
 Check whether remaining ambiguity would likely cause incorrect or unstable generated outputs.
 
 ## Allowed outcomes
@@ -138,6 +152,10 @@ Use this response shape:
 ## Overall state
 - not-ready | ready-with-assumptions | ready
 
+## AI-first operating-model completeness
+- status:
+- notes:
+
 ## Behavior completeness
 - status:
 - notes:
@@ -151,6 +169,10 @@ Use this response shape:
 - notes:
 
 ## Observability completeness
+- status:
+- notes:
+
+## Frontend/UI completeness
 - status:
 - notes:
 
@@ -172,7 +194,7 @@ If a critical area is underspecified, say so directly.
 Do not mark the description ready just because generation is technically possible.
 
 ### 2. Weight missing production concerns appropriately
-Missing auth/security or observability details may block readiness even if core behavior is mostly defined.
+Missing auth/security, observability, operating-model, or AI-first UI details may block readiness even if core behavior is mostly defined.
 
 ### 3. Allow limited assumptions only when localized
 `ready-with-assumptions` is valid only when the remaining assumptions are:
@@ -182,6 +204,8 @@ Missing auth/security or observability details may block readiness even if core 
 - unlikely to distort the app's core behavior
 
 For browser UI generation, a missing style guide/theme is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
+
+For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
 ### 4. Consider manual evaluation intent
 If the user mainly wants a rough generated app for early evaluation, readiness may tolerate more assumptions than a production-grade generation step, but those assumptions must still be surfaced.
@@ -193,10 +217,12 @@ If the description is sufficiently mature, this skill may recommend moving on to
 
 Route onward as follows:
 - if `not-ready`, route to the most relevant missing description skills:
+  - `ai-first-saas` or focused AI-first companion skills when operating-model semantics are missing
   - `app-description-behavior-specification`
   - `app-description-test-specification`
   - `app-description-auth-security`
   - `app-description-observability`
+  - `app-description-ui`
 - if `ready-with-assumptions`, route to:
   - explicit assumption confirmation if needed
   - then `app-generate-app` if generation is requested or accepted
@@ -224,10 +250,12 @@ Avoid:
 
 Before finishing, verify:
 - the result uses one of the three allowed states
+- AI-first operating-model completeness was assessed explicitly when delegated operations are in scope
 - behavior completeness was assessed explicitly
 - test completeness was assessed explicitly
 - auth/security completeness was assessed explicitly
 - observability completeness was assessed explicitly
+- frontend/UI completeness was assessed explicitly when UI is in scope
 - remaining assumptions or gaps are listed clearly
 - the recommendation is explicit
 - the next skill or sequence is named clearly

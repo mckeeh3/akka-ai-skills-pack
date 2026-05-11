@@ -29,12 +29,14 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-readiness-assessment/SKILL.md`
-- any currently relevant app-description layer artifacts identified by the harness
+- `../ai-first-saas/SKILL.md` when delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope
+- any currently relevant app-description layer artifacts identified by the harness, including `15-operating-model/` when present or required
 - `../../docs/web-ui-style-guide.md` and `app-description/55-ui/style-guide.md` when a browser frontend is in scope
 
 If the user asks to generate and run, read the current build and execution entry points for the target project before acting.
@@ -57,11 +59,13 @@ Use it only after the harness has either:
 Generation is a realization step, not the source-of-truth step.
 
 If generation reveals a semantic gap, the fix belongs in the app description, not in hand-edited generated code.
+For AI-first/delegated operations, never invent missing authority, policy, approval, decision, evidence, trace, outcome, or supervision semantics during generation.
 
 ## Generation responsibilities
 
 When generating, this skill must:
 - identify the current description baseline
+- verify readiness did not ignore `15-operating-model/` when delegated operations are in scope
 - identify whether generation is full or localized
 - identify which outputs are in scope
 - realize outputs from the description
@@ -95,9 +99,12 @@ As applicable, generation may include:
 - configuration or deployment assets
 - runtime startup commands or scripts
 - Akka-hosted web UI assets and TypeScript frontend modules when the app description includes `55-ui`, applying the selected `55-ui/style-guide.md`
+- AI-first substrate outputs when described: durable goals/plans, policy/approval gates, decision cards, traces, outcome loops, agents/workflows/views/endpoints, and supervision UI surfaces
 - documentation or evaluation notes
 
 The exact realization set depends on the current repository and user request. When a browser frontend is in scope, route realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as static content only. Do not invent a visual theme during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../../docs/web-ui-style-guide.md`.
+
+When AI-first behavior is in scope, route through `ai-first-saas` companion skills and the selected Akka substrate skills before generation. Stop or surface a blocking gap if `15-operating-model/` does not define the required delegated work, retained human authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or AI-first UI surfaces well enough to implement.
 
 ## Standard generation output shape
 
@@ -109,6 +116,7 @@ Use this response shape when summarizing generation:
 ## Generation basis
 - description state:
 - readiness state:
+- operating-model basis:
 - assumptions used:
 
 ## Regeneration scope
@@ -138,6 +146,7 @@ Use this response shape when summarizing generation:
 ## Handoff behavior
 
 After generation, route onward as needed:
+- to `ai-first-saas` or focused AI-first companion skills if generation exposed missing operating-model semantics
 - to `app-description-change-summary` if the user asks what changed
 - to `app-description-readiness-summary` if the user asks why generation was considered acceptable
 - back to description-maintenance skills if generation exposed missing semantics or unacceptable assumptions
@@ -159,12 +168,14 @@ Avoid:
 - treating prior generated code as authoritative over the current description
 - performing manual-style code edits as if they were the correct response to semantic gaps
 - hiding assumptions used during `ready-with-assumptions` generation
+- generating AI-first apps from CRUD-only or chatbot-only descriptions when goals, authority, policies, decisions, traces, outcomes, or supervision surfaces are actually in scope
 
 ## Final review checklist
 
 Before finishing, verify:
 - the description basis for generation is explicit
 - readiness state is explicit
+- operating-model basis is explicit when AI-first/delegated operations are in scope
 - assumptions are explicit when used
 - regeneration scope is explicit
 - outputs in scope are listed clearly

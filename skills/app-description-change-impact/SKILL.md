@@ -13,7 +13,7 @@ It helps the harness keep the internal app-description system consistent and dec
 ## Goal
 
 Analyze a requested or completed description change and produce an impact result that:
-- identifies impacted authoritative layers
+- identifies impacted authoritative layers, including `15-operating-model/` when AI-first/delegated operations are in scope
 - identifies impacted traceability artifacts
 - identifies whether readiness must be reassessed
 - identifies likely affected generated output areas
@@ -27,6 +27,7 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-skills-plan-backlog.md`
@@ -35,7 +36,9 @@ Read these first if present:
 - `../app-description-test-specification/SKILL.md`
 - `../app-description-auth-security/SKILL.md`
 - `../app-description-observability/SKILL.md`
+- `../app-description-ui/SKILL.md`
 - `../app-description-readiness-assessment/SKILL.md`
+- `../ai-first-saas/SKILL.md` when the change involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 
 Prefer these example references when present:
 - `../../docs/examples/purchase-request-app-description/app-description/60-generation/regeneration-map.md`
@@ -58,7 +61,8 @@ Use it after or alongside changes to:
 - tests
 - auth/security
 - observability
-- readiness-driving assumptions
+- UI/supervision surfaces
+- AI-first operating-model semantics such as delegated work, authority, policies, decisions, traces, outcomes, or readiness-driving assumptions
 
 ## Core operating rule
 
@@ -76,10 +80,12 @@ A one-line behavior change may still require:
 
 For each change, determine as applicable:
 - which capability artifacts are impacted
+- which `15-operating-model/` artifacts are impacted when delegated operations are in scope: goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, evidence, traces, learning, or outcomes
 - which behavior artifacts are impacted
 - which test artifacts are impacted
-- which auth/security artifacts are impacted
-- which observability artifacts are impacted
+- which auth/security artifacts are impacted, especially authority boundaries and permission enforcement
+- which observability artifacts are impacted, especially audit/work/decision traces, policy invocations, tool/data-access events, and outcome metrics
+- which UI artifacts are impacted, especially supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
 - which traceability maps must change
 - whether `00-system/readiness-status.md` must be updated
 - which generation surfaces are likely affected
@@ -98,10 +104,12 @@ Use this response shape:
 
 ## Impacted authoritative layers
 - capabilities:
+- operating-model:
 - behavior:
 - tests:
 - auth/security:
 - observability:
+- UI:
 
 ## Impacted derived layers
 - traceability:
@@ -127,20 +135,24 @@ Use this response shape:
 ### 1. Start from semantics, not files
 Ask what the change means for the app, then identify which artifacts must reflect that meaning.
 
-### 2. Always inspect verification impact
-Any important change in behavior, security, or observability should trigger a test-impact check.
+### 2. Preserve AI-first operating-model context
+When delegated operations are in scope, do not let a change bypass `15-operating-model/`.
+Detect whether it changes goals, plans, delegated authority, retained human authority, agent/team responsibility, policies, approval gates, decision evidence, exception handling, audit traces, learning loops, outcomes, or supervision surfaces.
 
-### 3. Treat security and observability as dependency surfaces
-Behavior changes may force security and observability updates even when the user did not explicitly ask for them.
+### 3. Always inspect verification impact
+Any important change in behavior, security, observability, UI supervision, or AI-first operating semantics should trigger a test-impact check.
 
-### 4. Reassess readiness when meaning changed materially
-If the change alters core behavior, failure semantics, production constraints, or test coverage expectations, readiness should usually be revisited.
+### 4. Treat security, observability, and UI as dependency surfaces
+Behavior or operating-model changes may force security, observability, and UI updates even when the user did not explicitly ask for them.
 
-### 5. Prefer localized regeneration only when the dependency chain is clear
+### 5. Reassess readiness when meaning changed materially
+If the change alters core behavior, failure semantics, delegated authority, policies, approvals, decisions, traces, outcomes, production constraints, UI supervision surfaces, or test coverage expectations, readiness should usually be revisited.
+
+### 6. Prefer localized regeneration only when the dependency chain is clear
 If the harness cannot confidently bound the affected outputs, recommend broad or full regeneration instead.
 
-### 6. Update traceability maps explicitly
-When capability-to-behavior, behavior-to-tests, or change-impact maps are now stale, mark them for update.
+### 7. Update traceability maps explicitly
+When capability-to-behavior, operating-model-to-behavior, behavior-to-tests, or change-impact maps are now stale, mark them for update.
 
 ## Regeneration recommendation guide
 
@@ -148,7 +160,7 @@ When capability-to-behavior, behavior-to-tests, or change-impact maps are now st
 - the changed semantic area is narrow
 - affected authoritative layers are clearly bounded
 - affected output surfaces are known
-- no broad architectural or policy assumption shifted
+- no broad architectural, authority, policy, decision, trace, outcome, or UI-supervision assumption shifted
 
 ### Recommend `broad` when
 - multiple authoritative layers changed in connected ways
@@ -166,7 +178,9 @@ When capability-to-behavior, behavior-to-tests, or change-impact maps are now st
 Route onward as needed:
 - to `app-description-test-specification` when verification impact exists
 - to `app-description-auth-security` when access, identity, boundary, or data-protection implications exist
-- to `app-description-observability` when logging, metrics, audit, trace, or diagnosability implications exist
+- to `app-description-observability` when logging, metrics, audit, trace, outcome, or diagnosability implications exist
+- to `app-description-ui` when supervision, decision, governance, digest, goal-to-execution, or audit UI implications exist
+- to focused AI-first companion skills when operating-model semantics changed and need decomposition before app-description updates
 - to `app-description-readiness-assessment` when readiness likely changed
 - to `akka-change-request-to-spec-update` when existing specs/backlogs/pending tasks must be reconciled after a bounded change
 - to `akka-revised-prd-reconciliation` when the change basis is a revised/replacement PRD
@@ -193,7 +207,7 @@ Avoid:
 ## Final review checklist
 
 Before finishing, verify:
-- impacted authoritative layers are named explicitly
+- impacted authoritative layers are named explicitly, including `15-operating-model/` when delegated operations are in scope
 - impacted derived layers are named explicitly
 - readiness impact is called out when relevant
 - likely generated outputs are named at a useful level
