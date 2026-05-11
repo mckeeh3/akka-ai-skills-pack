@@ -16,6 +16,10 @@ Generate or review agent code that is:
 - easy for AI coding agents to extend with focused companion skills
 - backed by tests or workflow-driven examples when reliability matters
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use. Before coding, make responsibility, non-responsibility, allowed tools/data, autonomous authority, escalation thresholds, session/memory behavior, and trace obligations explicit. Use workflows for durable multi-agent orchestration, approvals, retries, timeouts, and progress tracking instead of chaining agents informally.
+
 ## Required reading before coding
 
 Read these first if present:
@@ -151,6 +155,15 @@ Rules:
 
 ## Decision guide
 
+### 0. AI-first operational worker
+Use when the model performs a bounded responsibility within a durable goal, plan, approval, exception, policy, audit, or outcome loop.
+
+Before implementation, identify:
+- delegated work and retained human authority
+- policies, permissions, evidence, and risk thresholds that bound the agent
+- trace records needed for prompts, tools, data access, recommendations, evaluations, and outcomes
+- whether a workflow must supervise retries, approvals, or multi-step execution
+
 ### 1. Single-purpose request/reply agent
 Use when one model interaction produces one reply.
 
@@ -198,6 +211,7 @@ Before finishing, verify:
 - harness-like skill tools are whitelisted and backed by packaged resources or MCP, not arbitrary filesystem reads
 - structured response records are small and descriptive
 - workflow orchestration is used instead of agent-to-agent tool chaining
+- AI-first agents have explicit authority boundaries, escalation criteria, and trace obligations
 - tests replace real models with `TestModelProvider`
 
 ## Response style

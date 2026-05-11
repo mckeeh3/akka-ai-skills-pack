@@ -16,6 +16,10 @@ Generate or review workflow code that is:
 - safe to compensate or pause when business flow requires it
 - easy for AI agents to extend with focused tests
 
+## AI-first substrate role
+
+In AI-first SaaS implementations, use workflows as durable execution plans for long-running automation, approval routing, exceptions, retries, compensation, deadlines, and agent-team orchestration. Keep the workflow state explicit about plan progress, human decisions, policy gates, evidence or risk summaries needed by later steps, and trace/outcome identifiers. Use agents for bounded model work inside the plan, but keep business progress and authority transitions in the workflow.
+
 ## Required reading before coding
 
 Read these first if present:
@@ -90,6 +94,15 @@ Rules:
 
 ## Decision guide
 
+### 0. AI-first execution plan
+Use when delegated work must remain inspectable, recoverable, and auditable across agent calls, human approval, exception handling, or downstream actions.
+
+Before implementation, identify:
+- goal or plan id, owner, success criteria, and outcome link carried in state
+- approval gates, exception paths, policy triggers, deadlines, and compensation needs
+- agent calls that require durable retries, shared session ids, or human review
+- trace events and view updates needed for supervision and audit surfaces
+
 ### 1. Straight-through orchestration workflow
 Use when the workflow coordinates a short series of durable steps.
 
@@ -130,6 +143,7 @@ Before finishing, verify:
 - transitions use method references
 - pause, compensation, or notification logic is explicit when needed
 - downstream component calls are idempotent under retries
+- AI-first workflows preserve authority boundaries, approval/exception state, and trace/outcome identifiers
 - tests use `componentClient.forWorkflow(...)`
 
 ## Response style

@@ -501,7 +501,7 @@
 
 ### TASK-05-001: Reframe agent and workflow implementation skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/05-substrate-implementation-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -521,6 +521,9 @@
   - avoid duplicating broad doctrine inside component skills
 - done criteria:
   - agents/workflows are framed as AI-first substrate implementation options
+- notes:
+  - completed: added concise AI-first substrate framing to agent and workflow skills, covering bounded operational workers, durable execution plans, approval/exception paths, retries, compensation, and trace/outcome obligations without duplicating broad doctrine
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Reframe agent and workflow skills for AI-first`
 
 ### TASK-05-002: Reframe entity and view implementation skills
 
