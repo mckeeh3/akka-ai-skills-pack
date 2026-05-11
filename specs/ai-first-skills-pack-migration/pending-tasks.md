@@ -1034,7 +1034,7 @@
 
 ### TASK-08-002: Implement SupplyDecision event-sourced write model
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/02-supply-decision-event-sourced-model.md
 - depends on: [TASK-08-001]
@@ -1061,7 +1061,9 @@
   - event history reconstructs decision state and trace/outcome refs
   - git commit created for this task
 - notes:
-  - future implementation task; keep workflow, endpoints, and UI out of scope
+  - completed: added SupplyDecision event-sourced write model with command validation, replay-safe state transitions, trace/outcome linkage, idempotent no-ops, and focused entity tests; workflow, endpoints, and UI remain out of scope
+  - checks: `mvn -q -Dtest=com.example.application.supplies.SupplyDecisionEntityTest test`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement SupplyDecision event-sourced model`
 
 ### TASK-08-003: Implement supplies workflow with deterministic agent/tool stubs
 
