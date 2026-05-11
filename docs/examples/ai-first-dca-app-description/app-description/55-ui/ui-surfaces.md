@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file defines supervision-oriented UI surfaces for the agent-first DCA reference app. The UI is not a CRUD dashboard by default; it is organized around objectives, active delegated work, policy boundaries, human decisions, audit traces, and outcomes.
+This file defines supervision-oriented UI surfaces for the AI-first DCA reference app. The UI is not a CRUD dashboard by default; it is organized around objectives, active delegated work, policy boundaries, human decisions, audit traces, and outcomes.
 
 ## Navigation model
 

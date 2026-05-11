@@ -10,7 +10,7 @@
 
 ## Brand adaptation
 
-- app/product name: Agent-first DCA supplies autopilot reference UI
+- app/product name: AI-first DCA supplies autopilot reference UI
 - logo/icon treatment: simple text or neutral operations icon; do not copy the Northpeak logo or demo marks
 - copied-demo-content rule: do not copy demo product names, logos, user names, metrics, or chart data from reference images
 - custom brand overrides: use supplies-autopilot terminology, decision-card labels, policy/evidence/risk language, and trace-oriented navigation from this app description

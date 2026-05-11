@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file captures example policies, approval boundaries, and governed behavior-change rules for the agent-first DCA reference app.
+This file captures example policies, approval boundaries, and governed behavior-change rules for the AI-first DCA reference app.
 
 Policies are runtime business logic. They must be versioned, addressable, cited by agents/workflows, and enforced mechanically where they grant or deny authority.
 

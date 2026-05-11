@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file defines audit, work-trace, decision-trace, and outcome-loop examples for the agent-first DCA reference app. These are business audit facts, not just logs.
+This file defines audit, work-trace, decision-trace, and outcome-loop examples for the AI-first DCA reference app. These are business audit facts, not just logs.
 
 ## Trace principles
 

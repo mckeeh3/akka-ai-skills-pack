@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file defines the decision-card and exception pattern for the agent-first DCA example.
+This file defines the decision-card and exception pattern for the AI-first DCA example.
 
 The app must keep recommendations distinct from decisions. Agents can prepare or recommend; humans or explicit active policy decide when authority, risk, impact, confidence, or evidence requirements demand review.
 

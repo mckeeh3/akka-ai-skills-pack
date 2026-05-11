@@ -5,4 +5,4 @@ Planned files for later tasks:
 - `readiness-status.md`
 - `generation-policy.md`
 
-Purpose: identify this as an agent-first DCA reference app-description, define scope/non-goals, and record readiness for realization.
+Purpose: identify this as an AI-first DCA reference app-description, define scope/non-goals, and record readiness for realization.

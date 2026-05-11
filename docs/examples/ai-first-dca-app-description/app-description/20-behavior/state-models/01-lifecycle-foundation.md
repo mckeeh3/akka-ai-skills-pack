@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file records the first behavior-level state model foundation for the agent-first DCA example. Detailed transition rules and workflow files will be added in later tasks.
+This file records the first behavior-level state model foundation for the AI-first DCA example. Detailed transition rules and workflow files will be added in later tasks.
 
 ## Customer lifecycle states
 

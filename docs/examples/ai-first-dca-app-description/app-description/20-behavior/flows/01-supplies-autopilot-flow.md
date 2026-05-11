@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This is the first implementation-slice workflow example for the agent-first DCA app description. It proves the AI-first loop with a bounded, high-volume operational domain.
+This is the first implementation-slice workflow example for the AI-first DCA app description. It proves the AI-first loop with a bounded, high-volume operational domain.
 
 ```text
 telemetry -> depletion projection -> policy check -> shipment recommendation -> auto-ship or decision card -> trace -> outcome

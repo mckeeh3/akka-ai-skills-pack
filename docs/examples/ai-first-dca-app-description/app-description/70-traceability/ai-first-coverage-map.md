@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This traceability map connects the agent-first DCA example's goals, capabilities, operating model, behavior, UI, traces, outcomes, and implementation slices. It helps future agents see whether the worked example is complete enough to guide planning.
+This traceability map connects the AI-first DCA example's goals, capabilities, operating model, behavior, UI, traces, outcomes, and implementation slices. It helps future agents see whether the worked example is complete enough to guide planning.
 
 ## Goal to capability to first slice
 

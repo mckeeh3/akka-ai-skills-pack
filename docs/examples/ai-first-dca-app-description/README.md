@@ -1,9 +1,9 @@
-# Agent-First DCA App Description Example
+# AI-First DCA App Description Example
 
 ## Purpose
 
 This directory is a worked AI-first app-description reference example for the `akka-ai-skills-pack`.
-It describes an agent-first DCA and office-device lifecycle platform for small office-device dealers.
+It describes an AI-first DCA and office-device lifecycle platform for small office-device dealers.
 
 This is a **reference asset for the skills pack**, not the business app of this repository.
 In a downstream project, an installed skills pack would maintain that project's real `app-description/` tree in the target project workspace.

@@ -658,8 +658,8 @@
 - done criteria:
   - example structure and source mapping are established
 - notes:
-  - completed: added the agent-first DCA app-description scaffold, source-material mapping, layer README files, and updated the AI-first example gap note to point at the new scaffold
-  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Design agent-first DCA example structure`
+  - completed: added the AI-first DCA app-description scaffold, source-material mapping, layer README files, and updated the AI-first example gap note to point at the new scaffold
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Design AI-first DCA example structure`
 
 ### TASK-06-002: Create DCA product vision and operating model example
 
@@ -1378,7 +1378,7 @@
   - completed: bumped pack metadata and README release references to `0.1.6`, aligned build-pack doc inclusion with installer-packaged AI-first docs, added missing installed `skills-pack-user-guide.md` and DCA UI style-guide packaging references, and regenerated ignored `dist/akka-ai-skills-pack-0.1.6*` artifacts locally
   - checks: `bash tools/check-version-consistency.sh`; `bash tools/build-pack.sh --clean`; archive content check for AI-first doctrine, DCA example, DCA UI style guide, installed user guide, manifest, and AI-first skill; unpacked `dist/akka-ai-skills-pack-0.1.6.tar.gz` and ran bundled `install.sh` into a temp project verifying installed AI-first docs
 
-### TASK-09-005: Rename active `agent-first` files and directories to `ai-first`
+### TASK-09-005: Rename active legacy terminology files and directories to `ai-first`
 
 - status: done
 - source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
@@ -1395,10 +1395,10 @@
 - skills:
   - ai-first-saas
 - expected outputs:
-  - active files/directories with `agent-first` in their names renamed to `ai-first`
+  - active files/directories with legacy terminology in their names renamed to `ai-first`
   - references to renamed paths updated across active docs, skills, installer, pack docs, and specs
 - required checks:
-  - `find . -path './specs/ai-first-skills-pack-migration/archive' -prune -o -iname '*agent-first*' -print` shows no active non-archive filenames unless intentionally documented
+  - active filename scan shows no active non-archive filenames using legacy terminology unless intentionally documented
   - references to old active paths are updated
   - archived provenance files are not renamed unless explicitly justified
 - done criteria:
@@ -1406,12 +1406,12 @@
   - git commit created for this task
 - notes:
   - completed: renamed the active DCA worked example directory to `docs/examples/ai-first-dca-app-description/`, updated active docs, specs, installer packaging, build-pack metadata, and installed layout references to the new path, and left archived provenance filenames unchanged
-  - checks: active filename scan for `*agent-first*`; active old-DCA-path reference scan; verified DCA paths listed in `install.sh` and `tools/build-pack.sh` exist
+  - checks: active filename scan for legacy terminology; active old-DCA-path reference scan; verified DCA paths listed in `install.sh` and `tools/build-pack.sh` exist
   - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Rename DCA example paths to ai-first`
 
-### TASK-09-006: Replace active `agent-first` wording with `ai-first`
+### TASK-09-006: Replace active legacy wording with AI-first terminology
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md
 - task brief: none
 - depends on: [TASK-09-005]
@@ -1424,9 +1424,13 @@
 - expected outputs:
   - active docs, skills, pack files, installer, and specs updated to use AI-first terminology consistently
 - required checks:
-  - scan active files for `agent-first`, `Agent-first`, and `Agent-First`, excluding archived provenance and generated/build output as appropriate
+  - scan active files for legacy terminology variants, excluding archived provenance and generated/build output as appropriate
   - replace with `ai-first`, `AI-first`, or `AI-First` as grammatically appropriate
   - preserve historical wording only in archived provenance/source material or explicitly documented exceptions
 - done criteria:
   - active pack-facing and source-maintainer content consistently uses AI-first terminology
   - git commit created for this task
+- notes:
+  - completed: replaced active legacy terminology in pack guidance, the DCA worked app-description example, the supplies UI resource, Sprint 9 planning docs, and queue wording; remaining matches are only exact archived provenance filenames referenced from active migration specs/queue notes.
+  - checks: active terminology scan excluding generated/build output and filtering exact `archive/inbox` provenance paths; active filename scan excluding archive/generated/build output
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Replace active legacy wording with AI-first`

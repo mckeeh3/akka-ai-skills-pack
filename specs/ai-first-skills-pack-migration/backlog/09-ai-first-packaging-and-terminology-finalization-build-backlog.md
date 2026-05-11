@@ -34,17 +34,17 @@ The pack should present AI-first SaaS consistently in source and installed conte
 - output: updated pack version/release metadata and regenerated dist artifacts if this repository tracks them as current release output.
 - scope: ensure `pack/manifest.yaml`, `dist/`, and any release notes/build info no longer represent pre-AI-first content as current.
 
-### 5. Rename active `agent-first` files and directories to `ai-first`
+### 5. Rename active legacy terminology files and directories to `ai-first`
 
 - task ID: `TASK-09-005`
-- output: renamed active files/directories whose names contain `agent-first`, plus reference updates.
+- output: renamed active files/directories whose names contain legacy terminology, plus reference updates.
 - scope: likely includes `docs/examples/ai-first-dca-app-description/` to `docs/examples/ai-first-dca-app-description/`; do not rename archived provenance files unless explicitly needed.
 
-### 6. Scan active content for `agent-first` wording and replace with `ai-first`
+### 6. Scan active content for legacy wording and replace with AI-first terminology
 
 - task ID: `TASK-09-006`
 - output: active docs/skills/specs updated for terminology consistency.
-- scope: search all active files for `agent-first`, `Agent-first`, and `Agent-First`; replace with `ai-first`, `AI-first`, or `AI-First` as grammatically appropriate. Preserve historical wording only inside archived provenance/source material when intentionally retained.
+- scope: search all active files for legacy terminology variants; replace with `ai-first`, `AI-first`, or `AI-First` as grammatically appropriate. Preserve historical wording only inside archived provenance/source material when intentionally retained.
 
 ## Implementation order
 

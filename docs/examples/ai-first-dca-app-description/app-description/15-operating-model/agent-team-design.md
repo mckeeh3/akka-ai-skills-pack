@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file defines the bounded agent team for the agent-first DCA example. It is app-description reference material, not runnable Akka code.
+This file defines the bounded agent team for the AI-first DCA example. It is app-description reference material, not runnable Akka code.
 
 ## Team shape
 

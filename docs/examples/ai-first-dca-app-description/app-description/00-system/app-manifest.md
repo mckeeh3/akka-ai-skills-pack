@@ -2,7 +2,7 @@
 
 ## Working identity
 
-Agent-First DCA and Office Device Lifecycle Platform.
+AI-First DCA and Office Device Lifecycle Platform.
 
 ## Reference-asset status
 

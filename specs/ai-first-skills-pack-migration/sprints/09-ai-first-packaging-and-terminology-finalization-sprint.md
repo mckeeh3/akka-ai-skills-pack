@@ -2,7 +2,7 @@
 
 ## Sprint goal
 
-Close the remaining high-level AI-first migration hygiene items before deeper Akka component-skill revisions. This sprint focuses on canonical doctrine freshness, installed-pack coherence, release artifact/version alignment, and consistent use of the term **AI-first** instead of **agent-first**.
+Close the remaining high-level AI-first migration hygiene items before deeper Akka component-skill revisions. This sprint focuses on canonical doctrine freshness, installed-pack coherence, release artifact/version alignment, and consistent use of **AI-first** terminology.
 
 ## Dependencies
 
@@ -19,8 +19,8 @@ Included work:
 2. Remove or rewrite installed-pack-facing references to source-only archive/provenance paths.
 3. Package all docs referenced by installed skills.
 4. Regenerate or update release/dist metadata and bump pack version if appropriate.
-5. Rename active files/directories containing `agent-first` to `ai-first`.
-6. Scan active repository content for remaining `agent-first` wording and change it to `ai-first` where it is not required historical provenance.
+5. Rename active files/directories that still use legacy terminology to `ai-first`.
+6. Scan active repository content for remaining legacy wording and change it to `ai-first` where it is not required historical provenance.
 
 ## Acceptance behavior
 

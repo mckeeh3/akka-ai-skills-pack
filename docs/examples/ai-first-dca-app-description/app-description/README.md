@@ -1,4 +1,4 @@
-# Agent-First DCA App Description
+# AI-First DCA App Description
 
 This reference app-description follows `docs/internal-app-description-architecture.md`.
 Sprint 6 populated the layer files as a non-runnable AI-first SaaS example; future work should use it as source material for executable reference slices rather than treating it as this repository's business app.

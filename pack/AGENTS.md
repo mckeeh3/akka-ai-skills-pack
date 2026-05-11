@@ -78,7 +78,7 @@ After installation, the main entry points are:
 - `AGENTS.md` — this installed-pack guidance file
 - `skills/README.md` — routing map across the installed skill library, including description-first and implementation paths
 - `skills/<skill-name>/SKILL.md` — focused implementation or routing guidance
-- `docs/` — selected pack-facing reference docs used by installed skills, including AI-first doctrine, description-first doctrine/architecture examples, and the agent-first DCA worked app-description example
+- `docs/` — selected pack-facing reference docs used by installed skills, including AI-first doctrine, description-first doctrine/architecture examples, and the AI-first DCA worked app-description example
 - `resources/examples/java/` — exported Akka Java SDK examples and tests for concrete Akka implementation patterns
 
 Use the docs under `docs/` as routing/reference support.
