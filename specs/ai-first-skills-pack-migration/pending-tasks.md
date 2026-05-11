@@ -172,7 +172,7 @@
 
 ### TASK-02-003: Create governance, decision-card, and audit companion skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/02-ai-first-routing-skill-family-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001]
@@ -191,6 +191,9 @@
   - no broken links to future/uncreated skills
 - done criteria:
   - governance, approval/exception, and audit trace guidance exists
+- notes:
+  - completed: added focused AI-first policy governance, decision-card, and audit-trace companion skills that route to existing Akka implementation families
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add AI-first governance decision and audit skills`
 
 ### TASK-02-004: Create UI-surfaces and outcomes companion skills
 
