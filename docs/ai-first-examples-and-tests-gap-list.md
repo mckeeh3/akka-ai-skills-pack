@@ -49,11 +49,16 @@ Placement note: audit/trace/outcome meaning is introduced by `15-operating-model
 
 ### P0: first executable AI-first implementation slice derived from the worked app-description
 
-Missing reference: runnable or implementation-ready slice-level specs showing how the DCA app-description becomes bounded Akka implementation tasks.
+Status: **planned for future implementation**.
 
-Candidate first slice: `docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md` Slice 1, Supplies autopilot foundation.
+Planning references:
+- `specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md`
+- `specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md`
+- `specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/`
 
-Required coverage:
+Selected first slice: `docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md` Slice 1, Supplies autopilot foundation.
+
+Required implementation coverage:
 
 - durable goal/objective and trace vocabulary for supplies;
 - supply recommendation and decision-card write model;

@@ -2,7 +2,7 @@
 
 This directory contains physical task briefs for migration work that needs a focused fresh Pi session.
 
-Only Sprint 1 task briefs are materialized initially. Later sprint briefs should be created or refined after Sprint 1 discoveries and after the new AI-first doctrine/routing shape is stable.
+Sprint 1 task briefs cover the initial doctrine pivot. Sprint 8 task briefs now plan the first future executable AI-first supplies autopilot reference slice. Other sprint briefs may be created or refined as discoveries require.
 
 ## Rules
 

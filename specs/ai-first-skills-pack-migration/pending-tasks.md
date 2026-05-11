@@ -973,7 +973,7 @@
 
 ### TASK-07-007: Plan the first executable AI-first reference implementation slice
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-07-006]
@@ -999,3 +999,241 @@
 - done criteria:
   - a follow-on implementation plan exists for the first executable AI-first reference slice
   - git commit created for this task
+- notes:
+  - completed: planned Sprint 8 executable supplies autopilot reference slice with sprint spec, build backlog, task briefs, pending implementation queue entries, and gap-list pointer; no implementation code changed
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Plan executable AI-first reference slice`
+
+### TASK-08-001: Implement supply domain and trace vocabulary
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/01-supply-domain-and-trace-vocabulary.md
+- depends on: [TASK-07-007]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/examples/agent-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/01-supply-domain-and-trace-vocabulary.md
+- skills:
+  - ai-first-saas
+  - ai-first-saas-object-model
+- expected outputs:
+  - supplies domain records, validators, and unit tests
+- required checks:
+  - run focused supplies domain unit tests
+  - run project compile/test command if practical
+- done criteria:
+  - domain vocabulary supports decision cards, policy refs, traces, and outcome refs
+  - git commit created for this task
+- notes:
+  - future implementation task; do not expand into Akka components
+
+### TASK-08-002: Implement SupplyDecision event-sourced write model
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/02-supply-decision-event-sourced-model.md
+- depends on: [TASK-08-001]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/02-supply-decision-event-sourced-model.md
+- skills:
+  - ai-first-saas
+  - ai-first-saas-decision-cards
+  - ai-first-saas-audit-trace
+  - akka-event-sourced-entities
+  - akka-ese-domain-modeling
+  - akka-ese-application-entity
+  - akka-ese-unit-testing
+- expected outputs:
+  - SupplyDecision event-sourced entity and focused tests
+- required checks:
+  - run focused SupplyDecision entity tests
+  - run compile for affected source/test packages
+- done criteria:
+  - event history reconstructs decision state and trace/outcome refs
+  - git commit created for this task
+- notes:
+  - future implementation task; keep workflow, endpoints, and UI out of scope
+
+### TASK-08-003: Implement supplies workflow with deterministic agent/tool stubs
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/03-supplies-workflow-agent-tool-stubs.md
+- depends on: [TASK-08-002]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/agent-coverage-matrix.md
+  - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/03-supplies-workflow-agent-tool-stubs.md
+- skills:
+  - ai-first-saas
+  - ai-first-saas-agent-team-design
+  - ai-first-saas-policy-governance
+  - akka-workflows
+  - akka-workflow-component
+  - akka-workflow-pausing
+  - akka-agent-structured-responses
+  - akka-agent-tools
+  - akka-workflow-testing
+  - akka-agent-testing
+- expected outputs:
+  - SupplyAutopilot workflow, deterministic agent/tool stubs, and workflow tests
+- required checks:
+  - run focused supplies workflow tests
+  - run compile for affected source/test packages
+- done criteria:
+  - workflow owns policy gates and side effects; stubs only recommend/explain
+  - git commit created for this task
+- notes:
+  - future implementation task; no real LLM or external integration
+
+### TASK-08-004: Implement supplies views, trace fanout, and stale-decision timer
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/04-supplies-views-trace-timer.md
+- depends on: [TASK-08-003]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/04-supplies-views-trace-timer.md
+- skills:
+  - ai-first-saas
+  - ai-first-saas-audit-trace
+  - akka-views
+  - akka-view-from-event-sourced-entity
+  - akka-view-from-workflow
+  - akka-view-query-patterns
+  - akka-view-testing
+  - akka-timed-actions
+  - akka-timers-scheduling
+  - akka-timed-action-component
+  - akka-timed-action-testing
+  - akka-consumers
+  - akka-consumer-from-event-sourced-entity
+  - akka-consumer-testing
+- expected outputs:
+  - supplies supervision views, optional trace consumer, stale-decision timed action, and tests
+- required checks:
+  - run focused view, timer, and consumer tests
+  - verify View queries obey Akka query constraints
+- done criteria:
+  - supervision queues and trace lookup are backed by durable facts
+  - git commit created for this task
+- notes:
+  - future implementation task; avoid frontend and endpoint work
+
+### TASK-08-005: Implement supplies HTTP APIs and endpoint tests
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/05-supplies-http-apis.md
+- depends on: [TASK-08-004]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/05-supplies-http-apis.md
+- skills:
+  - ai-first-saas
+  - ai-first-saas-decision-cards
+  - ai-first-saas-audit-trace
+  - akka-http-endpoints
+  - akka-http-endpoint-component-client
+  - akka-http-endpoint-request-context
+  - akka-http-endpoint-testing
+- expected outputs:
+  - supplies telemetry, decision action, and trace lookup HTTP APIs with endpoint tests
+- required checks:
+  - run focused supplies endpoint integration tests
+  - verify APIs expose trace IDs and decision-card evidence fields
+- done criteria:
+  - APIs drive the slice without bypassing workflow/entity authority gates
+  - git commit created for this task
+- notes:
+  - future implementation task; no production auth, gRPC, MCP, or frontend
+
+### TASK-08-006: Implement supplies command-center and decision-card web UI
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/06-supplies-command-center-ui.md
+- depends on: [TASK-08-005]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/web-ui-style-guide.md
+  - docs/examples/agent-first-dca-app-description/app-description/55-ui/README.md
+  - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/06-supplies-command-center-ui.md
+- skills:
+  - ai-first-saas
+  - ai-first-saas-ui-surfaces
+  - akka-web-ui-apps
+  - akka-web-ui-ux-design
+  - akka-web-ui-frontend-project
+  - akka-web-ui-api-client
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+  - akka-http-endpoints
+  - akka-http-endpoint-web-ui
+  - akka-http-endpoint-testing
+- expected outputs:
+  - minimal supplies command-center and decision-card UI with smoke/build tests
+- required checks:
+  - run frontend build/test command if frontend project exists
+  - run route/static hosting tests
+  - verify decision-card UI preserves policy/evidence/trace context
+- done criteria:
+  - UI prioritizes supervision and decision quality over CRUD navigation
+  - git commit created for this task
+- notes:
+  - future implementation task; block if style selection is absent rather than inventing a theme
+
+### TASK-08-007: Add slice-level AI-first acceptance and trace/outcome tests
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/07-supplies-slice-acceptance-tests.md
+- depends on: [TASK-08-006]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/ai-first-examples-and-tests-gap-list.md
+  - specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/07-supplies-slice-acceptance-tests.md
+- skills:
+  - ai-first-saas
+  - ai-first-saas-audit-trace
+  - ai-first-saas-outcomes-metrics
+  - akka-workflow-testing
+  - akka-ese-integration-testing
+  - akka-view-testing
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+- expected outputs:
+  - slice-level AI-first acceptance, trace-completeness, idempotency, and outcome-link tests
+- required checks:
+  - run all supplies slice tests
+  - run full project test command if practical
+- done criteria:
+  - tests prove authority boundaries, decision-card completeness, trace completeness, idempotency, and outcome linkage
+  - git commit created for this task
+- notes:
+  - future implementation task; do not add new product scope
