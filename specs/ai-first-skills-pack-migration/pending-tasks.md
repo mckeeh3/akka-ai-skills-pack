@@ -1067,7 +1067,7 @@
 
 ### TASK-08-003: Implement supplies workflow with deterministic agent/tool stubs
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/08-executable-ai-first-reference-slice-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/08-executable-ai-first-reference-slice/03-supplies-workflow-agent-tool-stubs.md
 - depends on: [TASK-08-002]
@@ -1098,7 +1098,9 @@
   - workflow owns policy gates and side effects; stubs only recommend/explain
   - git commit created for this task
 - notes:
-  - future implementation task; no real LLM or external integration
+  - completed: added `SupplyAutopilotWorkflow`, deterministic `SupplyForecastAgent`/`SupplyForecastTools` stubs, workflow-owned policy gates and side effects, approval pause/resume, suppression, missing-evidence escalation, stale-decision hook, idempotent duplicate handling, and focused workflow/boundary tests
+  - checks: `mvn -q -DskipTests compile`; `mvn -q -Dtest=com.example.application.supplies.SupplyAutopilotWorkflowIntegrationTest,com.example.application.supplies.SupplyDecisionEntityTest test`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement supplies autopilot workflow`
 
 ### TASK-08-004: Implement supplies views, trace fanout, and stale-decision timer
 
