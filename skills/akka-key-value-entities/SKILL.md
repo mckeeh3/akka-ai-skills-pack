@@ -16,6 +16,18 @@ Generate or review key value entity code that is:
 - easy for AI agents to extend
 - backed by tests
 
+## AI-first substrate role
+
+In AI-first SaaS work, use Key Value Entities for replaceable current-state objects where audit-grade history is not required: current preferences, low-risk configuration, draft goal or plan state, agent runtime settings, cached evidence, dashboard filters, notification cursors, and operational summaries.
+
+Prefer KVE when the product needs the latest durable state and can rely on separate durable traces, event-sourced records, workflow history, or authoritative integrations for accountability. Do not use KVE as the only store for consequential decisions, policy commits, approvals, or traces that must preserve temporal history.
+
+Pair AI-first KVEs with:
+- `akka-event-sourced-entities` when some related decisions, policies, or trace facts require history
+- `akka-workflows` for plan lifecycle, approvals, retries, and exception handling around the current state
+- `akka-views` for supervision queues, current-state dashboards, policy lists, and outcome summaries
+- `akka-consumers` for asynchronous state enrichment or notifications
+
 ## Required reading before coding
 
 If these files exist, read them first:

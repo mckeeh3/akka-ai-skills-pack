@@ -16,6 +16,18 @@ Generate or review view code that is:
 - easy for AI agents to extend safely
 - backed by integration tests
 
+## AI-first substrate role
+
+In AI-first SaaS work, use Views for supervision and accountability read models: command centers, active goal/plan lists, agent activity feeds, approval and exception queues, decision-card indexes, policy catalogs, audit search, digest inputs, and outcome dashboards.
+
+Views are derived projections, not the source of authority. Keep consequential decisions, policies, traces, approvals, and outcomes in entities, workflows, topics, or authoritative integrations, then project them into views for review, filtering, streaming, and reporting.
+
+Typical AI-first view sources:
+- Event Sourced Entities for audit-grade goals, decisions, policies, traces, and outcomes
+- Key Value Entities for current-state objects and operational summaries
+- Workflows for running plans, approval waits, failures, compensations, and completion status
+- Topics or service streams for external signals, trace enrichment, and cross-service reporting
+
 ## Required reading before coding
 
 Read these first if present:

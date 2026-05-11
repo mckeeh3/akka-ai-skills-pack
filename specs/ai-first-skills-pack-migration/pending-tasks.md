@@ -527,7 +527,7 @@
 
 ### TASK-05-002: Reframe entity and view implementation skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/05-substrate-implementation-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -549,6 +549,9 @@
   - event sourcing/audit-grade state guidance remains semantically correct
 - done criteria:
   - entity/view skills explain AI-first substrate roles
+- notes:
+  - completed: added concise AI-first substrate framing to Event Sourced Entity, Key Value Entity, and View skills, distinguishing audit-grade temporal facts from replaceable current state and derived supervision/accountability read models
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Reframe entity and view skills for AI-first`
 
 ### TASK-05-003: Reframe consumer, timer, and endpoint skills
 

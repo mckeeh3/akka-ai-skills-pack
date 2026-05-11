@@ -16,6 +16,18 @@ Generate or review event sourced entity code that is:
 - easy for AI agents to extend
 - backed by tests
 
+## AI-first substrate role
+
+In AI-first SaaS work, use Event Sourced Entities for audit-grade objects whose history matters: goals, policy documents and clauses, approval/decision records, exceptions, precedents, work traces, policy invocations, outcome links, and consequential domain facts.
+
+Prefer event sourcing when the app must answer what changed, who or what authorized it, which evidence or policy version applied, how a decision evolved, or why an agent/workflow action is explainable later. Do not use an ESE just because an object is important; use a Key Value Entity when only replaceable current state is required.
+
+Pair AI-first ESEs with:
+- `akka-workflows` for long-running plan, approval, exception, rollback, or simulation flows
+- `akka-agents` for bounded recommendations, explanations, evaluations, and policy proposal drafting
+- `akka-views` for command centers, decision queues, policy catalogs, audit search, and outcome dashboards
+- `akka-consumers` for trace enrichment, notifications, and downstream publication
+
 ## Required reading before coding
 
 If these files exist, read them first:
