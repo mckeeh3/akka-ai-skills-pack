@@ -197,7 +197,7 @@
 
 ### TASK-02-004: Create UI-surfaces and outcomes companion skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/02-ai-first-routing-skill-family-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001]
@@ -216,6 +216,9 @@
   - UI guidance points to `akka-web-ui-*` and HTTP endpoint skills instead of replacing them
 - done criteria:
   - AI-first UI and outcome validation companion guidance exists
+- notes:
+  - completed: added AI-first UI surfaces and outcomes/metrics companion skills that route supervision, decision, governance, digest, audit, and outcome loops to existing Akka web UI, endpoint, view, workflow, agent, consumer, timer, and entity skills
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add AI-first UI surfaces and outcomes skills`
 
 ### TASK-02-005: Wire AI-first skills into routing map
 
