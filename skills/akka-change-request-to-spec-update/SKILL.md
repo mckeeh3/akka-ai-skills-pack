@@ -13,6 +13,7 @@ This is an **evolution skill**. It keeps the app meaning and implementation plan
 
 Turn a change request into a controlled planning delta that:
 - preserves the current app-description/spec structure
+- preserves AI-first operating-model meaning when delegated work, governance, decisions, audit, or outcomes are in scope
 - updates only the affected authoritative description/spec artifacts
 - adds or revises verification expectations
 - identifies auth/security and observability impact
@@ -38,6 +39,7 @@ Use `akka-do-next-pending-task` instead when the user wants to execute an existi
 
 Read these first if present:
 - `../README.md`
+- `../../docs/ai-first-saas-application-architecture.md` when the change involves delegated work, agents, governance, approvals, exceptions, audit, or outcomes
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/pending-task-queue.md`
@@ -47,6 +49,7 @@ Read these first if present:
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-change-impact/SKILL.md`
+- `../ai-first-saas/SKILL.md` when AI-first semantics are in scope
 - `../akka-backlog-to-pending-tasks/SKILL.md`
 - target project `app-description/` indexes if present
 - target project `specs/README.md` if present
@@ -63,6 +66,7 @@ Classify the input as one or more of:
 - bug/regression fix
 - security/auth change
 - observability/operations change
+- AI-first operating-model change: delegated work, retained human authority, agent/team responsibility, approval gates, exception handling, policy/permission rules, audit traces, evidence/risk thresholds, UI supervision surfaces, or outcome metrics
 - integration contract change
 - UI/API surface change, including web UI style-guide/theme selection or token changes
 - implementation discovery
@@ -80,10 +84,13 @@ Summarize:
 - affected capabilities
 - affected behavior
 - affected tests
+- affected AI-first semantics: durable goals/plans, agent authority, policy, approval, exception, trace, UI, or outcome implications
 - likely affected Akka components
 - whether this is local, cross-slice, or foundational
 
-If the change is broad enough to invalidate the current architecture, stop and recommend `akka-revised-prd-reconciliation` or `akka-prd-to-specs-backlog` instead of patching locally.
+If the change is broad enough to invalidate the current architecture or authority model, stop and recommend `akka-revised-prd-reconciliation` or `akka-prd-to-specs-backlog` instead of patching locally.
+
+When the input changes delegated work or automation authority, apply `ai-first-saas` before selecting implementation artifacts. Do not treat the change as a simple CRUD field or endpoint update if it changes who/what may act, approve, decide, learn, or be audited.
 
 ### 2. Update authoritative meaning first
 
@@ -93,16 +100,17 @@ If `app-description/` exists, update it before implementation specs:
 3. tests for acceptance, regression, negative, idempotency, security, or operational verification
 4. auth/security when identity, authorization, trust, or sensitive data changed
 5. observability when logs, metrics, traces, audit, health, or alerts changed
-6. UI style guide when a browser frontend theme, mode policy, density, brand treatment, or component styling changes
-7. traceability and readiness as needed
+6. AI-first operating model when delegated work, retained authority, agent/team boundaries, policy gates, decision cards, work traces, or outcome loops changed
+7. UI style guide when a browser frontend theme, mode policy, density, brand treatment, component styling, supervision surface, decision card, governance center, digest, or audit view changes
+8. traceability and readiness as needed
 
-Do not bury new semantics only in backlog text or generated code.
+Do not bury new governance, audit, policy, approval, or outcome semantics only in backlog text or generated code.
 
 ### 3. Update realization specs
 
 Update the smallest relevant `specs/` artifacts:
-- `specs/akka-solution-plan.md` only if architectural choices or global implementation order changed
-- `specs/cross-cutting/*.md` for shared conventions/policies, including `*ui-style-guide*.md` for browser UI theme/style decisions
+- `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, authority boundaries, or global implementation order changed
+- `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI theme/style decisions
 - `specs/slices/*.md` for business slice meaning
 - `specs/backlog/*-build-backlog.md` for implementation breakdown
 - `specs/tasks/**/*.md` when one task brief must change or a new leaf task is needed
@@ -119,7 +127,8 @@ Rules:
 - append new tasks for new work
 - mark obsolete pending/deferred/blocked tasks as `superseded` when a later spec change replaces them
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
-- update required reads and skills for affected pending tasks
+- update required reads and skills for affected pending tasks, adding `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior
+- block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, or outcome semantics are now ambiguous
 - block web UI tasks whose source spec has no selected style guide/theme and add or update the pending style-selection question
 - block tasks whose source spec is now ambiguous
 - avoid renumbering
@@ -171,6 +180,7 @@ Before finishing, verify:
 - the change was classified
 - authoritative description/spec files were updated before queue edits
 - test impact was handled
+- governance, audit, policy, approval, and outcome implications were preserved when applicable
 - security and observability impact were considered
 - affected backlog/task files were updated or intentionally left unchanged
 - queue IDs and statuses were preserved

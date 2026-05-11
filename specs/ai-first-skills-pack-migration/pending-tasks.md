@@ -425,7 +425,7 @@
 
 ### TASK-04-003: Refactor iterative change and revised PRD reconciliation
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/04-prd-spec-backlog-intake-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -445,6 +445,9 @@
   - governance, audit, policy, and outcome implications are preserved in changes
 - done criteria:
   - change/revised PRD flows remain AI-first-aware
+- notes:
+  - completed: updated iterative change and revised PRD reconciliation skills to preserve AI-first operating-model semantics, governance, audit, policy, approval, UI supervision, and outcome implications during planning deltas and queue reconciliation
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor iterative planning skills for AI-first`
 
 ### TASK-04-004: Refactor pending question generation for AI-first blockers
 

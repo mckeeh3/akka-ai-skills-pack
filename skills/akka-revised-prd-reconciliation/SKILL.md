@@ -17,6 +17,7 @@ Reconcile a revised PRD with the current project plan by identifying:
 - removed or de-scoped requirements
 - clarified requirements
 - conflicting requirements
+- added, changed, or removed AI-first operating-model semantics: delegated work, retained human authority, policies, approvals, exceptions, audit traces, UI supervision, and outcomes
 - completed implementation work that now needs follow-up
 - pending tasks that remain valid
 - pending tasks that must be updated, blocked, deferred, or superseded
@@ -41,6 +42,7 @@ Use `akka-prd-to-specs-backlog` when no existing planning artifacts exist or the
 
 Read these first if present:
 - `../README.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../../docs/internal-app-description-architecture.md`
@@ -48,6 +50,7 @@ Read these first if present:
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-change-request-to-spec-update/SKILL.md`
 - `../app-description-change-impact/SKILL.md`
+- `../ai-first-saas/SKILL.md`
 - target project `app-description/00-system/app-manifest.md` if present
 - target project `app-description/10-capabilities/capabilities-index.md` if present
 - target project `app-description/20-behavior/behavior-index.md` if present
@@ -68,6 +71,7 @@ Summarize the current baseline from maintained artifacts:
 - app identity and goals
 - capabilities
 - major behavior flows
+- current AI-first interpretation if present: delegated work, durable goals/plans, agent/team authority, approval/exception model, policies, traces, supervision surfaces, and outcome loops
 - chosen Akka components
 - slice/backlog structure
 - queue status counts
@@ -82,6 +86,7 @@ From the revised PRD, extract:
 - queries/views/reporting needs
 - workflows and timers
 - integrations
+- AI-first operating-model facts: human objectives, delegated work, retained authority, agent/team responsibilities, policies, approval gates, exception paths, evidence/risk thresholds, audit/trace needs, UI supervision surfaces, learning loops, and outcome metrics
 - security/auth requirements
 - observability/operational requirements
 - explicit non-goals/de-scopes
@@ -107,6 +112,8 @@ For each delta, identify likely affected:
 - pending tasks
 - generated outputs/components
 
+Do not classify AI-first changes as implementation detail only when they affect authorization, autonomous action, human review, auditability, policy behavior, or outcome accountability.
+
 ### 4. Update app-description first when present
 
 If `app-description/` exists, update authoritative layers before `specs/`:
@@ -115,8 +122,9 @@ If `app-description/` exists, update authoritative layers before `specs/`:
 3. tests
 4. auth/security
 5. observability
-6. traceability
-7. readiness
+6. AI-first operating model and governance sections when delegated work, agent/team boundaries, approvals, exceptions, policy, trace, UI supervision, learning, or outcomes changed
+7. traceability
+8. readiness
 
 If the revised PRD conflicts with current app-description meaning, do not silently choose. Ask the smallest clarifying question or mark affected tasks blocked.
 
@@ -125,6 +133,7 @@ If the revised PRD conflicts with current app-description meaning, do not silent
 Update existing files rather than replacing the whole tree:
 - modify existing slice specs when a slice remains valid
 - add new numbered slice specs for new capability areas
+- preserve or update AI-first sections in solution plans, cross-cutting specs, slices, and backlogs when authority, policy, approval, audit, UI supervision, or outcome semantics changed
 - mark de-scoped behavior in specs explicitly rather than deleting context when useful
 - update matching backlog files
 - create new backlog files for new slices
@@ -139,10 +148,10 @@ Apply queue reconciliation rules:
 - do not delete completed tasks
 - do not reset `done` tasks to `pending`
 - append new tasks for new work
-- update pending tasks whose scope/read list/skills changed but still represent the same work
+- update pending tasks whose scope/read list/skills changed but still represent the same work, adding `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior
 - mark obsolete non-done tasks as `superseded`
 - add follow-up tasks for completed work that must change
-- mark tasks `blocked` when the revised PRD creates unresolved decisions
+- mark tasks `blocked` when the revised PRD creates unresolved decisions about delegation, authority, approvals, policy, evidence/risk, audit, supervision UI, or outcomes
 - keep dependencies valid and not over-serialized
 
 Status counts should be reported after reconciliation.
@@ -216,6 +225,12 @@ Use this response shape:
 - superseded:
 - follow-up tasks for completed work:
 
+## AI-first reconciliation
+- delegated work / authority changes:
+- governance / policy / approval changes:
+- audit / trace / outcome changes:
+- unresolved AI-first blockers:
+
 ## Replanning recommendation
 - localized | broad | full replanning recommended
 - rationale:
@@ -233,6 +248,7 @@ Avoid:
 - letting old pending tasks survive when their source requirement changed
 - treating the revised PRD as additive only
 - skipping removal/de-scope analysis
+- losing prior AI-first governance, audit, policy, approval, or outcome semantics during rewrite
 - changing implementation code during reconciliation
 - failing to surface conflicts between the revised PRD and current app-description
 
@@ -242,6 +258,7 @@ Before finishing, verify:
 - the revised PRD was read completely
 - current maintained artifacts were used as baseline
 - deltas are categorized as added/changed/removed/clarified/conflict
+- AI-first delegation, authority, governance, audit, UI supervision, and outcome implications were compared against the current baseline
 - affected app-description/spec/backlog/task files were updated
 - queue history was preserved
 - obsolete non-done tasks were superseded, not deleted
