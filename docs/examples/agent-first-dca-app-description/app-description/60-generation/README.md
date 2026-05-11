@@ -1,6 +1,9 @@
 # 60 Generation
 
-Planned files for later tasks:
+Current files:
+- `implementation-slices.md` — future realization sequence for supplies autopilot, mission control/digest, policy governance, and lifecycle expansion.
+
+Future downstream realization may split this into:
 - `realization-scope.md`
 - `regeneration-map.md`
 - `output-surfaces.md`

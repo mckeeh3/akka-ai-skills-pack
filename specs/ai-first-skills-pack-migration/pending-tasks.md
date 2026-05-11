@@ -714,7 +714,7 @@
 
 ### TASK-06-004: Create DCA UI, audit, outcomes, and implementation slices examples
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-06-003]
@@ -735,6 +735,9 @@
   - UI surfaces are supervision/governance oriented, not CRUD dashboards by default
 - done criteria:
   - worked example is complete enough to guide future agents
+- notes:
+  - completed: added DCA supervision-oriented UI surfaces, supply decision/trace screens, business audit trace and outcome metric examples, realization slice sequencing, and AI-first coverage mapping for future agents
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Create DCA UI audit outcomes and slices`
 
 ### TASK-06-005: Archive or remove temporary inbox material
 

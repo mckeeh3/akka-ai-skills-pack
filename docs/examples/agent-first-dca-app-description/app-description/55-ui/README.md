@@ -1,7 +1,9 @@
 # 55 UI
 
-Planned files for later tasks:
-- `ui-index.md`
+Current files:
+- `ui-surfaces.md` — supervision-oriented surface catalog, first-slice supplies screens, realtime/state behavior, accessibility expectations, and web UI/Akka routing.
+
+Future downstream realization may split this into:
 - `personas-and-journeys.md`
 - `screens-and-navigation.md`
 - `interactions-and-forms.md`
@@ -10,4 +12,4 @@ Planned files for later tasks:
 - `accessibility-and-responsive.md`
 - `style-guide.md`
 
-Purpose: define supervision-oriented UI surfaces such as owner morning brief, customer lifecycle command center, supplies autopilot, approvals/exceptions queue, policy center, audit trace, and offboarding control room.
+Purpose: define supervision-oriented UI surfaces such as owner brief, mission control, supplies autopilot, approvals/exceptions queue, policy center, audit trace, and lifecycle workbench.

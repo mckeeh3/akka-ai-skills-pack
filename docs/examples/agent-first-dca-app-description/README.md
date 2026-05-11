@@ -39,7 +39,7 @@ Non-goals for this reference example:
 
 ## Current structure
 
-The initial tree is a scaffold. Later Sprint 6 tasks fill the authoritative content.
+The Sprint 6 worked example now includes product vision, operating model, agent-team, governance, decision-card, workflow, UI, audit/trace/outcome, and implementation-slice reference files. It remains a reference app-description asset, not runnable application code.
 
 ```text
 app-description/
@@ -67,5 +67,5 @@ app-description/
 
 1. `TASK-06-002`: product vision and operating model foundation.
 2. `TASK-06-003`: agent team, policies, decision cards, approvals, and workflows.
-3. `TASK-06-004`: UI surfaces, audit/trace/outcomes, and implementation-slice examples.
+3. `TASK-06-004`: UI surfaces, audit/trace/outcomes, and implementation-slice examples. (complete)
 4. `TASK-06-005`: inbox disposition after promoted material is represented in canonical docs/examples.

@@ -43,4 +43,4 @@ A downstream realization would target:
 
 ## Current readiness
 
-`not-ready`: this Sprint 6 example is being filled layer by layer. The product vision and operating model foundation are present; detailed agent team, policy, decision-card, workflow, UI, audit, outcome, and implementation-slice artifacts are planned follow-on work.
+`reference-ready`: this Sprint 6 example is complete enough to guide future agents through AI-first app-description, planning, UI, trace, outcome, and implementation-slice shape. It remains intentionally non-runnable and still requires downstream project-specific answers for external integrations, numeric thresholds, tenant/user roles, style guide, retention periods, and concrete evaluation fixtures before code generation.
