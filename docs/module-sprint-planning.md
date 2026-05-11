@@ -4,6 +4,8 @@ Use this pattern when a large PRD, revised PRD, app-description realization, or 
 
 Goal: decompose work into **vertical module sprints** that can be implemented and tested full stack, one module at a time.
 
+Before splitting modules, classify whether the product is AI-first SaaS: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision, audit traces, or outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
+
 ## When to use
 
 Use module-oriented sprint planning when the input includes any of:
@@ -66,6 +68,7 @@ Each `specs/modules/NN-<module>.md` should contain:
 - frontend screens or navigation areas owned by the module
 - integrations and events entering/leaving the module
 - cross-cutting specs referenced by the module
+- AI-first scope when applicable: delegated work, retained human authority, durable goals/plans, agents, policies, decisions, traces, UI surfaces, and outcomes owned or used by the module
 - out-of-scope adjacent modules
 - related sprints/backlogs
 
@@ -80,6 +83,7 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - dependencies and prerequisite decisions
 - backend scope: entities, workflows, views, consumers, timers, endpoints
 - frontend scope: screens, forms, navigation, API client calls, realtime behavior
+- AI-first increment when applicable: goals/plans, agent/team responsibilities, authority limits, approval gates, policy clauses, evidence/risk/confidence/impact surfaces, trace records, evaluations, and outcome metrics
 - acceptance behavior: happy paths, validation, no-op/idempotent cases, error cases
 - pending questions that block or affect the sprint
 - implementation task groups
@@ -121,6 +125,7 @@ Rules:
 - block only affected tasks, not the whole project
 - allow unblocked foundation or module work to continue
 - if browser UI is in scope and no style guide is selected, create a UI style-selection question and block only UI implementation tasks
+- for AI-first scope, create scoped questions when implementation would otherwise guess delegated authority, approval gates, policy/risk thresholds, evidence requirements, trace visibility, evaluation strategy, or outcome metrics
 
 ## Pending tasks
 
@@ -148,6 +153,7 @@ Each task should include required reads for the smallest useful set:
 - the relevant sprint spec
 - the matching backlog
 - related cross-cutting specs
+- AI-first doctrine or companion skills only when the task implements or verifies delegated work, agents, policies, decisions, traces, UI surfaces, governance, or outcomes
 - a task brief when one exists
 
 ## Done criteria for a module sprint
@@ -160,6 +166,7 @@ A module sprint is done only when:
 - frontend checks/tests pass when UI is in scope
 - at least one module-level integration or smoke path verifies the full stack for the sprint
 - deferred items and blocked questions are visible in the sprint spec, backlog, or queues
+- AI-first authority, policy, trace, evaluation, and outcome constraints are either implemented, explicitly deferred, or blocked by named questions
 
 ## Anti-patterns
 

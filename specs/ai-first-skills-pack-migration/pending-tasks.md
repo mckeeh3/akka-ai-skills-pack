@@ -835,7 +835,7 @@
 
 ### TASK-07-003: Align core flow docs with AI-first default
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/07-ai-first-alignment-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-07-002]
@@ -862,6 +862,9 @@
 - done criteria:
   - core docs are consistent with AI-first routing in `skills/README.md` and `akka-solution-decomposition`
   - git commit created for this task
+- notes:
+  - completed: aligned core flow, PRD flow, module/sprint planning, solution-to-queue, pending-question, and pending-task docs with AI-first interpretation and context-preservation rules
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Align core flow docs with AI-first default`
 
 ### TASK-07-004: Add AI-first checks to app-description lifecycle skills
 

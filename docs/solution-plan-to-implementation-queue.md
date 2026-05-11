@@ -6,6 +6,7 @@ For durable multi-session execution with task status, use `pending-question-queu
 
 Purpose:
 - turn unresolved design decisions into a durable clarification queue when needed
+- preserve AI-first operating-model context when delegated work, governance, supervision, audit, or outcomes are in scope
 - turn the solution plan into a downstream implementation work queue
 - keep coding focused on one component family at a time
 - make code generation and test generation explicit follow-on work
@@ -21,10 +22,12 @@ That contract should tell the next agent or next phase:
 - which skills to load for each build step
 - which tests to generate alongside each component
 - whether endpoint, web UI, or documentation/snippet work is also required
+- when applicable, which delegated authority, policy/approval, trace, supervision UI, evaluation, and outcome requirements must be carried into each task
 
 ## Minimal transformation
 
 Take these sections from the solution plan:
+- AI-first interpretation when present: delegated work, retained authority, durable objects, policy/approval/exception needs, traces, UI surfaces, and outcomes
 - chosen components
 - skill routing
 - recommended implementation order
@@ -78,7 +81,8 @@ For each queue item:
 1. load only the listed skills
 2. generate the code for that component or layer
 3. generate its corresponding tests before moving on
-4. keep later components out of context until their step begins
+4. preserve only the AI-first context needed for that queue item; do not reread or duplicate the full doctrine unless the task needs it
+5. keep later components out of context until their step begins
 
 For reliable follow-on work across sessions, first convert unresolved blocking decisions into `specs/pending-questions.md` and answer them with `akka-do-next-pending-question`. Then convert unblocked implementation work into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
 
@@ -106,6 +110,7 @@ Before starting code generation, verify that the solution plan already answers:
 - which later components depend on it
 - whether any open questions still block coding
 - whether blocking questions are resolved or explicitly deferred in `specs/pending-questions.md`
+- whether AI-first authority, policy, approval, trace, UI, evaluation, or outcome decisions are represented in the relevant queue items instead of silently dropped
 
 ## Related docs
 

@@ -4,6 +4,7 @@ Use this contract when planning discovers unresolved decisions that would otherw
 
 Purpose:
 - persist design, product, architecture, security, testing, and delivery questions across harness sessions
+- preserve AI-first blockers when delegated work, authority, policies, decisions, supervision, audit, or outcomes would otherwise be guessed
 - let the user answer one focused question at a time instead of receiving a large interview list
 - record why each answer matters and which artifacts it affects
 - distinguish answered questions from reconciled decisions
@@ -24,14 +25,15 @@ This file belongs in the target project workspace, not inside the installed `.ag
 1. Ask one question at a time unless the user explicitly requests a batch.
 2. Preserve question IDs and history; do not renumber questions casually.
 3. Prefer questions that block architecture, specs, backlog, task generation, or safe implementation.
-4. If a browser UI is in scope and no style guide/theme is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block only web UI implementation/generation work.
-5. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
-6. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
-7. Defer questions only when the plan can safely proceed without that answer.
-8. Mark questions `superseded` when later requirements or decisions make them irrelevant.
-9. Keep questions short enough to answer without rereading the full PRD.
-10. Include why the question matters and the expected design impact.
-11. At the end of planning responses, report the next pending or answered question that needs attention.
+4. For AI-first scope, add questions when work would otherwise guess delegated authority, human-only decisions, approval gates, policy/risk thresholds, evidence requirements, trace retention/visibility, supervision UI mode, evaluation/replay approach, or outcome metrics.
+5. If a browser UI is in scope and no style guide/theme is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block only web UI implementation/generation work.
+6. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
+7. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
+8. Defer questions only when the plan can safely proceed without that answer.
+9. Mark questions `superseded` when later requirements or decisions make them irrelevant.
+10. Keep questions short enough to answer without rereading the full PRD.
+11. Include why the question matters and the expected design impact.
+12. At the end of planning responses, report the next pending or answered question that needs attention.
 
 ## Status values
 
@@ -93,7 +95,7 @@ Use this structure:
 
 - status: pending
 - priority: blocking
-- category: <capability|behavior|state-model|workflow|integration|security|authorization|observability|testing|ui|api|data-retention|failure-handling|deployment>
+- category: <capability|behavior|state-model|workflow|integration|security|authorization|policy-governance|approval|risk-evidence|audit-trace|outcomes|observability|testing|ui|api|data-retention|failure-handling|deployment>
 - depends on: []
 - blocks:
   - <artifact, decision, slice, backlog, or task generation area>
@@ -147,7 +149,7 @@ A pending task may reference a question in notes, for example:
   - depends on decision from Q-003
 ```
 
-If an implementation task discovers a missing decision, block the task and add or update a pending question instead of guessing.
+If an implementation task discovers a missing decision, block the task and add or update a pending question instead of guessing. For AI-first work, missing authority, approval, policy, evidence, trace, supervision UI, evaluation, or outcome semantics are blockers for the affected work, not implementation details to invent.
 
 ## End-of-response reminder
 

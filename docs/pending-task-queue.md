@@ -4,6 +4,7 @@ Use this contract when PRD/spec planning creates follow-on implementation work t
 
 Purpose:
 - persist follow-on work after decomposition, backlog creation, task-brief creation, and resolution or deferral of blocking questions
+- preserve AI-first operating-model constraints in implementation tasks when delegated work, governance, supervision, audit, or outcomes are in scope
 - make the next runnable task obvious
 - keep each implementation run bounded to one task
 - support fresh-context execution for each task
@@ -29,11 +30,12 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 4. Select the first `pending` task whose dependencies are `done` or empty.
 5. Mark a task `done` only after its required checks pass or are explicitly reported as not runnable.
 6. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, or build/runtime preconditions are missing.
-7. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
-8. Mark a task `superseded` when a later app-description/spec/PRD change replaces the task and it should not be executed.
-9. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
-10. When a task is complete, blocked, or superseded, report the next runnable pending task if one exists.
-11. At the end of ordinary harness responses, remind the user when runnable pending tasks remain, without automatically starting them.
+7. For AI-first work, unresolved delegated authority, approval, policy/risk threshold, evidence, audit/trace, supervision UI, evaluation, or outcome decisions block only the affected tasks.
+8. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
+9. Mark a task `superseded` when a later app-description/spec/PRD change replaces the task and it should not be executed.
+10. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
+11. When a task is complete, blocked, or superseded, report the next runnable pending task if one exists.
+12. At the end of ordinary harness responses, remind the user when runnable pending tasks remain, without automatically starting them.
 
 ## Status values
 
@@ -92,8 +94,10 @@ Use this structure:
   - specs/akka-solution-plan.md
   - specs/backlog/01-<slice>-build-backlog.md
   - specs/tasks/01-<slice>/01-<task>.md
+  - docs/ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
 - skills:
   - <skill-name>
+  - ai-first-saas when the task must preserve AI-first operating-model semantics
 - expected outputs:
   - <file, package, component, or test family>
 - required checks:
@@ -193,6 +197,8 @@ Preserve useful prior notes when adding blocked, superseded, or completion notes
 
 Do not create or execute runnable implementation tasks for work blocked by unresolved `blocking` questions unless those questions have been explicitly deferred with an accepted default or limitation.
 
+For AI-first work, unresolved authority boundaries, approval gates, policy clauses, risk/confidence thresholds, evidence requirements, trace visibility/retention, supervision UI behavior, evaluation strategy, or outcome metrics should be represented as pending questions and referenced from affected tasks.
+
 When a task is blocked by a question, record the question ID in `notes`, for example:
 
 ```md
@@ -204,7 +210,7 @@ If a task discovers an unresolved design decision during execution, block the ta
 
 ## Relationship to other planning artifacts
 
-- `specs/akka-solution-plan.md` defines the overall architecture and implementation order.
+- `specs/akka-solution-plan.md` defines the overall architecture, AI-first interpretation when applicable, and implementation order.
 - `specs/modules/*.md` define durable module boundaries for large plans.
 - `specs/sprints/*.md` define ordered vertical full-stack delivery increments for large plans.
 - `specs/slices/*.md` define bounded business slices for smaller or existing slice-based plans.
