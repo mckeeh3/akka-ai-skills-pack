@@ -9,6 +9,24 @@ This file serves both:
 - the **source repository**, where app-description trees under `docs/examples/` are reference assets for the pack itself
 - the **installed pack** in a real development project, where the project's maintained `app-description/` tree belongs in the project workspace rather than under `.agents/`, unless that project explicitly chooses another internal location
 
+## AI-first SaaS entry routing
+
+For high-level product input, first interpret whether the product should be treated as AI-first SaaS before decomposing it into CRUD screens or isolated Akka components. Use this interpretation when the input involves delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, or outcome accountability.
+
+Canonical doctrine:
+- `../docs/ai-first-saas-application-architecture.md`
+
+Transition note:
+- `ai-first-saas` is the planned top-level AI-first skill family for Sprint 2. Until that skill exists, do not link to a `skills/ai-first-saas/` file; use the canonical doctrine plus this routing map.
+
+After AI-first interpretation, choose the normal operating path:
+1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization
+2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known
+3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts
+4. use focused Stage 3 component skills only after the operating model and solution shape are clear enough for implementation
+
+Existing Stage 3 skills are implementation substrate skills for the AI-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with AI-first narrative guidance; route to them after goals, plans, authority, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
+
 ## Description-first intake skills
 
 This repository now also includes an initial description-first skill path for maintaining **application descriptions as the source of truth** before app realization.
@@ -68,11 +86,12 @@ Important routing rule:
 Use the skills in this order:
 
 1. read the requirements, PRD, spec, prompt, API sketch, UI brief, feature request, or change request
-2. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear
-3. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
-4. move to Stage 3 to load only the focused implementation skills for the chosen components
-5. use the accepted solution plan as the implementation contract for the downstream coding phase
-6. generate code and tests only after decomposition and structural selection are done
+2. apply AI-first SaaS interpretation first when the input involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
+3. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear
+4. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
+5. move to Stage 3 to load only the focused implementation skills for the chosen components
+6. use the accepted solution plan as the implementation contract for the downstream coding phase
+7. generate code and tests only after decomposition and structural selection are done
 
 Short reusable version:
 - `../docs/intent-driven-usage-flow.md`
@@ -84,7 +103,7 @@ Short reusable version:
 Use the skill library as a visible 3-stage hierarchy:
 
 ### Stage 1: Intent and architecture
-Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape.
+Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape. For high-level product inputs, apply the AI-first SaaS interpretation rule above before mapping the work to Akka components.
 
 Primary Stage 1 entry skills:
 - `akka-solution-decomposition`

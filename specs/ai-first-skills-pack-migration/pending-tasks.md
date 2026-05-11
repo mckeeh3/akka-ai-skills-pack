@@ -69,7 +69,7 @@
 
 ### TASK-01-003: Add AI-first entry guidance to skill routing map
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/01-architectural-pivot-and-doctrine-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/01-architectural-pivot-and-doctrine/03-routing-map-ai-first-entry.md
 - depends on: [TASK-01-001, TASK-01-002]
@@ -87,6 +87,9 @@
   - verify routing map still supports current skills until Sprint 2 creates new ones
 - done criteria:
   - high-level product inputs are routed toward AI-first interpretation before CRUD/component decomposition
+- notes:
+  - completed: routing map now applies AI-first interpretation before app-description, decomposition, PRD-to-specs/backlog, or Stage 3 implementation routing
+  - commit hash: not pre-recorded because the queue status update is included in the same task commit
 
 ### TASK-01-004: Document inbox provenance and cleanup plan
 
