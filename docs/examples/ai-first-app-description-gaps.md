@@ -16,13 +16,15 @@ It demonstrates the baseline app-description layer structure for capabilities, b
 
 Do **not** force-fit this example into a full AI-first SaaS operating model. It currently lacks durable delegated goals, bounded agent/team execution, governed policy learning, decision-card evidence, work traces, and outcome loops by design.
 
-## Missing AI-first reference example
+## AI-first reference example scaffold
 
-Sprint 6 should add a separate worked example rather than overloading the purchase-request example:
+Sprint 6 adds a separate worked example rather than overloading the purchase-request example:
 
 ```text
 docs/examples/agent-first-dca-app-description/
 ```
+
+Current status: initial scaffold and source mapping exist in `agent-first-dca-app-description/README.md`; later Sprint 6 tasks fill the authoritative app-description content.
 
 Planned source inputs:
 - `skills/inbox/docs/cai-dca-agentic-reconstruction.md`
@@ -63,8 +65,7 @@ The DCA worked example should demonstrate, at minimum:
 - supervision-oriented UI surfaces: goal-to-execution, command center, decision review, governance/learning, digest, and audit/trace;
 - traceability links from operating-model artifacts to behavior, tests, security, observability, UI, and realization slices.
 
-## Non-goals for this task
+## Non-goals for this note
 
-- Do not implement the DCA worked example yet; Sprint 6 owns that work.
 - Do not move, archive, or delete inbox provenance files here.
 - Do not retrofit the purchase-request example into a complete AI-first example without explicit product intent.

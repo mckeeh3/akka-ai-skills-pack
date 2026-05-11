@@ -637,7 +637,7 @@
 
 ### TASK-06-001: Design AI-first DCA example structure
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/06-worked-example-and-inbox-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-005, TASK-04-002]
@@ -657,6 +657,9 @@
   - example is clearly a reference asset, not this repo's business app
 - done criteria:
   - example structure and source mapping are established
+- notes:
+  - completed: added the agent-first DCA app-description scaffold, source-material mapping, layer README files, and updated the AI-first example gap note to point at the new scaffold
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Design agent-first DCA example structure`
 
 ### TASK-06-002: Create DCA product vision and operating model example
 

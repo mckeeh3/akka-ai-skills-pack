@@ -27,9 +27,9 @@ These examples are valuable implementation substrate references, but they are no
 
 ### P0: cohesive AI-first worked app-description example
 
-Missing reference: `docs/examples/agent-first-dca-app-description/`.
+Reference scaffold: `docs/examples/agent-first-dca-app-description/`.
 
-Required coverage:
+Remaining required coverage:
 
 - durable goals, constraints, success criteria, execution plans, and outcome links;
 - bounded coordinator/specialist/evaluator agent roles with explicit authority limits;
@@ -40,7 +40,7 @@ Required coverage:
 - supervision-oriented UI surfaces: goal-to-execution workbench, command center, decision review, governance/learning, digest, and audit/trace;
 - traceability from operating-model artifacts to behavior, tests, security, observability, UI, and realization slices.
 
-Owner path: Sprint 6 DCA tasks (`TASK-06-001` through `TASK-06-004`).
+Owner path: Sprint 6 DCA tasks (`TASK-06-002` through `TASK-06-004` complete the scaffold created by `TASK-06-001`).
 
 ### P0: AI-first implementation-slice examples derived from the worked app-description
 
