@@ -24,10 +24,12 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-end-to-end-workflow-example.md`
+- `../ai-first-saas/SKILL.md` when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - `../../docs/web-ui-style-guide.md` when a browser UI is in scope
 
 Prefer these local examples and references:
@@ -44,6 +46,7 @@ Prefer these local examples and references:
 
 Use this top-level skill when the task spans more than one description concern, such as:
 - a new app idea that needs description-first maintenance
+- a broad product prompt that may need AI-first operating-model interpretation before normal description updates
 - a feature request that affects behavior, tests, and security together
 - a bug fix that requires behavior correction plus regression coverage
 - a request to assess readiness and possibly generate the app
@@ -73,6 +76,8 @@ Load the companion skill that matches the current task:
   - update identity, authorization, trust-boundary, sensitive-data, and denial-behavior rules
 - `app-description-observability`
   - update logs, metrics, traces, audit events, health signals, alerts, and diagnosability expectations
+- `app-description-ui`
+  - update browser UI screens, navigation, frontend API contracts, realtime states, accessibility, responsive behavior, and style guide; for AI-first apps, prioritize supervision, decision, governance, digest, and audit surfaces
 - `app-description-readiness-assessment`
   - decide whether the current description is `not-ready`, `ready-with-assumptions`, or `ready`
 - `app-generate-app`
@@ -86,24 +91,28 @@ Load the companion skill that matches the current task:
 
 Prefer this sequence unless the task is already narrowly scoped:
 
-1. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet
-2. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
-3. route input with `app-description-intake-router`
-4. model capabilities with `app-description-capability-modeling` when scope or business outcomes changed
-5. update behavior with `app-description-behavior-specification`
-6. update tests with `app-description-test-specification`
-7. run `app-description-change-impact` to identify cross-layer and realization implications
-8. update security with `app-description-auth-security` when needed
-9. update observability with `app-description-observability` when needed
-10. assess readiness with `app-description-readiness-assessment`
-11. realize outputs with `app-generate-app` only when generation is requested or accepted
-12. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+1. apply `ai-first-saas` interpretation when broad input involves delegated work, agents, policy-bound decisions, approvals, supervision, audit, learning, or outcomes
+2. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `15-operating-model/` when AI-first/delegated operations are in scope
+3. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
+4. route input with `app-description-intake-router`
+5. model capabilities with `app-description-capability-modeling` when scope or business outcomes changed
+6. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
+7. update behavior with `app-description-behavior-specification`
+8. update tests with `app-description-test-specification`
+9. run `app-description-change-impact` to identify cross-layer and realization implications
+10. update security with `app-description-auth-security` when needed
+11. update observability with `app-description-observability` when needed
+12. update UI with `app-description-ui` when needed
+13. assess readiness with `app-description-readiness-assessment`
+14. realize outputs with `app-generate-app` only when generation is requested or accepted
+15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 ## Layer model
 
 The default internal app-description structure is:
 - `00-system/`
 - `10-capabilities/`
+- `15-operating-model/` when AI-first/delegated operations are in scope
 - `20-behavior/`
 - `30-tests/`
 - `40-auth-security/`
@@ -121,16 +130,18 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 2. Generated code is a projection, not the definition of the app.
 3. Humans do not directly edit generated code or internal app-description artifacts.
 4. Tests are part of the app description, not only post-hoc verification.
-5. Auth/security and observability are first-class description concerns.
-6. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
-7. Readiness must be assessed before generation.
-8. Localized regeneration is an optimization, not a conceptual requirement.
-9. Review should focus on semantic change, not only file churn.
+5. AI-first operating-model semantics are first-class when delegated work, agents, governance, decisions, traces, or outcomes are in scope.
+6. Auth/security and observability are first-class description concerns.
+7. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
+8. Readiness must be assessed before generation.
+9. Localized regeneration is an optimization, not a conceptual requirement.
+10. Review should focus on semantic change, not only file churn.
 
 ## Decision guide
 
 ### 1. The user is starting a new app description
 Start with:
+- `ai-first-saas` first when the idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - `app-description-bootstrap`
 - then `app-description-intake-router`
 
@@ -166,7 +177,8 @@ Start with:
 
 Before finishing, verify:
 - the current task is routed to the smallest suitable companion skill
-- behavior, tests, security, and observability are kept separate when they change separately
+- operating-model, behavior, tests, security, UI, and observability are kept separate when they change separately
+- broad AI-first product input is interpreted before CRUD/component decomposition
 - readiness is not skipped before generation
 - generation summaries are clearly distinguished from description changes
 - review answers focus on app meaning and readiness rather than internal editing mechanics

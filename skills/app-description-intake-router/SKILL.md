@@ -14,6 +14,7 @@ This skill exists for a **description-first operating model** where the applicat
 Interpret flexible user input and produce a routing decision that:
 - defaults to maintaining the app description unless generation is explicitly requested
 - detects when the user wants to change only the app description
+- detects AI-first/delegated operating-model semantics before routing to CRUD, behavior, or generation work
 - detects when the user wants to generate the app or run it
 - consumes a normalized input envelope when available
 - extracts candidate behavior, test, security, and observability deltas when normalization has not yet happened
@@ -26,10 +27,12 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-input-normalization/SKILL.md`
+- `../ai-first-saas/SKILL.md` when input involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 
 ## Default routing rule
 
@@ -39,6 +42,8 @@ If normalization has not yet occurred, this skill may perform lightweight extrac
 If the user does **not** explicitly ask to generate code, run the app, execute tests, or otherwise realize outputs, treat the input as:
 - **change only the app description**
 
+Before selecting a focused description skill for broad product input, check for AI-first signals: delegated operational work, agents, recommendations, policy-bound automation, approvals, exceptions, supervision, audit traces, learning, or outcome accountability. If present, route through AI-first interpretation and preserve `15-operating-model/` semantics instead of reducing the app to CRUD screens or a chatbot.
+
 Generation is opt-in unless the harness is only recommending it as a possible next step.
 
 ## Primary input modes
@@ -46,6 +51,7 @@ Generation is opt-in unless the harness is only recommending it as a possible ne
 ### 1. Change only the app description
 Route here when the user is:
 - adding or revising capabilities
+- describing delegated work, agents, approvals, policies, exceptions, supervision, audit, learning, or outcomes
 - changing rules or workflows
 - clarifying behavior
 - reporting a bug in expected behavior
@@ -97,6 +103,7 @@ If the input contains both revision and generation requests:
 
 From the user input or normalized input envelope, identify candidate deltas in these categories:
 - capability or scope
+- AI-first operating-model concerns: goals, delegated work, retained human authority, agents, policies, approvals, decisions, exceptions, evidence, traces, learning, and outcomes
 - behavior and invariants
 - test and example expectations
 - auth/security
@@ -113,6 +120,20 @@ Use provisional extraction plus targeted clarification when needed.
 Load next:
 - `app-description-input-normalization`
 - then continue routing based on the normalized envelope
+
+### If broad input includes delegated work, agents, governance, decisions, supervision, audit, or outcomes
+Load next:
+- `ai-first-saas`
+- then route to `app-description-bootstrap` if no usable description root exists, or update `15-operating-model/` plus the smallest affected app-description companion skills
+
+Use focused AI-first companion skills only for the concerns in scope:
+- `ai-first-saas-object-model`
+- `ai-first-saas-agent-team-design`
+- `ai-first-saas-policy-governance`
+- `ai-first-saas-decision-cards`
+- `ai-first-saas-audit-trace`
+- `ai-first-saas-ui-surfaces`
+- `ai-first-saas-outcomes-metrics`
 
 ### If the input is primarily about capability scope, actors, or user-visible outcomes
 Load next:
@@ -184,10 +205,13 @@ Use this response shape internally or in structured notes:
 - description-change | generate-app | mixed | review
 
 ## Candidate description deltas
+- capabilities:
+- operating-model:
 - behavior:
 - tests:
 - auth/security:
 - observability:
+- UI:
 
 ## Next skill or skill sequence
 1. ...
@@ -201,6 +225,7 @@ Use this response shape internally or in structured notes:
 
 Avoid:
 - jumping straight to code generation on a vague prompt
+- converting agentic operational intent into CRUD screens before modeling goals, authority, policies, decisions, traces, and outcomes
 - forcing the user to name a skill or internal artifact type
 - treating all ambiguity as a reason to stop instead of routing provisionally
 - confusing behavior rules with test-only examples when the user is clearly changing the app
@@ -212,7 +237,7 @@ Avoid:
 Before finishing, verify:
 - the primary intent is explicit
 - generation is not assumed unless the user asked for it
-- candidate behavior, test, security, and observability deltas are separated
+- candidate operating-model, behavior, test, security, UI, and observability deltas are separated when present
 - the next skill is the smallest focused skill that matches the request
 - clarification questions are minimal and justified
 

@@ -271,7 +271,7 @@
 
 ### TASK-03-002: Refactor app-description entry and bootstrap skills
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/03-app-description-ai-first-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-001]
@@ -291,6 +291,9 @@
   - broad AI-first product input routes correctly
 - done criteria:
   - bootstrapped descriptions can include AI-first sections
+- notes:
+  - completed: updated app-description entry, bootstrap, and intake routing skills so broad AI-first product input routes through AI-first interpretation and bootstraps `15-operating-model/` sections when delegated operations are in scope
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor app-description entry skills for AI-first`
 
 ### TASK-03-003: Refactor capability and behavior app-description skills
 

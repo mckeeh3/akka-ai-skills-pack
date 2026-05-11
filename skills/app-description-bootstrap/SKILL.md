@@ -14,7 +14,7 @@ It is the description-first equivalent of project scaffolding, but for the autho
 
 Create a minimum viable internal app-description tree that:
 - gives the harness a stable root to maintain
-- establishes authoritative layers for capabilities, behavior, tests, auth/security, observability, and UI when a frontend is in scope
+- establishes authoritative layers for capabilities, AI-first operating model when in scope, behavior, tests, auth/security, observability, and UI when a frontend is in scope
 - records an initial readiness posture
 - defines a generation policy
 - creates enough cross-linking that later changes can stay localized and traceable
@@ -25,10 +25,12 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
+- `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - `../../docs/examples/purchase-request-app-description/README.md`
 
 Prefer these example references:
@@ -86,6 +88,12 @@ app-description/
   10-capabilities/
     capabilities-index.md
     01-<primary-capability>.md
+  15-operating-model/      # only when AI-first/delegated operations are in scope
+    goals-and-objectives.md
+    agent-roles-and-authority.md
+    policies-and-approval-gates.md
+    decisions-exceptions-and-evidence.md
+    audit-trace-and-outcomes.md
   20-behavior/
     behavior-index.md
     flows/
@@ -111,11 +119,14 @@ Add deeper files only when the user's input already justifies them. When the app
 From the initial user input, derive as applicable:
 - app identity or working name
 - top-level goal
+- whether the app has AI-first/delegated operating-model semantics
+- delegated work versus retained human authority when applicable
 - first in-scope capability set
 - likely primary behavior flow
 - first acceptance scenarios
 - initial auth/security expectations
 - initial observability expectations
+- initial policy, approval, exception, audit, trace, and outcome expectations when AI-first/delegated operations are in scope
 - initial frontend/UI expectations when a browser app is in scope
 - selected web UI style guide/theme when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
@@ -147,23 +158,35 @@ Create `00-system/generation-policy.md` with a conservative policy that preserve
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and at least one capability file representing the clearest business capability currently known.
 
-### 5. Create the first behavior layer
+### 5. Create the AI-first operating-model layer when in scope
+Create `15-operating-model/` when the input includes delegated operational work, agents, recommendations, approvals, exceptions, policy-governed automation, supervision, auditability, learning, or outcome accountability.
+
+Seed only the files justified by the input, but prefer the standard operating-model files when the app is clearly agentic:
+- `goals-and-objectives.md`
+- `agent-roles-and-authority.md`
+- `policies-and-approval-gates.md`
+- `decisions-exceptions-and-evidence.md`
+- `audit-trace-and-outcomes.md`
+
+Capture durable goals, delegated work, retained human authority, agent/team boundaries, policy/approval semantics, decision evidence, trace requirements, and outcome loops as assumptions when not fully settled. Do not create this layer for clearly non-agentic apps except to record an explicit non-goal when useful.
+
+### 6. Create the first behavior layer
 Create a `20-behavior/` index and at least one primary flow file.
 Add state-model or rules files only if the input clearly contains lifecycle or invariant semantics already.
 
-### 6. Create the first test layer
+### 7. Create the first test layer
 Create a `30-tests/` index and at least one acceptance file.
 Capture only the strongest initial acceptance expectations plus obvious negative or regression expectations if the input already supports them.
 
-### 7. Create initial production-readiness layers
+### 8. Create initial production-readiness layers
 Create:
 - `40-auth-security/identity-and-trust.md`
 - `50-observability/logs-and-audit.md`
 
 These may begin with baseline expectations and explicit open questions rather than complete policy.
 
-### 8. Create initial cross-links
-Cross-link the first capability, behavior, and test artifacts so later maintenance and change-impact work have a stable base.
+### 9. Create initial cross-links
+Cross-link the first capability, operating-model artifacts when present, behavior, and test artifacts so later maintenance and change-impact work have a stable base.
 
 ## Standard bootstrap output shape
 
@@ -181,6 +204,7 @@ Use this response shape when summarizing bootstrap work:
 ## Created authoritative layers
 - 00-system:
 - 10-capabilities:
+- 15-operating-model: present | omitted because not in scope
 - 20-behavior:
 - 30-tests:
 - 40-auth-security:
@@ -202,7 +226,7 @@ Use this response shape when summarizing bootstrap work:
 Bootstrap should be:
 - as small as possible while still structurally useful
 - explicit about uncertainty
-- biased toward one primary capability and one primary flow first
+- biased toward one primary capability, one primary operating-model thread when AI-first is in scope, and one primary flow first
 - expandable without restructuring everything immediately
 
 Do not create a large multi-capability tree from weak input unless the user already supplied a strong PRD or equivalent requirements artifact.
@@ -210,6 +234,7 @@ Do not create a large multi-capability tree from weak input unless the user alre
 ## Handoff rules
 
 After bootstrap, route onward as needed:
+- to AI-first companion skills for durable object model, agent-team, policy/governance, decisions, audit, UI surfaces, or outcomes when delegated operations are in scope
 - to `app-description-behavior-specification` for deeper behavioral refinement
 - to `app-description-test-specification` for richer acceptance, regression, or negative coverage
 - to `app-description-auth-security` for tighter access and data-protection definition
@@ -231,16 +256,17 @@ Avoid:
 - bootstrapping code instead of the app description
 - inventing a fully detailed security or observability model from thin input
 - creating dozens of files from a vague one-paragraph idea
+- reducing delegated operational work to CRUD screens or a chatbot without durable goals, authority, policies, decisions, traces, and outcomes
 - marking a fresh bootstrap `ready` without substantial supporting detail
 - skipping the readiness-status or generation-policy files
-- leaving the first capability, behavior, and test artifacts unlinked
+- leaving the first capability, operating-model artifacts when present, behavior, and test artifacts unlinked
 
 ## Final review checklist
 
 Before finishing, verify:
 - one stable app-description root is used
 - the minimum authoritative layers exist
-- the initial capability, behavior, and test artifacts are cross-linked
+- the initial capability, operating-model artifacts when present, behavior, and test artifacts are cross-linked
 - readiness state is explicit
 - generation policy is explicit
 - major assumptions are recorded
