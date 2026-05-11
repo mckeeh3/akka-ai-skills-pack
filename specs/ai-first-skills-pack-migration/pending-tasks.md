@@ -353,7 +353,7 @@
 
 ### TASK-03-005: Update app-description examples or placeholders
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/03-app-description-ai-first-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-002, TASK-03-003, TASK-03-004]
@@ -371,6 +371,9 @@
   - old examples are not force-fit into AI-first without intent
 - done criteria:
   - app-description examples/gaps are clearly documented
+- notes:
+  - completed: documented the purchase-request app description as a low-agentic approval-workflow reference and added `docs/examples/ai-first-app-description-gaps.md` as the Sprint 6 DCA example placeholder and coverage gap list
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Document AI-first app-description example gaps`
 
 ### TASK-04-001: Refactor solution decomposition for AI-first interpretation
 
