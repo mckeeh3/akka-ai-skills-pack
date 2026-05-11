@@ -2,6 +2,7 @@
 
 Current files:
 - `ui-surfaces.md` — supervision-oriented surface catalog, first-slice supplies screens, realtime/state behavior, accessibility expectations, and web UI/Akka routing.
+- `style-guide.md` — selected Northpeak Analytics (`theme-1`) visual style guide for generated browser UI.
 
 Future downstream realization may split this into:
 - `personas-and-journeys.md`

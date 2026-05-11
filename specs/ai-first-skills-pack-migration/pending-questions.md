@@ -11,7 +11,7 @@
 
 ### Q-001: Select web UI style guide theme
 
-- status: pending
+- status: resolved
 - priority: blocking
 - category: ui
 - depends on: []
@@ -33,10 +33,11 @@
   - E: theme-5-acme-admin-blue — general blue admin/ops dashboard
   - F: custom — user will provide a custom style brief or reference
 - default if deferred: none for production generation; theme-1-northpeak-analytics may be accepted explicitly for early evaluation only
-- answer: none
-- decision: pending
-- decision impact: pending
+- answer: theme-1
+- decision: selected `theme-1-northpeak-analytics` — clean blue SaaS analytics dashboard
+- decision impact: generated browser UI for the supplies command-center and decision-card reference UI must follow the Northpeak Analytics style guide, using centralized CSS tokens, system light/dark mode, blue primary actions, airy dashboard cards, accessible status semantics, and responsive supervision-oriented layouts.
 - reconciled into:
-  - none
+  - `docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md`
 - notes:
-  - When answered, reconcile into `docs/examples/agent-first-dca-app-description/app-description/55-ui/style-guide.md` or a migration UI style spec before unblocking TASK-08-006.
+  - Resolved from user answer: "select theme-1".
+  - TASK-08-006 is no longer blocked by style selection.
