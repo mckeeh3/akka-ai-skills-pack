@@ -451,7 +451,7 @@
 
 ### TASK-04-004: Refactor pending question generation for AI-first blockers
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/04-prd-spec-backlog-intake-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -469,6 +469,9 @@
   - AI-first blockers are actionable and not cosmetic
 - done criteria:
   - unresolved delegation/policy/approval/risk/outcome decisions can be queued safely
+- notes:
+  - completed: updated pending-question generation to queue actionable AI-first blockers for delegation, authority, approval gates, policies, evidence, risk thresholds, supervision UI, trace obligations, evaluations, and outcome metrics without broad cosmetic interviews
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor pending question generation for AI-first`
 
 ### TASK-04-005: Refactor pending task materialization/execution guidance
 

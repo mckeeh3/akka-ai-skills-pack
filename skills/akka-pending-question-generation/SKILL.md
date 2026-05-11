@@ -51,10 +51,12 @@ Do **not** use this skill when:
 
 Read these first if present:
 - `../README.md`
+- `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/intent-driven-usage-flow.md`
 - `../../docs/web-ui-style-guide.md`
+- `../ai-first-saas/SKILL.md`
 - `../../specs/README.md`
 - `../../specs/pending-questions.md` if it already exists
 - `../../specs/akka-solution-plan.md` if present
@@ -68,6 +70,11 @@ Do not read the entire codebase. This skill is about planning decisions, not imp
 ## Question discovery rules
 
 Create questions only when the answer can change one or more of:
+- AI-first operating model: delegated work, retained human authority, supervision mode, or outcome loop
+- agent or agent-team authority: autonomous decisions, tool/data permissions, escalation rules, or memory/trace requirements
+- governance model: policies, clauses, guardrails, prompts, thresholds, approval gates, simulations, or human-governed commits
+- decision semantics: required evidence, risk/confidence/impact thresholds, alternatives, exception handling, or override behavior
+- audit and outcome accountability: work traces, decision traces, policy invocations, data-access records, retention, metrics, or outcome links
 - Akka component selection
 - Event Sourced Entity vs Key Value Entity choice
 - workflow shape, pause/resume, compensation, or deadline behavior
@@ -78,10 +85,19 @@ Create questions only when the answer can change one or more of:
 - UI behavior, realtime requirements, or web UI style-guide/theme selection
 - auth, tenancy, audit, retention, or privacy model
 - failure handling, retries, idempotency, or compensation
-- acceptance, regression, or edge-case tests
+- acceptance, regression, evaluation, replay/simulation, or edge-case tests
 - backlog slicing, dependencies, or task generation
 
 If a browser UI is in scope and no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the five default theme options from `../../docs/web-ui-style-guide.md`. Mark it `priority: blocking` only for web UI implementation/generation tasks; do not block unrelated backend work.
+
+For AI-first SaaS inputs, prefer a small number of actionable blocker questions over broad product interviews. Queue a blocking question only when the harness cannot safely choose a default for a concrete implementation area. Good AI-first blocker patterns include:
+- `category: behavior` — what work is delegated to agents versus retained by humans?
+- `category: authorization` — which actions, tools, data, or decisions may agents perform without approval?
+- `category: workflow` — which approval, escalation, pause/resume, retry, or compensation gates are mandatory?
+- `category: security` — which policy clauses, permissions, tenant boundaries, or redaction rules must be mechanically enforced?
+- `category: observability` — which work, decision, policy, tool, data-access, approval, and outcome traces are required?
+- `category: testing` — which evaluations, replay/simulation checks, or threshold acceptance tests prove safe behavior?
+- `category: ui` — which supervision, command-center, decision-card, governance, digest, or audit surface is required first?
 
 Avoid questions that are:
 - cosmetic
@@ -92,7 +108,7 @@ Avoid questions that are:
 
 ## Prioritization
 
-Use `priority: blocking` only when task generation or implementation would require guessing.
+Use `priority: blocking` only when task generation or implementation would require guessing. For AI-first work, this includes guessing about delegated authority, approval gates, risk/confidence thresholds, policy enforcement, audit obligations, or outcome metrics for consequential actions.
 
 Use `priority: important` when the answer affects quality or later scope but does not block all safe progress.
 
@@ -133,7 +149,7 @@ If `specs/pending-questions.md` already exists:
 
 ## Relationship to pending tasks
 
-Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks.
+Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks. For AI-first plans, also check whether tasks depend on unresolved delegation, authority, approval, policy, evidence, risk, trace, UI-supervision, evaluation, or outcome-metric decisions.
 
 If blocking questions exist:
 - create or update `specs/pending-questions.md`
@@ -146,6 +162,7 @@ Before finishing, verify:
 - `specs/pending-questions.md` exists or no durable questions were needed
 - browser UI work has a selected style guide or a pending/deferred style-selection question that blocks only affected UI tasks
 - every question has a clear design impact
+- AI-first questions are actionable blockers or meaningful quality decisions, not cosmetic prompts
 - blocking questions name what they block
 - question dependencies are valid
 - existing statuses and IDs were preserved
