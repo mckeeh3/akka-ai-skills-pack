@@ -377,7 +377,7 @@
 
 ### TASK-04-001: Refactor solution decomposition for AI-first interpretation
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/04-prd-spec-backlog-intake-refactor-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-005]
@@ -395,6 +395,9 @@
   - high-level input is not decomposed as CRUD by default
 - done criteria:
   - solution decomposition includes an AI-first interpretation phase
+- notes:
+  - completed: updated solution decomposition to classify high-level inputs through AI-first interpretation before CRUD/component decomposition, add AI-first output fields, route through companion skills, and map substrate objects to Akka components
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Refactor solution decomposition for AI-first`
 
 ### TASK-04-002: Refactor PRD-to-specs/backlog generation for AI-first outputs
 

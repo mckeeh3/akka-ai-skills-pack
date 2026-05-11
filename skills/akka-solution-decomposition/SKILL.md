@@ -10,6 +10,7 @@ Use this as the top-level starting skill when the task begins from high-level in
 ## Goal
 
 Generate or review an Akka solution plan that:
+- interprets high-level product intent through the AI-first SaaS operating model when delegated work, decisions, governance, supervision, audit, or outcomes are in scope
 - maps user-facing capabilities to concrete Akka components
 - chooses the simplest component set that preserves required business semantics
 - makes write model, read model, orchestration, timing, integration, and edge concerns explicit
@@ -46,6 +47,7 @@ Read these first if present:
 - `../../../CONTEXT-WARMUP.md` for repo mental model and session bootstrap
 - `../../../AGENTS.md` for authoritative project rules and Akka coding constraints
 - `../../../skills/README.md` for local routing across skill families
+- `../../../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
 - `../../../docs/agent-coverage-matrix.md` when the task is agent-related
 - `../references/akka-entity-comparison.md`
 - `../../../docs/workflow-endpoint-pattern.md`
@@ -82,15 +84,16 @@ In this repository, prefer these cross-component examples:
 
 Before any coding, produce a component plan with these sections:
 1. Inputs
-2. Capability summary
-3. Chosen components
-4. Why each component exists
-5. Skill routing
-6. Open questions and assumptions
-7. Recommended implementation order
-8. Required tests
+2. AI-first interpretation
+3. Capability summary
+4. Chosen components
+5. Why each component exists
+6. Skill routing
+7. Open questions and assumptions
+8. Recommended implementation order
+9. Required tests
 
-Treat sections 5, 7, and 8 as the implementation handoff.
+Treat sections 6, 8, and 9 as the implementation handoff.
 The plan is not complete if it only names components.
 It must also tell the downstream implementation phase:
 - which skills to load for code generation
@@ -100,87 +103,109 @@ It must also tell the downstream implementation phase:
 
 ## Decomposition workflow
 
-### 1. Extract capabilities
+### 1. Interpret AI-first operating model
+
+Before CRUD or component decomposition, decide whether the input implies delegated operational work, semi/autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
+
+If AI-first concerns are present, use `ai-first-saas` framing and extract:
+- human objective, owner, success criteria, constraints, and definition of done
+- delegated work versus retained human authority
+- durable goals, plans, tasks, policies, decisions, approvals, exceptions, traces, and outcome links that are justified by the product intent
+- agent or agent-team responsibilities, tools, permissions, thresholds, escalation rules, and trace needs
+- governance, evidence, risk, confidence, impact, alternatives, audit, and learning-loop implications
+- supervision, decision, governance, digest, audit, and outcome UI surfaces
+
+If the product is clearly not agentic, say so and continue with ordinary Akka decomposition. Do not force every app to use every AI-first pattern.
+
+### 2. Extract capabilities
 
 List:
-- actors
+- actors and human operating roles
+- objectives, delegated work, retained authority, and outcome loops when AI-first concerns exist
 - commands and mutations
 - queries, search, and reporting needs
 - long-running processes
 - time-based behavior
 - async integrations
 - human approval or pause points
+- policy, permission, evidence, audit, and governance requirements
 - edge and API channels
 - browser UI needs, including screens, navigation, forms, frontend state, realtime behavior, accessibility, and responsive requirements
 - AI and LLM needs
 - security constraints
 
-### 2. Identify the write model
+### 3. Identify the write model
 
 Ask:
 - what state must be durable?
 - is there one aggregate or several?
 - does history matter or only latest state?
 - are durable facts or events part of the business language?
+- are goals, policies, decisions, approvals, traces, or outcomes audit-grade business records?
 
 If a stateful core exists but entity type is not yet fixed, route to:
 - `akka-entity-type-selection`
 
-### 3. Add orchestration only when required
+### 4. Add orchestration only when required
 
 Choose a `Workflow` when:
 - the use case is multi-step and durable
 - retries or restarts must not lose progress
 - compensation or approval is required
+- agent execution, human review, or policy gates must be supervised as a durable plan
 - several components or integrations must be coordinated
 
 Do not add a workflow for a simple single-entity command flow.
 
-### 4. Add read models only when query needs justify them
+### 5. Add read models only when query needs justify them
 
 Choose a `View` when:
 - the user needs list, search, filter, or reporting queries
 - query shape differs from write-model shape
 - data must be projected from events, updates, workflow state, topics, or service streams
 - streaming query results or live updates are required
+- command centers, decision queues, audit searches, governance lists, digest feeds, or outcome dashboards are needed
 
 Do not add a view for simple direct single-entity lookups unless the query pattern truly needs projection.
 
-### 5. Add async reactions only when something must react after the write
+### 6. Add async reactions only when something must react after the write
 
 Choose a `Consumer` when:
 - one component must react asynchronously to another component's updates
 - messages come from topics or service streams
 - side effects should happen outside the entity command handler
 - events need republishing to topics or service streams
+- traces, notifications, outcome links, or governance records must be enriched asynchronously
 
-### 6. Add time-based components only when deadlines or reminders exist
+### 7. Add time-based components only when deadlines or reminders exist
 
 Choose a `TimedAction` when:
 - a timeout, expiry, reminder, retry delay, or scheduled callback is required
 - the schedule must call back into an entity or workflow safely
 - obsolete timer executions must be normalized to no-op or done behavior
+- periodic digests, rechecks, policy simulations, or outcome reviews are required
 
-### 7. Add AI components only when the requirement is genuinely LLM-driven
+### 8. Add AI components only when the requirement is genuinely LLM-driven
 
 Choose an `Agent` when:
 - the behavior depends on prompt-driven generation, extraction, classification, evaluation, or summarization
 - structured LLM output is needed
 - tools, memory, guardrails, or multi-agent orchestration are required
+- bounded planning, recommendation, exception triage, evidence summarization, or evaluation is required
 
 Do not introduce an agent for deterministic business rules that should stay in code.
 
-### 8. Choose edge and API surfaces
+### 9. Choose edge and API surfaces
 
 Choose:
 - `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
-- `Akka-hosted web UI app` for full browser applications with screens, typed API clients, forms, state, selected frontend project shape, and frontend quality requirements
+- `Akka-hosted web UI app` for full browser applications with screens, typed API clients, forms, state, selected frontend project shape, and frontend quality requirements; prioritize supervision, decision, governance, digest, audit, and outcome surfaces when AI-first concerns exist
 - `gRPC endpoint` for protobuf-first service APIs
 - `MCP endpoint` for LLM-oriented tools, resources, or prompts
 
 A single solution may expose more than one edge surface.
 
-### 9. Add security and delivery concerns explicitly
+### 10. Add security and delivery concerns explicitly
 
 Check whether the requirements imply:
 - WorkOS or other end-user authentication
@@ -192,11 +217,12 @@ Check whether the requirements imply:
 - WebSocket interaction
 - packaged browser UI assets
 - notifications or service streams
+- policy-bound permissions, approval gates, tool/data-access controls, redaction, retention, tenant isolation, and trace visibility
 
-### 10. Generate the implementation order
+### 11. Generate the implementation order
 
 Prefer this order unless requirements force another:
-1. domain records and invariants
+1. AI-first object model, authority boundaries, policies, trace/outcome records, and domain invariants
 2. stateful core components: entities and workflows
 3. views
 4. consumers and timed actions
@@ -205,6 +231,19 @@ Prefer this order unless requirements force another:
 7. docs or snippets if the task includes repository guidance
 
 ## Component selection guide
+
+### AI-first substrate mapping
+
+When AI-first concerns are present, map durable objects before selecting components:
+- audit-grade goals, policies, decisions, approvals, traces, precedents, and consequential facts → `EventSourcedEntity`
+- current-state preferences, simple assignments, ephemeral operational state, and non-audit configuration → `KeyValueEntity`
+- execution plans, approval gates, retries, compensation, human wait states, and agent-team orchestration → `Workflow`
+- planning, classification, recommendation, summarization, evaluation, explanation, and bounded tool use → `Agent`
+- command centers, decision queues, policy lists, audit search, digest feeds, and outcome dashboards → `View`
+- trace enrichment, notification, publication, integration bridges, and outcome linking → `Consumer`
+- deadlines, reminders, expiries, periodic digests, rechecks, simulations, and review cadences → `TimedAction`
+- browser APIs, service APIs, streams, and AI-client tools/resources → HTTP, gRPC, and MCP endpoints
+- supervision, decision, governance, digest, trace, and outcome interfaces → `akka-web-ui-apps` plus focused web UI skills
 
 ### Stateful core
 
@@ -249,6 +288,17 @@ Choose one or more of:
 After decomposition, load the minimal next skill set.
 The routing output should feed code generation directly, not serve as a purely informational appendix.
 For every chosen component, list the implementation skills and the corresponding testing skill when one exists.
+
+When AI-first concerns shape the solution, include `ai-first-saas` in planning/intake routing and add only the companion skills needed by the plan:
+- `ai-first-saas-object-model` for durable goals, plans, policies, decisions, traces, and outcomes
+- `ai-first-saas-agent-team-design` for bounded coordinator/specialist/evaluator agent teams
+- `ai-first-saas-policy-governance` for policies, permissions, thresholds, simulations, and governed commits
+- `ai-first-saas-decision-cards` for recommendation, approval, exception, and deviation review surfaces
+- `ai-first-saas-audit-trace` for work, decision, policy, tool, data-access, approval, and outcome traces
+- `ai-first-saas-ui-surfaces` for supervision, decision, governance, digest, audit, and outcome interfaces
+- `ai-first-saas-outcomes-metrics` for outcome loops, metrics, replay, feedback, and validation surfaces
+
+Then route to the normal Akka substrate skills for implementation.
 
 ### If the core decision is still entity type
 
@@ -460,6 +510,15 @@ Use this exact response shape whenever the task starts from requirements:
 - source:
 - assumptions:
 
+## AI-first interpretation
+- operating model:
+- delegated work:
+- retained human authority:
+- durable substrate objects:
+- governance / approval / exception needs:
+- audit, trace, and outcome needs:
+- AI-first UI surfaces:
+
 ## Capability summary
 - ...
 
@@ -490,6 +549,11 @@ If requirements are incomplete, still produce the best provisional plan, but sep
 ## Open questions to ask when the requirements are underspecified
 
 Ask only the smallest set needed to avoid architectural mistakes:
+- Is this product doing delegated operational work that should be modeled as durable goals/plans rather than CRUD records?
+- What authority is delegated to agents or automation, and what authority remains human-only?
+- Which decisions require approval, escalation, evidence, risk/confidence/impact display, or exception handling?
+- Which policies, permissions, thresholds, prompts, skills, or guardrails must be versioned and mechanically enforced?
+- What audit traces and outcome links are required for accountability and learning?
 - Does the business need audit, history, or replay, or is latest state enough?
 - Is there a multi-step process that must survive retries and restarts?
 - Are approvals or human wait states required?
@@ -515,6 +579,8 @@ Avoid:
 ## Final review checklist
 
 Before moving from planning to coding, verify:
+- high-level input was explicitly classified as AI-first-applicable or clearly non-agentic
+- delegated work, retained human authority, policy, approval, audit, trace, and outcome needs are reflected before CRUD/component decomposition when applicable
 - every user-facing capability maps to at least one concrete component or an explicit decision not to add one
 - each chosen component has a clear purpose and owning package
 - entity type decisions are justified
