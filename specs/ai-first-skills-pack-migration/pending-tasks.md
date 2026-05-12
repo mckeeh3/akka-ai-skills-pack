@@ -1508,7 +1508,7 @@
 
 ### TASK-10-003: Implement WorkOS/JWT `/api/me` and backend authorization helper
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/03-workos-me-and-authorization.md
 - depends on: [TASK-10-002]
@@ -1536,6 +1536,10 @@
 - done criteria:
   - browser users can establish local app identity while backend authorization remains authoritative
   - git commit created for this task
+- notes:
+  - completed: added JWT-protected `/api/me`, WorkOS claim extraction, idempotent invited-account link/activation, disabled/uninvited rejection, browser-safe account DTOs, centralized backend authorization helper methods for app admin and tenant/customer scopes, and focused endpoint/authorization tests
+  - checks: `mvn -q -Dtest=com.example.application.security.MeEndpointIntegrationTest test`; `mvn -q -DskipTests compile`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement WorkOS me endpoint and authorization helper`
 
 ### TASK-10-004: Implement admin APIs and bootstrap lifecycle
 
