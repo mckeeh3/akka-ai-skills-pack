@@ -19,9 +19,9 @@ Akka applications often need more than JSON endpoints. A common real-world shape
 - packaged reference assets such as generated OpenAPI files
 
 Right now the repository has a useful starting point:
-- the removed dedicated static-content skill
-- `src/main/java/com/example/api/StaticContentEndpoint.java`
-- `src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
+- the removed dedicated asset-serving skill
+- `removed asset-serving endpoint source`
+- `removed asset-serving endpoint integration test`
 
 The next step is to make this area first-class rather than leaving it as a single example.
 
@@ -131,11 +131,11 @@ Route agents to the right pattern among:
 - public vs internal UI/API route splits
 - plain static assets vs TypeScript-authored interactive assets
 
-## 2. Keep and refine the existing static-content skill
+## 2. Keep and refine the existing asset-serving skill
 
 ### Existing file
 
-- the removed dedicated static-content skill
+- the removed dedicated asset-serving skill
 
 ### Updates
 
@@ -200,11 +200,11 @@ Decide and document the smallest TypeScript setup that supports interactive UI e
 - no large frontend framework or bundler is introduced
 - future agents can find both the authored `.ts` file and the served `.js` file quickly
 
-## Phase 1: strengthen the current static-content foundation
+## Phase 1: strengthen the current asset-serving foundation
 
 ### Deliverables
 
-1. Refine the existing static-content example to be the canonical file-serving reference
+1. Refine the existing asset-serving example to be the canonical file-serving reference
 2. Ensure examples cover:
    - single file
    - CSS/JS asset
@@ -215,8 +215,8 @@ Decide and document the smallest TypeScript setup that supports interactive UI e
 
 ### Existing assets to keep using
 
-- `src/main/java/com/example/api/StaticContentEndpoint.java`
-- `src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
+- `removed asset-serving endpoint source`
+- `removed asset-serving endpoint integration test`
 
 ### Acceptance criteria
 
@@ -347,7 +347,7 @@ Document and minimally demonstrate the boundary between a public UI shell and no
 ## Required docs/skill updates
 
 1. Create `skills/akka-http-endpoint-web-ui/SKILL.md`
-2. Update the removed dedicated static-content skill
+2. Update the removed dedicated asset-serving skill
 3. Add `docs/web-ui-pattern-selection.md`
 4. Add minimal TypeScript tool files if this wave includes compiled interactive examples:
    - `package.json`
@@ -396,7 +396,7 @@ Use endpoint integration tests as the default verification layer.
 ## Implementation order
 
 1. Establish the minimal TypeScript strategy and file layout
-2. Harden the static-content example already in the repo
+2. Harden the asset-serving example already in the repo
 3. Add the broad `web-ui` routing skill
 4. Add UI shell + JSON API example
 5. Add UI + SSE example

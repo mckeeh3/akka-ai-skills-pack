@@ -1,6 +1,6 @@
 # Web UI/static content implementation checklist
 
-Purpose: historical checklist for the original `docs/web-ui-static-content.md` plan. Current browser UI work should use the React/Vite/TypeScript frontend project path.
+Purpose: historical checklist for the original Akka-served web UI asset plan. Current browser UI work should use the React/Vite/TypeScript frontend project path.
 
 Use this only as archived implementation context for the earlier web UI/asset-serving family.
 
@@ -35,27 +35,27 @@ Goal: add the smallest possible TypeScript setup for browser-side examples.
 
 ---
 
-## Phase 1 — strengthen the static-content foundation
+## Phase 1 — strengthen the asset-serving foundation
 
-Goal: keep the existing static-content example as the narrow canonical file-serving reference.
+Goal: keep the existing asset-serving example as the narrow canonical file-serving reference.
 
 ### Update first
 
-- [ ] the removed dedicated static-content skill
-- [ ] `src/main/java/com/example/api/StaticContentEndpoint.java`
-- [ ] `src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
+- [ ] the removed dedicated asset-serving skill
+- [ ] `removed asset-serving endpoint source`
+- [ ] `removed asset-serving endpoint integration test`
 
 ### Add or confirm resource files
 
-- [ ] `src/main/resources/static-resources/http-endpoint/index.html`
-- [ ] `src/main/resources/static-resources/http-endpoint/app.css`
+- [ ] `removed packaged HTML example`
+- [ ] `removed packaged CSS example`
 - [ ] `src/main/resources/static-resources/http-endpoint/help.txt`
 - [ ] `src/main/resources/static-resources/http-endpoint/guide/index.html`
-- [ ] `src/main/resources/static-resources/http-endpoint/openapi.yaml`
+- [ ] `removed packaged OpenAPI example`
 
 ### Tasks
 
-- [ ] Update the static-content skill to position it as the narrow file-serving skill
+- [ ] Update the asset-serving skill to position it as the narrow file-serving skill
 - [ ] Add a link from that skill to the broader web-ui skill that will be created later
 - [ ] Confirm the endpoint demonstrates:
   - serving a single HTML file
@@ -82,7 +82,7 @@ Goal: provide one entry point for all Akka-served web UI patterns.
 
 ### Update after creation
 
-- [ ] the removed dedicated static-content skill
+- [ ] the removed dedicated asset-serving skill
 - [ ] `docs/web-ui-pattern-selection.md`
 
 ### Tasks
@@ -94,13 +94,13 @@ Goal: provide one entry point for all Akka-served web UI patterns.
   - UI + WebSocket
   - public vs internal route split
   - plain static assets vs TypeScript-authored interactive assets
-- [ ] Cross-link the new broad skill to the narrow static-content skill
+- [ ] Cross-link the new broad skill to the narrow asset-serving skill
 - [ ] Cross-link the pattern-selection doc to both skills
 
 ### Expected result
 
 - future agents have one obvious starting point for web UI work
-- the static-content skill remains focused instead of growing into a catch-all
+- the asset-serving skill remains focused instead of growing into a catch-all
 
 ---
 
@@ -258,7 +258,7 @@ Goal: make the new family discoverable from the repo’s routing layer.
 
 ### Expected result
 
-- the new web-ui/static-content family is easy to discover from the repo’s normal routing paths
+- the new web-ui asset-serving family is easy to discover from the repo’s normal routing paths
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: akka-http-endpoint-testing
-description: Write Akka Java SDK HTTP endpoint integration tests using TestKitSupport and httpClient. Use for route-level validation of JSON APIs, HTTP error mapping, and static resource endpoints.
+description: Write Akka Java SDK HTTP endpoint integration tests using TestKitSupport and httpClient. Use for route-level validation of JSON APIs, HTTP error mapping, asset routes for generated frontend builds, and streaming endpoints.
 ---
 
 # Akka HTTP Endpoint Testing
@@ -12,7 +12,6 @@ Use this skill for HTTP endpoint integration tests.
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `../../../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
@@ -40,9 +39,6 @@ HTTP endpoint tests should:
   - query parameter behavior
   - request body mapping
   - HTTP 400 mapping for invalid input
-- `StaticContentEndpointIntegrationTest`
-  - packaged HTML and CSS served through HTTP routes
-  - static subtrees and `openapi.yaml` served as static resources
 - `LowLevelHttpEndpointIntegrationTest`
   - low-level response and `HttpEntity.Strict` handling
 - `ProxyGreetingEndpointIntegrationTest`
@@ -87,7 +83,7 @@ Prefer these categories:
 2. request body and path parameter mapping
 3. query parameter or request-context behavior when relevant
 4. HTTP validation failure behavior
-5. static content retrieval when the endpoint serves assets
+5. generated frontend asset retrieval when the endpoint serves a built web app
 6. low-level request or response handling when relevant
 7. streaming route behavior for SSE or WebSockets when relevant
 

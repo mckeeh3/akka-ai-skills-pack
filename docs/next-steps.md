@@ -237,7 +237,7 @@ This is a high-value cross-cutting layer: helping agents choose the right Akka b
 
 ## Proposed sequence
 
-1. Finish `web-ui/static-content` family
+1. Finish `web-ui asset-serving` family
 2. Service setup, bootstrap, and configuration
 3. Security and boundary patterns
 4. Observability and runtime inspection

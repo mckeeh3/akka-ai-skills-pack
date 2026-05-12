@@ -87,7 +87,7 @@
 
 ### TASK-SWPR-01-003: Remove static-page executable examples and tests
 
-- status: pending
+- status: done
 - source: specs/static-web-page-content-removal/backlog/01-remove-static-web-page-guidance-build-backlog.md
 - task brief: specs/static-web-page-content-removal/tasks/01-remove-static-web-page-guidance/03-remove-static-page-examples.md
 - depends on: [TASK-SWPR-01-002]
@@ -122,6 +122,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Remove static page executable examples`
+  - completed: removed the static page endpoint source, integration test, packaged resources, and current references to the removed example.
 
 ### TASK-SWPR-01-004: Revise or remove static-web-page docs
 

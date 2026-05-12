@@ -136,7 +136,7 @@ Avoid:
 - treating generated frontend build output as source code
 - hiding the frontend source path or the served JavaScript/CSS path
 - relying on browser-only behavior without a route-level integration test
-- treating a complete frontend app as only a static-content concern
+- treating a complete frontend app as only an asset-hosting concern
 - implementing only happy-path UI states
 
 ## Review checklist
