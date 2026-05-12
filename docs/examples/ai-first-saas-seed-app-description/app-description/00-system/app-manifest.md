@@ -1,0 +1,38 @@
+# App Manifest
+
+- app-id: ai-first-saas-seed
+- working-name: AI-First SaaS Seed
+- status: reference-app-description-bootstrap
+- app-class: secure multi-tenant AI-first SaaS seed/reference app
+- generation-targets:
+  - runnable Akka Java SDK backend
+  - runnable React + Vite + TypeScript frontend
+  - backend and frontend tests
+  - reference code examples for skills-pack component guidance
+  - bootstrap base for downstream generated SaaS apps
+- top-level goals:
+  - provide secure human-user access to a multi-tenant SaaS application
+  - provide reusable tenant, customer, user, membership, role, and permission foundations
+  - provide a functional AI-first operating-model shell for delegated goals, plans, decisions, approvals, audit traces, and outcomes
+  - demonstrate common Akka Java component patterns in a coherent application
+  - demonstrate common browser UI and frontend/backend integration patterns
+  - support modular expansion by adding app modules and required features
+- non-goals:
+  - implement a vertical business product beyond generic AI-first SaaS substrate
+  - provide production identity-provider provisioning for every vendor
+  - demonstrate every possible Akka feature in the first runnable increment
+  - replace focused component examples where isolated examples remain clearer
+- primary architectural assumptions:
+  - all business data is tenant scoped unless explicitly marked global
+  - every browser API request is authenticated and authorized
+  - authorization is enforced mechanically in backend endpoints and commands
+  - AI/agent actions are bounded by explicit permissions, approval gates, and trace capture
+  - the frontend is a first-class generated output, not a static demo shell
+- primary linked artifacts:
+  - `../10-capabilities/capabilities-index.md`
+  - `../15-operating-model/goals-and-objectives.md`
+  - `../20-behavior/behavior-index.md`
+  - `../30-tests/test-index.md`
+  - `../40-auth-security/identity-and-trust.md`
+  - `../55-ui/ui-index.md`
+  - `../60-generation/realization-scope.md`

@@ -16,6 +16,18 @@ Keep this example focused on the existing purchase request workflow unless a lat
 
 Do **not** force-fit this example into a full AI-first SaaS operating model. It lacks durable delegated goals, bounded agent/team execution, governed policy learning, decision-card evidence, work traces, and outcome loops by design.
 
+### `ai-first-saas-seed-app-description/`
+
+Status: **new runnable-seed app-description reference**.
+
+This example defines the generic AI-first SaaS seed/reference app before implementation. It is intended to become the canonical runnable Akka Java + React/Vite/TypeScript base app for secure multi-tenant SaaS foundations, frontend/backend integration patterns, and coherent Akka component coverage.
+
+Use it when the task is about:
+- bootstrapping a generated AI-first SaaS app;
+- defining shared human-user access, tenant, membership, role, and permission foundations;
+- mapping a reusable AI-first operating model to implementation phases;
+- planning the runnable seed app that future skills and examples can reference.
+
 ### `ai-first-dca-app-description/`
 
 Status: **completed non-runnable AI-first app-description reference**.
@@ -71,7 +83,7 @@ The DCA reference now demonstrates:
 
 ## Remaining gaps
 
-Remaining gaps are executable reference implementation and test gaps, not app-description scaffold gaps. Track them in `../ai-first-examples-and-tests-gap-list.md`.
+Remaining gaps are executable reference implementation and test gaps, not app-description scaffold gaps. The new `ai-first-saas-seed-app-description/` tree is the planning/reference description for closing the runnable seed-app gap. Track broader executable gaps in `../ai-first-examples-and-tests-gap-list.md`.
 
 ## Non-goals for this note
 

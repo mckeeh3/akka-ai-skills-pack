@@ -1,0 +1,22 @@
+# Capability: Frontend Shell and Integration Patterns
+
+- capability-id: frontend-shell-integration-patterns
+- purpose:
+  - provide a functional SaaS UI shell and reference frontend/backend integration patterns
+- in scope:
+  - authenticated app layout
+  - tenant switcher
+  - navigation and user menu
+  - dashboard/mission control
+  - goal workbench
+  - decision queue and decision card detail
+  - governance center
+  - audit trace explorer
+  - admin user/role screens
+  - typed API client, validation errors, loading/empty/error states, and realtime updates
+- out of scope:
+  - a bespoke design system beyond seed-app primitives
+- UI links:
+  - `../55-ui/ui-index.md`
+  - `../55-ui/screens-and-navigation.md`
+  - `../55-ui/frontend-api-contracts.md`

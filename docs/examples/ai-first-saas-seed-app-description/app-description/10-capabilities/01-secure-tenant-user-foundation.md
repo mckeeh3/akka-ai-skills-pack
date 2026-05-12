@@ -1,0 +1,28 @@
+# Capability: Secure Tenant and User Foundation
+
+- capability-id: secure-tenant-user-foundation
+- purpose:
+  - provide the required SaaS foundation for human user access, tenant/customer isolation, memberships, roles, and permissions
+- in scope:
+  - customers/tenants/workspaces
+  - users and user profiles
+  - tenant memberships
+  - invitations and activation
+  - role assignment and permission checks
+  - tenant switching for users with multiple memberships
+  - tenant-scoped settings
+- out of scope:
+  - billing/subscription management in v1
+  - enterprise identity-provider configuration UI in v1
+- primary actors:
+  - platform admin
+  - tenant admin
+  - tenant member
+  - invited user
+- behavior links:
+  - `../20-behavior/state-models/01-tenant-user-access-model.md`
+  - `../20-behavior/flows/01-onboarding-and-access-flow.md`
+  - `../20-behavior/rules/01-tenant-authz-rules.md`
+- security links:
+  - `../40-auth-security/identity-and-trust.md`
+  - `../40-auth-security/authorization-rules.md`

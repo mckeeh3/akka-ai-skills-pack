@@ -1,0 +1,22 @@
+# Rules: Akka Component Mapping
+
+- Event Sourced Entities:
+  - tenant lifecycle when audit-grade history is required
+  - goals, decisions, policies, and trace records
+- Key Value Entities:
+  - user profiles, tenant settings, UI preferences, current lightweight configuration
+- Workflows:
+  - onboarding/invitation acceptance when multi-step
+  - goal execution, approval gates, pause/resume, retry, compensation
+- Views:
+  - mission control, approval queue, user/member lists, audit search, governance lists
+- Consumers:
+  - trace enrichment, notifications, projection reactions, digest item creation
+- Timed Actions:
+  - invitation expiry, approval reminders, periodic digests, stale-goal checks
+- HTTP Endpoints:
+  - browser APIs and static frontend hosting
+- SSE/WebSocket:
+  - mission-control updates, decision queue changes, long-running goal progress
+- Agents:
+  - planning, summarization, classification, evaluation, recommendation, explanation

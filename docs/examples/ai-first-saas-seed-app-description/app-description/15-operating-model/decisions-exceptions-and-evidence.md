@@ -1,0 +1,25 @@
+# Decisions, Exceptions, and Evidence
+
+- decision card types:
+  - recommendation approval
+  - exception resolution
+  - deviation review
+  - policy change proposal
+- required decision-card content:
+  - recommendation or requested action
+  - evidence items
+  - confidence score
+  - risk score
+  - impact estimate
+  - policy triggers
+  - alternatives considered
+  - allowed actions: approve, reject, request changes, escalate, convert to policy proposal
+- exception triggers:
+  - missing data
+  - authority boundary reached
+  - policy conflict
+  - low confidence
+  - failed tool invocation
+  - human correction required
+- decision persistence:
+  - every consequential decision has durable state and an audit/decision trace
