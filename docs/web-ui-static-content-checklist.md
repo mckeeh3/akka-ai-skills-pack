@@ -41,7 +41,7 @@ Goal: keep the existing static-content example as the narrow canonical file-serv
 
 ### Update first
 
-- [ ] `skills/akka-http-endpoint-static-content/SKILL.md`
+- [ ] the removed dedicated static-content skill
 - [ ] `src/main/java/com/example/api/StaticContentEndpoint.java`
 - [ ] `src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
 
@@ -82,7 +82,7 @@ Goal: provide one entry point for all Akka-served web UI patterns.
 
 ### Update after creation
 
-- [ ] `skills/akka-http-endpoint-static-content/SKILL.md`
+- [ ] the removed dedicated static-content skill
 - [ ] `docs/web-ui-pattern-selection.md`
 
 ### Tasks

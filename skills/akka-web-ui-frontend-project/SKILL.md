@@ -33,7 +33,7 @@ Reference example document:
 - Akka should serve `index.html` and built `/assets/**` files
 - backend APIs should be called through same-origin `/api/...` routes
 
-For interactive web app work, prefer this full frontend project path. Use `akka-http-endpoint-static-content` only for non-app static assets or documentation pages.
+For interactive web app work, prefer this full frontend project path. Keep Akka static-resource guidance focused on generated frontend build output, not hand-authored static pages.
 
 ## Integration contract
 

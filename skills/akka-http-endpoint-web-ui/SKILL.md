@@ -44,15 +44,6 @@ Read these first if present:
 
 ## Pattern selection
 
-### Static content only
-Use:
-- `akka-http-endpoint-static-content`
-
-Read first:
-- `../../../src/main/java/com/example/api/StaticContentEndpoint.java`
-
-Use this when the task is mainly packaged HTML, CSS, OpenAPI, or file-serving.
-
 ### Complete frontend app
 Use first:
 - `akka-web-ui-apps`
@@ -127,8 +118,6 @@ Keep those route families separate so a future agent can infer intent from the p
   - packaged page consuming SSE
 - `WebUiWebSocketPageEndpoint` + `PingWebSocketEndpoint`
   - packaged page consuming a WebSocket
-- `StaticContentEndpoint`
-  - packaged files and OpenAPI publishing without interactive browser logic
 
 ## Testing rule
 
@@ -142,7 +131,7 @@ Add route-level assertions for:
 ## Anti-patterns
 
 Avoid:
-- starting with the static-content skill when the main task is an interactive browser page
+- treating browser UI work as hand-authored static page/file-serving work
 - mixing UI routes and API routes under one ambiguous path family
 - treating generated frontend build output as source code
 - hiding the frontend source path or the served JavaScript/CSS path

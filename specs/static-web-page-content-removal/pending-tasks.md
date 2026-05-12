@@ -14,7 +14,7 @@
 
 ### TASK-SWPR-01-001: Remove static-content skill exposure
 
-- status: pending
+- status: done
 - source: specs/static-web-page-content-removal/backlog/01-remove-static-web-page-guidance-build-backlog.md
 - task brief: specs/static-web-page-content-removal/tasks/01-remove-static-web-page-guidance/01-remove-static-content-skill-exposure.md
 - depends on: []
@@ -45,6 +45,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Remove static content skill exposure`
+  - completed: removed the dedicated static-content skill exposure from manifest, routing, and current references.
 
 ### TASK-SWPR-01-002: Revise web UI routing away from static page patterns
 

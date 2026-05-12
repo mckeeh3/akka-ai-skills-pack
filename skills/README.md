@@ -318,7 +318,7 @@ This skill routes to:
 - `akka-views` for list/search/reporting read models
 - `akka-consumers` for async reactions, integrations, and republishing
 - `akka-timed-actions` for deadlines, reminders, and expiry
-- `akka-http-endpoints` for REST, SSE, WebSocket, static content, and browser-hosted UI
+- `akka-http-endpoints` for REST, SSE, WebSocket, and browser-hosted UI
 - `akka-web-ui-apps` for fully capable frontend apps hosted by Akka HTTP endpoints, including standard frontend projects
 - `akka-grpc-endpoints` for protobuf-first service APIs
 - `akka-mcp-endpoints` for LLM-facing tools, resources, and prompts
@@ -617,10 +617,6 @@ Use when the endpoint depends on query params, headers, principals, or other req
 ### Web UI endpoints
 Use when the service should host a packaged browser UI, especially with co-hosted JSON APIs, SSE pages, or WebSocket pages.
 - `akka-http-endpoint-web-ui`
-
-### Static content endpoints
-Use when the endpoint serves packaged HTML, CSS, OpenAPI files, or other assets without broader interactive browser behavior.
-- `akka-http-endpoint-static-content`
 
 ### Low-level HTTP endpoints
 Use when the endpoint needs `HttpResponse`, `HttpEntity.Strict`, or other lower-level HTTP model APIs.
@@ -932,7 +928,6 @@ Then add one or more focused frontend companions as needed:
 
 Then add one or more Akka HTTP companions as needed:
 - `akka-http-endpoint-component-client`
-- `akka-http-endpoint-static-content`
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
 - `akka-http-endpoint-jwt` only when security is in scope
@@ -945,12 +940,6 @@ Load:
 - `akka-http-endpoint-testing`
 
 Use this narrower path only when the UI is mainly a packaged page/asset delivery pattern, not a complete frontend app.
-
-### New HTTP endpoint serving static content
-Load:
-- `akka-http-endpoints`
-- `akka-http-endpoint-static-content`
-- `akka-http-endpoint-testing`
 
 ### New low-level HTTP endpoint
 Load:
@@ -1260,7 +1249,6 @@ Testing examples:
 ### HTTP endpoints
 Core endpoint examples:
 - `../src/main/java/com/example/api/GreetingEndpoint.java`
-- `../src/main/java/com/example/api/StaticContentEndpoint.java`
 - `../src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../src/main/java/com/example/api/WebUiDataEndpoint.java`
 - `../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
@@ -1282,7 +1270,6 @@ Core endpoint examples:
 
 Testing examples:
 - `../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
 - `../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`

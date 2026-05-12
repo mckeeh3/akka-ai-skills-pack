@@ -1,6 +1,6 @@
 ---
 name: akka-http-endpoints
-description: Orchestrate Akka Java SDK HTTP endpoint work across request mapping, component calls, request context, static content, and integration testing. Use when the task spans more than one HTTP endpoint concern.
+description: Orchestrate Akka Java SDK HTTP endpoint work across request mapping, component calls, request context, browser UI hosting, streaming, and integration testing. Use when the task spans more than one HTTP endpoint concern.
 ---
 
 # Akka HTTP Endpoints
@@ -40,7 +40,7 @@ Read these first if present:
 
 In this repository, prefer these examples:
 - `../../../src/main/java/com/example/api/GreetingEndpoint.java`
-- `../../../src/main/java/com/example/api/StaticContentEndpoint.java`
+- `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../../../src/main/java/com/example/api/LowLevelHttpEndpoint.java`
 - `../../../src/main/java/com/example/api/ProxyGreetingEndpoint.java`
 - `../../../src/main/java/com/example/api/PingWebSocketEndpoint.java`
@@ -54,7 +54,7 @@ In this repository, prefer these examples:
 - `../../../src/main/java/com/example/api/OrderEndpoint.java`
 - `../../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
 - `../../../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
+- `../../../src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
@@ -75,8 +75,6 @@ Load the companion skill that matches the current task:
   - endpoints that call entities, views, agents, workflows, or other components through `ComponentClient`
 - `akka-http-endpoint-request-context`
   - endpoints extending `AbstractHttpEndpoint` to read query params, headers, or other request metadata
-- `akka-http-endpoint-static-content`
-  - endpoints serving packaged HTML, CSS, JavaScript, OpenAPI files, or other static resources
 - `akka-http-endpoint-low-level`
   - low-level responses, `HttpEntity.Strict`, and advanced request/response handling
 - `akka-http-endpoint-http-client-provider`
@@ -135,9 +133,8 @@ Choose one of these modes before coding:
 ### 1. Pure edge mapping endpoint
 Use when the endpoint mainly maps HTTP requests to API responses and does not need component calls.
 
-Repository examples:
+Repository example:
 - `GreetingEndpoint`
-- `StaticContentEndpoint`
 
 ### 2. Component-calling endpoint
 Use when the endpoint translates HTTP requests into entity or view calls and maps replies into API types.
@@ -155,25 +152,19 @@ Repository examples:
 - `GreetingEndpoint`
 - `RequestHeadersEndpoint`
 
-### 4. Static content endpoint
-Use when the endpoint serves packaged HTML, CSS, static subtrees, OpenAPI files, or small self-contained UI assets.
-
-Repository example:
-- `StaticContentEndpoint`
-
-### 5. Low-level HTTP endpoint
+### 4. Low-level HTTP endpoint
 Use when the endpoint needs `HttpResponse`, `HttpEntity.Strict`, or other lower-level HTTP model control.
 
 Repository example:
 - `LowLevelHttpEndpoint`
 
-### 6. HTTP client provider endpoint
+### 5. HTTP client provider endpoint
 Use when the endpoint delegates to another HTTP service through `HttpClientProvider`.
 
 Repository example:
 - `ProxyGreetingEndpoint`
 
-### 7. SSE endpoint
+### 6. SSE endpoint
 Use when the endpoint must stream a sequence of updates and optionally resume from the last seen event id.
 
 Repository examples:
@@ -182,19 +173,19 @@ Repository examples:
 - `ShoppingCartEndpoint#notifications`
 - `DraftCartEndpoint#notifications`
 
-### 8. WebSocket endpoint
+### 7. WebSocket endpoint
 Use when the endpoint must support bidirectional streaming over a socket.
 
 Repository example:
 - `PingWebSocketEndpoint`
 
-### 9. JWT-secured endpoint
+### 8. JWT-secured endpoint
 Use when the endpoint requires bearer token validation and claim-aware behavior.
 
 Repository example:
 - `SecureGreetingEndpoint`
 
-### 10. Internal-only ACL endpoint
+### 9. Internal-only ACL endpoint
 Use when the endpoint should be callable only by other services or needs class-level ACL defaults with method-level overrides.
 
 Repository example:

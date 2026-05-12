@@ -19,7 +19,7 @@ Akka applications often need more than JSON endpoints. A common real-world shape
 - packaged docs or OpenAPI assets
 
 Right now the repository has a useful starting point:
-- `skills/akka-http-endpoint-static-content/SKILL.md`
+- the removed dedicated static-content skill
 - `src/main/java/com/example/api/StaticContentEndpoint.java`
 - `src/test/java/com/example/application/StaticContentEndpointIntegrationTest.java`
 
@@ -135,7 +135,7 @@ Route agents to the right pattern among:
 
 ### Existing file
 
-- `skills/akka-http-endpoint-static-content/SKILL.md`
+- the removed dedicated static-content skill
 
 ### Updates
 
@@ -347,7 +347,7 @@ Document and minimally demonstrate the boundary between a public UI shell and no
 ## Required docs/skill updates
 
 1. Create `skills/akka-http-endpoint-web-ui/SKILL.md`
-2. Update `skills/akka-http-endpoint-static-content/SKILL.md`
+2. Update the removed dedicated static-content skill
 3. Add `docs/web-ui-pattern-selection.md`
 4. Add minimal TypeScript tool files if this wave includes compiled interactive examples:
    - `package.json`

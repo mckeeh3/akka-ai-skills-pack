@@ -77,7 +77,6 @@ Start with:
 
 Then load the focused companion skill you need:
 
-- `skills/akka-http-endpoint-static-content/SKILL.md`
 - `skills/akka-http-endpoint-sse/SKILL.md`
 - `skills/akka-http-endpoint-websocket/SKILL.md`
 - `skills/akka-http-endpoint-jwt/SKILL.md` only when security is in scope

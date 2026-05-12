@@ -246,9 +246,6 @@ content:
     - id: akka-http-endpoint-sse
       path: skills/akka-http-endpoint-sse
       category: focused
-    - id: akka-http-endpoint-static-content
-      path: skills/akka-http-endpoint-static-content
-      category: focused
     - id: akka-http-endpoint-testing
       path: skills/akka-http-endpoint-testing
       category: testing
@@ -519,7 +516,6 @@ bundles:
       - akka-http-endpoint-low-level
       - akka-http-endpoint-request-context
       - akka-http-endpoint-sse
-      - akka-http-endpoint-static-content
       - akka-http-endpoint-testing
       - akka-http-endpoint-web-ui
       - akka-http-endpoint-websocket

@@ -434,7 +434,6 @@ Then add only what is needed:
 - `akka-http-endpoint-component-client`
 - `akka-http-endpoint-request-context`
 - `akka-http-endpoint-web-ui`
-- `akka-http-endpoint-static-content`
 - `akka-http-endpoint-low-level`
 - `akka-http-endpoint-http-client-provider`
 - `akka-http-endpoint-sse`

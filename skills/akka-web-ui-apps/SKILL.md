@@ -52,7 +52,7 @@ Canonical frontend project integration reference:
 - the frontend should be excellent and use a standard frontend framework/build tool
 - browser code should live in a dedicated frontend project when the UI is a real app
 
-Do not use this as the main skill for a single static page or OpenAPI file; use `akka-http-endpoint-static-content` instead.
+Do not use this as the main skill for OpenAPI publication or simple file-serving concerns; use HTTP endpoint guidance and official Akka docs instead.
 
 ## Planning output before coding
 
