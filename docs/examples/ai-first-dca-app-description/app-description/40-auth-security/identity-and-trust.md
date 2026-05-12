@@ -33,7 +33,10 @@ Local account state should include:
 - link a matching invited local account idempotently;
 - activate the local account when policy allows;
 - reject disabled accounts even when the JWT is valid;
-- return only browser-safe profile, role, status, and scope data.
+- reject or return an explicit not-invited state for unknown identities when self-registration is disabled;
+- return only browser-safe profile, role, status, scope, and UI capability-hint data.
+
+Local account linking is idempotent: repeated `/api/me` calls with the same WorkOS subject/email must not duplicate users, widen scopes, or overwrite administrator-managed roles.
 
 ## Startup admin bootstrap
 
@@ -52,6 +55,10 @@ Rules:
 - Backend endpoints must re-check local account status, roles, and scopes for every protected operation.
 - JWT role claims are not the mutable application authorization source unless a future product decision explicitly changes this.
 - AI agents, workflows, and tools do not inherit broad user authority implicitly; their effective permissions must be represented and audited.
+
+## Audit and readiness implications
+
+Identity and trust implementation must emit admin/security audit facts for bootstrap-created admins, invited users, first-login linking, activation, disable/enable, role or scope changes, and rejected privileged actions. These facts feed `../50-observability/audit-trace-and-outcomes.md` and make the seed slice testable without relying on application logs alone.
 
 ## PoC source guidance
 

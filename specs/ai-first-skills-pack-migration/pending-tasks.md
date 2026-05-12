@@ -1437,7 +1437,7 @@
 
 ### TASK-10-001: Update DCA auth/security app-description
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/01-update-dca-auth-security-description.md
 - depends on: [TASK-09-006]
@@ -1466,6 +1466,10 @@
 - done criteria:
   - DCA seed app auth/security meaning is concrete enough for implementation
   - git commit created for this task
+- notes:
+  - completed: tightened DCA auth/security app-description semantics for WorkOS/local account linking, backend authorization matrix, admin/security audit facts, agent/tool authority boundaries, frontend/backend secret separation, and linked UI/observability/generation/test layers
+  - checks: `rg` verification that auth/security files explicitly reject frontend navigation/UI state as authorization, forbid backend secrets in frontend env/build assets, and require mechanical agent/tool enforcement plus audit traces
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Update DCA auth security app description`
 
 ### TASK-10-002: Implement local account, tenant, customer, role, and audit domain
 

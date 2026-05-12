@@ -36,6 +36,7 @@ Rules:
 - List/query endpoints must filter by tenant/customer scope server-side.
 - Mutation endpoints must validate target scope and allowed role transitions server-side.
 - Admin, policy, and high-impact AI-first decisions must write audit/work/decision trace facts.
+- Frontend UI state, cached `/api/me` responses, and hidden buttons must never be treated as proof of authority by backend handlers.
 
 ## Integration boundaries
 

@@ -18,6 +18,8 @@ The DCA seed app should treat these categories as sensitive:
 - `WORKOS_API_KEY`, email API keys, bootstrap admin configuration, service credentials, and signing secrets are backend-only.
 - Do not copy `frontend/.env.local` into static resources or repository examples.
 - Built frontend assets must not contain backend secrets.
+- Frontend examples may include public WorkOS client id and redirect URI placeholders only.
+- Seed security acceptance tests should scan frontend env examples and generated assets for forbidden backend-secret names or sample secret values.
 
 ## Response and log minimization
 

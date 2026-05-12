@@ -20,6 +20,7 @@ Implementation should record an effective principal for material agent activity:
 - Sensitive reads must create data-access trace facts.
 - Write/external-impact tools require a structured proposal, policy evaluation, and workflow gate before execution.
 - High-risk actions such as spending, changing permissions, deleting data, activating policy changes, or expanding agent authority require human approval unless a future policy explicitly defines a narrow autonomous boundary.
+- Denied or escalated tool/action proposals should emit work/decision trace facts with policy clause ids and reason categories.
 
 ## Action-boundary judge pattern
 
@@ -38,6 +39,7 @@ The proposal should include intended action, target resource, evidence, policy b
 - Workflows and policy gates decide auto-ship, approval-required, suppression, or escalation paths.
 - Human reviewers approve high-cost, abnormal, ambiguous, offboarding, unmapped-contract, or policy-bound shipments.
 - Agent recommendations must not bypass `SupplyAutopilotWorkflow` or `SupplyDecisionEntity` authority gates.
+- Agent/tool permissions must be enforceable outside prompts and visible in audit traces.
 
 ## Governed policy and prompt changes
 
