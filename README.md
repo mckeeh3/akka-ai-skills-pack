@@ -339,6 +339,7 @@ Use:
 
 - JDK 21
 - Maven 3.x
+- Node.js and npm for frontend/static web UI example builds
 - bash
 - python3
 - standard archive tools such as `tar` and `gzip`
@@ -379,9 +380,14 @@ When adding or revising skills, optimize for:
 4. consistency with repo conventions
 5. human readability
 
-### Executable reference examples
+### Executable reference examples and seed app
 
-The `src/` tree is the executable example layer:
+The `src/` tree has two purposes:
+
+1. provide concrete code examples that specific skills can reference when guiding downstream Akka application work
+2. provide a runnable Akka Java SDK seed app that skill-pack developers can compile, run, and test while maintaining this repository
+
+The executable seed app is still reference material for the pack, not this repository's business product.
 
 ```text
 src/main/java/com/example/domain        # pure domain logic and immutable models
@@ -403,33 +409,117 @@ Examples and tests should demonstrate reusable patterns for the installed pack, 
 - Event Sourced Entity and Key Value Entity design
 - deterministic testing patterns for each component family
 
-### Validate the example project
+### Build, run, and test the seed app
 
-Compile:
+Use these commands from the repository root when maintaining the executable Akka Java SDK seed app under `src/`.
+
+Compile the seed app:
 
 ```bash
 mvn compile
 ```
 
-Run tests:
+Run the test suite:
 
 ```bash
 mvn test
 ```
 
-Start locally:
+Run the full Maven verification used by release checks:
 
 ```bash
-mvn compile exec:java
+mvn verify
 ```
 
-Build the Maven artifact:
+Configure local environment variables before starting the seed app. The repository provides a root template:
+
+```bash
+cp .env.example .env
+# edit .env and provide local values
+set -a
+source .env
+set +a
+```
+
+Do not commit `.env`; it is ignored by git. Backend secrets belong in the root `.env`, shell environment, deployment secret store, or another backend-only mechanism. Do not put backend secrets in `frontend/.env.local` or built static assets.
+
+Important variables in `.env.example` include:
+
+- `ADMIN_USERS` — comma-separated `email:ROLE:scope` entries for backend admin bootstrap
+- `OPENAI_API_KEY` — required only for examples that call OpenAI-backed Akka agents
+- `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL` — WorkOS server-side settings from the auth PoC
+- `APP_BASE_URL` — local app URL used by invite/account flows, normally `http://localhost:9000`
+- `RESEND_API_KEY`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT` — optional invite-email settings from the auth PoC
+- `VITE_WORKOS_CLIENT_ID`, `VITE_WORKOS_REDIRECT_URI` — public browser build-time WorkOS/AuthKit settings
+
+`ADMIN_USERS` supported scope forms are:
+
+```text
+APP_ADMIN:ALL
+TENANT_ADMIN:<tenant-id>
+CUSTOMER_ADMIN:<tenant-id>/<customer-id>
+USER:<tenant-id>/<customer-id>
+```
+
+Only `VITE_` variables are public and may be embedded into the frontend bundle. The current seed app uses the implemented variables for the corresponding implemented slices; keep the full PoC-compatible list documented so future auth/email slices preserve the same secret boundary.
+
+The seed app includes topic-producing and topic-consuming examples. Local Akka broker support is disabled by default, so start a local Kafka broker on `localhost:9092` before running the app, or use another Akka-supported local broker configuration.
+
+One Docker-based local Kafka option is the official Apache Kafka image:
+
+```bash
+docker run --rm --name akka-seed-kafka \
+  -p 9092:9092 \
+  apache/kafka:3.9.1
+```
+
+On first use Docker prints a message such as `Unable to find image ... locally` and then pulls the image. If the pull fails, authenticate/configure Docker or use any other local Kafka distribution that listens on `localhost:9092`.
+
+Start the seed app locally after exporting the needed backend variables and enabling local Kafka eventing support:
+
+```bash
+mvn compile exec:java -Dakka.javasdk.dev-mode.eventing.support=kafka
+```
+
+If you do not need to exercise broker-backed examples, you still need some valid dev-mode eventing support because the seed app declares topic components. Without it, startup fails with an error such as `has declared a message destination topic ..., but no topic support is configured`.
+
+Build and install the local Maven artifact:
 
 ```bash
 mvn clean install
 ```
 
-The Maven build validates the executable example service. The installable resource-pack distribution is built separately.
+Build/check the TypeScript web UI reference files under `src/main/web-ui`:
+
+```bash
+npm install
+npm run check:web-ui
+npm run build:web-ui
+```
+
+Build and test the Vite/React frontend seed shell under `frontend/`. If you already loaded the root `.env`, Vite receives the public `VITE_` variables from the shell:
+
+```bash
+cd frontend
+npm install
+npm test
+npm run build
+```
+
+Alternatively, create `frontend/.env.local` from `frontend/.env.example` and set only the public WorkOS/AuthKit browser values there:
+
+```bash
+cd frontend
+cp .env.example .env.local
+# edit .env.local; do not add backend secrets
+npm run build
+```
+
+Only `VITE_` variables are embedded in the frontend bundle. Never add backend secrets such as `WORKOS_API_KEY`, `RESEND_API_KEY`, `ADMIN_USERS`, `OPENAI_API_KEY`, invite sender settings, JWT key material, or service credentials to `frontend/.env.local`.
+
+`frontend/npm run build` writes browser assets into `src/main/resources/static-resources` so the Akka seed app can serve them. If the browser shows `Configuration needed / WorkOS AuthKit client ID is missing`, set `VITE_WORKOS_CLIENT_ID` in the loaded root `.env` or in `frontend/.env.local`, rerun `npm run build`, then restart or refresh the Akka-hosted app so it serves the rebuilt assets. After building the frontend, run the seed app with `mvn compile exec:java -Dakka.javasdk.dev-mode.eventing.support=kafka` and access the web content through the Akka-hosted HTTP endpoints.
+
+The Maven commands validate the executable seed app and its reference patterns. The npm commands validate and build the frontend reference assets that are hosted by the Akka app. The installable skills-pack distribution is built separately with `tools/build-pack.sh` or `tools/release.sh`.
 
 ### Distribution model
 

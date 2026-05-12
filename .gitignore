@@ -29,6 +29,10 @@ frontend/node_modules/
 # Generated bundles
 dist/
 
+# Local environment/secrets
+.env
+.env.local
+
 #local db
 db.mv.db
 
