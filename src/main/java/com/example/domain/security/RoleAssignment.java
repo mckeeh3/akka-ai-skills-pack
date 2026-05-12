@@ -14,9 +14,7 @@ public record RoleAssignment(SecurityRole role, String tenantId, String customer
             && (role == SecurityRole.DEALER_OWNER
                 || role == SecurityRole.OPERATIONS_SUPERVISOR
                 || role == SecurityRole.POLICY_OWNER
-                || role == SecurityRole.AUDITOR
-                || role == SecurityRole.CUSTOMER_ADMIN
-                || role == SecurityRole.USER));
+                || role == SecurityRole.AUDITOR));
   }
 
   public boolean grantsCustomer(String requestedTenantId, String requestedCustomerId) {

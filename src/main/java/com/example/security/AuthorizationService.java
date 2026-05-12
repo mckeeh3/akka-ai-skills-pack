@@ -6,6 +6,7 @@ import com.example.application.security.AdminAuditEntryEntity;
 import com.example.application.security.LocalAccountEntity;
 import com.example.domain.security.AdminAuditEntry;
 import com.example.domain.security.LocalAccount;
+import com.example.domain.security.RoleAssignment;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -92,6 +93,44 @@ public class AuthorizationService {
     }
   }
 
+  public boolean canViewAccount(AuthContext auth, LocalAccount.State target) {
+    requireActive(auth);
+    if (target == null || !target.exists()) {
+      return false;
+    }
+    if (auth.actorUserId().equals(target.userId()) || auth.actor().isAppAdmin()) {
+      return true;
+    }
+    return target.roles().stream()
+        .anyMatch(
+            role ->
+                role.customerId() == null
+                    ? auth.actor().canAccessTenant(role.tenantId())
+                    : auth.actor().canAccessCustomer(role.tenantId(), role.customerId()));
+  }
+
+  public void requireCanManageAccountRoles(AuthContext auth, java.util.List<RoleAssignment> roles) {
+    requireActive(auth);
+    if (auth.actor().isAppAdmin()) {
+      return;
+    }
+    if (roles == null || roles.isEmpty()) {
+      throw forbidden("At least one scoped role is required");
+    }
+    for (var role : roles) {
+      if (role == null || role.role() == null || role.role().name().equals("APP_ADMIN")) {
+        throw forbidden("APP_ADMIN role is required for platform administration");
+      }
+      if (role.customerId() == null || role.customerId().isBlank()) {
+        if (!auth.actor().canAccessTenant(role.tenantId())) {
+          throw forbidden("Tenant scope is required for role management");
+        }
+      } else if (!auth.actor().canAccessCustomer(role.tenantId(), role.customerId())) {
+        throw forbidden("Customer scope is required for role management");
+      }
+    }
+  }
+
   public LocalAccount.State getAccount(String userId) {
     if (userId == null || userId.isBlank()) {
       throw unauthorized("Local user id is required");
@@ -116,7 +155,7 @@ public class AuthorizationService {
     }
   }
 
-  public void audit(
+  public AdminAuditEntry audit(
       AdminAuditEntry.AdminAuditAction action,
       String actorUserId,
       String targetUserId,
@@ -135,5 +174,6 @@ public class AuthorizationService {
             Instant.now(),
             details == null ? Map.of() : details);
     componentClient.forKeyValueEntity(auditId).method(AdminAuditEntryEntity::create).invoke(entry);
+    return entry;
   }
 }

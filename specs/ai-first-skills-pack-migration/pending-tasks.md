@@ -1543,7 +1543,7 @@
 
 ### TASK-10-004: Implement admin APIs and bootstrap lifecycle
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/04-admin-apis-and-bootstrap.md
 - depends on: [TASK-10-003]
@@ -1571,6 +1571,10 @@
 - done criteria:
   - seed app administrators can manage local accounts and scopes with auditable backend enforcement
   - git commit created for this task
+- notes:
+  - completed: added JWT-protected admin user, tenant, and customer APIs; idempotent backend-only admin bootstrap from `ADMIN_USERS`; centralized scoped role-management checks; audit IDs on privileged operations; and focused integration tests for app admin, scoped admin, privilege-escalation denial, cross-scope denial, disabled-user denial, missing JWT rejection, bootstrap idempotency, and audit creation
+  - checks: `mvn -q -Dtest=com.example.application.security.AdminEndpointsIntegrationTest test`; `mvn -q -Dtest='com.example.application.security.*Test' test`; `mvn -q -DskipTests compile`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement DCA seed admin APIs`
 
 ### TASK-10-005: Implement authenticated React/Vite shell and Akka hosting
 
