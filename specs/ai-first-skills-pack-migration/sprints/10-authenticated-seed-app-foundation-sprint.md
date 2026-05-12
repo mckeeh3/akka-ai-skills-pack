@@ -6,6 +6,8 @@ Turn the working `examples/poc-user-auth-onboarding/` proof-of-concept into an i
 
 This sprint is planning for a future implementation increment. It should not copy the PoC blindly; it should adapt its proven WorkOS/AuthKit, JWT, local user administration, role/scope authorization, audit, and React/Vite hosting patterns to the AI-first DCA seed app described under `docs/examples/ai-first-dca-app-description/`.
 
+Execution rule: each Sprint 10 task must make one git commit before being marked `done`; that commit must include only the task's intended changes and its queue-status update.
+
 ## Source references
 
 - `examples/poc-user-auth-onboarding/README.md`

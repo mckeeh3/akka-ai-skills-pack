@@ -6,6 +6,8 @@ Use the working `examples/poc-user-auth-onboarding/` proof-of-concept to plan an
 
 The goal is not to add a generic security sample. The goal is to make the DCA seed app implementable with clear identity, authorization, admin, audit, and frontend hosting boundaries before more AI-first operational slices are added.
 
+Execution rule: each task in this backlog must make one git commit before being marked `done`; that commit must include only the task's intended changes and its `pending-tasks.md` queue-status update.
+
 ## PoC guidance to incorporate
 
 - WorkOS/AuthKit authenticates browser users.
