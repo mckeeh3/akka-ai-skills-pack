@@ -1621,7 +1621,7 @@
 
 ### TASK-10-006: Add seed security acceptance tests and PoC alignment notes
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/06-seed-security-acceptance-tests.md
 - depends on: [TASK-10-005]
@@ -1648,3 +1648,8 @@
 - done criteria:
   - seed foundation is verified as a reusable authenticated base for future DCA slices
   - git commit created for this task
+- notes:
+  - completed: added cross-cutting DCA seed security acceptance coverage for admin bootstrap idempotency, invite/link/activate, missing-JWT rejection, tenant/customer setup, privileged audit entries, role/scope denial, privilege-escalation denial, disabled-user rejection, static frontend hosting, bearer-token frontend API behavior, UX-only navigation copy, and frontend secret boundaries
+  - added: PoC alignment and caveat note at `specs/ai-first-skills-pack-migration/dca-seed-security-poc-alignment.md`
+  - checks: `mvn -q -Dtest=com.example.application.security.DcaSeedSecurityAcceptanceIntegrationTest test`; `cd frontend && npm test && npm run build`; `mvn -q -DskipTests compile`; `rg -n "WORKOS_API_KEY|RESEND_API_KEY|INVITE_EMAIL_FROM|sk_test_|sk_live_|re_x|ADMIN_USERS=" frontend src/main/resources/static-resources specs/ai-first-skills-pack-migration/dca-seed-security-poc-alignment.md || true`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Add DCA seed security acceptance coverage`
