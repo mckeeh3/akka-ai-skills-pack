@@ -126,7 +126,7 @@
 
 ### TASK-SWPR-01-004: Revise or remove static-web-page docs
 
-- status: pending
+- status: done
 - source: specs/static-web-page-content-removal/backlog/01-remove-static-web-page-guidance-build-backlog.md
 - task brief: specs/static-web-page-content-removal/tasks/01-remove-static-web-page-guidance/04-revise-static-page-docs.md
 - depends on: [TASK-SWPR-01-003]
@@ -160,6 +160,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Remove static page documentation guidance`
+  - completed: removed obsolete static web page planning/checklist docs and revised retained docs/skill wording toward React/Vite/TypeScript frontend app delivery and generated build-output hosting.
 
 ### TASK-SWPR-01-005: Final static page removal validation
 

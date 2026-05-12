@@ -52,7 +52,7 @@ Canonical frontend project integration reference:
 - the frontend should be excellent and use a standard frontend framework/build tool
 - browser code should live in a dedicated frontend project when the UI is a real app
 
-Do not use this as the main skill for OpenAPI publication or raw asset-delivery concerns; keep browser UI work on the React/Vite/TypeScript frontend project path.
+Do not use this as the main skill for generated API documentation assets or raw asset-delivery concerns; keep browser UI work on the React/Vite/TypeScript frontend project path.
 
 ## Planning output before coding
 

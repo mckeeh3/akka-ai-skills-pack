@@ -1,6 +1,6 @@
-# Next steps after the web UI/static content family
+# Next steps after the web UI app delivery family
 
-Purpose: define what this repository should cover next, after the web UI/static content work is complete.
+Purpose: define what this repository should cover next, after the React/Vite/TypeScript web UI app delivery work is complete.
 
 ## Working decision
 
@@ -54,7 +54,7 @@ Every new SDLC topic should satisfy most of these:
 
 ### Why next
 
-After web UI/static content, the most valuable gap is the path from isolated components to a correctly wired Akka service.
+After web UI app delivery, the most valuable gap is the path from isolated components to a correctly wired Akka service.
 
 Agents often generate valid entities, workflows, and endpoints, but make mistakes in:
 - `ServiceSetup`
@@ -237,7 +237,7 @@ This is a high-value cross-cutting layer: helping agents choose the right Akka b
 
 ## Proposed sequence
 
-1. Finish `web-ui asset-serving` family
+1. Finish the React/Vite/TypeScript web UI app delivery family
 2. Service setup, bootstrap, and configuration
 3. Security and boundary patterns
 4. Observability and runtime inspection

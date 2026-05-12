@@ -10,7 +10,7 @@ At the backend core is the **Akka SDK**, using Akka components as peer building 
 - **Workflows** for long-running business processes, orchestration, compensation, pause/resume flows, approvals, retries, and multi-step automation.
 - **Consumers** for reacting to entity, workflow, service stream, or topic events.
 - **Timed Actions and timers** for scheduled work, reminders, expirations, retry loops, and deadline-driven processes.
-- **HTTP endpoints** for browser and API clients, including JSON APIs, streaming, SSE, WebSocket, static content, and web UI delivery.
+- **HTTP endpoints** for browser and API clients, including JSON APIs, streaming, SSE, WebSocket, and React/Vite/TypeScript web UI delivery.
 - **gRPC endpoints** where typed service contracts or internal service-to-service APIs are needed.
 - **MCP endpoints** where the application exposes tools, resources, or prompts to AI clients.
 
@@ -43,7 +43,7 @@ The frontend stack is **React + Vite + TypeScript**, integrated as part of the s
 - real-time UI updates through SSE/WebSocket/streaming endpoints,
 - accessibility and responsive design,
 - UX flows derived from the same app description used for backend generation,
-- Akka-hosted static frontend delivery where appropriate.
+- Akka-hosted frontend build-output delivery where appropriate.
 
 For harness agents creating higher-level app-design skills, this means the target stack should be described as a **single full-stack system**, not as disconnected backend and frontend tasks. Product capabilities should be decomposed into:
 

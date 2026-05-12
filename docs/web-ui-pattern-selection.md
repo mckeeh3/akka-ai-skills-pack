@@ -59,9 +59,9 @@ This keeps route intent visible from URL shape alone. Avoid broad `/**` SPA fall
 
 This pattern-selection doc focuses on web UI delivery and route integration. Public/protected/internal route policy, JWTs, identity-provider integration, and authorization UX should be handled by security-specific guidance when those tasks are in scope.
 
-## OpenAPI publication
+## API documentation assets
 
-OpenAPI asset publication is not a browser UI implementation path. If a service must expose generated API documentation assets, keep that concern separate from frontend app delivery and use official Akka HTTP static-resource semantics directly.
+Generated API documentation assets are not a browser UI implementation path. If a service must expose them, keep that concern separate from frontend app delivery and use official Akka HTTP resource-serving semantics directly.
 
 ## What to read next
 
