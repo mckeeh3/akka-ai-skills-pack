@@ -1473,7 +1473,7 @@
 
 ### TASK-10-002: Implement local account, tenant, customer, role, and audit domain
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/02-local-account-domain-and-audit.md
 - depends on: [TASK-10-001]
@@ -1501,6 +1501,10 @@
 - done criteria:
   - local Akka state can authorize future APIs independently from frontend state or JWT role claims
   - git commit created for this task
+- notes:
+  - completed: added reusable DCA seed security domain records for local accounts, roles/scopes, tenant/customer directory, bootstrap input, and append-only admin audit entries, plus Akka KVE components and focused unit tests
+  - checks: `mvn -q -Dtest='com.example.application.security.*Test' test`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement DCA seed security domain`
 
 ### TASK-10-003: Implement WorkOS/JWT `/api/me` and backend authorization helper
 
