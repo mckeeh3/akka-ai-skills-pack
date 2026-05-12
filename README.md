@@ -447,9 +447,9 @@ Important variables in `.env.example` include:
 
 - `ADMIN_USERS` — comma-separated `email:ROLE:scope` entries for backend admin bootstrap
 - `OPENAI_API_KEY` — required only for examples that call OpenAI-backed Akka agents
-- `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL` — WorkOS server-side settings from the auth PoC
-- `APP_BASE_URL` — local app URL used by invite/account flows, normally `http://localhost:9000`
-- `RESEND_API_KEY`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT` — optional invite-email settings from the auth PoC
+- `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL` — backend WorkOS API settings used to look up the signed-in user's email when the JWT does not include an email claim
+- `APP_BASE_URL` — local app URL used by invite/account flows in the auth PoC, normally `http://localhost:9000`
+- `RESEND_API_KEY`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT` — invite-email settings from the auth PoC; retained as placeholders for future email-sending slices
 - `VITE_WORKOS_CLIENT_ID`, `VITE_WORKOS_REDIRECT_URI` — public browser build-time WorkOS/AuthKit settings
 
 `ADMIN_USERS` supported scope forms are:
@@ -461,7 +461,7 @@ CUSTOMER_ADMIN:<tenant-id>/<customer-id>
 USER:<tenant-id>/<customer-id>
 ```
 
-Only `VITE_` variables are public and may be embedded into the frontend bundle. The current seed app uses the implemented variables for the corresponding implemented slices; keep the full PoC-compatible list documented so future auth/email slices preserve the same secret boundary.
+Only `VITE_` variables are public and may be embedded into the frontend bundle. Current bootstrap creates invited local accounts and audit records from `ADMIN_USERS`, but it does not send invite email. If sign-in returns `Local account invite is required`, check that `.env` was sourced before starting Maven, that `ADMIN_USERS` contains the same email as the WorkOS user, and that either the JWT includes an email claim or `WORKOS_API_KEY` is set so the backend can look up the WorkOS user's email. Keep the full PoC-compatible list documented so future auth/email slices preserve the same secret boundary.
 
 The seed app includes topic-producing and topic-consuming examples. Local Akka broker support is disabled by default, so start a local Kafka broker on `localhost:9092` before running the app, or use another Akka-supported local broker configuration.
 

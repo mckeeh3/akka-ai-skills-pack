@@ -23,9 +23,11 @@ import static akka.javasdk.http.HttpException.unauthorized;
 public class AuthorizationService {
 
   private final ComponentClient componentClient;
+  private final WorkosUserLookup workosUserLookup;
 
   public AuthorizationService(ComponentClient componentClient) {
     this.componentClient = componentClient;
+    this.workosUserLookup = new WorkosUserLookup();
   }
 
   public AuthContext requireAuthenticated(RequestContext requestContext) {
@@ -34,6 +36,9 @@ public class AuthorizationService {
     var userId = identity.subject();
 
     if (!account.exists()) {
+      if (!identity.hasEmail()) {
+        identity = withLookedUpWorkosEmail(identity);
+      }
       if (!identity.hasEmail()) {
         throw forbidden("Local account invite is required");
       }
@@ -136,6 +141,15 @@ public class AuthorizationService {
       throw unauthorized("Local user id is required");
     }
     return componentClient.forKeyValueEntity(userId).method(LocalAccountEntity::get).invoke();
+  }
+
+  private WorkosUserIdentity withLookedUpWorkosEmail(WorkosUserIdentity identity) {
+    var user = workosUserLookup.userById(identity.subject());
+    if (user.email().isBlank()) {
+      return identity;
+    }
+    var displayName = identity.displayName().isBlank() ? user.displayName() : identity.displayName();
+    return new WorkosUserIdentity(identity.subject(), user.email(), displayName);
   }
 
   private void linkAndActivate(String userId, WorkosUserIdentity identity) {
