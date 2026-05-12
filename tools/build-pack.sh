@@ -196,6 +196,11 @@ PACK_DOC_FILES=(
   docs/examples/ai-first-dca-app-description/app-description/30-tests/operational/README.md
   docs/examples/ai-first-dca-app-description/app-description/30-tests/regression/README.md
   docs/examples/ai-first-dca-app-description/app-description/40-auth-security/README.md
+  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/agent-permissions.md
+  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/authorization-rules.md
+  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/boundary-and-surface-rules.md
+  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/data-protection.md
+  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/identity-and-trust.md
   docs/examples/ai-first-dca-app-description/app-description/50-observability/README.md
   docs/examples/ai-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md
   docs/examples/ai-first-dca-app-description/app-description/55-ui/README.md

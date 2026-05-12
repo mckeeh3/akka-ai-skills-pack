@@ -12,6 +12,58 @@ This file translates the app-description example into future realization slices.
 - Add views and UI surfaces only when backed by durable facts and clear actions.
 - Preserve fail-safe behavior and trace completeness in every slice.
 
+## Seed foundation: authenticated full-stack app shell
+
+Business goal: provide a secure, role-aware, Akka-hosted application foundation before broadening DCA operational automation.
+
+Source reference: adapt the working `examples/poc-user-auth-onboarding/` proof-of-concept for WorkOS/AuthKit, JWT-protected APIs, local Akka user/account authorization, startup admin bootstrap, admin audit logging, and React/Vite static hosting. Treat that PoC as implementation guidance, not a drop-in production security system.
+
+Seed scope:
+
+- public React/Vite frontend assets served by Akka;
+- WorkOS/AuthKit browser authentication;
+- frontend bearer-token calls to same-origin `/api/...` routes;
+- JWT-protected Akka API endpoints;
+- `/api/me` local account bootstrap with invited-user linking and active/disabled status;
+- local Akka roles and scopes for app admin, dealer owner, operations supervisor, policy owner, auditor, customer admin, and baseline user access;
+- tenant/customer authorization boundaries enforced server-side;
+- startup admin bootstrap from backend-only environment variables;
+- admin invite, role assignment, activation/disable, tenant, and customer administration APIs;
+- admin/security audit entries for privileged operations;
+- role-aware frontend navigation as UX only, never as authorization;
+- unauthorized, forbidden, disabled-account, loading, empty, and error frontend states.
+
+Akka component map:
+
+| Need | Suggested component family |
+|---|---|
+| Local user/account, tenant, customer, role assignment current state | Key Value Entity by default |
+| Admin/security audit entries | Event Sourced Entity or append-only audit pattern |
+| `/api/me`, admin, tenant, customer APIs | HTTP endpoints with JWT and request context |
+| Central authorization checks | Plain application/security service used by endpoints and components |
+| Account/admin list/search surfaces | Views when list/query needs exceed direct entity reads |
+| Authenticated browser shell | React/Vite frontend project + Akka static hosting |
+
+Implementation task groups:
+
+1. DCA auth/security app-description files for identity/trust, authorization, agent permissions, data protection, and route boundaries;
+2. user/account, tenant, customer, role, account-status, bootstrap, and admin-audit domain/components;
+3. WorkOS/JWT `/api/me`, local account linking, disabled-user denial, and centralized authorization helper;
+4. admin APIs for invites, roles, status, tenants, customers, and auditable privileged operations;
+5. React/Vite AuthKit shell, same-origin bearer-token API client, role-aware navigation, and Akka static hosting;
+6. security acceptance tests for missing JWT, first-login link, role/scope denial, audit, frontend auth state, and secret boundaries.
+
+Done when a future app can demonstrate:
+
+```text
+unauthenticated browser -> public shell/login prompt; protected APIs reject
+invited WorkOS user signs in -> /api/me links and activates local account
+APP_ADMIN -> can bootstrap/invite users, assign allowed roles, and see audit entries
+TENANT_ADMIN/CUSTOMER_ADMIN -> can manage only assigned scopes
+DISABLED user with valid JWT -> backend rejects
+frontend hidden navigation -> never substitutes for backend authorization
+```
+
 ## Slice 1: Supplies autopilot foundation
 
 Business goal: make supply fulfillment timely and policy-safe for active monitored devices.
@@ -152,6 +204,7 @@ Implementation task groups:
 
 Before or alongside slice work, downstream planning should create specs for:
 
+- authenticated seed-app foundation: WorkOS/AuthKit, JWT-protected APIs, `/api/me`, local Akka accounts/roles/scopes, startup admin bootstrap, admin audit, and Akka-hosted React/Vite shell;
 - tenancy, roles, and authority boundaries;
 - shared IDs, event names, trace correlation, and redaction classes;
 - frontend style guide and design tokens;
@@ -163,6 +216,12 @@ Before or alongside slice work, downstream planning should create specs for:
 
 A future `specs/pending-tasks.md` created from these slices should keep tasks bounded, for example:
 
+- `TASK-SEED-001`: update DCA auth/security app-description files;
+- `TASK-SEED-002`: implement local account, tenant, customer, role, and admin-audit domain/components;
+- `TASK-SEED-003`: implement WorkOS/JWT `/api/me` and centralized backend authorization;
+- `TASK-SEED-004`: implement admin APIs and startup bootstrap lifecycle;
+- `TASK-SEED-005`: implement authenticated React/Vite shell and Akka hosting;
+- `TASK-SEED-006`: add seed security acceptance tests and PoC alignment notes;
 - `TASK-SUP-001`: implement supply domain records and trace vocabulary;
 - `TASK-SUP-002`: implement supply recommendation/decision event-sourced model;
 - `TASK-SUP-003`: implement supplies workflow with policy-gated paths;

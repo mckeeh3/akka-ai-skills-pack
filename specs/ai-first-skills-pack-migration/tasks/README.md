@@ -2,7 +2,7 @@
 
 This directory contains physical task briefs for migration work that needs a focused fresh Pi session.
 
-Sprint 1 task briefs cover the initial doctrine pivot. Sprint 8 task briefs now plan the first future executable AI-first supplies autopilot reference slice. Other sprint briefs may be created or refined as discoveries require.
+Sprint 1 task briefs cover the initial doctrine pivot. Sprint 8 task briefs cover the first executable AI-first supplies autopilot reference slice. Sprint 10 task briefs plan the authenticated seed app foundation derived from the user-auth onboarding PoC. Other sprint briefs may be created or refined as discoveries require.
 
 ## Rules
 

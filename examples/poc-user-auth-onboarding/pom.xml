@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.akka</groupId>
+    <artifactId>akka-javasdk-parent</artifactId>
+    <version>3.5.18</version>
+  </parent>
+
+  <groupId>com.example</groupId>
+  <artifactId>empty-service</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>empty-service</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.resend</groupId>
+      <artifactId>resend-java</artifactId>
+      <version>4.13.0</version>
+      <exclusions>
+        <!-- Akka Runtime manages Jackson. Do not let the Resend SDK pin older Jackson artifacts. -->
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-jsr310</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Your dependencies go here -->
+  </dependencies>
+</project>

@@ -1,0 +1,20 @@
+{
+  "name": "akka-fullstack-security-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build --outDir ../src/main/resources/static-resources --emptyOutDir",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@workos-inc/authkit-react": "^0.16.1"
+  },
+  "devDependencies": {}
+}

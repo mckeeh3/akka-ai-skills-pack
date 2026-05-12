@@ -42,7 +42,7 @@ Explicitly deferred:
 
 - real DCA, ERP, billing, or supplier integrations;
 - broad lifecycle onboarding/service/billing/offboarding modules;
-- production WorkOS/auth setup beyond simple role/authority modeling required by the reference;
+- production WorkOS/auth setup beyond simple role/authority modeling required by the reference; the authenticated seed-app foundation is now planned separately in Sprint 10 using `examples/poc-user-auth-onboarding/` as guidance;
 - autonomous policy changes or policy governance center implementation;
 - full brand/UI theme beyond a minimal reference UI surface if no style decision is already recorded.
 

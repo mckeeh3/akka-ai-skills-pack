@@ -70,6 +70,7 @@ The reference now covers:
 - bounded coordinator/specialist/evaluator agents and approval/escalation boundaries;
 - policy clauses, thresholds, governed policy changes, decision-card evidence, and exception handling;
 - supervision-oriented UI surfaces, audit/work/decision traces, outcome metrics, and traceability maps;
+- WorkOS/JWT/local-account seed-app auth/security semantics adapted from the working user-auth onboarding PoC;
 - non-runnable realization slices that show how future Akka/React implementation work can be decomposed.
 
 Remaining work belongs in future executable reference slices and tests, not in this app-description reference.

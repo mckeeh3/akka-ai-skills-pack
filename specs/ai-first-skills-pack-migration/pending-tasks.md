@@ -1434,3 +1434,197 @@
   - completed: replaced active legacy terminology in pack guidance, the DCA worked app-description example, the supplies UI resource, Sprint 9 planning docs, and queue wording; remaining matches are only exact archived provenance filenames referenced from active migration specs/queue notes.
   - checks: active terminology scan excluding generated/build output and filtering exact `archive/inbox` provenance paths; active filename scan excluding archive/generated/build output
   - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Replace active legacy wording with AI-first`
+
+### TASK-10-001: Update DCA auth/security app-description
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/01-update-dca-auth-security-description.md
+- depends on: [TASK-09-006]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/examples/ai-first-dca-app-description/README.md
+  - docs/examples/ai-first-dca-app-description/app-description/40-auth-security/README.md
+  - docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md
+  - examples/poc-user-auth-onboarding/AI_REVIEW_NOTES.md
+  - examples/poc-user-auth-onboarding/docs/frontend-with-akka-backend.md
+  - examples/poc-user-auth-onboarding/docs/AI_AGENT_FIRST_APP_SECURITY.md
+  - docs/security-workos-auth-and-admin.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/01-update-dca-auth-security-description.md
+- skills:
+  - app-descriptions
+  - app-description-auth-security
+  - ai-first-saas
+  - ai-first-saas-policy-governance
+  - ai-first-saas-audit-trace
+- expected outputs:
+  - DCA auth/security app-description files under `40-auth-security/`
+- required checks:
+  - verify frontend navigation is not treated as authorization
+  - verify backend secrets are forbidden in frontend env/build assets
+- done criteria:
+  - DCA seed app auth/security meaning is concrete enough for implementation
+  - git commit created for this task
+
+### TASK-10-002: Implement local account, tenant, customer, role, and audit domain
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/02-local-account-domain-and-audit.md
+- depends on: [TASK-10-001]
+- required reads:
+  - AGENTS.md
+  - docs/security-workos-auth-and-admin.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/02-local-account-domain-and-audit.md
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/domain/Role.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/domain/RoleAssignment.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/domain/UserAccount.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/application/UserAccountEntity.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/application/AdminAuditEntryEntity.java
+- skills:
+  - akka-key-value-entities
+  - akka-kve-domain-modeling
+  - akka-kve-application-entity
+  - akka-kve-unit-testing
+  - akka-event-sourced-entities if audit-grade history is selected
+- expected outputs:
+  - local account, tenant/customer, role, bootstrap, and audit domain/components with tests
+- required checks:
+  - run focused security domain/entity tests
+- done criteria:
+  - local Akka state can authorize future APIs independently from frontend state or JWT role claims
+  - git commit created for this task
+
+### TASK-10-003: Implement WorkOS/JWT `/api/me` and backend authorization helper
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/03-workos-me-and-authorization.md
+- depends on: [TASK-10-002]
+- required reads:
+  - AGENTS.md
+  - docs/security-workos-auth-and-admin.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/03-workos-me-and-authorization.md
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/api/MeEndpoint.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/security/AuthorizationService.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/security/AuthContext.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/security/WorkosUserLookup.java
+- skills:
+  - akka-workos-user-auth
+  - akka-basic-user-admin
+  - akka-http-endpoints
+  - akka-http-endpoint-jwt
+  - akka-http-endpoint-request-context
+  - akka-http-endpoint-testing
+- expected outputs:
+  - `/api/me`, WorkOS claim linking, authorization helper, and endpoint tests
+- required checks:
+  - run focused `/api/me` and authorization tests
+- done criteria:
+  - browser users can establish local app identity while backend authorization remains authoritative
+  - git commit created for this task
+
+### TASK-10-004: Implement admin APIs and bootstrap lifecycle
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/04-admin-apis-and-bootstrap.md
+- depends on: [TASK-10-003]
+- required reads:
+  - AGENTS.md
+  - docs/security-workos-auth-and-admin.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/04-admin-apis-and-bootstrap.md
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/api/AdminUsersEndpoint.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/api/TenantAdminEndpoint.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/api/CustomerAdminEndpoint.java
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/application/AdminUserBootstrap.java
+- skills:
+  - akka-basic-user-admin
+  - akka-workos-user-auth
+  - akka-http-endpoints
+  - akka-http-endpoint-jwt
+  - akka-http-endpoint-component-client
+  - akka-http-endpoint-testing
+- expected outputs:
+  - admin endpoints, bootstrap lifecycle, audit logging, and authorization tests
+- required checks:
+  - run focused admin endpoint tests
+- done criteria:
+  - seed app administrators can manage local accounts and scopes with auditable backend enforcement
+  - git commit created for this task
+
+### TASK-10-005: Implement authenticated React/Vite shell and Akka hosting
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/05-authenticated-react-shell.md
+- depends on: [TASK-10-004]
+- required reads:
+  - AGENTS.md
+  - docs/web-ui-style-guide.md
+  - docs/security-workos-auth-and-admin.md
+  - docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/05-authenticated-react-shell.md
+  - examples/poc-user-auth-onboarding/docs/frontend-with-akka-backend.md
+  - examples/poc-user-auth-onboarding/frontend/package.json
+  - examples/poc-user-auth-onboarding/frontend/src/main.tsx
+  - examples/poc-user-auth-onboarding/src/main/java/com/example/api/StaticFrontendEndpoint.java
+- skills:
+  - akka-workos-user-auth
+  - akka-web-ui-apps
+  - akka-web-ui-frontend-project
+  - akka-web-ui-api-client
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+  - akka-http-endpoints
+  - akka-http-endpoint-web-ui
+  - akka-http-endpoint-testing
+- expected outputs:
+  - authenticated React/Vite shell, API client, static hosting endpoint, and smoke tests
+- required checks:
+  - run frontend build/test command
+  - run static route/asset tests
+  - verify backend secrets are absent from frontend env examples and build output
+- done criteria:
+  - DCA seed app has an authenticated shell whose UX reflects roles/scopes but never replaces backend authorization
+  - git commit created for this task
+
+### TASK-10-006: Add seed security acceptance tests and PoC alignment notes
+
+- status: pending
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/06-seed-security-acceptance-tests.md
+- depends on: [TASK-10-005]
+- required reads:
+  - AGENTS.md
+  - docs/security-workos-auth-and-admin.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/06-seed-security-acceptance-tests.md
+  - examples/poc-user-auth-onboarding/AI_REVIEW_NOTES.md
+  - examples/poc-user-auth-onboarding/docs/frontend-with-akka-backend.md
+- skills:
+  - akka-workos-user-auth
+  - akka-basic-user-admin
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+  - app-description-auth-security
+- expected outputs:
+  - seed-level security acceptance tests and PoC alignment/caveat note
+- required checks:
+  - run focused seed security acceptance tests
+  - run frontend build/test if frontend project exists
+  - run backend compile/test if practical
+- done criteria:
+  - seed foundation is verified as a reusable authenticated base for future DCA slices
+  - git commit created for this task

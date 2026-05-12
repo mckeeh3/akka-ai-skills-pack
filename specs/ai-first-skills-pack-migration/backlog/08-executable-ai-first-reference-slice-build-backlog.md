@@ -113,6 +113,6 @@ Output: end-to-end or integration tests covering auto-ship, approval-required, s
 
 - Real integrations with DCA collectors, suppliers, ERP, billing, or service dispatch.
 - Full policy governance center or autonomous policy updates.
-- Full authentication/tenant administration beyond minimal role/actor fields needed by tests.
+- Full authentication/tenant administration beyond minimal role/actor fields needed by tests; Sprint 10 now plans this authenticated seed foundation from `examples/poc-user-auth-onboarding/`.
 - MCP/gRPC exposure for the supplies slice.
 - Broad lifecycle expansion beyond supplies.
