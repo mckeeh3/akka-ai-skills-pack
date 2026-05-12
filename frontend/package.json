@@ -1,0 +1,20 @@
+{
+  "name": "dca-seed-authenticated-shell",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build --outDir ../src/main/resources/static-resources --emptyOutDir false",
+    "test": "node --test src/*.test.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@workos-inc/authkit-react": "^0.16.1"
+  },
+  "devDependencies": {}
+}

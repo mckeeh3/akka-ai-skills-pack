@@ -1578,7 +1578,7 @@
 
 ### TASK-10-005: Implement authenticated React/Vite shell and Akka hosting
 
-- status: pending
+- status: done
 - source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
 - task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/05-authenticated-react-shell.md
 - depends on: [TASK-10-004]
@@ -1614,6 +1614,10 @@
 - done criteria:
   - DCA seed app has an authenticated shell whose UX reflects roles/scopes but never replaces backend authorization
   - git commit created for this task
+- notes:
+  - completed: added React/Vite/AuthKit frontend project, same-origin bearer-token `/api/me` client behavior, role/capability-aware DCA navigation, supplies autopilot entry point, loading/signed-out/access-problem states, Northpeak style tokens, Akka static hosting routes for `/`, `/assets/**`, and `/favicon.ico`, and focused frontend/route smoke tests
+  - checks: `cd frontend && npm test && npm run build`; `mvn -q -Dtest=com.example.application.security.DcaSeedFrontendEndpointIntegrationTest test`; `mvn -q -DskipTests compile`; `rg -n "WORKOS_API_KEY|RESEND_API_KEY|INVITE_EMAIL_FROM|sk_test_|sk_live_|re_x" frontend src/main/resources/static-resources || true`
+  - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement authenticated DCA React shell`
 
 ### TASK-10-006: Add seed security acceptance tests and PoC alignment notes
 
