@@ -49,7 +49,7 @@
 
 ### TASK-SWPR-01-002: Revise web UI routing away from static page patterns
 
-- status: pending
+- status: done
 - source: specs/static-web-page-content-removal/backlog/01-remove-static-web-page-guidance-build-backlog.md
 - task brief: specs/static-web-page-content-removal/tasks/01-remove-static-web-page-guidance/02-revise-web-ui-routing.md
 - depends on: [TASK-SWPR-01-001]
@@ -83,6 +83,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Revise web UI routing away from static pages`
+  - completed: routed web UI guidance to React/Vite/TypeScript frontend app delivery and limited static-resource discussion to generated build-output hosting.
 
 ### TASK-SWPR-01-003: Remove static-page executable examples and tests
 

@@ -1,6 +1,6 @@
 # Web UI/static content family plan
 
-Purpose: historical plan for the original Akka-served web UI and static content coverage wave. For current full web app integration guidance, prefer `docs/web-ui-frontend-project-integration.md`, `docs/web-ui-frontend-decomposition.md`, and `skills/akka-web-ui-apps/SKILL.md`.
+Purpose: historical plan for the original Akka-served web UI and asset-serving coverage wave. For current full web app integration guidance, prefer `docs/web-ui-frontend-project-integration.md`, `docs/web-ui-frontend-decomposition.md`, and `skills/akka-web-ui-apps/SKILL.md`.
 
 ## Goal
 
@@ -16,7 +16,7 @@ Akka applications often need more than JSON endpoints. A common real-world shape
 - a bundled admin or demo UI
 - API endpoints in the same service
 - optional SSE or WebSocket updates
-- packaged docs or OpenAPI assets
+- packaged reference assets such as generated OpenAPI files
 
 Right now the repository has a useful starting point:
 - the removed dedicated static-content skill
@@ -123,7 +123,7 @@ Create a higher-level skill for the whole area so future agents do not start fro
 ### Purpose
 
 Route agents to the right pattern among:
-- static content only
+- asset delivery only
 - UI + JSON API
 - UI + SSE
 - UI + WebSocket
@@ -362,7 +362,7 @@ The new skill should answer:
 - which narrower skills to load next
 - which example to read first for each pattern
 - how to choose between:
-  - packaged static docs
+  - packaged generated API reference assets
   - packaged interactive UI
   - UI + JSON API
   - UI + SSE

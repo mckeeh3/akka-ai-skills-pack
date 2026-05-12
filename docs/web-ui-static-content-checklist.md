@@ -1,8 +1,8 @@
 # Web UI/static content implementation checklist
 
-Purpose: turn `docs/web-ui-static-content.md` into a concrete execution checklist with the first files to create, the order to create them, and the expected outcome of each step.
+Purpose: historical checklist for the original `docs/web-ui-static-content.md` plan. Current browser UI work should use the React/Vite/TypeScript frontend project path.
 
-Use this as the implementation sequence for the web UI/static content family.
+Use this only as archived implementation context for the earlier web UI/asset-serving family.
 
 ## Execution order
 
@@ -88,7 +88,7 @@ Goal: provide one entry point for all Akka-served web UI patterns.
 ### Tasks
 
 - [ ] Create the broad web-ui skill with routing guidance for:
-  - static content only
+  - asset delivery only
   - UI + JSON API
   - UI + SSE
   - UI + WebSocket
@@ -284,10 +284,10 @@ After those are in place, move to the SSE page example, then the WebSocket page 
 ## Definition of done
 
 The checklist is complete when:
-- there is one broad web-ui skill and one narrow static-content skill
+- there is one broad web-ui skill and one narrow asset-delivery skill
 - there is a documented minimal TypeScript strategy
 - there is one canonical example each for:
-  - static content only
+  - asset delivery only
   - UI + JSON API
   - UI + SSE
   - UI + WebSocket

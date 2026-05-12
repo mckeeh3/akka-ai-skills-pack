@@ -1,11 +1,11 @@
 ---
 name: akka-http-endpoint-web-ui
-description: Route Akka Java SDK tasks involving packaged browser UIs, co-hosted JSON APIs, SSE pages, and WebSocket pages. Use when the service should serve a web UI from HTTP endpoints.
+description: Route Akka Java SDK tasks involving Akka-hosted frontend build output, co-hosted JSON APIs, SSE pages, and WebSocket pages. Use when the service should serve a React/Vite/TypeScript web UI from HTTP endpoints.
 ---
 
 # Akka HTTP Endpoint Web UI
 
-Use this skill when an Akka service should serve a browser-facing UI from packaged resources.
+Use this skill when an Akka service should host the production build output of a browser-facing frontend app.
 
 For a complete user-facing frontend app, start with `akka-web-ui-apps` first, then return here for Akka HTTP hosting, route shape, packaged build assets, and endpoint tests.
 
@@ -31,14 +31,14 @@ Read these first if present:
 
 ## Use this skill when
 
-- the service should serve packaged browser UI assets through Akka HTTP endpoints
+- the service should serve generated React/Vite/TypeScript browser UI assets through Akka HTTP endpoints
 - `akka-web-ui-apps` has identified screens, frontend state, and browser API contracts
 - the UI calls JSON endpoints in the same service
 - the UI should consume SSE updates
 - the UI should consume a WebSocket endpoint
 - you need route-shape guidance for `/ui`, `/api`, stream, and socket paths
 - a standard frontend project should build production assets into `src/main/resources/static-resources/`
-- packaged CSS should apply the selected web UI style guide/theme
+- generated CSS should apply the selected web UI style guide/theme
 - if a browser UI style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` before implementing affected UI assets
 - auth/security implementation details are out of scope unless the user explicitly asks for them
 
@@ -103,7 +103,7 @@ Akka implementation and tests remain Java-based.
 
 Prefer clear route families:
 
-- packaged UI shell and assets: `/`, `/assets/**`, `/ui...`, or explicit app-specific entry routes
+- generated frontend app shell and assets: `/`, `/assets/**`, `/ui...`, or explicit app-specific entry routes
 - JSON APIs: `/api/...`
 - SSE streams: explicit stream prefix such as `/counter-stream/...` or `/streams/...`
 - WebSocket routes: `/websockets/...`
@@ -113,25 +113,25 @@ Keep those route families separate so a future agent can infer intent from the p
 ## Repository examples
 
 - `WebUiHomeEndpoint` + `WebUiDataEndpoint`
-  - packaged page plus JSON API hosting pattern
+  - generated app shell plus JSON API hosting pattern
 - `WebUiSsePageEndpoint` + `CounterStreamEndpoint`
-  - packaged page consuming SSE
+  - generated app shell consuming SSE
 - `WebUiWebSocketPageEndpoint` + `PingWebSocketEndpoint`
-  - packaged page consuming a WebSocket
+  - generated app shell consuming a WebSocket
 
 ## Testing rule
 
-Default to endpoint integration tests using `httpClient` for page and asset routes.
+Default to endpoint integration tests using `httpClient` for generated app shell and asset routes.
 
 Add route-level assertions for:
-- packaged HTML
-- packaged JS and CSS assets
-- explicit API, SSE, or WebSocket path references in the served page
+- generated `index.html`
+- generated JS and CSS assets
+- explicit API, SSE, or WebSocket path references in the served app shell
 
 ## Anti-patterns
 
 Avoid:
-- treating browser UI work as hand-authored static page/file-serving work
+- treating browser UI work as ad hoc HTML/file-serving work
 - mixing UI routes and API routes under one ambiguous path family
 - treating generated frontend build output as source code
 - hiding the frontend source path or the served JavaScript/CSS path
@@ -146,5 +146,5 @@ Before finishing, verify:
 - JSON API routes are under `/api/...`
 - SSE and WebSocket routes remain explicit and separate
 - frontend source paths and served JavaScript/CSS asset paths are easy to correlate
-- integration tests fetch the packaged page and CSS/JS asset routes through `httpClient`
+- integration tests fetch the generated app shell and CSS/JS asset routes through `httpClient`
 - non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md` and the selected style guide

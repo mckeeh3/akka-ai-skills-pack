@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-apps
-description: Plan and implement fully capable browser apps hosted by Akka HTTP endpoints, using standard frontend projects such as React/Vite. Use when the task is a user-facing full web app, not merely static file serving.
+description: Plan and implement fully capable browser apps hosted by Akka HTTP endpoints, using standard frontend projects such as React/Vite/TypeScript. Use when the task is a user-facing web app.
 ---
 
 # Akka Web UI Apps
@@ -10,7 +10,7 @@ Use this as the top-level skill for complete browser app work in Akka services.
 This skill complements `akka-http-endpoint-web-ui`:
 - `akka-web-ui-apps` designs the frontend application experience and implementation plan.
 - `akka-web-ui-frontend-project` integrates a standard frontend project such as React/Vite with Akka static hosting.
-- `akka-http-endpoint-web-ui` hosts packaged build assets and connects UI routes to Akka HTTP endpoints.
+- `akka-http-endpoint-web-ui` hosts generated frontend build assets and connects UI routes to Akka HTTP endpoints.
 
 ## AI-first substrate role
 
@@ -48,11 +48,11 @@ Canonical frontend project integration reference:
 - the user asks for a web app, dashboard, admin UI, console, portal, or browser workflow
 - the UI needs multiple states, screens, forms, actions, or data dependencies
 - a UI brief must become implementation-ready frontend work
-- the frontend should provide excellent UX, not only correct static asset delivery
+- the frontend should provide excellent UX, with generated build assets hosted by Akka
 - the frontend should be excellent and use a standard frontend framework/build tool
 - browser code should live in a dedicated frontend project when the UI is a real app
 
-Do not use this as the main skill for OpenAPI publication or simple file-serving concerns; use HTTP endpoint guidance and official Akka docs instead.
+Do not use this as the main skill for OpenAPI publication or raw asset-delivery concerns; keep browser UI work on the React/Vite/TypeScript frontend project path.
 
 ## Planning output before coding
 
@@ -69,7 +69,7 @@ Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and pr
 8. Frontend implementation shape: standard frontend project (for example React/Vite)
 9. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
 10. Accessibility and responsive requirements
-11. Akka HTTP endpoint route plan, including static asset and API route separation
+11. Akka HTTP endpoint route plan, including generated frontend asset and API route separation
 12. SPA routing choice: hash routing, explicit server entry routes, or in-app navigation only
 13. Implementation skills to load
 14. Required tests and quality checks
@@ -105,7 +105,7 @@ Always pair with Akka hosting/API skills as needed:
 3. Confirm frontend project framework/build tool and project conventions.
 4. Implement or adjust backend JSON/SSE/WebSocket endpoints.
 5. Implement the frontend in its source root (`frontend/src/**`).
-6. Build frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
+6. Build React/Vite/TypeScript frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
 7. Add/extend endpoint integration tests for page, assets, explicit SPA entry routes, and API route separation.
 8. Run frontend checks/build and backend tests.
 9. Review with `docs/web-ui-quality-checklist.md` and `docs/web-ui-ux-patterns.md`.

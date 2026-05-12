@@ -1,11 +1,11 @@
 ---
 name: akka-web-ui-frontend-project
-description: Integrate a standard frontend project, such as React/Vite, with an Akka Java SDK backend that hosts the production frontend build from static resources. Use for full web apps under frontend/ rather than hand-authored static pages.
+description: Integrate a standard frontend project, such as React/Vite/TypeScript, with an Akka Java SDK backend that hosts the production frontend build from static resources. Use for full web apps under frontend/.
 ---
 
 # Akka Web UI Frontend Project
 
-Use this skill when the Akka service includes a real frontend application project and Akka should host its production build output.
+Use this skill when the Akka service includes a React/Vite/TypeScript frontend application project and Akka should host its production build output.
 
 This skill is about web UI integration only. Defer authentication, authorization, JWT, identity-provider, and secret-handling details to security-specific skills/docs.
 
@@ -33,7 +33,7 @@ Reference example document:
 - Akka should serve `index.html` and built `/assets/**` files
 - backend APIs should be called through same-origin `/api/...` routes
 
-For interactive web app work, prefer this full frontend project path. Keep Akka static-resource guidance focused on generated frontend build output, not hand-authored static pages.
+For interactive web app work, use this full frontend project path. Keep Akka static-resource guidance focused on generated React/Vite/TypeScript frontend build output.
 
 ## Integration contract
 
@@ -84,7 +84,7 @@ Test through Akka HTTP endpoints, not only the frontend dev server:
 ## Anti-patterns
 
 Avoid:
-- treating a React/Vite app as unmanaged static files instead of editing frontend source and rebuilding
+- treating a React/Vite/TypeScript app as unmanaged resource files instead of editing frontend source and rebuilding
 - hand-editing generated files under `src/main/resources/static-resources/`
 - copying local frontend env files into served resources
 - mixing frontend assets and backend APIs under ambiguous route wildcards

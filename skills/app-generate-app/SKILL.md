@@ -102,7 +102,7 @@ As applicable, generation may include:
 - AI-first substrate outputs when described: durable goals/plans, policy/approval gates, decision cards, traces, outcome loops, agents/workflows/views/endpoints, and supervision UI surfaces
 - documentation or evaluation notes
 
-The exact realization set depends on the current repository and user request. When a browser frontend is in scope, route realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as static content only. Do not invent a visual theme during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../../docs/web-ui-style-guide.md`.
+The exact realization set depends on the current repository and user request. When a browser frontend is in scope, route realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as raw asset delivery. Do not invent a visual theme during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../../docs/web-ui-style-guide.md`.
 
 When AI-first behavior is in scope, route through `ai-first-saas` companion skills and the selected Akka substrate skills before generation. Stop or surface a blocking gap if `15-operating-model/` does not define the required delegated work, retained human authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or AI-first UI surfaces well enough to implement.
 

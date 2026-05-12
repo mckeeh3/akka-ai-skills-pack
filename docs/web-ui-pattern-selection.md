@@ -1,6 +1,6 @@
 # Web UI pattern selection
 
-Use this doc when an Akka service needs packaged browser-facing assets, not only JSON APIs.
+Use this doc when an Akka service needs a browser-facing React/Vite/TypeScript app hosted by Akka, not only JSON APIs.
 
 ## Default conventions
 
@@ -18,16 +18,15 @@ The frontend build owns generated files under `static-resources/`. Edit `fronten
 
 | Need | Use | First example |
 | --- | --- | --- |
-| Full frontend app with screens, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `skills/akka-web-ui-apps/SKILL.md` plus `skills/akka-web-ui-frontend-project/SKILL.md` |
-| Packaged docs, HTML, CSS, OpenAPI, or simple file serving | Narrow static-content pattern | `src/main/java/com/example/api/StaticContentEndpoint.java` |
-| Co-hosted browser page calling JSON endpoints | UI + JSON API pattern | `src/main/java/com/example/api/WebUiHomeEndpoint.java` and `src/main/java/com/example/api/WebUiDataEndpoint.java` |
-| Browser page consuming live one-way updates | UI + SSE pattern | `src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `src/main/java/com/example/api/CounterStreamEndpoint.java` |
-| Browser page needing two-way communication | UI + WebSocket pattern | `src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `src/main/java/com/example/api/PingWebSocketEndpoint.java` |
+| Full React/Vite/TypeScript frontend app with screens, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `skills/akka-web-ui-apps/SKILL.md` plus `skills/akka-web-ui-frontend-project/SKILL.md` |
+| Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `src/main/java/com/example/api/WebUiHomeEndpoint.java` and `src/main/java/com/example/api/WebUiDataEndpoint.java` |
+| Frontend app consuming live one-way updates | UI + SSE pattern | `src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `src/main/java/com/example/api/CounterStreamEndpoint.java` |
+| Frontend app needing two-way communication | UI + WebSocket pattern | `src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `src/main/java/com/example/api/PingWebSocketEndpoint.java` |
 | Route exposure and backend access boundaries | Defer to security-specific routing when in scope | `skills/akka-http-endpoint-jwt/SKILL.md` and `skills/akka-http-endpoint-acl-internal/SKILL.md` |
 
 ## Frontend project requirement for web apps
 
-Use a standard frontend project when the browser app has product surface area, especially when it:
+Use a standard React/Vite/TypeScript frontend project when the browser app has product surface area, especially when it:
 
 - has multiple screens or complex navigation
 - needs React or another UI framework
@@ -48,7 +47,7 @@ Read next:
 
 Use route families with clear separation:
 
-- UI shell and packaged assets: `/`, `/assets/**`, `/ui...`, or explicit app entry routes
+- frontend app shell and generated assets: `/`, `/assets/**`, `/ui...`, or explicit app entry routes
 - JSON API routes: `/api/...`
 - SSE streams: `/counter-stream/...`, `/view-streams/...`, or another explicit stream prefix
 - WebSocket routes: `/websockets/...`
@@ -62,9 +61,7 @@ This pattern-selection doc focuses on web UI delivery and route integration. Pub
 
 ## OpenAPI publication
 
-Use the static-content pattern when the service should publish a packaged `openapi.yaml`.
-
-That belongs with static assets, not with the interactive UI examples.
+OpenAPI asset publication is not a browser UI implementation path. If a service must expose generated API documentation assets, keep that concern separate from frontend app delivery and use official Akka HTTP static-resource semantics directly.
 
 ## What to read next
 
