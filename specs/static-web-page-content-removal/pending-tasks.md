@@ -164,7 +164,7 @@
 
 ### TASK-SWPR-01-005: Final static page removal validation
 
-- status: pending
+- status: done
 - source: specs/static-web-page-content-removal/backlog/01-remove-static-web-page-guidance-build-backlog.md
 - task brief: specs/static-web-page-content-removal/tasks/01-remove-static-web-page-guidance/05-final-static-page-removal-validation.md
 - depends on: [TASK-SWPR-01-004]
@@ -194,3 +194,4 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Validate static page guidance removal`
+  - completed: final searches found no static-page guidance matches; remaining `HttpResponses.staticResource(...)` matches are generated frontend app shell/build-asset hosting references, with wording repaired away from packaged/static page patterns.

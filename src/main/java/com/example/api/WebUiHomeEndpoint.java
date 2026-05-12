@@ -6,7 +6,7 @@ import akka.javasdk.annotations.http.Get;
 import akka.javasdk.annotations.http.HttpEndpoint;
 import akka.javasdk.http.HttpResponses;
 
-/** HTTP endpoint example serving a packaged web UI shell and its static assets. */
+/** HTTP endpoint example serving a generated frontend app shell and build assets. */
 @HttpEndpoint
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.ALL))
 public class WebUiHomeEndpoint {

@@ -577,7 +577,7 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just a packaged page or static files. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: screen intent, information hierarchy, UX copy, feedback/recovery states, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just asset-route wiring. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: screen intent, information hierarchy, UX copy, feedback/recovery states, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
@@ -933,13 +933,13 @@ Then add one or more Akka HTTP companions as needed:
 - `akka-http-endpoint-jwt` only when security is in scope
 - `akka-http-endpoint-acl-internal` only when internal-route security is in scope
 
-### New simple Akka-served web UI shell
+### New Akka-hosted frontend app shell routes
 Load:
 - `akka-http-endpoints`
 - `akka-http-endpoint-web-ui`
 - `akka-http-endpoint-testing`
 
-Use this narrower path only when the UI is mainly a packaged page/asset delivery pattern, not a complete frontend app.
+Use this only for the Akka HTTP routes that serve generated frontend build output. For product UI source, load `akka-web-ui-apps` and `akka-web-ui-frontend-project`.
 
 ### New low-level HTTP endpoint
 Load:

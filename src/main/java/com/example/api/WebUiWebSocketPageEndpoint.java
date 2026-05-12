@@ -6,7 +6,7 @@ import akka.javasdk.annotations.http.Get;
 import akka.javasdk.annotations.http.HttpEndpoint;
 import akka.javasdk.http.HttpResponses;
 
-/** HTTP endpoint example serving a packaged page that connects to a WebSocket route. */
+/** HTTP endpoint example serving a generated frontend app shell that connects to a WebSocket route. */
 @HttpEndpoint
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.ALL))
 public class WebUiWebSocketPageEndpoint {
