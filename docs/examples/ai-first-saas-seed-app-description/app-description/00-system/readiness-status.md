@@ -6,7 +6,8 @@
   - backlog/sprint decomposition
   - phase-1 scaffold design
   - UI design validation against `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
-  - localized frontend planning for the seed app shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
+  - localized frontend implementation planning for the seed app shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
+  - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
 - not yet fully ready for:
   - complete code generation of all phases at once
   - production authentication integration without provider decision

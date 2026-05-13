@@ -6,7 +6,8 @@
   - backlog/sprint decomposition
   - phase-1 scaffold design
   - UI design validation against the mockup-derived design spec
-  - localized frontend planning for shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
+  - localized frontend implementation planning for shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
+  - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
 - not yet fully ready for:
   - complete code generation of all phases at once
   - production authentication integration without provider decision

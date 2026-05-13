@@ -11,4 +11,6 @@
 - expanded UI interactions/forms with fields, validation, idempotency, confirmation, success, and failure behavior
 - expanded frontend API contracts with browser-facing DTO sketches and SSE event envelope expectations
 - added design-specific UI acceptance checks for shell, modes, command strip, decision cards, realtime, responsive behavior, and accessibility
+- validated the seed app design in `specs/web-ui-design/seed-app-design-validation.md`
+- created localized frontend implementation planning in `specs/web-ui-design/seed-app-localized-frontend-implementation-plan.md`
 - mapped intended behavior to tests, security, observability, and generation phases
