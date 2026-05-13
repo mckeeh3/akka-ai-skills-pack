@@ -13,4 +13,5 @@
 - added design-specific UI acceptance checks for shell, modes, command strip, decision cards, realtime, responsive behavior, and accessibility
 - validated the seed app design in `specs/web-ui-design/seed-app-design-validation.md`
 - created localized frontend implementation planning in `specs/web-ui-design/seed-app-localized-frontend-implementation-plan.md`
+- completed frontend Slice 1 foundation with tokenized light/dark/system mode and documented it in `specs/web-ui-design/seed-app-frontend-slice-1-completion.md`
 - mapped intended behavior to tests, security, observability, and generation phases

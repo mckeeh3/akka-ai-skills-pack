@@ -354,6 +354,8 @@ frontend/
 
 ### Slice 1: Frontend foundation and design tokens
 
+Status: complete. See `seed-app-frontend-slice-1-completion.md`.
+
 Outputs:
 
 - Vite/React/TypeScript project skeleton.
