@@ -403,6 +403,8 @@ Validation:
 
 ### Slice 4: Reusable UI primitives
 
+Status: complete. See `seed-app-frontend-slice-4-completion.md`.
+
 Outputs:
 
 - buttons, cards, badges/status pills, command strip, KPI cards, forms, data-state wrappers, modal/drawer.

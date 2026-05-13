@@ -4,6 +4,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
+import { CommandStrip, KpiCard, PageHeader as DsPageHeader } from './design-system';
 
 type ModePreference = 'light' | 'dark' | 'system';
 type RouteId = 'briefing' | 'goals' | 'decisions' | 'governance' | 'audit' | 'admin' | 'profile';
@@ -185,13 +186,7 @@ function UserMenu() {
 }
 
 function PageHeader({ route }: { route: (typeof routes)[number] }) {
-  return (
-    <header className="page-header">
-      <p className="eyebrow">{route.group}</p>
-      <h1>{route.label}</h1>
-      <p>{pageSubtitle(route.id)}</p>
-    </header>
-  );
+  return <DsPageHeader eyebrow={route.group} title={route.label}>{pageSubtitle(route.id)}</DsPageHeader>;
 }
 
 function RouteShell({ route, mode, onModeChange }: { route: RouteId; mode: ModePreference; onModeChange: (mode: ModePreference) => void }) {
@@ -200,25 +195,17 @@ function RouteShell({ route, mode, onModeChange }: { route: RouteId; mode: ModeP
   }
 
   return (
-    <section className="route-shell" aria-labelledby={`${route}-shell-heading`}>
-      <div className="command-strip">
-        <div className="ai-mark" aria-hidden="true">✦</div>
-        <div>
-          <h2 id={`${route}-shell-heading`}>{routeShellTitle(route)}</h2>
-          <p>{routeShellCopy(route)}</p>
-          <div className="prompt-row" aria-label="Example prompts">
-            <button type="button" className="prompt-chip">Summarize blockers</button>
-            <button type="button" className="prompt-chip">Review exceptions</button>
-            <button type="button" className="prompt-chip">Explain policy triggers</button>
-          </div>
-        </div>
-        <button type="button" className="icon-button" aria-label="Send command preview">➤</button>
-      </div>
+    <section className="route-shell" aria-label={routeShellTitle(route)}>
+      <CommandStrip
+        title={routeShellTitle(route)}
+        description={routeShellCopy(route)}
+        prompts={['Summarize blockers', 'Review exceptions', 'Explain policy triggers']}
+      />
 
       <div className="card-grid">
-        <article className="kpi-card"><span className="status-pill success">Ready · shell route</span><h2>Route mounted</h2><p>This slice validates route shells before product data is wired.</p></article>
-        <article className="kpi-card"><span className="status-pill warning">Pending · fixture client</span><h2>Client seam next</h2><p>Slice 3 will add typed clients and fixture-backed data.</p></article>
-        <article className="kpi-card"><span className="status-pill danger">Guarded · backend authority</span><h2>UX only</h2><p>Route visibility is not an authorization grant; backend APIs remain authoritative.</p></article>
+        <KpiCard label="Route mounted" value="Ready" detail="This slice validates route shells before product data is wired." status="Ready · shell route" statusTone="success" />
+        <KpiCard label="Client seam next" value="Pending" detail="Slice 3 will add typed clients and fixture-backed data." status="Pending · fixture client" statusTone="warning" />
+        <KpiCard label="UX only" value="Guarded" detail="Route visibility is not an authorization grant; backend APIs remain authoritative." status="Guarded · backend authority" statusTone="danger" />
       </div>
     </section>
   );
