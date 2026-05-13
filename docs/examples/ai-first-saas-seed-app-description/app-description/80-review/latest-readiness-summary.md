@@ -1,13 +1,22 @@
 # Latest Readiness Summary
 
-- readiness: ready-with-assumptions-for-planning
+- readiness: ready-with-assumptions-for-planning-and-ui-design-validation
 - ready for:
   - implementation planning
   - backlog/sprint decomposition
   - phase-1 scaffold design
+  - UI design validation against the mockup-derived design spec
+  - localized frontend planning for shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
 - not yet fully ready for:
   - complete code generation of all phases at once
+  - production authentication integration without provider decision
+- UI readiness notes:
+  - selected `atlas-ops-supervisory-console` style guide is recorded
+  - light/dark/system mode and lightweight theme constraints are defined
+  - AI-first UI surfaces, form/action behavior, frontend API DTO sketches, realtime behavior, and design-specific acceptance checks are defined
 - main remaining decisions:
   - local/prod auth mode
+  - first implementation slice boundary
   - v1 component coverage boundary
+  - whether phase-1 frontend includes only admin/auth shell or also phase-2 AI-first mission-control surfaces
   - whether MCP/gRPC are included in seed v1 or deferred modules
