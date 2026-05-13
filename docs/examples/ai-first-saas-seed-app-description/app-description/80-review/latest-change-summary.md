@@ -15,4 +15,5 @@
 - created localized frontend implementation planning in `specs/web-ui-design/seed-app-localized-frontend-implementation-plan.md`
 - completed frontend Slice 1 foundation with tokenized light/dark/system mode and documented it in `specs/web-ui-design/seed-app-frontend-slice-1-completion.md`
 - completed frontend Slice 2 app shell/routing with responsive navigation and documented it in `specs/web-ui-design/seed-app-frontend-slice-2-completion.md`
+- completed frontend Slice 3 typed DTOs, API client interfaces, fixture adapter, and realtime fixture client, documented in `specs/web-ui-design/seed-app-frontend-slice-3-completion.md`
 - mapped intended behavior to tests, security, observability, and generation phases

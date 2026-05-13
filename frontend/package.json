@@ -5,16 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "typecheck": "tsc --noEmit",
     "build": "vite build --outDir ../src/main/resources/static-resources --emptyOutDir false",
     "test": "node --test src/*.test.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "typescript": "latest",
+    "@workos-inc/authkit-react": "^0.16.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@workos-inc/authkit-react": "^0.16.1"
+    "typescript": "latest",
+    "vite": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
+  }
 }

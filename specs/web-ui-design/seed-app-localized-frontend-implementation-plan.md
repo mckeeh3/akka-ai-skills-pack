@@ -387,6 +387,8 @@ Validation:
 
 ### Slice 3: Typed clients and fixtures
 
+Status: complete. See `seed-app-frontend-slice-3-completion.md`.
+
 Outputs:
 
 - DTOs from `frontend-api-contracts.md`.
