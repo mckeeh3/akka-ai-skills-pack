@@ -1,13 +1,84 @@
 # Style Guide
 
-- visual intent:
-  - calm operational SaaS interface
-  - prioritizes supervision, decisions, governance, and audit clarity over decorative chrome
-- layout:
-  - persistent app shell with top bar and side nav
-  - cards for summaries and decision surfaces
-  - dense but readable tables for queues and audit search
-- status language:
-  - clear labels for draft, active, blocked, waiting for human, approved, rejected, completed
-- component primitives:
-  - button, input, select, textarea, checkbox, badge, alert, table, card, tabs, modal/drawer, toast, skeleton, empty state
+## Selection
+
+- selected theme: `atlas-ops-supervisory-console`
+- theme name: Atlas Ops supervisory console
+- source reference: `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md` and mockups in `specs/web-ui-design/images/`
+- mode policy: system with explicit light and dark token sets
+- status: selected for seed app validation
+
+## Brand adaptation
+
+- app/product name: AI-First SaaS Seed
+- logo/icon treatment: simple generated product mark; do not copy Atlas Ops logo or mockup names
+- copied-demo-content rule: do not copy demo product names, people, account names, metrics, or fleet/customer examples from reference images
+- custom brand overrides: none for the seed validation pass
+
+## Visual intent
+
+- calm operational SaaS interface for supervising delegated agent work
+- prioritizes decisions, exceptions, policy boundaries, auditability, and outcome visibility over decorative chrome
+- makes autonomous activity visible without hiding consequential work in chat transcripts
+- supports light, dark, and system mode with equivalent hierarchy and contrast
+
+## Design tokens
+
+- typography:
+  - `--font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
+  - `--font-mono: "Roboto Mono", "SFMono-Regular", Consolas, monospace`
+  - tabular numerals for KPIs, counts, percentages, money, time, and queue metrics
+- spacing: stable 4px-based scale from `--space-1` through `--space-8`
+- radius: 8px controls, 12px standard cards, 16px prominent panels, pill badges
+- elevation: light mode may use subtle card shadows; dark mode relies primarily on borders and restrained glow
+- colors:
+  - surfaces, text, borders, primary, AI accent, status, chart, focus, and shadows are defined in `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
+  - lightweight themes may override only color and font tokens
+
+## Component style rules
+
+- shell/navigation:
+  - persistent left sidebar on desktop with grouped navigation and user/notification region near the bottom
+  - active section uses soft primary surface plus primary icon/text
+  - mobile collapses navigation into a drawer or menu
+- AI command strip:
+  - placed near top of operational screens
+  - includes AI icon, command input/prompt, suggested prompt chips, and send/action button
+  - AI-commanded consequential work must resolve into durable goals, decisions, approvals, policy proposals, or traceable actions
+- cards/panels:
+  - use clear headings, metadata subtitles, 1px borders, and consistent padding
+  - decision and exception cards use left semantic accent plus status badge and action column
+- buttons/actions:
+  - primary actions use solid primary color
+  - AI actions may use AI accent
+  - destructive/high-impact actions require confirmation or a decision-card workflow
+- forms:
+  - labels are always visible
+  - helper text explains constraints and authority boundaries
+  - validation maps to field and form-level messages
+- tables/lists:
+  - use readable row spacing and persistent labels for status, agent, policy trigger, risk, and due time
+  - dense rows may become cards on narrow screens
+- charts/data visualization:
+  - chart colors use tokenized chart palette
+  - legends and text labels are required; color is never the only status channel
+- loading/empty/error/success states:
+  - skeletons for dashboard cards and queues
+  - empty states explain what is absent and what the user can do next
+  - errors include recovery action and retry where appropriate
+  - success messages name the completed action
+
+## Accessibility and responsive constraints
+
+- contrast: WCAG AA for text and meaningful controls in both modes
+- focus: visible focus ring using `--color-focus` across all surfaces
+- keyboard: nav, command strip, queues, decision actions, forms, drawers, and modals must be keyboard-reachable in logical order
+- status semantics: status uses text plus color/icon treatment
+- narrow-screen layout: preserve primary decision/action first; stack KPI cards and queues by priority
+- reduced motion: disable or simplify decorative animation when `prefers-reduced-motion` is active
+
+## Implementation notes
+
+- CSS variable prefix: use semantic CSS variables matching the design spec
+- files expected to apply this guide: generated React/Vite frontend CSS, shell components, dashboard screens, decision-card components, governance screens, audit trace screens
+- tests/manual checks: render core shell and primary command-center screen in light and dark mode; verify keyboard focus and status labels
