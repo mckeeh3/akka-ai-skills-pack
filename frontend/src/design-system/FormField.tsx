@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import { forwardRef, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 
 export function FormField({ id, label, helper, error, children }: { id: string; label: string; helper?: string; error?: string; children: ReactNode }) {
   return (
@@ -11,13 +11,13 @@ export function FormField({ id, label, helper, error, children }: { id: string; 
   );
 }
 
-export function TextInput({ label, helper, error, ...props }: InputHTMLAttributes<HTMLInputElement> & { id: string; label: string; helper?: string; error?: string }) {
-  return <FormField id={props.id} label={label} helper={helper} error={error}><input {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined} /></FormField>;
-}
+export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { id: string; label: string; helper?: string; error?: string }>(function TextInput({ label, helper, error, ...props }, ref) {
+  return <FormField id={props.id} label={label} helper={helper} error={error}><input ref={ref} {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined} /></FormField>;
+});
 
-export function TextArea({ label, helper, error, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { id: string; label: string; helper?: string; error?: string }) {
-  return <FormField id={props.id} label={label} helper={helper} error={error}><textarea {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined} /></FormField>;
-}
+export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement> & { id: string; label: string; helper?: string; error?: string }>(function TextArea({ label, helper, error, ...props }, ref) {
+  return <FormField id={props.id} label={label} helper={helper} error={error}><textarea ref={ref} {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined} /></FormField>;
+});
 
 export function SelectField({ label, helper, error, children, ...props }: SelectHTMLAttributes<HTMLSelectElement> & { id: string; label: string; helper?: string; error?: string; children: ReactNode }) {
   return <FormField id={props.id} label={label} helper={helper} error={error}><select {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined}>{children}</select></FormField>;

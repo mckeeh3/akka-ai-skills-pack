@@ -431,6 +431,8 @@ Validation:
 
 ### Slice 6: Goal and decision flows
 
+Status: complete. See `seed-app-frontend-slice-6-completion.md`.
+
 Outputs:
 
 - Goal Workbench and Goal Detail.
@@ -444,6 +446,8 @@ Validation:
 - keyboard/focus behavior works.
 
 ### Slice 7: Governance, audit, admin, profile screens
+
+Status: planned.
 
 Outputs:
 

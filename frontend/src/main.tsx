@@ -5,8 +5,10 @@ import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
 import { CommandStrip, KpiCard, PageHeader as DsPageHeader } from './design-system';
-import { FixtureApiClient, FixtureRealtimeClient } from './api';
+import { FixtureApiClient, FixtureRealtimeClient, type ApiClient, type RealtimeClient } from './api';
 import { BriefingPage } from './screens/briefing/BriefingPage';
+import { DecisionQueuePage } from './screens/decisions/DecisionQueuePage';
+import { GoalWorkbenchPage } from './screens/goals/GoalWorkbenchPage';
 
 type ModePreference = 'light' | 'dark' | 'system';
 type RouteId = 'briefing' | 'goals' | 'decisions' | 'governance' | 'audit' | 'admin' | 'profile';
@@ -92,8 +94,8 @@ function AppShell({
   onModeChange: (mode: ModePreference) => void;
   onToggleNav: () => void;
   onCloseNav: () => void;
-  apiClient: FixtureApiClient;
-  realtimeClient: FixtureRealtimeClient;
+  apiClient: ApiClient;
+  realtimeClient: RealtimeClient;
 }) {
   const activeRoute = routes.find((item) => item.id === route) ?? routes[0];
 
@@ -199,13 +201,21 @@ function PageHeader({ route }: { route: (typeof routes)[number] }) {
   return <DsPageHeader eyebrow={route.group} title={route.label}>{pageSubtitle(route.id)}</DsPageHeader>;
 }
 
-function RouteShell({ route, mode, onModeChange, apiClient, realtimeClient }: { route: RouteId; mode: ModePreference; onModeChange: (mode: ModePreference) => void; apiClient: FixtureApiClient; realtimeClient: FixtureRealtimeClient }) {
+function RouteShell({ route, mode, onModeChange, apiClient, realtimeClient }: { route: RouteId; mode: ModePreference; onModeChange: (mode: ModePreference) => void; apiClient: ApiClient; realtimeClient: RealtimeClient }) {
   if (route === 'profile') {
     return <ProfilePreferences mode={mode} onModeChange={onModeChange} />;
   }
 
   if (route === 'briefing') {
     return <BriefingPage apiClient={apiClient} realtimeClient={realtimeClient} />;
+  }
+
+  if (route === 'goals') {
+    return <GoalWorkbenchPage apiClient={apiClient} />;
+  }
+
+  if (route === 'decisions') {
+    return <DecisionQueuePage apiClient={apiClient} />;
   }
 
   return (
@@ -283,7 +293,7 @@ function routeShellCopy(route: RouteId) {
   return {
     briefing: 'Future panels will show KPI bands, agent activity, attention queues, trust controls, and upcoming actions.',
     goals: 'Future panels will capture objectives, success criteria, constraints, draft plans, and approval gates.',
-    decisions: 'Future panels will show decision cards with evidence, risk, confidence, impact, policy triggers, and trace links.',
+    decisions: 'Decision cards show evidence, risk, confidence, impact, policy triggers, allowed actions, stale conflicts, and trace links.',
     governance: 'Future panels will show policy versions, proposals, simulations, human-authorized commits, and audit links.',
     audit: 'Future panels will show trace filters, chronological trace results, authorization basis, and correlation ids.',
     admin: 'Future panels will show invitations, role assignments, validation, and high-impact confirmations.',
