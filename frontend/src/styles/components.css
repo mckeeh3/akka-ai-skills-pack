@@ -10,7 +10,9 @@
 .brand-lockup span { color: var(--color-muted); font-size: 0.875rem; }
 
 .brand-mark,
-.ai-mark {
+.ai-mark,
+.tenant-avatar,
+.user-avatar {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -32,22 +34,54 @@
   box-shadow: var(--shadow-glow-ai);
 }
 
+.tenant-avatar,
+.user-avatar {
+  width: 2rem;
+  height: 2rem;
+  background: var(--color-primary);
+  font-size: 0.75rem;
+}
+
+.nav-groups,
+.nav-group,
 .nav-list {
   display: grid;
   gap: var(--space-2);
 }
 
-.nav-item {
+.nav-groups { gap: var(--space-5); }
+
+.nav-group h2 {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-item,
+.mobile-menu-button,
+.tenant-switcher,
+.user-menu,
+.icon-ghost,
+.collapse-button {
   display: inline-flex;
   align-items: center;
+  min-height: var(--control-height);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-weight: 750;
+}
+
+.nav-item {
   justify-content: flex-start;
   gap: var(--space-3);
   width: 100%;
-  border: 1px solid transparent;
+  border-color: transparent;
   background: transparent;
   color: var(--color-text-soft);
   padding: 0 var(--space-3);
-  font-weight: 700;
   text-align: left;
 }
 
@@ -60,13 +94,58 @@
 
 .nav-icon { color: var(--color-primary); }
 
-.sidebar-note {
+.sidebar-bottom {
+  display: grid;
+  gap: var(--space-3);
   margin-top: auto;
+}
+
+.notification-summary {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-soft);
   padding: var(--space-4);
+  color: var(--color-muted);
   font-size: 0.875rem;
+}
+
+.notification-dot {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  margin-right: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-danger);
+  color: var(--color-inverse-text);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.collapse-button,
+.mobile-menu-button,
+.tenant-switcher,
+.user-menu,
+.icon-ghost { padding: 0 var(--space-3); }
+
+.tenant-switcher,
+.user-menu { gap: var(--space-2); text-align: left; }
+
+.tenant-switcher small,
+.user-menu small { display: block; color: var(--color-muted); font-size: 0.75rem; }
+
+.icon-ghost {
+  position: relative;
+  width: var(--control-height);
+  justify-content: center;
+  padding: 0;
+}
+
+.icon-ghost .notification-dot {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.55rem;
+  margin: 0;
 }
 
 .eyebrow {
@@ -113,10 +192,18 @@
   font-weight: 750;
 }
 
-.prompt-chip:hover {
-  border-color: var(--color-ai);
-  background: var(--color-ai-soft);
+.prompt-chip:hover,
+.nav-item:hover,
+.mobile-menu-button:hover,
+.tenant-switcher:hover,
+.user-menu:hover,
+.icon-ghost:hover,
+.collapse-button:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
+
+.prompt-chip:hover { border-color: var(--color-ai); background: var(--color-ai-soft); }
 
 .icon-button {
   width: 2.75rem;
@@ -143,38 +230,28 @@
   font-weight: 900;
 }
 
-.status-pill.success {
-  background: var(--color-success-soft);
-  color: var(--color-success);
-}
+.status-pill.success { background: var(--color-success-soft); color: var(--color-success); }
+.status-pill.warning { background: var(--color-warning-soft); color: var(--color-warning); }
+.status-pill.danger { background: var(--color-danger-soft); color: var(--color-danger); }
 
-.status-pill.warning {
-  background: var(--color-warning-soft);
-  color: var(--color-warning);
-}
-
-.status-pill.danger {
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
-}
-
-.mode-options {
+.mode-toggle {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-2);
   margin: 0;
   border: 0;
   padding: 0;
 }
 
-.mode-options legend {
-  width: 100%;
-  margin-bottom: var(--space-2);
-  color: var(--color-muted);
-  font-weight: 800;
+.mode-toggle legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
 
-.mode-option {
+.mode-choice {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -187,7 +264,7 @@
   font-weight: 800;
 }
 
-.mode-option:has(input:checked) {
+.mode-choice.selected {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
 }

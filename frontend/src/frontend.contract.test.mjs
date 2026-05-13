@@ -8,10 +8,32 @@ const base = readFileSync(new URL('./styles/base.css', import.meta.url), 'utf8')
 const layout = readFileSync(new URL('./styles/layout.css', import.meta.url), 'utf8');
 const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
 
-test('slice 1 renders seed design foundation without product screens', () => {
-  assert.match(main, /Localized frontend slice 1/);
-  assert.match(main, /This page proves light, dark, and system mode behavior/);
-  assert.match(main, /without implementing product screens yet/);
+test('slice 1 foundation remains present while slice 2 adds route shells', () => {
+  assert.match(main, /data-mode-preference/);
+  assert.match(main, /function AppShell/);
+  assert.match(main, /function SidebarNav/);
+  assert.match(main, /function RouteShell/);
+});
+
+test('app shell declares planned seed app routes', () => {
+  assert.match(main, /id: 'briefing'/);
+  assert.match(main, /id: 'goals'/);
+  assert.match(main, /id: 'decisions'/);
+  assert.match(main, /id: 'governance'/);
+  assert.match(main, /id: 'audit'/);
+  assert.match(main, /id: 'admin'/);
+  assert.match(main, /id: 'profile'/);
+  assert.match(main, /path: '\/ui\/briefing'/);
+  assert.match(main, /path: '\/ui\/governance\/policies'/);
+});
+
+test('shell includes tenant, notifications, user, and responsive nav seams', () => {
+  assert.match(main, /function TenantSwitcher/);
+  assert.match(main, /function NotificationsButton/);
+  assert.match(main, /function UserMenu/);
+  assert.match(main, /aria-expanded=\{navOpen\}/);
+  assert.match(main, /aria-controls="sidebar-navigation"/);
+  assert.match(main, /nav-backdrop/);
 });
 
 test('mode switching uses root data attributes and persists preference', () => {
@@ -38,6 +60,8 @@ test('focus, skip link, reduced motion, and responsive rules are present', () =>
   assert.match(base, /prefers-reduced-motion/);
   assert.match(layout, /@media \(max-width: 960px\)/);
   assert.match(layout, /@media \(max-width: 640px\)/);
+  assert.match(layout, /\.sidebar\.open/);
+  assert.match(layout, /\.mobile-menu-button/);
 });
 
 test('status and command-strip components use tokenized semantic classes', () => {
@@ -46,9 +70,9 @@ test('status and command-strip components use tokenized semantic classes', () =>
   assert.match(components, /\.status-pill\.success/);
   assert.match(components, /\.status-pill\.warning/);
   assert.match(components, /\.status-pill\.danger/);
-  assert.match(main, /Success · text label/);
-  assert.match(main, /Warning · text label/);
-  assert.match(main, /Risk · text label/);
+  assert.match(main, /Ready .* shell route/);
+  assert.match(main, /Pending .* fixture client/);
+  assert.match(main, /Guarded .* backend authority/);
 });
 
 test('frontend source of record exists separately from generated static resources', () => {

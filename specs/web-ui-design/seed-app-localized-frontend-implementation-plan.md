@@ -371,6 +371,8 @@ Validation:
 
 ### Slice 2: App shell and routing
 
+Status: complete. See `seed-app-frontend-slice-2-completion.md`.
+
 Outputs:
 
 - `AppShell`, sidebar nav, user region, notifications placeholder, tenant switcher placeholder.
