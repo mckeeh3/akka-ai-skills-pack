@@ -9,6 +9,7 @@ import com.example.domain.security.RoleAssignment;
 import com.example.domain.security.SecurityRole;
 import com.example.domain.security.UserProfile;
 import com.example.security.AuthorizationService;
+import com.example.security.RequiredEnvironment;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,9 @@ public class AdminUserBootstrap implements ServiceSetup {
 
   @Override
   public void onStartup() {
+    if (!isTestRuntime()) {
+      RequiredEnvironment.validateOrThrow(System.getenv());
+    }
     bootstrapFrom(System.getenv("ADMIN_USERS"), Instant.now());
   }
 
@@ -138,6 +142,10 @@ public class AdminUserBootstrap implements ServiceSetup {
 
   private static String defaultDisplayName(String email) {
     return email.substring(0, email.indexOf('@'));
+  }
+
+  private static boolean isTestRuntime() {
+    return System.getProperty("surefire.test.class.path") != null;
   }
 
   public record BootstrapAdminSpec(String userId, String email, String displayName, RoleAssignment role) {}

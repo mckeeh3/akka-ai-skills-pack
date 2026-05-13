@@ -15,6 +15,7 @@ import com.example.domain.security.LocalAccount;
 import com.example.domain.security.RoleAssignment;
 import com.example.domain.security.UserProfile;
 import com.example.security.AuthorizationService;
+import com.example.security.InvitationEmailSender;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -29,10 +30,12 @@ public class AdminUsersEndpoint extends AbstractHttpEndpoint {
 
   private final ComponentClient componentClient;
   private final AuthorizationService authorization;
+  private final InvitationEmailSender invitationEmailSender;
 
   public AdminUsersEndpoint(ComponentClient componentClient) {
     this.componentClient = componentClient;
     this.authorization = new AuthorizationService(componentClient);
+    this.invitationEmailSender = new InvitationEmailSender();
   }
 
   public record InviteUserRequest(String email, String displayName, List<RoleAssignment> roles) {}
@@ -113,6 +116,7 @@ public class AdminUsersEndpoint extends AbstractHttpEndpoint {
         .invoke(
             new LocalAccount.Command.Invite(
                 userId, new UserProfile(displayName, userId), request.roles(), Instant.now()));
+    var delivery = invitationEmailSender.sendInvitation(userId, displayName);
     var audit =
         authorization.audit(
             AdminAuditEntry.AdminAuditAction.INVITE_USER,
@@ -120,7 +124,13 @@ public class AdminUsersEndpoint extends AbstractHttpEndpoint {
             userId,
             firstTenantId(request.roles()),
             firstCustomerId(request.roles()),
-            Map.of("email", userId));
+            Map.of(
+                "email",
+                userId,
+                "inviteEmailStatus",
+                delivery.status(),
+                "inviteEmailReason",
+                delivery.reason()));
     return HttpResponses.ok(new UserActionResponse(UserResponse.from(authorization.getAccount(userId)), audit.auditId()));
   }
 

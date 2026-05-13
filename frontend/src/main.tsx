@@ -32,6 +32,25 @@ type MeResponse = {
   capabilities: string[];
 };
 
+type RoleAssignment = {
+  role: string;
+  tenantId?: string | null;
+  customerId?: string | null;
+};
+
+type UserResponse = {
+  userId: string;
+  email: string;
+  displayName: string;
+  status: string;
+  roles: RoleAssignment[];
+};
+
+type UserActionResponse = {
+  user: UserResponse;
+  auditId: string;
+};
+
 type Page = 'overview' | 'supplies' | 'admin' | 'tenants' | 'audit' | 'profile';
 
 const clientId = browserEnvValue('WORKOS_CLIENT_ID');
@@ -207,13 +226,73 @@ function SuppliesSurface({ me }: { me: MeResponse }) {
 }
 
 function AdminSurface({ me }: { me: MeResponse }) {
+  const auth = useAuth();
+  const [email, setEmail] = React.useState('');
+  const [displayName, setDisplayName] = React.useState('');
+  const [role, setRole] = React.useState('USER');
+  const [tenantId, setTenantId] = React.useState('');
+  const [customerId, setCustomerId] = React.useState('');
+  const [result, setResult] = React.useState<RemoteData<UserActionResponse>>({ status: 'idle' });
+  const canAdminUsers = hasAnyCapability(me, ['ADMIN_USERS', 'ADMIN_CUSTOMER_USERS']);
+
+  async function submitInvite(event: React.FormEvent) {
+    event.preventDefault();
+    setResult({ status: 'loading' });
+    const assignment: RoleAssignment = {
+      role,
+      tenantId: role === 'APP_ADMIN' ? null : tenantId.trim(),
+      customerId: role === 'CUSTOMER_ADMIN' || role === 'USER' ? customerId.trim() : null
+    };
+    const response = await inviteUser(() => auth.getAccessToken(), {
+      email: email.trim(),
+      displayName: displayName.trim(),
+      roles: [assignment]
+    });
+    setResult(response.ok ? { status: 'ready', value: response.value } : { status: 'error', error: response.error });
+    if (response.ok) {
+      setEmail('');
+      setDisplayName('');
+    }
+  }
+
   return (
-    <PlaceholderSurface
-      eyebrow="Administration"
-      title="Users and roles"
-      body="Invite users, assign allowed roles/scopes, activate or disable accounts, and review audit IDs from protected /api/admin/users calls."
-      warning={!hasCapability(me, 'ADMIN_USERS') ? 'Your current role does not grant user administration; backend APIs will reject forbidden calls.' : undefined}
-    />
+    <section aria-labelledby="users-and-roles-heading">
+      <div className="section-heading">
+        <p className="eyebrow">Administration</p>
+        <h2 id="users-and-roles-heading">Invite users and assign roles</h2>
+        <p>Create a local invited account, assign its server-side role/scope, and trigger the backend invitation email. The user signs in with WorkOS and <code>/api/me</code> links the identity to the invited account.</p>
+      </div>
+      {!canAdminUsers && <div className="callout warning" role="note">Your current role does not grant user administration; backend APIs will reject forbidden calls.</div>}
+      <form className="panel form-grid" onSubmit={submitInvite} aria-busy={result.status === 'loading'}>
+        <label>
+          Email
+          <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required placeholder="new.user@example.com" />
+        </label>
+        <label>
+          Display name
+          <input value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder="New User" />
+        </label>
+        <label>
+          Role
+          <select value={role} onChange={(event) => setRole(event.target.value)}>
+            {['USER', 'CUSTOMER_ADMIN', 'OPERATIONS_SUPERVISOR', 'DEALER_OWNER', 'POLICY_OWNER', 'AUDITOR', 'APP_ADMIN'].map((value) => <option key={value} value={value}>{value}</option>)}
+          </select>
+        </label>
+        {role !== 'APP_ADMIN' && <label>
+          Tenant ID
+          <input value={tenantId} onChange={(event) => setTenantId(event.target.value)} required placeholder="tenant-a" />
+        </label>}
+        {(role === 'USER' || role === 'CUSTOMER_ADMIN') && <label>
+          Customer ID
+          <input value={customerId} onChange={(event) => setCustomerId(event.target.value)} required placeholder="customer-a" />
+        </label>}
+        <div className="form-actions">
+          <button type="submit" disabled={!canAdminUsers || result.status === 'loading'}>{result.status === 'loading' ? 'Sending invite…' : 'Invite user'}</button>
+        </div>
+      </form>
+      {result.status === 'ready' && <div className="callout success" role="status">Invited <strong>{result.value.user.email}</strong> as {result.value.user.roles.map((item) => item.role).join(', ')}. Audit ID: <code>{result.value.auditId}</code></div>}
+      {result.status === 'error' && <div className="callout warning" role="alert">{result.error.message}</div>}
+    </section>
   );
 }
 
@@ -402,6 +481,29 @@ async function getMe(getAccessToken: () => Promise<string | null | undefined>): 
       return { ok: false, error: await mapApiError(response) };
     }
     return { ok: true, value: await response.json() as MeResponse };
+  } catch (error) {
+    return { ok: false, error: { kind: 'network', message: error instanceof Error ? error.message : String(error) } };
+  }
+}
+
+async function inviteUser(
+  getAccessToken: () => Promise<string | null | undefined>,
+  request: { email: string; displayName: string; roles: RoleAssignment[] }
+): Promise<{ ok: true; value: UserActionResponse } | { ok: false; error: ApiError }> {
+  try {
+    const token = await getAccessToken();
+    if (!token) {
+      return { ok: false, error: { kind: 'unauthorized', message: 'No WorkOS access token was available.' } };
+    }
+    const response = await fetch('/api/admin/users/invite', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(request)
+    });
+    if (!response.ok) {
+      return { ok: false, error: await mapApiError(response) };
+    }
+    return { ok: true, value: await response.json() as UserActionResponse };
   } catch (error) {
     return { ok: false, error: { kind: 'network', message: error instanceof Error ? error.message : String(error) } };
   }
