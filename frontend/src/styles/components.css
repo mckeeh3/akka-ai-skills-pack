@@ -403,3 +403,144 @@
   flex-wrap: wrap;
   gap: var(--space-3);
 }
+
+.mission-control {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.command-result,
+.realtime-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-soft);
+  padding: var(--space-4) var(--space-5);
+}
+
+.realtime-banner.stale {
+  border-color: color-mix(in srgb, var(--color-warning) 58%, var(--color-border));
+  background: var(--color-warning-soft);
+}
+
+.mission-kpi-band {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-areas:
+    "attention activity"
+    "teams trust"
+    "upcoming trust";
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.needs-attention-panel { grid-area: attention; }
+.agent-activity-panel { grid-area: activity; }
+.agent-teams-panel { grid-area: teams; }
+.trust-controls-panel { grid-area: trust; }
+.upcoming-actions-panel { grid-area: upcoming; }
+
+.attention-list,
+.timeline-list,
+.team-list,
+.policy-list,
+.upcoming-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attention-row,
+.policy-row,
+.team-row,
+.timeline-list li,
+.upcoming-list li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  padding: var(--space-4);
+}
+
+.attention-row.primary {
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-border));
+  box-shadow: var(--shadow-card);
+}
+
+.attention-row h3,
+.policy-row h3 {
+  margin: var(--space-2) 0;
+  font-size: 1rem;
+}
+
+.attention-row p,
+.policy-row p,
+.team-row p,
+.timeline-list p {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted);
+}
+
+.policy-trigger {
+  font-weight: 750;
+}
+
+.attention-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.timeline-list li,
+.team-row {
+  justify-content: flex-start;
+}
+
+.upcoming-list li span {
+  color: var(--color-muted);
+  font-weight: 800;
+}
+
+@media (max-width: 1120px) {
+  .mission-kpi-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mission-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "attention"
+      "activity"
+      "teams"
+      "trust"
+      "upcoming";
+  }
+}
+
+@media (max-width: 640px) {
+  .mission-kpi-band { grid-template-columns: 1fr; }
+  .attention-row,
+  .policy-row,
+  .upcoming-list li {
+    flex-direction: column;
+  }
+  .attention-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .attention-actions .ds-button { width: 100%; }
+}

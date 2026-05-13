@@ -5,6 +5,8 @@ import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
 import { CommandStrip, KpiCard, PageHeader as DsPageHeader } from './design-system';
+import { FixtureApiClient, FixtureRealtimeClient } from './api';
+import { BriefingPage } from './screens/briefing/BriefingPage';
 
 type ModePreference = 'light' | 'dark' | 'system';
 type RouteId = 'briefing' | 'goals' | 'decisions' | 'governance' | 'audit' | 'admin' | 'profile';
@@ -25,6 +27,8 @@ function App() {
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
   const [route, setRoute] = React.useState<RouteId>(() => routeFromHash());
   const [navOpen, setNavOpen] = React.useState(false);
+  const apiClient = React.useMemo(() => new FixtureApiClient(), []);
+  const realtimeClient = React.useMemo(() => new FixtureRealtimeClient(), []);
 
   React.useEffect(() => {
     const root = document.documentElement;
@@ -64,6 +68,8 @@ function App() {
       onModeChange={setMode}
       onToggleNav={() => setNavOpen((open) => !open)}
       onCloseNav={() => setNavOpen(false)}
+      apiClient={apiClient}
+      realtimeClient={realtimeClient}
     />
   );
 }
@@ -75,7 +81,9 @@ function AppShell({
   onNavigate,
   onModeChange,
   onToggleNav,
-  onCloseNav
+  onCloseNav,
+  apiClient,
+  realtimeClient
 }: {
   route: RouteId;
   mode: ModePreference;
@@ -84,6 +92,8 @@ function AppShell({
   onModeChange: (mode: ModePreference) => void;
   onToggleNav: () => void;
   onCloseNav: () => void;
+  apiClient: FixtureApiClient;
+  realtimeClient: FixtureRealtimeClient;
 }) {
   const activeRoute = routes.find((item) => item.id === route) ?? routes[0];
 
@@ -108,7 +118,7 @@ function AppShell({
 
         <main id="main-content" className="content" tabIndex={-1}>
           <PageHeader route={activeRoute} />
-          <RouteShell route={route} mode={mode} onModeChange={onModeChange} />
+          <RouteShell route={route} mode={mode} onModeChange={onModeChange} apiClient={apiClient} realtimeClient={realtimeClient} />
         </main>
       </div>
     </div>
@@ -189,9 +199,13 @@ function PageHeader({ route }: { route: (typeof routes)[number] }) {
   return <DsPageHeader eyebrow={route.group} title={route.label}>{pageSubtitle(route.id)}</DsPageHeader>;
 }
 
-function RouteShell({ route, mode, onModeChange }: { route: RouteId; mode: ModePreference; onModeChange: (mode: ModePreference) => void }) {
+function RouteShell({ route, mode, onModeChange, apiClient, realtimeClient }: { route: RouteId; mode: ModePreference; onModeChange: (mode: ModePreference) => void; apiClient: FixtureApiClient; realtimeClient: FixtureRealtimeClient }) {
   if (route === 'profile') {
     return <ProfilePreferences mode={mode} onModeChange={onModeChange} />;
+  }
+
+  if (route === 'briefing') {
+    return <BriefingPage apiClient={apiClient} realtimeClient={realtimeClient} />;
   }
 
   return (
