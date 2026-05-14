@@ -60,7 +60,7 @@ Use it only after the harness has either:
 Generation is a realization step, not the source-of-truth step.
 
 If generation reveals a semantic gap, the fix belongs in the app description, not in hand-edited generated code.
-For every generated SaaS app, never invent missing secure foundation semantics during generation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, AuthContext, `/api/me`, backend authorization, audit, support-access, billing boundary, and tenant-isolation tests must already be described or generation must stop/mark not-ready.
+For every generated SaaS app, never invent missing secure foundation semantics during generation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, audit, support-access, billing boundary, admin surfaces, tenant-isolation, disabled-user, forbidden-access, role/scope-denial, and frontend secret-boundary tests must already be described or generation must stop/mark not-ready.
 For AI-first/delegated operations, never invent missing authority, policy, approval, decision, evidence, trace, outcome, or supervision semantics during generation.
 
 ## Generation responsibilities
@@ -68,6 +68,7 @@ For AI-first/delegated operations, never invent missing authority, policy, appro
 When generating, this skill must:
 - identify the current description baseline
 - verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
+- block generation or return to readiness if Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin/support-access/billing-boundary semantics, tenant isolation, forbidden access, disabled-user, role/scope denial, or foundation tests are missing
 - verify readiness did not ignore `15-operating-model/` when delegated operations are in scope
 - identify whether generation is full or localized
 - identify which outputs are in scope
@@ -97,7 +98,7 @@ It must never override description correctness.
 ## Output categories
 
 As applicable, generation may include:
-- secure SaaS foundation outputs first: identity/tenancy/domain types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization service, AdminAuditEvent/audit views, support-access, subscription/billing boundary, and tenant-isolation/security tests
+- secure SaaS foundation outputs first: identity/tenancy/domain types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization service, AdminAuditEvent/audit views, support-access, subscription/billing boundary, admin/context-selection UI surfaces when a browser UI is in scope, and tenant-isolation/security tests for forbidden access, disabled users, role/scope denial, audit, and frontend secret boundaries
 - source code
 - generated tests
 - configuration or deployment assets
@@ -108,7 +109,7 @@ As applicable, generation may include:
 
 The exact realization set depends on the current repository and user request. When a browser frontend is in scope, route realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as raw asset delivery. Do not invent a visual theme during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../../docs/web-ui-style-guide.md`.
 
-For generated SaaS apps, route through `core-saas-foundation` before app-specific generation and stop or surface a blocking gap if the description lacks the mandatory foundation contract. When AI-first behavior is in scope, route through `ai-first-saas` companion skills and the selected Akka substrate skills before generation. Stop or surface a blocking gap if `15-operating-model/` does not define the required delegated work, retained human authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or AI-first UI surfaces well enough to implement.
+For generated SaaS apps, route through `core-saas-foundation` before app-specific generation and stop or surface a blocking gap if the description lacks the mandatory foundation contract. The generation step must not decide that a protected route, agent tool, data access path, workflow action, view query, stream, consumer side effect, timer action, or generated UI action is public or authorized by default. When AI-first behavior is in scope, route through `ai-first-saas` companion skills and the selected Akka substrate skills before generation. Stop or surface a blocking gap if `15-operating-model/` does not define the required delegated work, retained human authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or AI-first UI surfaces well enough to implement.
 
 ## Standard generation output shape
 
@@ -180,7 +181,8 @@ Avoid:
 Before finishing, verify:
 - the description basis for generation is explicit
 - readiness state is explicit
-- secure SaaS foundation basis is explicit and complete enough for generation
+- secure SaaS foundation basis is explicit and complete enough for generation, including foundation behavior, auth/security, observability, UI when in scope, and baseline tests
+- missing foundation/security semantics block generation instead of becoming assumptions
 - operating-model basis is explicit when AI-first/delegated operations are in scope
 - assumptions are explicit when used
 - regeneration scope is explicit

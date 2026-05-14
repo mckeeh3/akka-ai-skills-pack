@@ -88,7 +88,7 @@
 
 ### TASK-003: Make description-first bootstrap, security, tests, readiness, and generation enforce secure AI-first SaaS foundations
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: [TASK-002]

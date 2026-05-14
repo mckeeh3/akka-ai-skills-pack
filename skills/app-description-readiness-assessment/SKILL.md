@@ -30,6 +30,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation readiness criteria
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -62,13 +63,25 @@ Readiness is about **semantic completeness**, not about whether code could be gu
 
 A description is ready only when it is clear enough that generation is likely to preserve intended behavior without hiding major unresolved decisions.
 
-This skill should resist premature generation when important behavior, test, security, observability, in-scope frontend/UI, or AI-first operating-model semantics are still undefined.
+This skill should resist premature generation when important behavior, test, security, observability, in-scope frontend/UI, mandatory secure SaaS foundation, or AI-first operating-model semantics are still undefined.
 
 ## Readiness dimensions
 
 Assess the current description across these dimensions:
 
-### 1. AI-first operating-model completeness
+### 1. Core secure SaaS foundation completeness
+For every generated SaaS app, this is blocking readiness. Check that the description explicitly defines:
+- SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, and subscription/billing boundary
+- WorkOS/JWT or selected authentication seam plus local Akka authorization state
+- `/api/me`, selected context, context switching, and browser-safe capability payloads
+- backend authorization for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, timer action, and generated UI action
+- tenant/customer-scoped commands and queries with forbidden access, disabled-user, inactive-membership, role/scope denial, and tenant-isolation behavior
+- foundation behavior artifacts for sign-in, account/profile/settings, tenant/customer admin, Membership/Role/Permission, invitations, support-access, audit, and billing-boundary behavior
+- foundation test artifacts for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, support-access, billing boundary, idempotency, and frontend secret-boundary checks
+- observability/audit artifacts for identity, Membership/role, support-access, billing-boundary, policy, approval, data-access, and consequential AI/tool activity
+- browser UI foundation surfaces when UI is in scope: sign-in state, context selection, profile/settings, tenant/customer admin, Membership/role/invitation, support-access, audit, and capability-gated navigation
+
+### 2. AI-first operating-model completeness
 Check this when `15-operating-model/` exists or delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope:
 - durable goals, objectives, constraints, success criteria, and outcome links
 - delegated work versus retained human authority
@@ -77,7 +90,7 @@ Check this when `15-operating-model/` exists or delegated work, agents, decision
 - decision/exception semantics with evidence, risk, confidence, impact, alternatives, and precedents
 - audit/work/decision traces, policy invocations, tool/data-access events, feedback, replay/simulation, and outcome metrics
 
-### 2. Behavior completeness
+### 3. Behavior completeness
 Check whether the app meaning is sufficiently defined:
 - core capabilities
 - major flows and state changes
@@ -86,7 +99,7 @@ Check whether the app meaning is sufficiently defined:
 - forbidden behavior
 - no-op or idempotency rules where relevant
 
-### 3. Test completeness
+### 4. Test completeness
 Check whether important behavior is backed by explicit verification expectations:
 - acceptance cases
 - regression cases
@@ -94,7 +107,7 @@ Check whether important behavior is backed by explicit verification expectations
 - repeated-request behavior
 - failure-path expectations
 
-### 4. Auth/security completeness
+### 5. Auth/security completeness
 Check whether required production security semantics are defined:
 - identity and trust model
 - authorization rules
@@ -103,7 +116,7 @@ Check whether required production security semantics are defined:
 - denial behavior
 - mechanical enforcement of agent/tool permissions and human authority boundaries when AI-first behavior is in scope
 
-### 5. Observability completeness
+### 6. Observability completeness
 Check whether required operational evidence is defined:
 - logs and audit events
 - metrics
@@ -113,7 +126,7 @@ Check whether required operational evidence is defined:
 - diagnosability expectations
 - AI-first work traces, decision traces, policy invocations, tool/data-access records, and outcome links when applicable
 
-### 6. Frontend/UI completeness
+### 7. Frontend/UI completeness
 Check this when a browser frontend is in scope:
 - user journeys and screens
 - navigation
@@ -125,7 +138,7 @@ Check this when a browser frontend is in scope:
 - selected web UI style guide/theme, mode policy, core CSS tokens, component styling, and brand adaptation rules
 - for AI-first apps, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces instead of only CRUD navigation
 
-### 7. Generation stability
+### 8. Generation stability
 Check whether remaining ambiguity would likely cause incorrect or unstable generated outputs.
 
 ## Allowed outcomes
@@ -151,6 +164,10 @@ Use this response shape:
 
 ## Overall state
 - not-ready | ready-with-assumptions | ready
+
+## Core secure SaaS foundation completeness
+- status:
+- notes:
 
 ## AI-first operating-model completeness
 - status:
@@ -194,7 +211,7 @@ If a critical area is underspecified, say so directly.
 Do not mark the description ready just because generation is technically possible.
 
 ### 2. Weight missing production concerns appropriately
-Missing auth/security, observability, operating-model, or AI-first UI details may block readiness even if core behavior is mostly defined.
+Missing secure SaaS foundation, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
 ### 3. Allow limited assumptions only when localized
 `ready-with-assumptions` is valid only when the remaining assumptions are:
@@ -217,6 +234,7 @@ If the description is sufficiently mature, this skill may recommend moving on to
 
 Route onward as follows:
 - if `not-ready`, route to the most relevant missing description skills:
+  - `core-saas-foundation`, `app-description-bootstrap`, `app-description-auth-security`, and `app-description-test-specification` when Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, disabled-user, forbidden-access, or foundation test semantics are missing
   - `ai-first-saas` or focused AI-first companion skills when operating-model semantics are missing
   - `app-description-behavior-specification`
   - `app-description-test-specification`
@@ -250,6 +268,8 @@ Avoid:
 
 Before finishing, verify:
 - the result uses one of the three allowed states
+- core secure SaaS foundation completeness was assessed explicitly for generated SaaS apps
+- missing foundation/security blocks generation or marks the description `not-ready`
 - AI-first operating-model completeness was assessed explicitly when delegated operations are in scope
 - behavior completeness was assessed explicitly
 - test completeness was assessed explicitly

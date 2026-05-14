@@ -17,8 +17,8 @@ The application description is the source of truth.
 Everything in this architecture exists to maintain that truth in a layered, interconnected, regenerable form.
 Generated code, tests, and runnable assets are downstream projections.
 
-For AI-first SaaS applications, the description must preserve the agentic operating model before implementation planning: durable goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, traces, and outcomes.
-Do not reduce agentic product intent to CRUD objects or chatbot screens.
+For AI-first SaaS applications, the description must preserve the secure SaaS foundation and agentic operating model before implementation planning: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, durable goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, traces, and outcomes.
+Do not reduce agentic product intent to CRUD objects or chatbot screens, and do not let generation invent missing security semantics.
 
 ## Default root
 
@@ -58,7 +58,7 @@ app-description/
 
   10-capabilities/
     capabilities-index.md
-    01-<capability>.md
+    01-secure-tenant-user-foundation.md
     02-<capability>.md
 
   15-operating-model/      # when AI-first/delegated operations are in scope
@@ -89,6 +89,7 @@ app-description/
       01-<operational-verification>.md
 
   40-auth-security/
+    secure-saas-foundation.md
     identity-and-trust.md
     authorization-rules.md
     data-protection.md
@@ -164,6 +165,8 @@ Should include:
 ## `10-capabilities/`
 Business capability inventory.
 
+For generated SaaS apps, the first capability must be `01-secure-tenant-user-foundation.md`, covering Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, and tenant/customer isolation before app-specific capabilities.
+
 This layer answers:
 - what business or user-visible capabilities exist?
 - what is in scope?
@@ -213,6 +216,7 @@ Subareas:
 Authoritative verification layer.
 
 This layer is part of the app description, not a downstream afterthought.
+For generated SaaS apps it must include baseline secure foundation tests for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, support-access, billing boundary, idempotency, and frontend secret boundaries.
 It answers:
 - what must be provable?
 - what acceptance cases define success?
@@ -230,6 +234,7 @@ Subareas:
 Auth/security semantics.
 
 This layer answers:
+- how the mandatory secure SaaS foundation is enforced: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, and subscription/billing boundary
 - how identity is established
 - what authorization rules exist
 - what trust boundaries exist
@@ -242,7 +247,7 @@ Operational evidence requirements.
 
 This layer answers:
 - what must be logged
-- what must be audited
+- what must be audited, including identity, Membership/role, support-access, billing-boundary, policy, approval, data-access, and consequential AI/tool activity
 - what metrics matter
 - what trace continuity is required
 - what health signals exist
@@ -315,7 +320,7 @@ Do not treat this layer as the source of app meaning.
 Default ownership should be:
 
 - `app-description-bootstrap`
-  - creates the initial `00-system/`, `10-capabilities/`, `20-behavior/`, `30-tests/`, `40-auth-security/`, and `50-observability/` seed artifacts, plus `15-operating-model/` when AI-first/delegated operations are in scope and `55-ui/` when a browser frontend is in scope
+  - creates the initial `00-system/`, secure foundation `10-capabilities/`, foundation `20-behavior/`, foundation `30-tests/`, `40-auth-security/`, and `50-observability/` seed artifacts, plus `15-operating-model/` when AI-first/delegated operations are in scope and `55-ui/` foundation surfaces when a browser frontend is in scope
   - establishes the first stable app-description root
 
 - `app-description-input-normalization`
@@ -375,15 +380,16 @@ Default ownership should be:
 
 The harness should maintain these invariants:
 
-1. Every in-scope capability must link to at least one behavior artifact.
-2. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
-3. Every important behavior change must link to one or more test artifacts.
-4. Security-sensitive behavior must link to relevant auth/security artifacts.
-5. Operationally important behavior must link to relevant observability artifacts.
-6. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
-7. Readiness must be based on the actual state of operating model, behavior, tests, security, observability, and in-scope UI layers.
-8. Generation policy must never override description correctness.
-9. Review summaries must be derivable from authoritative layers.
+1. Every generated SaaS app must include the secure tenant/user foundation capability, behavior, auth/security, observability, UI when in scope, and test artifacts before app-specific generation.
+2. Every in-scope capability must link to at least one behavior artifact.
+3. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
+4. Every important behavior change must link to one or more test artifacts.
+5. Security-sensitive behavior must link to relevant auth/security artifacts.
+6. Operationally important behavior must link to relevant observability artifacts.
+7. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
+8. Readiness must be based on the actual state of operating model, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
+9. Generation policy must never override description correctness.
+10. Review summaries must be derivable from authoritative layers.
 
 ## File sizing rules
 
@@ -465,14 +471,20 @@ app-description/
     readiness-status.md
   10-capabilities/
     capabilities-index.md
+    01-secure-tenant-user-foundation.md
   15-operating-model/      # only when AI-first/delegated operations are in scope
     goals-and-objectives.md
   20-behavior/
     behavior-index.md
+    flows/01-secure-foundation-access-flow.md
   30-tests/
     test-index.md
+    regression/01-tenant-isolation-and-idempotency.md
+    negative/01-security-denial-baseline.md
   40-auth-security/
+    secure-saas-foundation.md
     identity-and-trust.md
+    authorization-rules.md
   50-observability/
     logs-and-audit.md
 ```

@@ -31,6 +31,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation semantics
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
@@ -70,6 +71,8 @@ Use it for:
 
 Treat security as part of the app's authoritative meaning, not as a later implementation hardening step.
 
+For every generated SaaS app, start from the `core-saas-foundation` baseline: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, tenant/customer scoping, and tenant isolation. Provider-specific unknowns may remain questions, but local authorization, tenancy, audit, and denial semantics are mandatory.
+
 This skill should define:
 - who the actors are
 - how trust is established
@@ -81,6 +84,7 @@ This skill should define:
 ## What this skill must capture
 
 For each requested change, identify and describe as applicable:
+- secure SaaS foundation impact: Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, billing boundary, `/api/me`, backend authorization, and tenant/customer scoping
 - caller identities or principal categories
 - authentication mechanism or trust source, including identity provider when known
 - frontend-to-backend token propagation expectations
@@ -97,6 +101,7 @@ For each requested change, identify and describe as applicable:
 - secret-handling constraints
 - forbidden access patterns
 - unauthorized and forbidden response behavior
+- explicit default-deny rule for every route, agent tool, data access path, workflow action, view query, stream, consumer side effect, timer action, and generated UI action unless deliberately public static assets
 - dependencies on behavior, test, and observability layers
 
 ## Standard auth/security output shape
@@ -141,6 +146,18 @@ Use this response shape when updating or summarizing auth/security changes:
 
 ## Security modeling rules
 
+### Secure SaaS foundation defaults
+
+Every app-description auth/security layer must explicitly capture:
+- SaaS Owner, Tenant, and Customer boundaries, including support-access and billing/subscription separation
+- Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, and selected AuthContext semantics
+- `/api/me` payload boundaries: browser-safe profile, settings, memberships, selected context, and capabilities only
+- a central backend authorization rule set used by protected HTTP/gRPC/MCP routes, component commands, view queries, streams, workflow actions, agent tools, consumers, timers, and generated UI actions
+- tenant/customer-scoped commands and queries with mechanical rejection of cross-scope access
+- disabled-user, inactive-membership, expired support-access, missing role/scope, and forbidden access behavior
+- AdminAuditEvent requirements for identity, membership, role, invitation, support-access, billing-boundary, policy, approval, data-access, and consequential AI/tool activity
+- security test links for tenant isolation, forbidden access, disabled user, role/scope denial, `/api/me`, audit, and frontend secret-boundary cases
+
 ### WorkOS/JWT web app defaults
 
 When the app uses WorkOS with an Akka-hosted frontend, capture these explicitly:
@@ -165,13 +182,13 @@ When delegated work, agents, or governed automation are in scope, capture:
 
 ### Basic administration defaults
 
-When basic administration is in scope, capture:
-- admin roles such as `APP_ADMIN`, `TENANT_ADMIN`, `CUSTOMER_ADMIN`, `USER`
-- scope boundaries such as all tenants, tenant id, customer id, or self
-- startup admin bootstrap source, such as `ADMIN_USERS`
+Basic administration is part of the secure SaaS foundation for generated SaaS apps. Capture:
+- SaaS Owner, Tenant Admin, Customer Admin, and user/member roles appropriate to the scope
+- scope boundaries such as SaaS Owner platform metadata, tenant id, customer id, support-access tenant scope, or self
+- startup admin bootstrap source, such as `ADMIN_USERS`, and how it creates the first SaaS Owner or Tenant admin without creating a permanent bypass
 - invite and first-login account-linking behavior
-- disabled-user behavior
-- server-side checks for every admin operation
+- disabled-user behavior and inactive-membership denial
+- server-side checks and AdminAuditEvent records for every admin operation
 
 ### 1. Define principals explicitly
 Do not say "authorized users" if the actual roles, identities, or caller classes matter.
@@ -236,16 +253,19 @@ Avoid:
 - reducing security to a vague "must be secure" statement
 - merging authentication and authorization into one blurry rule
 - forgetting tenant or ownership isolation semantics
+- leaving Account/Profile/Settings/Membership/Tenant/Customer/admin/audit foundation behavior undefined
+- treating a route, agent tool, data access path, workflow action, view query, stream, or generated UI action as unauthenticated or unauthorized by default
 - defining sensitive-data rules without mentioning logs, responses, or audit visibility
 - assuming denial behavior is irrelevant because a framework will handle it somehow
 - using prompt instructions as the only control for agent tool use, data access, policy commits, or high-impact actions
-- treating auth/security as optional polish after behavior is already fixed
+- delaying auth/security until after behavior is already fixed
 
 ## Final review checklist
 
 Before finishing, verify:
 - the caller or principal model is explicit
 - authentication expectations are explicit where relevant
+- secure SaaS foundation objects and `/api/me` semantics are explicit for generated SaaS apps
 - authorization rules are explicit by action or surface
 - trust boundaries are called out
 - sensitive-data rules are included where relevant

@@ -18,6 +18,7 @@ The output should:
 - capture regressions and bug-fix expectations
 - include edge cases and negative cases
 - make no-op and idempotency behavior testable
+- capture mandatory secure SaaS foundation verification expectations, including tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, and frontend secret-boundary tests
 - capture relevant security and observability verification expectations
 - preserve AI-first verification needs when delegated work, agent judgment, approvals, policies, traces, evaluations, or outcomes are in scope
 - identify remaining ambiguity that still needs clarification
@@ -30,6 +31,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation verification expectations
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
@@ -73,6 +75,7 @@ For each behavior or change, specify as applicable:
 - no-op scenarios
 - idempotency scenarios
 - failure-path scenarios
+- baseline secure SaaS foundation scenarios for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, support-access, billing boundary, AdminAuditEvent, and tenant/customer-scoped commands and queries
 - auth/security verification scenarios
 - observability verification scenarios
 
@@ -92,6 +95,16 @@ Repeated or obsolete requests that should not create unintended side effects.
 
 ### 5. Security
 Authentication, authorization, and restricted-access expectations.
+
+For generated SaaS apps this category is mandatory baseline coverage, not a conditional add-on. Include:
+- tenant isolation for commands, queries, views, streams, tools, workflow actions, consumers, timers, and generated UI access
+- forbidden access and resource-hiding behavior where applicable
+- disabled-user and inactive-membership denial
+- role/scope/permission denial for every protected operation family
+- `/api/me` payload, selected AuthContext, context switching, and browser-safe capability display
+- invitation, admin bootstrap, Membership/role assignment, support-access grant/revoke/expiry, and billing-boundary cases
+- AdminAuditEvent emission for identity, membership, role, support-access, billing-boundary, policy, approval, data-access, and consequential AI/tool activity
+- frontend secret-boundary tests proving provider/server secrets are not emitted to browser assets or client-visible API payloads
 
 ### 6. Observability
 What evidence should exist for diagnosis, audit, alerts, or operational visibility.
@@ -158,8 +171,10 @@ Include rejected behavior, repeated commands, obsolete callbacks, and retry situ
 ### 4. Add regression tests for every bug-fix semantic change
 If a bug triggered the change, capture the old failure mode as a regression expectation.
 
-### 5. Include security and observability when first-class
-If access control or operational evidence is part of the requested behavior, define it here explicitly.
+### 5. Include secure foundation, security, and observability baseline tests
+For generated SaaS apps, secure foundation tests are mandatory even when the feature request is app-specific. Do not treat tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, or frontend secret-boundary checks as polish.
+
+If additional access control or operational evidence is part of the requested behavior, define it here explicitly.
 
 ### 6. Test delegated authority, not just generated answers
 For AI-first behavior, include tests that prove what the agent/system may do, what it must only recommend, what requires approval, and what must be denied or escalated.
@@ -183,6 +198,9 @@ Route onward as needed:
 ## Example scenario patterns
 
 Good patterns include:
+- Given a disabled user with a formerly valid Membership, when they call any protected route, view query, stream, agent tool, workflow action, or generated UI action, then the system denies access and emits the required AdminAuditEvent without exposing protected data.
+- Given a user with Membership in tenant A only, when they attempt to read or mutate tenant B or customer B data, then the system rejects the request mechanically and no cross-tenant data appears in responses, views, streams, traces, or logs.
+- Given the browser requests `/api/me`, when the user is authenticated, then the response contains only browser-safe Account/Profile/Settings, Membership, selected AuthContext, and capabilities and never exposes backend secrets or unauthorized scopes.
 - Given a valid request in the initial state, when the user submits it, then the system accepts it and records the new state.
 - Given the request has already been applied, when the same request is repeated, then the system performs no duplicate side effect.
 - Given the caller lacks permission, when they attempt the action, then the system rejects it and exposes no protected data.
@@ -197,6 +215,7 @@ Avoid:
 - describing tests in vague prose with no scenario shape
 - binding tests too tightly to likely implementation details
 - forgetting regression coverage for behavior changes triggered by bugs
+- omitting mandatory secure SaaS foundation verification for generated apps
 - omitting security or observability verification when they are part of the requested behavior
 - testing only LLM text quality while ignoring authority boundaries, policy enforcement, trace emission, and outcome links
 - pretending ambiguous behavior is well-defined when it is not
@@ -208,6 +227,7 @@ Before finishing, verify:
 - bug-fix changes have regression cases
 - invalid or forbidden paths have negative cases
 - repeated-request behavior is covered where relevant
+- mandatory secure SaaS foundation tests are present for generated SaaS apps, including tenant isolation, forbidden access, disabled user, role/scope denial, `/api/me`, audit, and frontend secret-boundary tests
 - security verification is included when relevant
 - observability verification is included when relevant
 - AI-first evaluation, policy, permission, approval, trace, and outcome cases are included when relevant

@@ -25,6 +25,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation that every new app description, readiness review, and generation flow must preserve
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -92,20 +93,21 @@ Load the companion skill that matches the current task:
 Prefer this sequence unless the task is already narrowly scoped:
 
 1. apply `ai-first-saas` interpretation when broad input involves delegated work, agents, policy-bound decisions, approvals, supervision, audit, learning, or outcomes
-2. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `15-operating-model/` when AI-first/delegated operations are in scope
-3. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
-4. route input with `app-description-intake-router`
-5. model capabilities with `app-description-capability-modeling` when scope or business outcomes changed
-6. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
-7. update behavior with `app-description-behavior-specification`
-8. update tests with `app-description-test-specification`
-9. run `app-description-change-impact` to identify cross-layer and realization implications
-10. update security with `app-description-auth-security` when needed
-11. update observability with `app-description-observability` when needed
-12. update UI with `app-description-ui` when needed
-13. assess readiness with `app-description-readiness-assessment`
-14. realize outputs with `app-generate-app` only when generation is requested or accepted
-15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+2. apply `core-saas-foundation` for every new SaaS app description so Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin, and tenant isolation are seeded before app-specific features
+3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `15-operating-model/` when AI-first/delegated operations are in scope
+4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
+5. route input with `app-description-intake-router`
+6. model capabilities with `app-description-capability-modeling` when scope or business outcomes changed
+7. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
+8. update behavior with `app-description-behavior-specification`
+9. update tests with `app-description-test-specification`
+10. run `app-description-change-impact` to identify cross-layer and realization implications
+11. update security with `app-description-auth-security` when security semantics change; preserve the mandatory foundation in every app description
+12. update observability with `app-description-observability` when observability semantics change; preserve audit requirements in every app description
+13. update UI with `app-description-ui` when needed
+14. assess readiness with `app-description-readiness-assessment`
+15. realize outputs with `app-generate-app` only when generation is requested or accepted
+16. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 ## Layer model
 
@@ -131,17 +133,19 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 3. Humans do not directly edit generated code or internal app-description artifacts.
 4. Tests are part of the app description, not only post-hoc verification.
 5. AI-first operating-model semantics are first-class when delegated work, agents, governance, decisions, traces, or outcomes are in scope.
-6. Auth/security and observability are first-class description concerns.
-7. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
-8. Readiness must be assessed before generation.
-9. Localized regeneration is an optimization, not a conceptual requirement.
-10. Review should focus on semantic change, not only file churn.
+6. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
+7. Auth/security and observability are first-class description concerns.
+8. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
+9. Readiness must be assessed before generation.
+10. Localized regeneration is an optimization, not a conceptual requirement.
+11. Review should focus on semantic change, not only file churn.
 
 ## Decision guide
 
 ### 1. The user is starting a new app description
 Start with:
 - `ai-first-saas` first when the idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
+- `core-saas-foundation` for the mandatory foundation contract
 - `app-description-bootstrap`
 - then `app-description-intake-router`
 
@@ -179,6 +183,7 @@ Before finishing, verify:
 - the current task is routed to the smallest suitable companion skill
 - operating-model, behavior, tests, security, UI, and observability are kept separate when they change separately
 - broad AI-first product input is interpreted before CRUD/component decomposition
+- the secure SaaS foundation is present or the gap is treated as blocking readiness/generation
 - readiness is not skipped before generation
 - generation summaries are clearly distinguished from description changes
 - review answers focus on app meaning and readiness rather than internal editing mechanics

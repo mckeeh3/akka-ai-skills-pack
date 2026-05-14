@@ -13,7 +13,7 @@ Reference example:
 
 The user interacts through flexible prompt/response.
 The harness interprets intent and updates internal description artifacts.
-For high-level product input, the harness first checks whether the product should be treated as AI-first SaaS: durable goals, delegated work, bounded agents, policy/permission controls, supervision, approvals/exceptions, traces, and outcome accountability.
+For high-level product input, the harness first checks whether the product should be treated as AI-first SaaS and applies the mandatory secure SaaS foundation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, durable goals, delegated work, bounded agents, policy/permission controls, supervision, approvals/exceptions, traces, and outcome accountability.
 The user does not edit:
 - generated code
 - generated tests
@@ -43,15 +43,15 @@ Use only when the user explicitly asks to realize outputs or accepts a harness r
 
 Prefer this default sequence:
 
-1. bootstrap the internal app-description tree if no usable root exists yet
+1. bootstrap the internal app-description tree if no usable root exists yet, seeding the secure SaaS foundation capability, behavior, tests, auth/security, observability, and UI surfaces when in scope
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
 5. update `15-operating-model/` when AI-first/delegated operations are in scope
 6. update behavior-level meaning
 7. update verification expectations
-8. update auth/security if needed
-9. update observability if needed
+8. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
+9. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, and consequential AI/tool activity
 10. update UI descriptions, including `55-ui/style-guide.md`, when a browser frontend is in scope
 11. update traceability and impact understanding
 12. assess readiness
@@ -94,7 +94,7 @@ Route to focused AI-first companion skills only for the affected concerns; do no
 ### Step 5. Update behavior
 Use `app-description-behavior-specification` to update the app's meaning.
 
-Behavior follows the operating model because:
+Behavior follows the operating model and the secure SaaS foundation because:
 - tests need something to verify
 - security needs something to protect
 - observability needs something meaningful to expose
@@ -102,6 +102,8 @@ Behavior follows the operating model because:
 
 ### Step 6. Update tests
 Use `app-description-test-specification` to make the behavior explicit and verifiable.
+
+For generated SaaS apps, the test layer must retain baseline tenant isolation, forbidden access, disabled-user, role/scope denial, `/api/me`, audit, support-access, billing-boundary, idempotency, and frontend secret-boundary tests even when the current change is app-specific.
 
 ### Step 7. Analyze change impact
 Use `app-description-change-impact` to determine:
@@ -116,7 +118,7 @@ Update as needed:
 - `app-description-observability`
 
 These are not optional polish layers.
-They are part of the app definition.
+They are part of the app definition. Missing secure SaaS foundation semantics must block readiness or generation rather than becoming assumptions.
 
 ### Step 9. Update UI when browser supervision is in scope
 
@@ -144,7 +146,7 @@ Use `app-description-readiness-assessment`.
 Do not skip this step just because generation was requested.
 
 ### Step 3. Decide outcome
-- if `not-ready`, explain blockers and continue description work
+- if `not-ready`, explain blockers and continue description work; missing Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, disabled-user, forbidden-access, role/scope-denial, or foundation test semantics are blocking gaps for generated SaaS apps
 - if `ready-with-assumptions`, surface assumptions explicitly and proceed only if acceptable
 - if `ready`, proceed
 
@@ -214,6 +216,7 @@ When a browser UI is in scope, the app description or specs must contain a selec
 Generation is allowed only as a realization step.
 
 The harness must not let generation become the place where missing semantics are silently invented.
+Secure SaaS foundation gaps are especially blocking: generation must not invent which routes, agent tools, data access paths, workflow actions, view queries, streams, consumers, timers, or generated UI actions are public or authorized by default.
 If generation exposes missing semantics, the harness should:
 1. identify the semantic gap
 2. update the description or ask for clarification
@@ -244,6 +247,7 @@ The real app definition remains in the earlier authoritative layers.
 The harness should ask only the smallest clarifying question needed to avoid one of these mistakes:
 - changing the wrong semantic layer
 - inventing a security model implicitly
+- inventing secure SaaS foundation behavior, tests, or UI surfaces implicitly
 - inventing observability requirements implicitly
 - generating too early
 - treating a user review question as a generation request
@@ -265,7 +269,7 @@ It must never preserve stale behavior that conflicts with the current descriptio
 A description change request is complete when:
 - the relevant authoritative layers are updated
 - when AI-first/delegated operations are in scope, `15-operating-model/` captures goals, delegated work, human authority, policies, decisions, traces, and outcomes sufficiently for the change
-- linked verification expectations are updated
+- linked verification expectations are updated, including mandatory secure foundation tests for generated SaaS apps
 - linked security and observability expectations are updated when needed
 - readiness has been reassessed or intentionally deferred
 - when a browser UI is in scope, the selected style guide is recorded or a pending style-selection question blocks only UI realization

@@ -99,19 +99,35 @@ app-description/
     audit-trace-and-outcomes.md
   20-behavior/
     behavior-index.md
+    state-models/
+      01-tenant-user-access-model.md
     flows/
-      01-<primary-flow>.md
+      01-secure-foundation-access-flow.md
+      02-<primary-flow>.md
+    rules/
+      01-tenant-authz-rules.md
   30-tests/
     test-index.md
     acceptance/
-      01-<primary-capability>-acceptance.md
+      01-secure-foundation-acceptance.md
+      02-<primary-capability>-acceptance.md
+    regression/
+      01-tenant-isolation-and-idempotency.md
+    negative/
+      01-security-denial-baseline.md
   40-auth-security/
     secure-saas-foundation.md
     identity-and-trust.md
+    authorization-rules.md
+    data-protection.md
+    boundary-and-surface-rules.md
   50-observability/
     logs-and-audit.md
+    security-and-admin-audit-events.md
   55-ui/                  # only when a browser frontend is in scope
     ui-index.md
+    secure-shell-and-context-selection.md
+    admin-and-audit-surfaces.md
     screens-and-navigation.md
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
@@ -126,12 +142,12 @@ From the initial user input, derive as applicable:
 - whether the app has AI-first/delegated operating-model semantics
 - delegated work versus retained human authority when applicable
 - first in-scope capability set, starting with the secure SaaS foundation capability
-- likely primary behavior flow, starting with sign-in, `/api/me`, context selection, administration, and tenant/customer-scoped access
-- first acceptance scenarios, including tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, and audit baseline tests
-- initial auth/security expectations based on `core-saas-foundation`
-- initial observability expectations
+- likely primary behavior flow, starting with sign-in, `/api/me`, context selection, Account/Profile/Settings maintenance, administration, invitations, support-access, audit viewing, and tenant/customer-scoped access
+- first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
+- initial auth/security expectations based on `core-saas-foundation`, including explicit default-deny authorization for every route, agent tool, data access, workflow action, view query, stream, and generated UI action
+- initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, and consequential AI/tool events
 - initial policy, approval, exception, audit, trace, and outcome expectations when AI-first/delegated operations are in scope
-- initial frontend/UI expectations when a browser app is in scope
+- initial frontend/UI expectations when a browser app is in scope, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, and audit surfaces
 - selected web UI style guide/theme when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
 - an initial readiness posture
@@ -177,20 +193,32 @@ Seed only the files justified by the input, but prefer the standard operating-mo
 Capture durable goals, delegated work, retained human authority, agent/team boundaries, policy/approval semantics, decision evidence, trace requirements, and outcome loops as assumptions when not fully settled. Do not create this layer for clearly non-agentic apps except to record an explicit non-goal when useful.
 
 ### 6. Create the first behavior layer
-Create a `20-behavior/` index and at least one primary flow file.
-Add state-model or rules files only if the input clearly contains lifecycle or invariant semantics already.
+Create a `20-behavior/` index plus secure foundation behavior artifacts before app-specific flows:
+- `state-models/01-tenant-user-access-model.md` for Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, support-access, and billing-boundary state semantics
+- `flows/01-secure-foundation-access-flow.md` for sign-in, `/api/me`, context selection, profile/settings, invitation, admin, support-access, audit, and tenant/customer-scoped access
+- `rules/01-tenant-authz-rules.md` for default-deny authorization, tenant/customer isolation, disabled-user behavior, role/scope checks, and forbidden access behavior
+
+Then add one primary app-specific flow file when the input supports it. Add deeper app state-model or rules files only if the input clearly contains lifecycle or invariant semantics already.
 
 ### 7. Create the first test layer
-Create a `30-tests/` index and at least one acceptance file.
-Capture only the strongest initial acceptance expectations plus obvious negative or regression expectations if the input already supports them.
+Create a `30-tests/` index plus mandatory secure foundation test artifacts before app-specific tests:
+- `acceptance/01-secure-foundation-acceptance.md` for sign-in seam, `/api/me`, context selection, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, invitation, support-access, admin, audit, and billing-boundary behavior
+- `regression/01-tenant-isolation-and-idempotency.md` for cross-tenant isolation, duplicate invite/acceptance, repeated role changes, repeated support-access revoke/expiry, and idempotent `/api/me` reads
+- `negative/01-security-denial-baseline.md` for forbidden access, disabled user, role/scope denial, cross-customer denial, unauthorized stream/query/tool/action attempts, and frontend secret-boundary checks
+
+Then add app-specific acceptance files. Capture only the strongest initial app-specific expectations plus obvious negative or regression expectations if the input already supports them.
 
 ### 8. Create initial production-readiness layers
 Create:
 - `40-auth-security/secure-saas-foundation.md`
 - `40-auth-security/identity-and-trust.md`
+- `40-auth-security/authorization-rules.md`
+- `40-auth-security/data-protection.md`
+- `40-auth-security/boundary-and-surface-rules.md`
 - `50-observability/logs-and-audit.md`
+- `50-observability/security-and-admin-audit-events.md`
 
-These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; provider-specific unknowns may remain explicit open questions, but authorization, tenancy, audit, and tenant isolation are not optional.
+These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; provider-specific unknowns may remain explicit open questions, but authorization, tenancy, audit, and tenant isolation are not optional. The bootstrap must state that no route, agent tool, data access, workflow action, view query, stream, or generated UI action is public or authorized by default except deliberately public static assets.
 
 ### 9. Create initial cross-links
 Cross-link the first capability, operating-model artifacts when present, behavior, and test artifacts so later maintenance and change-impact work have a stable base.
@@ -216,6 +244,13 @@ Use this response shape when summarizing bootstrap work:
 - 30-tests:
 - 40-auth-security:
 - 50-observability:
+- secure SaaS foundation artifacts:
+  - capability:
+  - behavior:
+  - tests:
+  - auth/security:
+  - observability:
+  - UI, if browser frontend is in scope:
 
 ## Initial readiness state
 - not-ready | ready-with-assumptions | ready
@@ -273,6 +308,7 @@ Avoid:
 Before finishing, verify:
 - one stable app-description root is used
 - the minimum authoritative layers exist
+- the mandatory secure SaaS foundation capability, behavior, auth/security, observability, UI, and test artifacts exist or the app is explicitly non-SaaS reference material
 - the initial capability, operating-model artifacts when present, behavior, and test artifacts are cross-linked
 - readiness state is explicit
 - generation policy is explicit
