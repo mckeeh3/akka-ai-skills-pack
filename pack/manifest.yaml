@@ -3,7 +3,7 @@ kind: ResourcePack
 
 metadata:
   name: akka-ai-skills-pack
-  version: 0.1.6
+  version: 0.1.7
   sourceRepo: https://github.com/mckeeh3/akka-ai-skills-pack
   description: >-
     Versioned Akka AI resource pack containing installable skills for AI-first SaaS

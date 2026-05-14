@@ -1375,8 +1375,8 @@
   - pack version/release artifacts reflect the post-AI-first migration state or document regeneration requirements clearly
   - git commit created for this task
 - notes:
-  - completed: bumped pack metadata and README release references to `0.1.6`, aligned build-pack doc inclusion with installer-packaged AI-first docs, added missing installed `skills-pack-user-guide.md` and DCA UI style-guide packaging references, and regenerated ignored `dist/akka-ai-skills-pack-0.1.6*` artifacts locally
-  - checks: `bash tools/check-version-consistency.sh`; `bash tools/build-pack.sh --clean`; archive content check for AI-first doctrine, DCA example, DCA UI style guide, installed user guide, manifest, and AI-first skill; unpacked `dist/akka-ai-skills-pack-0.1.6.tar.gz` and ran bundled `install.sh` into a temp project verifying installed AI-first docs
+  - completed: bumped pack metadata and README release references to `0.1.7`, aligned build-pack doc inclusion with installer-packaged AI-first docs, added missing installed `skills-pack-user-guide.md` and DCA UI style-guide packaging references, and regenerated ignored `dist/akka-ai-skills-pack-0.1.7*` artifacts locally
+  - checks: `bash tools/check-version-consistency.sh`; `bash tools/build-pack.sh --clean`; archive content check for AI-first doctrine, DCA example, DCA UI style guide, installed user guide, manifest, and AI-first skill; unpacked `dist/akka-ai-skills-pack-0.1.7.tar.gz` and ran bundled `install.sh` into a temp project verifying installed AI-first docs
 
 ### TASK-09-005: Rename active legacy terminology files and directories to `ai-first`
 
