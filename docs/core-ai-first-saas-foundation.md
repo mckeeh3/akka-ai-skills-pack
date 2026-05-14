@@ -14,6 +14,8 @@ Companion docs:
 | Tenant | The SaaS user organization that subscribes to the platform and uses it to serve its own customers. This is the canonical internal/architectural term for “SaaS user.” |
 | Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the seed model. |
 | Account | A local Akka-owned authorization record linked to a WorkOS-authenticated human identity. |
+| User Profile | Human-facing account information and scoped profile attributes shown in the application, separate from authentication and authorization facts. |
+| User Settings | User-controlled preferences that affect application experience, such as UI appearance, without changing authorization. |
 | Membership | A scoped relationship between an account and a SaaS Owner, Tenant, or Customer organization. |
 | Role | A permission bundle within a scope, such as SaaS Owner Admin, Tenant Admin, Tenant Employee, Customer Admin, or Customer User. |
 
@@ -65,6 +67,7 @@ The same human/email may have separate local accounts or memberships at multiple
 - All backend commands and queries must enforce scope mechanically.
 - Frontend navigation is only UX; backend authorization is authoritative.
 - WorkOS authenticates humans; Akka-owned state authorizes business actions.
+- Profiles and settings are user-experience state, not authorization state; they may be scoped, but they must not grant permissions.
 - Billing in the core foundation covers only SaaS Owner → Tenant subscriptions.
 - Tenant → Customer billing is app-specific and must be modeled by the generated business application when needed.
 
@@ -96,6 +99,7 @@ Example AI-first core scenarios:
 | Concern | Preferred Akka substrate |
 |---|---|
 | Tenant, Customer, Account, Membership lifecycle | Event Sourced Entity when audit-grade history is required; Key Value Entity for low-risk current state only. |
+| User profiles and settings | Key Value Entity for current editable profile/settings state; Event Sourced Entity if the app requires audit-grade profile or preference history. |
 | Subscription lifecycle | Event Sourced Entity for plan changes, trial, activation, suspension, cancellation, and billing state history. |
 | Invitations and onboarding | Workflow for invite/link/activate and multi-step onboarding. |
 | Access review and support-access expiry | Timed Actions plus Views and Consumers. |
@@ -106,11 +110,12 @@ Example AI-first core scenarios:
 
 ## Initial implementation slices
 
-1. WorkOS-backed `/api/me` account bootstrap and membership selection.
+1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
 2. SaaS Owner Admin tenant creation and initial Tenant Admin invitation.
 3. Tenant Admin employee invitation and role management.
 4. Tenant Admin customer organization creation and Customer Admin invitation.
 5. Customer Admin customer user invitation and role management.
-6. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
-7. Cross-scope audit trace and access review views.
-8. AI-first admin decision cards for risky role, support-access, tenant suspension, and billing changes.
+6. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
+7. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
+8. Cross-scope audit trace and access review views.
+9. AI-first admin decision cards for risky role, support-access, tenant suspension, and billing changes.

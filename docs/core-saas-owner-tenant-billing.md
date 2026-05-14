@@ -28,12 +28,13 @@ SaaS Owner billing capabilities may use Tenant metadata needed to operate the su
 - invoice/payment provider identifiers;
 - usage metrics explicitly defined as platform billing metrics.
 
-SaaS Owner billing capabilities must not access Tenant application data or Customer service data.
+SaaS Owner billing capabilities must not access Tenant application data, Customer service data, or user profile/settings data except for explicit billing contact fields stored in the billing account.
 
 Examples of forbidden SaaS Owner billing access:
 - Tenant customer records beyond billing-safe aggregate counts explicitly defined as billing metrics;
 - Tenant case/ticket/order/document data;
 - Customer user activity content;
+- user profile attributes or settings such as UI mode, unless copied into billing-safe contact fields by an authorized billing flow;
 - AI work traces from Tenant-owned business operations, unless the metric is explicitly redacted/aggregated for platform billing.
 
 ## Core billing objects
@@ -256,6 +257,7 @@ Tenant APIs should expose only that Tenant's own subscription/billing-safe infor
 - `SAAS_OWNER_ADMIN` may manage plans, billing accounts, subscriptions, invoices/payment summaries, and billing decisions.
 - `TENANT_ADMIN` may view its own Tenant subscription and billing contact information, and may update billing contact details only if product policy allows.
 - `TENANT_ADMIN` cannot change plan, subscription state, suspension state, or billing policy unless the generated app explicitly adds a self-service purchasing flow.
+- Billing contact updates must not silently mutate user profile/settings records; synchronize only through explicit product rules and audit when needed.
 - `CUSTOMER_ADMIN` and `CUSTOMER_USER` have no core billing access.
 - Billing assistants operate with billing-safe data access and cannot read Tenant application data.
 

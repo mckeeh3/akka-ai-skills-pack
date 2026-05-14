@@ -24,6 +24,8 @@ WorkOS authenticates the human. The Akka backend owns local authorization state.
 ```text
 WorkOS Identity
   -> Local Account
+     -> User Profile
+     -> User Settings
      -> Membership(s)
         -> Scope: SaaS Owner | Tenant | Customer
         -> Role(s) within that scope
@@ -35,7 +37,8 @@ Rules:
 - do not rely on email alone for authorization;
 - allow the same human/email to hold accounts or memberships at multiple levels;
 - require explicit context selection when a signed-in user has more than one active membership;
-- include scope identifiers in every protected command/query: `tenantId`, `customerId`, or platform owner context as applicable.
+- include scope identifiers in every protected command/query: `tenantId`, `customerId`, or platform owner context as applicable;
+- keep profile and settings state separate from authorization state; profile/settings changes must not change roles, scopes, or access.
 
 ## Account and membership concepts
 
@@ -51,6 +54,47 @@ Recommended fields:
 - `status`: `INVITED`, `ACTIVE`, `DISABLED`, `REMOVED`
 - `createdAt`, `activatedAt`, `disabledAt`
 - audit metadata: created by, reason, source
+
+### User Profile
+
+A user profile stores human-facing attributes that the application can display or let the user edit. It is not the source of authentication or authorization.
+
+Base viewable fields:
+- `accountId`
+- `email`, sourced from WorkOS/local account and usually read-only in the app
+- `displayName`
+- `givenName`, optional
+- `familyName`, optional
+- `avatarUrl`, optional
+- selected or active membership/context summary when relevant
+
+Base editable fields:
+- `displayName`
+- `givenName`
+- `familyName`
+- `avatarUrl`, when the app supports user-managed avatars
+
+Profile extension rules:
+- app-specific implementations may add fields, such as title, department, phone, locale, timezone, expertise, notification contact preferences, or onboarding attributes;
+- tenant-scoped or customer-scoped profile extensions must include the relevant `tenantId` and/or `customerId` and be visible only to authorized users in that scope;
+- profile fields must not be used as permission grants; use memberships and roles for authorization;
+- changes to sensitive or organization-visible profile fields should be auditable when required by the app.
+
+### User Settings
+
+User settings store preferences that affect application behavior or presentation for a signed-in human. Settings are extensible by generated application requirements.
+
+Base viewable and editable fields:
+- `accountId`
+- `uiMode`: `LIGHT` or `DARK`
+
+Initial rule:
+- support a light/dark UI setting first; do not introduce a broader theme model until the app explicitly requires themes.
+
+Settings extension rules:
+- app-specific implementations may add settings such as notification preferences, default landing page, digest cadence, table density, locale, timezone, or AI-assistance preferences;
+- settings may be account-wide by default, or scoped to a membership/context when the same human needs different preferences for SaaS Owner, Tenant, or Customer work;
+- settings must not override backend authorization, policy gates, retention rules, or audit requirements.
 
 ### Membership
 
@@ -142,9 +186,10 @@ Backend rules:
 - cross-tenant reports may use only platform/billing/operational metadata that excludes Tenant application data.
 
 Frontend rules:
-- `/api/me` returns available memberships and selected context;
+- `/api/me` returns available memberships, selected context, base profile, and base settings needed to render the shell;
 - UI routes and navigation are filtered by selected context;
 - switching context must update API request scope;
+- profile and settings screens must call backend APIs and respect scoped visibility/editability rules;
 - hidden navigation is not a security boundary.
 
 ## WorkOS integration expectations
@@ -162,7 +207,35 @@ Use WorkOS for authentication and identity linking:
 - active memberships;
 - available roles and scopes;
 - selected/default context if the frontend uses context switching;
+- base profile fields needed by the app shell;
+- base settings, including `uiMode` (`LIGHT` or `DARK`);
 - minimal browser-facing data only.
+
+## Profile and settings APIs
+
+Baseline authenticated user APIs:
+
+```text
+GET  /api/me
+GET  /api/me/profile
+PATCH /api/me/profile
+GET  /api/me/settings
+PATCH /api/me/settings
+```
+
+Optional scoped administration APIs, when profile visibility or support workflows require them:
+
+```text
+GET /api/tenant/{tenantId}/users/{accountId}/profile
+GET /api/tenant/{tenantId}/customers/{customerId}/users/{accountId}/profile
+```
+
+API rules:
+- profile update requests may edit only declared editable profile fields;
+- settings update requests initially support `uiMode: LIGHT | DARK`;
+- app-specific fields must declare whether they are account-wide, tenant-scoped, or customer-scoped;
+- tenant/customer administrators may view only the profile attributes needed for administration and collaboration;
+- administrators must not edit another user's personal settings unless the generated app explicitly adds delegated preference management.
 
 ## AI-first administration behavior
 
@@ -216,6 +289,8 @@ Record audit events for:
 | Component | Responsibility |
 |---|---|
 | `AccountEntity` | Local account lifecycle and identity-link history. |
+| `UserProfileEntity` | Current profile attributes; use audit-grade history only when required by the app. |
+| `UserSettingsEntity` | Current user preferences, starting with `uiMode` light/dark. |
 | `MembershipEntity` or scoped membership state | Role/scope lifecycle with audit-grade changes. |
 | `TenantEntity` | Tenant organization lifecycle and status. |
 | `CustomerEntity` | Customer organization lifecycle under a Tenant. |
@@ -235,6 +310,9 @@ Record audit events for:
 - [ ] Customer Admin can manage Customer users.
 - [ ] Same email can hold multiple memberships and must operate in an explicit context.
 - [ ] WorkOS authentication is separate from Akka-owned authorization state.
+- [ ] Base profile fields are viewable/editable according to scope rules and do not grant permissions.
+- [ ] Base user settings include editable `uiMode` with `LIGHT` and `DARK` values.
+- [ ] Profile and settings models can be extended by app-specific requirements.
 - [ ] Tenant-created support access is scoped, time-limited, auditable, and revocable.
 - [ ] Risky admin actions can produce decision cards.
 - [ ] Access review assistant produces recommendations without unauthorized automatic changes.
