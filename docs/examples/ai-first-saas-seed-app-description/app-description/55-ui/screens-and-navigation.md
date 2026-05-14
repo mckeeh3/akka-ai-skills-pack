@@ -7,7 +7,7 @@
   - Decisions: Decision Queue, Exceptions
   - Governance: Policies, Approval Gates, Learning / Proposals
   - Audit: Trace Explorer, Outcome Review
-  - Admin: Users, Invitations, Roles, Tenant Settings
+  - Admin: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings
 - top or page header region:
   - page title and short operational subtitle
   - optional page-level action such as export, create goal, or manage policy
@@ -117,16 +117,69 @@
   - authorization and policy invocation detail
   - outcome links
 
-### Admin Users and Invitations
+### Admin Users
 
 - route: `/ui/admin/users`
-- user goal: manage tenant users, invitations, roles, and access state
-- primary action: invite a user or update role assignment
+- user goal: discover, search, and manage tenant/customer users within authority boundary
+- primary action: invite a user or open a user detail/access action
 - required regions:
-  - user list
-  - invitation status
+  - user list/search backed by UserDirectoryView, with filters for status, role, membership status, tenant/customer, and email/name
+  - user detail drawer/page with account/profile, memberships, roles, identity link state, support-access grants, and audit links
+  - allowed profile-field edit controls
+  - disable/reactivate account controls when permitted
+  - last-admin protection warnings
+
+### Admin Invitations
+
+- route: `/ui/admin/invitations`
+- user goal: manage invite delivery and activation issues
+- primary action: resend invite or revoke invite
+- required regions:
+  - InvitationView list/search with invitation status, delivery status, delivery attempts, expiry, target email, and scope
+  - create invite form with role/scope validation
+  - resend/revoke controls with confirmation and audit result
+  - failed-delivery repair queue
+
+### Admin Roles / Memberships
+
+- route: `/ui/admin/memberships`
+- user goal: manage roles, scopes, memberships, and access state safely
+- primary action: assign/replace/remove roles or suspend/reactivate/remove membership
+- required regions:
+  - MembershipView filters by scope, role, membership status, account, support-access expiry, and last-admin risk
   - role and permission summary
-  - disable/reactivate controls when permitted
+  - membership lifecycle controls
+  - last-admin protection and privilege-escalation feedback
+
+### Access Review
+
+- route: `/ui/admin/access-review`
+- user goal: review stale, risky, or expiring access
+- primary action: resolve the highest-risk access review item
+- required regions:
+  - AccessReviewQueueView for stale invites, dormant admins, risky role combinations, support-access nearing expiry, and orphaned customer admin gaps
+  - recommendation/risk summary
+  - decision-card links for high-risk actions
+
+### Support Access
+
+- route: `/ui/admin/support-access`
+- user goal: grant, revoke, and review time-limited SaaS Owner support memberships
+- primary action: approve or revoke a support-access grant
+- required regions:
+  - active and expiring support-access grants
+  - reason, expiry, scope, actor, and audit summary
+  - grant/revoke controls with policy and last-admin protections
+
+### Admin Audit
+
+- route: `/ui/admin/audit`
+- user goal: answer who changed access, in what scope, when, why, and under which policy
+- primary action: search admin audit events
+- required regions:
+  - AdminAuditView filters for actor, target user, action type, tenant/customer, role, membership status, invitation status, support-access grant, and time range
+  - redacted event details according to caller scope
+  - links to affected user, invitation, membership, and decision cards
 
 ### Profile / Preferences
 

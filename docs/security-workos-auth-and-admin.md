@@ -14,6 +14,11 @@ public frontend routes
 JWT-protected backend APIs
   /api/me
   /api/admin/users
+  /api/admin/invitations
+  /api/admin/memberships
+  /api/admin/access-review
+  /api/admin/audit
+  /api/admin/support-access
   /api/tenants
   /api/tenants/{tenantId}/customers
 ```
@@ -128,8 +133,9 @@ Example response shape:
   "email": "jane@example.com",
   "displayName": "Jane Example",
   "status": "ACTIVE",
-  "roles": ["APP_ADMIN"],
-  "tenantIds": ["tenant-123"]
+  "roles": ["TENANT_ADMIN"],
+  "tenantIds": ["tenant-123"],
+  "capabilities": ["users:list", "memberships:manage", "invitations:resend"]
 }
 ```
 
@@ -137,14 +143,18 @@ Example response shape:
 
 WorkOS authenticates the user. Akka application state authorizes actions.
 
-Typical roles:
+Foundation roles and scoped capabilities:
 
 ```text
-APP_ADMIN       global administration
-TENANT_ADMIN    tenant-scoped administration
-CUSTOMER_ADMIN  customer/user-scoped administration
-USER            basic authenticated access
+SAAS_OWNER_ADMIN  platform/SaaS Owner administration without direct Tenant data access
+TENANT_ADMIN      tenant-scoped user, customer, support-access, and settings administration
+TENANT_EMPLOYEE   tenant-scoped application use according to app capabilities
+CUSTOMER_ADMIN    customer-scoped user administration and service supervision
+CUSTOMER_USER     customer-facing application use
+AUDITOR           scoped admin audit/search and access-review visibility without mutation
 ```
+
+App-specific admin roles map to additional permissions/capabilities and do not replace foundation scope, membership status, or role checks.
 
 Rules:
 - the frontend may hide or show navigation from `/api/me`
@@ -158,22 +168,50 @@ Rules:
 Common API families:
 
 ```text
-GET  /api/me
-GET  /api/admin/users
-POST /api/admin/users/invite
-POST /api/admin/users/{userId}/roles
-POST /api/admin/users/{userId}/disable
-GET  /api/tenants
-POST /api/tenants
+GET    /api/me
+GET    /api/admin/users
+GET    /api/admin/users/{userId}
+PATCH  /api/admin/users/{userId}/profile
+POST   /api/admin/users/invite
+GET    /api/admin/invitations
+POST   /api/admin/invitations/{invitationId}/resend
+POST   /api/admin/invitations/{invitationId}/revoke
+PUT    /api/admin/users/{userId}/roles
+DELETE /api/admin/users/{userId}/roles/{role}
+POST   /api/admin/users/{userId}/memberships
+POST   /api/admin/memberships/{membershipId}/suspend
+POST   /api/admin/memberships/{membershipId}/reactivate
+DELETE /api/admin/memberships/{membershipId}
+POST   /api/admin/users/{userId}/disable
+POST   /api/admin/users/{userId}/activate
+POST   /api/admin/users/{userId}/identity/relink
+GET    /api/admin/access-review
+GET    /api/admin/audit
+POST   /api/admin/support-access/grants
+POST   /api/admin/support-access/{grantId}/revoke
+GET    /api/tenants
+POST   /api/tenants
 ```
 
 Authorization examples:
-- `APP_ADMIN` may manage all users, tenants, and roles
-- `TENANT_ADMIN` may manage users and customers within assigned tenant scope
-- `CUSTOMER_ADMIN` may manage users within assigned customer scope
-- `USER` may view/update own profile only
+- `SAAS_OWNER_ADMIN` may manage SaaS Owner users, Tenants, Tenant Admin bootstrap, and platform-safe metadata; it must not read Tenant application data without a Tenant-scoped support-access membership
+- `TENANT_ADMIN` may manage users, memberships, customers, support access, and Tenant settings within assigned tenant scope
+- `CUSTOMER_ADMIN` may manage users and memberships within assigned customer scope
+- `AUDITOR` may search admin audit and access-review views within assigned scope without mutation privileges
+- basic users may view/update their own profile and settings only
 
-Backend checks should return clear `401` for unauthenticated requests and `403` for authenticated but forbidden requests unless the app intentionally hides resource existence.
+Backend checks should return clear `401` for unauthenticated requests and `403` for authenticated but forbidden requests unless the app intentionally hides resource existence. Role removal, membership suspension/removal, account disable, identity relink, and support-access changes must enforce last-admin protection where the target scope requires an active admin.
+
+## Admin read models and UI readiness
+
+Initial generated apps must include operational admin discovery, not only write endpoints. Required scoped views are:
+- `UserDirectoryView` for list/search users and view user detail entry points;
+- `MembershipView` for membership lifecycle, role/status filters, support-access expiry, and last-admin risk;
+- `InvitationView` for invitation status, delivery status, resend invite/revoke invite visibility, expiry, and failed delivery;
+- `AdminAuditView` for actor/target/action/scope/time search;
+- `AccessReviewQueueView` for stale invitations, dormant access, risky memberships, support-access review, and last-admin risks where applicable.
+
+Required browser admin surfaces are Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. A description/spec is not generation-ready if admin management is limited to invite/disable/activate or if list/search and membership lifecycle behavior are omitted.
 
 ## Startup admin bootstrap
 
@@ -212,10 +250,12 @@ Bootstrap behavior:
 - [ ] endpoint tests inject bearer tokens with expected claims
 - [ ] `/api/me` returns browser-facing DTOs only
 - [ ] admin endpoints enforce role and tenant/customer scope on the backend
+- [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView list/search only authorized scoped rows and redact protected fields
+- [ ] admin operations cover invite, resend invite, revoke invite, list/search, view user detail, edit allowed profile fields, role assignment/replacement/removal, membership lifecycle, disable/reactivate, reset/relink identity subject under policy, support-access grant/revoke/expiry, and last-admin protection
 - [ ] frontend navigation is treated as UX only, not authorization
 - [ ] backend secrets are not present in `frontend/.env*` or built assets
 - [ ] startup bootstrap is idempotent
 - [ ] production readiness fails when invite email delivery configuration or equivalent accepted provider decision is missing
 - [ ] local/dev/test invite email adapter captures messages in an outbox without external delivery
 - [ ] invite/link/activate flow has send, resend, revoke/cancel, expiry, delivery failure, acceptance, idempotency, and audit tests
-- [ ] admin actions emit required AdminAuditEvent records for identity, membership, role, support-access, data-access, and forbidden attempts
+- [ ] admin actions emit required AdminAuditEvent records for identity, membership, role, support-access, data-access, access-review, and forbidden attempts

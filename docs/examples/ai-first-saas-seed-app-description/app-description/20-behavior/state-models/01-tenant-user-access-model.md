@@ -8,9 +8,20 @@
   - may belong to multiple tenants through memberships
 - membership:
   - states: invited, active, suspended, removed
-  - binds user to tenant with roles and permissions
+  - binds user to tenant/customer with roles and permissions
+  - supports add, suspend, reactivate, remove, role assign, role replace, and role remove operations
+  - enforces last-admin protection for tenant/customer admin scopes
 - invitation:
-  - states: pending, accepted, expired, revoked
-  - expires through timed action
+  - states: pending-delivery, sent, delivery-failed, accepted, expired, revoked
+  - supports resend invite, revoke invite, delivery status, delivery attempts, expiry through timed action, and idempotent acceptance
+- admin read models:
+  - UserDirectoryView for scoped list/search and user detail entry points
+  - MembershipView for membership lifecycle and role/status filters
+  - InvitationView for invitation status and delivery repair
+  - AdminAuditView for scoped admin audit/search
+  - AccessReviewQueueView for stale invite, dormant access, support-access, and last-admin risk review
+- support access:
+  - states: active, expired, revoked
+  - time-limited, tenant-scoped, reason-required, and auditable
 - tenant settings:
   - current-state configuration; changes require tenant admin permission

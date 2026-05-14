@@ -7,16 +7,23 @@
   - customers/tenants/workspaces
   - users and user profiles
   - tenant memberships
-  - invitations and activation
-  - role assignment and permission checks
+  - complete invitations and activation, including resend, revoke, delivery status, expiry, and acceptance
+  - user directory list/search and user detail within authorized scope
+  - role assignment, replacement, removal, and permission checks
+  - membership add, suspend, reactivate, and remove lifecycle
+  - account disable/reactivate and reset/relink identity subject under policy
+  - support-access grant, revoke, expiry, and review
+  - admin audit/search and access-review queues
   - tenant switching for users with multiple memberships
   - tenant-scoped settings
 - out of scope:
   - billing/subscription management in v1
   - enterprise identity-provider configuration UI in v1
 - primary actors:
-  - platform admin
-  - tenant admin
+  - SaaS Owner Admin
+  - Tenant Admin
+  - Customer Admin
+  - Auditor
   - tenant member
   - invited user
 - behavior links:

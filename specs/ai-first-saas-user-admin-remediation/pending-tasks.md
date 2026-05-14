@@ -95,7 +95,7 @@
 
 ### TASK-003: Upgrade admin management baseline to full user, membership, role, and access-state management
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-001, TASK-002]

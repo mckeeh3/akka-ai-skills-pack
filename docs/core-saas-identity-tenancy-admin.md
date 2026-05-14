@@ -111,6 +111,12 @@ Recommended fields:
 - `expiresAt`, optional, especially for support-access accounts
 - audit metadata: granted by, approved by, reason, policy references
 
+Membership lifecycle requirements:
+- administrators can add, suspend membership, reactivate membership, and remove membership only within their authority boundary;
+- role changes must support assign, replace, and remove roles, not only append roles;
+- last-admin protection must reject actions that would leave a Tenant or Customer with no active admin;
+- every lifecycle command must be idempotent or return a documented conflict and emit AdminAuditEvent facts.
+
 ### Invitation
 
 Complete email-invite onboarding is mandatory for generated SaaS foundations.
@@ -148,6 +154,38 @@ Lifecycle rules:
 
 Do not use a global super-admin role for Tenant data access. SaaS Owner permissions are platform-operations permissions only.
 
+## Administration read models
+
+Admins must be able to discover and repair access state without already knowing internal user IDs. Generated SaaS foundations should include these scoped views from the first admin slice:
+
+| View | Purpose |
+|---|---|
+| `UserDirectoryView` | List/search users by authorized SaaS Owner, Tenant, or Customer scope; filter by email/name, account status, role, membership status, identity link state, and last activity when available. |
+| `MembershipView` | List memberships and role summaries by scope, account, status, role, support-access expiry, and last-admin risk. |
+| `InvitationView` | List invitations by target email, scope, invitation status, delivery status, expiry, inviter, resend count, and delivery failure. |
+| `AdminAuditView` | Search admin audit events by actor, target user, action type, scope, role, membership status, invitation status, support-access grant, policy, and time range. |
+| `AccessReviewQueueView` | Queue stale invitations, dormant admins, risky role combinations, support-access nearing expiry, orphaned customers without active admins, and last-admin protection risks. |
+
+View endpoints must constrain queries with the caller's AuthContext and must redact or omit fields outside the caller's scope. Frontend filtering is never the security boundary.
+
+## Administration operations
+
+Required baseline operations:
+- invite users, resend invite, revoke invite, and view invitation status through the mandatory Invitation lifecycle;
+- list users, search/filter users, and view user detail through scoped views rather than requiring caller-supplied user IDs;
+- edit declared profile fields only;
+- assign, replace, and remove roles within caller authority;
+- add, suspend, reactivate, and remove memberships;
+- disable and reactivate accounts;
+- reset/relink identity subject under explicit policy and audit;
+- grant, revoke, and expire support-access memberships;
+- enforce last-admin protection for Tenant and Customer admin scopes;
+- expose Admin Audit and Access Review queues to authorized Admins and Auditors.
+
+## Administration UI surfaces
+
+When a browser UI is in scope, the foundation includes: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative.
+
 ## Administration flows
 
 ### SaaS Owner Admin creates a Tenant and initial Tenant Admin
@@ -165,8 +203,9 @@ Do not use a global super-admin role for Tenant data access. SaaS Owner permissi
 2. Backend creates local account if needed, Tenant membership in `INVITED` state, and an Invitation with expiry, delivery status, and audit trail.
 3. Backend sends or captures invite email through the configured delivery adapter.
 4. Employee signs in through WorkOS and links/activates membership only through a valid invitation or membership policy.
-5. Tenant Admin may change roles, suspend, or remove membership.
-6. All changes are Tenant-scoped and auditable.
+5. Tenant Admin can list/search users, view user detail, edit allowed profile fields, assign/replace/remove roles, suspend membership, reactivate membership, remove membership, disable/reactivate accounts, and run access review actions within Tenant scope.
+6. Last-admin protection rejects any change that would leave the Tenant without an active Tenant Admin.
+7. All changes are Tenant-scoped and auditable.
 
 ### Tenant Admin creates Customer organization and Customer Admin
 
@@ -325,8 +364,11 @@ Record audit events for:
 | `CustomerEntity` | Customer organization lifecycle under a Tenant. |
 | `InvitationWorkflow` | Invite creation, email delivery/outbox, WorkOS sign-in/link, activation, expiry, resend, revoke/cancel, acceptance idempotency, delivery status, delivery attempts, and audit. |
 | `AccessReviewTimedAction` | Periodic stale-access/support-access checks. |
+| `UserDirectoryView` | Scoped user list/search and user detail entry points without requiring known user ids. |
+| `MembershipView` | Scoped membership lifecycle, role/status filters, support-access expiry, and last-admin risk rows for SaaS Owner, Tenant Admin, and Customer Admin screens. |
+| `InvitationView` | Scoped invitation status, delivery status, resend/revoke visibility, expiry, and delivery failure rows. |
 | `AdminAuditView` | Queryable admin audit trail. |
-| `MembershipView` | Scoped user lists for SaaS Owner, Tenant Admin, and Customer Admin screens. |
+| `AccessReviewQueueView` | Stale invite, dormant access, risky role combination, support-access, and last-admin review queue. |
 | `AdminRiskAgent` | Read-only analysis and recommendation for risky admin actions. |
 | `AdminDecisionWorkflow` | Approval gate for risky admin changes. |
 
@@ -342,7 +384,11 @@ Record audit events for:
 - [ ] Base profile fields are viewable/editable according to scope rules and do not grant permissions.
 - [ ] Base user settings include editable `uiMode` with `LIGHT` and `DARK` values.
 - [ ] Profile and settings models can be extended by app-specific requirements.
-- [ ] Tenant-created support access is scoped, time-limited, auditable, and revocable.
+- [ ] Admins can list/search users, view user detail, and manage users without already knowing internal user IDs.
+- [ ] Admins can assign/replace/remove roles and add/suspend/reactivate/remove memberships inside their authority boundary.
+- [ ] Last-admin protection prevents removing the final active Tenant Admin or Customer Admin.
+- [ ] Tenant-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review screens.
+- [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView enforce scoped query authorization and redaction.
 - [ ] Risky admin actions can produce decision cards.
 - [ ] Access review assistant produces recommendations without unauthorized automatic changes.
 - [ ] Audit views can answer who changed what, in which scope, when, why, and under which policy.

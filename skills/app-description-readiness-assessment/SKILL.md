@@ -77,9 +77,12 @@ For every generated SaaS app, this is blocking readiness. Check that the descrip
 - backend authorization for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, timer action, and generated UI action
 - tenant/customer-scoped commands and queries with forbidden access, disabled-user, inactive-membership, role/scope denial, and tenant-isolation behavior
 - foundation behavior artifacts for sign-in, account/profile/settings, tenant/customer admin, Membership/Role/Permission, invitations, support-access, audit, and billing-boundary behavior
-- foundation test artifacts for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, support-access, billing boundary, idempotency, and frontend secret-boundary checks
-- observability/audit artifacts for identity, Membership/role, support-access, billing-boundary, policy, approval, data-access, and consequential AI/tool activity
-- browser UI foundation surfaces when UI is in scope: sign-in state, context selection, profile/settings, tenant/customer admin, Membership/role/invitation, support-access, audit, and capability-gated navigation
+- operational admin management beyond invite/disable/activate: user list/search without caller-supplied user IDs, view user detail, edit allowed profile fields, assign/replace/remove roles, add/suspend/reactivate/remove memberships, disable/reactivate account, reset/relink identity subject under policy, support-access grant/revoke/expiry, and last-admin protection
+- required admin read models: UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView where applicable
+- scoped capabilities for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins
+- foundation test artifacts for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, user and membership list/search, membership lifecycle, last-admin protection, support-access, billing boundary, idempotency, and frontend secret-boundary checks
+- observability/audit artifacts for identity, Membership/role, support-access, billing-boundary, policy, approval, data-access, access-review, and consequential AI/tool activity
+- browser UI foundation surfaces when UI is in scope: sign-in state, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, and capability-gated navigation
 
 ### 2. AI-first operating-model completeness
 Check this when `15-operating-model/` exists or delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope:
