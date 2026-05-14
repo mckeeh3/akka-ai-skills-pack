@@ -15,7 +15,7 @@ It is the description-first equivalent of project scaffolding, but for the autho
 Create a minimum viable internal app-description tree that:
 - gives the harness a stable root to maintain
 - establishes the mandatory secure SaaS foundation for Account/Profile/Settings/Membership/Tenant/Customer/admin/audit before app-specific features
-- establishes authoritative layers for capabilities, AI-first operating model when in scope, behavior, tests, auth/security, observability, and UI when a frontend is in scope
+- establishes authoritative layers for capabilities, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
 - records an initial readiness posture
 - defines a generation policy
 - creates enough cross-linking that later changes can stay localized and traceable
@@ -96,7 +96,7 @@ app-description/
     capabilities-index.md
     01-secure-tenant-user-foundation.md
     02-<primary-app-capability>.md
-  15-operating-model/      # only when AI-first/delegated operations are in scope
+  15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
     agent-roles-and-authority.md
     policies-and-approval-gates.md
@@ -129,7 +129,7 @@ app-description/
   50-observability/
     logs-and-audit.md
     security-and-admin-audit-events.md
-  55-ui/                  # only when a browser frontend is in scope
+  55-ui/                  # required for generated full-stack AI-first SaaS apps
     ui-index.md
     secure-shell-and-context-selection.md
     admin-and-audit-surfaces.md
@@ -137,7 +137,7 @@ app-description/
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
-Add deeper files only when the user's input already justifies them. When the app has a meaningful browser UI, use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and recommend adding a pending UI style-selection question before web UI generation.
+Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
 ## What this skill must derive from input
 
@@ -151,8 +151,8 @@ From the initial user input, derive as applicable:
 - first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
 - initial auth/security expectations based on `core-saas-foundation`, including explicit default-deny authorization for every route, agent tool, data access, workflow action, view query, stream, and generated UI action
 - initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, and consequential AI/tool events
-- initial policy, approval, exception, audit, trace, and outcome expectations when AI-first/delegated operations are in scope
-- initial frontend/UI expectations when a browser app is in scope, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, and audit surfaces
+- initial policy, approval, exception, audit, trace, and outcome expectations for the AI-first SaaS operating model
+- initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, and audit surfaces
 - selected web UI style guide/theme when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
 - an initial readiness posture
@@ -185,8 +185,8 @@ Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundat
 
 Then add the clearest app-specific business capability as the next numbered file when the input supports it.
 
-### 5. Create the AI-first operating-model layer when in scope
-Create `15-operating-model/` when the input includes delegated operational work, agents, recommendations, approvals, exceptions, policy-governed automation, supervision, auditability, learning, or outcome accountability.
+### 5. Create the AI-first operating-model layer
+Create `15-operating-model/` for generated AI-first SaaS apps. The secure foundation itself includes delegated admin assistance, supervision, policy-governed decisions, auditability, and outcome accountability, so this layer is not optional for generated apps.
 
 Seed only the files justified by the input, but prefer the standard operating-model files when the app is clearly agentic:
 - `goals-and-objectives.md`
@@ -195,7 +195,7 @@ Seed only the files justified by the input, but prefer the standard operating-mo
 - `decisions-exceptions-and-evidence.md`
 - `audit-trace-and-outcomes.md`
 
-Capture durable goals, delegated work, retained human authority, agent/team boundaries, policy/approval semantics, decision evidence, trace requirements, and outcome loops as assumptions when not fully settled. Do not create this layer for clearly non-agentic apps except to record an explicit non-goal when useful.
+Capture durable goals, delegated work, retained human authority, agent/team boundaries, policy/approval semantics, decision evidence, trace requirements, and outcome loops as assumptions when not fully settled. Omit this layer only for explicitly non-SaaS reference material or repository-maintenance-only work.
 
 ### 6. Create the first behavior layer
 Create a `20-behavior/` index plus secure foundation behavior artifacts before app-specific flows:
@@ -255,7 +255,7 @@ Use this response shape when summarizing bootstrap work:
   - tests:
   - auth/security:
   - observability:
-  - UI, if browser frontend is in scope:
+  - UI:
 
 ## Initial readiness state
 - not-ready | ready-with-assumptions | ready
@@ -281,7 +281,7 @@ Do not create a large multi-capability tree from weak input unless the user alre
 ## Handoff rules
 
 After bootstrap, route onward as needed:
-- to AI-first companion skills for durable object model, agent-team, policy/governance, decisions, audit, UI surfaces, or outcomes when delegated operations are in scope
+- to AI-first companion skills for durable object model, agent-team, policy/governance, decisions, audit, UI surfaces, or outcomes for generated AI-first SaaS
 - to `app-description-behavior-specification` for deeper behavioral refinement
 - to `app-description-test-specification` for richer acceptance, regression, or negative coverage
 - to `app-description-auth-security` for tighter access and data-protection definition
@@ -313,7 +313,7 @@ Avoid:
 Before finishing, verify:
 - one stable app-description root is used
 - the minimum authoritative layers exist
-- the mandatory secure SaaS foundation capability, behavior, auth/security, observability, UI, and test artifacts exist or the app is explicitly non-SaaS reference material
+- the mandatory secure SaaS foundation capability, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts exist or the task is explicitly non-SaaS reference material
 - the initial capability, operating-model artifacts when present, behavior, and test artifacts are cross-linked
 - readiness state is explicit
 - generation policy is explicit

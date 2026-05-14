@@ -5,9 +5,9 @@ description: Maintain authoritative frontend/UI descriptions for description-fir
 
 # App Description UI
 
-Use this skill when description-first work affects the browser frontend of an app.
+Use this skill for the mandatory browser frontend of generated full-stack AI-first SaaS apps, and for any description-first work that changes UI meaning.
 
-This skill keeps UI requirements authoritative before realization so generated Akka apps can be fully capable on both backend and frontend. When the product is AI-first, preserve supervision, decision, governance, digest, audit, and goal-to-execution surfaces before falling back to CRUD-oriented screens.
+This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. Preserve supervision, decision, governance, digest, audit, and goal-to-execution surfaces before falling back to CRUD-oriented screens.
 
 ## Required reading
 
@@ -19,7 +19,7 @@ Read these first if present:
 - `../../docs/web-ui-style-guide.md`
 - `../../docs/web-ui-quality-checklist.md`
 - `../app-descriptions/SKILL.md`
-- `../ai-first-saas-ui-surfaces/SKILL.md` when supervision, decision, governance, digest, audit, or goal-to-execution UI is in scope
+- `../ai-first-saas-ui-surfaces/SKILL.md` for generated AI-first SaaS supervision, decision, governance, digest, audit, and goal-to-execution UI surfaces
 - existing `app-description/55-ui/**`
 
 ## Use this skill when
@@ -32,7 +32,7 @@ Read these first if present:
 
 ## Authoritative UI layer
 
-Prefer this structure when UI is in scope:
+Prefer this structure for generated full-stack AI-first SaaS apps:
 
 ```text
 app-description/55-ui/
@@ -47,7 +47,7 @@ app-description/55-ui/
   style-guide.md
 ```
 
-Create only files justified by the app. For a very small app, one `ui-index.md` plus `screens-and-navigation.md` may be enough. Add `ai-first-surfaces.md` only when the UI must support delegated work, supervision, decisions, governance, digests, audit, or outcome review. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata.
+Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For a very small app, one `ui-index.md`, `ai-first-surfaces.md`, `screens-and-navigation.md`, and `style-guide.md` may be enough. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata.
 
 ## What to capture
 
@@ -58,7 +58,7 @@ Create only files justified by the app. For a very small app, one `ui-index.md` 
 - role-specific access or UI differences
 - temporal modes for AI-first work: delegation, supervision, review/approval, exception handling, teaching/governance, catch-up, and audit
 
-### AI-first surfaces, when in scope
+### AI-first surfaces
 - Goal-to-Execution Workbench: intent capture, plan review, agent assignments, tool/data permissions, approval gates, simulation, launch/cancel controls
 - Command Center / Mission Control: active objectives, agent activity, progress, risks, exceptions, approval queues, material events, and trace links
 - Decision Card / Deviation Review: recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, reviewer actions, and learning options
@@ -111,7 +111,7 @@ Create only files justified by the app. For a very small app, one `ui-index.md` 
 - UX handoff for each non-trivial screen: primary action, information hierarchy, UX copy, feedback/recovery states, responsive behavior, and keyboard/focus path
 - static asset output and Akka hosting route expectations
 
-If a browser UI is in scope and no style is selected, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks only web UI implementation/generation tasks.
+If no UI style is selected for a generated AI-first SaaS app, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks web UI implementation/generation tasks until style is selected.
 
 ## Change handling
 

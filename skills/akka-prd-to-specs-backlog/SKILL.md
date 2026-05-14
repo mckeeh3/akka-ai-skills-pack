@@ -12,8 +12,8 @@ This is a **project-specific planning skill** that builds on the ideas in `akka-
 ## Goal
 
 Generate a consistent planning package from a PRD, requirements document, or high-level feature set that:
-- interprets product intent through the secure AI-first SaaS operating model before record-management or component decomposition when delegated work, decisions, governance, supervision, audit, or outcomes are in scope
-- produces a master Akka solution plan with explicit operating-model, governance, UI-surface, outcome, and substrate mapping sections when applicable
+- interprets product intent through the full-stack secure AI-first SaaS operating model before record-management or component decomposition
+- produces a master Akka solution plan with explicit operating-model, governance, mandatory UI-surface, outcome, and substrate mapping sections for generated SaaS apps
 - for large inputs, splits the plan into module-oriented vertical sprint specs
 - for smaller inputs, splits the plan into bounded vertical slice specs
 - turns each sprint or slice into a build backlog suitable for one or more independent harness operations
@@ -67,7 +67,7 @@ Read these first if present:
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/module-sprint-planning.md` when the input is large, multi-module, or includes backend plus frontend delivery
-- `../../docs/web-ui-style-guide.md` when browser UI is in scope
+- `../../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
 - `../../specs/akka-solution-plan.md` if it already exists
 - `../references/akka-entity-comparison.md`
 
@@ -98,7 +98,7 @@ For every SaaS app PRD, create the secure foundation spec first:
 
 Create additional cross-cutting specs as justified by the PRD:
 - `specs/cross-cutting/00-common-domain-and-conventions.md`
-- `specs/cross-cutting/02-ui-style-guide.md` when a browser UI is in scope and style is selected
+- `specs/cross-cutting/02-ui-style-guide.md` for generated full-stack AI-first SaaS when style is selected
 - `specs/cross-cutting/03-<integration-or-platform-concern>.md`
 
 ### Module and sprint specs for larger PRDs
@@ -116,7 +116,7 @@ For smaller plans, or when preserving an existing project shape, create numbered
 - `specs/slices/02-<slice-name>.md`
 - `specs/slices/03-<slice-name>.md`
 
-For SaaS app PRDs, the first slice must be a secure foundation slice unless the task is explicitly non-SaaS reference material. It must cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, mandatory AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection when a browser UI is in scope, and tenant-isolation tests before CRM/domain-specific slices.
+For SaaS app PRDs, the first slice must be a full-stack secure foundation slice unless the task is explicitly non-SaaS reference material. It must cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, mandatory AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend secret-boundary tests before CRM/domain-specific slices.
 
 Do not create both `specs/slices/` and `specs/sprints/` for new planning output unless project history requires it.
 
@@ -209,15 +209,15 @@ Write that to:
 
 Separate concerns that should not be duplicated across modules, sprints, or slices, such as:
 - ID and domain conventions
-- AI-first operating-model vocabulary: goals, plans, tasks, agent/team definitions, policy clauses, decisions, approvals, exceptions, traces, and outcomes when applicable
+- AI-first operating-model vocabulary: goals, plans, tasks, agent/team definitions, policy clauses, decisions, approvals, exceptions, traces, and outcomes for generated SaaS apps
 - tenancy, auth, permission, and authority-boundary rules
 - policy, guardrail, approval-gate, and governance-versioning rules
 - audit, work-trace, decision-trace, tool-invocation, data-access, retention, and redaction rules
 - evaluation, replay, simulation, feedback, and outcome-metric conventions when agentic behavior or policy evolution is in scope
 - ERP integration model
 - notification delivery model
-- web UI style guide/theme, design tokens, mode policy, and brand adaptation when browser UI is in scope
-- supervision, decision-card, governance-center, digest, audit, and outcome UI-surface conventions when AI-first concerns are in scope
+- mandatory web UI style guide/theme, design tokens, mode policy, and brand adaptation for generated full-stack AI-first SaaS
+- mandatory supervision, decision-card, governance-center, digest, audit, and outcome UI-surface conventions for generated AI-first SaaS apps
 - export/reporting conventions
 
 Create one file per cross-cutting concern when it affects multiple modules, sprints, or slices.
@@ -227,7 +227,7 @@ Create one file per cross-cutting concern when it affects multiple modules, spri
 For large PRDs, prefer module-oriented vertical sprint planning:
 1. identify durable app modules and write `specs/modules/NN-<module>.md` files
 2. define ordered vertical delivery sprints and write `specs/sprints/NN-<sprint>-sprint.md` files
-3. make each sprint testable through its backend and frontend surface when UI is in scope
+3. make each sprint testable through its backend and frontend surface for generated full-stack AI-first SaaS
 4. keep cross-cutting foundation work explicit rather than duplicating it in every module
 
 A good module spec contains boundaries, owned capabilities, actors, human operating roles, delegated work and retained authority when applicable, state ownership, agent/team ownership if any, policy/audit/outcome ownership, UI area, integrations, and related sprints.
@@ -309,7 +309,7 @@ The queue must:
 - include why each question matters and what artifacts or decisions it affects
 - avoid dumping a large interrogation list into the chat response
 
-If browser UI is in scope and no selected style guide exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec, create a `category: ui` style-selection question with the default theme options from `../../docs/web-ui-style-guide.md`. This blocks only web UI implementation/generation tasks.
+If no selected style guide exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the default theme options from `../../docs/web-ui-style-guide.md`. This blocks web UI implementation/generation tasks until style is selected.
 
 If unresolved `blocking` questions affect planned implementation work, either:
 - stop before creating blocked implementation tasks and recommend `akka-do-next-pending-question`, or
@@ -323,7 +323,7 @@ Create or update:
 Use `../../docs/pending-task-queue.md` as the queue contract.
 
 The queue must:
-- start with runnable secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection when applicable, and tenant-isolation tests
+- start with runnable full-stack secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend tests
 - contain one task for each bounded, unblocked item in each backlog's `Suggested harness task breakdown`
 - block or omit work still gated by unresolved `blocking` questions in `specs/pending-questions.md`
 - use stable task IDs such as `TASK-001`, `TASK-002`, `TASK-003`
@@ -442,7 +442,7 @@ Each `specs/sprints/*.md` file should contain:
 - Dependencies and prerequisite questions
 - AI-first operating-model increment when applicable: goal/plan, agent/team, policy, decision, approval/exception, trace, UI-surface, and outcome scope
 - Backend scope
-- Frontend scope when UI is in scope
+- Mandatory frontend scope for generated full-stack AI-first SaaS
 - Acceptance behavior
 - Pending questions affecting the sprint
 - Implementation task groups
@@ -543,7 +543,7 @@ Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
 - `core-saas-foundation` was applied and `specs/cross-cutting/01-auth-tenancy-audit.md` plus a first foundation sprint/slice were created for SaaS apps
-- first runnable pending tasks implement the secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection when applicable, and tenant-isolation tests
+- first runnable pending tasks implement the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend tests
 - high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition
 - AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
 - module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered

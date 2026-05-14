@@ -63,7 +63,7 @@ The canonical doctrine is `docs/ai-first-saas-application-architecture.md`. Form
 
 For high-level product input, begin from the secure AI-first SaaS operating model: durable goals and plans, bounded agent or agent-team execution, policy/permission controls, human supervision, decision/exception handling, audit traces, outcome loops, and a mandatory SaaS security foundation. Then choose the description-first, decomposition, or focused implementation path.
 
-Security is **mandatory from project start** for every generated application unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. The baseline foundation must model identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, and security review before app-specific features are treated as generation-ready.
+Security and the web UI are **mandatory from project start** for every generated application unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. The baseline foundation must model identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, security review, and browser UI surfaces for sign-in, context selection, administration, supervision, decisions, governance, audit, and outcomes before app-specific features are treated as generation-ready.
 
 AI-first is the default interpretation for delegated operational work, autonomous or semi-autonomous decisions, human governance of automation, or outcome accountability. It is **not** a requirement that every app use every AI-first pattern; apply only the substrate objects, governance surfaces, and Akka components justified by the product intent, while keeping the secure SaaS foundation mandatory.
 
@@ -90,7 +90,7 @@ prefer the **agent-friendly structure**.
 
 This repository now has an AI-first SaaS interpretation layer followed by two first-class operating modes.
 
-For broad product input, inspect the intent through the AI-first architecture doctrine before decomposing into CRUD screens or isolated Akka components. Existing Akka component skills remain the implementation substrate; they are selected after the operating model, durable objects, governance needs, UI surfaces, and delivery path are clear enough.
+For broad product input, inspect the intent through the AI-first architecture doctrine before decomposing into CRUD screens or isolated Akka components. Existing Akka component skills remain the implementation substrate; they are selected after the operating model, durable objects, governance needs, mandatory UI surfaces, and delivery path are clear enough.
 
 ### Mode A: description-first application maintenance
 Use this when the user is primarily describing, revising, reviewing, or validating the app as a maintained internal description before realization.

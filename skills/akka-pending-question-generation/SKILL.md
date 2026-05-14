@@ -91,7 +91,7 @@ Create questions only when the answer can change one or more of:
 - acceptance, regression, evaluation, replay/simulation, or edge-case tests
 - backlog slicing, dependencies, or task generation
 
-If a browser UI is in scope and no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the five default theme options from `../../docs/web-ui-style-guide.md`. Mark it `priority: blocking` only for web UI implementation/generation tasks; do not block unrelated backend work.
+For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the five default theme options from `../../docs/web-ui-style-guide.md`. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
 
 For AI-first SaaS inputs, prefer a small number of actionable blocker questions over broad product interviews. Queue a blocking question only when the harness cannot safely choose a default for a concrete implementation area. Good AI-first blocker patterns include:
 - `category: behavior` — what work is delegated to agents versus retained by humans?

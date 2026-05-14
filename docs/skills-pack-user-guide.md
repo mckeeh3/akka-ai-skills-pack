@@ -2,7 +2,7 @@
 
 This guide is for developers using the installed Akka AI Skills Pack to build or evolve an Akka application with an AI coding harness.
 
-The pack is not an application framework you call directly. It is a guidance and routing library for the harness. You describe the product, behavior, bug, issue, or change in normal language; the harness uses the pack to maintain specs, queue decisions, create implementation tasks, write code, run checks, and carry the app forward over many sessions.
+The pack is not an application framework you call directly. It is an opinionated guidance and routing library for the harness with one default product target: full-stack secure AI-first SaaS on Akka. You describe the product, behavior, bug, issue, or change in normal language; the harness uses the pack to maintain specs, queue decisions, create implementation tasks, write backend and frontend code, run checks, and carry the app forward over many sessions.
 
 ## Core idea
 
@@ -115,7 +115,7 @@ As a user, you usually interact with the harness rather than directly reading th
 For non-trivial apps, expect the harness to create or maintain files like:
 
 ```text
-app-description/                 # optional description-first source of truth
+app-description/                 # recommended description-first source of truth for non-trivial apps
 specs/
   akka-solution-plan.md
   pending-questions.md

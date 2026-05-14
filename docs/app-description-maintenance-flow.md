@@ -43,16 +43,16 @@ Use only when the user explicitly asks to realize outputs or accepts a harness r
 
 Prefer this default sequence:
 
-1. bootstrap the internal app-description tree if no usable root exists yet, seeding the secure SaaS foundation capability, behavior, tests, auth/security, observability, and UI surfaces when in scope
+1. bootstrap the internal app-description tree if no usable root exists yet, seeding the secure SaaS foundation capability, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
-5. update `15-operating-model/` when AI-first/delegated operations are in scope
+5. update `15-operating-model/` for generated AI-first SaaS operating semantics
 6. update behavior-level meaning
 7. update verification expectations
 8. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
 9. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, and consequential AI/tool activity
-10. update UI descriptions, including `55-ui/style-guide.md`, when a browser frontend is in scope
+10. update mandatory UI descriptions, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS
 11. update traceability and impact understanding
 12. assess readiness
 13. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
@@ -120,10 +120,10 @@ Update as needed:
 These are not optional polish layers.
 They are part of the app definition. Missing secure SaaS foundation semantics must block readiness or generation rather than becoming assumptions.
 
-### Step 9. Update UI when browser supervision is in scope
+### Step 9. Update mandatory UI
 
-When a browser frontend is in scope, update `55-ui/` after the operating model and behavior are clear enough to describe the user's work surfaces.
-For AI-first apps, prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over record-management navigation. Conventional list/form screens can exist, but they must remain subordinate to the secure AI-first operating model when delegated work is in scope.
+For generated full-stack AI-first SaaS, update `55-ui/` after the operating model and behavior are clear enough to describe the user's work surfaces.
+Prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over record-management navigation. Conventional list/form screens can exist, but they must remain subordinate to the secure AI-first operating model.
 Keep the style-selection rule below in force.
 
 ### Step 10. Update readiness
@@ -165,12 +165,12 @@ Use generation and readiness summaries to explain what happened.
 When multiple layers are affected, prefer this order:
 
 1. `10-capabilities/`
-2. `15-operating-model/` when AI-first/delegated operations are in scope
+2. `15-operating-model/` for generated AI-first SaaS apps
 3. `20-behavior/`
 4. `30-tests/`
 5. `40-auth-security/`
 6. `50-observability/`
-7. `55-ui/` when a browser frontend is in scope, including `style-guide.md`
+7. `55-ui/` for generated full-stack AI-first SaaS, including `style-guide.md`
 8. `70-traceability/`
 9. `00-system/readiness-status.md`
 10. `60-generation/` derived generation notes
@@ -189,7 +189,7 @@ The harness should ask:
 - which tests now need updates?
 - are there new or changed security implications, especially permission enforcement and authority boundaries?
 - are there new or changed observability implications, especially work traces, decision traces, policy invocations, audit events, and outcome metrics?
-- if a browser UI is in scope, is a style guide selected and do supervision, decision, governance, digest, or audit surfaces need to change?
+- is a style guide selected and do supervision, decision, governance, digest, or audit surfaces need to change?
 - does readiness status change?
 - would generation scope be localized or broad?
 - do any existing specs, backlogs, task briefs, or pending tasks need to be updated, blocked, deferred, or superseded?
@@ -209,7 +209,7 @@ The harness should reassess readiness after material description changes, especi
 
 ## UI style-selection rule
 
-When a browser UI is in scope, the app description or specs must contain a selected web UI style guide before web UI implementation or generation starts. If style is missing, add or update a `category: ui` entry in `specs/pending-questions.md` using `docs/web-ui-style-guide.md` rather than silently choosing a theme. This blocks only affected web UI work; unrelated backend description or implementation work can continue.
+For generated full-stack AI-first SaaS, the app description or specs must contain a selected web UI style guide before web UI implementation or generation starts. If style is missing, add or update a `category: ui` entry in `specs/pending-questions.md` using `docs/web-ui-style-guide.md` rather than silently choosing a theme. This blocks web UI work until answered; unrelated backend description or implementation work can continue.
 
 ## Regeneration rule
 
@@ -268,11 +268,11 @@ It must never preserve stale behavior that conflicts with the current descriptio
 
 A description change request is complete when:
 - the relevant authoritative layers are updated
-- when AI-first/delegated operations are in scope, `15-operating-model/` captures goals, delegated work, human authority, policies, decisions, traces, and outcomes sufficiently for the change
+- `15-operating-model/` captures goals, delegated work, human authority, policies, decisions, traces, and outcomes sufficiently for the generated AI-first SaaS change
 - linked verification expectations are updated, including mandatory secure foundation tests for generated SaaS apps
 - linked security and observability expectations are updated when needed
 - readiness has been reassessed or intentionally deferred
-- when a browser UI is in scope, the selected style guide is recorded or a pending style-selection question blocks only UI realization
+- the selected style guide is recorded or a pending style-selection question blocks UI realization
 - affected realization specs/backlogs/task briefs/pending tasks are reconciled when they already exist
 - the user can receive a coherent summary of what changed
 

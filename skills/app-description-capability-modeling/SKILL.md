@@ -79,7 +79,7 @@ For each capability, identify and describe as applicable:
 - in-scope outcomes
 - out-of-scope outcomes
 - major constraints or assumptions
-- linked operating-model artifacts under `15-operating-model/` when AI-first semantics are in scope
+- linked operating-model artifacts under the required `15-operating-model/` for generated AI-first SaaS semantics
 - linked behavior artifacts
 - linked test artifacts
 - linked auth/security artifacts
@@ -100,7 +100,7 @@ Use this response shape when updating or summarizing capability work:
 - business goal:
 - actors:
 
-## AI-first operating semantics, if in scope
+## AI-first operating semantics
 - delegated work:
 - retained human authority:
 - governance / policy boundary:
@@ -195,7 +195,7 @@ Before finishing, verify:
 - business goal and actors are explicit
 - in-scope and out-of-scope outcomes are explicit
 - major assumptions are recorded when relevant
-- delegated work and retained human governance are explicit when AI-first semantics are in scope
+- delegated work and retained human governance are explicit for generated AI-first SaaS semantics
 - linked downstream layers are called out
 - the result strengthens `10-capabilities/` rather than bypassing it
 
@@ -207,4 +207,4 @@ When answering:
 - list in-scope and out-of-scope outcomes explicitly
 - avoid implementation terminology unless needed for clarification
 - call out the next linked description layers to update
-- when AI-first semantics are in scope, mention operating-model links before behavior/test/security/observability links
+- mention operating-model links before behavior/test/security/observability links for generated AI-first SaaS semantics

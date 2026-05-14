@@ -84,10 +84,10 @@ For every generated SaaS app, this is blocking readiness. Check that the descrip
 - mandatory AI-assisted admin offload surfaces and behavior: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, scoped tools/redaction, audit/work traces, and decision cards for risky admin actions such as admin role grants, support-access expansion, identity relink/reset, bulk operations, and last-admin risk
 - foundation test artifacts for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, invite send/resend/revoke/expire/accept, delivery failure, user and membership list/search, membership lifecycle, last-admin protection, support-access, AI access review recommendations, admin-agent approval boundaries, decision cards for risky admin actions, audit/search views, billing boundary, idempotency, and frontend secret-boundary checks
 - observability/audit artifacts for identity, Membership/role, support-access, billing-boundary, policy, approval, data-access, access-review, and consequential AI/tool activity
-- browser UI foundation surfaces when UI is in scope: sign-in state, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, admin-agent recommendation queues, decision-card review for risky admin actions, and capability-gated navigation
+- mandatory browser UI foundation surfaces: sign-in state, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, admin-agent recommendation queues, decision-card review for risky admin actions, and capability-gated navigation
 
 ### 2. AI-first operating-model completeness
-Check this when `15-operating-model/` exists or delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope:
+Check this for generated AI-first SaaS apps and for any existing `15-operating-model/`:
 - durable goals, objectives, constraints, success criteria, and outcome links
 - delegated work versus retained human authority
 - agent/team responsibilities, tools, data access, thresholds, and escalation rules
@@ -132,7 +132,7 @@ Check whether required operational evidence is defined:
 - AI-first work traces, decision traces, policy invocations, tool/data-access records, and outcome links when applicable
 
 ### 7. Frontend/UI completeness
-Check this when a browser frontend is in scope:
+Check this for generated full-stack AI-first SaaS apps:
 - user journeys and screens
 - navigation
 - forms/actions and validation behavior
@@ -275,12 +275,12 @@ Before finishing, verify:
 - the result uses one of the three allowed states
 - core secure SaaS foundation completeness was assessed explicitly for generated SaaS apps
 - missing foundation/security blocks generation or marks the description `not-ready`
-- AI-first operating-model completeness was assessed explicitly when delegated operations are in scope
+- AI-first operating-model completeness was assessed explicitly for generated AI-first SaaS
 - behavior completeness was assessed explicitly
 - test completeness was assessed explicitly
 - auth/security completeness was assessed explicitly
 - observability completeness was assessed explicitly
-- frontend/UI completeness was assessed explicitly when UI is in scope
+- frontend/UI completeness was assessed explicitly as mandatory generated SaaS scope
 - remaining assumptions or gaps are listed clearly
 - the recommendation is explicit
 - the next skill or sequence is named clearly

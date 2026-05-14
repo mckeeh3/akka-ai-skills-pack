@@ -77,7 +77,7 @@ For each requested change, identify and describe as applicable:
 - actors or callers
 - delegated work and retained human authority
 - triggers, commands, requests, agent actions, approvals, exceptions, or scheduled checks
-- stateful concepts and lifecycle states, including goals, plans, tasks, decisions, policy proposals, traces, or outcomes when in scope
+- stateful concepts and lifecycle states, including goals, plans, tasks, decisions, policy proposals, traces, or outcomes for generated AI-first SaaS
 - valid transitions
 - invalid transitions
 - invariants
@@ -111,7 +111,7 @@ Use this response shape when updating or summarizing behavior changes:
 ## Capability or scope change
 - ...
 
-## AI-first operating semantics, if in scope
+## AI-first operating semantics for generated SaaS apps
 - delegated work:
 - retained human authority:
 - approval / exception / decision semantics:
@@ -217,7 +217,7 @@ Before finishing, verify:
 - invariants and forbidden behavior are included when relevant
 - no-op or idempotent behavior is included when relevant
 - assumptions are separated from confirmed facts
-- operational delegation and human governance are represented when in scope
+- operational delegation and human governance are represented for generated AI-first SaaS
 - linked operating-model, test, security, and observability impacts are called out
 - no code-generation step was assumed
 
@@ -229,4 +229,4 @@ When answering:
 - keep implementation speculation minimal
 - call out open questions separately from confirmed behavior
 - make the downstream test implications explicit
-- when AI-first semantics are in scope, state delegated work, retained authority, and approval/exception/trace impacts explicitly
+- state delegated work, retained authority, and approval/exception/trace impacts explicitly for generated AI-first SaaS

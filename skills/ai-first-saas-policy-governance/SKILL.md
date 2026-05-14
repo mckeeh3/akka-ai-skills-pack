@@ -57,7 +57,7 @@ Select only objects needed for enforceable behavior and audit:
 - Trace enrichment, notification, and downstream policy publication → `akka-consumers`.
 - Scheduled reviews, replays, expirations, or periodic governance checks → `akka-timed-actions`.
 - Browser governance APIs and UI → `akka-http-endpoints`, `akka-web-ui-apps`, and focused web UI skills.
-- Authentication, roles, JWT, or admin permissions → `akka-workos-user-auth`, `akka-basic-user-admin`, and HTTP/JWT skills when in scope.
+- Authentication, roles, JWT, or admin permissions → `akka-workos-user-auth`, `akka-basic-user-admin`, and HTTP/JWT skills for the mandatory secure SaaS foundation.
 
 ## Output expectations
 

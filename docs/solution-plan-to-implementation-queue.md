@@ -6,7 +6,7 @@ For durable multi-session execution with task status, use `pending-question-queu
 
 Purpose:
 - turn unresolved design decisions into a durable clarification queue when needed
-- preserve AI-first operating-model context when delegated work, governance, supervision, audit, or outcomes are in scope
+- preserve full-stack secure AI-first SaaS operating-model context, including mandatory foundation, UI surfaces, governance, supervision, audit, and outcomes
 - turn the solution plan into a downstream implementation work queue
 - keep coding focused on one component family at a time
 - make code generation and test generation explicit follow-on work
@@ -22,12 +22,12 @@ That contract should tell the next agent or next phase:
 - which skills to load for each build step
 - which tests to generate alongside each component
 - whether endpoint, web UI, or documentation/snippet work is also required
-- when applicable, which delegated authority, policy/approval, trace, supervision UI, evaluation, and outcome requirements must be carried into each task
+- which delegated authority, policy/approval, trace, supervision UI, evaluation, and outcome requirements must be carried into each generated SaaS task
 
 ## Minimal transformation
 
 Take these sections from the solution plan:
-- AI-first interpretation when present: delegated work, retained authority, durable objects, policy/approval/exception needs, traces, UI surfaces, and outcomes
+- AI-first interpretation: delegated work, retained authority, durable objects, policy/approval/exception needs, traces, mandatory UI surfaces, and outcomes
 - chosen components
 - skill routing
 - recommended implementation order

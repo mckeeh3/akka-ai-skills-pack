@@ -31,7 +31,7 @@ Read these first if present:
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-end-to-end-workflow-example.md`
 - `../ai-first-saas/SKILL.md` when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- `../../docs/web-ui-style-guide.md` when a browser UI is in scope
+- `../../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
 
 Prefer these local examples and references:
 - `../../docs/examples/ai-first-saas-seed-app-description/README.md` for secure AI-first SaaS foundation shape
@@ -95,7 +95,7 @@ Prefer this sequence unless the task is already narrowly scoped:
 
 1. apply `ai-first-saas` interpretation when broad input involves delegated work, agents, policy-bound decisions, approvals, supervision, audit, learning, or outcomes
 2. apply `core-saas-foundation` for every new SaaS app description so Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin, and tenant isolation are seeded before app-specific features
-3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `15-operating-model/` when AI-first/delegated operations are in scope
+3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `15-operating-model/` and `55-ui/` for generated full-stack AI-first SaaS apps
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`
 6. model capabilities with `app-description-capability-modeling` when scope or business outcomes changed
@@ -105,7 +105,7 @@ Prefer this sequence unless the task is already narrowly scoped:
 10. run `app-description-change-impact` to identify cross-layer and realization implications
 11. update security with `app-description-auth-security` when security semantics change; preserve the mandatory foundation in every app description
 12. update observability with `app-description-observability` when observability semantics change; preserve audit requirements in every app description
-13. update UI with `app-description-ui` when needed
+13. update UI with `app-description-ui`; for generated full-stack AI-first SaaS apps the browser UI layer is mandatory, not optional polish
 14. assess readiness with `app-description-readiness-assessment`
 15. realize outputs with `app-generate-app` only when generation is requested or accepted
 16. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
@@ -115,12 +115,12 @@ Prefer this sequence unless the task is already narrowly scoped:
 The default internal app-description structure is:
 - `00-system/`
 - `10-capabilities/`
-- `15-operating-model/` when AI-first/delegated operations are in scope
+- `15-operating-model/` for generated AI-first SaaS apps
 - `20-behavior/`
 - `30-tests/`
 - `40-auth-security/`
 - `50-observability/`
-- `55-ui/` when a browser frontend is in scope, including `style-guide.md`
+- `55-ui/` for generated full-stack AI-first SaaS apps, including `style-guide.md`
 - `60-generation/`
 - `70-traceability/`
 - `80-review/`
@@ -133,7 +133,7 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 2. Generated code is a projection, not the definition of the app.
 3. Humans do not directly edit generated code or internal app-description artifacts.
 4. Tests are part of the app description, not only post-hoc verification.
-5. AI-first operating-model semantics are first-class when delegated work, agents, governance, decisions, traces, or outcomes are in scope.
+5. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
 6. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
 7. Auth/security and observability are first-class description concerns.
 8. Browser UI style guides are first-class UI description concerns; do not invent them during generation.

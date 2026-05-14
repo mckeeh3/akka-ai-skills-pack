@@ -4,9 +4,9 @@ Use this pattern when a large PRD, revised PRD, app-description realization, or 
 
 Goal: decompose work into **vertical module sprints** that can be implemented and tested full stack, one module at a time.
 
-Before splitting modules, classify whether the product is AI-first SaaS: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision, audit traces, or outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
+Before splitting modules, classify the generated product as full-stack secure AI-first SaaS by default: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision UI, audit traces, and outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
-For SaaS app planning, the first sprint or slice is always the core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents, decision cards for risky admin actions, admin UI surfaces, audit, frontend shell/context selection when applicable, and security/admin tests before app-specific CRM/domain features.
+For SaaS app planning, the first sprint or slice is always the full-stack core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents, decision cards for risky admin actions, mandatory admin UI surfaces, audit, frontend shell/context selection, and security/admin/frontend tests before app-specific CRM/domain features.
 
 ## When to use
 
@@ -70,7 +70,7 @@ Each `specs/modules/NN-<module>.md` should contain:
 - frontend screens or navigation areas owned by the module
 - integrations and events entering/leaving the module
 - cross-cutting specs referenced by the module
-- AI-first scope when applicable: delegated work, retained human authority, durable goals/plans, agents, policies, decisions, traces, UI surfaces, and outcomes owned or used by the module
+- AI-first scope for generated SaaS: delegated work, retained human authority, durable goals/plans, agents, policies, decisions, traces, UI surfaces, and outcomes owned or used by the module
 - out-of-scope adjacent modules
 - related sprints/backlogs
 
@@ -85,7 +85,7 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - dependencies and prerequisite decisions
 - backend scope: entities, workflows, views, consumers, timers, endpoints
 - frontend scope: screens, forms, navigation, API client calls, realtime behavior
-- AI-first increment when applicable: goals/plans, agent/team responsibilities, authority limits, approval gates, policy clauses, evidence/risk/confidence/impact surfaces, trace records, evaluations, and outcome metrics
+- AI-first increment for generated SaaS: goals/plans, agent/team responsibilities, authority limits, approval gates, policy clauses, evidence/risk/confidence/impact surfaces, trace records, evaluations, and outcome metrics
 - acceptance behavior: happy paths, validation, no-op/idempotent cases, error cases
 - pending questions that block or affect the sprint
 - implementation task groups
@@ -129,7 +129,7 @@ Rules:
 - block only affected tasks, not the whole project
 - allow unblocked foundation or module work to continue
 - let unknown security-provider details block provider-specific WorkOS/JWT integration tasks, but not the foundation slice's local authorization contracts, Tenant/Customer boundaries, `/api/me` contract, audit model, or tenant-isolation test design
-- if browser UI is in scope and no style guide is selected, create a UI style-selection question and block only UI implementation tasks
+- if no style guide is selected for generated AI-first SaaS, create a UI style-selection question and block web UI implementation tasks until answered
 - for AI-first scope, create scoped questions when implementation would otherwise guess delegated authority, approval gates, policy/risk thresholds, evidence requirements, trace visibility, evaluation strategy, or outcome metrics
 
 ## Pending tasks
@@ -168,7 +168,7 @@ A module sprint is done only when:
 - all runnable tasks for the sprint are done or explicitly deferred
 - backend component tests pass
 - endpoint tests pass for the sprint API surface
-- frontend checks/tests pass when UI is in scope
+- frontend checks/tests pass for generated full-stack AI-first SaaS
 - at least one module-level integration or smoke path verifies the full stack for the sprint
 - deferred items and blocked questions are visible in the sprint spec, backlog, or queues
 - AI-first authority, policy, trace, evaluation, and outcome constraints are either implemented, explicitly deferred, or blocked by named questions

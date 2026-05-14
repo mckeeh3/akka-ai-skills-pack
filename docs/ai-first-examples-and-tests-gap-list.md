@@ -22,7 +22,7 @@ The DCA app-description reference now covers durable goals, bounded agents, reta
 
 - **P0 required**: needed for future agents to confidently generate AI-first SaaS apps without guessing core operating-model semantics.
 - **P1 important**: closes recurring implementation/test gaps once the first executable slice exists.
-- **P2 optional**: useful breadth examples, but not required before the first complete AI-first reference path.
+- **P2 breadth**: useful breadth examples, but not required before the first complete AI-first reference path.
 
 ## Completed app-description coverage
 

@@ -10,7 +10,7 @@ Use this as the top-level starting skill when the task begins from high-level in
 ## Goal
 
 Generate or review an Akka solution plan that:
-- interprets high-level product intent through the AI-first SaaS operating model when delegated work, decisions, governance, supervision, audit, or outcomes are in scope
+- interprets high-level product intent through the full-stack secure AI-first SaaS operating model, including mandatory foundation and UI surfaces
 - maps user-facing capabilities to concrete Akka components
 - chooses the simplest component set that preserves required business semantics
 - makes write model, read model, orchestration, timing, integration, and edge concerns explicit
@@ -596,7 +596,7 @@ Avoid:
 
 Before moving from planning to coding, verify:
 - high-level input was explicitly classified as AI-first-applicable or clearly non-agentic
-- delegated work, retained human authority, policy, approval, audit, trace, and outcome needs are reflected before CRUD/component decomposition when applicable
+- delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
 - every user-facing capability maps to at least one concrete component or an explicit decision not to add one
 - each chosen component has a clear purpose and owning package
 - entity type decisions are justified

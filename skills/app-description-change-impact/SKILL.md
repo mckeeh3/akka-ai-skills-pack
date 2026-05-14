@@ -13,7 +13,7 @@ It helps the harness keep the internal app-description system consistent and dec
 ## Goal
 
 Analyze a requested or completed description change and produce an impact result that:
-- identifies impacted authoritative layers, including `15-operating-model/` when AI-first/delegated operations are in scope
+- identifies impacted authoritative layers, including the required `15-operating-model/` for generated AI-first SaaS apps
 - identifies impacted traceability artifacts
 - identifies whether readiness must be reassessed
 - identifies likely affected generated output areas
@@ -80,7 +80,7 @@ A one-line behavior change may still require:
 
 For each change, determine as applicable:
 - which capability artifacts are impacted
-- which `15-operating-model/` artifacts are impacted when delegated operations are in scope: goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, evidence, traces, learning, or outcomes
+- which `15-operating-model/` artifacts are impacted for generated AI-first SaaS: goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, evidence, traces, learning, or outcomes
 - which behavior artifacts are impacted
 - which test artifacts are impacted
 - which auth/security artifacts are impacted, especially authority boundaries and permission enforcement
@@ -207,7 +207,7 @@ Avoid:
 ## Final review checklist
 
 Before finishing, verify:
-- impacted authoritative layers are named explicitly, including `15-operating-model/` when delegated operations are in scope
+- impacted authoritative layers are named explicitly, including `15-operating-model/` for generated AI-first SaaS apps
 - impacted derived layers are named explicitly
 - readiness impact is called out when relevant
 - likely generated outputs are named at a useful level

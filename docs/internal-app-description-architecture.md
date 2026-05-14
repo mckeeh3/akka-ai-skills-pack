@@ -61,7 +61,7 @@ app-description/
     01-secure-tenant-user-foundation.md
     02-<capability>.md
 
-  15-operating-model/      # when AI-first/delegated operations are in scope
+  15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
     agent-roles-and-authority.md
     policies-and-approval-gates.md
@@ -101,7 +101,7 @@ app-description/
     traces-and-correlation.md
     health-and-alerts.md
 
-  55-ui/                  # when a browser frontend is in scope
+  55-ui/                  # required for generated full-stack AI-first SaaS apps
     ui-index.md
     personas-and-journeys.md
     screens-and-navigation.md
@@ -177,8 +177,7 @@ Each capability file should be narrowly focused and should link to the correspon
 ## `15-operating-model/`
 AI-first operating model and agentic substrate.
 
-Include this layer when the described app involves delegated operational work, agents, recommendations, approvals, exceptions, policy-governed automation, auditability, or outcome accountability.
-Do not create it for a clearly non-agentic app unless useful as an explicit non-goal.
+Include this layer for every generated AI-first SaaS app. The pack is opinionated toward full-stack AI-first SaaS, so the baseline secure foundation already includes delegated admin assistance, human supervision, policy controls, auditability, and outcome accountability. Omit this layer only for explicitly non-SaaS reference material or repository-maintenance-only work.
 
 This layer answers:
 - what durable goals, objectives, success criteria, constraints, and outcome links exist?
@@ -257,7 +256,7 @@ This layer answers:
 ## `55-ui/`
 Authoritative frontend and browser interaction layer.
 
-This layer is present when a browser frontend is in scope.
+This layer is required for generated full-stack AI-first SaaS apps. It may be omitted only for explicitly non-SaaS reference material or repository-maintenance-only work. Do not treat the browser UI as optional polish or defer it behind backend-only generation.
 
 This layer answers:
 - who uses the UI and for which journeys
@@ -320,7 +319,7 @@ Do not treat this layer as the source of app meaning.
 Default ownership should be:
 
 - `app-description-bootstrap`
-  - creates the initial `00-system/`, secure foundation `10-capabilities/`, foundation `20-behavior/`, foundation `30-tests/`, `40-auth-security/`, and `50-observability/` seed artifacts, plus `15-operating-model/` when AI-first/delegated operations are in scope and `55-ui/` foundation surfaces when a browser frontend is in scope
+  - creates the initial `00-system/`, secure foundation `10-capabilities/`, foundation `15-operating-model/`, foundation `20-behavior/`, foundation `30-tests/`, `40-auth-security/`, `50-observability/`, and required `55-ui/` seed artifacts for generated full-stack AI-first SaaS apps
   - establishes the first stable app-description root
 
 - `app-description-input-normalization`
@@ -358,7 +357,7 @@ Default ownership should be:
 - `app-description-ui`
   - primarily owns `55-ui/`
   - links UI screens, interactions, frontend API contracts, accessibility, responsive behavior, and the selected `style-guide.md` back to capabilities, behavior, tests, security, and observability
-  - when AI-first UI is in scope, prioritizes supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces over CRUD navigation by default
+  - prioritizes supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces over CRUD navigation by default for generated AI-first SaaS UI
 
 - `app-description-readiness-assessment`
   - primarily owns `00-system/readiness-status.md`
@@ -380,7 +379,7 @@ Default ownership should be:
 
 The harness should maintain these invariants:
 
-1. Every generated SaaS app must include the secure tenant/user foundation capability, behavior, auth/security, observability, UI when in scope, and test artifacts before app-specific generation.
+1. Every generated SaaS app must include the secure tenant/user foundation capability, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
 2. Every in-scope capability must link to at least one behavior artifact.
 3. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
 4. Every important behavior change must link to one or more test artifacts.
@@ -434,7 +433,7 @@ When a change request arrives, the harness should:
 4. update linked test semantics
 5. update linked auth/security semantics if needed
 6. update linked observability semantics if needed
-7. update linked UI semantics, including `55-ui/style-guide.md`, if a browser frontend is in scope
+7. update linked UI semantics, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS apps
 8. update traceability links
 9. reassess readiness
 10. generate outputs only if requested or accepted
@@ -444,12 +443,12 @@ When a change request arrives, the harness should:
 ### Authoritative
 These layers define the app:
 - `10-capabilities/`
-- `15-operating-model/` when AI-first/delegated operations are in scope
+- `15-operating-model/` for generated AI-first SaaS apps
 - `20-behavior/`
 - `30-tests/`
 - `40-auth-security/`
 - `50-observability/`
-- `55-ui/` when a browser frontend is in scope
+- `55-ui/` for generated full-stack AI-first SaaS apps
 - relevant control state in `00-system/`
 
 ### Derived
@@ -472,7 +471,7 @@ app-description/
   10-capabilities/
     capabilities-index.md
     01-secure-tenant-user-foundation.md
-  15-operating-model/      # only when AI-first/delegated operations are in scope
+  15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
   20-behavior/
     behavior-index.md
@@ -487,9 +486,13 @@ app-description/
     authorization-rules.md
   50-observability/
     logs-and-audit.md
+  55-ui/
+    ui-index.md
+    secure-shell-and-context-selection.md
+    style-guide.md
 ```
 
-Then expand into the full structure as complexity grows.
+Then expand into the full structure as complexity grows. For generated AI-first SaaS, even a very small project is full-stack and must include a browser UI description.
 
 ## Operating rule
 

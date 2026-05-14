@@ -81,7 +81,7 @@ Use the contract in `../../docs/pending-task-queue.md`.
 
 Derive queue tasks from each backlog file's `Suggested harness task breakdown` section.
 
-Security baseline tasks must never be omitted as cross-cutting polish. For SaaS app queues, ensure the first runnable tasks implement or verify the secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, frontend shell/context selection when applicable, and security/admin tests. If the source backlogs lack those tasks, repair the queue only after adding or flagging the missing foundation backlog coverage instead of silently proceeding to domain work.
+Security and web UI baseline tasks must never be omitted as cross-cutting polish. For SaaS app queues, ensure the first runnable tasks implement or verify the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, frontend shell/context selection, and security/admin/frontend tests. If the source backlogs lack those tasks, repair the queue only after adding or flagging the missing foundation backlog coverage instead of silently proceeding to domain work.
 
 Do not create one queue task per class name unless the backlog explicitly frames each class as a separate harness-sized task.
 
@@ -139,7 +139,7 @@ When a backlog item appears to match an existing queue task, update that existin
 ### Dependency rules
 
 Set dependencies conservatively:
-- secure foundation tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents, decision cards for risky admin actions, admin UI surfaces, audit, frontend shell/context selection when applicable, and security/admin tests come before app-specific CRM/domain tasks
+- secure foundation tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents, decision cards for risky admin actions, admin UI surfaces, audit, frontend shell/context selection, and security/admin/frontend tests come before app-specific CRM/domain tasks
 - foundational domain/config tasks usually have no dependencies
 - entity/workflow tasks depend on required domain tasks
 - views depend on their source component tasks

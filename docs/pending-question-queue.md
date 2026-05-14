@@ -26,7 +26,7 @@ This file belongs in the target project workspace, not inside the installed `.ag
 2. Preserve question IDs and history; do not renumber questions casually.
 3. Prefer questions that block architecture, specs, backlog, task generation, or safe implementation.
 4. For AI-first scope, add questions when work would otherwise guess delegated authority, human-only decisions, approval gates, policy/risk thresholds, evidence requirements, trace retention/visibility, supervision UI mode, evaluation/replay approach, or outcome metrics.
-5. If a browser UI is in scope and no style guide/theme is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block only web UI implementation/generation work.
+5. For generated full-stack AI-first SaaS, if no style guide/theme is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block web UI implementation/generation work until answered.
 6. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
 7. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
 8. Defer questions only when the plan can safely proceed without that answer.

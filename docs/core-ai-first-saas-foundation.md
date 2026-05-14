@@ -79,7 +79,7 @@ Core AI-first features must include:
 
 - durable audit traces for identity, role, scope, tenant, customer, and billing administration;
 - policy-controlled administrative actions, such as role assignment, tenant suspension, and billing-plan changes, using the canonical foundation roles `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` as the baseline;
-- mandatory AI-assisted admin offload agents: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and optional AdminPolicyProposalAgent;
+- mandatory AI-assisted admin offload agents: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and AdminPolicyProposalAgent when the product allows policy/permission/threshold proposal drafting;
 - decision cards for risky or high-impact administration changes;
 - anomaly and risk signals for suspicious account, access, or billing events;
 - human-supervised recommendations rather than autonomous high-impact changes by default;
@@ -121,4 +121,4 @@ Example AI-first core scenarios:
 8. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
 9. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
 10. Cross-scope audit trace and access review views.
-11. AI-assisted admin offload: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, optional AdminPolicyProposalAgent, and decision cards for risky role, support-access, tenant suspension, bulk, identity relink, and billing changes.
+11. AI-assisted admin offload: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, AdminPolicyProposalAgent when policy proposal drafting is allowed, and decision cards for risky role, support-access, tenant suspension, bulk, identity relink, and billing changes.

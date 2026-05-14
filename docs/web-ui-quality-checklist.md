@@ -95,7 +95,7 @@ For generated SaaS applications, the browser UI inherits the mandatory secure fo
 - [ ] Public UI asset routes and backend API routes are intentionally separated.
 - [ ] Sensitive data is not embedded in static assets.
 - [ ] Unauthorized/expired-session and forbidden-action UX is covered for protected routes, including tenant/customer mismatch, disabled users, and role/scope denial.
-- [ ] `/api/me`, selected context, browser-safe capabilities, profile, settings, and context-switch behavior are represented when a browser UI is in scope.
+- [ ] `/api/me`, selected context, browser-safe capabilities, profile, settings, and context-switch behavior are represented for generated full-stack AI-first SaaS.
 
 ## Build and tests
 

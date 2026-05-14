@@ -19,7 +19,7 @@ Create or update auth/security-oriented app-description artifacts that:
 - define authorization boundaries and protected operations
 - define sensitive-data handling expectations
 - define allowed and forbidden access patterns
-- define AI-first authority boundaries for agents, tools, data access, approvals, and governed policy changes when in scope
+- define AI-first authority boundaries for agents, tools, data access, approvals, and governed policy changes for generated AI-first SaaS
 - define failure behavior for unauthorized and forbidden actions
 - identify linked impacts on behavior, tests, observability, and generation readiness
 
@@ -120,7 +120,7 @@ Use this response shape when updating or summarizing auth/security changes:
 ## Authorization rules
 - ...
 
-## Agent/tool/data authority, if in scope
+## Agent/tool/data authority
 - ...
 
 ## Trust boundaries and access surfaces
@@ -269,7 +269,7 @@ Before finishing, verify:
 - authorization rules are explicit by action or surface
 - trust boundaries are called out
 - sensitive-data rules are included where relevant
-- agent/tool/data/policy authority boundaries are explicit when AI-first semantics are in scope
+- agent/tool/data/policy authority boundaries are explicit for generated AI-first SaaS semantics
 - forbidden access behavior is explicit
 - denial outcomes are explicit where relevant
 - linked impacts on behavior, tests, and observability are called out

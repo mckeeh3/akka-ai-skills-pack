@@ -204,7 +204,7 @@ Required baseline operations:
 
 ## Administration UI surfaces
 
-When a browser UI is in scope, the foundation includes first-slice screens for: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
+For generated full-stack AI-first SaaS apps, the foundation includes mandatory first-slice web screens for: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
 
 ## Administration flows
 
@@ -362,7 +362,7 @@ Required agents:
 - `RoleRecommendationAgent` recommends least-privilege roles/capabilities from scoped context;
 - `SupportAccessReviewAgent` reviews support memberships nearing expiry, unusual use, purpose, and revocation candidates;
 - `AdminAuditSummaryAgent` summarizes admin audit/search results with actor, target user, scope, policy, and trace links;
-- optional `AdminPolicyProposalAgent` drafts policy/permission/threshold proposals only; human governance is required for commits.
+- `AdminPolicyProposalAgent`, when enabled for policy governance, drafts policy/permission/threshold proposals only; human governance is required for commits.
 
 Agents may autonomously draft invites, summarize risk, recommend roles, identify stale/dormant access, prepare bulk invite drafts, create low-risk admin tasks, generate audit summaries, and create decision cards. They must not autonomously grant admin roles, remove last admin, expand support access, suspend tenants, bulk disable users, change policy/permissions, or access tenant/customer data outside authorized tool scope.
 
@@ -402,7 +402,7 @@ Record audit events for:
 | `RoleRecommendationAgent` | Mandatory least-privilege role/capability recommendation agent. |
 | `SupportAccessReviewAgent` | Mandatory support-access review agent for expiry, purpose, usage, and revocation recommendations. |
 | `AdminAuditSummaryAgent` | Mandatory audit/search summarization agent for supervisors and auditors. |
-| `AdminPolicyProposalAgent` | Optional proposal-drafting agent; policy commits remain human-governed. |
+| `AdminPolicyProposalAgent` | Conditional proposal-drafting agent for products that allow policy governance drafts; policy commits remain human-governed. |
 | `AdminDecisionWorkflow` | Approval gate for risky admin changes and agent-generated decision cards. |
 
 ## Acceptance checklist

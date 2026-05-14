@@ -18,7 +18,7 @@ Create or update observability-oriented app-description artifacts that:
 - capture required logs, metrics, traces, and audit events
 - define health and alert-worthy conditions
 - define diagnosability expectations for important failures and workflows
-- preserve AI-first work traces, decision traces, policy/tool/data access evidence, evaluations, digests, and outcome visibility when in scope
+- preserve AI-first work traces, decision traces, policy/tool/data access evidence, evaluations, digests, and outcome visibility for generated AI-first SaaS apps
 - link observability expectations back to behavior, security, and tests
 - improve readiness for generation and manual evaluation
 
@@ -104,7 +104,7 @@ Use this response shape when updating or summarizing observability changes:
 ## Traces and correlation
 - ...
 
-## AI-first audit, evaluation, digest, and outcome evidence, if in scope
+## AI-first audit, evaluation, digest, and outcome evidence
 - ...
 
 ## Health signals

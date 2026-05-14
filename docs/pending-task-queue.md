@@ -4,7 +4,7 @@ Use this contract when PRD/spec planning creates follow-on implementation work t
 
 Purpose:
 - persist follow-on work after decomposition, backlog creation, task-brief creation, and resolution or deferral of blocking questions
-- preserve AI-first operating-model constraints in implementation tasks when delegated work, governance, supervision, audit, or outcomes are in scope
+- preserve full-stack secure AI-first SaaS operating-model constraints in implementation tasks, including governance, supervision UI, audit, and outcomes
 - make the next runnable task obvious
 - keep each implementation run bounded to one task
 - support fresh-context execution for each task
@@ -210,7 +210,7 @@ If a task discovers an unresolved design decision during execution, block the ta
 
 ## Relationship to other planning artifacts
 
-- `specs/akka-solution-plan.md` defines the overall architecture, AI-first interpretation when applicable, and implementation order.
+- `specs/akka-solution-plan.md` defines the overall architecture, full-stack secure AI-first SaaS interpretation, and implementation order for generated apps.
 - `specs/modules/*.md` define durable module boundaries for large plans.
 - `specs/sprints/*.md` define ordered vertical full-stack delivery increments for large plans.
 - `specs/slices/*.md` define bounded business slices for smaller or existing slice-based plans.

@@ -20,7 +20,7 @@ The output should:
 - make no-op and idempotency behavior testable
 - capture mandatory secure SaaS foundation verification expectations, including tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, and frontend secret-boundary tests
 - capture relevant security and observability verification expectations
-- preserve AI-first verification needs when delegated work, agent judgment, approvals, policies, traces, evaluations, or outcomes are in scope
+- preserve AI-first verification needs for generated SaaS delegated work, agent judgment, approvals, policies, traces, evaluations, and outcomes
 - identify remaining ambiguity that still needs clarification
 
 ## Required reading
@@ -56,7 +56,7 @@ Use it for:
 - idempotency behavior
 - authorization/security expectations
 - observability verification expectations
-- agent output, evaluator, guardrail, policy, approval, trace, and outcome-loop verification expectations when AI-first semantics are in scope
+- agent output, evaluator, guardrail, policy, approval, trace, and outcome-loop verification expectations for generated AI-first SaaS semantics
 
 ## Core operating rule
 
@@ -146,7 +146,7 @@ Use this structure when updating or summarizing the test layer:
 ## Observability / trace verification cases
 - ...
 
-## AI-first evaluation and outcome cases, if in scope
+## AI-first evaluation and outcome cases
 - ...
 
 ## Open questions and assumptions

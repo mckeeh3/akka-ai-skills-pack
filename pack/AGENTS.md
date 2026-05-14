@@ -7,9 +7,9 @@ It is distinct from the repository-internal maintainer guidance used to develop 
 
 ## What this installed pack is for
 
-This pack creates **secure AI-first SaaS on Akka**. Treat that as the generated-application target from the start of every project unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
+This pack creates **full-stack secure AI-first SaaS on Akka**. Treat that as the generated-application target from the start of every project unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
 
-Security is mandatory. Every generated SaaS application must begin with a secure foundation: identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, and security review. Do not defer these to later hardening or wait for the user to ask for them.
+Security and the web UI are mandatory. Every generated SaaS application must begin with a secure foundation: identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, security review, and browser UI surfaces for sign-in, context selection, administration, supervision, decisions, governance, audit, and outcomes. Do not defer these to later hardening/polish or wait for the user to ask for them.
 
 AI-first SaaS means agents do bounded work while humans supervise, decide, approve, audit, teach, and own outcomes. First decide which durable goals/plans, bounded agents or agent teams, policy and approval controls, supervision surfaces, audit traces, and outcome loops the product needs; then apply only the justified Akka substrate components on top of the mandatory secure SaaS foundation.
 
@@ -17,7 +17,7 @@ This pack supports a secure AI-first interpretation layer plus two complementary
 
 0. **secure AI-first SaaS interpretation**
    - inspect high-level product intent before decomposing into CRUD or isolated components
-   - model the mandatory secure SaaS foundation before app-specific features
+   - model the mandatory secure SaaS foundation and browser UI surfaces before app-specific features
    - model delegated work, retained human authority, policies, decisions, traces, supervision, and outcomes when applicable
    - route through `skills/ai-first-saas/SKILL.md` and focused AI-first companion skills only as needed
 1. **description-first application maintenance**
@@ -48,7 +48,7 @@ Use this mode when the user is primarily describing or revising the app, asking 
 
 Recommended flow:
 1. read the user's input completely
-2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, and tenant-isolation foundations
+2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, tenant-isolation, and web UI foundations
 3. if the user is working description-first, start with `skills/app-descriptions/SKILL.md`
 4. bootstrap with `skills/app-description-bootstrap/SKILL.md` when no usable app-description tree exists yet
 5. normalize broad or mixed input with `skills/app-description-input-normalization/SKILL.md`
@@ -66,7 +66,7 @@ Use this mode when the user wants to derive the Akka solution shape and then imp
 
 Recommended flow:
 1. read the user's input completely
-2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, and tenant-isolation foundations
+2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, tenant-isolation, and web UI foundations
 3. if the Akka solution shape is still unclear, start with `skills/akka-solution-decomposition/SKILL.md`
 4. if one structural choice is still unresolved, use the focused decision skill such as `skills/akka-entity-type-selection/SKILL.md`
 5. if unresolved decisions would make tasks speculative, create `specs/pending-questions.md` with `skills/akka-pending-question-generation/SKILL.md` and work through it one question at a time with `skills/akka-do-next-pending-question/SKILL.md`

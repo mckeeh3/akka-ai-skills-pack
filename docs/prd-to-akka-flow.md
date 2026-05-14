@@ -33,7 +33,7 @@ Use a prompt like:
 ```text
 read docs/examples/purchase-request-prd.md,
 then produce an Akka solution plan with:
-- AI-first interpretation when delegated work, governance, supervision, audit, or outcomes are in scope
+- full-stack secure AI-first SaaS interpretation, including mandatory foundation and UI surfaces
 - capability summary
 - chosen components
 - why each component exists

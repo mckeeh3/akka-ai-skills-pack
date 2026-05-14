@@ -49,7 +49,7 @@ Read these first if present:
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-change-impact/SKILL.md`
-- `../ai-first-saas/SKILL.md` when AI-first semantics are in scope
+- `../ai-first-saas/SKILL.md` for generated AI-first SaaS semantics
 - `../akka-backlog-to-pending-tasks/SKILL.md`
 - target project `app-description/` indexes if present
 - target project `specs/README.md` if present

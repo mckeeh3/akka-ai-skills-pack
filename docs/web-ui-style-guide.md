@@ -9,7 +9,7 @@ Record the selected style in the smallest authoritative artifact available:
 - description-first apps: `app-description/55-ui/style-guide.md`
 - specs/backlog apps: `specs/cross-cutting/NN-ui-style-guide.md` or an equivalent UI slice spec referenced by every web UI task
 
-A generated web UI should read from that style guide before producing HTML, CSS, TypeScript, or JavaScript. If a browser UI is in scope and no style has been selected, add a durable `category: ui` question to `specs/pending-questions.md` before creating or executing web UI implementation tasks.
+A generated web UI should read from that style guide before producing HTML, CSS, TypeScript, or JavaScript. For generated full-stack AI-first SaaS, the browser UI is mandatory; if no style has been selected, add a durable `category: ui` question to `specs/pending-questions.md` before creating or executing web UI implementation tasks.
 
 ## Required style-guide fields
 

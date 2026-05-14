@@ -135,7 +135,7 @@ Implementation task groups:
 
 1. common activity and material-event schema;
 2. command-center and digest views from workflow/decision/trace/outcome facts;
-3. scheduled digest generation and optional summary agent;
+3. scheduled digest generation and bounded summary agent when digest summarization is part of the slice;
 4. HTTP/SSE APIs for active objectives, agent activity, decisions, and digest windows;
 5. owner brief and mission-control UI screens;
 6. tests for material event ranking, routine compression, trace links, authorization, and realtime/stale-state behavior.

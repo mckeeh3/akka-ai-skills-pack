@@ -1,6 +1,6 @@
 # Akka Skill Routing Map
 
-This directory contains AI-focused skills for creating secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security foundation, derive the right Akka Java SDK solution, then turn that solution plan into concrete component code, tests, and delivery assets.
+This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security and web UI foundation, derive the right Akka Java SDK solution, then turn that solution plan into concrete backend, frontend, test, and delivery assets.
 
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
@@ -13,14 +13,15 @@ This file serves both:
 
 For high-level product input, treat the target as secure AI-first SaaS unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. Interpret delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, and outcome accountability before decomposing into Akka components.
 
-Mandatory secure SaaS foundation before app-specific features:
+Mandatory secure SaaS and web UI foundation before app-specific features:
 - identity and authentication seam, typically WorkOS for browser user authentication
 - local Akka-owned authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, and selected AuthContext
 - SaaS Owner, Tenant, and Customer organization model with tenant/customer-scoped commands and queries
 - `/api/me` for the signed-in account, memberships, selected context, profile, settings, and browser-safe capabilities
 - backend authorization checks for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action
 - AdminAuditEvent and audit/work traces for identity, authorization, policy, approval, data access, and consequential AI/tool activity
-- tenant-isolation, forbidden-access, disabled-user, role/scope denial, audit, and security-review tests
+- mandatory browser UI surfaces for sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, supervision, decisions, governance, audit/traces, and outcome review
+- tenant-isolation, forbidden-access, disabled-user, role/scope denial, audit, frontend secret-boundary, UI, and security-review tests
 
 Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
@@ -74,7 +75,7 @@ Initial app-description skills:
 - `app-description-change-impact` — determine which layers, maps, readiness state, and generated outputs are affected by a change
 - `app-description-auth-security` — update the authoritative auth/security layer of the app description
 - `app-description-observability` — update the authoritative observability layer of the app description
-- `app-description-ui` — update the authoritative frontend/UI layer of the app description, including `55-ui/style-guide.md` when a browser UI is in scope
+- `app-description-ui` — update the authoritative frontend/UI layer of the app description, including mandatory `55-ui/style-guide.md` for generated full-stack AI-first SaaS apps
 - `app-description-readiness-assessment` — assess whether the current app description is sufficiently complete for generation
 - `app-generate-app` — realize the current app description as generated outputs
 - `app-description-change-summary` — summarize what changed after a revision request
@@ -933,7 +934,7 @@ Load:
 - `akka-http-endpoint-request-context`
 - `akka-http-endpoint-testing`
 
-### New fully capable Akka-hosted web UI app
+### New generated full-stack AI-first SaaS web UI app
 Load:
 - `akka-web-ui-apps`
 - `akka-http-endpoints`
@@ -941,7 +942,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-If no style guide/theme is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory. If no style guide/theme is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`

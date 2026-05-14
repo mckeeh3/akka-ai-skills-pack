@@ -15,7 +15,7 @@ It explains the readiness result in prompt/response form.
 Produce a concise readiness summary that explains:
 - whether the app description is ready, ready-with-assumptions, or not ready
 - which factors most influenced that result
-- what the blocking gaps or acceptable assumptions are, including missing `15-operating-model/` semantics when delegated operations are in scope
+- what the blocking gaps or acceptable assumptions are, including missing required `15-operating-model/` semantics for generated AI-first SaaS apps
 - whether the harness recommends continuing description work or proceeding to generation
 
 ## Required reading

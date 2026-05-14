@@ -13,7 +13,7 @@ Use this skill before implementing details with `akka-web-ui-frontend-project` s
 
 For AI-first SaaS surfaces, design around supervision, judgment, teaching, and accountability before conventional record management. The first five seconds should answer: which objective or plan is active, what the agent/system is doing, what needs human attention, what authority the human retains, and how to inspect evidence or trace history.
 
-Include these AI-first screen patterns when in scope:
+Include these AI-first screen patterns for generated full-stack AI-first SaaS:
 - **Command center:** active goals, plan progress, agent activity, exceptions, approval queues, material events, and stale/reconnect status.
 - **Decision card / deviation review:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
 - **Policy/governance center:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.

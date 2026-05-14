@@ -7,7 +7,7 @@ description: Interpret high-level product intent as an AI-first SaaS operating m
 
 Use this as the top-level interpretation skill when a product, PRD, feature request, or architecture prompt involves delegated operational work, autonomous or semi-autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
 
-This is a routing and framing skill. It does not replace `core-saas-foundation`, app-description skills, Akka solution decomposition, or focused component implementation skills. For every generated SaaS app, route through `core-saas-foundation` before app-specific domain work.
+This is a routing and framing skill. It does not replace `core-saas-foundation`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. For every generated SaaS app, route through `core-saas-foundation` and mandatory web UI foundation work before app-specific domain work.
 
 ## Goal
 
@@ -139,7 +139,7 @@ Map AI-first concepts to Akka implementation families after the operating model 
 When this skill is the entry point, produce or feed downstream work with:
 - AI-first interpretation: objective, delegated work, retained human authority, and outcome loop
 - selected durable objects and why each is needed
-- agent/team responsibilities and authority boundaries, if agents are in scope
+- agent/team responsibilities and authority boundaries, including mandatory foundation admin agents and any app-specific agents
 - policy, approval, exception, audit, and outcome implications
 - recommended downstream path and exact skills to load next, always including `core-saas-foundation` for generated SaaS apps
 - open questions only where implementation would otherwise guess authority, risk, policy, or outcome semantics

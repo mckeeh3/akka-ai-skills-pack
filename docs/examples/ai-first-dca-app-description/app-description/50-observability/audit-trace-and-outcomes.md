@@ -99,4 +99,4 @@ Future implementation should verify:
 - Trace enrichment and outcome measurement from integrations -> Consumers.
 - Search, command-center feeds, digest inputs, and outcome dashboards -> Views.
 - Scheduled outcome measurement, SLA checks, digest generation, and replay windows -> Timed Actions.
-- Decision and trace APIs -> HTTP endpoints; optional service integrations may use gRPC or MCP only when justified.
+- Decision and trace APIs -> HTTP endpoints; service integrations use gRPC or MCP only when justified by a concrete generated-app requirement.

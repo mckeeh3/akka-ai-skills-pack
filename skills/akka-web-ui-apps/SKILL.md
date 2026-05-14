@@ -14,7 +14,7 @@ This skill complements `akka-http-endpoint-web-ui`:
 
 ## AI-first substrate role
 
-In AI-first SaaS implementations, use web UI apps as human supervision and governance surfaces, not CRUD dashboards with a chat panel. Prioritize command center, goal-to-execution workbench, decision card, policy/governance, async digest, audit/work-trace, and outcome review screens when the product includes delegated work, approvals, exceptions, policy changes, or accountability loops.
+In AI-first SaaS implementations, web UI apps are mandatory human supervision and governance surfaces, not optional CRUD dashboards with a chat panel. Prioritize command center, goal-to-execution workbench, decision card, policy/governance, async digest, audit/work-trace, and outcome review screens.
 
 Before implementation, make the UI contract explicit for:
 - selected account, membership, AuthContext, tenant/customer scope, roles/capabilities, disabled/forbidden states, and `/api/me` bootstrap behavior;
@@ -57,7 +57,7 @@ Do not use this as the main skill for generated API documentation assets or raw 
 
 ## Planning output before coding
 
-Before implementing, verify that a selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If a browser UI is in scope and style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
+Before implementing generated AI-first SaaS UI, verify that a selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
 
 Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and produce a frontend plan with:
 1. User goals and personas
