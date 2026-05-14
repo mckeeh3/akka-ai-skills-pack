@@ -1,0 +1,367 @@
+# Pending Tasks: Opinionated AI-first SaaS Security Reset
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Do not combine adjacent tasks.
+- Update this file before finishing the harness response.
+- Every task must create a git commit for its completed work.
+- Commit message format: `opinionated-ai-saas-security: <short task title>`.
+
+## Tasks
+
+### TASK-001: Reset top-level doctrine to non-optional security and AI-first SaaS only
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - pack/AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/core-saas-owner-tenant-billing.md
+- skills:
+  - ai-first-saas
+  - app-description-auth-security
+- expected outputs:
+  - Update `AGENTS.md` and `pack/AGENTS.md` so security is mandatory from the start of every project using the pack.
+  - Update `skills/README.md` so top-level routing says the pack exists to create AI-first SaaS apps, not generic Akka apps.
+  - Update `docs/ai-first-saas-application-architecture.md` so the default is secure AI-first SaaS, with agents doing bounded work and humans supervising, deciding, approving, auditing, teaching, and owning outcomes.
+  - Define the mandatory secure SaaS foundation in the top-level doctrine: identity, local authorization, tenant/customer model, memberships, roles/scopes, `/api/me`, backend authorization, audit, tenant-isolation tests, and security review.
+  - Remove or rewrite language that presents security as conditional, optional, later hardening, or only needed when explicitly requested.
+- required checks:
+  - `rg -n "security.*optional|optional.*security|when security is in scope|only when security is in scope|JWT/internal security skills only when security is in scope" AGENTS.md pack/AGENTS.md skills/README.md docs/ai-first-saas-application-architecture.md`
+  - `rg -n "generic Akka app|ordinary Akka|simple current-state CRUD app" AGENTS.md pack/AGENTS.md skills/README.md docs/ai-first-saas-application-architecture.md`
+  - Review each match and either remove it or reframe it as low-level implementation detail subordinate to secure AI-first SaaS generation.
+  - `git diff --check`
+- done criteria:
+  - Top-level guidance clearly states that security is mandatory and the pack's product target is AI-first SaaS.
+  - The mandatory secure SaaS foundation is visible before any component-specific routing.
+  - Residual generic-app framing in top-level docs is removed or explicitly subordinated.
+  - A git commit exists for the changes.
+- notes:
+  - Do not edit component code in this task.
+
+### TASK-002: Add a core secure SaaS foundation skill and route it globally
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-001]
+- required reads:
+  - skills/README.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/core-saas-owner-tenant-billing.md
+  - skills/ai-first-saas/SKILL.md
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/app-description-bootstrap/SKILL.md
+  - skills/app-generate-app/SKILL.md
+  - pack/manifest.yaml
+- skills:
+  - ai-first-saas
+  - app-description-auth-security
+  - akka-workos-user-auth
+  - akka-basic-user-admin
+- expected outputs:
+  - Create `skills/core-saas-foundation/SKILL.md`.
+  - The skill must be used for every new project/app/PRD/spec/backlog handled by this pack unless the user explicitly asks for non-SaaS reference material.
+  - The skill must define mandatory baseline objects and behavior: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization service, tenant/customer-scoped commands and queries, and tenant-isolation tests.
+  - The skill must define first-slice implementation order for secure foundation before app-specific CRM/domain features.
+  - Update `skills/README.md`, `skills/ai-first-saas/SKILL.md`, `skills/akka-solution-decomposition/SKILL.md`, `skills/akka-prd-to-specs-backlog/SKILL.md`, `skills/app-description-bootstrap/SKILL.md`, and `skills/app-generate-app/SKILL.md` to route through `core-saas-foundation`.
+  - Add the new skill to `pack/manifest.yaml` `content.skills` and `bundles.all.skills`.
+- required checks:
+  - `test -f skills/core-saas-foundation/SKILL.md`
+  - `rg -n "core-saas-foundation" skills/README.md skills/ai-first-saas/SKILL.md skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/app-description-bootstrap/SKILL.md skills/app-generate-app/SKILL.md pack/manifest.yaml`
+  - `rg -n "SaaS Owner|Tenant|Customer|Membership|/api/me|tenant-isolation|backend authorization" skills/core-saas-foundation/SKILL.md`
+  - `git diff --check`
+- done criteria:
+  - The new skill exists, is manifest-listed, and is reachable from all broad intake/planning/generation paths.
+  - A future CRM PRD cannot be decomposed without first considering the secure SaaS foundation.
+  - A git commit exists for the changes.
+
+### TASK-003: Make description-first bootstrap, security, tests, readiness, and generation enforce secure AI-first SaaS foundations
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-002]
+- required reads:
+  - skills/core-saas-foundation/SKILL.md
+  - skills/app-descriptions/SKILL.md
+  - skills/app-description-bootstrap/SKILL.md
+  - skills/app-description-auth-security/SKILL.md
+  - skills/app-description-test-specification/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - skills/app-generate-app/SKILL.md
+  - docs/internal-app-description-architecture.md
+  - docs/app-description-maintenance-flow.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/identity-and-trust.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
+- skills:
+  - app-descriptions
+  - app-description-bootstrap
+  - app-description-auth-security
+  - app-description-test-specification
+  - app-description-readiness-assessment
+  - app-generate-app
+  - core-saas-foundation
+- expected outputs:
+  - Update app-description bootstrap minimum outputs so a new app description starts with secure SaaS foundation files, not just generic `identity-and-trust.md`.
+  - Require seeded capability, behavior, auth/security, observability, UI, and test artifacts for Account/Profile/Settings/Membership/Tenant/Customer/admin/audit foundations.
+  - Update auth/security skill so every app-description has explicit security semantics; no route, agent tool, data access, workflow action, view query, stream, or generated UI may be treated as unauthenticated/unauthorized by default.
+  - Update test specification guidance so security, tenant isolation, forbidden access, disabled users, role/scope denial, audit, and frontend secret-boundary tests are mandatory baseline tests.
+  - Update readiness and generation skills so missing foundation/security blocks generation or marks it not-ready, rather than becoming assumptions.
+- required checks:
+  - `rg -n "secure SaaS foundation|core-saas-foundation|tenant isolation|/api/me|Membership|disabled user|forbidden access" skills/app-description-bootstrap/SKILL.md skills/app-description-auth-security/SKILL.md skills/app-description-test-specification/SKILL.md skills/app-description-readiness-assessment/SKILL.md skills/app-generate-app/SKILL.md`
+  - `rg -n "security.*optional|only when security|when security is in scope" skills/app-description-*.md skills/app-generate-app/SKILL.md`
+  - Review each match and remove/reframe optional-security language.
+  - `git diff --check`
+- done criteria:
+  - Description-first app creation and generation cannot bypass secure SaaS foundation semantics.
+  - Readiness blocks missing security/tenant/user/admin/test foundations.
+  - A git commit exists for the changes.
+
+### TASK-004: Make PRD/spec/backlog planning produce secure foundation-first implementation queues
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-002]
+- required reads:
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/akka-pending-question-generation/SKILL.md
+  - skills/akka-backlog-to-pending-tasks/SKILL.md
+  - docs/module-sprint-planning.md
+  - docs/pending-question-queue.md
+  - docs/pending-task-queue.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/core-saas-owner-tenant-billing.md
+- skills:
+  - akka-solution-decomposition
+  - akka-prd-to-specs-backlog
+  - akka-pending-question-generation
+  - akka-backlog-to-pending-tasks
+  - core-saas-foundation
+- expected outputs:
+  - Update solution decomposition template to include a mandatory `Core secure SaaS foundation` section.
+  - Update PRD-to-specs backlog skill so all app PRDs start with `specs/cross-cutting/01-auth-tenancy-audit.md` and a first foundation sprint/slice unless the task is explicitly repository-maintenance-only.
+  - Require first runnable tasks to implement foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, admin bootstrap/invites, audit, frontend shell/context selection, and tenant-isolation tests.
+  - Update pending-question guidance so unknown security provider details may block provider-specific integration, but never block modeling the mandatory security boundaries and local authorization contracts.
+  - Update backlog-to-pending-tasks guidance so security baseline tasks are never omitted as “cross-cutting polish.”
+- required checks:
+  - `rg -n "Core secure SaaS foundation|auth-tenancy-audit|foundation sprint|foundation slice|tenant-isolation" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-pending-question-generation/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md docs/module-sprint-planning.md`
+  - `rg -n "security.*optional|only when security|JWT.*only when security" skills/akka-*.md docs/module-sprint-planning.md`
+  - Review matches and reframe optional-security wording.
+  - `git diff --check`
+- done criteria:
+  - A future CRM PRD planning run produces a secure foundation-first sprint/slice and task queue.
+  - Security-provider uncertainty cannot erase mandatory local authorization/tenancy design.
+  - A git commit exists for the changes.
+
+### TASK-005: Harden implementation skills so endpoints, UI, agents, workflows, views, consumers, and timers inherit security-by-default
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-002, TASK-004]
+- required reads:
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-http-endpoint-jwt/SKILL.md
+  - skills/akka-http-endpoint-request-context/SKILL.md
+  - skills/akka-http-endpoint-web-ui/SKILL.md
+  - skills/akka-workos-user-auth/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-orchestration/SKILL.md
+  - skills/akka-workflows/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-consumers/SKILL.md
+  - skills/akka-timed-actions/SKILL.md
+  - docs/security-pattern-selection.md
+  - docs/security-workos-auth-and-admin.md
+  - docs/security-review-checklist.md
+- skills:
+  - core-saas-foundation
+  - akka-http-endpoints
+  - akka-workos-user-auth
+  - akka-basic-user-admin
+  - akka-web-ui-apps
+  - akka-agents
+  - akka-workflows
+  - akka-views
+  - akka-consumers
+  - akka-timed-actions
+- expected outputs:
+  - Update implementation suite skills so security context is an expected input, not an optional concern.
+  - HTTP/gRPC/MCP/browser APIs must default to JWT/request-context/authorization-helper patterns unless explicitly public static asset routes.
+  - Views and streaming endpoints must require tenant/customer filtering and forbidden-access behavior.
+  - Agents and tools must require scope, permission, policy gates, audit traces, and approval behavior for consequential actions.
+  - Workflows must carry actor, tenant/customer context, policy/approval/audit references where actions are consequential.
+  - Consumers and timed actions must preserve security context and avoid cross-tenant side effects.
+  - Fix incorrect required-reading paths in `akka-workos-user-auth` and `akka-basic-user-admin` from `../../../docs/...` to `../../docs/...` if still present.
+- required checks:
+  - `rg -n "tenant|customer|authorization|scope|JWT|/api/me|audit|forbidden" skills/akka-http-endpoints/SKILL.md skills/akka-workos-user-auth/SKILL.md skills/akka-basic-user-admin/SKILL.md skills/akka-web-ui-apps/SKILL.md skills/akka-agents/SKILL.md skills/akka-workflows/SKILL.md skills/akka-views/SKILL.md skills/akka-consumers/SKILL.md skills/akka-timed-actions/SKILL.md`
+  - `! rg -n "../../../docs" skills/akka-workos-user-auth/SKILL.md skills/akka-basic-user-admin/SKILL.md`
+  - `rg -n "only when security is in scope|JWT.*only when security|security implementation is in scope" skills/akka-*.md skills/README.md`
+  - Review matches and remove/reframe optional-security wording.
+  - `git diff --check`
+- done criteria:
+  - Component implementation guidance inherits mandatory security context across backend, frontend, agents, and async behavior.
+  - WorkOS/basic-admin path references are corrected.
+  - A git commit exists for the changes.
+
+### TASK-006: Eliminate or reframe residual non-AI-first-SaaS content and examples
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-001, TASK-002, TASK-005]
+- required reads:
+  - AGENTS.md
+  - pack/AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - pack/manifest.yaml
+  - tools/build-pack.sh
+  - install.sh
+- skills:
+  - ai-first-saas
+  - core-saas-foundation
+- expected outputs:
+  - Audit `skills/`, `docs/`, `src/`, `pack/`, and installer/build scripts for residual generic Akka app framing, CRUD-first framing, static-page-first framing, shopping-cart-first routing, purchase-request-as-main-example framing, or “security only if requested” guidance.
+  - Remove content that no longer belongs.
+  - Reframe low-level Akka examples as substrate examples only, never as product-architecture examples.
+  - Reframe or demote purchase-request examples if they remain useful only as description mechanics, not as target architecture doctrine.
+  - Ensure routing points to AI-first SaaS seed and core secure foundation examples first.
+  - If content cannot be safely removed in one task, create follow-up pending tasks in this queue with exact paths and rationale.
+- required checks:
+  - `rg -n "shopping cart|purchase request|CRUD|static page|static content|generic Akka|ordinary Akka|security.*optional|only when security|when security is in scope" AGENTS.md pack/AGENTS.md skills docs pack tools install.sh src/main/java src/test/java`
+  - Review every match for whether it is acceptable as low-level substrate example or should be removed/reframed.
+  - `git diff --check`
+- done criteria:
+  - Top-level and routing content no longer presents the pack as generic Akka guidance.
+  - Remaining non-SaaS examples are explicitly substrate/reference material and cannot drive architecture selection.
+  - Follow-up tasks are appended if any removals are too large for this session.
+  - A git commit exists for the changes.
+
+### TASK-007: Package the core secure SaaS foundation and AI-first seed assets into the installable pack
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-002, TASK-006]
+- required reads:
+  - pack/manifest.yaml
+  - tools/build-pack.sh
+  - install.sh
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/core-saas-owner-tenant-billing.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
+- skills:
+  - core-saas-foundation
+- expected outputs:
+  - Ensure the new `core-saas-foundation` skill is included in all installable bundles.
+  - Add core SaaS docs to packaged docs.
+  - Add the AI-first SaaS seed app-description reference tree to packaged docs, or add a deliberate minimal subset with README explaining why only that subset is packaged.
+  - Remove/demote packaged docs that conflict with the AI-first SaaS target or route users toward generic app design.
+  - Update installed-pack docs/readmes if needed so installed users can find the core foundation assets.
+- required checks:
+  - `rg -n "core-ai-first-saas-foundation|core-saas-identity-tenancy-admin|core-saas-owner-tenant-billing|ai-first-saas-seed-app-description|core-saas-foundation" pack/manifest.yaml tools/build-pack.sh install.sh skills/README.md pack/AGENTS.md`
+  - Run the pack build command if documented and available; otherwise inspect `tools/build-pack.sh` for syntax/array consistency.
+  - `bash -n tools/build-pack.sh install.sh`
+  - `git diff --check`
+- done criteria:
+  - Installed-pack users receive the core secure SaaS foundation guidance and seed reference assets.
+  - The new skill is packaged.
+  - Build/install scripts pass shell syntax checks.
+  - A git commit exists for the changes.
+
+### TASK-008: Add repository verification for opinionated AI-first SaaS and security defaults
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-003, TASK-004, TASK-005, TASK-007]
+- required reads:
+  - package.json
+  - tools/
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - pack/manifest.yaml
+  - tools/build-pack.sh
+  - install.sh
+- skills:
+  - core-saas-foundation
+- expected outputs:
+  - Add a lightweight repository verification script, for example `tools/verify-opinionated-ai-first-saas-pack.sh`.
+  - The script must fail when required routing/docs/packaging references are missing.
+  - Checks should cover: `core-saas-foundation` skill exists and is manifest-listed; top-level docs say security is mandatory; primary routing skills reference core foundation; pack scripts include core docs and seed app assets; forbidden optional-security phrases are absent from top-level routing files.
+  - Add a package script if appropriate, e.g. `npm run verify:opinionated-ai-first-saas`.
+  - Update README or relevant docs with the verification command if project convention supports it.
+- required checks:
+  - Run the new verification script.
+  - Run existing relevant checks if cheap and documented.
+  - `git diff --check`
+- done criteria:
+  - Repository has automated guardrails against regressing to optional security or generic app routing.
+  - Verification passes locally.
+  - A git commit exists for the changes.
+
+### TASK-009: Final audit and repair of all opinionated reset work
+
+- status: pending
+- source: specs/opinionated-ai-first-saas-security-reset/README.md
+- task brief: none
+- depends on: [TASK-008]
+- required reads:
+  - specs/opinionated-ai-first-saas-security-reset/README.md
+  - specs/opinionated-ai-first-saas-security-reset/pending-tasks.md
+  - AGENTS.md
+  - pack/AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - pack/manifest.yaml
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+- skills:
+  - ai-first-saas
+  - core-saas-foundation
+- expected outputs:
+  - Run a final audit for contradictions after TASK-001 through TASK-008.
+  - Verify the pack now aggressively addresses security from the start of all projects.
+  - Verify broad PRD/spec/new-app flows are unambiguously AI-first SaaS and foundation-first.
+  - Verify agent behavior doctrine says agents do as much bounded work as possible while humans supervise, approve, decide, teach, audit, and own outcomes.
+  - Repair inconsistencies found during the audit.
+  - Mark this queue's completed tasks done if they were not already updated by prior sessions, preserving history.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `rg -n "optional security|security is optional|only when security is in scope|generic Akka app|ordinary Akka app|CRUD-first" AGENTS.md pack/AGENTS.md skills docs pack tools install.sh`
+  - Review any matches and repair if they contradict the reset.
+  - `git status --short`
+  - `git diff --check`
+- done criteria:
+  - Final audit passes.
+  - No known contradiction remains in routing, doctrine, planning, packaging, or generation guidance.
+  - This task records the final state and commits any repairs.
+  - A git commit exists for the final audit/repair.
