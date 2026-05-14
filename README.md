@@ -8,6 +8,8 @@ This pack is **not** intended as a general-purpose generator for traditional CRU
 
 The pack is designed so users can speak naturally to the harness. You should not need to know the internal skill names, stages, or routing files.
 
+A primary benefit of the pack is that it can maintain a durable **application description** in addition to generating code. For non-trivial apps, the harness can capture the app's intent, behavior, goals, objectives, security posture, UI expectations, tests, observability, governance rules, open questions, and realization readiness in structured project documents. Those documents become an authoritative source of truth that developers can interrogate through their AI harness: asking what the app is supposed to do, why a behavior exists, what a change impacts, which decisions remain open, and whether generated code is still aligned with product intent.
+
 ## Who this is for
 
 ### Skills pack users

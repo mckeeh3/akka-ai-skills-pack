@@ -6,6 +6,10 @@ The pack is not an application framework you call directly. It is an opinionated
 
 ## Core idea
 
+The pack is valuable for more than code generation. In the recommended description-first workflow, it helps the harness create and maintain a structured `app-description/` plus related `specs/` artifacts that capture the application's intent, behavior, goals, objectives, security model, UI expectations, tests, observability, governance, open questions, and implementation readiness.
+
+These documents become a durable source of truth for both humans and AI harnesses. Developers can ask the harness questions such as “what is this app supposed to do?”, “why does this behavior exist?”, “what would this change impact?”, “which decisions are still open?”, “what should I test manually?”, or “is the implementation still aligned with the product intent?” The harness can answer from maintained project artifacts instead of inferring everything from code or stale chat history.
+
 Use the skills pack as a durable, iterative development workflow:
 
 1. ingest PRDs, specs, issues, or rough ideas
@@ -126,6 +130,8 @@ specs/
   tasks/
 src/
 ```
+
+The `app-description/` tree is the best place to preserve product meaning over time: capabilities, user-visible behavior, security and tenant boundaries, UI surfaces, acceptance criteria, audit/observability expectations, AI-first governance, and readiness for generation. `specs/` then carries planning, decomposition, sprint, backlog, question, and task artifacts derived from or reconciled with that description.
 
 Small apps may need fewer files. Large apps benefit from module and sprint specs so implementation stays organized and testable.
 
