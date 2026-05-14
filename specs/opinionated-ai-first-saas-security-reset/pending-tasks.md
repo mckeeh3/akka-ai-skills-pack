@@ -13,7 +13,7 @@
 
 ### TASK-001: Reset top-level doctrine to non-optional security and AI-first SaaS only
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: []

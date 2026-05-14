@@ -7,14 +7,17 @@ It is distinct from the repository-internal maintainer guidance used to develop 
 
 ## What this installed pack is for
 
-This pack treats **AI-first SaaS on Akka** as the default target architecture when product intent involves delegated operational work, autonomous or semi-autonomous decisions, human supervision, policy-controlled automation, or outcome accountability.
+This pack creates **secure AI-first SaaS on Akka**. Treat that as the generated-application target from the start of every project unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
 
-AI-first does not mean every app must use every pattern. First decide whether the product needs durable goals/plans, bounded agents or agent teams, policy and approval controls, supervision surfaces, audit traces, and outcome loops; then apply only the justified Akka substrate components.
+Security is mandatory. Every generated SaaS application must begin with a secure foundation: identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, and security review. Do not defer these to later hardening or wait for the user to ask for them.
 
-This pack now supports an AI-first interpretation layer plus two complementary ways of working in a real development project:
+AI-first SaaS means agents do bounded work while humans supervise, decide, approve, audit, teach, and own outcomes. First decide which durable goals/plans, bounded agents or agent teams, policy and approval controls, supervision surfaces, audit traces, and outcome loops the product needs; then apply only the justified Akka substrate components on top of the mandatory secure SaaS foundation.
 
-0. **AI-first SaaS interpretation**
+This pack supports a secure AI-first interpretation layer plus two complementary ways of working in a real development project:
+
+0. **secure AI-first SaaS interpretation**
    - inspect high-level product intent before decomposing into CRUD or isolated components
+   - model the mandatory secure SaaS foundation before app-specific features
    - model delegated work, retained human authority, policies, decisions, traces, supervision, and outcomes when applicable
    - route through `skills/ai-first-saas/SKILL.md` and focused AI-first companion skills only as needed
 1. **description-first application maintenance**
@@ -35,9 +38,9 @@ Treat the installed skills as an **internal routing layer for the harness**.
 
 ### AI-first interpretation layer
 
-For broad product input, first ask whether the product should be interpreted as AI-first SaaS. Use this layer when the input involves agents, delegated operational work, recommendations, approvals, exceptions, policy/permission controls, supervision, auditability, or accountable outcomes.
+For broad product input, interpret the product as secure AI-first SaaS unless the request is explicitly outside generated SaaS application work. Use this layer when the input involves agents, delegated operational work, recommendations, approvals, exceptions, policy/permission controls, supervision, auditability, or accountable outcomes.
 
-Start with `skills/ai-first-saas/SKILL.md`, then load only the focused companions that match the concern: object model, agent-team design, governance, decision cards, audit trace, UI surfaces, or outcomes/metrics.
+Start with `skills/ai-first-saas/SKILL.md`, model the mandatory secure SaaS foundation, then load only the focused companions that match the concern: object model, agent-team design, governance, decision cards, audit trace, UI surfaces, or outcomes/metrics.
 
 ### Mode A: description-first application maintenance
 
@@ -45,7 +48,7 @@ Use this mode when the user is primarily describing or revising the app, asking 
 
 Recommended flow:
 1. read the user's input completely
-2. apply AI-first interpretation first when delegated work, governance, decisions, supervision, audit, or outcomes are in scope
+2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, and tenant-isolation foundations
 3. if the user is working description-first, start with `skills/app-descriptions/SKILL.md`
 4. bootstrap with `skills/app-description-bootstrap/SKILL.md` when no usable app-description tree exists yet
 5. normalize broad or mixed input with `skills/app-description-input-normalization/SKILL.md`
@@ -63,7 +66,7 @@ Use this mode when the user wants to derive the Akka solution shape and then imp
 
 Recommended flow:
 1. read the user's input completely
-2. apply AI-first interpretation first when delegated work, governance, decisions, supervision, audit, or outcomes are in scope
+2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, and tenant-isolation foundations
 3. if the Akka solution shape is still unclear, start with `skills/akka-solution-decomposition/SKILL.md`
 4. if one structural choice is still unresolved, use the focused decision skill such as `skills/akka-entity-type-selection/SKILL.md`
 5. if unresolved decisions would make tasks speculative, create `specs/pending-questions.md` with `skills/akka-pending-question-generation/SKILL.md` and work through it one question at a time with `skills/akka-do-next-pending-question/SKILL.md`

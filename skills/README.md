@@ -1,6 +1,6 @@
 # Akka Skill Routing Map
 
-This directory contains AI-focused skills for turning high-level requirements into the right Akka Java SDK solution, then turning that solution plan into the downstream implementation phase for concrete component code, tests, and related delivery assets.
+This directory contains AI-focused skills for creating secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security foundation, derive the right Akka Java SDK solution, then turn that solution plan into concrete component code, tests, and delivery assets.
 
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
@@ -11,13 +11,25 @@ This file serves both:
 
 ## AI-first SaaS entry routing
 
-For high-level product input, first interpret whether the product should be treated as AI-first SaaS before decomposing it into CRUD screens or isolated Akka components. Use this interpretation when the input involves delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, or outcome accountability.
+For high-level product input, treat the target as secure AI-first SaaS unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. Interpret delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, and outcome accountability before decomposing into Akka components.
+
+Mandatory secure SaaS foundation before app-specific features:
+- identity and authentication seam, typically WorkOS for browser user authentication
+- local Akka-owned authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, and selected AuthContext
+- SaaS Owner, Tenant, and Customer organization model with tenant/customer-scoped commands and queries
+- `/api/me` for the signed-in account, memberships, selected context, profile, settings, and browser-safe capabilities
+- backend authorization checks for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action
+- AdminAuditEvent and audit/work traces for identity, authorization, policy, approval, data access, and consequential AI/tool activity
+- tenant-isolation, forbidden-access, disabled-user, role/scope denial, audit, and security-review tests
 
 Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/core-ai-first-saas-foundation.md`
+- `../docs/core-saas-identity-tenancy-admin.md`
+- `../docs/core-saas-owner-tenant-billing.md`
 
 Top-level AI-first entry skill:
-- `ai-first-saas` — interpret product intent as an AI-first SaaS operating model, identify delegated work and retained human authority, then route to app-description, decomposition, PRD planning, or focused implementation skills
+- `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model, identify mandatory foundation/security requirements, delegated work, and retained human authority, then route to app-description, decomposition, PRD planning, or focused implementation skills
 
 AI-first companion skills:
 - `ai-first-saas-object-model` — select durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects before choosing Akka components
@@ -28,11 +40,11 @@ AI-first companion skills:
 - `ai-first-saas-ui-surfaces` — select supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces and route to web UI/API skills
 - `ai-first-saas-outcomes-metrics` — define outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces
 
-After AI-first interpretation, choose the normal operating path:
+After secure AI-first SaaS interpretation, choose the normal operating path:
 1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization
 2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known
 3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts
-4. use focused Stage 3 component skills only after the operating model and solution shape are clear enough for implementation
+4. use focused Stage 3 component skills only after the secure foundation, operating model, and solution shape are clear enough for implementation
 
 Use companion skills only for the AI-first concerns that are actually in scope. Existing Stage 3 skills remain implementation substrate skills for the AI-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with AI-first narrative guidance; route to them after goals, plans, authority, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
 
@@ -590,7 +602,7 @@ Then load the focused skill that matches the current task:
 - `akka-web-ui-accessibility-responsive` — semantic HTML, keyboard, focus, responsive layout
 - `akka-web-ui-testing` — frontend checks/builds, route/asset/API tests, optional frontend smoke checks
 
-Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP endpoint companion skills for JSON, SSE, or WebSocket routes. Load JWT/internal security skills only when security implementation is in scope.
+Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP endpoint companion skills for JSON, SSE, or WebSocket routes. For generated SaaS apps, load JWT/request-context/internal ACL guidance as part of the mandatory security foundation; only public static asset routes are outside authenticated API authorization.
 
 Reference docs:
 - `../docs/web-ui-frontend-decomposition.md`
@@ -930,8 +942,8 @@ Then add one or more Akka HTTP companions as needed:
 - `akka-http-endpoint-component-client`
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
-- `akka-http-endpoint-jwt` only when security is in scope
-- `akka-http-endpoint-acl-internal` only when internal-route security is in scope
+- `akka-http-endpoint-jwt` for generated SaaS API routes that require authenticated browser or service callers
+- `akka-http-endpoint-acl-internal` for internal-only routes or method-level service ACLs
 
 ### New Akka-hosted frontend app shell routes
 Load:

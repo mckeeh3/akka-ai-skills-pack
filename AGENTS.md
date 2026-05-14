@@ -57,19 +57,21 @@ Implications:
 
 ## What this repository is
 
-Treat this repository as a **requirements-first, intent-driven Akka pack for AI coding agents** whose default generated-application target is now **AI-first SaaS on Akka**.
+Treat this repository as a **requirements-first, intent-driven Akka pack for AI coding agents** whose generated-application target is **secure AI-first SaaS on Akka**.
 
 The canonical doctrine is `docs/ai-first-saas-application-architecture.md`. Former temporary concept files are archived under `specs/ai-first-skills-pack-migration/archive/inbox/` as provenance/source material only.
 
-For high-level product input, first ask whether the product should be interpreted as an AI-first SaaS operating model: durable goals and plans, bounded agent or agent-team execution, policy/permission controls, human supervision, decision/exception handling, audit traces, and outcome loops. Then choose the description-first, decomposition, or focused implementation path.
+For high-level product input, begin from the secure AI-first SaaS operating model: durable goals and plans, bounded agent or agent-team execution, policy/permission controls, human supervision, decision/exception handling, audit traces, outcome loops, and a mandatory SaaS security foundation. Then choose the description-first, decomposition, or focused implementation path.
 
-AI-first is the default interpretation for delegated operational work, autonomous or semi-autonomous decisions, human governance of automation, or outcome accountability. It is **not** a requirement that every app use every AI-first pattern; apply only the substrate objects, governance surfaces, and Akka components justified by the product intent.
+Security is **mandatory from project start** for every generated application unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. The baseline foundation must model identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, and security review before app-specific features are treated as generation-ready.
+
+AI-first is the default interpretation for delegated operational work, autonomous or semi-autonomous decisions, human governance of automation, or outcome accountability. It is **not** a requirement that every app use every AI-first pattern; apply only the substrate objects, governance surfaces, and Akka components justified by the product intent, while keeping the secure SaaS foundation mandatory.
 
 Its job is to help an agent go from:
 1. high-level input
-2. AI-first operating-model interpretation when applicable
+2. secure AI-first SaaS operating-model interpretation
 3. either to authoritative app-description maintenance and review, or to Akka solution decomposition
-4. to focused skill selection and realization planning
+4. to foundation-first skill selection and realization planning
 5. to component-by-component code and test generation when realization is requested
 
 Important distinction:
