@@ -329,7 +329,7 @@
 
 ### TASK-009: Add verification guardrails for full onboarding, admin management, and AI admin offload
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-002, TASK-005, TASK-008]

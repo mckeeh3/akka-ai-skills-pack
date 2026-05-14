@@ -40,6 +40,16 @@ require_rg "id: core-saas-foundation" pack/manifest.yaml
 require_rg "path: skills/core-saas-foundation" pack/manifest.yaml
 require_rg "- core-saas-foundation" pack/manifest.yaml
 
+log "checking mandatory invitation and AI-admin skills and manifest routing"
+require_file "skills/akka-saas-invitation-onboarding/SKILL.md"
+require_file "skills/ai-first-saas-admin-agents/SKILL.md"
+require_rg "id: akka-saas-invitation-onboarding" pack/manifest.yaml
+require_rg "path: skills/akka-saas-invitation-onboarding" pack/manifest.yaml
+require_rg "- akka-saas-invitation-onboarding" pack/manifest.yaml
+require_rg "id: ai-first-saas-admin-agents" pack/manifest.yaml
+require_rg "path: skills/ai-first-saas-admin-agents" pack/manifest.yaml
+require_rg "- ai-first-saas-admin-agents" pack/manifest.yaml
+
 log "checking mandatory-security doctrine in top-level guidance"
 require_rg "Security is mandatory" AGENTS.md pack/AGENTS.md docs/ai-first-saas-application-architecture.md
 require_rg "mandatory secure SaaS foundation" AGENTS.md pack/AGENTS.md skills/README.md docs/ai-first-saas-application-architecture.md
@@ -54,6 +64,43 @@ require_rg "core-saas-foundation" \
   skills/app-description-bootstrap/SKILL.md \
   skills/app-generate-app/SKILL.md
 
+log "checking invitation onboarding doctrine guardrails"
+require_rg "resend" docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "revoke|revoked" docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "expiry|expire|expired" docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "delivery status" docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "InvitationWorkflow" skills/akka-saas-invitation-onboarding/SKILL.md skills/akka-basic-user-admin/SKILL.md docs/core-saas-identity-tenancy-admin.md
+require_rg "email delivery/outbox" skills/akka-saas-invitation-onboarding/SKILL.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+
+log "checking admin management and AI-admin doctrine guardrails"
+require_rg "UserDirectoryView" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "MembershipView" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "InvitationView" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "AdminAuditView" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "AccessReviewQueueView" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "user directory/search|list/search users|search/filter users" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/akka-basic-user-admin/SKILL.md
+require_rg "membership lifecycle" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "admin audit/search" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "access review|Access Review" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "last-admin" docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md
+require_rg "AccessReviewAgent" skills/ai-first-saas-admin-agents/SKILL.md docs/core-saas-identity-tenancy-admin.md skills/core-saas-foundation/SKILL.md
+require_rg "AdminRiskAgent" skills/ai-first-saas-admin-agents/SKILL.md docs/core-saas-identity-tenancy-admin.md skills/core-saas-foundation/SKILL.md
+require_rg "RoleRecommendationAgent" skills/ai-first-saas-admin-agents/SKILL.md docs/core-saas-identity-tenancy-admin.md skills/core-saas-foundation/SKILL.md
+require_rg "AdminAuditSummaryAgent" skills/ai-first-saas-admin-agents/SKILL.md docs/core-saas-identity-tenancy-admin.md skills/core-saas-foundation/SKILL.md
+
+log "checking planning guardrails for full foundation task breakdown"
+require_rg "invitation lifecycle" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "email delivery" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "UserDirectoryView" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "MembershipView" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "InvitationView" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "AdminAuditView" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "AccessReviewQueueView" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "AI admin|admin AI" skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "AdminRiskAgent" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "AccessReviewAgent" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "decision cards for risky admin" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+
 log "checking packaged docs and seed app-description assets"
 require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml tools/build-pack.sh install.sh
 require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml tools/build-pack.sh install.sh
@@ -67,6 +114,16 @@ forbid_rg "security.*optional|optional.*security|when security is in scope|only 
   pack/AGENTS.md \
   skills/README.md \
   docs/ai-first-saas-application-architecture.md
+
+log "checking forbidden optional invitation-email phrasing in foundation/admin docs"
+forbid_rg "optional invite email|optionally sends invite|optionally send invite|invite email delivery is optional|invite email.*may be omitted|email-invite.*optional|optional.*email-invite" \
+  docs/core-ai-first-saas-foundation.md \
+  docs/core-saas-identity-tenancy-admin.md \
+  docs/security-workos-auth-and-admin.md \
+  skills/core-saas-foundation/SKILL.md \
+  skills/akka-basic-user-admin/SKILL.md \
+  skills/akka-workos-user-auth/SKILL.md \
+  skills/akka-saas-invitation-onboarding/SKILL.md
 
 log "checking shell syntax for pack scripts"
 bash -n tools/build-pack.sh install.sh
