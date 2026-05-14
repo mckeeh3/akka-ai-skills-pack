@@ -171,7 +171,7 @@ Avoid:
 - deleting completed or obsolete queue entries
 - renumbering task IDs
 - leaving regression tests unspecified for a bug fix
-- treating security/observability as optional after behavior changes
+- treating security, authorization, tenant isolation, audit, or observability impact as skippable after behavior changes
 - silently widening the current implementation task
 
 ## Final review checklist

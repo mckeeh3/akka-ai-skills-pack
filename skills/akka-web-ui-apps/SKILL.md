@@ -95,7 +95,7 @@ Always pair with Akka hosting/API skills as needed:
 - `akka-http-endpoint-component-client`
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
-- `akka-http-endpoint-jwt` only when security implementation is explicitly in scope
+- `akka-http-endpoint-jwt` for generated SaaS API routes that require authenticated browser or service callers; only public static asset routes are outside authenticated API authorization
 - `akka-http-endpoint-testing`
 
 ## Default implementation order

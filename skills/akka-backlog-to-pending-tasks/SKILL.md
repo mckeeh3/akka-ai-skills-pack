@@ -46,6 +46,7 @@ Do **not** use this skill when:
 
 Read these first if present:
 - `../README.md`
+- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and first-slice implementation order
 - `../../docs/ai-first-saas-application-architecture.md` when backlog work involves delegated operations, agents, governance, decisions, supervision, audit, or outcomes
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
@@ -80,6 +81,8 @@ Use the contract in `../../docs/pending-task-queue.md`.
 
 Derive queue tasks from each backlog file's `Suggested harness task breakdown` section.
 
+Security baseline tasks must never be omitted as cross-cutting polish. For SaaS app queues, ensure the first runnable tasks implement or verify the secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, admin bootstrap/invites, audit, frontend shell/context selection when applicable, and tenant-isolation tests. If the source backlogs lack those tasks, repair the queue only after adding or flagging the missing foundation backlog coverage instead of silently proceeding to domain work.
+
 Do not create one queue task per class name unless the backlog explicitly frames each class as a separate harness-sized task.
 
 ### AI-first context preservation
@@ -96,6 +99,7 @@ If `specs/pending-questions.md` exists, inspect unresolved `blocking` questions 
 
 Rules:
 - do not create runnable tasks for work blocked by unresolved `blocking` questions
+- treat unknown security-provider setup details as blockers only for provider-specific integration tasks; keep local authorization contracts, tenancy models, AuthContext, `/api/me`, audit, and tenant-isolation tasks runnable when their semantics are otherwise defined
 - if a backlog item is entirely blocked, create a `blocked` task only when useful for visibility and note the blocking question IDs
 - if only part of a backlog is blocked, create tasks for unblocked work and leave blocked work out or blocked with explicit question references
 - if a question is `answered` but not `resolved`, reconcile it or leave affected tasks blocked
@@ -134,6 +138,7 @@ When a backlog item appears to match an existing queue task, update that existin
 ### Dependency rules
 
 Set dependencies conservatively:
+- secure foundation tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, admin bootstrap/invites, audit, frontend shell/context selection when applicable, and tenant-isolation tests come before app-specific CRM/domain tasks
 - foundational domain/config tasks usually have no dependencies
 - entity/workflow tasks depend on required domain tasks
 - views depend on their source component tasks
@@ -149,7 +154,7 @@ Each task should list the smallest useful reads, usually:
 - `specs/akka-solution-plan.md`
 - the source backlog file
 - the matching task brief when one exists
-- relevant cross-cutting spec files, including AI-first operating-model, governance, audit, outcome, and UI-surface specs when they constrain the task
+- relevant cross-cutting spec files, including `specs/cross-cutting/01-auth-tenancy-audit.md` for secure foundation, authorization, tenant/customer scope, audit, or tenant-isolation work, and AI-first operating-model, governance, audit, outcome, and UI-surface specs when they constrain the task
 - `docs/ai-first-saas-application-architecture.md` when the task must preserve AI-first semantics and the local specs do not fully capture them
 - relevant cross-cutting spec files, including `*ui-style-guide*.md` for browser UI tasks
 - relevant module and sprint specs when module-oriented planning is present
@@ -159,7 +164,7 @@ Do not list the original PRD by default.
 
 ### Skills
 
-List exact skills required for the task's component family. Add `ai-first-saas` and the smallest relevant AI-first companion skill only when the task must implement or preserve agentic operating-model semantics; do not add the whole AI-first family by default.
+List exact skills required for the task's component family. Add `core-saas-foundation` to secure foundation, authorization, tenancy, `/api/me`, audit, frontend context shell, and tenant-isolation tasks. Add `ai-first-saas` and the smallest relevant AI-first companion skill only when the task must implement or preserve agentic operating-model semantics; do not add the whole AI-first family by default.
 
 Examples:
 - entity task: `akka-event-sourced-entities`, `akka-ese-application-entity`, `akka-ese-unit-testing`
@@ -207,6 +212,7 @@ If a task is not ready because it needs a task brief first, use:
 
 Before finishing, verify:
 - `specs/pending-tasks.md` exists
+- secure foundation tasks are present and runnable before CRM/domain-specific tasks for SaaS app queues; missing foundation work is not treated as cross-cutting polish
 - each runnable backlog task item has a queue entry
 - no obvious duplicate queue entries were created
 - obsolete non-done queue entries were superseded rather than deleted

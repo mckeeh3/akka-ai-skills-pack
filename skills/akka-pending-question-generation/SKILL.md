@@ -51,6 +51,7 @@ Do **not** use this skill when:
 
 Read these first if present:
 - `../README.md`
+- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and the provider-uncertainty rule
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
@@ -68,6 +69,8 @@ Read these first if present:
 Do not read the entire codebase. This skill is about planning decisions, not implementation details.
 
 ## Question discovery rules
+
+Do not ask security-provider setup questions in a way that blocks the core model itself. Unknown WorkOS or alternate-provider details may block provider-specific integration tasks, but must not block modeling Tenant/Customer boundaries, local Account/Membership/Role/Permission authorization, AuthContext, `/api/me`, AdminAuditEvent, tenant/customer-scoped commands and queries, or tenant-isolation tests.
 
 Create questions only when the answer can change one or more of:
 - AI-first operating model: delegated work, retained human authority, supervision mode, or outcome loop
@@ -94,7 +97,8 @@ For AI-first SaaS inputs, prefer a small number of actionable blocker questions 
 - `category: behavior` — what work is delegated to agents versus retained by humans?
 - `category: authorization` — which actions, tools, data, or decisions may agents perform without approval?
 - `category: workflow` — which approval, escalation, pause/resume, retry, or compensation gates are mandatory?
-- `category: security` — which policy clauses, permissions, tenant boundaries, or redaction rules must be mechanically enforced?
+- `category: security` — which policy clauses, permissions, tenant boundaries, or redaction rules must be mechanically enforced beyond the mandatory core SaaS foundation?
+- `category: security-provider` — which provider-specific issuer, audience, callback, claim mapping, or AuthKit details are needed for WorkOS/JWT integration tasks?
 - `category: observability` — which work, decision, policy, tool, data-access, approval, and outcome traces are required?
 - `category: testing` — which evaluations, replay/simulation checks, or threshold acceptance tests prove safe behavior?
 - `category: ui` — which supervision, command-center, decision-card, governance, digest, or audit surface is required first?
@@ -154,6 +158,7 @@ Before creating or updating `specs/pending-tasks.md`, check whether unresolved `
 If blocking questions exist:
 - create or update `specs/pending-questions.md`
 - do not create implementation tasks for blocked work unless explicitly marked deferred with a safe default
+- keep secure foundation modeling and local authorization-contract tasks unblocked when only provider-specific setup details are unknown
 - create tasks only for unblocked work, or stop and ask the next question depending on the user's requested workflow
 
 ## Final review checklist

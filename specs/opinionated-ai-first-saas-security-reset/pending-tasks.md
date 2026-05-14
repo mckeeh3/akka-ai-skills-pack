@@ -132,7 +132,7 @@
 
 ### TASK-004: Make PRD/spec/backlog planning produce secure foundation-first implementation queues
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: [TASK-002]

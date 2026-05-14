@@ -6,6 +6,8 @@ Goal: decompose work into **vertical module sprints** that can be implemented an
 
 Before splitting modules, classify whether the product is AI-first SaaS: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision, audit traces, or outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
+For SaaS app planning, the first sprint or slice is always the core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, admin bootstrap/invites, audit, frontend shell/context selection when applicable, and tenant-isolation tests before app-specific CRM/domain features.
+
 ## When to use
 
 Use module-oriented sprint planning when the input includes any of:
@@ -104,16 +106,18 @@ specs/backlog/02-purchase-request-core-build-backlog.md
 
 The backlog should break the sprint into harness-sized tasks. Prefer this order when applicable:
 
-1. shared domain/API records
-2. write model entity or workflow
-3. views/read models
-4. consumers or timed actions
-5. HTTP/gRPC/MCP endpoints
-6. frontend API client and state
-7. frontend screens/forms/realtime behavior
-8. component tests
-9. endpoint and frontend tests
-10. full-stack module smoke or integration test
+1. secure foundation records and contracts: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, AuthContext, central authorization, audit metadata, and tenant/customer scope types
+2. WorkOS/JWT seam, `/api/me`, admin bootstrap/invites, and foundation tenant-isolation tests
+3. shared domain/API records for the app-specific module
+4. write model entity or workflow
+5. views/read models
+6. consumers or timed actions
+7. HTTP/gRPC/MCP endpoints
+8. frontend API client, context-selection shell, and state
+9. frontend screens/forms/realtime behavior
+10. component tests
+11. endpoint, frontend, forbidden-access, and tenant-isolation tests
+12. full-stack module smoke or integration test
 
 ## Pending questions
 
@@ -124,6 +128,7 @@ Rules:
 - associate each question with the exact module/sprint/backlog work it blocks
 - block only affected tasks, not the whole project
 - allow unblocked foundation or module work to continue
+- let unknown security-provider details block provider-specific WorkOS/JWT integration tasks, but not the foundation slice's local authorization contracts, Tenant/Customer boundaries, `/api/me` contract, audit model, or tenant-isolation test design
 - if browser UI is in scope and no style guide is selected, create a UI style-selection question and block only UI implementation tasks
 - for AI-first scope, create scoped questions when implementation would otherwise guess delegated authority, approval gates, policy/risk thresholds, evidence requirements, trace visibility, evaluation strategy, or outcome metrics
 

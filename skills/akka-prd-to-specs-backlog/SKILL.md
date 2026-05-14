@@ -114,6 +114,8 @@ For smaller plans, or when preserving an existing project shape, create numbered
 - `specs/slices/02-<slice-name>.md`
 - `specs/slices/03-<slice-name>.md`
 
+For SaaS app PRDs, the first slice must be a secure foundation slice unless the task is explicitly non-SaaS reference material. It must cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, admin bootstrap/invites, audit, frontend shell/context selection when a browser UI is in scope, and tenant-isolation tests before CRM/domain-specific slices.
+
 Do not create both `specs/slices/` and `specs/sprints/` for new planning output unless project history requires it.
 
 ### Build backlogs
@@ -295,6 +297,8 @@ Create this queue when unresolved decisions would otherwise make the solution pl
 
 For AI-first inputs, create blocking or scoped questions when the plan would otherwise guess consequential semantics such as delegated authority, autonomous action limits, approval gates, exception ownership, policy/permission boundaries, required evidence, risk/confidence/impact thresholds, audit retention/redaction, supervision UI mode, governed policy changes, evaluation/replay needs, or outcome metrics.
 
+Unknown security-provider details may block only provider-specific integration tasks, such as WorkOS issuer/audience/callback configuration. They must not block modeling the mandatory local authorization contracts, Tenant/Customer boundaries, AuthContext, role/capability checks, `/api/me`, audit events, or tenant-isolation tests.
+
 The queue must:
 - use stable question IDs such as `Q-001`, `Q-002`, `Q-003`
 - preserve existing question IDs and statuses when updating an existing queue
@@ -317,6 +321,7 @@ Create or update:
 Use `../../docs/pending-task-queue.md` as the queue contract.
 
 The queue must:
+- start with runnable secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, admin bootstrap/invites, audit, frontend shell/context selection when applicable, and tenant-isolation tests
 - contain one task for each bounded, unblocked item in each backlog's `Suggested harness task breakdown`
 - block or omit work still gated by unresolved `blocking` questions in `specs/pending-questions.md`
 - use stable task IDs such as `TASK-001`, `TASK-002`, `TASK-003`
@@ -534,6 +539,7 @@ Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
 - `core-saas-foundation` was applied and `specs/cross-cutting/01-auth-tenancy-audit.md` plus a first foundation sprint/slice were created for SaaS apps
+- first runnable pending tasks implement the secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, admin bootstrap/invites, audit, frontend shell/context selection when applicable, and tenant-isolation tests
 - high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition
 - AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
 - module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered
