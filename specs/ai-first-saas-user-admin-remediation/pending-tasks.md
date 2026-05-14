@@ -1,0 +1,406 @@
+# Pending Tasks: AI-first SaaS User Administration Remediation
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Do not combine adjacent tasks.
+- Update this file before finishing the harness response.
+- Every task must create a git commit for its completed work.
+- Commit message format: `ai-saas-user-admin: <short task title>`.
+
+## Tasks
+
+### TASK-001: Make complete email-invite onboarding mandatory in foundation doctrine
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - pack/AGENTS.md
+  - skills/README.md
+  - skills/core-saas-foundation/SKILL.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/security-workos-auth-and-admin.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-workos-user-auth/SKILL.md
+- skills:
+  - core-saas-foundation
+  - app-description-auth-security
+  - akka-basic-user-admin
+  - akka-workos-user-auth
+- expected outputs:
+  - Update top-level foundation doctrine so email-invite onboarding is mandatory for initial generated SaaS apps, not optional.
+  - Replace or reframe language such as “optionally sends invite email” so production apps require email delivery and local/dev/test apps require an explicit safe delivery adapter or captured outbox.
+  - Define mandatory invitation lifecycle concepts: Invitation, invitation token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotency.
+  - Define mandatory failure semantics: missing email provider config blocks production readiness; dev/test adapter may capture emails without external delivery; failed delivery is visible to admins and auditable.
+  - Update `/api/me` and first-login guidance so invited account linking requires a valid invitation/membership policy and does not silently self-register privileged users.
+- required checks:
+  - `rg -n "optional|optionally" docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md skills/akka-workos-user-auth/SKILL.md`
+  - Review every match and remove/reframe any optional invite-email wording.
+  - `rg -n "Invitation|invite token|expiry|resend|revoke|delivery status|delivery attempts|email delivery|outbox" docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md`
+  - `git diff --check`
+- done criteria:
+  - Core doctrine and auth/admin skills make full email-invite onboarding mandatory foundation behavior.
+  - Production readiness blocks missing email delivery configuration or equivalent accepted provider decision.
+  - Local/dev/test email adapters are allowed only as explicit safe substitutes, not as omitted onboarding.
+  - A git commit exists for the changes.
+
+### TASK-002: Add dedicated SaaS invitation onboarding skill
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-001]
+- required reads:
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-workos-user-auth/SKILL.md
+  - skills/akka-workflows/SKILL.md
+  - skills/akka-workflow-component/SKILL.md
+  - skills/akka-timed-actions/SKILL.md
+  - skills/akka-timers-scheduling/SKILL.md
+  - skills/akka-consumers/SKILL.md
+  - skills/akka-views/SKILL.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/security-workos-auth-and-admin.md
+  - pack/manifest.yaml
+- skills:
+  - core-saas-foundation
+  - akka-basic-user-admin
+  - akka-workflows
+  - akka-timed-actions
+  - akka-consumers
+  - akka-views
+- expected outputs:
+  - Create `skills/akka-saas-invitation-onboarding/SKILL.md`.
+  - The skill must implement complete email-invite onboarding guidance using Akka substrate components: Invitation entity or audit-grade record, InvitationWorkflow, email delivery/outbox consumer, expiry/reminder TimedAction, InvitationView, and admin endpoints/UI.
+  - Cover invite creation, validation, token/acceptance context, resend, revoke/cancel, expiry, acceptance, idempotent repeated invite, duplicate email handling, membership activation, and delivery failure visibility.
+  - Cover tests for success, repeated invite, expired invite, revoked invite, replayed acceptance, delivery failure, forbidden invite, cross-tenant invite, disabled inviter, and audit facts.
+  - Add the new skill to `pack/manifest.yaml` content and bundle lists.
+  - Add routing references in `skills/README.md`, `skills/core-saas-foundation/SKILL.md`, `skills/akka-basic-user-admin/SKILL.md`, `skills/akka-solution-decomposition/SKILL.md`, and `skills/akka-prd-to-specs-backlog/SKILL.md`.
+- required checks:
+  - `test -f skills/akka-saas-invitation-onboarding/SKILL.md`
+  - `rg -n "akka-saas-invitation-onboarding" skills/README.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md pack/manifest.yaml`
+  - `rg -n "InvitationWorkflow|resend|revoke|expire|delivery|outbox|InvitationView|TimedAction|Consumer" skills/akka-saas-invitation-onboarding/SKILL.md`
+  - `git diff --check`
+- done criteria:
+  - The new invitation onboarding skill exists, is packaged, and is routed from foundation/planning/admin paths.
+  - A future generated app has focused guidance for complete email invite onboarding.
+  - A git commit exists for the changes.
+
+### TASK-003: Upgrade admin management baseline to full user, membership, role, and access-state management
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-001, TASK-002]
+- required reads:
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/security-workos-auth-and-admin.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+- skills:
+  - core-saas-foundation
+  - akka-basic-user-admin
+  - akka-saas-invitation-onboarding
+  - akka-views
+  - akka-http-endpoints
+  - akka-web-ui-apps
+- expected outputs:
+  - Update admin/foundation docs and skills so admin users are fully capable of managing users within their authority boundary.
+  - Require user and membership list/search without caller-supplied user IDs: UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView where applicable.
+  - Require admin operations: invite, resend invite, revoke invite, view invitation status, list users, search/filter users, view user detail, edit allowed profile fields, assign/replace/remove roles, add/suspend/reactivate/remove memberships, disable/reactivate account, reset/relink identity subject under policy, support-access grant/revoke/expiry, and last-admin protection.
+  - Require scoped capabilities for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins.
+  - Require admin UI surfaces: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings.
+  - Update readiness guidance so an app is not generation-ready if admin management only supports invite/disable/activate without list/search/membership lifecycle.
+- required checks:
+  - `rg -n "UserDirectoryView|MembershipView|InvitationView|AdminAuditView|AccessReviewQueueView|resend invite|revoke invite|last-admin|membership lifecycle|support-access" skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/app-description-readiness-assessment/SKILL.md`
+  - `rg -n "list/search|search/filter|view user detail|remove roles|suspend.*membership|reactivate.*membership|reset.*identity|relink" skills/akka-basic-user-admin/SKILL.md docs/core-saas-identity-tenancy-admin.md`
+  - `git diff --check`
+- done criteria:
+  - Initial generated apps are required to have operational admin user-management capabilities, not just low-level invite/disable endpoints.
+  - Readiness blocks incomplete admin-management surfaces.
+  - A git commit exists for the changes.
+
+### TASK-004: Normalize core SaaS roles and separate app-specific roles from foundation roles
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-003]
+- required reads:
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/security-workos-auth-and-admin.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/authorization-rules.md
+  - docs/examples/ai-first-dca-app-description/app-description/40-auth-security/authorization-rules.md
+  - src/main/java/com/example/domain/security/SecurityRole.java
+  - src/main/java/com/example/domain/security/RoleAssignment.java
+- skills:
+  - core-saas-foundation
+  - akka-basic-user-admin
+  - app-description-auth-security
+- expected outputs:
+  - Update doctrine and skills to make these core foundation roles canonical: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR` or scoped auditor equivalent.
+  - Define app-specific roles as extensions mapped to permissions/capabilities, not replacements for foundation roles.
+  - Reframe DCA/dealer roles as app-specific example roles only.
+  - Update example app-description docs where needed to distinguish foundation roles from DCA roles.
+  - If executable examples use DCA-specific roles, add clear comments/docs that they are reference-specific and not the generic role baseline, or create follow-up tasks if code changes are too large.
+  - Ensure `APP_ADMIN` is not presented as the preferred generic role name when `SAAS_OWNER_ADMIN` is the canonical platform role.
+- required checks:
+  - `rg -n "SAAS_OWNER_ADMIN|TENANT_ADMIN|TENANT_EMPLOYEE|CUSTOMER_ADMIN|CUSTOMER_USER" docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md docs/security-workos-auth-and-admin.md skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md`
+  - `rg -n "APP_ADMIN|DEALER_OWNER|OPERATIONS_SUPERVISOR|POLICY_OWNER" docs skills src/main/java/com/example/domain/security/SecurityRole.java src/main/java/com/example/domain/security/RoleAssignment.java`
+  - Review each match and ensure DCA/app-specific roles are clearly marked as extensions/examples.
+  - `git diff --check`
+- done criteria:
+  - Foundation role vocabulary is consistent and SaaS-generic.
+  - App-specific roles are subordinate capability mappings, not the default foundation model.
+  - A git commit exists for the changes.
+
+### TASK-005: Make AI-assisted admin offload mandatory foundation behavior
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-003, TASK-004]
+- required reads:
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/ai-first-saas-agent-team-design/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - skills/ai-first-saas-policy-governance/SKILL.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-orchestration/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - pack/manifest.yaml
+- skills:
+  - ai-first-saas
+  - ai-first-saas-agent-team-design
+  - ai-first-saas-decision-cards
+  - ai-first-saas-policy-governance
+  - core-saas-foundation
+  - akka-agents
+- expected outputs:
+  - Create `skills/ai-first-saas-admin-agents/SKILL.md`.
+  - Define mandatory AI admin offload agents for initial generated SaaS apps: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and optional AdminPolicyProposalAgent.
+  - Define what agents may do autonomously: draft invites, summarize risk, recommend roles, identify stale/dormant access, prepare bulk invite drafts, create low-risk admin tasks, generate audit summaries, and create decision cards.
+  - Define what agents must not do autonomously without approval: grant admin roles, remove last admin, expand support access, suspend tenants, bulk disable users, change policy/permissions, or access tenant data outside authorized tool scope.
+  - Route high-risk admin recommendations to decision cards with evidence, risk, confidence, alternatives, policy triggers, and audit links.
+  - Add the new skill to `pack/manifest.yaml` and route it from `skills/README.md`, `skills/core-saas-foundation/SKILL.md`, `skills/ai-first-saas/SKILL.md`, and `skills/akka-prd-to-specs-backlog/SKILL.md`.
+- required checks:
+  - `test -f skills/ai-first-saas-admin-agents/SKILL.md`
+  - `rg -n "ai-first-saas-admin-agents" skills/README.md skills/core-saas-foundation/SKILL.md skills/ai-first-saas/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md pack/manifest.yaml`
+  - `rg -n "AccessReviewAgent|AdminRiskAgent|InvitationDraftAgent|RoleRecommendationAgent|SupportAccessReviewAgent|AdminAuditSummaryAgent|decision card|last admin|bulk" skills/ai-first-saas-admin-agents/SKILL.md`
+  - `git diff --check`
+- done criteria:
+  - AI admin offload is a mandatory foundation behavior with a dedicated skill and routing.
+  - Human admins are explicitly supervisors/approvers for high-risk admin changes.
+  - A git commit exists for the changes.
+
+### TASK-006: Add admin audit/search and access-review views as first-slice requirements
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-003, TASK-005]
+- required reads:
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-view-query-patterns/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/security-review-checklist.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+- skills:
+  - core-saas-foundation
+  - akka-basic-user-admin
+  - ai-first-saas-admin-agents
+  - akka-views
+  - akka-http-endpoints
+  - akka-web-ui-apps
+- expected outputs:
+  - Update guidance so AdminAuditView, MembershipView, InvitationView, UserDirectoryView, and AccessReviewQueueView are first-slice requirements.
+  - Define required query paths and filters: actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range.
+  - Define backend authorization and redaction rules for audit/search views.
+  - Define admin UI expectations for audit search, invitation queue, access review queue, stale/dormant access warnings, and agent-generated admin recommendations.
+  - Update tests guidance to include query authorization, cross-scope filtering, redaction, pagination, stale invite/access review queue correctness, and audit trace completeness.
+- required checks:
+  - `rg -n "AdminAuditView|MembershipView|InvitationView|UserDirectoryView|AccessReviewQueueView" skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md skills/akka-views/SKILL.md docs/core-saas-identity-tenancy-admin.md docs/security-review-checklist.md docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md`
+  - `rg -n "actor|target user|invitation status|delivery status|membership status|redaction|cross-scope filtering|access review" skills docs/core-saas-identity-tenancy-admin.md docs/security-review-checklist.md`
+  - `git diff --check`
+- done criteria:
+  - Initial generated apps are required to include usable admin/audit/access-review read models, endpoints, and UI surfaces.
+  - Admins can discover what needs attention without knowing IDs upfront.
+  - A git commit exists for the changes.
+
+### TASK-007: Update app-description seed example and readiness to require full onboarding/admin/AI-admin surfaces
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-001, TASK-003, TASK-005, TASK-006]
+- required reads:
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/negative/01-forbidden-actions.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/realization-scope.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - skills/app-generate-app/SKILL.md
+- skills:
+  - app-descriptions
+  - app-description-bootstrap
+  - app-description-auth-security
+  - app-description-test-specification
+  - app-description-readiness-assessment
+  - app-generate-app
+  - core-saas-foundation
+  - ai-first-saas-admin-agents
+- expected outputs:
+  - Update the AI-first SaaS seed app-description so full invitation onboarding, complete admin user management, and AI-assisted admin offload are explicit in capabilities, behavior, state models, tests, UI, and generation scope.
+  - Add/expand files where useful for invitation lifecycle, admin management, access review, and admin-agent behavior.
+  - Update readiness and generation skills so missing full onboarding/admin/admin-agent surfaces block initial app generation.
+  - Ensure the seed example includes acceptance/negative/regression tests for invite send/resend/revoke/expire/accept, admin list/search, membership lifecycle, last-admin protection, AI access review recommendations, decision cards for risky admin actions, and audit/search views.
+- required checks:
+  - `rg -n "resend|revoke|expire|accept|InvitationView|UserDirectoryView|AccessReviewQueueView|AdminRiskAgent|AccessReviewAgent|last-admin|delivery status" docs/examples/ai-first-saas-seed-app-description skills/app-description-readiness-assessment/SKILL.md skills/app-generate-app/SKILL.md`
+  - `git diff --check`
+- done criteria:
+  - The preferred seed example describes a fully operational user onboarding/admin baseline.
+  - Readiness/generation guidance blocks incomplete user admin foundations.
+  - A git commit exists for the changes.
+
+### TASK-008: Update planning/backlog generation to create user-admin foundation tasks before domain features
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-002, TASK-003, TASK-005, TASK-007]
+- required reads:
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/akka-backlog-to-pending-tasks/SKILL.md
+  - skills/akka-slice-spec-to-backlog/SKILL.md
+  - skills/akka-backlog-item-to-task-brief/SKILL.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - docs/module-sprint-planning.md
+  - docs/pending-task-queue.md
+- skills:
+  - akka-solution-decomposition
+  - akka-prd-to-specs-backlog
+  - akka-backlog-to-pending-tasks
+  - core-saas-foundation
+  - akka-saas-invitation-onboarding
+  - ai-first-saas-admin-agents
+- expected outputs:
+  - Update solution decomposition and PRD/backlog skills so foundation-first planning creates concrete tasks for full onboarding and user administration before app-specific domain features.
+  - Require task breakdown for: invitation lifecycle, email delivery/outbox, user directory views, membership/role management, admin audit/search, access review queues, AI admin agents, decision cards for risky admin actions, admin UI surfaces, and security/admin tests.
+  - Update pending-task materialization guidance so these tasks are never collapsed into a vague “auth/admin” item.
+  - Update slice/backlog/task-brief skills so a backlog item spanning invitation lifecycle plus admin AI plus UI is split into smaller harness tasks.
+- required checks:
+  - `rg -n "invitation lifecycle|email delivery|UserDirectoryView|MembershipView|InvitationView|AdminAuditView|AccessReviewQueueView|AI admin|AdminRiskAgent|AccessReviewAgent|decision cards for risky admin" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md`
+  - `git diff --check`
+- done criteria:
+  - New PRD/spec planning reliably creates small, executable foundation tasks for full user onboarding/admin/admin-agent capabilities.
+  - Foundation user admin work precedes domain-specific CRM/app features.
+  - A git commit exists for the changes.
+
+### TASK-009: Add verification guardrails for full onboarding, admin management, and AI admin offload
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-002, TASK-005, TASK-008]
+- required reads:
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+  - package.json
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/security-workos-auth-and-admin.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+- skills:
+  - core-saas-foundation
+  - akka-saas-invitation-onboarding
+  - ai-first-saas-admin-agents
+- expected outputs:
+  - Extend `tools/verify-opinionated-ai-first-saas-pack.sh` or add a companion verification script to fail when required full onboarding/admin/admin-agent references are missing.
+  - Checks must cover: invitation onboarding skill exists and is manifest-listed; admin agents skill exists and is manifest-listed; optional invite email phrasing is absent from foundation/admin docs; core foundation references resend/revoke/expiry/delivery status; admin docs reference user directory/search, membership lifecycle, admin audit/search, access review, and last-admin protection; planning skills reference full onboarding/admin task breakdown.
+  - Add package script if appropriate.
+  - Update README or relevant docs with the verification command if project convention supports it.
+- required checks:
+  - Run the updated/new verification script.
+  - `bash -n tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `git diff --check`
+- done criteria:
+  - Automated checks guard against regressing user onboarding and admin management to partial/optional behavior.
+  - Verification passes locally.
+  - A git commit exists for the changes.
+
+### TASK-010: Final audit and repair for user-admin remediation
+
+- status: pending
+- source: specs/ai-first-saas-user-admin-remediation/README.md
+- task brief: none
+- depends on: [TASK-009]
+- required reads:
+  - specs/ai-first-saas-user-admin-remediation/README.md
+  - specs/ai-first-saas-user-admin-remediation/pending-tasks.md
+  - AGENTS.md
+  - pack/AGENTS.md
+  - skills/README.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/security-workos-auth-and-admin.md
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+- skills:
+  - core-saas-foundation
+  - akka-saas-invitation-onboarding
+  - ai-first-saas-admin-agents
+- expected outputs:
+  - Run a final audit for contradictions after TASK-001 through TASK-009.
+  - Verify initial generated apps are fully capable of email-invite onboarding, admin user management, and AI-assisted admin offload.
+  - Verify broad PRD/spec/new-app flows create foundation-first tasks before domain-specific work.
+  - Verify no foundation docs still say invite email is optional or that admin management is limited to invite/disable/activate.
+  - Repair inconsistencies found during the audit.
+  - Mark this queue's completed tasks done if they were not already updated by prior sessions, preserving history.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `rg -n "optionally sends invite email|optionally send invite|invite email.*optional|admin.*invite.*disable.*activate" AGENTS.md pack/AGENTS.md skills docs pack tools install.sh`
+  - Review any matches and repair if they contradict the remediation.
+  - `rg -n "InvitationWorkflow|InvitationView|UserDirectoryView|MembershipView|AdminAuditView|AccessReviewQueueView|AdminRiskAgent|AccessReviewAgent|RoleRecommendationAgent|last-admin|resend|revoke|delivery status" skills docs pack/manifest.yaml tools/build-pack.sh install.sh`
+  - `git status --short`
+  - `git diff --check`
+- done criteria:
+  - Final audit passes.
+  - No known contradiction remains in routing, doctrine, planning, packaging, generation, or examples.
+  - This task records the final state and commits any repairs.
+  - A git commit exists for the final audit/repair.
