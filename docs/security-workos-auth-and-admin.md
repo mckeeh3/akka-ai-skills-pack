@@ -114,9 +114,11 @@ Use `/api/me` as the frontend's local account bootstrap endpoint.
 Responsibilities:
 - validate JWT
 - read WorkOS identity claims from `requestContext().getJwtClaims()`
-- find or link the local Akka user account
+- find an existing linked local account or link an invited account only through a valid invitation, invite token/acceptance context, or explicit membership policy
 - return browser-facing profile, status, role, and tenant/customer scope DTOs
 - never return internal secrets or full domain state accidentally
+
+`/api/me` must not silently self-register privileged users from WorkOS claims alone. If no valid invitation or accepted self-registration policy exists, return a safe pending/forbidden outcome rather than creating admin access.
 
 Example response shape:
 
@@ -183,7 +185,7 @@ export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 export APP_BASE_URL="http://localhost:9000"
 ```
 
-Optional invite-email settings are also backend-only:
+Invite-email settings are backend-only and mandatory for production readiness, unless the project has recorded an accepted provider decision that supplies equivalent delivery:
 
 ```bash
 export RESEND_API_KEY="re_xxxxxxxxx"
@@ -191,12 +193,17 @@ export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
 ```
 
+Local/dev/test environments may replace external delivery with an explicit safe adapter that captures emails in an outbox for inspection without sending externally. Production startup/readiness must fail or report not-ready when required email delivery configuration is missing.
+
 Bootstrap behavior:
 - parse configured initial admins at startup
 - create invited local Akka user accounts idempotently
-- optionally send invite emails
-- when the user signs in through WorkOS, link WorkOS identity to the invited local account
-- activate the local account after successful link
+- create Invitation records with invite token or acceptance context, status, expiry, delivery status, delivery attempts, and audit metadata
+- send invite emails in production or capture them in the local/dev/test outbox adapter
+- surface delivery failures to authorized admins and record AdminAuditEvent facts
+- support idempotent resend and revoke/cancel before acceptance
+- when the user signs in through WorkOS, link WorkOS identity to the invited local account only through a valid invitation or membership policy
+- activate the local account after successful link and invitation acceptance
 
 ## Testing checklist
 
@@ -208,5 +215,7 @@ Bootstrap behavior:
 - [ ] frontend navigation is treated as UX only, not authorization
 - [ ] backend secrets are not present in `frontend/.env*` or built assets
 - [ ] startup bootstrap is idempotent
-- [ ] invite/link/activate flow has success and failure tests
+- [ ] production readiness fails when invite email delivery configuration or equivalent accepted provider decision is missing
+- [ ] local/dev/test invite email adapter captures messages in an outbox without external delivery
+- [ ] invite/link/activate flow has send, resend, revoke/cancel, expiry, delivery failure, acceptance, idempotency, and audit tests
 - [ ] admin actions emit required AdminAuditEvent records for identity, membership, role, support-access, data-access, and forbidden attempts

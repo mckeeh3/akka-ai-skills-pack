@@ -54,7 +54,8 @@ Required baseline:
 | Local authorization | Maintain Akka-owned authorization state separate from authentication: `Account`, `UserProfile`, `UserSettings`, `Membership`, `Role`, `Permission`/`Capability`, and selected `AuthContext`. |
 | Organization model | Model `SaaS Owner`, `Tenant`, and `Customer` boundaries. Tenants own application data; Customers are organizations served within a Tenant boundary. |
 | Memberships and roles/scopes | Authorize by active membership, status, role/scope, tenant/customer ids, and capabilities. Do not authorize by email alone or frontend navigation state. |
-| `/api/me` | Provide browser-safe current account, status, memberships, selected/default context, roles/capabilities, profile, and settings. |
+| Email-invite onboarding | Complete onboarding through mandatory `Invitation` lifecycle: invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency, and audit trail. Production readiness requires configured email delivery or an accepted provider decision; local/dev/test must use an explicit captured outbox adapter. |
+| `/api/me` | Provide browser-safe current account, status, memberships, selected/default context, roles/capabilities, profile, and settings. First-login linking must require a valid invitation or accepted membership policy and must not silently self-register privileged users. |
 | Backend authorization | Enforce scope mechanically on every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action. |
 | Audit and traces | Record identity, role, membership, tenant/customer, policy, approval, data-access, tool-use, decision, and outcome events as durable audit/work traces. |
 | Tenant isolation | Include tenant/customer ids in scoped records; filter all reads by authorized context; reject cross-tenant/customer commands and queries. |
@@ -158,7 +159,7 @@ Outcome metrics should validate whether agent labor is useful, safe, timely, and
 
 Before calling a generated design AI-first, verify:
 
-- [ ] Secure SaaS foundation is present: identity, local authorization, Tenant/Customer model, memberships, roles/scopes, `/api/me`, backend authorization, audit, tenant-isolation tests, and security review.
+- [ ] Secure SaaS foundation is present: identity, local authorization, Tenant/Customer model, memberships, roles/scopes, mandatory email-invite onboarding, `/api/me`, backend authorization, audit, tenant-isolation tests, and security review.
 - [ ] Goals are durable and include objective, owner, constraints, success criteria, and outcome links.
 - [ ] Agents have explicit responsibilities, versioned prompts/skills, permissions, thresholds, escalation rules, and traces.
 - [ ] Execution plans are inspectable, policy-bound, and auditable before or during activation.

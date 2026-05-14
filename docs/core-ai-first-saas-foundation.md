@@ -101,7 +101,7 @@ Example AI-first core scenarios:
 | Tenant, Customer, Account, Membership lifecycle | Event Sourced Entity when audit-grade history is required; Key Value Entity for low-risk current state only. |
 | User profiles and settings | Key Value Entity for current editable profile/settings state; Event Sourced Entity if the app requires audit-grade profile or preference history. |
 | Subscription lifecycle | Event Sourced Entity for plan changes, trial, activation, suspension, cancellation, and billing state history. |
-| Invitations and onboarding | Workflow for invite/link/activate and multi-step onboarding. |
+| Invitations and onboarding | Workflow for mandatory email invite delivery, token/acceptance context, link/activate, resend, revoke/cancel, expiry, idempotency, and multi-step onboarding. |
 | Access review and support-access expiry | Timed Actions plus Views and Consumers. |
 | Administrative dashboards | Views for scoped lists, queues, tenant health, subscription state, and audit search. |
 | AI recommendations and summaries | Agents with bounded tools and read-only access unless explicitly approved. |
@@ -111,11 +111,13 @@ Example AI-first core scenarios:
 ## Initial implementation slices
 
 1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
-2. SaaS Owner Admin tenant creation and initial Tenant Admin invitation.
-3. Tenant Admin employee invitation and role management.
-4. Tenant Admin customer organization creation and Customer Admin invitation.
-5. Customer Admin customer user invitation and role management.
-6. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
-7. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
-8. Cross-scope audit trace and access review views.
-9. AI-first admin decision cards for risky role, support-access, tenant suspension, and billing changes.
+2. Mandatory invitation lifecycle: `Invitation` record, invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotent duplicate handling.
+3. Mandatory email delivery foundation: production email provider configuration or accepted provider decision, plus a safe local/dev/test adapter that captures messages in an outbox without external delivery.
+4. SaaS Owner Admin tenant creation and initial Tenant Admin invitation.
+5. Tenant Admin employee invitation and role management.
+6. Tenant Admin customer organization creation and Customer Admin invitation.
+7. Customer Admin customer user invitation and role management.
+8. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
+9. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
+10. Cross-scope audit trace and access review views.
+11. AI-first admin decision cards for risky role, support-access, tenant suspension, and billing changes.

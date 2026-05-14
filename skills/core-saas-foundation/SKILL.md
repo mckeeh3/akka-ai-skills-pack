@@ -38,7 +38,7 @@ Every generated SaaS application must model these foundation concepts before app
 - Membership — scoped Account relationship to SaaS Owner, Tenant, or Customer with status and roles.
 - Role — named permission bundle within a scope, such as `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, or `CUSTOMER_USER`.
 - Permission/Capability — mechanically enforced action grants used by endpoints, component commands, queries, tools, workflows, consumers, timers, and UI capability display.
-- Invitation — auditable invite/onboarding state for Tenant, Customer, and user activation flows.
+- Invitation — mandatory auditable email-invite onboarding state for Tenant, Customer, and user activation flows, including invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency key, and audit trail.
 - AuthContext — selected signed-in operating context: account, membership, roles/capabilities, tenantId/customerId when applicable, and actor metadata.
 - AdminAuditEvent — durable audit record for identity, membership, role, policy, support-access, billing, data access, approval, and consequential AI/tool activity.
 - Support-access membership — Tenant-created, time-limited, auditable Tenant-scoped access for SaaS Owner personnel when a Tenant requests help; never a global super-admin bypass.
@@ -50,10 +50,11 @@ All broad planning and generation paths must include:
 
 - WorkOS authentication seam for browser human sign-in and JWT-bearing API calls unless the target explicitly selects another provider.
 - Akka-owned local authorization state for Accounts, Memberships, Roles, Permissions/Capabilities, Tenant, Customer, support access, and billing-safe platform records.
-- `/api/me` returning browser-safe account, profile, settings, active memberships, selected AuthContext, roles/capabilities, and context-switch data.
+- `/api/me` returning browser-safe account, profile, settings, active memberships, selected AuthContext, roles/capabilities, and context-switch data; first-login linking must require a valid invitation or accepted membership policy and must not silently self-register privileged users.
 - Backend authorization service used by every protected HTTP/gRPC/MCP route, component command, view query, stream, workflow action, agent tool, consumer side effect, and timer action.
 - Tenant/customer-scoped commands and queries that include `tenantId` and `customerId` where required and reject cross-scope access mechanically.
-- AdminAuditEvent creation for identity changes, invitations, membership/role changes, support access, policy checks, approval outcomes, billing actions, data access, and consequential AI/tool activity.
+- AdminAuditEvent creation for identity changes, invitations, invitation email delivery attempts/failures, resend/revoke/expiry/acceptance, membership/role changes, support access, policy checks, approval outcomes, billing actions, data access, and consequential AI/tool activity.
+- Complete email-invite onboarding is mandatory: production readiness requires configured email delivery or an accepted provider decision; local/dev/test environments may use an explicit safe adapter that captures emails in an outbox without external delivery. Missing production email provider configuration blocks readiness.
 - Tenant-isolation tests, forbidden-access tests, disabled-user tests, role/scope-denial tests, audit tests, `/api/me` tests, and security-review checks.
 
 ## First-slice implementation order
@@ -64,14 +65,15 @@ For every new SaaS app, implement or specify the secure foundation before app-sp
 2. WorkOS/JWT authentication seam and request-context extraction.
 3. Account, UserProfile, and UserSettings state plus base profile/settings APIs.
 4. Tenant and Customer organization state with Tenant/Customer boundaries.
-5. Membership, Role, Permission/Capability, Invitation, support-access, and context-selection flows.
-6. `/api/me` endpoint and browser-safe capability model.
-7. Central backend authorization service and mandatory checks for routes, commands, queries, streams, tools, workflow actions, consumers, and timers.
-8. SaaS Owner to Tenant subscription/billing boundary, plan/subscription/entitlement records, and billing-safe admin APIs where needed.
-9. AdminAuditEvent write path and scoped audit/search views.
-10. Foundation UI shell: sign-in, context selection, profile/settings, admin navigation, user/tenant/customer administration, and capability-gated actions when a browser UI is in scope.
-11. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, audit, support-access expiry/revocation, billing-boundary, and frontend secret-boundary tests.
-12. Security review before implementing app-specific CRM/domain slices.
+5. Membership, Role, Permission/Capability, complete Invitation lifecycle, support-access, and context-selection flows.
+6. Email delivery/outbox adapter for invitation send/resend, delivery status, delivery attempts, failed-delivery visibility for admins, and auditable delivery failures.
+7. `/api/me` endpoint and browser-safe capability model that links invited accounts only through a valid invitation/acceptance context or explicit membership policy.
+8. Central backend authorization service and mandatory checks for routes, commands, queries, streams, tools, workflow actions, consumers, and timers.
+9. SaaS Owner to Tenant subscription/billing boundary, plan/subscription/entitlement records, and billing-safe admin APIs where needed.
+10. AdminAuditEvent write path and scoped audit/search views.
+11. Foundation UI shell: sign-in, context selection, profile/settings, invitation status/resend/revoke visibility, admin navigation, user/tenant/customer administration, and capability-gated actions when a browser UI is in scope.
+12. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, invite delivery/resend/revoke/expiry/acceptance, audit, support-access expiry/revocation, billing-boundary, and frontend secret-boundary tests.
+13. Security review before implementing app-specific CRM/domain slices.
 
 Do not let uncertainty about provider-specific details block modeling the mandatory local authorization, tenancy, AuthContext, and audit contracts. If WorkOS setup values are unknown, queue a provider-specific question while preserving the local boundary model.
 
@@ -96,7 +98,8 @@ Generation must stop or mark the description not-ready when the foundation is mi
 ## Output checklist
 
 Before handing off to downstream implementation, verify:
-- SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, and subscription/billing boundary are present or explicitly deferred only for non-SaaS reference work.
+- SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, complete Invitation lifecycle, AuthContext, AdminAuditEvent, support-access, and subscription/billing boundary are present or explicitly deferred only for non-SaaS reference work.
+- Invitation email delivery is configured for production readiness, or local/dev/test uses an explicit captured outbox adapter; delivery failures are visible to admins and auditable.
 - `/api/me` and context selection are specified for browser apps.
 - Backend authorization checks are required for every protected route, component command, query, stream, tool, workflow action, consumer side effect, and timer action.
 - Tenant/customer-scoped commands and queries enforce isolation mechanically.

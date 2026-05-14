@@ -39,7 +39,8 @@ Required SaaS foundation concepts:
 - roles/capabilities such as `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`
 - scopes: SaaS Owner, tenant ids, customer ids, support-access windows, or self-only
 - selected AuthContext for each protected operation
-- AdminAuditEvent metadata for identity, membership, role, support-access, billing-boundary, approval, and data-access changes
+- Invitation lifecycle with invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency key, and audit trail
+- AdminAuditEvent metadata for identity, invitation delivery/resend/revoke/expiry/acceptance, membership, role, support-access, billing-boundary, approval, and data-access changes
 
 Use Key Value Entity for simple current user/account state. Use Event Sourced Entity when an audit-grade history of role/status changes is required in the state model.
 
@@ -87,7 +88,7 @@ APP_BASE_URL="http://localhost:9000"
 WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 ```
 
-Optional invite-email settings:
+Invite-email delivery settings are backend-only and mandatory for production readiness unless an accepted provider decision supplies equivalent delivery:
 
 ```bash
 RESEND_API_KEY="re_xxxxxxxxx"
@@ -95,24 +96,32 @@ INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
 INVITE_EMAIL_SUBJECT="Account access information"
 ```
 
+Local/dev/test may use an explicit safe delivery adapter that captures invite emails in an outbox without external delivery.
+
 Bootstrap rules:
 - parse entries defensively
 - normalize email addresses
 - create missing invited/admin users idempotently
+- create Invitation records with expiry, delivery status, delivery attempts, and audit metadata
+- send invite emails in production or capture them in the local/dev/test outbox adapter
+- block production readiness when email delivery configuration is missing
 - update only allowed bootstrap-managed fields on repeated startup
 - never expose bootstrap secrets to frontend assets
-- surface invalid bootstrap config clearly at startup or in operational status
+- surface invalid bootstrap or email provider config clearly at startup or in operational status
 
 ## Invite and first-login flow
 
 1. Admin invites a user with email, roles, and scopes.
-2. Backend creates an `INVITED` local user.
-3. Backend optionally sends invite email.
-4. User signs in through WorkOS.
-5. `/api/me` links WorkOS subject to invited local account.
-6. Backend activates the account and returns current profile/roles/scopes.
+2. Backend creates an `INVITED` local user or membership plus an Invitation record.
+3. Invitation stores invite token or acceptance context, status, expiry, delivery status, delivery attempts, idempotency key, and audit trail.
+4. Backend sends invite email in production or captures it in the explicit local/dev/test outbox adapter.
+5. Failed delivery is visible to authorized admins and creates an audit event.
+6. Admin may resend idempotently or revoke/cancel before acceptance; expiry prevents later acceptance.
+7. User signs in through WorkOS.
+8. `/api/me` links WorkOS subject to invited local account only through a valid invitation or accepted membership policy.
+9. Backend accepts the invitation, activates the account/membership, and returns current profile/roles/scopes.
 
-Do not let an uninvited WorkOS identity become an admin unless self-registration and role policy explicitly allow it.
+Do not let an uninvited WorkOS identity become an admin unless self-registration and role policy explicitly allow it. Never silently self-register privileged users from WorkOS claims alone.
 
 ## Endpoint implementation guidance
 
@@ -138,8 +147,11 @@ Add tests for:
 - customer admin cannot manage tenant-wide users
 - tenant/customer-scoped list queries cannot leak cross-scope rows
 - tenant admin cannot grant `SAAS_OWNER_ADMIN` or other out-of-scope capabilities
+- production readiness blocks missing email delivery configuration or equivalent accepted provider decision
+- local/dev/test invite adapter captures outbound messages in an outbox without external delivery
+- invite send, resend, revoke/cancel, expiry, acceptance, replayed acceptance, duplicate email handling, delivery failure, and delivery-attempt audit behavior
 - repeated invite/role assignment is idempotent or returns documented conflict
-- audit events are emitted for admin changes and forbidden attempts
+- audit events are emitted for admin changes, invitation lifecycle events, delivery failures, and forbidden attempts
 - frontend receives enough `/api/me` data for navigation without leaking internals
 
 ## Anti-patterns
@@ -148,6 +160,7 @@ Avoid:
 - making JWT role claims the only source of mutable app authorization when roles are app-managed
 - trusting frontend route guards as authorization
 - allowing first login to auto-create privileged users accidentally
+- treating invite email delivery as omitted setup instead of mandatory production readiness behavior
 - storing backend API keys in frontend env files
 - returning full internal user entities to the browser
 - omitting scope checks from list/query endpoints

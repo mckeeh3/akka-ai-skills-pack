@@ -92,7 +92,7 @@ For each requested change, identify and describe as applicable:
 - authorization rules by capability or operation
 - tenancy or ownership boundaries
 - admin roles and scopes when user administration is in scope
-- bootstrap/invite/first-login behavior when relevant
+- bootstrap/invite/first-login behavior when relevant, including mandatory email delivery for production, explicit local/dev/test outbox capture, invitation status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency, and audit trail
 - internal-only versus external access
 - agent/tool/data/policy permission grants, autonomy thresholds, and approval gates
 - policy, prompt, skill, guardrail, and evaluator update authority
@@ -186,7 +186,7 @@ Basic administration is part of the secure SaaS foundation for generated SaaS ap
 - SaaS Owner, Tenant Admin, Customer Admin, and user/member roles appropriate to the scope
 - scope boundaries such as SaaS Owner platform metadata, tenant id, customer id, support-access tenant scope, or self
 - startup admin bootstrap source, such as `ADMIN_USERS`, and how it creates the first SaaS Owner or Tenant admin without creating a permanent bypass
-- invite and first-login account-linking behavior
+- complete email-invite onboarding and first-login account-linking behavior: production delivery configuration is required, local/dev/test must use an explicit captured outbox adapter, failed delivery must be visible/auditable, and `/api/me` must link only through a valid invitation or accepted membership policy
 - disabled-user behavior and inactive-membership denial
 - server-side checks and AdminAuditEvent records for every admin operation
 

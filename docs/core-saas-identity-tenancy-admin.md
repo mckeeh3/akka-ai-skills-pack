@@ -111,6 +111,31 @@ Recommended fields:
 - `expiresAt`, optional, especially for support-access accounts
 - audit metadata: granted by, approved by, reason, policy references
 
+### Invitation
+
+Complete email-invite onboarding is mandatory for generated SaaS foundations.
+
+Recommended fields:
+- `invitationId`
+- normalized target `email`
+- target scope: SaaS Owner, Tenant, or Customer plus `tenantId`/`customerId` where required
+- requested roles/capabilities and membership policy
+- invite token hash or acceptance context identifier; never expose raw tokens in views or logs
+- `status`: `PENDING_DELIVERY`, `SENT`, `DELIVERY_FAILED`, `ACCEPTED`, `EXPIRED`, `REVOKED`
+- `expiresAt`, `acceptedAt`, `revokedAt`
+- delivery provider/message ids, `deliveryStatus`, `deliveryAttempts`, last delivery error, and captured outbox id for local/dev/test
+- resend count and idempotency key for duplicate invite handling
+- audit metadata: invited by, resent by, revoked by, accepted by, reason, policy references
+
+Lifecycle rules:
+- invite creation must create local authorization intent before first sign-in;
+- production readiness requires configured email delivery or an accepted provider decision;
+- local/dev/test may use an explicit safe email adapter that captures messages in an outbox without external delivery;
+- failed delivery remains visible to authorized admins and creates an audit event;
+- resend must reuse or rotate acceptance context according to policy and remain idempotent;
+- revoke/cancel and expiry must prevent acceptance and be auditable;
+- acceptance must be idempotent and must not activate a membership unless the invitation and membership policy are valid.
+
 ## Roles
 
 | Role | Scope | Purpose |
@@ -131,30 +156,32 @@ Do not use a global super-admin role for Tenant data access. SaaS Owner permissi
 2. SaaS Owner Admin assigns subscription/billing state.
 3. SaaS Owner Admin invites one or more Tenant Admins.
 4. Invited human signs in through WorkOS.
-5. Backend links WorkOS identity to local account and activates Tenant membership.
+5. Backend validates a non-expired, non-revoked invitation or accepted membership policy, then links WorkOS identity to the local account and activates Tenant membership.
 6. Audit trace records Tenant creation, invitation, link, activation, and subscription state.
 
 ### Tenant Admin manages Tenant employees
 
 1. Tenant Admin invites employee by email.
-2. Backend creates local account if needed and Tenant membership in `INVITED` state.
-3. Employee signs in through WorkOS and links/activates membership.
-4. Tenant Admin may change roles, suspend, or remove membership.
-5. All changes are Tenant-scoped and auditable.
+2. Backend creates local account if needed, Tenant membership in `INVITED` state, and an Invitation with expiry, delivery status, and audit trail.
+3. Backend sends or captures invite email through the configured delivery adapter.
+4. Employee signs in through WorkOS and links/activates membership only through a valid invitation or membership policy.
+5. Tenant Admin may change roles, suspend, or remove membership.
+6. All changes are Tenant-scoped and auditable.
 
 ### Tenant Admin creates Customer organization and Customer Admin
 
 1. Tenant Admin creates Customer organization under Tenant.
-2. Tenant Admin invites Customer Admin.
-3. Customer Admin signs in through WorkOS and activates Customer membership.
+2. Tenant Admin invites Customer Admin through the mandatory Invitation lifecycle.
+3. Customer Admin signs in through WorkOS and activates Customer membership only through a valid invitation or membership policy.
 4. Customer Admin can then manage Customer users.
 
 ### Customer Admin manages Customer users
 
 1. Customer Admin invites Customer users within the Customer organization.
-2. Backend creates local account if needed and Customer membership in `INVITED` state.
-3. Customer user signs in through WorkOS and activates membership.
-4. Customer Admin may suspend or remove Customer users.
+2. Backend creates local account if needed, Customer membership in `INVITED` state, and an Invitation with expiry, delivery status, delivery attempts, and audit trail.
+3. Backend sends or captures invite email through the configured delivery adapter.
+4. Customer user signs in through WorkOS and activates membership only through a valid invitation or membership policy.
+5. Customer Admin may suspend or remove Customer users.
 
 ## SaaS Owner support access rule
 
@@ -198,7 +225,7 @@ Use WorkOS for authentication and identity linking:
 - sign-in, callback, session/token acquisition in the React frontend;
 - JWT bearer token validation in Akka HTTP endpoints;
 - local account lookup/linking using WorkOS identity claims;
-- invitation flows that create local authorization state before first sign-in.
+- invitation flows that create local authorization state and deliver/capture invite email before first sign-in.
 
 `/api/me` should return:
 - local `accountId`;
@@ -210,6 +237,8 @@ Use WorkOS for authentication and identity linking:
 - base profile fields needed by the app shell;
 - base settings, including `uiMode` (`LIGHT` or `DARK`);
 - minimal browser-facing data only.
+
+First-login linking through `/api/me` must require a valid invitation, invite token/acceptance context, or explicit membership policy. It must not silently self-register privileged users from WorkOS claims alone.
 
 ## Profile and settings APIs
 
@@ -294,7 +323,7 @@ Record audit events for:
 | `MembershipEntity` or scoped membership state | Role/scope lifecycle with audit-grade changes. |
 | `TenantEntity` | Tenant organization lifecycle and status. |
 | `CustomerEntity` | Customer organization lifecycle under a Tenant. |
-| `InvitationWorkflow` | Invite, WorkOS sign-in/link, activation, expiry, resend. |
+| `InvitationWorkflow` | Invite creation, email delivery/outbox, WorkOS sign-in/link, activation, expiry, resend, revoke/cancel, acceptance idempotency, delivery status, delivery attempts, and audit. |
 | `AccessReviewTimedAction` | Periodic stale-access/support-access checks. |
 | `AdminAuditView` | Queryable admin audit trail. |
 | `MembershipView` | Scoped user lists for SaaS Owner, Tenant Admin, and Customer Admin screens. |
@@ -303,11 +332,11 @@ Record audit events for:
 
 ## Acceptance checklist
 
-- [ ] SaaS Owner Admin can create Tenant and invite Tenant Admin.
+- [ ] SaaS Owner Admin can create Tenant and invite Tenant Admin with mandatory email delivery or captured outbox behavior.
 - [ ] SaaS Owner Admin cannot read Tenant application data.
-- [ ] Tenant Admin can manage Tenant employees.
+- [ ] Tenant Admin can manage Tenant employees through invite, resend, revoke/cancel, expiry, acceptance, and delivery-failure visibility.
 - [ ] Tenant Admin can create Customer organizations and invite Customer Admins.
-- [ ] Customer Admin can manage Customer users.
+- [ ] Customer Admin can manage Customer users through the same Invitation lifecycle.
 - [ ] Same email can hold multiple memberships and must operate in an explicit context.
 - [ ] WorkOS authentication is separate from Akka-owned authorization state.
 - [ ] Base profile fields are viewable/editable according to scope rules and do not grant permissions.

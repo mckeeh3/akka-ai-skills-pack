@@ -104,7 +104,7 @@ Prefer issuer/audience claim validation when the token contract is known:
 `GET /api/me` should:
 - require JWT
 - read WorkOS identity claims
-- find existing linked local account, or link an invited account when policy allows
+- find existing linked local account, or link an invited account only through a valid invitation, invite token/acceptance context, or explicit membership policy
 - return a browser-facing `MeResponse`
 - include account status, memberships, selected/default AuthContext, tenant/customer ids, roles/capabilities, profile, settings, and context-switch options needed for navigation
 - reject disabled users or return a safe disabled state that prevents protected API use
@@ -120,16 +120,18 @@ Typical local statuses:
 When an invited user signs in:
 1. validate JWT
 2. extract stable WorkOS subject and email claims
-3. find invited local account by normalized email or invite token policy
-4. link WorkOS subject to local account idempotently
-5. activate account if allowed
-6. return active `/api/me` response
+3. find invited local account by normalized email plus valid invitation, invite token policy, or acceptance context
+4. reject expired, revoked/cancelled, delivery-failed-without-admin-override, or already-accepted-by-another-subject invitations
+5. link WorkOS subject to local account idempotently
+6. accept the invitation, activate account/membership if allowed, and record audit facts
+7. return active `/api/me` response
 
 Reject or return a pending state when:
-- no matching invite exists and self-registration is disabled
+- no matching valid invitation or membership policy exists and self-registration is disabled
 - the local account is disabled
 - email/domain does not match allowed policy
 - WorkOS subject is already linked to another local account
+- the invitation is expired, revoked/cancelled, or outside the target membership policy
 
 ## Testing rules
 
@@ -137,10 +139,11 @@ Add tests for:
 - missing bearer token rejected
 - bearer token claims available through `requestContext().getJwtClaims()`
 - `/api/me` returns linked active account, memberships, selected AuthContext, tenant/customer scopes, and browser-safe capabilities
-- invited account first-login link is idempotent
+- invited account first-login link and replayed invitation acceptance are idempotent
+- expired, revoked/cancelled, missing, and cross-scope invitations cannot activate membership
 - disabled account cannot access protected APIs even with a valid JWT
 - tenant/customer scope mismatch is forbidden
-- identity, denial, invite/link, membership, and role changes create required audit events
+- identity, denial, invite/link, invitation acceptance, delivery status, membership, and role changes create required audit events
 - frontend API client attaches `Authorization: Bearer ...` if frontend tests exist
 
 Integration tests may use unsigned `alg: none` JWTs locally, but production configuration must rely on real trusted JWT key/issuer setup.
@@ -153,4 +156,5 @@ Avoid:
 - relying solely on role claims when app roles are managed in Akka
 - putting WorkOS API keys in frontend env files
 - returning internal user/account entity records from `/api/me`
+- using `/api/me` to create privileged local authorization state without a valid invitation or membership policy
 - reading JWT claims without `@JWT`

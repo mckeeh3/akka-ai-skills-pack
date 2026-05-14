@@ -13,7 +13,7 @@
 
 ### TASK-001: Make complete email-invite onboarding mandatory in foundation doctrine
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: []
