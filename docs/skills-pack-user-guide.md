@@ -23,7 +23,7 @@ Use the skills pack as a durable, iterative development workflow driven by the h
 9. the harness reconciles findings, tweaks, issues, and revised specs back into the workflow
 10. repeat until the application is functioning and accepted
 
-Your durable project state should live in your application workspace, usually under `specs/`, `app-description/`, source directories, and tests. The installed `.agents/` directory is the harness support library, not your app source.
+Your durable project state should live in your application workspace. Human-supplied source input belongs under `docs/input/`; harness-maintained planning and derived intent belong under `app-description/` and `specs/`; implementation belongs under source directories and tests. The installed `.agents/` directory is the harness support library, not your app source.
 
 ## Install the pack
 
@@ -117,11 +117,13 @@ As a user, you usually interact with the harness rather than directly reading th
 
 ## Recommended project artifacts
 
-For non-trivial apps, expect the harness to create or maintain files like:
+For non-trivial apps, use a project layout like this:
 
 ```text
-app-description/                 # recommended description-first source of truth for non-trivial apps
-specs/
+docs/
+  input/                          # human-supplied PRDs, briefs, issue exports, revised specs, notes, diagrams
+app-description/                  # harness-maintained description-first source of truth for non-trivial apps
+specs/                            # harness-maintained derived plans, queues, sprints, backlogs, and task artifacts
   akka-solution-plan.md
   pending-questions.md
   pending-tasks.md
@@ -132,26 +134,30 @@ specs/
 src/
 ```
 
-The `app-description/` tree is the best place to preserve product meaning over time: capabilities, user-visible behavior, security and tenant boundaries, UI surfaces, acceptance criteria, audit/observability expectations, AI-first governance, and readiness for generation. `specs/` then carries planning, decomposition, sprint, backlog, question, and task artifacts derived from or reconciled with that description.
+`docs/input/` is the handoff directory for human-authored or externally sourced material that the harness should ingest. Put initial PRDs, product briefs, API sketches, UI briefs, revised PRDs, customer notes, exported tickets, meeting notes, diagrams, and other source material there. Organize it with subdirectories when useful, such as `docs/input/initial/`, `docs/input/revisions/`, or `docs/input/testing/`.
+
+Treat `app-description/` and `specs/` as strictly harness-maintained outputs. The human changes them by asking the harness to reconcile new input, answers, approvals, test findings, or corrections. Avoid manually editing `specs/` as if it were an input drop zone; the harness owns its contents, consistency, task statuses, and cross-references.
+
+The `app-description/` tree is the best place for the harness to preserve product meaning over time: capabilities, user-visible behavior, security and tenant boundaries, UI surfaces, acceptance criteria, audit/observability expectations, AI-first governance, and readiness for generation. `specs/` then carries harness-maintained planning, decomposition, sprint, backlog, question, and task artifacts derived from or reconciled with that description and the source inputs in `docs/input/`.
 
 Small apps may need fewer files. Large apps benefit from module and sprint specs so implementation stays organized and testable.
 
 ## Phase 1: Ingest the initial PRD or spec
 
-Start by pointing the harness at the best available source of intent. This can be a full PRD, a rough idea, a ticket, a UI brief, an existing spec, or several files.
+Start by placing the best available source of intent under `docs/input/`, then point the harness at those files. This can be a full PRD, a rough idea captured in a note, a ticket export, a UI brief, an existing external spec, or several files.
 
 Example prompts:
 
 ```text
-Read docs/order-management-prd.md and use the Akka skills pack to plan this application. Queue questions instead of guessing.
+Read docs/input/order-management-prd.md and use the Akka skills pack to plan this application. Queue questions instead of guessing.
 ```
 
 ```text
-Here is the initial product idea. Create the app description and implementation planning artifacts needed to build it as an Akka application.
+Read docs/input/initial-product-idea.md. Create the app description and implementation planning artifacts needed to build it as an Akka application.
 ```
 
 ```text
-Read docs/api-sketch.md and docs/ui-brief.md together. Produce a solution plan, identify open questions, and prepare the backlog only for decisions that are clear.
+Read docs/input/api-sketch.md and docs/input/ui-brief.md together. Produce a solution plan, identify open questions, and prepare the backlog only for decisions that are clear.
 ```
 
 For early or ambiguous requirements, ask the harness to maintain an app description first. For clearer implementation-ready specs, ask it to produce an Akka solution plan and backlog.
@@ -263,7 +269,7 @@ Create a manual test checklist for the purchase request sprint, including happy 
 I manually tested sprint 02. These scenarios failed: ... Reconcile these findings with the specs and create follow-up tasks.
 ```
 
-Manual testing findings should become normal change input. The harness should update specs, questions, and tasks before coding fixes unless the fix is tiny and unambiguous.
+Manual testing findings should become normal change input. Save substantial findings under `docs/input/testing/` when they span multiple scenarios or need durable provenance, then ask the harness to reconcile them. The harness should update specs, questions, and tasks before coding fixes unless the fix is tiny and unambiguous.
 
 ## Phase 7: Iterate on features, tweaks, and issues
 
@@ -279,15 +285,15 @@ After the app exists, keep using the same supervised harness loop for every mean
 Example prompts:
 
 ```text
-This issue changes refund behavior for partially shipped orders. Reconcile it with the current specs, identify impacted tasks or completed work, and queue implementation changes before coding.
+Read docs/input/revisions/partial-shipment-refund-change.md. Reconcile it with the current specs, identify impacted tasks or completed work, and queue implementation changes before coding.
 ```
 
 ```text
-The support dashboard needs a new filter and export action. Update the UI/API specs, add acceptance criteria, and create the next pending tasks.
+Read docs/input/revisions/support-dashboard-filter-export.md. Update the UI/API specs, add acceptance criteria, and create the next pending tasks.
 ```
 
 ```text
-Bug: approving a request twice returns a 500. Expected behavior is idempotent success. Update the behavior spec, tests, and task queue.
+Read docs/input/bugs/duplicate-approval-500.md. Expected behavior is idempotent success. Update the behavior spec, tests, and task queue.
 ```
 
 ```text
@@ -299,7 +305,7 @@ Apply this small copy tweak to the UI and update any tests if needed. If no plan
 ### Start a new app
 
 ```text
-Use the Akka skills pack to ingest docs/product-prd.md. Create or update app-description/specs, queue questions instead of guessing, and do not start coding yet.
+Use the Akka skills pack to ingest docs/input/product-prd.md. Create or update app-description/specs, queue questions instead of guessing, and do not start coding yet.
 ```
 
 ### Move from planning to build tasks
@@ -329,19 +335,21 @@ Manual test results for sprint 03: <results>. Update specs and queues, mark any 
 ### Add a feature after the app is working
 
 ```text
-Here is a new feature request: <request>. Reconcile it with the existing app description and specs, identify impacted modules, queue questions, and prepare implementation tasks.
+Read docs/input/revisions/<feature-request-file>.md. Reconcile it with the existing app description and specs, identify impacted modules, queue questions, and prepare implementation tasks.
 ```
 
 ### Fix a bug
 
 ```text
-Here is a bug report: <report>. Determine the intended behavior from the specs, update tests/specs if the behavior is missing, and create the smallest safe implementation task.
+Read docs/input/bugs/<bug-report-file>.md. Determine the intended behavior from the specs, update tests/specs if the behavior is missing, and create the smallest safe implementation task.
 ```
 
 ## Practical operating rules
 
 - Speak in product and engineering terms; you do not need to name internal skills.
 - Ask the harness to queue questions instead of guessing.
+- Put human-authored source input under `docs/input/`.
+- Treat `app-description/` and `specs/` as harness-maintained outputs, not human-edited input folders.
 - Keep planning artifacts in your app workspace, not in `.agents/`.
 - Ask the harness to create vertical module sprints for large apps.
 - Ask the harness to execute one pending task per fresh session.
@@ -353,7 +361,7 @@ Here is a bug report: <report>. Determine the intended behavior from the specs, 
 ## Minimal end-to-end example
 
 ```text
-User: Read docs/returns-prd.md and plan this Akka app. Queue questions instead of guessing.
+User: Read docs/input/returns-prd.md and plan this Akka app. Queue questions instead of guessing.
 Harness: Created specs/akka-solution-plan.md and specs/pending-questions.md.
 
 User: What is the next question?
