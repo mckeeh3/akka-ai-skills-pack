@@ -252,7 +252,7 @@
 
 ### TASK-007: Update app-description seed example and readiness to require full onboarding/admin/AI-admin surfaces
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-001, TASK-003, TASK-005, TASK-006]

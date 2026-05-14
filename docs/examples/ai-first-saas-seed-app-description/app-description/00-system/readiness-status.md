@@ -12,15 +12,15 @@
   - complete code generation of all phases at once
   - production authentication integration without provider decision
 - decisive reasons:
-  - app class, SaaS foundation, AI-first substrate, UI surfaces, security posture, and Akka component mapping are defined
-  - selected UI design, light/dark/system mode, lightweight theme constraints, AI-first surface semantics, form/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
+  - app class, SaaS foundation, complete invitation onboarding, full admin user management, AI-assisted admin offload, UI surfaces, security posture, and Akka component mapping are defined
+  - selected UI design, light/dark/system mode, lightweight theme constraints, AI-first surface semantics, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
   - enough structure exists to plan implementation phases and generate initial scaffolding
 - blocking gaps before full code generation:
   - choose concrete authentication provider mode for runnable local development and cloud deployment
   - choose first implementation slice boundary
   - confirm persistence model expectations for local test execution
   - confirm whether MCP and gRPC are in v1 or deferred examples
-  - decide whether the first generated frontend slice should include only phase-1 admin/auth shell or also phase-2 AI-first mission-control surfaces
+  - decide whether the first generated frontend slice should include only phase-1 admin/auth/admin-agent shell or also phase-2 AI-first mission-control surfaces
 - accepted assumptions:
   - v1 may use a developer-friendly auth adapter while preserving production auth seams
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules

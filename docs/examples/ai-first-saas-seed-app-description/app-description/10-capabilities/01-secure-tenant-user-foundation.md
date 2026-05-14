@@ -13,7 +13,8 @@
   - membership add, suspend, reactivate, and remove lifecycle
   - account disable/reactivate and reset/relink identity subject under policy
   - support-access grant, revoke, expiry, and review
-  - admin audit/search and access-review queues
+  - admin audit/search and access-review queues backed by UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView
+  - AI-assisted admin offload with AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and decision cards for risky admin actions
   - tenant switching for users with multiple memberships
   - tenant-scoped settings
 - out of scope:
@@ -26,6 +27,7 @@
   - Auditor
   - tenant member
   - invited user
+  - AI admin assistant supervisor
 - behavior links:
   - `../20-behavior/state-models/01-tenant-user-access-model.md`
   - `../20-behavior/flows/01-onboarding-and-access-flow.md`

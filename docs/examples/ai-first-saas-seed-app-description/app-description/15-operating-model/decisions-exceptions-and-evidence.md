@@ -14,6 +14,15 @@
   - policy triggers
   - alternatives considered
   - allowed actions: approve, reject, request changes, escalate, convert to policy proposal
+- risky admin action decision triggers:
+  - admin role grants or removals
+  - last-admin protection risk
+  - bulk invite, bulk disable, or bulk membership revocation
+  - support-access expansion or unusual usage
+  - tenant suspension or billing-impacting admin change
+  - identity subject reset/relink
+  - low-confidence RoleRecommendationAgent output
+  - AccessReviewAgent or AdminRiskAgent finding that exceeds approval thresholds
 - exception triggers:
   - missing data
   - authority boundary reached

@@ -2,8 +2,18 @@
 
 - unauthenticated browser API request is rejected
 - authenticated user without active membership is rejected
-- member without admin role cannot invite users or assign elevated roles
+- member without admin role cannot invite users, resend invite, revoke invite, or assign elevated roles
+- cross-tenant admin cannot list/search users, inspect MembershipView, InvitationView, AdminAuditView, or AccessReviewQueueView outside scope
+- disabled inviter cannot create, resend, revoke, or bulk prepare invitations
+- revoked invitation cannot be accepted
+- expired invitation cannot be accepted
+- replayed acceptance cannot create duplicate memberships or bypass current tenant/customer policy
+- delivery-failed invitation does not activate a membership until valid acceptance succeeds
+- admin cannot remove/suspend/reactivate the last admin without last-admin protection and required decision-card approval
+- admin cannot reset/relink identity subject outside policy and authority scope
 - agent cannot execute a tool without permission grant
+- AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent cannot access unscoped tenant/customer data
+- AI admin agents cannot autonomously grant admin roles, remove last admins, expand support access, bulk disable users, or change policy/permissions
 - agent cannot activate policy changes directly
 - reviewer without approval permission cannot decide a decision card
 - suspended tenant rejects normal user actions

@@ -82,7 +82,20 @@ type UpdatePreferencesResponse = {
 
 ## Admin users and invitations
 
+Admin APIs are backed by UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView and enforce backend authorization, redaction, pagination, tenant/customer scope, and audit for every query/action.
+
 ### `GET /api/admin/users`
+
+Query parameters:
+
+- `q?`
+- `tenantId?`
+- `customerId?`
+- `accountStatus?`
+- `membershipStatus?`
+- `role?`
+- `identityLinkState?`
+- `pageToken?`
 
 Response:
 
@@ -91,9 +104,12 @@ type AdminUsersResponse = Page<{
   userId: string;
   email: string;
   displayName?: string;
-  membershipStatus: "active" | "invited" | "disabled";
+  accountStatus: "active" | "disabled";
+  membershipStatus: "active" | "invited" | "suspended" | "removed";
   roles: string[];
+  identityLinkState: "linked" | "unlinked" | "relink_pending";
   lastActiveAt?: string;
+  lastAdminRisk?: boolean;
 }>;
 ```
 
@@ -118,7 +134,48 @@ type InviteUserResponse = {
   invitationId: string;
   status: "pending" | "resent";
   invitedEmail: string;
+  deliveryStatus: "pending" | "sent" | "delivery_failed";
   correlationId: string;
+};
+```
+
+### Invitation lifecycle routes
+
+Routes:
+
+- `GET /api/admin/invitations`
+- `POST /api/admin/invitations/{invitationId}/resend`
+- `POST /api/admin/invitations/{invitationId}/revoke`
+- `POST /api/invitations/accept`
+
+Invitation query filters:
+
+- `status?=pending|sent|delivery_failed|accepted|expired|revoked`
+- `deliveryStatus?=pending|sent|delivery_failed`
+- `targetEmail?`
+- `inviterId?`
+- `tenantId?`
+- `customerId?`
+- `expiresBefore?`
+- `pageToken?`
+
+```ts
+type InvitationSummary = {
+  invitationId: string;
+  targetEmail: string;
+  status: "pending" | "sent" | "delivery_failed" | "accepted" | "expired" | "revoked";
+  deliveryStatus: "pending" | "sent" | "delivery_failed";
+  deliveryAttempts: number;
+  expiresAt: string;
+  roles: string[];
+  canResend: boolean;
+  canRevoke: boolean;
+  auditTraceId: string;
+};
+
+type AcceptInvitationRequest = {
+  acceptanceContext: string;
+  idempotencyKey: string;
 };
 ```
 
@@ -142,9 +199,24 @@ type UpdateRolesResponse = {
   roleIds: string[];
   version: number;
   auditTraceId: string;
+  decisionCardId?: string;
+  lastAdminProtection?: boolean;
   correlationId: string;
 };
 ```
+
+### Access review and admin-agent routes
+
+Routes:
+
+- `GET /api/admin/access-review`
+- `POST /api/admin/access-review/{itemId}/resolve`
+- `POST /api/admin/agents/access-review/run`
+- `POST /api/admin/agents/risk-score`
+- `POST /api/admin/agents/role-recommendation`
+- `POST /api/admin/agents/audit-summary`
+
+Responses include evidence links to UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, risk/confidence, recommendation source agent, decision-card id when required, and correlation id.
 
 ## Goals and plans
 

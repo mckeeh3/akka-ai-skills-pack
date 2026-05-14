@@ -1,12 +1,29 @@
 # Acceptance Tests: Seed App
 
+## Secure onboarding and admin
+
 - tenant admin can invite a user, assign a role, and see the active membership after acceptance
+- tenant admin can resend an invite after failed or stale delivery and see updated delivery status and delivery attempts in InvitationView
+- tenant admin can revoke an unaccepted invite and the invited user cannot accept it afterward
+- timed action can expire an old invite and the admin can find the expired record in InvitationView and AccessReviewQueueView
+- invited user can accept a valid invite and repeated accept is idempotent without duplicate memberships
+- admin can list/search users through UserDirectoryView without knowing user ids upfront
+- admin can open user detail and view memberships, roles, support-access grants, invitation status, and audit links
+- authorized admin can assign/replace/remove roles and add/suspend/reactivate/remove memberships within scope
+- last-admin protection blocks unsafe role or membership removal and creates a decision card when review is needed
+- AccessReviewAgent identifies stale invites, dormant access, expiring support access, and last-admin risk in AccessReviewQueueView
+- AdminRiskAgent and RoleRecommendationAgent produce evidence, risk, confidence, alternatives, and decision cards for risky admin actions
+- AdminAuditSummaryAgent summarizes AdminAuditView search results with redacted details and audit trace links
 - active user can switch only among tenants where membership is active
+
+## AI-first work management
+
 - supervisor can create a goal, request a draft plan, approve launch, and observe progress
 - policy-triggered high-risk work creates a decision card before execution proceeds
 - reviewer can approve or reject a decision card and workflow responds accordingly
 - auditor can find trace entries for goal, plan, agent, tool, policy, and decision activity
 - frontend shell shows authenticated layout, tenant switcher, navigation, loading/empty/error states, and validation feedback
+- admin UI exposes Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings with capability-gated actions
 
 ## UI design acceptance checks
 
