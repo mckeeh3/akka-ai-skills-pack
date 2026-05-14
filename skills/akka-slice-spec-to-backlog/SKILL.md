@@ -102,6 +102,8 @@ The backlog file must include:
 The suggested harness task breakdown is the default leaf layer for implementation.
 Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
 
+When the target slice or sprint is the SaaS foundation, split the breakdown into concrete first-slice user-admin tasks before app-specific domain features: invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests. Do not produce one broad `auth/admin` item for this work.
+
 For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`.
 If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
 Preserve existing task IDs and statuses when updating an existing queue.
@@ -144,7 +146,7 @@ Not allowed:
 ### Detail level
 The backlog should be detailed enough for several small harness runs, but not so detailed that it becomes source code.
 If one task item still spans multiple unrelated component families or too many files, call that out and recommend a further task-brief decomposition before coding.
-Do not add an oversized item to `specs/pending-tasks.md` as if it were ready; either split it into smaller pending tasks or mark the queue item `blocked` with a note that a task brief is required.
+Do not add an oversized item to `specs/pending-tasks.md` as if it were ready; either split it into smaller pending tasks or mark the queue item `blocked` with a note that a task brief is required. In particular, a task spanning invitation lifecycle plus admin AI plus UI must be split before it becomes runnable.
 
 ## Sizing rules
 

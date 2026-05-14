@@ -70,7 +70,7 @@ Choose one format per project and keep it consistent. When using module-oriented
 
 ## Required queue shape
 
-Use this structure:
+Use this structure. For SaaS app queues, the first runnable tasks must cover the secure user-admin foundation before app-specific domain features and must not collapse this work into a vague `auth/admin` item. Split foundation work into bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests.
 
 ```md
 # Pending Tasks

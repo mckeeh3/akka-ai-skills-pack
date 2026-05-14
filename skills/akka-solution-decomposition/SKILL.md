@@ -230,7 +230,7 @@ The secure foundation is mandatory; this step refines provider-specific and deli
 ### 12. Generate the implementation order
 
 Prefer this order unless requirements force another:
-1. core secure SaaS foundation: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, audit, support-access, billing boundary, and tenant-isolation tests
+1. core secure SaaS foundation: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with a concrete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, admin UI surfaces, support-access, billing boundary, and security/admin tests before app-specific domain features
 2. AI-first object model, authority boundaries, policies, trace/outcome records, and domain invariants
 3. stateful app-specific core components: entities and workflows
 4. views

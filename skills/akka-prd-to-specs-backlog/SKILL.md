@@ -484,6 +484,8 @@ Each `specs/backlog/*.md` file should contain:
 - Done criteria
 - Explicit defer list
 
+For the first SaaS foundation backlog, the `Suggested harness task breakdown` must split user-admin foundation work into concrete tasks instead of one vague `auth/admin` item. Include bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests before app-specific domain features.
+
 ## Required content for the pending question queue
 
 `specs/pending-questions.md` must follow `../../docs/pending-question-queue.md` and include, for each question:
@@ -517,7 +519,7 @@ Create this queue only when open decisions are meaningful enough to affect plann
 - done criteria
 - notes when useful
 
-Create queue tasks from backlog `Suggested harness task breakdown` items, not from every class name. A queue task should be one focused harness implementation run.
+Create queue tasks from backlog `Suggested harness task breakdown` items, not from every class name. A queue task should be one focused harness implementation run. For SaaS foundation work, never collapse invitation lifecycle, email delivery, user directory/search, membership/role management, admin audit/search, access review queues, AI admin, decision cards for risky admin recommendations, admin UI, and security/admin tests into a single broad `auth/admin` queue item.
 
 ## Anti-patterns
 

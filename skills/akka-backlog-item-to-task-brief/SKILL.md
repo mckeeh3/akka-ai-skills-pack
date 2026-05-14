@@ -156,7 +156,7 @@ A task brief is too large if it still spans:
 - unresolved architecture questions
 
 If that happens, split again before coding.
-Only add queue entries that are small enough for one focused harness run; if the work remains too broad, create multiple task briefs or mark the corresponding queue item `blocked` with the exact split needed.
+Only add queue entries that are small enough for one focused harness run; if the work remains too broad, create multiple task briefs or mark the corresponding queue item `blocked` with the exact split needed. For SaaS foundation backlog items, never keep one task brief that spans invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests; split those into separate harness tasks before app-specific domain features.
 
 ## Naming rules
 

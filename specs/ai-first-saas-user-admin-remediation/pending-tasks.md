@@ -292,7 +292,7 @@
 
 ### TASK-008: Update planning/backlog generation to create user-admin foundation tasks before domain features
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-002, TASK-003, TASK-005, TASK-007]

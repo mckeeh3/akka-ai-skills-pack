@@ -6,7 +6,7 @@ Goal: decompose work into **vertical module sprints** that can be implemented an
 
 Before splitting modules, classify whether the product is AI-first SaaS: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision, audit traces, or outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
-For SaaS app planning, the first sprint or slice is always the core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, admin bootstrap/invites, audit, frontend shell/context selection when applicable, and tenant-isolation tests before app-specific CRM/domain features.
+For SaaS app planning, the first sprint or slice is always the core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents, decision cards for risky admin actions, admin UI surfaces, audit, frontend shell/context selection when applicable, and security/admin tests before app-specific CRM/domain features.
 
 ## When to use
 
@@ -107,7 +107,7 @@ specs/backlog/02-purchase-request-core-build-backlog.md
 The backlog should break the sprint into harness-sized tasks. Prefer this order when applicable:
 
 1. secure foundation records and contracts: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, AuthContext, central authorization, audit metadata, and tenant/customer scope types
-2. WorkOS/JWT seam, `/api/me`, admin bootstrap/invites, and foundation tenant-isolation tests
+2. WorkOS/JWT seam, `/api/me`, complete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests
 3. shared domain/API records for the app-specific module
 4. write model entity or workflow
 5. views/read models
