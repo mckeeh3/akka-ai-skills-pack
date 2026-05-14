@@ -24,6 +24,7 @@ Then load only the focused downstream skills needed for the selected path:
 - `app-description-auth-security` for description-first security semantics
 - `akka-workos-user-auth` for WorkOS/JWT browser authentication
 - `akka-basic-user-admin` for local account, membership, role, invite, and admin flows
+- `akka-saas-invitation-onboarding` for complete mandatory email-invite onboarding with InvitationWorkflow, outbox/email delivery, timers, InvitationView, and admin lifecycle tests
 
 ## Mandatory baseline objects
 
@@ -85,7 +86,7 @@ Bootstrap and maintain secure SaaS foundation files in capabilities, behavior, t
 
 ### Akka solution decomposition
 
-Every solution plan must include a `Core secure SaaS foundation` section before app-specific capabilities. Skill routing must include `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, endpoint JWT/request-context skills, and the entity/workflow/view/test skills needed to realize the foundation.
+Every solution plan must include a `Core secure SaaS foundation` section before app-specific capabilities. Skill routing must include `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, `akka-saas-invitation-onboarding`, endpoint JWT/request-context skills, and the entity/workflow/view/timer/consumer/test skills needed to realize the foundation.
 
 ### PRD/spec/backlog planning
 
@@ -99,7 +100,7 @@ Generation must stop or mark the description not-ready when the foundation is mi
 
 Before handing off to downstream implementation, verify:
 - SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, complete Invitation lifecycle, AuthContext, AdminAuditEvent, support-access, and subscription/billing boundary are present or explicitly deferred only for non-SaaS reference work.
-- Invitation email delivery is configured for production readiness, or local/dev/test uses an explicit captured outbox adapter; delivery failures are visible to admins and auditable.
+- Invitation email delivery is configured for production readiness, or local/dev/test uses an explicit captured outbox adapter; delivery failures are visible to admins and auditable; focused implementation routes through `akka-saas-invitation-onboarding` for InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests.
 - `/api/me` and context selection are specified for browser apps.
 - Backend authorization checks are required for every protected route, component command, query, stream, tool, workflow action, consumer side effect, and timer action.
 - Tenant/customer-scoped commands and queries enforce isolation mechanically.

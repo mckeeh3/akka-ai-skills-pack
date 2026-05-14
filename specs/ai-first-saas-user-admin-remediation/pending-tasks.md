@@ -52,7 +52,7 @@
 
 ### TASK-002: Add dedicated SaaS invitation onboarding skill
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-001]

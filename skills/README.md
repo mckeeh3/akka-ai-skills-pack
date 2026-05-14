@@ -34,6 +34,9 @@ Top-level AI-first entry skill:
 Mandatory foundation skill:
 - `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
 
+Mandatory foundation companion skill:
+- `akka-saas-invitation-onboarding` — implement complete email-invite onboarding with Invitation entity/audit record, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, resend, revoke, expiry, acceptance, delivery failure visibility, idempotency, and lifecycle tests
+
 AI-first companion skills:
 - `ai-first-saas-object-model` — select durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects before choosing Akka components
 - `ai-first-saas-agent-team-design` — design bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision
@@ -668,6 +671,10 @@ Use when an Akka-hosted browser app uses WorkOS/AuthKit for sign-in and calls `/
 Use when the app needs local user/account roles, `/api/me`, invites, startup admin bootstrap, role assignment, disable/activate, or tenant/customer admin scopes.
 - `akka-basic-user-admin`
 
+### SaaS invitation onboarding
+Use when the app needs complete mandatory email-invite onboarding: InvitationWorkflow, resend, revoke/cancel, expiry, acceptance, delivery status, delivery attempts, email delivery/outbox, InvitationView, and admin invite UI/APIs.
+- `akka-saas-invitation-onboarding`
+
 ### Internal-only ACL endpoints
 Use when the endpoint should only be callable by services or needs method-level ACL overrides.
 - `akka-http-endpoint-acl-internal`
@@ -996,18 +1003,19 @@ Load:
 - `akka-http-endpoint-request-context`
 - `akka-http-endpoint-testing`
 
-Add `akka-web-ui-frontend-project` when implementing the frontend AuthKit shell. Add `akka-basic-user-admin` when `/api/me`, roles, invites, or admin APIs are in scope.
+Add `akka-web-ui-frontend-project` when implementing the frontend AuthKit shell. Add `akka-basic-user-admin` when `/api/me`, roles, invites, or admin APIs are in scope. Add `akka-saas-invitation-onboarding` when full invite lifecycle, email delivery/outbox, resend, revoke, expiry, acceptance, and InvitationView work is in scope.
 
 ### New basic user administration surface
 Load:
 - `akka-basic-user-admin`
+- `akka-saas-invitation-onboarding`
 - `akka-workos-user-auth`
 - `akka-http-endpoints`
 - `akka-http-endpoint-jwt`
 - `akka-http-endpoint-component-client`
 - `akka-http-endpoint-testing`
 
-Add an entity skill (`akka-key-value-entities` or `akka-event-sourced-entities`) based on whether user/account state is current-state only or needs audit-grade event history.
+Add an entity skill (`akka-key-value-entities` or `akka-event-sourced-entities`) based on whether user/account state is current-state only or needs audit-grade event history. For invitation onboarding, also load `akka-workflows`, `akka-workflow-component`, `akka-consumers`, `akka-timed-actions`, `akka-timers-scheduling`, and `akka-views` as needed for InvitationWorkflow, email delivery/outbox, expiry/reminders, and InvitationView.
 
 ### New internal-only HTTP endpoint
 Load:

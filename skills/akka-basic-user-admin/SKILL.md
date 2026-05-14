@@ -14,6 +14,7 @@ Read these first if present:
 - `../../docs/security-workos-auth-and-admin.md`
 - `../../docs/security-review-checklist.md`
 - `../akka-workos-user-auth/SKILL.md`
+- `../akka-saas-invitation-onboarding/SKILL.md` for complete InvitationWorkflow, email delivery/outbox, expiry/reminder, InvitationView, and invite lifecycle tests
 - `../akka-http-endpoint-jwt/SKILL.md`
 - `../akka-key-value-entities/SKILL.md` or `../akka-event-sourced-entities/SKILL.md` when implementing user/account state
 - existing user/account/tenant entities, views, endpoints, and tests
@@ -23,6 +24,7 @@ Read these first if present:
 - the app needs `APP_ADMIN`, `TENANT_ADMIN`, `CUSTOMER_ADMIN`, or `USER` roles
 - startup should bootstrap initial admin users from environment variables
 - admins should invite users or assign roles
+- complete email-invite onboarding must be implemented through `akka-saas-invitation-onboarding` rather than as a single invite endpoint
 - `/api/me` should drive role-aware frontend navigation
 - admin APIs must enforce role and tenant/customer scope on the backend
 - users can be disabled, activated, linked to WorkOS identity, or scoped to tenants/customers
@@ -110,6 +112,9 @@ Bootstrap rules:
 - surface invalid bootstrap or email provider config clearly at startup or in operational status
 
 ## Invite and first-login flow
+
+For generated SaaS apps, load `akka-saas-invitation-onboarding` for the full implementation contract: Invitation entity or audit-grade record, `InvitationWorkflow`, email delivery/outbox Consumer, expiry/reminder TimedAction, `InvitationView`, admin endpoints/UI, resend/revoke/expiry/acceptance semantics, duplicate handling, and lifecycle tests.
+
 
 1. Admin invites a user with email, roles, and scopes.
 2. Backend creates an `INVITED` local user or membership plus an Invitation record.

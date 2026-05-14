@@ -47,6 +47,7 @@ Read these first if present:
 - `../../AGENTS.md` for authoritative project rules and Akka coding constraints
 - `../README.md` for local routing across skill families
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline every new app plan must include
+- `../akka-saas-invitation-onboarding/SKILL.md` when the foundation plan includes complete email-invite onboarding implementation details
 - `../../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
 - `../../docs/agent-coverage-matrix.md` when the task is agent-related
 - `../references/akka-entity-comparison.md`
@@ -108,7 +109,7 @@ It must also tell the downstream implementation phase:
 
 For every new app/PRD/spec handled by this skill, load `core-saas-foundation` and include a `Core secure SaaS foundation` section before app-specific capability decomposition unless the user explicitly asks for non-SaaS reference material.
 
-That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests. Unknown provider-specific details may become questions, but they must not erase local authorization and tenancy contracts.
+That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests. Unknown provider-specific details may become questions, but they must not erase local authorization and tenancy contracts. Route complete invitation onboarding work to `akka-saas-invitation-onboarding` for InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests.
 
 ### 2. Interpret AI-first operating model
 
@@ -229,7 +230,7 @@ The secure foundation is mandatory; this step refines provider-specific and deli
 ### 12. Generate the implementation order
 
 Prefer this order unless requirements force another:
-1. core secure SaaS foundation: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, admin invites, audit, support-access, billing boundary, and tenant-isolation tests
+1. core secure SaaS foundation: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, audit, support-access, billing boundary, and tenant-isolation tests
 2. AI-first object model, authority boundaries, policies, trace/outcome records, and domain invariants
 3. stateful app-specific core components: entities and workflows
 4. views
@@ -427,6 +428,7 @@ The implementation handoff must include frontend screens, frontend project shape
 Load as needed:
 - `akka-workos-user-auth` for WorkOS/AuthKit, JWT-secured browser APIs, `/api/me`, and account linking
 - `akka-basic-user-admin` for roles, admin bootstrap, invites, user management, disabling users, and tenant/customer scopes
+- `akka-saas-invitation-onboarding` for complete email-invite lifecycle, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, resend, revoke, delivery status, acceptance, and invitation tests
 - `akka-http-endpoints`
 - `akka-http-endpoint-jwt`
 - `akka-http-endpoint-request-context`

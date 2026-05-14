@@ -321,6 +321,9 @@ content:
     - id: akka-basic-user-admin
       path: skills/akka-basic-user-admin
       category: focused
+    - id: akka-saas-invitation-onboarding
+      path: skills/akka-saas-invitation-onboarding
+      category: focused
     - id: akka-change-request-to-spec-update
       path: skills/akka-change-request-to-spec-update
       category: planning
@@ -549,6 +552,7 @@ bundles:
       - akka-backlog-item-to-task-brief
       - akka-backlog-to-pending-tasks
       - akka-basic-user-admin
+      - akka-saas-invitation-onboarding
       - akka-change-request-to-spec-update
       - akka-revised-prd-reconciliation
       - akka-pending-question-generation
