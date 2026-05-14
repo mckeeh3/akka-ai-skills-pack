@@ -2,25 +2,26 @@
 
 This guide is for developers using the installed Akka AI Skills Pack to build or evolve an Akka application with an AI coding harness.
 
-The pack is not an application framework you call directly. It is an opinionated guidance and routing library for the harness with one default product target: full-stack secure AI-first SaaS on Akka. You describe the product, behavior, bug, issue, or change in normal language; the harness uses the pack to maintain specs, queue decisions, create implementation tasks, write backend and frontend code, run checks, and carry the app forward over many sessions.
+The pack is not an application framework you call directly. It is an opinionated guidance and routing library for the harness with one default product target: full-stack secure AI-first SaaS on Akka. You describe the product, behavior, bug, issue, or change in normal language; the harness uses the pack to maintain specs, queue decisions, develop sprints, create implementation tasks, write backend and frontend code, run checks, update task status, and carry the app forward over many sessions. The human role is supervisory: provide intent, answer questions, review outputs, approve or redirect, and manually test the resulting increments.
 
 ## Core idea
 
 The pack is valuable for more than code generation. In the recommended description-first workflow, it helps the harness create and maintain a structured `app-description/` plus related `specs/` artifacts that capture the application's intent, behavior, goals, objectives, security model, UI expectations, tests, observability, governance, open questions, and implementation readiness.
 
-These documents become a durable source of truth for both humans and AI harnesses. Developers can ask the harness questions such as “what is this app supposed to do?”, “why does this behavior exist?”, “what would this change impact?”, “which decisions are still open?”, “what should I test manually?”, or “is the implementation still aligned with the product intent?” The harness can answer from maintained project artifacts instead of inferring everything from code or stale chat history.
+These documents become a durable source of truth for both humans and AI harnesses. Developers supervise the work by asking questions such as “what is this app supposed to do?”, “why does this behavior exist?”, “what would this change impact?”, “which decisions are still open?”, “what should I test manually?”, or “is the implementation still aligned with the product intent?” The harness can answer from maintained project artifacts instead of inferring everything from code or stale chat history.
 
-Use the skills pack as a durable, iterative development workflow:
+Use the skills pack as a durable, iterative development workflow driven by the harness and supervised by the human:
 
-1. ingest PRDs, specs, issues, or rough ideas
-2. clarify decisions without guessing
-3. create or update app-description/spec artifacts
-4. plan vertical module sprints when the scope is large
-5. create a pending task queue
-6. execute one task per fresh harness session
-7. manually test each sprint or feature increment
-8. feed findings, tweaks, issues, and revised specs back into the same workflow
-9. repeat until the application is functioning and accepted
+1. the human provides PRDs, specs, issues, or rough ideas
+2. the harness ingests the input and queues clarifying questions instead of guessing
+3. the human answers, defers, approves, or redirects decisions
+4. the harness creates or updates app-description/spec artifacts
+5. the harness plans vertical module sprints when the scope is large
+6. the harness creates and maintains the pending task queue
+7. the harness executes one task per fresh harness session and marks it completed or blocked
+8. the human manually tests each sprint or feature increment
+9. the harness reconciles findings, tweaks, issues, and revised specs back into the workflow
+10. repeat until the application is functioning and accepted
 
 Your durable project state should live in your application workspace, usually under `specs/`, `app-description/`, source directories, and tests. The installed `.agents/` directory is the harness support library, not your app source.
 
@@ -183,7 +184,9 @@ Good answers are specific enough to update behavior, security, UI, tests, or imp
 
 ## Phase 3: Plan module sprints
 
-For larger apps, prefer vertical module sprints rather than one giant backlog or layer-only work such as “all entities” followed by “all UI.” A good sprint produces something demonstrable and testable for one capability area.
+For larger apps, ask the harness to develop vertical module sprints rather than one giant backlog or layer-only work such as “all entities” followed by “all UI.” The skills pack guides the harness to define sprint scope, sequencing, dependencies, and testable increments. The human supervises by approving, changing, or reprioritizing the proposed sprint plan; the human does not need to manually decompose the work into sprints.
+
+A good sprint produces something demonstrable and testable for one capability area.
 
 Example prompt:
 
@@ -206,13 +209,13 @@ A sprint plan should make clear:
 
 ## Phase 4: Create the pending task queue
 
-Implementation work should be queued in:
+Implementation work should be queued by the harness in:
 
 ```text
 specs/pending-tasks.md
 ```
 
-Each task should be small enough for one harness session and should include required reads, expected outputs, checks, dependencies, and done criteria.
+`specs/pending-tasks.md` is the harness execution queue. The harness creates, refreshes, and maintains it from the approved app description, solution plan, sprint plan, backlog, questions, and current implementation state. Each task should be small enough for one harness session and should include required reads, expected outputs, checks, dependencies, and done criteria.
 
 Example prompt:
 
@@ -222,9 +225,11 @@ Create or refresh specs/pending-tasks.md from the approved sprint plan. Make eac
 
 For large projects, task IDs may be sprint-prefixed, such as `TASK-02-001`, so the next runnable task remains obvious.
 
+Task status changes are also harness-owned. During execution the harness should update each task to completed when its done criteria and checks are satisfied, or blocked when a dependency, missing decision, failing check, or external issue prevents safe completion. The human supervises these changes by reviewing the harness report, answering questions, and deciding whether to approve, defer, reprioritize, or request follow-up work.
+
 ## Phase 5: Execute implementation tasks
 
-Default rule: execute one pending task per fresh harness session.
+Default rule: the harness executes one pending task per fresh harness session.
 
 Use a fresh session prompt like:
 
@@ -238,7 +243,7 @@ For a specific task:
 Use the Akka skills pack to execute TASK-02-003 from specs/pending-tasks.md in a fresh context. Do not work on any other queue item. Update the queue before finishing.
 ```
 
-This is usually more efficient than doing an entire sprint in one long harness session because it avoids context bloat, keeps changes reviewable, and makes failures or blocked work easier to recover from.
+This is usually more efficient than doing an entire sprint in one long harness session because it avoids context bloat, keeps changes reviewable, and makes failures or blocked work easier to recover from. At the end of the session, the harness should report what it changed, which checks ran, whether the task is completed or blocked, and what task is next runnable.
 
 ## Phase 6: Review and manually test the sprint
 
@@ -262,14 +267,14 @@ Manual testing findings should become normal change input. The harness should up
 
 ## Phase 7: Iterate on features, tweaks, and issues
 
-After the app exists, keep using the same loop for every meaningful change:
+After the app exists, keep using the same supervised harness loop for every meaningful change:
 
-1. provide the new issue, feature request, bug report, or tweak
-2. ask the harness to reconcile it with existing app-description/specs
-3. queue or answer any new questions
-4. refresh affected sprint/backlog/task files
-5. execute one task per fresh session
-6. test and repeat
+1. the human provides the new issue, feature request, bug report, or tweak
+2. the harness reconciles it with existing app-description/specs
+3. the harness queues any new questions; the human answers or defers them
+4. the harness refreshes affected sprint/backlog/task files
+5. the harness executes one task per fresh session and updates task status
+6. the human tests the increment and repeats the loop with any findings
 
 Example prompts:
 
@@ -318,7 +323,7 @@ Review the current sprint status. If all runnable tasks are done, produce a spri
 ### Feed back manual testing
 
 ```text
-Manual test results for sprint 03: <results>. Update specs and queues, mark anything blocked or done as appropriate, and create follow-up tasks for confirmed issues.
+Manual test results for sprint 03: <results>. Update specs and queues, mark any affected tasks blocked or completed as appropriate, and create follow-up tasks for confirmed issues.
 ```
 
 ### Add a feature after the app is working
@@ -338,10 +343,10 @@ Here is a bug report: <report>. Determine the intended behavior from the specs, 
 - Speak in product and engineering terms; you do not need to name internal skills.
 - Ask the harness to queue questions instead of guessing.
 - Keep planning artifacts in your app workspace, not in `.agents/`.
-- Prefer vertical module sprints for large apps.
-- Prefer one pending task per fresh harness session.
-- Do not combine unrelated pending tasks just because they touch nearby files.
-- Mark tasks done only after required checks pass or are explicitly not runnable.
+- Ask the harness to create vertical module sprints for large apps.
+- Ask the harness to execute one pending task per fresh session.
+- Do not ask the harness to combine unrelated pending tasks just because they touch nearby files.
+- Let the harness update task status; it should mark tasks completed only after required checks pass, or blocked when safe completion is not possible.
 - Treat manual testing output as first-class input to the next planning/update cycle.
 - When requirements change, reconcile specs before coding broad changes.
 
