@@ -39,4 +39,9 @@ Use before completing security-sensitive Akka changes.
 - [ ] Invite and first-login linking are idempotent.
 - [ ] Startup admin bootstrap is idempotent and validates malformed config.
 - [ ] Admin actions emit required AdminAuditEvent records.
-- [ ] Tests cover allowed and forbidden admin operations.
+- [ ] First-slice admin read models exist: UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView.
+- [ ] Admin/audit/search query paths support required filters where applicable: actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range.
+- [ ] Admin view endpoints authorize every query with AuthContext, reject or hide cross-scope access, and do not rely on frontend filtering as the security boundary.
+- [ ] Admin view DTOs redact raw invitation tokens, provider ids/secrets, support details, policy evidence, and tenant/customer data outside caller authority.
+- [ ] Admin UI surfaces expose audit search, invitation queue, access review queue, stale/dormant access warnings, and agent-generated admin recommendations.
+- [ ] Tests cover allowed and forbidden admin operations, query authorization, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, and audit trace completeness.

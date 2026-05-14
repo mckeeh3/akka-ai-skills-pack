@@ -213,7 +213,7 @@
 
 ### TASK-006: Add admin audit/search and access-review views as first-slice requirements
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-003, TASK-005]

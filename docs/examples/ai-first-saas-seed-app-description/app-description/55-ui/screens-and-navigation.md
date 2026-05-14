@@ -123,7 +123,7 @@
 - user goal: discover, search, and manage tenant/customer users within authority boundary
 - primary action: invite a user or open a user detail/access action
 - required regions:
-  - user list/search backed by UserDirectoryView, with filters for status, role, membership status, tenant/customer, and email/name
+  - user list/search backed by UserDirectoryView, with filters for tenant/customer, email/name, account status, role, membership status, identity link state, and last activity
   - user detail drawer/page with account/profile, memberships, roles, identity link state, support-access grants, and audit links
   - allowed profile-field edit controls
   - disable/reactivate account controls when permitted
@@ -135,10 +135,11 @@
 - user goal: manage invite delivery and activation issues
 - primary action: resend invite or revoke invite
 - required regions:
-  - InvitationView list/search with invitation status, delivery status, delivery attempts, expiry, target email, and scope
+  - InvitationView list/search with invitation status, delivery status, delivery attempts, expiry/due time, target email, inviter, tenant/customer scope, and resend/revoke eligibility
   - create invite form with role/scope validation
   - resend/revoke controls with confirmation and audit result
-  - failed-delivery repair queue
+  - failed-delivery, stale-invite, and expiring-invite queues
+  - InvitationDraftAgent suggestions for invite copy and role rationale without exposing raw tokens
 
 ### Admin Roles / Memberships
 
@@ -146,10 +147,11 @@
 - user goal: manage roles, scopes, memberships, and access state safely
 - primary action: assign/replace/remove roles or suspend/reactivate/remove membership
 - required regions:
-  - MembershipView filters by scope, role, membership status, account, support-access expiry, and last-admin risk
+  - MembershipView filters by tenant/customer scope, account, role, membership status, support-access expiry, lifecycle review status, and last-admin risk
   - role and permission summary
   - membership lifecycle controls
   - last-admin protection and privilege-escalation feedback
+  - RoleRecommendationAgent suggestions with least-privilege evidence and decision-card links for risky role changes
 
 ### Access Review
 
@@ -157,8 +159,9 @@
 - user goal: review stale, risky, or expiring access
 - primary action: resolve the highest-risk access review item
 - required regions:
-  - AccessReviewQueueView for stale invites, dormant admins, risky role combinations, support-access nearing expiry, and orphaned customer admin gaps
-  - recommendation/risk summary
+  - AccessReviewQueueView filters by tenant/customer scope, target user, role, membership status, invitation status, delivery status, risk, due/expiry time, review status, item type, and agent recommendation source
+  - stale invites, dormant admins, risky role combinations, support-access nearing expiry, last-admin risk, and orphaned customer admin gaps
+  - AccessReviewAgent and AdminRiskAgent recommendation/risk summary
   - decision-card links for high-risk actions
 
 ### Support Access
@@ -177,9 +180,10 @@
 - user goal: answer who changed access, in what scope, when, why, and under which policy
 - primary action: search admin audit events
 - required regions:
-  - AdminAuditView filters for actor, target user, action type, tenant/customer, role, membership status, invitation status, support-access grant, and time range
+  - AdminAuditView filters for actor, target user, action type, tenant/customer, role, membership status, invitation status, delivery status, support-access grant, risk/policy metadata, and time range
   - redacted event details according to caller scope
   - links to affected user, invitation, membership, and decision cards
+  - AdminAuditSummaryAgent summaries for selected result sets with audit trace links
 
 ### Profile / Preferences
 

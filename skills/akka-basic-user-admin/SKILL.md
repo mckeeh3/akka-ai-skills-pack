@@ -28,7 +28,7 @@ Read these first if present:
 - `/api/me` should drive role-aware frontend navigation
 - admin APIs must enforce role and tenant/customer scope on the backend
 - users can be disabled, reactivated, linked to WorkOS identity, reset/relinked under policy, or scoped to tenants/customers
-- generated SaaS apps need UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView where applicable so admins do not need caller-supplied user IDs to find users or access problems
+- generated SaaS apps need UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView in the first admin slice so admins do not need caller-supplied user IDs to find users or access problems
 
 ## Core model
 
@@ -44,11 +44,11 @@ Required SaaS foundation concepts:
 - selected AuthContext for each protected operation
 - Invitation lifecycle with invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency key, and audit trail
 - AdminAuditEvent metadata for identity, invitation delivery/resend/revoke/expiry/acceptance, membership, role, support-access, billing-boundary, approval, and data-access changes
-- UserDirectoryView for scoped user list/search and user detail entry points
-- MembershipView for tenant/customer membership lifecycle lists, role summaries, status filters, and last-admin checks
-- InvitationView for invitation status, delivery status, resend/revoke actions, and delivery failure repair
-- AdminAuditView for scoped admin audit/search
-- AccessReviewQueueView for stale invites, dormant/high-risk access, support-access expiry, and last-admin risk queues where applicable
+- UserDirectoryView for scoped user list/search and user detail entry points, filtering by tenant, customer, email/name, account status, role, membership status, identity link state, and last activity
+- MembershipView for tenant/customer membership lifecycle lists, role summaries, membership status filters, account filters, support-access expiry, and last-admin checks
+- InvitationView for invitation status, delivery status, delivery attempts, resend/revoke actions, expiry, target email, inviter, and delivery failure repair
+- AdminAuditView for scoped admin audit/search by actor, target user, tenant, customer, role, membership status, invitation status, action type, policy, decision card, and time range
+- AccessReviewQueueView for stale invites, dormant/high-risk access, support-access expiry, orphaned customer admin gaps, last-admin risk queues, risk level, due time, and agent-generated recommendations
 
 Use Key Value Entity for simple current user/account state. Use Event Sourced Entity when an audit-grade history of role/status changes is required in the state model.
 
@@ -82,7 +82,7 @@ GET    /api/tenants
 POST   /api/tenants
 ```
 
-All admin routes should require JWT, request-context extraction, active local membership, tenant/customer scope validation, capability checks, and server-side authorization. List/query endpoints must filter by authorized tenant/customer context and return forbidden rather than leaking cross-tenant/customer data.
+All admin routes should require JWT, request-context extraction, active local membership, tenant/customer scope validation, capability checks, and server-side authorization. List/query endpoints must filter by authorized tenant/customer context, apply redaction before returning DTOs, paginate large result sets, and return forbidden rather than leaking cross-tenant/customer data.
 
 ## Authorization rules
 
@@ -148,7 +148,24 @@ Generated SaaS apps are not generation-ready if admin management only supports i
 - disable and reactivate accounts while preserving audit history and rejecting disabled users on every protected route;
 - reset/relink external identity subject only under explicit policy, with evidence, audit events, and safe handling for compromised or migrated identities;
 - grant, revoke, and expire Tenant-created support-access memberships with reason, duration, visibility to Tenant Admins, and audit;
-- maintain `MembershipView`, `InvitationView`, `AdminAuditView`, and `AccessReviewQueueView` so admins can find stale invites, dormant access, risky role combinations, support-access nearing expiry, and last-admin risks.
+- maintain first-slice `MembershipView`, `InvitationView`, `AdminAuditView`, and `AccessReviewQueueView` so admins can find stale invites, delivery failures, dormant access, risky role combinations, support-access nearing expiry, agent-generated admin recommendations, and last-admin risks.
+
+## Required admin read-model query paths
+
+Generated SaaS foundations must expose backend-authorized admin query endpoints over the first-slice read models:
+
+- `UserDirectoryView`: search by authorized tenant/customer scope, email/name, account status, role, membership status, identity link state, and last activity; return browser-safe user summaries and user-detail entry links only inside caller scope.
+- `MembershipView`: filter by tenant, customer, account, role, membership status, support-access expiry, and last-admin risk; support access-review and role/membership lifecycle screens.
+- `InvitationView`: filter by target email, tenant/customer scope, invitation status, delivery status, expiry/due time, inviter, delivery attempts, and resend/revoke eligibility.
+- `AdminAuditView`: filter by actor, target user, tenant, customer, role, membership status, invitation status, action type, policy/decision-card link, risk when present, and time range.
+- `AccessReviewQueueView`: filter by tenant/customer scope, risk, due/expiry time, review status, item type, target user, role, membership status, invitation status, delivery status, and agent recommendation source.
+
+Backend authorization and redaction rules:
+- constrain every query with the caller's AuthContext before invoking the view or before returning rows;
+- reject or resource-hide cross-scope access consistently with the app security policy;
+- redact WorkOS subjects, raw invitation tokens, provider message ids, support details, policy evidence, and tenant/customer data outside caller authority;
+- do not use frontend filters as the security boundary;
+- include pagination and stable supported Akka View query shapes for large admin/audit result sets.
 
 Required admin UI surfaces: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. Each surface must be capability-gated in the UI and mechanically authorized on the backend.
 
@@ -191,21 +208,22 @@ Add tests for:
 - non-admin cannot list users
 - tenant admin cannot manage another tenant or customer outside scope
 - customer admin cannot manage tenant-wide users
-- tenant/customer-scoped list queries cannot leak cross-scope rows
+- tenant/customer-scoped list queries cannot leak cross-scope rows and preserve cross-scope filtering guarantees
 - tenant admin cannot grant `SAAS_OWNER_ADMIN` or other out-of-scope capabilities
 - production readiness blocks missing email delivery configuration or equivalent accepted provider decision
 - local/dev/test invite adapter captures outbound messages in an outbox without external delivery
 - invite send, resend, revoke/cancel, expiry, acceptance, replayed acceptance, duplicate email handling, delivery failure, and delivery-attempt audit behavior
 - user directory list/search filters by authorized scope and does not require caller-supplied user IDs
-- user detail returns only browser-safe admin DTOs and preserves scope redaction
+- user detail and admin/audit/search rows return only browser-safe admin DTOs and preserve scope redaction
 - role assignment, replacement, and remove roles enforce scope/capability limits and last-admin protection
 - add, suspend membership, reactivate membership, and remove membership flows enforce tenant/customer boundaries
 - account disable/reactivate rejects disabled users and preserves audit history
 - reset identity/relink identity subject requires policy, emits audit facts, and rejects privilege escalation
 - support-access grant/revoke/expiry is scoped, visible, audited, and time-limited
 - repeated invite/role assignment/membership lifecycle action is idempotent or returns documented conflict
-- AccessReviewQueueView flags stale invites, dormant admins, support-access expiry, risky memberships, and last-admin risks
-- audit events are emitted for admin changes, invitation lifecycle events, delivery failures, access reviews, and forbidden attempts
+- paginated admin read-model queries preserve stable results and do not rely on unsupported optional-filter `OR` patterns
+- AccessReviewQueueView flags stale invites, dormant admins, support-access expiry, risky memberships, last-admin risks, and due/expiry-time correctness
+- audit events are emitted for admin changes, invitation lifecycle events, delivery failures, access reviews, agent-generated recommendations, and forbidden attempts; audit trace completeness is tested
 - frontend receives enough `/api/me` data for navigation without leaking internals
 
 ## Anti-patterns

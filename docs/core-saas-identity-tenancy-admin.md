@@ -173,6 +173,21 @@ Admins must be able to discover and repair access state without already knowing 
 
 View endpoints must constrain queries with the caller's AuthContext and must redact or omit fields outside the caller's scope. Frontend filtering is never the security boundary.
 
+Required first-slice query paths and filters:
+- `UserDirectoryView`: tenant, customer, email/name, account status, role, membership status, identity link state, and last activity.
+- `MembershipView`: tenant, customer, account, role, membership status, support-access expiry, last-admin risk, and lifecycle review status.
+- `InvitationView`: target email, tenant/customer scope, invitation status, delivery status, delivery attempts, inviter, expiry/due time, and resend/revoke eligibility.
+- `AdminAuditView`: actor, target user, tenant, customer, role, membership status, invitation status, action type, support-access grant, policy or decision-card link, risk where present, and time range.
+- `AccessReviewQueueView`: target user, tenant, customer, role, membership status, invitation status, delivery status, risk, due/expiry time, review status, item type, and agent recommendation source.
+
+Authorization and redaction rules:
+- SaaS Owner Admin and Auditor views are limited to platform-safe metadata unless a scoped support-access membership authorizes Tenant data access;
+- Tenant Admin views are limited to their Tenant and authorized Customer scopes;
+- Customer Admin views are limited to their Customer scope;
+- Auditor capabilities allow read-only audit/search and access-review access only within granted scope;
+- raw invitation tokens, provider secrets, private WorkOS/provider ids, unrelated tenant/customer data, and sensitive support details must never be returned to unauthorized callers;
+- admin/audit/search endpoints must return paginated browser-safe DTOs and must be tested for query authorization, cross-scope filtering, redaction, stale invite/access-review correctness, and audit trace completeness.
+
 ## Administration operations
 
 Required baseline operations:
@@ -189,7 +204,7 @@ Required baseline operations:
 
 ## Administration UI surfaces
 
-When a browser UI is in scope, the foundation includes: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative.
+When a browser UI is in scope, the foundation includes first-slice screens for: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
 
 ## Administration flows
 
@@ -379,8 +394,8 @@ Record audit events for:
 | `UserDirectoryView` | Scoped user list/search and user detail entry points without requiring known user ids. |
 | `MembershipView` | Scoped membership lifecycle, role/status filters, support-access expiry, and last-admin risk rows for SaaS Owner, Tenant Admin, and Customer Admin screens. |
 | `InvitationView` | Scoped invitation status, delivery status, resend/revoke visibility, expiry, and delivery failure rows. |
-| `AdminAuditView` | Queryable admin audit trail. |
-| `AccessReviewQueueView` | Stale invite, dormant access, risky role combination, support-access, and last-admin review queue. |
+| `AdminAuditView` | Queryable admin audit trail with actor, target user, action type, scope, role, membership status, invitation status, risk/policy metadata, and time-range filters. |
+| `AccessReviewQueueView` | Stale invite, dormant access, risky role combination, support-access, last-admin review queue, due/expiry time, and agent-generated recommendation index. |
 | `AccessReviewAgent` | Mandatory bounded agent that reads scoped access views and recommends stale/dormant access cleanup, last-admin risk review, and low-risk admin tasks. |
 | `AdminRiskAgent` | Mandatory read-only analysis and recommendation agent for risky admin actions. |
 | `InvitationDraftAgent` | Mandatory agent that drafts invite messages, role rationale, and bulk invite preparation without sending or exposing tokens. |
@@ -406,7 +421,7 @@ Record audit events for:
 - [ ] Admins can assign/replace/remove roles and add/suspend/reactivate/remove memberships inside their authority boundary.
 - [ ] Last-admin protection prevents removing the final active Tenant Admin or Customer Admin.
 - [ ] Tenant-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review screens.
-- [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView enforce scoped query authorization and redaction.
+- [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView are first-slice read models with required query filters, scoped query authorization, redaction, pagination, stale invite/access-review correctness, and audit trace completeness tests.
 - [ ] Risky admin actions can produce decision cards.
 - [ ] AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent are present or equivalently modeled.
 - [ ] Admin agents produce recommendations, drafts, audit summaries, and decision cards without unauthorized automatic changes.

@@ -18,7 +18,7 @@ Generate or review view code that is:
 
 ## AI-first substrate role
 
-In AI-first SaaS work, use Views for supervision and accountability read models: command centers, active goal/plan lists, agent activity feeds, approval and exception queues, decision-card indexes, policy catalogs, audit search, digest inputs, and outcome dashboards.
+In AI-first SaaS work, use Views for supervision and accountability read models: command centers, active goal/plan lists, agent activity feeds, approval and exception queues, decision-card indexes, policy catalogs, audit search, digest inputs, outcome dashboards, and first-slice admin read models such as UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView.
 
 Views are derived projections, not the source of authority. Keep consequential decisions, policies, traces, approvals, and outcomes in entities, workflows, topics, or authoritative integrations, then project them into views for review, filtering, streaming, and reporting. Generated SaaS view rows and queries must carry tenant/customer scope fields where data is scoped, and endpoints exposing views must filter by authorized AuthContext rather than by frontend state.
 
@@ -112,6 +112,8 @@ Rules:
 14. Prefer separate query methods over optional-filter `OR` expressions so each access path has explicit indexed fields.
 15. Include tenantId/customerId conditions in protected view queries and stream queries; never expose unscoped lists for tenant/customer data.
 16. Design forbidden-access behavior for view endpoints and tests: a caller outside scope receives `403` or resource-hidden behavior, not rows filtered only in the browser.
+17. For generated SaaS admin views, define first-slice query paths for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range where relevant.
+18. Apply backend authorization and redaction before returning view rows; tests must cover query authorization, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, and audit trace completeness.
 
 ## Decision guide
 
@@ -159,6 +161,7 @@ Repository examples:
 - Do not use `ORDER BY` on live view queries forwarded to SSE; create a separate unsorted `streamUpdates = true` query for SSE and keep sorted/paginated queries separate.
 - View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.
 - Tenant/customer scope columns are part of the security contract for scoped SaaS views; omit them only for deliberately platform-public or aggregate data approved by the foundation spec.
+- Admin/audit/access-review views are first-slice foundation requirements in generated SaaS apps, not optional reporting polish. Model AdminAuditView, MembershipView, InvitationView, UserDirectoryView, and AccessReviewQueueView with explicit access paths rather than one broad optional-filter query.
 
 ## Final review checklist
 
@@ -176,7 +179,8 @@ Before finishing, verify:
 - tests publish incoming messages from the correct source type
 - tests use `Awaitility` instead of assuming immediate view updates
 - scoped views include tenant/customer filters in queries and endpoint callers enforce AuthContext before querying or streaming
-- tests cover no cross-tenant/customer leakage and forbidden access for protected view APIs
+- admin read models include required filters for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range where relevant
+- tests cover no cross-tenant/customer leakage, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, audit trace completeness, and forbidden access for protected view APIs
 
 ## Response style
 
