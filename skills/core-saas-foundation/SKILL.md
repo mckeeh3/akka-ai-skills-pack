@@ -37,7 +37,7 @@ Every generated SaaS application must model these foundation concepts before app
 - UserProfile — human-facing display/profile attributes; never grants authorization.
 - UserSettings — user preferences such as `uiMode`; never overrides authorization, policy, or audit.
 - Membership — scoped Account relationship to SaaS Owner, Tenant, or Customer with status and roles.
-- Role — named permission bundle within a scope, such as `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, or `CUSTOMER_USER`.
+- Role — named permission bundle within a scope. Canonical foundation roles are `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` (or an equivalent scoped auditor capability). App-specific roles extend these through permissions/capabilities; they do not replace foundation roles, membership status, or scope checks.
 - Permission/Capability — mechanically enforced action grants used by endpoints, component commands, queries, tools, workflows, consumers, timers, and UI capability display.
 - Invitation — mandatory auditable email-invite onboarding state for Tenant, Customer, and user activation flows, including invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency key, and audit trail.
 - AuthContext — selected signed-in operating context: account, membership, roles/capabilities, tenantId/customerId when applicable, and actor metadata.
@@ -57,7 +57,7 @@ All broad planning and generation paths must include:
 - Tenant/customer-scoped commands and queries that include `tenantId` and `customerId` where required and reject cross-scope access mechanically.
 - AdminAuditEvent creation for identity changes, invitations, invitation email delivery attempts/failures, resend/revoke/expiry/acceptance, membership/role changes, support access, policy checks, approval outcomes, billing actions, data access, and consequential AI/tool activity.
 - Complete admin management within each caller's authority boundary: invite, resend invite, revoke invite, view invitation status, list users, search/filter users, view user detail, edit allowed profile fields, assign/replace/remove roles, add/suspend/reactivate/remove memberships, disable/reactivate account, reset/relink identity subject under policy, grant/revoke/expire support-access, and enforce last-admin protection.
-- Scoped admin capabilities for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admin roles; app-specific admin roles extend the foundation capability model rather than bypassing it.
+- Scoped admin capabilities for `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`, and app-specific roles; app-specific roles extend the foundation capability model rather than bypassing or renaming the canonical foundation roles.
 - Complete email-invite onboarding is mandatory: production readiness requires configured email delivery or an accepted provider decision; local/dev/test environments may use an explicit safe adapter that captures emails in an outbox without external delivery. Missing production email provider configuration blocks readiness.
 - Tenant-isolation tests, forbidden-access tests, disabled-user tests, role/scope-denial tests, admin list/search authorization tests, audit tests, `/api/me` tests, last-admin protection tests, support-access lifecycle tests, and security-review checks.
 
@@ -65,7 +65,7 @@ All broad planning and generation paths must include:
 
 For every new SaaS app, implement or specify the secure foundation before app-specific CRM/domain features:
 
-1. Common identity/tenancy types: IDs, scope enums, roles, permissions/capabilities, AuthContext, audit metadata.
+1. Common identity/tenancy types: IDs, scope enums, canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), app-specific role-to-capability mappings, permissions/capabilities, AuthContext, audit metadata.
 2. WorkOS/JWT authentication seam and request-context extraction.
 3. Account, UserProfile, and UserSettings state plus base profile/settings APIs.
 4. Tenant and Customer organization state with Tenant/Customer boundaries.

@@ -144,15 +144,20 @@ Lifecycle rules:
 
 ## Roles
 
+Canonical foundation roles:
+
 | Role | Scope | Purpose |
 |---|---|---|
-| `SAAS_OWNER_ADMIN` | SaaS Owner | Manage Tenants, Tenant Admin bootstrap, SaaS Owner to Tenant subscription/billing state. |
-| `TENANT_ADMIN` | Tenant | Manage Tenant users, Customer organizations, Customer Admins, and Tenant-owned app configuration/data. |
+| `SAAS_OWNER_ADMIN` | SaaS Owner | Manage SaaS Owner users, Tenants, Tenant Admin bootstrap, and SaaS Owner to Tenant subscription/billing state. |
+| `TENANT_ADMIN` | Tenant | Manage Tenant users, Customer organizations, Customer Admins, support-access grants, and Tenant-owned configuration/data within the Tenant boundary. |
 | `TENANT_EMPLOYEE` | Tenant | Use Tenant-owned application functionality according to app-specific permissions. |
 | `CUSTOMER_ADMIN` | Customer | Manage Customer users and supervise Customer-side service use. |
 | `CUSTOMER_USER` | Customer | Use Customer-facing online services provided by the Tenant. |
+| `AUDITOR` | SaaS Owner, Tenant, or Customer | Read scoped admin audit/search and access-review surfaces without mutation rights. |
 
-Do not use a global super-admin role for Tenant data access. SaaS Owner permissions are platform-operations permissions only.
+App-specific roles are extensions mapped to permissions/capabilities inside these scopes. They may express domain authority such as supervisor, policy owner, dealer owner, reviewer, or operator, but they must not replace the foundation roles, membership status checks, scope checks, or support-access rules.
+
+Do not use `APP_ADMIN` as the preferred generic platform role; use `SAAS_OWNER_ADMIN` for SaaS Owner administration. Existing examples that mention `APP_ADMIN`, dealer roles, or policy roles are app-specific aliases or reference roles and must be documented as such. Do not use a global super-admin role for Tenant data access. SaaS Owner permissions are platform-operations permissions only.
 
 ## Administration read models
 

@@ -17,7 +17,7 @@ Companion docs:
 | User Profile | Human-facing account information and scoped profile attributes shown in the application, separate from authentication and authorization facts. |
 | User Settings | User-controlled preferences that affect application experience, such as UI appearance, without changing authorization. |
 | Membership | A scoped relationship between an account and a SaaS Owner, Tenant, or Customer organization. |
-| Role | A permission bundle within a scope, such as SaaS Owner Admin, Tenant Admin, Tenant Employee, Customer Admin, or Customer User. |
+| Role | A permission bundle within a scope. Canonical foundation roles are `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` (or an equivalent scoped auditor capability). App-specific roles extend these roles through permissions/capabilities; they do not replace the foundation role model. |
 
 ## Three-level operating model
 
@@ -78,7 +78,7 @@ The seed foundation should validate the broader AI-first architecture by using c
 Core AI-first features should include:
 
 - durable audit traces for identity, role, scope, tenant, customer, and billing administration;
-- policy-controlled administrative actions, such as role assignment, tenant suspension, and billing-plan changes;
+- policy-controlled administrative actions, such as role assignment, tenant suspension, and billing-plan changes, using the canonical foundation roles `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` as the baseline;
 - decision cards for risky or high-impact administration changes;
 - anomaly and risk signals for suspicious account, access, or billing events;
 - human-supervised recommendations rather than autonomous high-impact changes by default;

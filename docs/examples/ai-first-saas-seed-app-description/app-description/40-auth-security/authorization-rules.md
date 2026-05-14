@@ -6,13 +6,17 @@
   - tenant status permits action
   - role/permission allows action
   - policy gate allows action or requires approval
-- role baseline:
-  - platform-admin: cross-tenant operational support with strict audit
-  - tenant-admin: manage tenant settings, users, roles, and policies within tenant
-  - supervisor: create/launch/supervise goals and handle exceptions
-  - reviewer: decide assigned approval/decision cards
-  - member: use permitted tenant features
-  - auditor: read audit/trace surfaces without mutation rights
+- foundation role baseline:
+  - `SAAS_OWNER_ADMIN`: SaaS Owner/platform administration for Tenants, Tenant Admin bootstrap, billing-safe metadata, and SaaS Owner users; no direct Tenant application-data access
+  - `TENANT_ADMIN`: manage tenant settings, users, memberships, roles, customer organizations, support-access grants, and policies within tenant
+  - `TENANT_EMPLOYEE`: use permitted tenant features according to app-specific capabilities
+  - `CUSTOMER_ADMIN`: manage customer-scoped users and supervise customer-side service use
+  - `CUSTOMER_USER`: use permitted customer-facing services
+  - `AUDITOR`: read scoped audit/trace/access-review surfaces without mutation rights
+- app-specific roles:
+  - supervisor: create/launch/supervise goals and handle exceptions as a capability extension of an active tenant/customer membership
+  - reviewer: decide assigned approval/decision cards as a capability extension of an active tenant/customer membership
+  - member: use permitted tenant/customer features; do not replace `TENANT_EMPLOYEE` or `CUSTOMER_USER` in the foundation model
 - enforcement:
   - endpoint checks prevent unauthorized command submission
   - command handlers/workflows re-check sensitive state transitions

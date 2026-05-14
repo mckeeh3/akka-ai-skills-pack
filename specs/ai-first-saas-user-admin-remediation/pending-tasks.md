@@ -133,7 +133,7 @@
 
 ### TASK-004: Normalize core SaaS roles and separate app-specific roles from foundation roles
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-003]

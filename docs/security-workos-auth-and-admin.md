@@ -154,7 +154,7 @@ CUSTOMER_USER     customer-facing application use
 AUDITOR           scoped admin audit/search and access-review visibility without mutation
 ```
 
-App-specific admin roles map to additional permissions/capabilities and do not replace foundation scope, membership status, or role checks.
+App-specific roles map to additional permissions/capabilities and do not replace foundation scope, membership status, or role checks. Use `SAAS_OWNER_ADMIN`, not `APP_ADMIN`, as the preferred generic SaaS Owner/platform administration role; any `APP_ADMIN` usage should be an app-specific alias with an explicit mapping to foundation capabilities.
 
 Rules:
 - the frontend may hide or show navigation from `/api/me`
@@ -218,7 +218,7 @@ Required browser admin surfaces are Users, Invitations, Roles/Memberships, Acces
 Use backend-only environment variables for initial admin bootstrap, for example:
 
 ```bash
-export ADMIN_USERS="jane@gmail.com:APP_ADMIN:ALL,joe@outlook.com:TENANT_ADMIN:tenant-123"
+export ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER,joe@outlook.com:TENANT_ADMIN:tenant-123"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 export APP_BASE_URL="http://localhost:9000"
 ```
@@ -234,7 +234,7 @@ export INVITE_EMAIL_SUBJECT="Account access information"
 Local/dev/test environments may replace external delivery with an explicit safe adapter that captures emails in an outbox for inspection without sending externally. Production startup/readiness must fail or report not-ready when required email delivery configuration is missing.
 
 Bootstrap behavior:
-- parse configured initial admins at startup
+- parse configured initial admins at startup using canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`) plus explicitly mapped app-specific roles when needed
 - create invited local Akka user accounts idempotently
 - create Invitation records with invite token or acceptance context, status, expiry, delivery status, delivery attempts, and audit metadata
 - send invite emails in production or capture them in the local/dev/test outbox adapter

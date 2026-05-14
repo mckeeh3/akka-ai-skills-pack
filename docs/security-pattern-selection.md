@@ -44,7 +44,8 @@ Authentication answers: who is this caller?
 
 Authorization answers: what may this caller do?
 - local Akka user status
-- roles such as `APP_ADMIN`, `TENANT_ADMIN`, `CUSTOMER_ADMIN`, `USER`
+- canonical foundation roles: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR`
+- app-specific roles mapped to capabilities; do not use `APP_ADMIN` as the preferred generic platform role unless it is explicitly documented as an app alias for `SAAS_OWNER_ADMIN`
 - tenant/customer/self scopes
 - business operation-specific rules
 
@@ -54,10 +55,12 @@ Do not let frontend navigation or JWT presence alone authorize admin operations.
 
 Use these defaults unless product requirements say otherwise:
 - `GET /api/me` returns current local profile, status, roles, and scopes
-- `APP_ADMIN` can manage global users, tenants, roles
+- `SAAS_OWNER_ADMIN` can manage SaaS Owner users, Tenants, Tenant Admin bootstrap, and platform-safe metadata without direct Tenant application-data access
 - `TENANT_ADMIN` can manage users/customers only in assigned tenants
+- `TENANT_EMPLOYEE` can use tenant-owned app features according to mapped capabilities
 - `CUSTOMER_ADMIN` can manage users only in assigned customers
-- `USER` can access own profile/dashboard only
+- `CUSTOMER_USER` can access allowed customer-facing features only
+- `AUDITOR` can read scoped audit/search and access-review surfaces without mutation
 - `DISABLED` users are rejected even with valid JWTs
 - startup admin bootstrap is idempotent and backend-only
 

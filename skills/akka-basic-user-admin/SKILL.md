@@ -21,7 +21,7 @@ Read these first if present:
 
 ## Use this skill when
 
-- the app needs `APP_ADMIN`, `TENANT_ADMIN`, `CUSTOMER_ADMIN`, or `USER` roles
+- the app needs canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`) plus optional app-specific roles mapped to capabilities
 - startup should bootstrap initial admin users from environment variables
 - admins should invite users, resend/revoke invitations, view invitation status, list/search users, view user detail, assign/replace/remove roles, and manage memberships within their authority boundary
 - complete email-invite onboarding must be implemented through `akka-saas-invitation-onboarding` rather than as a single invite endpoint
@@ -39,7 +39,7 @@ Required SaaS foundation concepts:
 - UserProfile for email/display attributes and UserSettings for preferences
 - status: `INVITED`, `ACTIVE`, `DISABLED`
 - Tenant and Customer scoped Membership records
-- roles/capabilities such as `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`
+- roles/capabilities using canonical foundation roles: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` or scoped auditor capability
 - scopes: SaaS Owner, tenant ids, customer ids, support-access windows, or self-only
 - selected AuthContext for each protected operation
 - Invitation lifecycle with invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency key, and audit trail
@@ -91,7 +91,9 @@ Recommended foundation scopes and capabilities:
 - `TENANT_ADMIN`: manage users, memberships, roles, Customer organizations, Customer Admins, support-access grants, and Tenant settings within assigned tenant ids.
 - `CUSTOMER_ADMIN`: manage Customer users and memberships within assigned customer ids.
 - `AUDITOR` or scoped audit capability: list/search admin audit and access-review records without mutation privileges.
-- App-specific admin roles: extend these foundation capabilities with domain permissions; they do not replace scope/status/membership checks.
+- `TENANT_EMPLOYEE`: use Tenant-owned application functionality according to app-specific permissions.
+- `CUSTOMER_USER`: use Customer-facing online services according to app-specific permissions.
+- App-specific roles: extend these foundation capabilities with domain permissions; they do not replace canonical foundation roles, scope/status/membership checks, or support-access rules. Do not use `APP_ADMIN` as the preferred generic platform role; use `SAAS_OWNER_ADMIN` and map any legacy/app-specific admin alias explicitly.
 
 Rules:
 - check caller status is `ACTIVE`
@@ -108,7 +110,7 @@ Rules:
 Read backend-only environment variables such as:
 
 ```bash
-ADMIN_USERS="jane@gmail.com:APP_ADMIN:ALL,joe@outlook.com:TENANT_ADMIN:tenant-123"
+ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER,joe@outlook.com:TENANT_ADMIN:tenant-123"
 APP_BASE_URL="http://localhost:9000"
 WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 ```
@@ -124,7 +126,7 @@ INVITE_EMAIL_SUBJECT="Account access information"
 Local/dev/test may use an explicit safe delivery adapter that captures invite emails in an outbox without external delivery.
 
 Bootstrap rules:
-- parse entries defensively
+- parse entries defensively and accept canonical foundation roles first (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), with app-specific role aliases only when explicitly mapped to capabilities
 - normalize email addresses
 - create missing invited/admin users idempotently
 - create Invitation records with expiry, delivery status, delivery attempts, and audit metadata

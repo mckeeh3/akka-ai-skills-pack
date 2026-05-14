@@ -58,7 +58,8 @@ Done when a future app can demonstrate:
 ```text
 unauthenticated browser -> public shell/login prompt; protected APIs reject
 invited WorkOS user signs in -> /api/me links and activates local account
-APP_ADMIN -> can bootstrap/invite users, assign allowed roles, and see audit entries
+SAAS_OWNER_ADMIN -> canonical foundation role for platform bootstrap/invites without direct Tenant application-data access
+APP_ADMIN -> DCA reference alias for SAAS_OWNER_ADMIN bootstrap capabilities only; prefer SAAS_OWNER_ADMIN in new generated apps
 TENANT_ADMIN/CUSTOMER_ADMIN -> can manage only assigned scopes
 DISABLED user with valid JWT -> backend rejects
 frontend hidden navigation -> never substitutes for backend authorization
