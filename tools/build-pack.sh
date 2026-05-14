@@ -302,6 +302,7 @@ PACK_DOC_FILES=(
   docs/examples/purchase-request-module-sprint-plan.md
   docs/intent-driven-usage-flow.md
   docs/skills-pack-user-guide.md
+  docs/skills-pack-developer-guide.md
   docs/module-sprint-planning.md
   docs/pending-question-queue.md
   docs/pending-task-queue.md

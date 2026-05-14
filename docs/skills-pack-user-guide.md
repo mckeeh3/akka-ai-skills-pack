@@ -20,6 +20,96 @@ Use the skills pack as a durable, iterative development workflow:
 
 Your durable project state should live in your application workspace, usually under `specs/`, `app-description/`, source directories, and tests. The installed `.agents/` directory is the harness support library, not your app source.
 
+## Install the pack
+
+Current manifest version:
+- `0.1.7`
+
+Project install from the current directory:
+
+```bash
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.7/install-akka-ai-skills-pack-0.1.7.sh | bash -s --
+```
+
+Project install into a specific directory:
+
+```bash
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.7/install-akka-ai-skills-pack-0.1.7.sh | bash -s -- --target-dir /path/to/project
+```
+
+Install from an unpacked archive:
+
+```bash
+tar -xzf akka-ai-skills-pack-0.1.7.tar.gz
+cd akka-ai-skills-pack-0.1.7
+bash install.sh --location project --project /path/to/project
+```
+
+Global install from an unpacked archive or source checkout:
+
+```bash
+bash install.sh --location global
+```
+
+Interactive install:
+
+```bash
+bash install.sh
+```
+
+Dry run:
+
+```bash
+bash install.sh --location project --project /path/to/project --dry-run
+```
+
+A project install creates `.agents/` under the target project. A global install creates `~/.agents`.
+
+## Getting started
+
+After installing the pack into a new target project, you can ask your harness to bootstrap only the secure AI-first SaaS foundation:
+
+```text
+Create a new AI-first SaaS app with only the core foundation functionality:
+secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding,
+admin user management, memberships/roles/capabilities, admin audit/search,
+and AI-assisted admin offload. Do not add any domain-specific CRM/product features yet.
+```
+
+The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
+
+## Installed layout
+
+A project install creates a directory like this:
+
+```text
+.agents/
+├── AGENTS.md
+├── docs/
+├── manifests/
+│   └── akka-ai-skills-pack.yaml
+├── resources/
+│   └── examples/
+│       └── java/
+│           ├── pom.xml
+│           ├── README.md
+│           └── src/
+└── skills/
+    ├── README.md
+    ├── references/
+    └── ...
+```
+
+Important files and directories:
+
+- `.agents/AGENTS.md` — installed guidance for the harness when working in a real Akka project
+- `.agents/docs/` — installed reference docs used by the harness
+- `.agents/skills/` — internal routing and implementation guidance loaded by the harness
+- `.agents/resources/examples/java/` — Akka Java SDK reference examples available to the harness
+- `.agents/manifests/akka-ai-skills-pack.yaml` — installed manifest metadata
+
+As a user, you usually interact with the harness rather than directly reading the installed skill files.
+
 ## Recommended project artifacts
 
 For non-trivial apps, expect the harness to create or maintain files like:
