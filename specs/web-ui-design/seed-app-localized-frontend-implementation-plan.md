@@ -447,7 +447,7 @@ Validation:
 
 ### Slice 7: Governance, audit, admin, profile screens
 
-Status: planned.
+Status: complete. See `seed-app-frontend-slice-7-completion.md`.
 
 Outputs:
 

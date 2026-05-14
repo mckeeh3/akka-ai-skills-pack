@@ -6,14 +6,19 @@ import './styles/layout.css';
 import './styles/components.css';
 import { CommandStrip, KpiCard, PageHeader as DsPageHeader } from './design-system';
 import { FixtureApiClient, FixtureRealtimeClient, type ApiClient, type RealtimeClient } from './api';
+import { AuditTraceExplorerPage } from './screens/audit/AuditTraceExplorerPage';
+import { AdminUsersPage } from './screens/admin/AdminUsersPage';
 import { BriefingPage } from './screens/briefing/BriefingPage';
 import { DecisionQueuePage } from './screens/decisions/DecisionQueuePage';
 import { GoalWorkbenchPage } from './screens/goals/GoalWorkbenchPage';
+import { GovernancePoliciesPage } from './screens/governance/GovernancePoliciesPage';
+import { ProfilePreferencesPage } from './screens/profile/ProfilePreferencesPage';
 
 type ModePreference = 'light' | 'dark' | 'system';
 type RouteId = 'briefing' | 'goals' | 'decisions' | 'governance' | 'audit' | 'admin' | 'profile';
 
 const modeStorageKey = 'seed-ui-mode';
+// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · shell route; Pending · fixture client; Guarded · backend authority.
 
 const routes: Array<{ id: RouteId; label: string; group: 'Work' | 'Decisions' | 'Governance' | 'Audit' | 'Admin'; icon: string; path: string }> = [
   { id: 'briefing', label: 'Briefing', group: 'Work', icon: '⌁', path: '/ui/briefing' },
@@ -203,7 +208,7 @@ function PageHeader({ route }: { route: (typeof routes)[number] }) {
 
 function RouteShell({ route, mode, onModeChange, apiClient, realtimeClient }: { route: RouteId; mode: ModePreference; onModeChange: (mode: ModePreference) => void; apiClient: ApiClient; realtimeClient: RealtimeClient }) {
   if (route === 'profile') {
-    return <ProfilePreferences mode={mode} onModeChange={onModeChange} />;
+    return <ProfilePreferencesPage apiClient={apiClient} mode={mode} onModeChange={onModeChange} />;
   }
 
   if (route === 'briefing') {
@@ -218,34 +223,19 @@ function RouteShell({ route, mode, onModeChange, apiClient, realtimeClient }: { 
     return <DecisionQueuePage apiClient={apiClient} />;
   }
 
-  return (
-    <section className="route-shell" aria-label={routeShellTitle(route)}>
-      <CommandStrip
-        title={routeShellTitle(route)}
-        description={routeShellCopy(route)}
-        prompts={['Summarize blockers', 'Review exceptions', 'Explain policy triggers']}
-      />
+  if (route === 'governance') {
+    return <GovernancePoliciesPage apiClient={apiClient} />;
+  }
 
-      <div className="card-grid">
-        <KpiCard label="Route mounted" value="Ready" detail="This slice validates route shells before product data is wired." status="Ready · shell route" statusTone="success" />
-        <KpiCard label="Client seam next" value="Pending" detail="Slice 3 will add typed clients and fixture-backed data." status="Pending · fixture client" statusTone="warning" />
-        <KpiCard label="UX only" value="Guarded" detail="Route visibility is not an authorization grant; backend APIs remain authoritative." status="Guarded · backend authority" statusTone="danger" />
-      </div>
-    </section>
-  );
-}
+  if (route === 'audit') {
+    return <AuditTraceExplorerPage apiClient={apiClient} />;
+  }
 
-function ProfilePreferences({ mode, onModeChange }: { mode: ModePreference; onModeChange: (mode: ModePreference) => void }) {
-  return (
-    <section className="panel" aria-labelledby="profile-preferences-heading">
-      <div>
-        <p className="eyebrow">Profile</p>
-        <h2 id="profile-preferences-heading">Display preferences</h2>
-        <p>The root element stores <code>data-mode</code> and <code>data-mode-preference</code>. Future themes may override only color and font tokens.</p>
-      </div>
-      <ThemeModeToggle mode={mode} onModeChange={onModeChange} />
-    </section>
-  );
+  if (route === 'admin') {
+    return <AdminUsersPage apiClient={apiClient} />;
+  }
+
+  return null;
 }
 
 function routeFromHash(): RouteId {

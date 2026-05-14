@@ -19,6 +19,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
   return <FormField id={props.id} label={label} helper={helper} error={error}><textarea ref={ref} {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined} /></FormField>;
 });
 
-export function SelectField({ label, helper, error, children, ...props }: SelectHTMLAttributes<HTMLSelectElement> & { id: string; label: string; helper?: string; error?: string; children: ReactNode }) {
-  return <FormField id={props.id} label={label} helper={helper} error={error}><select {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined}>{children}</select></FormField>;
-}
+export const SelectField = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement> & { id: string; label: string; helper?: string; error?: string; children: ReactNode }>(function SelectField({ label, helper, error, children, ...props }, ref) {
+  return <FormField id={props.id} label={label} helper={helper} error={error}><select ref={ref} {...props} aria-invalid={error ? 'true' : undefined} aria-describedby={error ? `${props.id}-error` : helper ? `${props.id}-helper` : undefined}>{children}</select></FormField>;
+});
