@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build:web-ui": "tsc --project tsconfig.web-ui.json",
-    "check:web-ui": "tsc --project tsconfig.web-ui.json --noEmit"
+    "check:web-ui": "tsc --project tsconfig.web-ui.json --noEmit",
+    "verify:opinionated-ai-first-saas": "bash tools/verify-opinionated-ai-first-saas-pack.sh"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

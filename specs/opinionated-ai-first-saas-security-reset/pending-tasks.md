@@ -297,7 +297,7 @@
 
 ### TASK-008: Add repository verification for opinionated AI-first SaaS and security defaults
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: [TASK-003, TASK-004, TASK-005, TASK-007]

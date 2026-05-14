@@ -518,6 +518,12 @@ Only `VITE_` variables are embedded in the frontend bundle. Never add backend se
 
 The Maven commands validate the executable seed app and its reference patterns. The npm commands validate and build the frontend reference assets that are hosted by the Akka app. The installable skills-pack distribution is built separately with `tools/build-pack.sh` or `tools/release.sh`.
 
+Run the opinionated AI-first SaaS pack guardrail before changing core routing, doctrine, or packaging:
+
+```bash
+npm run verify:opinionated-ai-first-saas
+```
+
 ### Distribution model
 
 This repository ships an installable resource pack named:
