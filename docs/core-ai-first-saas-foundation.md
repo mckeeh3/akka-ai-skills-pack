@@ -75,10 +75,11 @@ The same human/email may have separate local accounts or memberships at multiple
 
 The seed foundation should validate the broader AI-first architecture by using core administrative work as real AI-first product behavior, not only as CRUD.
 
-Core AI-first features should include:
+Core AI-first features must include:
 
 - durable audit traces for identity, role, scope, tenant, customer, and billing administration;
 - policy-controlled administrative actions, such as role assignment, tenant suspension, and billing-plan changes, using the canonical foundation roles `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` as the baseline;
+- mandatory AI-assisted admin offload agents: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and optional AdminPolicyProposalAgent;
 - decision cards for risky or high-impact administration changes;
 - anomaly and risk signals for suspicious account, access, or billing events;
 - human-supervised recommendations rather than autonomous high-impact changes by default;
@@ -89,7 +90,7 @@ Example AI-first core scenarios:
 | Scenario | AI-first behavior |
 |---|---|
 | Tenant onboarding | Assistant drafts setup checklist, missing configuration summary, and next-best action recommendations. |
-| Access review | Agent flags stale admins, excessive roles, unusual cross-level memberships, and dormant customer admins. |
+| Access review | AccessReviewAgent flags stale admins, excessive roles, unusual cross-level memberships, dormant customer admins, and last-admin risks. |
 | Billing issue | Agent summarizes subscription state, payment issue, service impact, prior notices, and recommended action. |
 | Tenant-created support account | Agent verifies purpose, expiry, permissions, and audit readiness before activation. |
 | Role change | Decision card shows requested role, scope, risk, policy triggers, affected data boundary, and approver actions. |
@@ -104,7 +105,7 @@ Example AI-first core scenarios:
 | Invitations and onboarding | Workflow for mandatory email invite delivery, token/acceptance context, link/activate, resend, revoke/cancel, expiry, idempotency, and multi-step onboarding. |
 | Access review and support-access expiry | Timed Actions plus Views and Consumers. |
 | Administrative dashboards | Views for scoped lists, queues, tenant health, subscription state, and audit search. |
-| AI recommendations and summaries | Agents with bounded tools and read-only access unless explicitly approved. |
+| AI recommendations and summaries | Mandatory admin agents with bounded tools and read-only access unless explicitly approved. |
 | Policy gates and approvals | Workflows plus decision-card records and audit events. |
 | Browser APIs | JWT-protected HTTP endpoints using WorkOS authentication and Akka-owned authorization state. |
 
@@ -120,4 +121,4 @@ Example AI-first core scenarios:
 8. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
 9. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
 10. Cross-scope audit trace and access review views.
-11. AI-first admin decision cards for risky role, support-access, tenant suspension, and billing changes.
+11. AI-assisted admin offload: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, optional AdminPolicyProposalAgent, and decision cards for risky role, support-access, tenant suspension, bulk, identity relink, and billing changes.

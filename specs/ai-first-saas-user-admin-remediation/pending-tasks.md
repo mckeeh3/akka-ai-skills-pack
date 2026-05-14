@@ -170,7 +170,7 @@
 
 ### TASK-005: Make AI-assisted admin offload mandatory foundation behavior
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-user-admin-remediation/README.md
 - task brief: none
 - depends on: [TASK-003, TASK-004]

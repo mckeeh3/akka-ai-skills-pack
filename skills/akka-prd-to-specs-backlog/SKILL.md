@@ -55,6 +55,7 @@ Read these first if present:
 - `../README.md`
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline every new app PRD/spec/backlog must include
 - `../akka-saas-invitation-onboarding/SKILL.md` when planning complete email-invite onboarding tasks
+- `../ai-first-saas-admin-agents/SKILL.md` when planning the mandatory AI-assisted admin offload foundation: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, admin decision cards, and approval boundaries
 - `../ai-first-saas/SKILL.md` for high-level product, PRD, feature, governance, agentic, decision, supervision, audit, or outcome inputs
 - `../akka-solution-decomposition/SKILL.md`
 - `../../docs/ai-first-saas-application-architecture.md` for the canonical AI-first doctrine
@@ -115,7 +116,7 @@ For smaller plans, or when preserving an existing project shape, create numbered
 - `specs/slices/02-<slice-name>.md`
 - `specs/slices/03-<slice-name>.md`
 
-For SaaS app PRDs, the first slice must be a secure foundation slice unless the task is explicitly non-SaaS reference material. It must cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, audit, frontend shell/context selection when a browser UI is in scope, and tenant-isolation tests before CRM/domain-specific slices.
+For SaaS app PRDs, the first slice must be a secure foundation slice unless the task is explicitly non-SaaS reference material. It must cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, mandatory AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection when a browser UI is in scope, and tenant-isolation tests before CRM/domain-specific slices.
 
 Do not create both `specs/slices/` and `specs/sprints/` for new planning output unless project history requires it.
 
@@ -322,7 +323,7 @@ Create or update:
 Use `../../docs/pending-task-queue.md` as the queue contract.
 
 The queue must:
-- start with runnable secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin invite UI/APIs, audit, frontend shell/context selection when applicable, and tenant-isolation tests
+- start with runnable secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection when applicable, and tenant-isolation tests
 - contain one task for each bounded, unblocked item in each backlog's `Suggested harness task breakdown`
 - block or omit work still gated by unresolved `blocking` questions in `specs/pending-questions.md`
 - use stable task IDs such as `TASK-001`, `TASK-002`, `TASK-003`
@@ -540,7 +541,7 @@ Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
 - `core-saas-foundation` was applied and `specs/cross-cutting/01-auth-tenancy-audit.md` plus a first foundation sprint/slice were created for SaaS apps
-- first runnable pending tasks implement the secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, audit, frontend shell/context selection when applicable, and tenant-isolation tests
+- first runnable pending tasks implement the secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection when applicable, and tenant-isolation tests
 - high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition
 - AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
 - module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered

@@ -81,6 +81,9 @@ content:
     - id: ai-first-saas-agent-team-design
       path: skills/ai-first-saas-agent-team-design
       category: focused
+    - id: ai-first-saas-admin-agents
+      path: skills/ai-first-saas-admin-agents
+      category: focused
     - id: ai-first-saas-audit-trace
       path: skills/ai-first-saas-audit-trace
       category: focused
@@ -472,6 +475,7 @@ bundles:
       - ai-first-saas
       - core-saas-foundation
       - ai-first-saas-agent-team-design
+      - ai-first-saas-admin-agents
       - ai-first-saas-audit-trace
       - ai-first-saas-decision-cards
       - ai-first-saas-object-model

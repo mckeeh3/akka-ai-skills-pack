@@ -336,15 +336,22 @@ Decision card fields:
 - approve/deny/request-changes actions;
 - audit trace link.
 
-### Access review assistant
+### Mandatory AI-assisted admin offload
 
-The system should be able to recommend, not autonomously execute, access cleanup:
-- stale invited accounts;
-- dormant admins;
-- support memberships nearing expiry;
-- users with multiple high-privilege memberships;
-- customer admins with no recent activity;
-- orphaned customer organizations with no active admin.
+The foundation must include bounded admin agents that recommend or draft work, not autonomously execute high-risk access changes.
+
+Required agents:
+- `AccessReviewAgent` identifies stale invited accounts, dormant admins, users with multiple high-privilege memberships, orphaned customer organizations with no active admin, and last-admin risks;
+- `AdminRiskAgent` scores proposed admin actions and produces risk, confidence, policy triggers, alternatives, and approval needs;
+- `InvitationDraftAgent` drafts invitation copy, role rationale, and bulk invite preparation without exposing raw tokens;
+- `RoleRecommendationAgent` recommends least-privilege roles/capabilities from scoped context;
+- `SupportAccessReviewAgent` reviews support memberships nearing expiry, unusual use, purpose, and revocation candidates;
+- `AdminAuditSummaryAgent` summarizes admin audit/search results with actor, target user, scope, policy, and trace links;
+- optional `AdminPolicyProposalAgent` drafts policy/permission/threshold proposals only; human governance is required for commits.
+
+Agents may autonomously draft invites, summarize risk, recommend roles, identify stale/dormant access, prepare bulk invite drafts, create low-risk admin tasks, generate audit summaries, and create decision cards. They must not autonomously grant admin roles, remove last admin, expand support access, suspend tenants, bulk disable users, change policy/permissions, or access tenant/customer data outside authorized tool scope.
+
+High-risk recommendations route to decision cards with evidence, risk, confidence, alternatives, policy triggers, and audit links.
 
 ### Audit trace
 
@@ -374,8 +381,14 @@ Record audit events for:
 | `InvitationView` | Scoped invitation status, delivery status, resend/revoke visibility, expiry, and delivery failure rows. |
 | `AdminAuditView` | Queryable admin audit trail. |
 | `AccessReviewQueueView` | Stale invite, dormant access, risky role combination, support-access, and last-admin review queue. |
-| `AdminRiskAgent` | Read-only analysis and recommendation for risky admin actions. |
-| `AdminDecisionWorkflow` | Approval gate for risky admin changes. |
+| `AccessReviewAgent` | Mandatory bounded agent that reads scoped access views and recommends stale/dormant access cleanup, last-admin risk review, and low-risk admin tasks. |
+| `AdminRiskAgent` | Mandatory read-only analysis and recommendation agent for risky admin actions. |
+| `InvitationDraftAgent` | Mandatory agent that drafts invite messages, role rationale, and bulk invite preparation without sending or exposing tokens. |
+| `RoleRecommendationAgent` | Mandatory least-privilege role/capability recommendation agent. |
+| `SupportAccessReviewAgent` | Mandatory support-access review agent for expiry, purpose, usage, and revocation recommendations. |
+| `AdminAuditSummaryAgent` | Mandatory audit/search summarization agent for supervisors and auditors. |
+| `AdminPolicyProposalAgent` | Optional proposal-drafting agent; policy commits remain human-governed. |
+| `AdminDecisionWorkflow` | Approval gate for risky admin changes and agent-generated decision cards. |
 
 ## Acceptance checklist
 
@@ -395,5 +408,6 @@ Record audit events for:
 - [ ] Tenant-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review screens.
 - [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView enforce scoped query authorization and redaction.
 - [ ] Risky admin actions can produce decision cards.
-- [ ] Access review assistant produces recommendations without unauthorized automatic changes.
+- [ ] AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent are present or equivalently modeled.
+- [ ] Admin agents produce recommendations, drafts, audit summaries, and decision cards without unauthorized automatic changes.
 - [ ] Audit views can answer who changed what, in which scope, when, why, and under which policy.

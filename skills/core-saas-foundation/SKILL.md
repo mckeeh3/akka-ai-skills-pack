@@ -25,6 +25,7 @@ Then load only the focused downstream skills needed for the selected path:
 - `akka-workos-user-auth` for WorkOS/JWT browser authentication
 - `akka-basic-user-admin` for local account, membership, role, invite, and admin flows
 - `akka-saas-invitation-onboarding` for complete mandatory email-invite onboarding with InvitationWorkflow, outbox/email delivery, timers, InvitationView, and admin lifecycle tests
+- `ai-first-saas-admin-agents` for mandatory AI-assisted admin offload: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries
 
 ## Mandatory baseline objects
 
@@ -43,6 +44,7 @@ Every generated SaaS application must model these foundation concepts before app
 - AuthContext — selected signed-in operating context: account, membership, roles/capabilities, tenantId/customerId when applicable, and actor metadata.
 - UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView — mandatory scoped admin read models so admins can discover, search, review, and repair access without already knowing target user ids.
 - AdminAuditEvent — durable audit record for identity, membership, role, policy, support-access, billing, data access, approval, and consequential AI/tool activity.
+- Admin offload agents — mandatory bounded assistants for access review, admin risk scoring, invitation drafting, role recommendations, support-access review, audit summaries, and optional policy proposal drafting; they recommend or draft within scope and route high-risk changes to decision cards.
 - Support-access membership — Tenant-created, time-limited, auditable Tenant-scoped access for SaaS Owner personnel when a Tenant requests help; never a global super-admin bypass.
 - Subscription/billing boundary — SaaS Owner to Tenant subscription, plan, billing account, and entitlement state that excludes Tenant application data.
 
@@ -59,7 +61,8 @@ All broad planning and generation paths must include:
 - Complete admin management within each caller's authority boundary: invite, resend invite, revoke invite, view invitation status, list users, search/filter users, view user detail, edit allowed profile fields, assign/replace/remove roles, add/suspend/reactivate/remove memberships, disable/reactivate account, reset/relink identity subject under policy, grant/revoke/expire support-access, and enforce last-admin protection.
 - Scoped admin capabilities for `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`, and app-specific roles; app-specific roles extend the foundation capability model rather than bypassing or renaming the canonical foundation roles.
 - Complete email-invite onboarding is mandatory: production readiness requires configured email delivery or an accepted provider decision; local/dev/test environments may use an explicit safe adapter that captures emails in an outbox without external delivery. Missing production email provider configuration blocks readiness.
-- Tenant-isolation tests, forbidden-access tests, disabled-user tests, role/scope-denial tests, admin list/search authorization tests, audit tests, `/api/me` tests, last-admin protection tests, support-access lifecycle tests, and security-review checks.
+- AI-assisted admin offload is mandatory foundation behavior: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and optional AdminPolicyProposalAgent may draft, summarize, recommend, identify stale/dormant access, prepare bulk invite drafts, create low-risk admin tasks, generate audit summaries, and create decision cards, but must not autonomously grant admin roles, remove last admin, expand support access, suspend tenants, bulk disable users, change policy/permissions, or access tenant/customer data outside authorized tool scope.
+- Tenant-isolation tests, forbidden-access tests, disabled-user tests, role/scope-denial tests, admin list/search authorization tests, audit tests, `/api/me` tests, last-admin protection tests, support-access lifecycle tests, admin-agent decision-card tests, and security-review checks.
 
 ## First-slice implementation order
 
@@ -75,9 +78,10 @@ For every new SaaS app, implement or specify the secure foundation before app-sp
 8. Central backend authorization service and mandatory checks for routes, commands, queries, streams, tools, workflow actions, consumers, and timers.
 9. SaaS Owner to Tenant subscription/billing boundary, plan/subscription/entitlement records, and billing-safe admin APIs where needed.
 10. AdminAuditEvent write path plus UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for scoped list/search, audit search, and access-review queues.
-11. Foundation UI shell: sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, and capability-gated actions when a browser UI is in scope.
-12. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, invite delivery/resend/revoke/expiry/acceptance, user and membership list/search, membership lifecycle, last-admin protection, audit, support-access expiry/revocation, billing-boundary, and frontend secret-boundary tests.
-13. Security review before implementing app-specific CRM/domain slices.
+11. AI-assisted admin offload agents: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards for risky admin recommendations, scoped tools, redaction, and audit/work-trace records.
+12. Foundation UI shell: sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, admin-agent recommendation queues, decision cards, and capability-gated actions when a browser UI is in scope.
+13. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, invite delivery/resend/revoke/expiry/acceptance, user and membership list/search, membership lifecycle, last-admin protection, audit, support-access expiry/revocation, admin-agent approval boundaries, billing-boundary, and frontend secret-boundary tests.
+14. Security review before implementing app-specific CRM/domain slices.
 
 Do not let uncertainty about provider-specific details block modeling the mandatory local authorization, tenancy, AuthContext, and audit contracts. If WorkOS setup values are unknown, queue a provider-specific question while preserving the local boundary model.
 
@@ -89,7 +93,7 @@ Bootstrap and maintain secure SaaS foundation files in capabilities, behavior, t
 
 ### Akka solution decomposition
 
-Every solution plan must include a `Core secure SaaS foundation` section before app-specific capabilities. Skill routing must include `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, `akka-saas-invitation-onboarding`, endpoint JWT/request-context skills, and the entity/workflow/view/timer/consumer/test skills needed to realize the foundation.
+Every solution plan must include a `Core secure SaaS foundation` section before app-specific capabilities. Skill routing must include `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, `akka-saas-invitation-onboarding`, `ai-first-saas-admin-agents`, endpoint JWT/request-context skills, agent/decision-card skills, and the entity/workflow/view/timer/consumer/test skills needed to realize the foundation.
 
 ### PRD/spec/backlog planning
 
@@ -105,6 +109,7 @@ Before handing off to downstream implementation, verify:
 - SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, complete Invitation lifecycle, AuthContext, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AdminAuditEvent, support-access, and subscription/billing boundary are present or explicitly deferred only for non-SaaS reference work.
 - Invitation email delivery is configured for production readiness, or local/dev/test uses an explicit captured outbox adapter; delivery failures are visible to admins and auditable; focused implementation routes through `akka-saas-invitation-onboarding` for InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests.
 - Admin users can discover and manage users within their authority boundary using list/search, view user detail, role assignment/replacement/removal, membership add/suspend/reactivate/remove, account disable/reactivate, reset/relink identity subject under policy, support-access grant/revoke/expiry, and last-admin protection.
+- AI-assisted admin offload routes through `ai-first-saas-admin-agents`; high-risk admin recommendations become decision cards with evidence, risk, confidence, alternatives, policy triggers, and audit links while humans supervise/approve consequential changes.
 - `/api/me` and context selection are specified for browser apps.
 - Backend authorization checks are required for every protected route, component command, query, stream, tool, workflow action, consumer side effect, and timer action.
 - Tenant/customer-scoped commands and queries enforce isolation mechanically.

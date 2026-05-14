@@ -33,7 +33,7 @@ Read these first when using this skill:
 - `../../docs/ai-first-saas-application-architecture.md`
 
 For description-first work, also read the app-description docs named by `skills/README.md`.
-For direct Akka implementation, load only the focused Stage 3 skills for the selected substrate components.
+For generated SaaS foundations, also load `../ai-first-saas-admin-agents/SKILL.md` for mandatory AI-assisted admin offload. For direct Akka implementation, load only the focused Stage 3 skills for the selected substrate components.
 
 ## Use when
 
@@ -113,7 +113,7 @@ Prefer mechanically enforced permissions and versioned policy records over promp
 
 ### 5. Choose the downstream operating path
 
-First load `core-saas-foundation` for the mandatory Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline, then route based on what the user is asking for:
+First load `core-saas-foundation` for the mandatory Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
 
 - Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative application description before generation.
 - Use `akka-solution-decomposition` when the user wants a direct Akka solution shape and the component set is not yet known.
