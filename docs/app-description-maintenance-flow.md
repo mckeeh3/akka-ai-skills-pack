@@ -123,7 +123,7 @@ They are part of the app definition. Missing secure SaaS foundation semantics mu
 ### Step 9. Update UI when browser supervision is in scope
 
 When a browser frontend is in scope, update `55-ui/` after the operating model and behavior are clear enough to describe the user's work surfaces.
-For AI-first apps, prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over CRUD navigation unless the product intent is explicitly CRUD-centric.
+For AI-first apps, prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over record-management navigation. Conventional list/form screens can exist, but they must remain subordinate to the secure AI-first operating model when delegated work is in scope.
 Keep the style-selection rule below in force.
 
 ### Step 10. Update readiness
@@ -288,7 +288,7 @@ A generation request is complete when:
 Avoid:
 - defaulting to code generation for every prompt
 - updating tests without first clarifying behavior
-- treating auth/security or observability as optional afterthoughts
+- treating auth/security or observability as later afterthoughts
 - using generated code as the primary explanation of what changed
 - leaving readiness stale after major description changes
 - silently burying semantic uncertainty inside generation results

@@ -380,14 +380,11 @@ When adding or revising skills, optimize for:
 4. consistency with repo conventions
 5. human readability
 
-### Executable reference examples and seed app
+### Executable substrate references
 
-The `src/` tree has two purposes:
+The `src/` tree provides concrete Akka Java SDK examples that specific skills can reference when guiding downstream implementation work. These examples are substrate references for component structure, APIs, and tests; they are not generated-product architecture templates and should not drive product decomposition ahead of the mandatory secure AI-first SaaS foundation.
 
-1. provide concrete code examples that specific skills can reference when guiding downstream Akka application work
-2. provide a runnable Akka Java SDK seed app that skill-pack developers can compile, run, and test while maintaining this repository
-
-The executable seed app is still reference material for the pack, not this repository's business product.
+The executable example set is still reference material for the pack, not this repository's business product.
 
 ```text
 src/main/java/com/example/domain        # pure domain logic and immutable models
@@ -404,7 +401,7 @@ Examples and tests should demonstrate reusable patterns for the installed pack, 
 - consumers and topic/service-stream integration
 - timed actions and timer-backed flows
 - HTTP, gRPC, and MCP endpoints
-- Akka-hosted full web UI apps, static content, SSE, and WebSocket frontend delivery patterns
+- Akka-hosted full web UI apps, static asset hosting, SSE, and WebSocket frontend delivery patterns
 - agents, tools, structured responses, memory, streaming, guardrails, and evaluation
 - Event Sourced Entity and Key Value Entity design
 - deterministic testing patterns for each component family

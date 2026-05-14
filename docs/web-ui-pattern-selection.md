@@ -22,7 +22,7 @@ The frontend build owns generated files under `static-resources/`. Edit `fronten
 | Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `src/main/java/com/example/api/WebUiHomeEndpoint.java` and `src/main/java/com/example/api/WebUiDataEndpoint.java` |
 | Frontend app consuming live one-way updates | UI + SSE pattern | `src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `src/main/java/com/example/api/CounterStreamEndpoint.java` |
 | Frontend app needing two-way communication | UI + WebSocket pattern | `src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `src/main/java/com/example/api/PingWebSocketEndpoint.java` |
-| Route exposure and backend access boundaries | Defer to security-specific routing when in scope | `skills/akka-http-endpoint-jwt/SKILL.md` and `skills/akka-http-endpoint-acl-internal/SKILL.md` |
+| Route exposure and backend access boundaries | Apply the mandatory secure SaaS foundation for protected APIs; public static asset routes are the exception | `skills/core-saas-foundation/SKILL.md`, `skills/akka-http-endpoint-jwt/SKILL.md`, and `skills/akka-http-endpoint-acl-internal/SKILL.md` |
 
 ## Frontend project requirement for web apps
 
@@ -55,9 +55,9 @@ Use route families with clear separation:
 
 This keeps route intent visible from URL shape alone. Avoid broad `/**` SPA fallbacks when they overlap asset wildcards; use hash routing or explicit frontend entry routes instead.
 
-## Security scope note
+## Security routing note
 
-This pattern-selection doc focuses on web UI delivery and route integration. Public/protected/internal route policy, JWTs, identity-provider integration, and authorization UX should be handled by security-specific guidance when those tasks are in scope.
+This pattern-selection doc focuses on web UI delivery and route integration. For generated SaaS applications, route policy, JWTs, identity-provider integration, AuthContext selection, backend authorization, tenant/customer filtering, and authorization UX inherit the mandatory secure foundation. Public static asset routes are the narrow exception; protected APIs and streams must use security-specific guidance.
 
 ## API documentation assets
 
@@ -76,5 +76,6 @@ Then load the focused companion skill you need:
 
 - `skills/akka-http-endpoint-sse/SKILL.md`
 - `skills/akka-http-endpoint-websocket/SKILL.md`
-- `skills/akka-http-endpoint-jwt/SKILL.md` only when security is in scope
-- `skills/akka-http-endpoint-acl-internal/SKILL.md` only when internal-route security is in scope
+- `skills/core-saas-foundation/SKILL.md` for mandatory SaaS identity, tenancy, authorization, `/api/me`, audit, and tenant-isolation expectations
+- `skills/akka-http-endpoint-jwt/SKILL.md` for protected browser/service API routes
+- `skills/akka-http-endpoint-acl-internal/SKILL.md` for internal-only routes or method-level service ACLs

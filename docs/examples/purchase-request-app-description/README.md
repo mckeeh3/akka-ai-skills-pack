@@ -6,7 +6,7 @@ This directory is a concrete example of the internal app-description architectur
 
 It shows a small but cross-linked **harness-maintained application description** for a purchase-request workflow.
 
-AI-first migration note: this remains a low-agentic/conventional approval-workflow reference. Do not force-fit it into a full AI-first SaaS operating model without explicit product intent. The current AI-first example gap and Sprint 6 placeholder target are documented in `../ai-first-app-description-gaps.md`.
+AI-first SaaS reset note: this remains a low-agentic/conventional approval-workflow reference for app-description mechanics only. It is **not** target architecture doctrine and must not be used as the first reference for generated SaaS planning. Start new SaaS work from `../ai-first-saas-seed-app-description/README.md` and the core foundation docs instead. Do not force-fit this example into a full AI-first SaaS operating model without explicit product intent.
 
 Purpose of this example:
 - validate the layer structure in practice

@@ -144,6 +144,6 @@ Avoid:
 - assuming route tests are enough for frontend logic
 - hand-editing generated frontend build output under `static-resources/`
 - mixing static asset wildcards and backend API routes under ambiguous catch-all paths
-- treating auth/session/security as optional for generated SaaS UI; only public static assets are outside authenticated API authorization
+- treating auth/session/security as deferrable for generated SaaS UI; only public static assets are outside authenticated API authorization
 - silently choosing colors/theme when app-description/specs have not selected a style guide
 - skipping accessible labels, focus behavior, or responsive layout

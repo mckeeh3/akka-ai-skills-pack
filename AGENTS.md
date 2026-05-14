@@ -240,7 +240,7 @@ The repository already has strong local patterns across much of the Akka applica
 - views across multiple source types
 - consumers and async integration patterns
 - timed actions and timer-backed flows
-- HTTP endpoints, including static content, SSE, WebSocket, JWT, and web UI delivery
+- HTTP endpoints, including static asset hosting, SSE, WebSocket, JWT, and web UI delivery
 - gRPC endpoints
 - MCP endpoints
 - agents, including tools, structured responses, memory, orchestration, guardrails, evaluation, and testing
@@ -263,7 +263,8 @@ At the start of a new session:
    - `docs/description-first-application-doctrine.md`
    - `docs/internal-app-description-architecture.md`
    - `docs/app-description-maintenance-flow.md`
-   - the smallest relevant example under `docs/examples/purchase-request-app-description/`
+   - `docs/examples/ai-first-saas-seed-app-description/README.md` for the secure AI-first SaaS seed reference
+   - the smallest relevant example under `docs/examples/purchase-request-app-description/` only for description-layer mechanics
 7. classify the task before choosing files:
    - AI-first SaaS doctrine / operating model / governance / routing
    - description-first app maintenance / review / realization

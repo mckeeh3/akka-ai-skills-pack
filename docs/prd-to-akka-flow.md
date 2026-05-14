@@ -1,9 +1,9 @@
 # PRD-to-Akka flow
 
-Use this mini-example set when you want a concrete pattern for the repository's intended workflow:
+Use this mini-example set when you want a concrete pattern for planning mechanics. For generated SaaS architecture, start from the mandatory secure foundation and AI-first SaaS seed reference before using these conventional examples.
 
 1. read a small requirements artifact
-2. classify whether AI-first SaaS interpretation applies before CRUD/component decomposition
+2. apply the secure SaaS foundation and classify AI-first SaaS concerns before CRUD/component decomposition
 3. produce an Akka solution plan before coding
 4. route to the minimal focused skills
 5. implement components in the recommended order
@@ -52,8 +52,8 @@ For queue templates, see `module-sprint-planning.md`, `solution-plan-to-implemen
 
 ## What the example demonstrates
 
-The example is not an AI-first SaaS example; it intentionally stays close to a conventional approval workflow while still demonstrating decomposition.
-For AI-first reference structure, see `examples/ai-first-dca-app-description/README.md`.
+The example is not an AI-first SaaS target architecture; it intentionally stays close to a conventional approval workflow while demonstrating decomposition mechanics.
+For generated SaaS foundation structure, start with `examples/ai-first-saas-seed-app-description/README.md`. For additional AI-first operating-model reference structure, see `examples/ai-first-dca-app-description/README.md`.
 
 The purchase-request example intentionally includes enough scope to justify multiple component families:
 - one write model

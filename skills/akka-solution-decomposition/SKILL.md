@@ -122,7 +122,7 @@ If AI-first concerns are present, use `ai-first-saas` framing and extract:
 - governance, evidence, risk, confidence, impact, alternatives, audit, and learning-loop implications
 - supervision, decision, governance, digest, audit, and outcome UI surfaces
 
-If the product is clearly not agentic, say so and continue with ordinary Akka decomposition. Do not force every app to use every AI-first pattern.
+If the product is clearly not agentic, say so and continue with secure foundation-first Akka decomposition. Do not force every app to use every AI-first pattern beyond the mandatory secure SaaS foundation.
 
 ### 3. Extract capabilities
 

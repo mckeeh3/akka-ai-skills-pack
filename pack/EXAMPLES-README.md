@@ -26,8 +26,8 @@ Typical usage:
 
 ## Scope
 
-These examples are a reference set, not a complete application template.
-Use the smallest relevant example files for the current task.
+These examples are Akka substrate references, not a complete application template and not product-architecture guidance. Use them only after the target app's secure AI-first SaaS foundation and operating-model decisions are clear.
+Use the smallest relevant example files for the current component task.
 
 For full web app work, prefer the frontend project guidance in the installed skills and treat static resources as packaged build output unless a narrow endpoint example explicitly says otherwise.
 

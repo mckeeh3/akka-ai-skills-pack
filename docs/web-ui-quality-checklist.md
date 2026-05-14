@@ -90,11 +90,12 @@ If SSE/WebSocket is used:
 
 ## Security/session UX
 
-Security implementation is covered by separate security guidance. For web UI integration-only work, record any auth/session placeholders and do not invent identity-provider, JWT, or authorization behavior.
+For generated SaaS applications, the browser UI inherits the mandatory secure foundation. Record provider-specific placeholders when details are unknown, but do not invent or omit identity-provider, JWT, AuthContext, authorization, tenant/customer, or audit behavior. Only public static asset routes are outside authenticated API authorization.
 
 - [ ] Public UI asset routes and backend API routes are intentionally separated.
 - [ ] Sensitive data is not embedded in static assets.
-- [ ] Unauthorized/expired-session and forbidden-action UX is covered when security is in scope.
+- [ ] Unauthorized/expired-session and forbidden-action UX is covered for protected routes, including tenant/customer mismatch, disabled users, and role/scope denial.
+- [ ] `/api/me`, selected context, browser-safe capabilities, profile, settings, and context-switch behavior are represented when a browser UI is in scope.
 
 ## Build and tests
 

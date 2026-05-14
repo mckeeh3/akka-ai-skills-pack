@@ -33,9 +33,14 @@ Read these first if present:
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- `../../docs/examples/purchase-request-app-description/README.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/README.md` for the preferred secure AI-first SaaS seed shape
+- `../../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
 
-Prefer these example references:
+Prefer these example references for generated SaaS foundation bootstraps:
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+
+Use purchase-request mechanics references only when the task is specifically about cross-linked description mechanics:
 - `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
 - `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
 - `../../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`

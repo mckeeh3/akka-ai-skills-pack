@@ -227,7 +227,7 @@
 
 ### TASK-006: Eliminate or reframe residual non-AI-first-SaaS content and examples
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: [TASK-001, TASK-002, TASK-005]

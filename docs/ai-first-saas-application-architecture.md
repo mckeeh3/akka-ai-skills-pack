@@ -105,7 +105,7 @@ AI-first products may include tables, forms, and detail pages, but the primary U
 | Async Digest / Executive Briefing | Compress routine activity while surfacing material events, pending decisions, outcomes, and trace links. |
 | Audit / Work Trace | Explain who/what/when/why/how-authorized for actions, decisions, tool calls, data access, approvals, and outcomes. |
 
-For UI composition and implementation routing, use `../skills/ai-first-saas-ui-surfaces/SKILL.md` together with the existing Akka web UI skills and `../docs/examples/ai-first-dca-app-description/`.
+For secure foundation shape, start with `../docs/examples/ai-first-saas-seed-app-description/README.md`. For UI composition and implementation routing, use `../skills/ai-first-saas-ui-surfaces/SKILL.md` together with the existing Akka web UI skills and AI-first reference app-description examples such as `../docs/examples/ai-first-dca-app-description/`.
 
 ## Akka + React/Vite/TypeScript substrate
 

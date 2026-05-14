@@ -34,7 +34,8 @@ Read these first if present:
 - `../../docs/web-ui-style-guide.md` when a browser UI is in scope
 
 Prefer these local examples and references:
-- `../../docs/examples/purchase-request-app-description/README.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/README.md` for secure AI-first SaaS foundation shape
+- `../../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
 - `../../docs/examples/purchase-request-app-description/normalized-input-example.md`
 - `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
 - `../../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`

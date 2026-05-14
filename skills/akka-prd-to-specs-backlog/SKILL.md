@@ -12,7 +12,7 @@ This is a **project-specific planning skill** that builds on the ideas in `akka-
 ## Goal
 
 Generate a consistent planning package from a PRD, requirements document, or high-level feature set that:
-- interprets product intent through the AI-first SaaS operating model before ordinary CRUD or component decomposition when delegated work, decisions, governance, supervision, audit, or outcomes are in scope
+- interprets product intent through the secure AI-first SaaS operating model before record-management or component decomposition when delegated work, decisions, governance, supervision, audit, or outcomes are in scope
 - produces a master Akka solution plan with explicit operating-model, governance, UI-surface, outcome, and substrate mapping sections when applicable
 - for large inputs, splits the plan into module-oriented vertical sprint specs
 - for smaller inputs, splits the plan into bounded vertical slice specs

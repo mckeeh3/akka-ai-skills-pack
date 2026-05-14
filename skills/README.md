@@ -92,12 +92,13 @@ Default description-first flow:
 13. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 Reference docs:
+- `../docs/examples/ai-first-saas-seed-app-description/README.md` — preferred secure AI-first SaaS seed app-description reference
 - `../docs/description-first-application-doctrine.md`
 - `../docs/app-description-skills-plan-backlog.md`
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
 - `../docs/app-description-end-to-end-workflow-example.md`
-- `../docs/examples/purchase-request-app-description/README.md`
+- `../docs/examples/purchase-request-app-description/README.md` — description mechanics reference only; not target architecture doctrine
 - `../docs/examples/purchase-request-app-description/normalized-input-example.md`
 
 Important routing rule:
@@ -352,6 +353,7 @@ Once a solution plan is accepted, treat it as the work queue for coding:
 For durable multi-session execution, materialize the work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
 
 Decomposition is complete only when it enables focused implementation work with low ambiguity.
+Use `../docs/examples/ai-first-saas-seed-app-description/README.md` and `../docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Purchase-request examples are conventional planning/queue mechanics references only.
 For a lightweight template, see `../docs/solution-plan-to-implementation-queue.md`.
 For the durable queue contract, see `../docs/pending-task-queue.md`.
 
@@ -1101,6 +1103,8 @@ Load:
 - `akka-view-testing`
 
 ## Repository reference examples
+
+These Java examples are **Akka substrate references**, not generated-product architecture templates. Use them to copy component structure, APIs, tests, and edge patterns after secure AI-first SaaS foundation and operating-model decisions are already made. Do not use shopping-cart or other low-level examples to choose the product architecture.
 
 ### Event sourced entities
 Core entities:

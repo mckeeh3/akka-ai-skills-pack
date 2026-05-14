@@ -60,7 +60,8 @@ The browser API client should normalize:
 
 For each browser API endpoint:
 - use `@HttpEndpoint` and explicit `@Acl`
-- record exposure assumptions or placeholders; choose JWT/internal security details only when security guidance is in scope
+- apply the mandatory secure SaaS foundation: JWT/request-context extraction, selected AuthContext, backend authorization, tenant/customer scoping, and audit where protected data or actions are involved; only public static asset routes are outside authenticated API authorization
+- record provider-specific placeholders when WorkOS/JWT setup details are unknown, without weakening local authorization or tenancy contracts
 - validate request bodies at the edge where HTTP-specific feedback is needed
 - call Akka components through `ComponentClient` when business state is involved
 - map domain/component failures to HTTP-oriented responses
@@ -81,7 +82,7 @@ Endpoint integration tests should verify:
 - success response shape
 - validation failure response shape
 - not-found behavior where relevant
-- unauthorized/forbidden behavior when security is in scope or already defined
+- unauthorized/forbidden behavior for protected routes, including tenant/customer mismatch and role/scope denial
 - route paths referenced by packaged HTML/JS
 
 TypeScript checks should verify frontend DTO usage against local types. If generated contracts are introduced in a future wave, keep them explicit and easy for agents to trace from endpoint DTO to frontend client type.
