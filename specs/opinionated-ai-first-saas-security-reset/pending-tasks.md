@@ -263,7 +263,7 @@
 
 ### TASK-007: Package the core secure SaaS foundation and AI-first seed assets into the installable pack
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: [TASK-002, TASK-006]

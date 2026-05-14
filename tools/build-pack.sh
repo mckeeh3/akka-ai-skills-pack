@@ -163,6 +163,9 @@ PY
 
 PACK_DOC_FILES=(
   docs/ai-first-saas-application-architecture.md
+  docs/core-ai-first-saas-foundation.md
+  docs/core-saas-identity-tenancy-admin.md
+  docs/core-saas-owner-tenant-billing.md
   docs/app-description-end-to-end-workflow-example.md
   docs/app-description-maintenance-flow.md
   docs/app-description-skills-plan-backlog.md
@@ -171,6 +174,60 @@ PACK_DOC_FILES=(
   docs/agent-coverage-matrix.md
   docs/agent-runtime-state-reference.md
   docs/consumer-reference.md
+  docs/examples/ai-first-saas-seed-app-description/README.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/00-system/generation-policy.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/00-system/readiness-status.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/02-ai-first-work-management.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/03-governance-decisions-and-audit.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/04-frontend-shell-and-integration-patterns.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/capabilities-index.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/agent-roles-and-authority.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/audit-trace-and-outcomes.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/decisions-exceptions-and-evidence.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/goals-and-objectives.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/policies-and-approval-gates.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/behavior-index.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/02-goal-execution-flow.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/03-decision-and-approval-flow.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/rules/01-tenant-authz-rules.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/rules/02-agent-authority-rules.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/rules/03-component-mapping-rules.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/02-goal-plan-decision-lifecycle.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/negative/01-forbidden-actions.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/operational/01-observability-and-audit.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/authorization-rules.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/boundary-and-surface-rules.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/data-protection.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/identity-and-trust.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/health-and-alerts.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/logs-and-audit.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/metrics.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/traces-and-correlation.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/accessibility-and-responsive.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ai-first-surfaces.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/interactions-and-forms.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/personas-and-journeys.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/states-and-realtime.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ui-index.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/output-surfaces.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/realization-scope.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/regeneration-map.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/behavior-to-tests-map.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-behavior-map.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/change-impact-map.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/operating-model-to-behavior-map.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/80-review/latest-change-summary.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/80-review/latest-readiness-summary.md
   docs/examples/ai-first-dca-app-description/README.md
   docs/examples/ai-first-dca-app-description/app-description/00-system/README.md
   docs/examples/ai-first-dca-app-description/app-description/00-system/app-manifest.md

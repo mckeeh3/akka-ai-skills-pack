@@ -428,6 +428,11 @@ content:
       category: component-suite
   references:
     - skills/README.md
+    - docs/core-ai-first-saas-foundation.md
+    - docs/core-saas-identity-tenancy-admin.md
+    - docs/core-saas-owner-tenant-billing.md
+    - docs/examples/ai-first-saas-seed-app-description/README.md
+    - docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
   examples:
