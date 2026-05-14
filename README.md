@@ -1,6 +1,10 @@
 # Akka AI Skills Pack
 
-The **Akka AI Skills Pack** is an installable `.agents/` resource pack for AI coding harnesses such as Claude Code, Codex, and Pi. It helps the harness turn normal product and engineering intent into secure AI-first SaaS application plans, Akka Java SDK code, tests, and supporting backend/frontend delivery assets.
+The **Akka AI Skills Pack** is an installable `.agents/` resource pack for AI coding harnesses such as Claude Code, Codex, and Pi. It helps the harness turn normal product and engineering intent into full-stack, secure, AI-first SaaS application plans, Akka Java SDK code, React/Vite/TypeScript web UI assets, tests, and delivery artifacts.
+
+This pack is intentionally **opinionated**. Its goal is to help agents design and build SaaS products where AI does bounded operational work, humans supervise and govern outcomes, security is present from the first planning step, and the browser UI is a required supervision, administration, decision, audit, and outcome surface.
+
+This pack is **not** intended as a general-purpose generator for traditional CRUD applications, backend-only services, or human-only workflow apps with no delegated AI work, governance model, audit trail, or outcome loop. Conventional forms, tables, and admin screens may exist, but they are subordinate to the secure AI-first SaaS operating model.
 
 The pack is designed so users can speak naturally to the harness. You should not need to know the internal skill names, stages, or routing files.
 
@@ -15,7 +19,7 @@ Use this pack when you are building or evolving an Akka application and want you
 - WorkOS/JWT authentication seams and tenant/customer/user administration
 - app-description, specs, question queues, and pending task queues
 - Akka components such as entities, workflows, views, consumers, timed actions, endpoints, and agents
-- optional Akka-hosted web UI delivery
+- mandatory Akka-hosted web UI delivery for full-stack AI-first SaaS
 - tests, reviews, and iterative change reconciliation
 
 Start here:
