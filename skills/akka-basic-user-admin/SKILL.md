@@ -10,9 +10,9 @@ Use this skill when an Akka web app needs local user/account administration afte
 ## Required reading
 
 Read these first if present:
-- `../../../docs/security-pattern-selection.md`
-- `../../../docs/security-workos-auth-and-admin.md`
-- `../../../docs/security-review-checklist.md`
+- `../../docs/security-pattern-selection.md`
+- `../../docs/security-workos-auth-and-admin.md`
+- `../../docs/security-review-checklist.md`
 - `../akka-workos-user-auth/SKILL.md`
 - `../akka-http-endpoint-jwt/SKILL.md`
 - `../akka-key-value-entities/SKILL.md` or `../akka-event-sourced-entities/SKILL.md` when implementing user/account state
@@ -31,14 +31,15 @@ Read these first if present:
 
 Authentication proves who the caller is. Local Akka admin state decides what they may do.
 
-Recommended concepts:
-- local user id
-- email and display name
-- external identity provider subject, e.g. WorkOS subject
+Required SaaS foundation concepts:
+- Account id linked to the external identity provider subject, e.g. WorkOS subject
+- UserProfile for email/display attributes and UserSettings for preferences
 - status: `INVITED`, `ACTIVE`, `DISABLED`
-- roles: `APP_ADMIN`, `TENANT_ADMIN`, `CUSTOMER_ADMIN`, `USER`
-- scopes: all tenants, tenant ids, customer ids, or self-only
-- audit metadata for admin changes when audit is in scope
+- Tenant and Customer scoped Membership records
+- roles/capabilities such as `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`
+- scopes: SaaS Owner, tenant ids, customer ids, support-access windows, or self-only
+- selected AuthContext for each protected operation
+- AdminAuditEvent metadata for identity, membership, role, support-access, billing-boundary, approval, and data-access changes
 
 Use Key Value Entity for simple current user/account state. Use Event Sourced Entity when an audit-grade history of role/status changes is required in the state model.
 
@@ -57,7 +58,7 @@ GET  /api/tenants
 POST /api/tenants
 ```
 
-All admin routes should require JWT and server-side authorization checks.
+All admin routes should require JWT, request-context extraction, active local membership, tenant/customer scope validation, capability checks, and server-side authorization. List/query endpoints must filter by authorized tenant/customer context and return forbidden rather than leaking cross-tenant/customer data.
 
 ## Authorization rules
 
@@ -74,6 +75,7 @@ Rules:
 - prevent privilege escalation, such as a tenant admin assigning `APP_ADMIN`
 - require idempotent behavior for invites and repeated role assignments where possible
 - return `401` for missing/invalid authentication and `403` for authenticated forbidden actions unless resource-hiding policy says otherwise
+- write AdminAuditEvent records for invites, role/membership changes, disables/activations, support-access grants/revocations, forbidden attempts, and consequential admin data access
 
 ## Startup admin bootstrap
 
@@ -128,13 +130,16 @@ Keep business authorization out of frontend code. The frontend may use `/api/me`
 
 Add tests for:
 - bootstrap creates configured admins idempotently
-- `/api/me` returns active linked user roles/scopes
+- `/api/me` returns active linked account, profile/settings, memberships, selected AuthContext, roles/scopes, tenant/customer ids, and browser-safe capabilities
 - missing JWT rejected for admin APIs
 - disabled user rejected despite valid JWT
 - non-admin cannot list users
-- tenant admin cannot manage another tenant
-- tenant admin cannot grant `APP_ADMIN`
+- tenant admin cannot manage another tenant or customer outside scope
+- customer admin cannot manage tenant-wide users
+- tenant/customer-scoped list queries cannot leak cross-scope rows
+- tenant admin cannot grant `SAAS_OWNER_ADMIN` or other out-of-scope capabilities
 - repeated invite/role assignment is idempotent or returns documented conflict
+- audit events are emitted for admin changes and forbidden attempts
 - frontend receives enough `/api/me` data for navigation without leaking internals
 
 ## Anti-patterns

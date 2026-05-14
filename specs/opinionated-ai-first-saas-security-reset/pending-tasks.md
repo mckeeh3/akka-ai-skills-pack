@@ -172,7 +172,7 @@
 
 ### TASK-005: Harden implementation skills so endpoints, UI, agents, workflows, views, consumers, and timers inherit security-by-default
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: [TASK-002, TASK-004]

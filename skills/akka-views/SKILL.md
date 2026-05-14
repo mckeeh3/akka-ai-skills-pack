@@ -20,7 +20,7 @@ Generate or review view code that is:
 
 In AI-first SaaS work, use Views for supervision and accountability read models: command centers, active goal/plan lists, agent activity feeds, approval and exception queues, decision-card indexes, policy catalogs, audit search, digest inputs, and outcome dashboards.
 
-Views are derived projections, not the source of authority. Keep consequential decisions, policies, traces, approvals, and outcomes in entities, workflows, topics, or authoritative integrations, then project them into views for review, filtering, streaming, and reporting.
+Views are derived projections, not the source of authority. Keep consequential decisions, policies, traces, approvals, and outcomes in entities, workflows, topics, or authoritative integrations, then project them into views for review, filtering, streaming, and reporting. Generated SaaS view rows and queries must carry tenant/customer scope fields where data is scoped, and endpoints exposing views must filter by authorized AuthContext rather than by frontend state.
 
 Typical AI-first view sources:
 - Event Sourced Entities for audit-grade goals, decisions, policies, traces, and outcomes
@@ -110,6 +110,8 @@ Rules:
 12. For every non-SSE query, each `ORDER BY` column must also be present in that query's `WHERE` conditions; otherwise Akka may reject the query with `AK-00101`.
 13. For view queries exposed as SSE with `serverSentEventsForView(...)`, do **not** generate `ORDER BY`; SSE view events are delivered in created/event order.
 14. Prefer separate query methods over optional-filter `OR` expressions so each access path has explicit indexed fields.
+15. Include tenantId/customerId conditions in protected view queries and stream queries; never expose unscoped lists for tenant/customer data.
+16. Design forbidden-access behavior for view endpoints and tests: a caller outside scope receives `403` or resource-hidden behavior, not rows filtered only in the browser.
 
 ## Decision guide
 
@@ -156,6 +158,7 @@ Repository examples:
 - `ORDER BY` is constrained by the View indexes inferred from the `WHERE` clause. If you need `ORDER BY lowestConsumablePercent, deviceId`, include conditions for both fields, such as `lowestConsumablePercent <= :maxPercent` and `deviceId >= :minDeviceId`.
 - Do not use `ORDER BY` on live view queries forwarded to SSE; create a separate unsorted `streamUpdates = true` query for SSE and keep sorted/paginated queries separate.
 - View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.
+- Tenant/customer scope columns are part of the security contract for scoped SaaS views; omit them only for deliberately platform-public or aggregate data approved by the foundation spec.
 
 ## Final review checklist
 
@@ -172,6 +175,8 @@ Before finishing, verify:
 - snapshot handling is present when an ESE-backed view should start from snapshots
 - tests publish incoming messages from the correct source type
 - tests use `Awaitility` instead of assuming immediate view updates
+- scoped views include tenant/customer filters in queries and endpoint callers enforce AuthContext before querying or streaming
+- tests cover no cross-tenant/customer leakage and forbidden access for protected view APIs
 
 ## Response style
 

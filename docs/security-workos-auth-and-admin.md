@@ -209,4 +209,4 @@ Bootstrap behavior:
 - [ ] backend secrets are not present in `frontend/.env*` or built assets
 - [ ] startup bootstrap is idempotent
 - [ ] invite/link/activate flow has success and failure tests
-- [ ] admin actions are auditable when audit is in scope
+- [ ] admin actions emit required AdminAuditEvent records for identity, membership, role, support-access, data-access, and forbidden attempts

@@ -19,7 +19,7 @@ Generate or review timer code that is:
 
 In AI-first SaaS implementations, use timed actions for deadlines, reminders, expiries, periodic digests, stale-work rechecks, retry nudges, replay/simulation schedules, policy-review cadences, and outcome-measurement windows.
 
-Timers should trigger bounded follow-up rather than make hidden consequential decisions. When a timer affects delegated work, approval SLAs, exceptions, policy changes, or outcome reporting, make the target command idempotent and ensure the authoritative entity or workflow records the decision, timeout, escalation, or trace/outcome event.
+Timers should trigger bounded follow-up rather than make hidden consequential decisions. When a timer affects delegated work, approval SLAs, exceptions, policy changes, tenant/customer data, or outcome reporting, make the target command idempotent and ensure the authoritative entity or workflow records the actor or system principal, tenant/customer scope, authorization/approval reference, decision, timeout, escalation, and trace/outcome event.
 
 Pair AI-first timed actions with:
 - `akka-workflows` for approval deadlines, exception escalation, plan retries, and long-running automation checkpoints
@@ -87,6 +87,9 @@ If the timer flow is part of a broader component story, also load the relevant f
 6. Schedule the timer before creating mutable state when an untracked resource would be worse than an obsolete timer.
 7. Delete timers as housekeeping after successful completion, but also make the target flow safe if deletion does not happen.
 8. Keep timed actions stateless; coordinate with entities, workflows, views, or endpoints through `ComponentClient`.
+9. Timer payloads for scoped SaaS work must include target id plus tenant/customer scope and the authorization/approval/audit reference needed by the target component.
+10. The target component must reject or no-op obsolete timers without crossing tenant/customer boundaries.
+11. Timed actions that perform consequential work must use a system/service actor with explicit capability or route to a workflow/entity that reauthorizes before side effects.
 
 ## Decision guide
 
@@ -131,7 +134,9 @@ Before finishing, verify:
 - scheduled method signature is compatible with future deployments
 - timed action replies `done()` for obsolete timers
 - unexpected failures are not swallowed unless intentionally converted to terminal success
-- tests cover both timer firing and explicit confirmation or cancellation paths
+- tenant/customer scope and authorization/approval/audit references are present for protected timer-triggered work
+- timer-triggered side effects cannot cross tenant/customer boundaries and are audited when consequential
+- tests cover both timer firing and explicit confirmation or cancellation paths, including stale/forbidden scoped timer attempts when relevant
 
 ## Response style
 

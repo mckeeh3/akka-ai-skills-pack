@@ -23,6 +23,8 @@ Read these first if present:
 
 ## Use this pattern when
 
+For generated SaaS apps, workflow-supervised agent orchestration must carry AuthContext, tenant/customer scope, policy/approval references, and trace identifiers through the workflow state or command payload so retries and resumes cannot lose authorization boundaries.
+
 - agent calls need retries and durable recovery
 - several agents collaborate on the same request
 - a workflow should own the shared session id
@@ -36,6 +38,9 @@ Read these first if present:
 4. Reuse the workflow id as the shared session id.
 5. Persist intermediate outputs in workflow state when later steps need them.
 6. Do not model agent-to-agent coordination as tools.
+7. Persist actor, tenant/customer, membership/capability snapshot or lookup reference, policy version, approval gate, and audit/work-trace ids needed by later agent steps.
+8. Reauthorize before consequential tool calls or final commits, especially after long pauses or retries.
+9. Route high-risk, low-confidence, cross-scope, or policy-bound outputs to human approval workflows instead of autonomous commits.
 
 ## Repository example
 
@@ -56,3 +61,5 @@ Before finishing, verify:
 - retries are bounded
 - workflow state captures the data needed by later steps
 - agent collaboration uses a workflow supervisor instead of direct chaining
+- workflow state preserves actor, tenant/customer scope, policy/approval/audit references, and forbidden/exception paths
+- consequential agent outputs are reauthorized and audited before final side effects

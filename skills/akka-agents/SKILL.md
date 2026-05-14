@@ -18,7 +18,7 @@ Generate or review agent code that is:
 
 ## AI-first substrate role
 
-In AI-first SaaS implementations, use agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use. Before coding, make responsibility, non-responsibility, allowed tools/data, autonomous authority, escalation thresholds, session/memory behavior, and trace obligations explicit. Use workflows for durable multi-agent orchestration, approvals, retries, timeouts, and progress tracking instead of chaining agents informally.
+In AI-first SaaS implementations, use agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use. Before coding, make responsibility, non-responsibility, allowed tools/data, tenant/customer scope, required permissions/capabilities, autonomous authority, policy gates, approval thresholds, escalation thresholds, session/memory behavior, and audit/work-trace obligations explicit. Use workflows for durable multi-agent orchestration, approvals, retries, timeouts, and progress tracking instead of chaining agents informally.
 
 ## Required reading before coding
 
@@ -160,8 +160,11 @@ Use when the model performs a bounded responsibility within a durable goal, plan
 
 Before implementation, identify:
 - delegated work and retained human authority
-- policies, permissions, evidence, and risk thresholds that bound the agent
-- trace records needed for prompts, tools, data access, recommendations, evaluations, and outcomes
+- caller AuthContext, tenant/customer scope, and active membership requirements
+- policies, permissions/capabilities, evidence, and risk thresholds that bound the agent
+- tool/data access allowed per scope and forbidden-access behavior
+- approval gates for consequential actions or high-risk recommendations
+- trace records needed for prompts, tools, data access, recommendations, evaluations, denials, approvals, and outcomes
 - whether a workflow must supervise retries, approvals, or multi-step execution
 
 ### 1. Single-purpose request/reply agent
@@ -211,8 +214,9 @@ Before finishing, verify:
 - harness-like skill tools are whitelisted and backed by packaged resources or MCP, not arbitrary filesystem reads
 - structured response records are small and descriptive
 - workflow orchestration is used instead of agent-to-agent tool chaining
-- AI-first agents have explicit authority boundaries, escalation criteria, and trace obligations
-- tests replace real models with `TestModelProvider`
+- AI-first agents have explicit authority boundaries, tenant/customer scope, required permissions, policy/approval gates, escalation criteria, and trace obligations
+- agent tools enforce backend authorization and audit before consequential data access or side effects
+- tests replace real models with `TestModelProvider` and cover forbidden/unauthorized tool or action attempts when relevant
 
 ## Response style
 

@@ -38,5 +38,5 @@ Use before completing security-sensitive Akka changes.
 - [ ] `/api/me` returns a browser-facing DTO, not internal entity state.
 - [ ] Invite and first-login linking are idempotent.
 - [ ] Startup admin bootstrap is idempotent and validates malformed config.
-- [ ] Admin actions are audited when audit is in scope.
+- [ ] Admin actions emit required AdminAuditEvent records.
 - [ ] Tests cover allowed and forbidden admin operations.

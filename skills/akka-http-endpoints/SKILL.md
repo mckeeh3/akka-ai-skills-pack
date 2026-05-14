@@ -22,6 +22,8 @@ In AI-first SaaS implementations, use HTTP endpoints as browser-facing control a
 
 Keep endpoints as edge adapters: validate request shape, map authentication/authorization context, translate to component commands or queries, and return HTTP-appropriate responses. Do not encode agent authority, policy decisions, or approval outcomes only in endpoint code; pass them to entities, workflows, agents, views, or timed actions that can preserve durable state and traces.
 
+Security context is expected input for generated SaaS endpoints. Protected browser, service, gRPC, and MCP-style API surfaces must default to JWT/request-context extraction plus a backend authorization helper that verifies active account, membership, tenant/customer scope, roles/capabilities, and forbidden-access behavior. Only explicit public static asset routes may omit authentication; public read APIs must still be a deliberate product decision with audit/privacy review.
+
 Pair AI-first HTTP endpoints with:
 - `akka-web-ui-apps` and focused web UI skills for command center, decision-card, governance, digest, and audit surfaces
 - `akka-http-endpoint-sse` or `akka-http-endpoint-websocket` for supervision streams and live work-trace updates
@@ -125,6 +127,9 @@ Rules:
 10. Keep production endpoint code synchronous with `.invoke()` unless a low-level streaming HTTP case truly requires otherwise.
 11. Keep business rules in domain or components, not in the endpoint.
 12. Test endpoints through `httpClient`, not `componentClient`.
+13. For generated SaaS APIs, extract or receive `AuthContext` and authorize every protected route against tenant/customer scope and required capability before calling components.
+14. Return explicit `401`/`403` behavior for missing authentication, disabled users, forbidden roles/scopes, and cross-tenant/customer attempts; include audit events for denials and consequential access when the foundation requires it.
+15. Keep public static frontend assets separate from protected `/api/...` routes; do not let an app-shell route imply API authorization.
 
 ## Decision guide
 
@@ -180,7 +185,7 @@ Repository example:
 - `PingWebSocketEndpoint`
 
 ### 8. JWT-secured endpoint
-Use when the endpoint requires bearer token validation and claim-aware behavior.
+Use when the endpoint requires bearer token validation and claim-aware behavior. This is the default for generated SaaS browser APIs under `/api/...`; pair JWT validation with local `/api/me`/membership authorization instead of treating token presence as permission.
 
 Repository example:
 - `SecureGreetingEndpoint`
@@ -203,6 +208,9 @@ Before finishing, verify:
 - request body parameter is last when combined with path parameters
 - `HttpResponse` methods return explicit HTTP errors when relevant
 - tests use `httpClient`
+- protected routes have JWT/request-context handling and backend authorization checks
+- tenant/customer ids are filtered or rejected server-side for every scoped command, query, stream, and component call
+- forbidden, disabled-user, role/scope denial, cross-tenant/customer, and audit expectations are covered or explicitly delegated to foundation tests
 
 ## Response style
 

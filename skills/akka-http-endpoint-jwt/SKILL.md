@@ -21,6 +21,8 @@ Read these first if present:
 
 ## Use this pattern when
 
+For generated AI-first SaaS applications, use this pattern for protected browser APIs, service-facing HTTP APIs that accept bearer tokens, and any endpoint whose behavior depends on signed-in account, membership, tenant/customer scope, roles/capabilities, or audit context. Public static frontend asset routes are the normal exception.
+
 - the endpoint should require a bearer token
 - a browser frontend should call `/api/...` with `Authorization: Bearer <token>`
 - WorkOS or another identity provider issues access tokens for frontend users
@@ -36,8 +38,10 @@ Read these first if present:
 4. Extend `AbstractHttpEndpoint` when the handler must inspect claims.
 5. Read claims through `requestContext().getJwtClaims()`.
 6. Keep authentication and claim extraction at the edge.
-7. Keep application authorization in Akka-owned user/account/role state or explicit authorization services.
-8. In integration tests, inject a bearer token through the `Authorization` header.
+7. Keep application authorization in Akka-owned Account/Membership/Role/Permission state or explicit authorization services.
+8. Build an `AuthContext` from validated claims plus local `/api/me`/membership data before protected component calls.
+9. Enforce active status, tenant/customer scope, required capability, disabled-user rejection, and forbidden-access behavior after JWT authentication.
+10. In integration tests, inject a bearer token through the `Authorization` header.
 
 ## Frontend-to-backend JWT pattern
 
@@ -48,9 +52,10 @@ For an Akka-hosted web app:
 - frontend sends `Authorization: Bearer <token>`
 - Akka validates the token with `@JWT`
 - endpoint reads `sub`, `email`, `iss`, or other needed claims
-- endpoint loads local Akka user/account state and enforces app authorization
+- endpoint loads local Akka account, membership, selected AuthContext, and capability state
+- endpoint enforces app authorization and records required audit events before consequential actions or sensitive data access
 
-Do not trust hidden frontend navigation as authorization.
+Do not trust hidden frontend navigation, JWT presence, email domain, or mutable JWT role claims as the sole authorization source.
 
 ## Repository example
 
@@ -85,6 +90,7 @@ Before finishing, verify:
 - `bearerTokenIssuers` matches the intended issuer contract when known
 - required static claims, such as audience, are explicit when needed
 - claim access uses `requestContext().getJwtClaims()`
-- server-side authorization is enforced after authentication when roles/scopes matter
+- server-side authorization is enforced after authentication for every protected SaaS route, including tenant/customer filtering and disabled-user rejection
+- `/api/me` or equivalent local account lookup supplies browser-safe roles/capabilities and selected context
 - frontend/backend calls use the standard `Authorization: Bearer ...` header
 - integration tests inject a bearer token header

@@ -17,6 +17,7 @@ This skill complements `akka-http-endpoint-web-ui`:
 In AI-first SaaS implementations, use web UI apps as human supervision and governance surfaces, not CRUD dashboards with a chat panel. Prioritize command center, goal-to-execution workbench, decision card, policy/governance, async digest, audit/work-trace, and outcome review screens when the product includes delegated work, approvals, exceptions, policy changes, or accountability loops.
 
 Before implementation, make the UI contract explicit for:
+- selected account, membership, AuthContext, tenant/customer scope, roles/capabilities, disabled/forbidden states, and `/api/me` bootstrap behavior;
 - delegated objective status, active plan progress, agent/team activity, exceptions, and pending approvals;
 - recommendation/decision evidence, risk, confidence, impact, alternatives, and action controls;
 - policy proposals, simulations, governed commits, learning feedback, and permission boundaries;
@@ -41,7 +42,7 @@ Read these first if present:
 - matching endpoint and endpoint tests under `src/main/java/**/api` and `src/test/java/**`
 
 Canonical frontend project integration reference:
-- `../../../frontend-with-akka-backend.md` (use only web UI integration sections unless security is explicitly in scope)
+- `../../../frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
 
 ## Use this skill when
 
@@ -70,11 +71,12 @@ Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and pr
 9. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
 10. Accessibility and responsive requirements
 11. Akka HTTP endpoint route plan, including generated frontend asset and API route separation
-12. SPA routing choice: hash routing, explicit server entry routes, or in-app navigation only
-13. Implementation skills to load
-14. Required tests and quality checks
+12. Auth/session/security UI contract: WorkOS/AuthKit entry, `/api/me` bootstrap, context selection, capability-gated navigation/actions, disabled-user state, forbidden recovery, and tenant/customer isolation expectations
+13. SPA routing choice: hash routing, explicit server entry routes, or in-app navigation only
+14. Implementation skills to load
+15. Required tests and quality checks
 
-For this skill family, defer auth/session/security implementation details unless the user explicitly asks for them. Record any known auth-dependent UI states as placeholders for the later security pass.
+For generated SaaS apps, auth/session/security behavior is expected input. If provider-specific values are unknown, preserve the local `/api/me`, AuthContext, capability, and forbidden-state contract while blocking only provider-specific integration details that cannot be safely implemented.
 
 ## Skill routing
 
@@ -96,6 +98,7 @@ Always pair with Akka hosting/API skills as needed:
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
 - `akka-http-endpoint-jwt` for generated SaaS API routes that require authenticated browser or service callers; only public static asset routes are outside authenticated API authorization
+- `akka-http-endpoint-request-context` for selected tenant/customer context, correlation/audit metadata, and forbidden-access behavior
 - `akka-http-endpoint-testing`
 
 ## Default implementation order
@@ -117,14 +120,14 @@ A complete web UI must apply the selected style guide without copying demo conte
 For AI-first surfaces, a complete UI must make human authority obvious: what the system is doing, why it recommends or waits, what evidence and policy triggered the state, what the human can approve/reject/defer/escalate, and where the trace/outcome can be reviewed.
 
 A complete web UI must handle:
-- first-five-seconds comprehension: where am I, what matters, what can I do?
+- first-five-seconds comprehension: where am I, which account/tenant/customer context is active, what matters, what can I do?
 - clear primary action and subordinate secondary actions
 - initial loading
 - useful empty data state
 - successful data
 - validation failures with preserved input and focus behavior
 - backend/API errors with recovery copy
-- unauthorized/forbidden placeholders when security behavior is already defined
+- unauthenticated, disabled-user, unauthorized/forbidden, and cross-tenant/customer denial states based on `/api/me` and backend responses
 - disabled/submitting states for actions
 - responsive layout at common viewport widths
 - keyboard navigation and visible focus
@@ -141,6 +144,6 @@ Avoid:
 - assuming route tests are enough for frontend logic
 - hand-editing generated frontend build output under `static-resources/`
 - mixing static asset wildcards and backend API routes under ambiguous catch-all paths
-- implementing auth/session/security details during a web UI integration-only pass
+- treating auth/session/security as optional for generated SaaS UI; only public static assets are outside authenticated API authorization
 - silently choosing colors/theme when app-description/specs have not selected a style guide
 - skipping accessible labels, focus behavior, or responsive layout

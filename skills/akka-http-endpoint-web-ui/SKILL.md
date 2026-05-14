@@ -40,7 +40,7 @@ Read these first if present:
 - a standard frontend project should build production assets into `src/main/resources/static-resources/`
 - generated CSS should apply the selected web UI style guide/theme
 - if a browser UI style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` before implementing affected UI assets
-- auth/security implementation details are out of scope unless the user explicitly asks for them
+- public frontend asset routes are separated from JWT-protected `/api/...` routes; generated SaaS APIs use request-context and backend authorization helpers by default
 
 ## Pattern selection
 
@@ -84,8 +84,16 @@ Use this when the browser needs two-way communication; for product UI work, keep
 Read next as needed:
 - `../../../docs/web-ui-pattern-selection.md`
 - `../akka-http-endpoint-jwt/SKILL.md`
+- `../akka-http-endpoint-request-context/SKILL.md`
 - `../akka-http-endpoint-acl-internal/SKILL.md`
 - `../../../src/main/java/com/example/api/InternalStatusEndpoint.java`
+
+Default generated SaaS route boundary:
+- public: static app shell/assets only, such as `/`, `/ui...`, and `/assets/**`
+- protected: `/api/...`, SSE, and WebSocket routes that expose tenant/customer data, decisions, traces, admin state, or consequential actions
+- internal: service-only operational routes with explicit ACLs
+
+Protected UI APIs must require JWT/request-context extraction, active local membership, tenant/customer filtering, capability checks, and forbidden-access behavior. Browser route guards and hidden buttons are UX only.
 
 ## Frontend asset guidance
 
@@ -104,8 +112,8 @@ Akka implementation and tests remain Java-based.
 Prefer clear route families:
 
 - generated frontend app shell and assets: `/`, `/assets/**`, `/ui...`, or explicit app-specific entry routes
-- JSON APIs: `/api/...`
-- SSE streams: explicit stream prefix such as `/counter-stream/...` or `/streams/...`
+- JSON APIs: `/api/...` with JWT/request-context and backend authorization for generated SaaS behavior
+- SSE streams: explicit stream prefix such as `/counter-stream/...` or `/streams/...`; tenant/customer-scoped streams require authorization before subscription
 - WebSocket routes: `/websockets/...`
 
 Keep those route families separate so a future agent can infer intent from the path alone. Avoid a broad `/**` SPA fallback when it overlaps `/assets/**`; use hash routing or explicit entry routes for deep links.
@@ -148,3 +156,5 @@ Before finishing, verify:
 - frontend source paths and served JavaScript/CSS asset paths are easy to correlate
 - integration tests fetch the generated app shell and CSS/JS asset routes through `httpClient`
 - non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md` and the selected style guide
+- protected API, SSE, or WebSocket routes called by the UI carry AuthContext, tenant/customer filtering, and forbidden-access tests
+- public static asset exposure has been reviewed so it cannot leak backend secrets or protected data

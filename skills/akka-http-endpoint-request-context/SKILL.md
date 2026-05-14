@@ -20,6 +20,8 @@ Read these first if present:
 
 ## Use this pattern when
 
+Generated SaaS APIs should treat request context as the source for authenticated caller metadata, correlation/audit metadata, and selected tenant/customer context before invoking protected application components.
+
 - the endpoint behavior depends on query parameters
 - the endpoint reads request headers, JWT claims, principals, or tracing metadata
 - the endpoint should stay in the HTTP layer without unnecessary constructor injection
@@ -32,6 +34,9 @@ Read these first if present:
 3. Keep request parsing small and explicit.
 4. Return HTTP-oriented errors when required request context is missing or invalid.
 5. Keep domain rules outside the endpoint.
+6. For protected SaaS APIs, turn JWT/principal/header metadata into an `AuthContext` and pass only authorized actor/scope data to downstream components.
+7. Reject missing, inconsistent, or forbidden tenant/customer context at the edge before running view queries, streams, workflow actions, agent tools, or component commands.
+8. Preserve correlation ids, actor ids, tenant/customer ids, and denial reasons needed for AdminAuditEvent or work-trace creation.
 
 ## Repository examples
 
@@ -51,6 +56,8 @@ Read these first if present:
 - request headers: correlation ids, tenant routing, lightweight caller context
 - SSE reconnect metadata: `lastSeenSseEventId()`
 - JWT or principal metadata when access control is configured
+- selected tenant/customer context and membership/capability hints for backend authorization
+- correlation, request id, or audit trace metadata for protected operations
 
 ## Anti-patterns
 
@@ -68,3 +75,5 @@ Before finishing, verify:
 - missing or invalid request metadata is handled explicitly
 - path params, query params, and body mapping stay readable
 - tests cover the request-context-dependent behavior
+- protected endpoints fail closed when required AuthContext, tenant/customer scope, or active membership is absent
+- forbidden/cross-tenant request-context combinations are covered in endpoint or foundation tests

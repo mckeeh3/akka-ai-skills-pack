@@ -20,7 +20,7 @@ Generate or review Consumer code that is:
 
 In AI-first SaaS implementations, use consumers for asynchronous trace fanout, enrichment, notifications, downstream publication, integration with external signals, and curation of material events for supervision, audit, digest, or outcome loops.
 
-Keep consumers idempotent and side-effect boundaries explicit. Do not hide authority transitions, approval decisions, or policy commits inside consumers; route consequential state changes to entities or workflows, then use consumers to react, enrich, publish, or project follow-on work.
+Keep consumers idempotent and side-effect boundaries explicit. Preserve actor, tenant/customer, policy, approval, and trace context from upstream messages when side effects or downstream publication are scoped. Do not hide authority transitions, approval decisions, or policy commits inside consumers; route consequential state changes to entities or workflows, then use consumers to react, enrich, publish, or project follow-on work.
 
 Pair AI-first consumers with:
 - `akka-views` for command centers, decision queues, digests, and audit/outcome reporting
@@ -92,6 +92,10 @@ Load the companion skill that matches the current task:
 8. For per-entity broker ordering, include `ce-subject` metadata when producing.
 9. For service streams, add `@Acl` so other Akka services can subscribe.
 10. Test topic flows with `TestKitSupport` and mocked incoming/outgoing messages.
+11. For generated SaaS flows, include tenant/customer ids and actor/audit metadata in consumed messages or load them from the authoritative source before side effects.
+12. Recheck authorization or consume an explicit prior authorization/approval decision before consequential side effects.
+13. Prevent cross-tenant/customer fanout by preserving `ce-subject`, tenant/customer metadata, and scoped downstream command payloads.
+14. Emit or propagate AdminAuditEvent/work-trace records for data access, denials, publications, and consequential side effects.
 
 ## Decision guide
 
@@ -152,6 +156,8 @@ Before finishing, verify:
 - the handler input type matches the source semantics
 - `effects().ignore()` is explicit for unhandled events or states
 - downstream side effects are idempotent under redelivery
+- tenant/customer scope, actor, authorization/approval, and trace metadata are preserved or intentionally reloaded before side effects
+- cross-tenant/customer side effects are rejected or impossible by payload design
 - `ce-subject` metadata is added when producing ordered per-entity topic messages
 - `@Acl` is present for `@Produce.ServiceStream`
 - tests use the right TestKit incoming/outgoing message hooks
