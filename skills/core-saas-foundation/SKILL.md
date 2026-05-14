@@ -1,0 +1,104 @@
+---
+name: core-saas-foundation
+description: Apply the mandatory secure SaaS foundation for every new AI-first SaaS app, PRD, spec, backlog, app-description, decomposition, and generation flow before app-specific domain work.
+---
+
+# Core SaaS Foundation
+
+Use this skill for every new project, app, PRD, spec, backlog, app-description bootstrap, solution decomposition, and generation flow handled by this pack unless the user explicitly asks for repository-maintenance-only work or non-SaaS reference material.
+
+This is a mandatory foundation skill. It does not replace `ai-first-saas`, app-description skills, Akka decomposition, or component implementation skills. It supplies the secure SaaS baseline those paths must include before app-specific CRM/domain features are treated as generation-ready.
+
+## Required reading
+
+Read these first when using this skill:
+- `../../AGENTS.md`
+- `../README.md`
+- `../../docs/core-ai-first-saas-foundation.md`
+- `../../docs/core-saas-identity-tenancy-admin.md`
+- `../../docs/core-saas-owner-tenant-billing.md`
+- `../../docs/ai-first-saas-application-architecture.md`
+
+Then load only the focused downstream skills needed for the selected path:
+- `ai-first-saas` for operating-model interpretation
+- `app-description-auth-security` for description-first security semantics
+- `akka-workos-user-auth` for WorkOS/JWT browser authentication
+- `akka-basic-user-admin` for local account, membership, role, invite, and admin flows
+
+## Mandatory baseline objects
+
+Every generated SaaS application must model these foundation concepts before app-specific features:
+
+- SaaS Owner — platform operator that manages Tenants, Tenant Admin bootstrap, subscription/billing state, and platform-safe metadata only.
+- Tenant — subscribing SaaS user organization that owns tenant application data and serves Customers.
+- Customer — organization served by a Tenant; all Customer data remains inside the Tenant boundary.
+- Account — local Akka-owned authorization record linked to a WorkOS-authenticated human identity.
+- UserProfile — human-facing display/profile attributes; never grants authorization.
+- UserSettings — user preferences such as `uiMode`; never overrides authorization, policy, or audit.
+- Membership — scoped Account relationship to SaaS Owner, Tenant, or Customer with status and roles.
+- Role — named permission bundle within a scope, such as `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, or `CUSTOMER_USER`.
+- Permission/Capability — mechanically enforced action grants used by endpoints, component commands, queries, tools, workflows, consumers, timers, and UI capability display.
+- Invitation — auditable invite/onboarding state for Tenant, Customer, and user activation flows.
+- AuthContext — selected signed-in operating context: account, membership, roles/capabilities, tenantId/customerId when applicable, and actor metadata.
+- AdminAuditEvent — durable audit record for identity, membership, role, policy, support-access, billing, data access, approval, and consequential AI/tool activity.
+- Support-access membership — Tenant-created, time-limited, auditable Tenant-scoped access for SaaS Owner personnel when a Tenant requests help; never a global super-admin bypass.
+- Subscription/billing boundary — SaaS Owner to Tenant subscription, plan, billing account, and entitlement state that excludes Tenant application data.
+
+## Mandatory baseline behavior
+
+All broad planning and generation paths must include:
+
+- WorkOS authentication seam for browser human sign-in and JWT-bearing API calls unless the target explicitly selects another provider.
+- Akka-owned local authorization state for Accounts, Memberships, Roles, Permissions/Capabilities, Tenant, Customer, support access, and billing-safe platform records.
+- `/api/me` returning browser-safe account, profile, settings, active memberships, selected AuthContext, roles/capabilities, and context-switch data.
+- Backend authorization service used by every protected HTTP/gRPC/MCP route, component command, view query, stream, workflow action, agent tool, consumer side effect, and timer action.
+- Tenant/customer-scoped commands and queries that include `tenantId` and `customerId` where required and reject cross-scope access mechanically.
+- AdminAuditEvent creation for identity changes, invitations, membership/role changes, support access, policy checks, approval outcomes, billing actions, data access, and consequential AI/tool activity.
+- Tenant-isolation tests, forbidden-access tests, disabled-user tests, role/scope-denial tests, audit tests, `/api/me` tests, and security-review checks.
+
+## First-slice implementation order
+
+For every new SaaS app, implement or specify the secure foundation before app-specific CRM/domain features:
+
+1. Common identity/tenancy types: IDs, scope enums, roles, permissions/capabilities, AuthContext, audit metadata.
+2. WorkOS/JWT authentication seam and request-context extraction.
+3. Account, UserProfile, and UserSettings state plus base profile/settings APIs.
+4. Tenant and Customer organization state with Tenant/Customer boundaries.
+5. Membership, Role, Permission/Capability, Invitation, support-access, and context-selection flows.
+6. `/api/me` endpoint and browser-safe capability model.
+7. Central backend authorization service and mandatory checks for routes, commands, queries, streams, tools, workflow actions, consumers, and timers.
+8. SaaS Owner to Tenant subscription/billing boundary, plan/subscription/entitlement records, and billing-safe admin APIs where needed.
+9. AdminAuditEvent write path and scoped audit/search views.
+10. Foundation UI shell: sign-in, context selection, profile/settings, admin navigation, user/tenant/customer administration, and capability-gated actions when a browser UI is in scope.
+11. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, audit, support-access expiry/revocation, billing-boundary, and frontend secret-boundary tests.
+12. Security review before implementing app-specific CRM/domain slices.
+
+Do not let uncertainty about provider-specific details block modeling the mandatory local authorization, tenancy, AuthContext, and audit contracts. If WorkOS setup values are unknown, queue a provider-specific question while preserving the local boundary model.
+
+## Route-specific requirements
+
+### App-description paths
+
+Bootstrap and maintain secure SaaS foundation files in capabilities, behavior, tests, auth/security, observability, and UI layers. Missing Account/Profile/Settings/Membership/Tenant/Customer/admin/audit semantics must make readiness `not-ready` or block generation.
+
+### Akka solution decomposition
+
+Every solution plan must include a `Core secure SaaS foundation` section before app-specific capabilities. Skill routing must include `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, endpoint JWT/request-context skills, and the entity/workflow/view/test skills needed to realize the foundation.
+
+### PRD/spec/backlog planning
+
+Every app PRD must create `specs/cross-cutting/01-auth-tenancy-audit.md` and a first foundation sprint or slice unless the task is explicitly non-SaaS reference material. Pending tasks must start with foundation work before app-specific CRM/domain tasks.
+
+### Generation
+
+Generation must stop or mark the description not-ready when the foundation is missing. Do not invent access semantics during code generation; add description/spec gaps instead.
+
+## Output checklist
+
+Before handing off to downstream implementation, verify:
+- SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, and subscription/billing boundary are present or explicitly deferred only for non-SaaS reference work.
+- `/api/me` and context selection are specified for browser apps.
+- Backend authorization checks are required for every protected route, component command, query, stream, tool, workflow action, consumer side effect, and timer action.
+- Tenant/customer-scoped commands and queries enforce isolation mechanically.
+- Tenant-isolation and security baseline tests are first-slice work, not polish.
+- App-specific domain implementation starts only after the secure SaaS foundation contract exists.

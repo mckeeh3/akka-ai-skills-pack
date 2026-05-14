@@ -7,7 +7,7 @@ description: Interpret high-level product intent as an AI-first SaaS operating m
 
 Use this as the top-level interpretation skill when a product, PRD, feature request, or architecture prompt involves delegated operational work, autonomous or semi-autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
 
-This is a routing and framing skill. It does not replace app-description skills, Akka solution decomposition, or focused component implementation skills.
+This is a routing and framing skill. It does not replace `core-saas-foundation`, app-description skills, Akka solution decomposition, or focused component implementation skills. For every generated SaaS app, route through `core-saas-foundation` before app-specific domain work.
 
 ## Goal
 
@@ -29,6 +29,7 @@ Then choose the smallest downstream path that can implement or maintain that mod
 Read these first when using this skill:
 - `../../AGENTS.md`
 - `../README.md`
+- `../core-saas-foundation/SKILL.md`
 - `../../docs/ai-first-saas-application-architecture.md`
 
 For description-first work, also read the app-description docs named by `skills/README.md`.
@@ -49,13 +50,13 @@ Also use it for broad product prompts where the app may be AI-first even if the 
 
 ## Do not use when
 
-Do not force AI-first framing when the task is clearly:
+Do not force every AI-first pattern when the task is clearly:
 - a narrow Akka component implementation request with settled architecture
-- a simple current-state CRUD app with no delegated work, decisions, governance, or outcome loop
+- a secure SaaS feature with no delegated work, decisions, governance, or outcome loop beyond the mandatory foundation
 - a documentation or repo maintenance task unrelated to generated application architecture
-- a pure static UI or endpoint task with no agentic operating model implications
+- a pure public static asset task with no protected API or agentic operating model implications
 
-Even when this skill is used, apply only the AI-first patterns justified by the product intent.
+Even when this skill is used, apply only the AI-first patterns justified by the product intent, while keeping the `core-saas-foundation` mandatory for generated SaaS apps.
 
 ## Anti-chatbot rule
 
@@ -112,12 +113,12 @@ Prefer mechanically enforced permissions and versioned policy records over promp
 
 ### 5. Choose the downstream operating path
 
-Route based on what the user is asking for:
+First load `core-saas-foundation` for the mandatory Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline, then route based on what the user is asking for:
 
 - Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative application description before generation.
 - Use `akka-solution-decomposition` when the user wants a direct Akka solution shape and the component set is not yet known.
 - Use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlogs, and pending-task artifacts.
-- Use focused Stage 3 component skills only when the AI-first operating model and component scope are already clear enough to implement.
+- Use focused Stage 3 component skills only when the secure foundation, AI-first operating model, and component scope are already clear enough to implement.
 
 ## Akka substrate routing
 
@@ -140,7 +141,7 @@ When this skill is the entry point, produce or feed downstream work with:
 - selected durable objects and why each is needed
 - agent/team responsibilities and authority boundaries, if agents are in scope
 - policy, approval, exception, audit, and outcome implications
-- recommended downstream path and exact skills to load next
+- recommended downstream path and exact skills to load next, always including `core-saas-foundation` for generated SaaS apps
 - open questions only where implementation would otherwise guess authority, risk, policy, or outcome semantics
 
 ## Minimal readiness checklist

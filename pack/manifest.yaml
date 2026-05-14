@@ -75,6 +75,9 @@ content:
     - id: ai-first-saas
       path: skills/ai-first-saas
       category: architecture
+    - id: core-saas-foundation
+      path: skills/core-saas-foundation
+      category: architecture
     - id: ai-first-saas-agent-team-design
       path: skills/ai-first-saas-agent-team-design
       category: focused
@@ -459,6 +462,7 @@ bundles:
       - app-descriptions
       - app-generate-app
       - ai-first-saas
+      - core-saas-foundation
       - ai-first-saas-agent-team-design
       - ai-first-saas-audit-trace
       - ai-first-saas-decision-cards

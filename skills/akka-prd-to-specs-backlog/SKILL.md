@@ -53,6 +53,7 @@ Then continue into repo file generation.
 
 Read these first if present:
 - `../README.md`
+- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline every new app PRD/spec/backlog must include
 - `../ai-first-saas/SKILL.md` for high-level product, PRD, feature, governance, agentic, decision, supervision, audit, or outcome inputs
 - `../akka-solution-decomposition/SKILL.md`
 - `../../docs/ai-first-saas-application-architecture.md` for the canonical AI-first doctrine
@@ -90,9 +91,11 @@ At minimum, create or update these files under `specs/`:
 - `specs/pending-tasks.md` when follow-on implementation work is sufficiently unblocked
 
 ### Cross-cutting specs
-Create only the ones justified by the PRD, but prefer these when broadly applicable:
+For every SaaS app PRD, create the secure foundation spec first:
+- `specs/cross-cutting/01-auth-tenancy-audit.md` — required for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, audit, support-access, billing boundary, and tenant-isolation tests unless the task is explicitly non-SaaS reference material.
+
+Create additional cross-cutting specs as justified by the PRD:
 - `specs/cross-cutting/00-common-domain-and-conventions.md`
-- `specs/cross-cutting/01-auth-tenancy-audit.md`
 - `specs/cross-cutting/02-ui-style-guide.md` when a browser UI is in scope and style is selected
 - `specs/cross-cutting/03-<integration-or-platform-concern>.md`
 
@@ -181,18 +184,19 @@ specs/
 
 ### 1. Produce the master solution plan
 
-Start with the same architecture reasoning as `akka-solution-decomposition`.
+Start with the same architecture reasoning as `akka-solution-decomposition` and `core-saas-foundation`.
 
 The master plan must include:
 1. Inputs
 2. AI-first interpretation: objective, delegated work, retained human authority, durable substrate objects, governance/approval needs, supervision UI, audit/trace needs, and outcome loop when applicable
-3. Capability summary
-4. Chosen components
-5. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
-6. Skill routing
-7. Open questions and assumptions
-8. Recommended implementation order
-9. Required tests
+3. Core secure SaaS foundation: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests
+4. Capability summary
+5. Chosen components
+6. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
+7. Skill routing
+8. Open questions and assumptions
+9. Recommended implementation order
+10. Required tests
 
 Write that to:
 - `specs/akka-solution-plan.md`
@@ -389,7 +393,7 @@ Use stable names:
 ## Recommended module sprint pattern
 
 Prefer vertical module sprint order like this when the PRD supports it:
-1. foundation: common domain, auth/security, style guide, project/test harness setup
+1. foundation: common domain plus the full core secure SaaS foundation from `core-saas-foundation` before app-specific CRM/domain features
 2. first business module core: write model, endpoints, minimal UI, full-stack smoke test
 3. next module increment: workflow/read side/UI flow, full-stack smoke test
 4. operational reactions: consumers, timers, notifications, realtime UI if needed
@@ -529,6 +533,7 @@ Avoid:
 Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
+- `core-saas-foundation` was applied and `specs/cross-cutting/01-auth-tenancy-audit.md` plus a first foundation sprint/slice were created for SaaS apps
 - high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition
 - AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
 - module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered

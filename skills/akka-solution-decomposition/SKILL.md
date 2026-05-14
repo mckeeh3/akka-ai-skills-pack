@@ -46,6 +46,7 @@ If the user provides a filename or path:
 Read these first if present:
 - `../../AGENTS.md` for authoritative project rules and Akka coding constraints
 - `../README.md` for local routing across skill families
+- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline every new app plan must include
 - `../../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
 - `../../docs/agent-coverage-matrix.md` when the task is agent-related
 - `../references/akka-entity-comparison.md`
@@ -84,13 +85,14 @@ In this repository, prefer these cross-component examples:
 Before any coding, produce a component plan with these sections:
 1. Inputs
 2. AI-first interpretation
-3. Capability summary
-4. Chosen components
-5. Why each component exists
-6. Skill routing
-7. Open questions and assumptions
-8. Recommended implementation order
-9. Required tests
+3. Core secure SaaS foundation
+4. Capability summary
+5. Chosen components
+6. Why each component exists
+7. Skill routing
+8. Open questions and assumptions
+9. Recommended implementation order
+10. Required tests
 
 Treat sections 6, 8, and 9 as the implementation handoff.
 The plan is not complete if it only names components.
@@ -102,7 +104,13 @@ It must also tell the downstream implementation phase:
 
 ## Decomposition workflow
 
-### 1. Interpret AI-first operating model
+### 1. Apply core secure SaaS foundation
+
+For every new app/PRD/spec handled by this skill, load `core-saas-foundation` and include a `Core secure SaaS foundation` section before app-specific capability decomposition unless the user explicitly asks for non-SaaS reference material.
+
+That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests. Unknown provider-specific details may become questions, but they must not erase local authorization and tenancy contracts.
+
+### 2. Interpret AI-first operating model
 
 Before CRUD or component decomposition, decide whether the input implies delegated operational work, semi/autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
 
@@ -116,7 +124,7 @@ If AI-first concerns are present, use `ai-first-saas` framing and extract:
 
 If the product is clearly not agentic, say so and continue with ordinary Akka decomposition. Do not force every app to use every AI-first pattern.
 
-### 2. Extract capabilities
+### 3. Extract capabilities
 
 List:
 - actors and human operating roles
@@ -133,7 +141,7 @@ List:
 - AI and LLM needs
 - security constraints
 
-### 3. Identify the write model
+### 4. Identify the write model
 
 Ask:
 - what state must be durable?
@@ -145,7 +153,7 @@ Ask:
 If a stateful core exists but entity type is not yet fixed, route to:
 - `akka-entity-type-selection`
 
-### 4. Add orchestration only when required
+### 5. Add orchestration only when required
 
 Choose a `Workflow` when:
 - the use case is multi-step and durable
@@ -156,7 +164,7 @@ Choose a `Workflow` when:
 
 Do not add a workflow for a simple single-entity command flow.
 
-### 5. Add read models only when query needs justify them
+### 6. Add read models only when query needs justify them
 
 Choose a `View` when:
 - the user needs list, search, filter, or reporting queries
@@ -167,7 +175,7 @@ Choose a `View` when:
 
 Do not add a view for simple direct single-entity lookups unless the query pattern truly needs projection.
 
-### 6. Add async reactions only when something must react after the write
+### 7. Add async reactions only when something must react after the write
 
 Choose a `Consumer` when:
 - one component must react asynchronously to another component's updates
@@ -176,7 +184,7 @@ Choose a `Consumer` when:
 - events need republishing to topics or service streams
 - traces, notifications, outcome links, or governance records must be enriched asynchronously
 
-### 7. Add time-based components only when deadlines or reminders exist
+### 8. Add time-based components only when deadlines or reminders exist
 
 Choose a `TimedAction` when:
 - a timeout, expiry, reminder, retry delay, or scheduled callback is required
@@ -184,7 +192,7 @@ Choose a `TimedAction` when:
 - obsolete timer executions must be normalized to no-op or done behavior
 - periodic digests, rechecks, policy simulations, or outcome reviews are required
 
-### 8. Add AI components only when the requirement is genuinely LLM-driven
+### 9. Add AI components only when the requirement is genuinely LLM-driven
 
 Choose an `Agent` when:
 - the behavior depends on prompt-driven generation, extraction, classification, evaluation, or summarization
@@ -194,7 +202,7 @@ Choose an `Agent` when:
 
 Do not introduce an agent for deterministic business rules that should stay in code.
 
-### 9. Choose edge and API surfaces
+### 10. Choose edge and API surfaces
 
 Choose:
 - `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
@@ -204,9 +212,9 @@ Choose:
 
 A single solution may expose more than one edge surface.
 
-### 10. Add security and delivery concerns explicitly
+### 11. Add security and delivery concerns explicitly
 
-Check whether the requirements imply:
+The secure foundation is mandatory; this step refines provider-specific and delivery details. Check whether the requirements imply:
 - WorkOS or other end-user authentication
 - frontend-to-backend JWT bearer-token security
 - `/api/me`, account linking, roles, invites, or basic administration
@@ -218,16 +226,17 @@ Check whether the requirements imply:
 - notifications or service streams
 - policy-bound permissions, approval gates, tool/data-access controls, redaction, retention, tenant isolation, and trace visibility
 
-### 11. Generate the implementation order
+### 12. Generate the implementation order
 
 Prefer this order unless requirements force another:
-1. AI-first object model, authority boundaries, policies, trace/outcome records, and domain invariants
-2. stateful core components: entities and workflows
-3. views
-4. consumers and timed actions
-5. endpoints and web UI
-6. tests for each component family
-7. docs or snippets if the task includes repository guidance
+1. core secure SaaS foundation: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, admin invites, audit, support-access, billing boundary, and tenant-isolation tests
+2. AI-first object model, authority boundaries, policies, trace/outcome records, and domain invariants
+3. stateful app-specific core components: entities and workflows
+4. views
+5. consumers and timed actions
+6. endpoints and web UI
+7. tests for each component family
+8. docs or snippets if the task includes repository guidance
 
 ## Component selection guide
 
@@ -288,7 +297,7 @@ After decomposition, load the minimal next skill set.
 The routing output should feed code generation directly, not serve as a purely informational appendix.
 For every chosen component, list the implementation skills and the corresponding testing skill when one exists.
 
-When AI-first concerns shape the solution, include `ai-first-saas` in planning/intake routing and add only the companion skills needed by the plan:
+For generated SaaS apps, always include `core-saas-foundation` in planning/intake routing before app-specific component skills. When AI-first concerns shape the solution, include `ai-first-saas` and add only the companion skills needed by the plan:
 - `ai-first-saas-object-model` for durable goals, plans, policies, decisions, traces, and outcomes
 - `ai-first-saas-agent-team-design` for bounded coordinator/specialist/evaluator agent teams
 - `ai-first-saas-policy-governance` for policies, permissions, thresholds, simulations, and governed commits
@@ -408,7 +417,7 @@ Then add only what is needed:
 - `akka-http-endpoint-component-client`
 - `akka-http-endpoint-sse`
 - `akka-http-endpoint-websocket`
-- `akka-http-endpoint-jwt` only when security implementation is in scope
+- `akka-http-endpoint-jwt` for protected browser/API routes; only public static asset routes are outside authenticated API authorization
 - `akka-http-endpoint-testing`
 
 The implementation handoff must include frontend screens, frontend project shape, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, static asset route plan, SPA routing choice, and tests.
@@ -516,6 +525,13 @@ Use this exact response shape whenever the task starts from requirements:
 - governance / approval / exception needs:
 - audit, trace, and outcome needs:
 - AI-first UI surfaces:
+
+## Core secure SaaS foundation
+- baseline objects:
+- `/api/me` and AuthContext:
+- backend authorization:
+- tenant/customer isolation:
+- audit and security tests:
 
 ## Capability summary
 - ...

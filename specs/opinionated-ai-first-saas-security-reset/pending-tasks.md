@@ -49,7 +49,7 @@
 
 ### TASK-002: Add a core secure SaaS foundation skill and route it globally
 
-- status: pending
+- status: done
 - source: specs/opinionated-ai-first-saas-security-reset/README.md
 - task brief: none
 - depends on: [TASK-001]

@@ -14,6 +14,7 @@ It is the description-first equivalent of project scaffolding, but for the autho
 
 Create a minimum viable internal app-description tree that:
 - gives the harness a stable root to maintain
+- establishes the mandatory secure SaaS foundation for Account/Profile/Settings/Membership/Tenant/Customer/admin/audit before app-specific features
 - establishes authoritative layers for capabilities, AI-first operating model when in scope, behavior, tests, auth/security, observability, and UI when a frontend is in scope
 - records an initial readiness posture
 - defines a generation policy
@@ -26,6 +27,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must seed
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -87,7 +89,8 @@ app-description/
     generation-policy.md
   10-capabilities/
     capabilities-index.md
-    01-<primary-capability>.md
+    01-secure-tenant-user-foundation.md
+    02-<primary-app-capability>.md
   15-operating-model/      # only when AI-first/delegated operations are in scope
     goals-and-objectives.md
     agent-roles-and-authority.md
@@ -103,6 +106,7 @@ app-description/
     acceptance/
       01-<primary-capability>-acceptance.md
   40-auth-security/
+    secure-saas-foundation.md
     identity-and-trust.md
   50-observability/
     logs-and-audit.md
@@ -121,10 +125,10 @@ From the initial user input, derive as applicable:
 - top-level goal
 - whether the app has AI-first/delegated operating-model semantics
 - delegated work versus retained human authority when applicable
-- first in-scope capability set
-- likely primary behavior flow
-- first acceptance scenarios
-- initial auth/security expectations
+- first in-scope capability set, starting with the secure SaaS foundation capability
+- likely primary behavior flow, starting with sign-in, `/api/me`, context selection, administration, and tenant/customer-scoped access
+- first acceptance scenarios, including tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, and audit baseline tests
+- initial auth/security expectations based on `core-saas-foundation`
 - initial observability expectations
 - initial policy, approval, exception, audit, trace, and outcome expectations when AI-first/delegated operations are in scope
 - initial frontend/UI expectations when a browser app is in scope
@@ -156,7 +160,9 @@ For most fresh bootstraps, prefer:
 Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy.
 
 ### 4. Create the first capability layer
-Create a `10-capabilities/` index and at least one capability file representing the clearest business capability currently known.
+Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.
+
+Then add the clearest app-specific business capability as the next numbered file when the input supports it.
 
 ### 5. Create the AI-first operating-model layer when in scope
 Create `15-operating-model/` when the input includes delegated operational work, agents, recommendations, approvals, exceptions, policy-governed automation, supervision, auditability, learning, or outcome accountability.
@@ -180,10 +186,11 @@ Capture only the strongest initial acceptance expectations plus obvious negative
 
 ### 8. Create initial production-readiness layers
 Create:
+- `40-auth-security/secure-saas-foundation.md`
 - `40-auth-security/identity-and-trust.md`
 - `50-observability/logs-and-audit.md`
 
-These may begin with baseline expectations and explicit open questions rather than complete policy.
+These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; provider-specific unknowns may remain explicit open questions, but authorization, tenancy, audit, and tenant isolation are not optional.
 
 ### 9. Create initial cross-links
 Cross-link the first capability, operating-model artifacts when present, behavior, and test artifacts so later maintenance and change-impact work have a stable base.
@@ -254,7 +261,7 @@ Examples:
 
 Avoid:
 - bootstrapping code instead of the app description
-- inventing a fully detailed security or observability model from thin input
+- inventing provider-specific security details from thin input while still failing to seed the mandatory secure SaaS foundation
 - creating dozens of files from a vague one-paragraph idea
 - reducing delegated operational work to CRUD screens or a chatbot without durable goals, authority, policies, decisions, traces, and outcomes
 - marking a fresh bootstrap `ready` without substantial supporting detail

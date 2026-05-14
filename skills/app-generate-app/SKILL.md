@@ -30,6 +30,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation readiness before generation
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -59,12 +60,14 @@ Use it only after the harness has either:
 Generation is a realization step, not the source-of-truth step.
 
 If generation reveals a semantic gap, the fix belongs in the app description, not in hand-edited generated code.
+For every generated SaaS app, never invent missing secure foundation semantics during generation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, AuthContext, `/api/me`, backend authorization, audit, support-access, billing boundary, and tenant-isolation tests must already be described or generation must stop/mark not-ready.
 For AI-first/delegated operations, never invent missing authority, policy, approval, decision, evidence, trace, outcome, or supervision semantics during generation.
 
 ## Generation responsibilities
 
 When generating, this skill must:
 - identify the current description baseline
+- verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
 - verify readiness did not ignore `15-operating-model/` when delegated operations are in scope
 - identify whether generation is full or localized
 - identify which outputs are in scope
@@ -94,6 +97,7 @@ It must never override description correctness.
 ## Output categories
 
 As applicable, generation may include:
+- secure SaaS foundation outputs first: identity/tenancy/domain types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization service, AdminAuditEvent/audit views, support-access, subscription/billing boundary, and tenant-isolation/security tests
 - source code
 - generated tests
 - configuration or deployment assets
@@ -104,7 +108,7 @@ As applicable, generation may include:
 
 The exact realization set depends on the current repository and user request. When a browser frontend is in scope, route realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as raw asset delivery. Do not invent a visual theme during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../../docs/web-ui-style-guide.md`.
 
-When AI-first behavior is in scope, route through `ai-first-saas` companion skills and the selected Akka substrate skills before generation. Stop or surface a blocking gap if `15-operating-model/` does not define the required delegated work, retained human authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or AI-first UI surfaces well enough to implement.
+For generated SaaS apps, route through `core-saas-foundation` before app-specific generation and stop or surface a blocking gap if the description lacks the mandatory foundation contract. When AI-first behavior is in scope, route through `ai-first-saas` companion skills and the selected Akka substrate skills before generation. Stop or surface a blocking gap if `15-operating-model/` does not define the required delegated work, retained human authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or AI-first UI surfaces well enough to implement.
 
 ## Standard generation output shape
 
@@ -117,6 +121,7 @@ Use this response shape when summarizing generation:
 - description state:
 - readiness state:
 - operating-model basis:
+- secure SaaS foundation basis:
 - assumptions used:
 
 ## Regeneration scope
@@ -175,6 +180,7 @@ Avoid:
 Before finishing, verify:
 - the description basis for generation is explicit
 - readiness state is explicit
+- secure SaaS foundation basis is explicit and complete enough for generation
 - operating-model basis is explicit when AI-first/delegated operations are in scope
 - assumptions are explicit when used
 - regeneration scope is explicit
