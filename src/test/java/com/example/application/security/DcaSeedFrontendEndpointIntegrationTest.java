@@ -22,10 +22,14 @@ class DcaSeedFrontendEndpointIntegrationTest extends TestKitSupport {
 
     var js = httpClient.GET(jsPath).responseBodyAs(String.class).invoke();
     assertTrue(js.status().isSuccess());
-    assertTrue(js.body().contains("/api/me"));
-    assertTrue(js.body().contains("Authorization"));
-    assertTrue(js.body().contains("Backend APIs still enforce authorization"));
-    assertTrue(js.body().contains("/ui/supplies"));
+    assertTrue(js.body().contains("/ui/briefing"));
+    assertTrue(js.body().contains("/ui/goals/new"));
+    assertTrue(js.body().contains("/ui/decisions"));
+    assertTrue(js.body().contains("/ui/governance/policies"));
+    assertTrue(js.body().contains("/ui/audit/traces"));
+    assertTrue(js.body().contains("/ui/admin/users"));
+    assertTrue(js.body().contains("/ui/profile"));
+    assertTrue(js.body().contains("real authenticated backend integration"));
 
     var css = httpClient.GET(cssPath).responseBodyAs(String.class).invoke();
     assertTrue(css.status().isSuccess());

@@ -160,6 +160,7 @@ function SidebarNav({ activeRoute, open, onNavigate, onClose }: { activeRoute: R
       </nav>
       <div className="sidebar-bottom">
         <div className="notification-summary" aria-label="Notification summary"><span className="notification-dot">3</span> pending reviews</div>
+        <p className="fixture-defer-note">Fixture frontend defers real authenticated backend integration, policy commit, trace export, admin authorization, and durable Akka state.</p>
         <button type="button" className="collapse-button" onClick={onClose}>Collapse</button>
       </div>
     </aside>
