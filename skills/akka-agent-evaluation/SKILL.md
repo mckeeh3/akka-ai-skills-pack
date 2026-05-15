@@ -7,6 +7,8 @@ description: Implement Akka Java SDK evaluator agents that return EvaluationResu
 
 Use this skill when the main task is evaluating AI output quality with another agent.
 
+Use `akka-agent-closed-loop-improvement` when evaluation results should become governed findings, improvement proposals, replay/simulation evidence, human approvals, activation, monitoring, or rollback.
+
 ## Required reading
 
 Read these first if present:
@@ -20,6 +22,7 @@ Read these first if present:
 - workflow or consumer flows should emit evaluation signals
 - prompt changes need regression coverage with realistic data
 - results should appear in traces and metrics as evaluation outcomes
+- the task is focused on evaluator-agent mechanics rather than the full proposal/approval/activation loop
 
 ## Core pattern
 
@@ -36,6 +39,10 @@ Read these first if present:
   - label validation
   - mapping into `EvaluationResult`
 
+## Closed-loop routing
+
+If evaluator output will alter prompts, skills, agent definitions, policies, rubrics, or authority boundaries, route to `akka-agent-closed-loop-improvement` after implementing or selecting the evaluator agent. Evaluators may draft findings and recommendations, but approval and activation must be handled by governed workflows and authorization checks outside the model.
+
 ## Review checklist
 
 Before finishing, verify:
@@ -43,3 +50,4 @@ Before finishing, verify:
 - evaluator memory is disabled unless truly needed
 - labels are validated before being converted to boolean pass/fail
 - the evaluator is placed in workflow, consumer, or test flows intentionally
+- proposal, activation, rollback, or self-improvement scope has been routed to `akka-agent-closed-loop-improvement`

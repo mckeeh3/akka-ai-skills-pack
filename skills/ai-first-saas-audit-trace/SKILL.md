@@ -62,7 +62,7 @@ Retention and access classification:
 - Trace enrichment, notification, publication, and integration → `akka-consumers`.
 - Trace search, command-center activity feeds, audit views, digest inputs, and outcome dashboards → `akka-views`.
 - Trace-producing long-running plans and approval flows → `akka-workflows`.
-- Agent prompt/version/tool/data traces → `akka-agents`, `akka-agent-tools`, `akka-agent-component-tools`, and `akka-agent-orchestration`.
+- Agent prompt/version/tool/data traces → `akka-agents`, `akka-agent-work-trace`, `akka-agent-tools`, `akka-agent-component-tools`, and `akka-agent-orchestration`.
 - Periodic audit checks, digest generation, retention checks, or replay/simulation schedules → `akka-timed-actions`.
 - Audit APIs, streaming activity feeds, and investigation tools → HTTP, SSE, gRPC, or MCP endpoint skills as appropriate.
 - Trace and investigation UI → `akka-web-ui-apps` plus focused web UI skills.
@@ -82,6 +82,7 @@ Produce a compact trace design with:
 ## Review checklist
 
 Before implementation, verify:
+- agent-specific prompt, skill, model, tool, data, and authorization traces have been routed to `akka-agent-work-trace` when detailed agent trace design is in scope
 - consequential actions emit durable trace facts
 - tool, data, policy, approval, and decision links are represented
 - sensitive content is redacted or access-controlled

@@ -32,6 +32,7 @@ Use for tasks that mention or imply:
 Select only objects needed for enforceable behavior and audit:
 
 - `PolicyDocument` / `PolicyClause`: versioned rules agents or workflows must cite.
+- `PromptDocument` / `SkillDocument` / `EvaluationRubric` / `ReferenceExample`: governed behavior-shaping documents when prompt, skill, rubric, or example changes affect runtime behavior.
 - `Guardrail` / `Threshold`: mechanical limits for autonomy, risk, confidence, impact, or data access.
 - `PermissionGrant`: who or what may use a tool, dataset, action, or authority scope.
 - `ReferenceExample` / `Precedent`: human-approved examples that guide future behavior.
@@ -53,6 +54,8 @@ Select only objects needed for enforceable behavior and audit:
 - Current non-audit configuration, feature flags, or tenant settings → `akka-key-value-entities`.
 - Approval, exception, simulation, replay, and activation lifecycles → `akka-workflows` plus `akka-workflow-pausing` when human input is required.
 - Policy interpretation, proposal drafting, classification, or evaluation → `akka-agents`, `akka-agent-structured-responses`, `akka-agent-guardrails`, and `akka-agent-evaluation`.
+- Governed prompts, skills, rubrics, policies, and examples → `akka-agent-governed-documents`, plus `akka-agent-prompt-governance` or `akka-agent-skill-governance` when focused prompt/skill behavior is in scope.
+- Closed-loop behavior improvement proposals, replay/simulation, activation, and rollback → `akka-agent-closed-loop-improvement`.
 - Policy catalogs, proposal queues, approval queues, and governance center read models → `akka-views`.
 - Trace enrichment, notification, and downstream policy publication → `akka-consumers`.
 - Scheduled reviews, replays, expirations, or periodic governance checks → `akka-timed-actions`.
@@ -74,7 +77,7 @@ Produce a compact governance design with:
 ## Review checklist
 
 Before implementation, verify:
-- behavior-shaping policies and thresholds are addressable and versioned
+- behavior-shaping prompts, skills, policies, rubrics, examples, and thresholds are addressable and versioned when they affect runtime behavior
 - permissions are enforceable outside prompts
 - policy changes have provenance and activation authority
 - approvals/exceptions are durable when consequential

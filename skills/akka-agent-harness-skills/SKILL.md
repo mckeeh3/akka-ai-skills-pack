@@ -1,13 +1,15 @@
 ---
 name: akka-agent-harness-skills
-description: Implement model-loadable agent guidance in Akka Java SDK using @FunctionTool methods that expose approved skill text from packaged resources. Use when approximating harness-managed skills inside an Akka agent runtime.
+description: Implement deploy-time model-loadable agent guidance in Akka Java SDK using @FunctionTool methods that expose approved skill text from packaged resources. Use for small trusted packaged resources; use akka-agent-skill-governance for tenant-managed versioned runtime skills.
 ---
 
 # Akka Agent Harness Skills
 
-Use this skill when an Akka agent should approximate coding-harness skill loading at runtime.
+Use this skill when an Akka agent should approximate coding-harness skill loading with small deploy-time packaged resources.
 
 This is for application agents that need **model-selectable internal guidance**, not for the external coding harness reading `.agents/skills` while generating code.
+
+Use `akka-agent-skill-governance` instead when skill content is tenant-managed, runtime-editable, versioned, reviewed, assigned per agent, or audited through application UI.
 
 ## Required reading
 
@@ -21,7 +23,8 @@ Read these first if present:
 Also load when needed:
 - `akka-agent-tools` for general `@FunctionTool` mechanics
 - `akka-agent-mcp-tools` if skill content should be served by another service
-- `akka-agent-runtime-state` if skill/prompt text must be runtime-editable
+- `akka-agent-skill-governance` if skills are tenant-managed, versioned, assigned per agent, or audited
+- `akka-agent-runtime-state` if simple prompt text must be runtime-editable
 - `akka-agent-testing` for deterministic tool-call tests
 
 ## Use this pattern when
@@ -31,7 +34,7 @@ Also load when needed:
 - the model should choose which guidance block to load before answering
 - guidance is deploy-time content, small, trusted, and whitelisted per agent
 
-Do not use this pattern for broad filesystem access or user-editable operational knowledge. Use Akka state, a database-backed component, or MCP when content must be mutable at runtime.
+Do not use this pattern for broad filesystem access or user-editable operational knowledge. Use `akka-agent-skill-governance` for tenant-managed governed skills backed by Akka state. Use MCP when content should be owned by another service or exposed through an explicit LLM-facing resource/tool boundary.
 
 ## Conceptual mapping
 
@@ -39,6 +42,12 @@ Do not use this pattern for broad filesystem access or user-editable operational
 - harness skill load request -> model calls a skill tool
 - `SKILL.md` content -> tool result string
 - `.agents/skills/**` -> packaged classpath resources under `src/main/resources/agent-skills/**`
+
+For governed runtime skills, route to `akka-agent-skill-governance` and map:
+- skill file/document -> `SkillDocument` / `SkillVersion`
+- skill index -> `AgentSkillManifest`
+- skill load request -> authorized `readSkill(skillId)` tool
+- skill use -> `SkillLoadTrace`
 
 Important caveat: tool results are model-visible context, not true harness/system-priority instructions. The agent prompt must explicitly say that returned skill text is trusted internal guidance to follow for the current request.
 

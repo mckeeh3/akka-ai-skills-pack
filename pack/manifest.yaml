@@ -102,6 +102,12 @@ content:
     - id: ai-first-saas-ui-surfaces
       path: skills/ai-first-saas-ui-surfaces
       category: focused
+    - id: akka-agent-behavior-profiles
+      path: skills/akka-agent-behavior-profiles
+      category: focused
+    - id: akka-agent-governed-documents
+      path: skills/akka-agent-governed-documents
+      category: focused
     - id: akka-agent-component
       path: skills/akka-agent-component
       category: focused

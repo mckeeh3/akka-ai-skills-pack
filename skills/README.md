@@ -369,6 +369,30 @@ Start with:
 
 Then load the focused skill that matches the current task:
 
+### Behavior profiles
+Use when agents are managed as tenant-scoped runtime actors with durable `AgentDefinition`, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin UI, or runtime profile lookup.
+- `akka-agent-behavior-profiles`
+
+### Governed documents
+Use when prompts, skills, rubrics, policies, examples, or other behavior-shaping artifacts need tenant-scoped version history, immutable snapshots, review, approval, activation, deprecation, diff/history UI, or audit.
+- `akka-agent-governed-documents`
+
+### Prompt governance
+Use when agent system prompts need tenant-scoped review, approval, activation, version history, diff/history UI, effective prompt assembly, prompt assembly trace, or a safe prompt test console.
+- `akka-agent-prompt-governance`
+
+### Skill governance
+Use when agents need tenant-scoped shared skills, skill versions, per-agent skill manifests, compact manifest prompt context, `readSkill(skillId)`, SkillLoadTrace, skill editor/review/diff UI, or a skill-loading test console.
+- `akka-agent-skill-governance`
+
+### Agent work trace
+Use when agent activity needs audit/work trace events, prompt/skill/model/tool/data references, authorization basis, redaction, correlation ids, trace search, or investigation timelines.
+- `akka-agent-work-trace`
+
+### Closed-loop improvement
+Use when evaluator output or trace analysis should produce EvaluationRuns, findings, improvement proposals, replay/simulation evidence, human approvals, activation, monitoring, or rollback.
+- `akka-agent-closed-loop-improvement`
+
 ### Component structure
 Use when writing the agent class itself.
 - `akka-agent-component`
@@ -390,7 +414,7 @@ Use when the agent should call remote MCP-hosted tools.
 - `akka-agent-mcp-tools`
 
 ### Harness-like skills through tools
-Use when an Akka runtime agent should approximate harness skill loading by exposing approved guidance blocks through `@FunctionTool` methods or MCP-backed resources.
+Use when an Akka runtime agent should approximate harness skill loading by exposing small deploy-time packaged guidance blocks through `@FunctionTool` methods or MCP-backed resources. Use `akka-agent-skill-governance` for tenant-managed, versioned, audited runtime skills.
 - `akka-agent-harness-skills`
 
 ### Multimodal
@@ -414,7 +438,7 @@ Use when runtime safety controls are the main concern.
 - `akka-agent-guardrails`
 
 ### Evaluation
-Use when LLM-as-judge or evaluator agents are the main concern.
+Use when LLM-as-judge or evaluator agents are the main concern. Use `akka-agent-closed-loop-improvement` when evaluator results become governed proposals, approvals, activations, monitoring, or rollback.
 - `akka-agent-evaluation`
 
 ### Runtime state
@@ -740,6 +764,92 @@ Use:
 - `akka-mcp-endpoint-testing`
 
 ## Practical combinations
+
+### New managed runtime agent with durable behavior profile
+Load:
+- `akka-agents`
+- `akka-agent-behavior-profiles`
+- `core-saas-foundation`
+- `ai-first-saas-audit-trace`
+- `akka-event-sourced-entities`
+- `akka-views`
+- `akka-http-endpoints`
+- `akka-web-ui-apps`
+
+### New governed agent behavior documents
+Load:
+- `akka-agents`
+- `akka-agent-governed-documents`
+- `core-saas-foundation`
+- `ai-first-saas-audit-trace`
+- `akka-event-sourced-entities`
+- `akka-key-value-entities`
+- `akka-consumers`
+- `akka-views`
+- `akka-http-endpoints`
+- `akka-web-ui-apps`
+
+### New governed runtime prompts
+Load:
+- `akka-agents`
+- `akka-agent-behavior-profiles`
+- `akka-agent-governed-documents`
+- `akka-agent-prompt-governance`
+- `core-saas-foundation`
+- `ai-first-saas-audit-trace`
+- `akka-event-sourced-entities`
+- `akka-key-value-entities`
+- `akka-consumers`
+- `akka-views`
+- `akka-http-endpoints`
+- `akka-web-ui-apps`
+
+### New governed runtime skills
+Load:
+- `akka-agents`
+- `akka-agent-behavior-profiles`
+- `akka-agent-governed-documents`
+- `akka-agent-skill-governance`
+- `akka-agent-tools`
+- `core-saas-foundation`
+- `ai-first-saas-audit-trace`
+- `akka-event-sourced-entities`
+- `akka-key-value-entities`
+- `akka-consumers`
+- `akka-views`
+- `akka-http-endpoints`
+- `akka-web-ui-apps`
+
+### Agent audit/work trace
+Load:
+- `akka-agents`
+- `akka-agent-work-trace`
+- `ai-first-saas-audit-trace`
+- `core-saas-foundation`
+- `akka-event-sourced-entities`
+- `akka-key-value-entities`
+- `akka-consumers`
+- `akka-views`
+- `akka-http-endpoints`
+- `akka-web-ui-apps`
+
+### Closed-loop agent improvement
+Load:
+- `akka-agents`
+- `akka-agent-closed-loop-improvement`
+- `akka-agent-evaluation`
+- `akka-agent-work-trace`
+- `akka-agent-governed-documents`
+- `core-saas-foundation`
+- `ai-first-saas-policy-governance`
+- `ai-first-saas-audit-trace`
+- `akka-workflows`
+- `akka-workflow-pausing`
+- `akka-event-sourced-entities`
+- `akka-key-value-entities`
+- `akka-views`
+- `akka-http-endpoints`
+- `akka-web-ui-apps`
 
 ### New single-purpose agent
 Load:
@@ -1149,6 +1259,14 @@ Testing examples:
 - `../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
 
 ### Agents
+Routing references:
+- `akka-agent-behavior-profiles` for durable tenant-scoped AgentDefinition and runtime behavior profile design before implementation of managed agents
+- `akka-agent-governed-documents` for tenant-scoped governed prompts, skills, rubrics, policies, and examples with immutable versions, review, activation, diff/history, and audit
+- `akka-agent-prompt-governance` for governed runtime-managed system prompts, PromptDocument/PromptVersion, effective prompt assembly, PromptAssemblyTrace, and prompt test consoles
+- `akka-agent-skill-governance` for governed runtime skills, SkillDocument/SkillVersion, AgentSkillManifest, compact manifest prompt context, readSkill(skillId), and SkillLoadTrace
+- `akka-agent-work-trace` for agent-specific prompt/skill/model/tool/data/policy usage traces, authorization basis, redaction, correlation, and timelines
+- `akka-agent-closed-loop-improvement` for EvaluationRun/Finding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback loops
+
 Core agent examples:
 - `../src/main/java/com/example/application/ActivityAgent.java`
 - `../src/main/java/com/example/application/TemplateBackedActivityAgent.java`

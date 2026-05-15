@@ -19,6 +19,7 @@ If the main task is not local or external tool classes, load the focused compani
 - `akka-agent-component-tools`
 - `akka-agent-mcp-tools`
 - `akka-agent-harness-skills` for model-loadable internal guidance backed by packaged resources
+- `akka-agent-skill-governance` for tenant-managed, versioned, audited `readSkill(skillId)` guidance tools
 
 ## Use this pattern when
 
@@ -29,6 +30,7 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 - agent output depends on current date, lookup services, or component calls
 - tool descriptions materially affect model behavior
 - an agent should approximate harness skill loading by exposing approved guidance blocks as tools
+- an agent should load tenant-managed governed skills through `readSkill(skillId)` with manifest authorization
 
 ## Core pattern
 
@@ -41,10 +43,12 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 7. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
 8. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
 9. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
-10. Do not try to use one agent as a tool for another agent.
-11. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
-12. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions as authorization.
-13. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
+10. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`.
+11. Do not try to use one agent as a tool for another agent.
+12. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
+13. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions as authorization.
+14. Skill-loading tools must check AgentSkillManifest and must not grant external tool/data permission by returning skill text.
+15. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
 
 ## Repository examples
 
@@ -64,4 +68,5 @@ Before finishing, verify:
 - tool denials, data access, approvals, and side effects are auditable when required by the secure foundation
 - component, MCP, or harness-skill tool cases are routed to the focused companion skill when needed
 - tools that return guidance do not expose arbitrary filesystem paths or unbounded resource content
+- tenant-managed skill tools route through `akka-agent-skill-governance` and enforce manifest checks
 - agent-to-agent chaining is replaced with workflow orchestration when coordination is needed

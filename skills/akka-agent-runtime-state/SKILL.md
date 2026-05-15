@@ -7,6 +7,8 @@ description: Work with built-in Akka Java SDK agent runtime state such as Prompt
 
 Use this skill when the main task is built-in agent runtime state rather than the agent prompt/response method itself.
 
+Use `akka-agent-prompt-governance` instead when prompts require tenant-scoped review, approval, activation, version history, diff/history UI, effective prompt assembly, prompt assembly traces, or governed admin surfaces. Use this skill's built-in `PromptTemplate` pattern for simple runtime-editable prompt text without a governance workflow.
+
 ## Required reading
 
 Read these first if present:
@@ -41,7 +43,7 @@ Read these first if present:
 
 ## Use this pattern when
 
-- prompts should be managed at runtime without redeploying
+- prompts should be managed at runtime without redeploying and without a full governance workflow
 - current prompt-template values should be queryable through a view or endpoint
 - session-memory activity should drive analytics or alerts
 - oversized session histories should be compacted into summaries
@@ -49,8 +51,8 @@ Read these first if present:
 
 ## Core pattern
 
-1. Use the built-in `PromptTemplate` entity for runtime-managed prompts.
-2. Use `systemMessageFromTemplate(...)` in the agent when prompt text should be mutable.
+1. Use the built-in `PromptTemplate` entity for simple runtime-managed prompts.
+2. Use `systemMessageFromTemplate(...)` in the agent when prompt text should be mutable without review/approval/version activation semantics.
 3. Build views from `PromptTemplate` or `SessionMemoryEntity` with `@Consume.FromEventSourcedEntity(...)`.
 4. Expose prompt-template or session-memory views through HTTP endpoints using API-specific response records.
 5. Treat `SessionMemoryEntity` as built-in event-sourced state that can trigger consumers.
@@ -92,6 +94,7 @@ Read these first if present:
 
 Before finishing, verify:
 - prompt-template ids are stable and explicit
+- governed prompt needs have been routed to `akka-agent-prompt-governance` instead of overloading simple `PromptTemplate` guidance
 - views return wrapper records for multi-row queries
 - endpoints expose API-facing types rather than view rows directly when appropriate
 - compaction consumers avoid recursive compaction loops

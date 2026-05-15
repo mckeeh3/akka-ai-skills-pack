@@ -1,6 +1,6 @@
 ---
 name: akka-agents
-description: Orchestrate Akka Java SDK Agent work across prompt design, structured responses, tools, memory, streaming, workflow orchestration, guardrails, evaluation, and testing. Use when the task spans more than one agent concern.
+description: Orchestrate Akka Java SDK Agent work across durable behavior profiles, governed behavior documents, prompt design, structured responses, tools, memory, streaming, workflow orchestration, guardrails, evaluation, and testing. Use when the task spans more than one agent concern.
 ---
 
 # Akka Agents
@@ -18,7 +18,7 @@ Generate or review agent code that is:
 
 ## AI-first substrate role
 
-In AI-first SaaS implementations, use agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use. Before coding, make responsibility, non-responsibility, allowed tools/data, tenant/customer scope, required permissions/capabilities, autonomous authority, policy gates, approval thresholds, escalation thresholds, session/memory behavior, and audit/work-trace obligations explicit. Use workflows for durable multi-agent orchestration, approvals, retries, timeouts, and progress tracking instead of chaining agents informally.
+In AI-first SaaS implementations, use agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use. Before coding, make responsibility, non-responsibility, allowed tools/data, tenant/customer scope, required permissions/capabilities, autonomous authority, policy gates, approval thresholds, escalation thresholds, session/memory behavior, and audit/work-trace obligations explicit. Use `akka-agent-behavior-profiles` first when agents are managed runtime actors with durable definitions, lifecycle, owner/steward, authority level, model references, tool permission boundaries, or admin UI. Use workflows for durable multi-agent orchestration, approvals, retries, timeouts, and progress tracking instead of chaining agents informally.
 
 ## Required reading before coding
 
@@ -96,6 +96,18 @@ In this repository, prefer these examples:
 
 Load the companion skill that matches the current task:
 
+- `akka-agent-behavior-profiles`
+  - durable tenant-scoped AgentDefinition, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin views, and runtime profile lookup
+- `akka-agent-governed-documents`
+  - tenant-scoped governed prompts, skills, rubrics, policies, and examples with version history, immutable snapshots, review, activation, diff UI, and audit
+- `akka-agent-prompt-governance`
+  - runtime-managed agent system prompts with PromptDocument/PromptVersion, review, activation, diff/history UI, effective prompt assembly, PromptAssemblyTrace, and safe test consoles
+- `akka-agent-skill-governance`
+  - governed runtime skills with SkillDocument/SkillVersion, per-agent AgentSkillManifest, compact skill manifests, readSkill(skillId), SkillLoadTrace, and skill editor/test UI
+- `akka-agent-work-trace`
+  - agent-specific audit/work traces for AgentDefinition, prompt/skill/model/tool/data/policy usage, authorization decisions, redaction, correlation, and trace timelines
+- `akka-agent-closed-loop-improvement`
+  - governed evaluation and self-improvement loops with EvaluationRubric, EvaluationRun, EvaluationFinding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback
 - `akka-agent-component`
   - core agent class, single command handler, prompt shape, session strategy, and failure fallback
 - `akka-agent-structured-responses`
@@ -107,7 +119,7 @@ Load the companion skill that matches the current task:
 - `akka-agent-mcp-tools`
   - remote MCP server tools added with `.mcpTools(...)`
 - `akka-agent-harness-skills`
-  - model-loadable internal guidance exposed through whitelisted `@FunctionTool` methods or MCP resources
+  - deploy-time packaged model-loadable internal guidance exposed through whitelisted `@FunctionTool` methods or MCP resources; use `akka-agent-skill-governance` for tenant-managed runtime skills
 - `akka-agent-multimodal`
   - `UserMessage.from(...)`, image/PDF content, and `contentLoader(...)`
 - `akka-agent-memory`
@@ -119,7 +131,7 @@ Load the companion skill that matches the current task:
 - `akka-agent-guardrails`
   - runtime-enforced input/output validation and configuration-driven guardrail selection
 - `akka-agent-evaluation`
-  - evaluator agents and `EvaluationResult` patterns for LLM-as-judge flows
+  - evaluator agents and `EvaluationResult` patterns for LLM-as-judge flows; use `akka-agent-closed-loop-improvement` when evaluator results become governed proposals or activations
 - `akka-agent-runtime-state`
   - built-in `PromptTemplate` and `SessionMemoryEntity` patterns, views, endpoints, and compaction flows
 - `akka-agent-testing`
@@ -148,10 +160,11 @@ Rules:
 5. Use explicit session ids with `componentClient.forAgent().inSession(...)`.
 6. Prefer `responseConformsTo(...)` for structured replies.
 7. Use `.onFailure(...)` for fallback handling instead of assuming model output is always valid.
-8. For harness-like runtime skills, expose only whitelisted packaged resources through focused `@FunctionTool` methods or MCP; do not read `.agents/skills` from the Akka runtime.
-9. Keep agents stateless; use memory or Akka components for context instead of mutable fields.
-10. Use workflows to orchestrate multiple agents or to add retries, timeouts, and durable progress.
-11. Use `TestModelProvider` for deterministic tests.
+8. For deploy-time harness-like skills, expose only whitelisted packaged resources through focused `@FunctionTool` methods or MCP; do not read `.agents/skills` from the Akka runtime.
+9. For tenant-managed runtime skills, use governed SkillDocument/SkillVersion and AgentSkillManifest checks before `readSkill(skillId)` returns content.
+10. Keep agents stateless; use memory or Akka components for context instead of mutable fields.
+11. Use workflows to orchestrate multiple agents or to add retries, timeouts, and durable progress.
+12. Use `TestModelProvider` for deterministic tests.
 
 ## Decision guide
 
@@ -167,13 +180,43 @@ Before implementation, identify:
 - trace records needed for prompts, tools, data access, recommendations, evaluations, denials, approvals, and outcomes
 - whether a workflow must supervise retries, approvals, or multi-step execution
 
-### 1. Single-purpose request/reply agent
+### 1. Durable behavior profile / managed runtime agent
+Use when the app manages agents as tenant-scoped runtime actors with lifecycle, owner/steward, authority, model configuration references, prompt/skill references, tool permission boundaries, or admin UI.
+
+Load `akka-agent-behavior-profiles` before prompt, skill, tool, orchestration, or Java agent implementation details.
+
+### 2. Governed behavior documents
+Use when prompts, skills, rubrics, policies, or examples need tenant-scoped version history, review, approval, activation, immutable snapshots, diff/history UI, or audit.
+
+Load `akka-agent-governed-documents` before focused prompt governance, skill governance, policy governance, evaluation-rubric, or runtime document lookup implementation.
+
+### 3. Governed runtime prompts
+Use when agent system prompts need tenant-scoped review, approval, activation, version history, diff/history UI, effective prompt assembly, prompt assembly trace, or a safe prompt test console.
+
+Load `akka-agent-prompt-governance`. Use `akka-agent-runtime-state` / built-in `PromptTemplate` instead for simple runtime-editable prompt text without governance workflow.
+
+### 4. Governed runtime skills
+Use when agents need tenant-scoped shared skills, skill versions, per-agent skill manifests, compact manifest prompt context, `readSkill(skillId)`, SkillLoadTrace, skill editor/review/diff UI, or a skill-loading test console.
+
+Load `akka-agent-skill-governance`. Use `akka-agent-harness-skills` instead only for small deploy-time packaged skill resources.
+
+### 5. Agent work trace
+Use when agent activity needs audit/work trace events, prompt/skill/model/tool/data references, authorization basis, redaction, correlation ids, trace search, or investigation timelines.
+
+Load `akka-agent-work-trace` together with `ai-first-saas-audit-trace`.
+
+### 6. Closed-loop improvement
+Use when evaluator output or trace analysis should produce EvaluationRuns, findings, improvement proposals, replay/simulation evidence, human approvals, activation, monitoring, or rollback.
+
+Load `akka-agent-closed-loop-improvement`. Load `akka-agent-evaluation` too when implementing evaluator agents that return `EvaluationResult`.
+
+### 7. Single-purpose request/reply agent
 Use when one model interaction produces one reply.
 
 Repository example:
 - `ActivityAgent`
 
-### 2. Tool-using agent
+### 8. Tool-using agent
 Use when the model must call functions to fetch data, trigger actions, or load approved internal guidance.
 
 Repository examples:
@@ -182,20 +225,20 @@ Repository examples:
 
 For model-loadable guidance that approximates harness skills inside an Akka service, load `akka-agent-harness-skills` in addition to `akka-agent-tools`.
 
-### 3. Streaming agent
+### 9. Streaming agent
 Use when tokens should be returned incrementally to an endpoint or notification flow.
 
 Repository examples:
 - `StreamingActivityAgent`
 - `ActivityAgentEndpoint#stream`
 
-### 4. Workflow-supervised agent team
+### 6. Workflow-supervised agent team
 Use when AI calls need durable retries, shared sessions, or multi-step orchestration.
 
 Repository example:
 - `AgentTeamWorkflow`
 
-### 5. Evaluated or governed agent
+### 7. Evaluated or governed agent
 Use when output quality or runtime safety checks are a first-class concern.
 
 Repository examples:
@@ -214,6 +257,8 @@ Before finishing, verify:
 - harness-like skill tools are whitelisted and backed by packaged resources or MCP, not arbitrary filesystem reads
 - structured response records are small and descriptive
 - workflow orchestration is used instead of agent-to-agent tool chaining
+- managed runtime agents have durable behavior profiles with tenant scope, lifecycle status, owner/steward, authority level, model references, tool permission boundaries, and active prompt/skill references
+- governed behavior documents use tenant-scoped version history, immutable snapshots, checksums, approval/activation rules, protected diff/history surfaces, and audit events
 - AI-first agents have explicit authority boundaries, tenant/customer scope, required permissions, policy/approval gates, escalation criteria, and trace obligations
 - agent tools enforce backend authorization and audit before consequential data access or side effects
 - tests replace real models with `TestModelProvider` and cover forbidden/unauthorized tool or action attempts when relevant
