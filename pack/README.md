@@ -6,7 +6,7 @@ This directory defines the installable packaging model for the Akka AI skills an
 
 This pack intentionally includes:
 - `skills/**`, including AI-first SaaS routing, description-first, planning, and implementation skills
-- selected pack-facing docs under `docs/**`, including AI-first doctrine, description-first doctrine/architecture references, and example app-description artifacts
+- repository docs under `docs/**`, including AI-first doctrine, description-first doctrine/architecture references, planning references, and example app-description artifacts
 - reference examples exported from `src/**`
 - pack manifests
 - installer scripts
