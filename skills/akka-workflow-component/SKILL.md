@@ -10,6 +10,7 @@ Use this skill when the task is mainly about the workflow class itself.
 ## Required reading
 
 Read these first if present:
+- `../../../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `../../../docs/timer-pattern-selection.md`
 - `../../../src/main/java/com/example/application/TransferWorkflow.java`
@@ -19,12 +20,18 @@ Read these first if present:
 - `../../../src/main/java/com/example/domain/ApprovalState.java`
 - `../../../src/main/java/com/example/domain/ApprovalDeadlineState.java`
 
+## Capability-first pattern
+
+Before writing the class, name the governed workflow capability and preserve its contract in code: capability id, allowed callers, AuthContext and tenant/customer scope, command schema, idempotency key or workflow id strategy, side effects, approval/escalation rules, audit/work-trace fields, and selected exposure surfaces.
+
+Workflow command handlers are capability entry/advance points. They should validate caller intent, store the authorization or approval basis needed by later steps, and avoid committing consequential side effects before the workflow reaches the authorized step.
+
 ## Core pattern
 
 1. Annotate the class with `@Component(id = "...")`.
 2. Extend `Workflow<State>`.
 3. Put workflow configuration in `settings()`.
-4. Start from a public command handler that updates state and `transitionTo(...)` the first step.
+4. Start from a public command handler that updates state with capability id, actor/scope, trace/correlation ids, and `transitionTo(...)` the first step.
 5. Keep steps private and return `StepEffect`.
 6. Use step input records when a later step needs durable input.
 7. Add a read-only command handler when callers need the current workflow state.
@@ -45,7 +52,9 @@ Read these first if present:
 ## Design guidance
 
 Prefer workflow state that answers these questions directly:
-- what business request started the workflow?
+- what governed capability execution does this workflow represent?
+- what actor, AuthContext, tenant/customer scope, correlation id, and trace id started it?
+- what approval, policy, or supervision decision currently authorizes progress?
 - what step outcome has already happened?
 - what data is required by the next step?
 - what data is required if compensation becomes necessary?
@@ -61,3 +70,5 @@ Before finishing, verify:
 - transitions use method references
 - any `ReadOnlyEffect` handler does not mutate state
 - state and step-input records are immutable Java records
+- consequential steps either reauthorize or use a persisted valid approval/policy decision
+- workflow state and tests make supervision, denial, idempotency, and audit/trace behavior explicit when relevant

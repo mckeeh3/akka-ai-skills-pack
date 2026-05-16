@@ -359,7 +359,7 @@
 
 ### TASK-03-003: Update workflow skills for consequential capabilities
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/03-component-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-003]
@@ -376,7 +376,9 @@
 - done criteria:
   - workflows are positioned as consequential capability carriers
 - notes:
-  - pending
+  - completed: updated workflow suite guidance to frame workflows as governed capability carriers for long-running, consequential, supervised, approval-gated, compensating, auditable, and idempotent execution
+  - checks: `rg` verified workflow skill guidance covers capability contracts, AuthContext/scope, approval, supervision, audit/trace, and idempotency; `git diff --check` passed
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Make workflow skills capability-first`
 
 ### TASK-03-004: Update view skills for curated read capabilities
 

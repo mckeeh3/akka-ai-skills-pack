@@ -10,6 +10,7 @@ Use this skill when a workflow should push progress updates to subscribers.
 ## Required reading
 
 Read these first if present:
+- `../../../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `../../../src/main/java/com/example/application/TransferWorkflow.java`
 - `../../../src/main/java/com/example/application/ApprovalWorkflow.java`
@@ -17,6 +18,10 @@ Read these first if present:
 - `../../../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
 - `../../../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+
+## Capability-first notification role
+
+Use notifications as a selected exposure surface for workflow capability progress. Keep notifications scoped, redacted, and subscriber-safe; they may support supervision, approval, audit, or UI progress but must not expose raw internal state or bypass authorization on the API/SSE route.
 
 ## Core pattern
 
@@ -43,13 +48,13 @@ Read these first if present:
 
 ## Design note
 
-Notifications are for user experience and observability, not business correctness. They do not replace the authoritative workflow state from `get()`.
+Notifications are for user experience, supervision, and observability, not business correctness or authorization. They do not replace the authoritative workflow state from `get()`, audit/work-trace records, or backend checks on the subscriber route.
 
 ## Review checklist
 
 Before finishing, verify:
 - the workflow injects `NotificationPublisher<...>`
-- notifications are small and progress-oriented
+- notifications are small, progress-oriented, scoped, and redacted for the intended subscriber
 - the workflow exposes a `NotificationStream<...>` method
 - public APIs map internal notifications to API-facing records
 - tests verify that subscribers receive workflow progress after the stream is opened

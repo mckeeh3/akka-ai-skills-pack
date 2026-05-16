@@ -10,11 +10,16 @@ Use this skill for executable workflow tests.
 ## Required reading
 
 Read these first if present:
+- `../../../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/agents/testing.html.md`
 - `../../../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WalletEntityTest.java`
+
+## Capability-first test role
+
+Workflow tests should verify the governed capability contract, not only step mechanics. Cover authorization/scope, approval gates, supervision states, idempotent retries, compensation, audit/work-trace expectations, and exposure-specific behavior for endpoints, tools, timers, or consumers that start or advance the workflow.
 
 ## Test harness rules
 
@@ -49,11 +54,13 @@ Workflow tests should usually:
 ## What to cover
 
 Prefer these categories:
-1. successful workflow completion
+1. successful workflow completion with authorized AuthContext/scope when auth is in scope
 2. validation rejection in the start command
-3. pause/resume or compensation path when present
-4. downstream state after the workflow finishes
-5. duplicate-start or invalid-state command rejection
+3. forbidden, cross-tenant, missing-role/scope, or unauthorized resume/start denial when relevant
+4. pause/resume or compensation path when present, including approval-denied and supervision-needed outcomes
+5. downstream state after the workflow finishes
+6. duplicate-start, retry, or invalid-state command rejection/no-op behavior
+7. audit/work-trace creation for approvals, denials, side effects, compensation, and consequential agent/tool activity when relevant
 
 ## Anti-patterns
 
@@ -61,6 +68,7 @@ Avoid:
 - assuming later steps complete before the start command returns
 - testing workflow logic only through mocked incoming messages
 - skipping setup of the downstream components the workflow actually calls
+- treating UI navigation, prompt text, or tool descriptions as authorization checks
 - relying on mutable test sleeps instead of `Awaitility`
 
 ## Review checklist
@@ -70,3 +78,4 @@ Before finishing, verify:
 - workflow calls go through `componentClient.forWorkflow(...)`
 - `Awaitility` is used for asynchronous completion when needed
 - assertions cover both workflow state and important downstream effects
+- consequential capability tests cover approval/denial, idempotency, compensation or supervision, and audit/trace behavior where applicable

@@ -10,6 +10,7 @@ Use this skill when the workflow must reverse earlier work if a later step canno
 ## Required reading
 
 Read these first if present:
+- `../../../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `../../../src/main/java/com/example/application/TransferWorkflow.java`
 - `../../../src/main/java/com/example/application/WalletEntity.java`
@@ -17,6 +18,10 @@ Read these first if present:
 - `../../../src/main/java/com/example/domain/Wallet.java`
 - `../../../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WalletEntityTest.java`
+
+## Capability-first compensation role
+
+Use compensation for governed capabilities whose side effects may need safe reversal or follow-up remediation. The capability contract should say which steps are consequential, which side effects can be compensated, which failures require human supervision, what audit/work-trace events are written, and which idempotency keys make retry and compensation safe.
 
 ## Core pattern
 
@@ -44,7 +49,8 @@ Do not use compensation as a substitute for normal business branching. If the fa
 
 Before finishing, verify:
 - known failures are represented by result types, not exceptions
-- compensation input data is stored durably in workflow state
+- compensation input data, authorization/approval basis, correlation id, and trace id are stored durably in workflow state
 - compensating steps are themselves safe to retry
 - downstream command ids are stable across retries and restarts
+- audit/work-trace events distinguish original side effects, failures, compensation attempts, and unresolved supervision-needed states
 - tests cover both the completed path and compensated path
