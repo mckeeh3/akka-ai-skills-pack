@@ -17,7 +17,8 @@ AI-first SaaS means the harness models products as:
 ```text
 human objective
 → mandatory secure SaaS foundation
-→ durable goal and plan
+→ AI-first operating model: durable goal and plan
+→ capability-first backend substrate: governed operations, queries, side effects, authority, audit, and exposure choices
 → bounded agent or agent team execution
 → policy, permission, evidence, and approval controls
 → human supervision, decision, approval, teaching, audit, and exception handling
@@ -28,7 +29,9 @@ Agents should do as much bounded work as the product safely permits. Humans reta
 
 AI-first does not mean every app must use every AI-first pattern. It means every generated app begins with secure SaaS foundations, then applies only the agentic substrate objects, governance surfaces, and Akka components justified by product intent.
 
-Existing Akka component skills remain substrate implementation tools. They should be selected after the secure SaaS foundation, AI-first operating model, object model, governance requirements, and UI surfaces are understood well enough to implement bounded components.
+Backend behavior should be modeled as governed capabilities before selecting Akka components or exposure surfaces. A capability is a named operation or query with explicit actors, auth context, inputs, outputs, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, tests, and selected exposure surfaces. Agent tools, browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, and internal component methods are possible surfaces for capabilities; they are not the root abstraction.
+
+Existing Akka component skills remain substrate implementation tools. They should be selected after the secure SaaS foundation, AI-first operating model, capability inventory, object model, governance requirements, and UI surfaces are understood well enough to implement bounded components. Use `capability-first-backend-architecture.md` as the backend substrate doctrine below this AI-first operating model.
 
 ## What AI-first SaaS is not
 
@@ -40,7 +43,7 @@ Do not treat AI-first SaaS as:
 - prompt-only automation without durable goals, policies, permissions, or traces;
 - an omnipotent assistant that can act without explicit authority boundaries.
 
-Conversation can be an input and review channel, but consequential work should resolve into durable, inspectable objects and auditable actions.
+Conversation can be an input and review channel, but consequential work should resolve into durable, inspectable objects, governed capabilities, and auditable actions.
 
 ## Mandatory secure SaaS foundation
 
@@ -115,7 +118,9 @@ The implementation target is a full-stack system. Backend-only generation is not
 - **Akka backend** for durable behavior, orchestration, events, projections, agent execution, APIs, streaming, and integration.
 - **React + Vite + TypeScript frontend** for supervision, decision, governance, digest, trace, and conventional domain screens.
 
-Map AI-first concepts onto Akka components deliberately:
+Map AI-first concepts onto backend capabilities first, then onto Akka components deliberately. For each operation or query, define authority, scope, schemas, side effects, idempotency, approval, audit/trace, tests, and exposure surfaces before deciding whether it is an entity command, workflow step, view query, endpoint action, agent tool, MCP tool, timer action, consumer reaction, or internal-only method.
+
+Map capability shapes onto Akka components deliberately:
 
 - **Event Sourced Entities:** audit-grade state, decisions, policies, goals, traces, or domain records where event history and temporal reasoning matter.
 - **Key Value Entities:** current-state objects where event history is not required.
@@ -124,7 +129,7 @@ Map AI-first concepts onto Akka components deliberately:
 - **Views:** CQRS read models for command centers, decision queues, digests, policy lists, audit searches, and outcome dashboards.
 - **Consumers:** event reactions, trace enrichment, notifications, downstream publication, and asynchronous integrations.
 - **Timed Actions:** deadlines, reminders, periodic digests, expiry, rechecks, and scheduled governance/replay work.
-- **HTTP/gRPC/MCP endpoints:** browser APIs, service contracts, streaming surfaces, and AI-client tools/resources/prompts.
+- **HTTP/gRPC/MCP endpoints:** browser APIs, service contracts, streaming surfaces, and AI-client tools/resources/prompts. Expose only selected capabilities and preserve backend auth, tenant scope, redaction, and audit.
 - **Web UI skills:** React app structure, typed clients, forms, realtime updates, accessibility, and responsive supervision surfaces.
 
 ## Governance and authority rules
@@ -161,6 +166,8 @@ Before calling a generated design AI-first, verify:
 
 - [ ] Secure SaaS foundation is present: identity, local authorization, Tenant/Customer model, memberships, roles/scopes, mandatory email-invite onboarding, `/api/me`, backend authorization, audit, tenant-isolation tests, frontend secret-boundary tests, and security review.
 - [ ] Goals are durable and include objective, owner, constraints, success criteria, and outcome links.
+- [ ] Backend capabilities are inventoried with actors/callers, auth context, schemas, side effects, idempotency, policy/approval rules, audit/trace needs, tests, and selected exposure surfaces.
+- [ ] Agent tools are treated as one optional exposure surface for selected capabilities, not as the backend design root.
 - [ ] Agents have explicit responsibilities, versioned prompts/skills, permissions, thresholds, escalation rules, and traces.
 - [ ] Execution plans are inspectable, policy-bound, and auditable before or during activation.
 - [ ] Policies and clauses are versioned, addressable, testable, and cited by actions or decisions.
@@ -174,7 +181,7 @@ Before calling a generated design AI-first, verify:
 
 ## Routing implications for future tasks
 
-When high-level product input arrives, route first through secure AI-first SaaS interpretation and the mandatory foundation unless the task is explicitly repository-maintenance-only or non-SaaS reference material. Start with `../skills/ai-first-saas/SKILL.md`, apply the foundation docs, then choose among description-first maintenance, Akka solution decomposition, PRD/spec/backlog planning, or focused implementation skills.
+When high-level product input arrives, route first through secure AI-first SaaS interpretation and the mandatory foundation unless the task is explicitly repository-maintenance-only or non-SaaS reference material. Start with `../skills/ai-first-saas/SKILL.md`, apply the foundation docs, then use `capability-first-backend-architecture.md` to model governed backend capabilities before choosing among description-first maintenance, Akka solution decomposition, PRD/spec/backlog planning, or focused implementation skills.
 
 Use the existing AI-first companion skills only for concerns that are actually in scope:
 

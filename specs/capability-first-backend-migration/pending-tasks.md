@@ -73,7 +73,7 @@
 
 ### TASK-01-002: Integrate capability-first substrate into AI-first doctrine
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/01-capability-first-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-001]
@@ -93,7 +93,8 @@
 - done criteria:
   - AI-first doctrine explicitly positions capabilities as the backend substrate below the AI-first operating model
 - notes:
-  - pending
+  - completed: updated AI-first SaaS doctrine to position governed backend capabilities below the secure AI-first operating model and before Akka components or exposure surfaces
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Integrate capability-first substrate into AI-first doctrine`
 
 ### TASK-01-003: Update skill routing map for capability-first design
 
