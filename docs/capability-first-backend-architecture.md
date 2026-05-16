@@ -1,0 +1,170 @@
+# Capability-First Backend Architecture
+
+## Status and scope
+
+This is the canonical capability-first backend doctrine for this skills pack. It extends the secure AI-first SaaS doctrine in `ai-first-saas-application-architecture.md` without replacing it.
+
+Default generated-application interpretation:
+
+```text
+product intent
+→ mandatory secure SaaS foundation
+→ capability inventory
+→ authority, scope, schemas, side effects, audit, approval, and supervision rules
+→ Akka component realization
+→ selected exposure surfaces
+```
+
+A capability is the backend design object. Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for a capability.
+
+## Non-negotiable foundation
+
+Capability-first design does **not** weaken the mandatory secure SaaS foundation from `ai-first-saas-application-architecture.md`, `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, and `core-saas-owner-tenant-billing.md`.
+
+Every protected capability must mechanically enforce:
+
+- authenticated account and selected `AuthContext`;
+- active tenant/customer membership and status;
+- role, permission, scope, or named capability authorization;
+- tenant/customer isolation on all reads and writes;
+- backend authorization independent of frontend navigation or prompt instructions;
+- audit/work-trace records for denials, data access, approvals, side effects, policy decisions, and consequential AI/tool activity;
+- security tests for cross-tenant access, disabled users, denied roles/scopes, audit creation, and frontend secret boundaries where applicable.
+
+Prompt text, tool descriptions, UI copy, route names, and hidden form fields are never authorization controls.
+
+## Definition: backend capability
+
+A backend capability is a named, intentional domain operation or query with explicit semantics. It may be read-only, side-effecting, long-running, scheduled, event-reactive, human-approved, agent-assisted, or internal-only.
+
+A capability definition should include:
+
+| Field | Required meaning |
+|---|---|
+| Capability id/name | Stable operation or query name, expressed in product language. |
+| Purpose | Business outcome and why the operation exists. |
+| Actors/callers | Human roles, agents, workflows, services, timers, consumers, or support roles allowed to request it. |
+| Auth context | Required account, tenant/customer, membership, role/scope, and selected context. |
+| Inputs | Typed command/query schema, validation, idempotency key, correlation id, and safe defaults. |
+| Outputs | Typed response schema, redaction rules, user/agent-safe fields, errors, and denial shape. |
+| Data access | Records/views/components read, tenant/customer filters, evidence boundaries, and PII/secret handling. |
+| Side effects | State changes, external calls, topic publications, timers, emails, notifications, or workflow starts. |
+| Idempotency | Duplicate command behavior, retry safety, dedupe keys, and no-op semantics. |
+| Policy/approval | Autonomy level, approval gates, exception/escalation rules, risk/confidence thresholds, and human authority. |
+| Audit/trace | Audit event type, work-trace fields, policy citations, tool/data references, and retention/redaction expectations. |
+| Exposure surfaces | Selected UI/API/tool/workflow/MCP/timer/consumer/internal surfaces, or explicit non-exposure. |
+| Tests | Success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-surface tests. |
+
+## Capability is not agent tool
+
+An agent tool is one possible exposure surface for a capability. It is not the root abstraction.
+
+Official Akka agent tooling supports local `@FunctionTool` methods, external tool classes, Akka components as function tools, and remote MCP tools. See `../akka-context/sdk/agents/extending.html.md`, `../skills/akka-agent-tools/SKILL.md`, and `../skills/akka-agent-component-tools/SKILL.md`.
+
+Capability-first interpretation of those tools:
+
+- `@FunctionTool` exposes a capability operation to an agent for model-selected invocation.
+- `.tools(ComponentClass.class)` exposes selected component command/query handlers as tools; it does not make the component itself the product boundary.
+- MCP tools expose capabilities across an explicit remote boundary and must preserve service ACLs, allowed-tool filtering, tenant scope, and audit.
+- Tool descriptions should communicate impact and required inputs to the model, but capability enforcement must happen in backend code.
+- Not every capability should be exposed as a tool. Many capabilities remain browser-only, workflow-only, timer-only, consumer-only, service-only, or internal-only.
+
+Default stance: expose read-only evidence capabilities to agents more readily than side-effecting capabilities. Consequential side effects should default to recommendation, proposal, or approval-request capabilities unless an accepted policy grants bounded autonomous authority.
+
+## Exposure surfaces
+
+Select exposure after capability semantics are clear.
+
+| Surface | Use when | Capability rules |
+|---|---|---|
+| Browser UI action | Humans directly initiate or supervise work. | Backend still enforces auth; UI shows allowed actions from `/api/me`/capabilities but never decides authorization alone. |
+| HTTP/gRPC API | External clients, browser APIs, or services need a stable contract. | Validate tokens/context, scope every command/query, return safe denial/errors, audit protected access. |
+| Agent tool | A bounded agent may choose to read evidence, draft recommendations, or request/perform allowed work. | Tool receives or resolves AuthContext, enforces permission/scope, limits side effects, records tool/data/work traces. |
+| MCP tool/resource/prompt | Capabilities are shared with remote AI clients or other services. | Expose only selected tools/resources/prompts, use ACL/JWT/service identity, filter allowed tools, audit remote access. |
+| Workflow step | Work is long-running, retryable, approval-gated, compensating, or multi-component. | Persist progress, approval state, retries, denials, and trace links. |
+| View/query | Capability provides curated evidence, lists, dashboards, or search. | Return scoped and redacted read models, not raw state dumps by default. |
+| Timer action | Deadlines, reminders, expiry, periodic checks, or scheduled governance work. | Store authority basis and audit scheduled actions; ensure idempotent retry behavior. |
+| Consumer | Capability reacts to events/topics/service streams. | Preserve provenance/correlation, enforce allowed side effects, handle duplicate/retry semantics. |
+| Internal component method | Operation is not directly exposed outside the backend. | Still validate invariants; apply auth at the caller boundary and audit where consequential. |
+
+A capability may have multiple surfaces, but the same authority, validation, idempotency, audit, and approval semantics must hold across all of them.
+
+## Akka realization rules
+
+Choose Akka components from the capability shape, not from CRUD intuition.
+
+| Capability shape | Likely Akka substrate |
+|---|---|
+| Audit-grade decisions, policies, approvals, goals, traces, or records where event history matters | Event Sourced Entity |
+| Current-state profile, preference, configuration, or cache-like state without audit-grade event history | Key Value Entity |
+| Multi-step execution, approval waits, retries, compensation, agent/team orchestration, or long-running work | Workflow |
+| Curated read/evidence/search/reporting capability | View |
+| Bounded classification, planning, summarization, recommendation, evaluation, or explanation | Agent |
+| Event reaction, trace enrichment, publication, integration, or downstream side effect | Consumer |
+| Deadlines, reminders, expiry, periodic digest/replay/recheck | Timed Action / Timer |
+| Browser or service request boundary | HTTP or gRPC endpoint |
+| LLM-facing remote tool/resource/prompt boundary | MCP endpoint |
+| Full-stack supervision, decision, governance, audit, and outcome surfaces | React/Vite/TypeScript web UI hosted behind Akka endpoints |
+
+## Design sequence for agents
+
+For broad product input or implementation planning:
+
+1. Preserve the mandatory secure SaaS foundation.
+2. Interpret AI-first operating-model needs: delegated work, retained human authority, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
+3. Build a capability inventory before selecting Akka components.
+4. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
+5. Decide which surfaces expose the capability, if any.
+6. Select Akka components that realize the capability semantics.
+7. Generate code/tests component by component while preserving the capability contract.
+
+Do not jump from a product request directly to an entity, endpoint, or agent tool unless the capability contract is already clear enough.
+
+## Capability classes
+
+Use these classes to decompose a product safely:
+
+- **Read/evidence capability:** scoped query, explanation context, decision evidence, dashboard/search/list data.
+- **Command capability:** state-changing action with validation, auth, idempotency, audit, and denial semantics.
+- **Proposal capability:** agent or human drafts a change or recommendation without committing the side effect.
+- **Approval capability:** human or policy-governed decision commits, rejects, delegates, or asks for more evidence.
+- **Workflow capability:** starts or advances long-running, retryable, approval-gated, or compensating work.
+- **Policy/governance capability:** creates, reviews, simulates, activates, deprecates, or rolls back behavior-changing rules/prompts/skills/thresholds.
+- **Trace/audit capability:** records, searches, explains, redacts, or exports what happened and why.
+- **Scheduled capability:** timer-backed expiry, reminder, digest, replay, recheck, or retention work.
+- **Reactive capability:** consumer-backed event reaction, integration, enrichment, or publication.
+
+## Authority defaults
+
+Use conservative defaults unless accepted product specs say otherwise:
+
+- Read-only scoped evidence may be agent-accessible when it is redacted and audited appropriately.
+- Side-effecting agent tools require explicit permission and should prefer proposal/approval flows.
+- High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, or external-side-effect capabilities require human approval or a documented autonomous policy boundary.
+- Agents may recommend governance changes; humans approve activation unless a narrow safe boundary is explicitly defined.
+- Support access and SaaS owner operations require separate authority, audit, and tenant/customer context rules.
+
+## Testing expectations
+
+Capability tests should verify behavior, not just component mechanics:
+
+- success path with authorized AuthContext;
+- validation failures and safe error shape;
+- forbidden access for wrong tenant/customer, missing membership, disabled account, or missing role/scope;
+- idempotent duplicate command/retry behavior;
+- no-op behavior where relevant;
+- audit/work-trace creation for denials, data access, approvals, and side effects;
+- approval/escalation behavior for consequential actions;
+- exposure-specific behavior for UI/API/tool/MCP/workflow/timer/consumer paths;
+- agent tool tests use deterministic model/tool invocation and do not rely on prompt-only security.
+
+## Routing implications
+
+Future skills and planning artifacts should use this doctrine as the backend substrate after secure AI-first SaaS interpretation:
+
+- Description-first paths should maintain capability inventories alongside behavior, auth/security, UI, observability, readiness, and tests.
+- Direct Akka decomposition should derive capabilities before component selection.
+- PRD/spec/backlog planning should preserve capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks.
+- Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or exposure surfaces.
+
+The top-level routing skill for this doctrine is planned as `../skills/capability-first-backend/SKILL.md` in this migration. Until that file exists, route via `../skills/README.md` and this document.

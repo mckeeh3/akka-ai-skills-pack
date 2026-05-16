@@ -41,7 +41,7 @@
 
 ### TASK-01-001: Create canonical capability-first backend doctrine
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/01-capability-first-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: [TASK-00-001]
@@ -68,7 +68,8 @@
 - done criteria:
   - canonical capability-first architecture doc exists and can guide later routing/skill tasks
 - notes:
-  - pending
+  - completed: created `docs/capability-first-backend-architecture.md` as canonical capability-first backend doctrine
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add capability-first backend doctrine`
 
 ### TASK-01-002: Integrate capability-first substrate into AI-first doctrine
 
