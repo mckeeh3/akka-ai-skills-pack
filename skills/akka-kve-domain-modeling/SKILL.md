@@ -59,10 +59,12 @@ Good examples:
 ## Command rules
 
 Commands should:
+- map to a named backend capability or an internal step of one
 - use imperative names
 - be records
 - be nested under a descriptive type such as `PurchaseOrder.Command`
 - represent caller intent, not persistence details
+- carry scoped identifiers, idempotency/correlation fields, and safe defaults required by the capability contract
 
 Examples:
 - `AddItem`
@@ -72,7 +74,7 @@ Examples:
 
 ## Validation pattern
 
-Use a dedicated validator when the task benefits from explicit validation.
+Use a dedicated validator when the task benefits from explicit validation. Validate capability input shape and scoped ids in domain/application code; authorization and AuthContext checks may happen at the caller boundary, but prompt text, tool descriptions, and frontend state are never sufficient controls.
 
 Preferred style:
 - one overloaded `validate(...)` method per command type
@@ -93,6 +95,7 @@ Rules:
 - output is updated state or no-op
 - no Akka effects
 - inspect current state first
+- encode idempotent duplicate/stale behavior as no-op when the capability allows it
 - no-op is represented by `Optional.empty()` or a boolean decision
 
 Examples:
@@ -122,7 +125,8 @@ Never:
 
 Before finishing, verify:
 - state is immutable
-- commands express intent clearly
+- commands express capability intent clearly
+- scoped identifiers and idempotency/correlation fields match the capability contract when required
 - validator messages are deterministic
 - command handler returns updated state or no-op only
 - domain package has no Akka effect logic

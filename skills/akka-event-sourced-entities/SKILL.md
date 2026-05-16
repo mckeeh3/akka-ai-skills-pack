@@ -7,12 +7,15 @@ description: Orchestrate Akka Java SDK EventSourcedEntity work across domain mod
 
 Use this as the top-level skill for Akka Java SDK event sourced entity work.
 
+Use it only after the relevant backend capability contract is clear enough, or as part of a decomposition task that is explicitly deciding whether an event-sourced entity should carry a capability. For broad product work, route through `capability-first-backend` and `akka-solution-decomposition` before implementing entities.
+
 ## Goal
 
 Generate or review event sourced entity code that is:
 - correct for Akka SDK 3.4+
 - cleanly split across `domain`, `application`, and `api`
 - replay-safe
+- aligned to a named capability's AuthContext, scope, idempotency, audit/trace, and approval semantics
 - easy for AI agents to extend
 - backed by tests
 
@@ -88,6 +91,20 @@ Rules:
 - application contains entities and consumers/workflows/timed actions
 - api exposes request/response types and maps domain to API shapes
 
+## Capability-first rules
+
+An Event Sourced Entity command or read handler is an implementation surface for a named capability, not the product boundary by itself.
+
+Before coding command/query handlers, identify:
+- capability id/name and class: command, approval, proposal, trace/audit, or read/evidence;
+- authorized actors/callers and where AuthContext/scope is enforced: endpoint, workflow, agent tool, timer, consumer, or internal caller;
+- tenant/customer scope keys carried by the command/query and persisted events;
+- input validation, idempotency key/correlation id, duplicate/no-op semantics, and denial shape;
+- audit/work-trace obligations and whether domain events themselves are the audit-grade facts;
+- selected exposure surfaces, including whether any command/read is safe to expose as an agent component tool.
+
+Do not expose every entity method as an agent tool just because Akka supports component tools. Prefer scoped read/evidence handlers for tool exposure; side-effecting ESE commands require explicit capability permission, idempotency, audit, and approval policy.
+
 ## Core rules
 
 1. Entity extends `EventSourcedEntity<State, Event>`.
@@ -99,7 +116,7 @@ Rules:
 7. Command handlers never mutate entity state directly.
 8. External side effects do not belong inside the entity.
 9. Use `EventSourcedEntityContext` when `emptyState()` needs the entity id.
-10. Tests must cover success, invalid input, and no-op or idempotent cases.
+10. Tests must cover success, invalid input, forbidden/scope denial at the caller boundary or entity guard, tenant isolation when scoped ids are present, audit/trace effects where applicable, and no-op or idempotent cases.
 
 ## Decision guide
 
@@ -110,9 +127,10 @@ Use when an endpoint calls the entity directly.
 
 Typical behavior:
 - explicit validation
-- `effects().error(...)` for business rejection
-- useful success reply, often current state
-- endpoint translates `CommandException` to HTTP response
+- AuthContext and tenant/customer scope checked at the endpoint or command boundary
+- `effects().error(...)` for business rejection or denied capability when the entity owns the guard
+- useful success reply, often current state or a capability response shape
+- endpoint translates `CommandException` to HTTP response and records required audit/trace data
 
 Repository example:
 - `ShoppingCartEntity`
@@ -122,10 +140,11 @@ Repository example:
 Use when a consumer or workflow drives the entity.
 
 Typical behavior:
+- caller carries capability authority, correlation id, and tenant/customer scope
 - malformed input may be rejected
-- duplicate or stale commands often become no-ops
+- duplicate or stale commands often become idempotent no-ops
 - reply type is often `Done`
-- one command may emit zero, one, or many events
+- one command may emit zero, one, or many audit-grade facts
 
 Repository example:
 - `OrderEntity`
@@ -150,14 +169,17 @@ Repository example:
 Before finishing, verify:
 - package split is correct
 - component id is stable
+- entity handlers map to named capabilities rather than raw CRUD by default
 - events have `@TypeName`
 - `emptyState()` exists and is sensible
-- validation happens before persist
+- validation and capability scope checks happen before persist at the correct boundary
 - `applyEvent` is pure
-- no-op cases do not persist events
+- no-op/idempotent cases do not persist events
+- audit/trace obligations are represented by events or caller-side audit records
 - side effects are outside the entity
-- endpoints do not expose domain types directly
-- tests cover the important behavior
+- endpoints and tools do not expose domain types directly
+- agent tool exposure is deliberate and preserves auth/scope, approval, audit, and idempotency
+- tests cover the important capability behavior
 
 ## Response style
 

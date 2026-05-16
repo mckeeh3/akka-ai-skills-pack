@@ -10,7 +10,8 @@ Use this skill only when the task is already narrowed to a stateful component bu
 - `KeyValueEntity`
 
 This is not the general front door for broad requirements, prompts, PDRs, or specification files.
-If the broader Akka component set is still unknown, start with:
+If the broader Akka component set or backend capability contract is still unknown, start with:
+- `capability-first-backend`
 - `akka-solution-decomposition`
 
 ## Required reading
@@ -19,6 +20,7 @@ Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../../docs/capability-first-backend-architecture.md` when the stateful object implements a named capability with auth/scope, idempotency, audit, approval, or exposure-surface choices
 - `../../docs/ai-first-saas-application-architecture.md` when the stateful object represents goals, plans, policies, decisions, approvals, traces, outcomes, agent authority, or other AI-first substrate state
 - `../../../src/main/java/com/example/application/ShoppingCartEntity.java`
 - `../../../src/main/java/com/example/application/OrderEntity.java`
@@ -29,6 +31,8 @@ Read these first if present:
 ## Decision rule
 
 Choose the simplest model that preserves the required business semantics.
+
+For capability-first work, decide which named capability the entity will carry, where AuthContext/scope is enforced, whether duplicate commands must be idempotent no-ops, what audit/trace record is required, and whether any command/read should be exposed through an endpoint, workflow, or agent tool.
 
 For AI-first SaaS objects, decide whether the state is an audit-grade fact stream or a replaceable current-state record before considering CRUD convenience.
 
@@ -104,7 +108,8 @@ When deciding, state explicitly:
 1. chosen entity type
 2. why the other type is less suitable here
 3. whether history/audit/replay is required, including any AI-first authority, policy, decision, trace, or outcome obligation
-4. which skill suite should be loaded next
+4. how command/query capability semantics, idempotency, auth/scope, audit, and exposure choices affect the implementation
+5. which skill suite should be loaded next
 
 ## Anti-patterns
 
@@ -114,3 +119,4 @@ Avoid:
 - choosing KVE for AI-first decisions, approvals, policy commits, or traces that must be explained or replayed later
 - mixing event-sourced vocabulary into KVE implementations
 - flattening a clearly event-driven process into snapshots without justification
+- treating entity method exposure as automatic API or agent-tool exposure instead of a selected capability surface
