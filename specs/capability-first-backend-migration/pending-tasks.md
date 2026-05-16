@@ -282,7 +282,7 @@
 
 ### TASK-02-005: Add or revise a small app-description capability example
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/02-description-and-decomposition-integration-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001, TASK-02-002]
@@ -301,7 +301,9 @@
 - done criteria:
   - future agents have one capability-description example to follow
 - notes:
-  - pending
+  - completed: revised the seed app-description capability index and expanded `01-secure-tenant-user-foundation.md` into a capability-first reference contract with AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure surfaces, tests, and linked layers
+  - checks: verified updated markdown file references resolve; `rg` verified required capability contract fields and explicit reference-material language
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add app-description capability example`
 
 ### TASK-03-001: Update agent tool and component-tool skills for capability-first design
 
