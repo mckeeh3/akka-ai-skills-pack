@@ -98,7 +98,7 @@
 
 ### TASK-01-003: Update skill routing map for capability-first design
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/01-capability-first-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-001, TASK-01-002]
@@ -119,7 +119,8 @@
 - done criteria:
   - routing map reflects capability-first backend architecture as the next step after secure AI-first SaaS interpretation
 - notes:
-  - pending
+  - completed: updated `skills/README.md` so secure AI-first SaaS routing now models capability-first backend contracts before description, decomposition, PRD planning, or Stage 3 component implementation
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Update skill routing for capability-first backend`
 
 ### TASK-01-004: Create top-level capability-first backend skill
 

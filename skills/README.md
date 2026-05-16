@@ -1,6 +1,6 @@
 # Akka Skill Routing Map
 
-This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security and web UI foundation, derive the right Akka Java SDK solution, then turn that solution plan into concrete backend, frontend, test, and delivery assets.
+This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security and web UI foundation, model governed backend capabilities, derive the right Akka Java SDK solution, then turn that solution plan into concrete backend, frontend, test, and delivery assets.
 
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
@@ -25,6 +25,7 @@ Mandatory secure SaaS and web UI foundation before app-specific features:
 
 Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../docs/core-ai-first-saas-foundation.md`
 - `../docs/core-saas-identity-tenancy-admin.md`
 - `../docs/core-saas-owner-tenant-billing.md`
@@ -48,13 +49,15 @@ AI-first companion skills:
 - `ai-first-saas-ui-surfaces` — select supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces and route to web UI/API skills
 - `ai-first-saas-outcomes-metrics` — define outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces
 
-After secure AI-first SaaS interpretation, route through `core-saas-foundation`, then choose the normal operating path:
-1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization
-2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known
-3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts
-4. use focused Stage 3 component skills only after the secure foundation, operating model, and solution shape are clear enough for implementation
+After secure AI-first SaaS interpretation, route through `core-saas-foundation`, model the capability-first backend substrate, then choose the normal operating path:
+1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization; capability inventory belongs in the description layer alongside behavior, auth/security, UI, observability, readiness, and tests
+2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known; derive governed capabilities before selecting Akka components
+3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts; preserve capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks
+4. use focused Stage 3 component skills only after the secure foundation, operating model, capability contracts, and solution shape are clear enough for implementation
 
-Use companion skills only for the AI-first concerns that are actually in scope, except `ai-first-saas-admin-agents` which is mandatory whenever generating the core SaaS user-administration foundation. Existing Stage 3 skills remain implementation substrate skills for the AI-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with AI-first narrative guidance; route to them after goals, plans, authority, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
+Capability-first backend design is the next substrate step below secure AI-first SaaS and above component implementation. A capability is a named operation or query with explicit actors/callers, AuthContext, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, selected exposure surfaces, and tests. Browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, internal component methods, and agent tools are exposure or realization choices for capabilities; they are not the root abstraction. The top-level `capability-first-backend` skill is planned/future in this migration; until it exists, use `../docs/capability-first-backend-architecture.md` directly with this routing map.
+
+Use companion skills only for the AI-first concerns that are actually in scope, except `ai-first-saas-admin-agents` which is mandatory whenever generating the core SaaS user-administration foundation. Existing Stage 3 skills remain implementation substrate skills for the AI-first and capability-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with narrative guidance; route to them after goals, plans, authority, capabilities, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
 
 ## Description-first intake skills
 
@@ -117,11 +120,12 @@ Use the skills in this order:
 
 1. read the requirements, PRD, spec, prompt, API sketch, UI brief, feature request, or change request
 2. apply AI-first SaaS interpretation first when the input involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
-3. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear
-4. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
-5. move to Stage 3 to load only the focused implementation skills for the chosen components
-6. use the accepted solution plan as the implementation contract for the downstream coding phase
-7. generate code and tests only after decomposition and structural selection are done
+3. model the capability-first backend substrate: named operations/queries, actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
+4. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear; Stage 1 should turn capabilities into an Akka component plan rather than skipping directly to entities, endpoints, or agent tools
+5. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
+6. move to Stage 3 to load only the focused implementation skills for the chosen components and capability exposure surfaces
+7. use the accepted solution plan as the implementation contract for the downstream coding phase
+8. generate code and tests only after capability contracts, decomposition, and structural selection are done
 
 Short reusable version:
 - `../docs/intent-driven-usage-flow.md`
@@ -133,7 +137,7 @@ Short reusable version:
 Use the skill library as a visible 3-stage hierarchy:
 
 ### Stage 1: Intent and architecture
-Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape. For high-level product inputs, apply the AI-first SaaS interpretation rule above before mapping the work to Akka components.
+Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape. For high-level product inputs, apply the AI-first SaaS interpretation rule above, then identify governed backend capabilities before mapping the work to Akka components.
 
 Primary Stage 1 entry skills:
 - `akka-solution-decomposition`
@@ -147,8 +151,8 @@ Primary Stage 2 skill currently available:
 - `akka-entity-type-selection` — choose between Event Sourced Entity and Key Value Entity when you know you need state but not which state model
 
 ### Stage 3: Focused component implementation
-Use this stage only after the solution shape is already clear enough to generate code.
-This is the downstream implementation phase driven by the accepted solution plan.
+Use this stage only after the capability contracts and solution shape are already clear enough to generate code.
+This is the downstream implementation phase driven by the accepted capability-aware solution plan.
 
 Stage 3 is the family of focused implementation skills for peer building blocks such as:
 - workflows
@@ -168,9 +172,10 @@ Move to Stage 3 when the architecture is settled enough to write code and tests.
 
 Primary flow:
 1. start from a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input
-2. use Stage 1 to decompose that input into the right Akka component set
-3. use Stage 2 when a focused architecture decision is still unresolved
-4. use Stage 3 to load only the implementation skills needed for the chosen components
+2. identify capability contracts before choosing implementation surfaces
+3. use Stage 1 to decompose those capabilities into the right Akka component set
+4. use Stage 2 when a focused architecture decision is still unresolved
+5. use Stage 3 to load only the implementation skills needed for the chosen components and exposure surfaces
 
 Current local Stage 3 suites:
 - Agents
