@@ -405,7 +405,7 @@
 
 ### TASK-03-005: Update endpoint and MCP skills for selective capability exposure
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/03-component-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-003]
@@ -422,7 +422,9 @@
 - done criteria:
   - endpoint/MCP guidance treats exposure as a selected surface of a capability
 - notes:
-  - pending
+  - completed: updated HTTP, gRPC, and MCP endpoint skill suites so routes, methods, tools, resources, and prompts are framed as selected exposure surfaces for named backend capabilities, preserving AuthContext, tenant/customer scope, role/scope/capability authorization, validation, idempotency, approval, audit/trace, and cross-surface consistency
+  - checks: `rg` verified capability exposure guidance, auth/scope, audit, approval, HTTP denial, gRPC denial, and MCP prompt/tool-description authorization language across endpoint skills; `git diff --check` passed
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Make endpoint skills capability-first`
 
 ### TASK-03-006: Update consumer, timer, and testing skills for capability execution
 
