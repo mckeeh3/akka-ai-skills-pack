@@ -11,7 +11,8 @@ Use this as the top-level starting skill when the task begins from high-level in
 
 Generate or review an Akka solution plan that:
 - interprets high-level product intent through the full-stack secure AI-first SaaS operating model, including mandatory foundation and UI surfaces
-- maps user-facing capabilities to concrete Akka components
+- derives governed backend capabilities before choosing Akka components or exposure surfaces
+- maps capability contracts to concrete Akka components
 - chooses the simplest component set that preserves required business semantics
 - makes write model, read model, orchestration, timing, integration, and edge concerns explicit
 - routes to the smallest relevant local skill set
@@ -38,8 +39,8 @@ Use this skill when the input is one or more of:
 
 If the user provides a filename or path:
 1. read the file completely before selecting components
-2. extract capabilities, constraints, actors, inputs, outputs, and integration points
-3. then produce the component plan
+2. extract capability contracts, constraints, actors, inputs, outputs, and integration points before selecting components
+3. then produce the capability-aware component plan
 
 ## Required reading
 
@@ -49,6 +50,7 @@ Read these first if present:
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline every new app plan must include
 - `../akka-saas-invitation-onboarding/SKILL.md` when the foundation plan includes complete email-invite onboarding implementation details
 - `../../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
+- `../../docs/capability-first-backend-architecture.md` and `../capability-first-backend/SKILL.md` for capability-first backend modeling before component selection
 - `../../docs/agent-coverage-matrix.md` when the task is agent-related
 - `../references/akka-entity-comparison.md`
 - `../../docs/workflow-endpoint-pattern.md`
@@ -88,16 +90,18 @@ Before any coding, produce a component plan with these sections:
 2. AI-first interpretation
 3. Core secure SaaS foundation
 4. Capability summary
-5. Chosen components
-6. Why each component exists
-7. Skill routing
-8. Open questions and assumptions
-9. Recommended implementation order
-10. Required tests
+5. Capability-to-component mapping
+6. Chosen components
+7. Why each component exists
+8. Skill routing
+9. Open questions and assumptions
+10. Recommended implementation order
+11. Required tests
 
-Treat sections 6, 8, and 9 as the implementation handoff.
+Treat sections 5, 7, 9, and 10 as the implementation handoff.
 The plan is not complete if it only names components.
 It must also tell the downstream implementation phase:
+- which capability id and contract each component implements or exposes
 - which skills to load for code generation
 - which skills to load for test generation
 - what order to implement the components
@@ -125,24 +129,41 @@ If AI-first concerns are present, use `ai-first-saas` framing and extract:
 
 If the product is clearly not agentic, say so and continue with secure foundation-first Akka decomposition. Do not force every app to use every AI-first pattern beyond the mandatory secure SaaS foundation.
 
-### 3. Extract capabilities
+### 3. Derive governed capabilities before component selection
 
-List:
-- actors and human operating roles
-- objectives, delegated work, retained authority, and outcome loops when AI-first concerns exist
-- commands and mutations
-- queries, search, and reporting needs
-- long-running processes
-- time-based behavior
-- async integrations
-- human approval or pause points
-- policy, permission, evidence, audit, and governance requirements
-- edge and API channels
+Build a capability inventory before deciding entities, workflows, views, endpoints, tools, timers, consumers, or UI actions. For each operation or query, capture:
+- stable capability id/name in product language
+- capability class: read/evidence, command, proposal, approval, workflow, policy/governance, trace/audit, scheduled, or reactive
+- purpose, actors/callers, human operating roles, delegated work, retained authority, and outcome loops when AI-first concerns exist
+- required AuthContext, tenant/customer scope, roles, permissions, named capability grants, and denial shape
+- input schema, validation rules, idempotency key, correlation id, and safe defaults
+- output schema, redaction rules, evidence boundaries, and user/agent-safe fields
+- data reads/writes, tenant filters, PII/secret handling, commands/mutations, queries/search/reporting needs
+- side effects: state changes, workflow starts, external calls, topics, timers, emails, notifications, or integrations
+- policy, approval, escalation, risk/confidence/impact thresholds, supervision, and governance requirements
+- audit/work-trace obligations for access, denials, approvals, side effects, tool activity, and data references
+- selected exposure surfaces: browser UI, HTTP/gRPC, MCP, agent tool/component tool, workflow step, timer action, consumer reaction, view/query, or internal-only
 - browser UI needs, including screens, navigation, forms, frontend state, realtime behavior, accessibility, and responsive requirements
-- AI and LLM needs
-- security constraints
+- AI and LLM needs, if genuinely prompt-driven
+- success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and surface-specific tests
 
-### 4. Identify the write model
+Only after these semantics are clear should the plan choose Akka components. If a broad request lacks enough authority, approval, audit, or scope detail to select components safely, record the smallest necessary open question instead of guessing.
+
+### 4. Map capabilities to Akka substrate candidates
+
+Use capability shape as the input to component selection:
+- read/evidence capabilities usually need curated `View` queries, direct safe component reads, HTTP/gRPC endpoints, MCP resources, or agent tools only when scoped and redacted
+- command capabilities usually need entity or workflow commands with backend auth, validation, idempotency, audit, and denial semantics
+- proposal capabilities usually use agents or deterministic services to draft changes without committing side effects
+- approval capabilities usually use workflows, event-sourced decisions, policy checks, and human UI surfaces
+- workflow capabilities usually use `Workflow` for long-running, retryable, approval-gated, or compensating execution
+- scheduled capabilities usually use timers/timed actions and idempotent target calls
+- reactive capabilities usually use consumers with provenance, correlation, retry, duplicate, and audit behavior
+- policy/governance and trace/audit capabilities usually need event history, views, and admin/governance UI surfaces
+
+A component may realize several capabilities, and a capability may have several exposure surfaces. Preserve one shared authority, validation, idempotency, approval, and audit contract across all surfaces.
+
+### 5. Identify the write model
 
 Ask:
 - what state must be durable?
@@ -154,7 +175,7 @@ Ask:
 If a stateful core exists but entity type is not yet fixed, route to:
 - `akka-entity-type-selection`
 
-### 5. Add orchestration only when required
+### 6. Add orchestration only when required
 
 Choose a `Workflow` when:
 - the use case is multi-step and durable
@@ -165,7 +186,7 @@ Choose a `Workflow` when:
 
 Do not add a workflow for a simple single-entity command flow.
 
-### 6. Add read models only when query needs justify them
+### 7. Add read models only when query needs justify them
 
 Choose a `View` when:
 - the user needs list, search, filter, or reporting queries
@@ -176,7 +197,7 @@ Choose a `View` when:
 
 Do not add a view for simple direct single-entity lookups unless the query pattern truly needs projection.
 
-### 7. Add async reactions only when something must react after the write
+### 8. Add async reactions only when something must react after the write
 
 Choose a `Consumer` when:
 - one component must react asynchronously to another component's updates
@@ -185,7 +206,7 @@ Choose a `Consumer` when:
 - events need republishing to topics or service streams
 - traces, notifications, outcome links, or governance records must be enriched asynchronously
 
-### 8. Add time-based components only when deadlines or reminders exist
+### 9. Add time-based components only when deadlines or reminders exist
 
 Choose a `TimedAction` when:
 - a timeout, expiry, reminder, retry delay, or scheduled callback is required
@@ -193,7 +214,7 @@ Choose a `TimedAction` when:
 - obsolete timer executions must be normalized to no-op or done behavior
 - periodic digests, rechecks, policy simulations, or outcome reviews are required
 
-### 9. Add AI components only when the requirement is genuinely LLM-driven
+### 10. Add AI components only when the requirement is genuinely LLM-driven
 
 Choose an `Agent` when:
 - the behavior depends on prompt-driven generation, extraction, classification, evaluation, or summarization
@@ -203,17 +224,17 @@ Choose an `Agent` when:
 
 Do not introduce an agent for deterministic business rules that should stay in code.
 
-### 10. Choose edge and API surfaces
+### 11. Choose edge and API surfaces
 
-Choose:
+Choose surfaces after capability semantics are fixed:
 - `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
 - `Akka-hosted web UI app` for full browser applications with screens, typed API clients, forms, state, selected frontend project shape, and frontend quality requirements; prioritize supervision, decision, governance, digest, audit, and outcome surfaces when AI-first concerns exist
 - `gRPC endpoint` for protobuf-first service APIs
-- `MCP endpoint` for LLM-oriented tools, resources, or prompts
+- `MCP endpoint` for selectively exposed LLM-oriented tools, resources, or prompts
 
-A single solution may expose more than one edge surface.
+A single solution may expose more than one edge surface, but every surface must preserve the same capability auth/scope, validation, idempotency, approval, and audit rules. Do not expose all capabilities as agent tools or MCP tools by default.
 
-### 11. Add security and delivery concerns explicitly
+### 12. Add security and delivery concerns explicitly
 
 The secure foundation is mandatory; this step refines provider-specific and delivery details. Check whether the requirements imply:
 - WorkOS or other end-user authentication
@@ -227,7 +248,7 @@ The secure foundation is mandatory; this step refines provider-specific and deli
 - notifications or service streams
 - policy-bound permissions, approval gates, tool/data-access controls, redaction, retention, tenant isolation, and trace visibility
 
-### 12. Generate the implementation order
+### 13. Generate the implementation order
 
 Prefer this order unless requirements force another:
 1. core secure SaaS foundation: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with a concrete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, admin UI surfaces, support-access, billing boundary, and security/admin tests before app-specific domain features
@@ -240,6 +261,8 @@ Prefer this order unless requirements force another:
 8. docs or snippets if the task includes repository guidance
 
 ## Component selection guide
+
+Component selection is a realization decision for the capability inventory. Do not start from CRUD screens, entity tables, endpoint routes, or agent tool lists when product-level capability semantics are still unclear.
 
 ### AI-first substrate mapping
 
@@ -298,7 +321,7 @@ After decomposition, load the minimal next skill set.
 The routing output should feed code generation directly, not serve as a purely informational appendix.
 For every chosen component, list the implementation skills and the corresponding testing skill when one exists.
 
-For generated SaaS apps, always include `core-saas-foundation` in planning/intake routing before app-specific component skills. When AI-first concerns shape the solution, include `ai-first-saas` and add only the companion skills needed by the plan:
+For generated SaaS apps, always include `core-saas-foundation` in planning/intake routing before app-specific component skills. Include `capability-first-backend` whenever broad requirements still need operation/query contracts before Stage 3 implementation. When AI-first concerns shape the solution, include `ai-first-saas` and add only the companion skills needed by the plan:
 - `ai-first-saas-object-model` for durable goals, plans, policies, decisions, traces, and outcomes
 - `ai-first-saas-agent-team-design` for bounded coordinator/specialist/evaluator agent teams
 - `ai-first-saas-policy-governance` for policies, permissions, thresholds, simulations, and governed commits
@@ -501,10 +524,11 @@ Then add only what is needed:
 
 After producing the solution plan, convert it into a concrete work queue:
 1. take the recommended implementation order
-2. for each component in that order, load only the named implementation skills
-3. generate that component's code before moving to the next major component
-4. generate the corresponding tests for that component family
-5. generate endpoints, web UI, or documentation/snippets when the plan explicitly includes them
+2. preserve capability ids, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, and exposure decisions in every implementation task
+3. for each component in that order, load only the named implementation skills
+4. generate that component's code before moving to the next major component
+5. generate the corresponding tests for that component family
+6. generate endpoints, web UI, or documentation/snippets when the plan explicitly includes them
 
 Decomposition has succeeded only when a future agent can follow the plan mechanically into focused implementation work.
 
@@ -536,7 +560,10 @@ Use this exact response shape whenever the task starts from requirements:
 - audit and security tests:
 
 ## Capability summary
-- ...
+- <capability-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; exposure surfaces; required tests
+
+## Capability-to-component mapping
+- <capability-id> → <ComponentName/surface>: <realization responsibility and preserved capability semantics>
 
 ## Chosen components
 - <ComponentType>: <ComponentName> — <purpose>
@@ -589,6 +616,7 @@ Avoid:
 - adding a workflow for simple one-step entity operations
 - adding an agent for deterministic rules that belong in domain code
 - exposing query-heavy use cases directly from write models when a view is the better fit
+- treating agent tools, MCP tools, endpoint routes, or UI actions as the root backend abstraction instead of selected capability surfaces
 - performing side effects inside entity command handlers instead of routing through consumers or other supported patterns
 - generating code before listing unresolved assumptions
 
@@ -597,8 +625,10 @@ Avoid:
 Before moving from planning to coding, verify:
 - high-level input was explicitly classified as AI-first-applicable or clearly non-agentic
 - delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
-- every user-facing capability maps to at least one concrete component or an explicit decision not to add one
-- each chosen component has a clear purpose and owning package
+- governed capabilities were derived before Akka component selection
+- every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests, or an explicit open question
+- every user-facing capability maps to at least one concrete component/surface or an explicit decision not to add one
+- each chosen component has a clear capability responsibility and owning package
 - entity type decisions are justified
 - workflow usage is justified
 - view needs are explicit
@@ -606,13 +636,13 @@ Before moving from planning to coding, verify:
 - edge and API surfaces are explicit
 - required tests are listed for each component family
 - the next skills to load are listed in implementation order
-- the plan clearly feeds the downstream implementation phase instead of stopping at decomposition
+- the plan preserves capability semantics for downstream implementation tasks instead of stopping at component names
 - open questions and assumptions are called out separately
 
 ## Response style
 
 When answering:
-- start with a short capability summary
+- start with a short capability summary, including capability ids and authority/scope highlights
 - then list the proposed Akka components
 - justify each component in one line
 - list the exact next skills to load

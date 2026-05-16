@@ -230,7 +230,7 @@
 
 ### TASK-02-003: Update Akka solution decomposition for capability-first planning
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/02-description-and-decomposition-integration-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-005]
@@ -250,7 +250,9 @@
 - done criteria:
   - direct Akka planning path is capability-first
 - notes:
-  - pending
+  - completed: updated `skills/akka-solution-decomposition/SKILL.md` so direct Akka planning now derives governed capabilities before component and exposure selection, adds capability-to-component mapping, and preserves capability ids, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure surfaces, and tests in the implementation handoff
+  - checks: `rg` verified capability-before-component language and implementation handoff semantics
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Make Akka solution decomposition capability-first`
 
 ### TASK-02-004: Update PRD/spec/backlog intake for capability semantics
 
