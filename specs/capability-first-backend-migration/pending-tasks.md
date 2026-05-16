@@ -150,7 +150,7 @@
 
 ### TASK-01-005: Sprint 1 consistency review
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/01-capability-first-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-001, TASK-01-002, TASK-01-003, TASK-01-004]
@@ -173,7 +173,9 @@
 - done criteria:
   - Sprint 1 is ready for Sprint 2 description/decomposition integration
 - notes:
-  - pending
+  - completed: reviewed Sprint 1 doctrine/routing outputs; capability-first doc and skill references resolve, Sprint 1 changes stayed limited to doctrine/routing/planning files, and guidance explicitly says agent tools are optional exposure surfaces rather than the root abstraction
+  - checks: `rg` review of capability-first references; `find` existence check for `docs/capability-first-backend-architecture.md` and `skills/capability-first-backend/SKILL.md`; `git diff --name-only 5f71098^..HEAD` confirmed no broad component-skill rewrite
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review Sprint 1 capability-first consistency`
 
 ### TASK-02-001: Design app-description capability inventory
 
