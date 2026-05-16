@@ -1,6 +1,16 @@
-# Web UI style guide and default themes
+# Web UI style guide and AI-first theme selection
 
-Use this document whenever an app includes a browser UI. The visual style is part of the app's maintained specification, not an implementation detail that frontend generation may invent later.
+Use this document whenever an app includes a browser UI. The visual style is part of the maintained app specification, not an implementation detail that frontend generation may invent later.
+
+## Policy
+
+Generated full-stack SaaS apps must use an AI-first supervision-oriented UI system by default. Do not select older dashboard/CRM/project-management visual themes for new generated AI-first SaaS apps; those patterns overfit conventional CRUD/analytics screens and do not make delegated work, authority, policy, evidence, decisions, traces, and outcomes prominent enough.
+
+Theme selection is intentionally narrow:
+
+1. **Use the canonical AI-first theme** unless the user provides a custom brand brief or design system.
+2. **Use `custom`** only when the user supplies enough tokens/component rules to preserve the AI-first UX anatomy.
+3. **Do not silently choose a legacy theme**. Legacy `theme-1-*` through `theme-5-*` ids are deprecated and should only be honored for existing app descriptions until they are migrated.
 
 ## Authoritative locations
 
@@ -9,21 +19,21 @@ Record the selected style in the smallest authoritative artifact available:
 - description-first apps: `app-description/55-ui/style-guide.md`
 - specs/backlog apps: `specs/cross-cutting/NN-ui-style-guide.md` or an equivalent UI slice spec referenced by every web UI task
 
-A generated web UI should read from that style guide before producing HTML, CSS, TypeScript, or JavaScript. For generated full-stack AI-first SaaS, the browser UI is mandatory; if no style has been selected, add a durable `category: ui` question to `specs/pending-questions.md` before creating or executing web UI implementation tasks.
+A generated web UI must read from that style guide before producing HTML, CSS, TypeScript, or JavaScript. For generated full-stack AI-first SaaS, the browser UI is mandatory; if no style has been selected, add a durable `category: ui` question to `specs/pending-questions.md` before creating or executing web UI implementation tasks.
 
 ## Required style-guide fields
 
 Every app UI style guide should define:
 
 - selected theme id and name, or `unselected`
-- source reference: one of the default theme images, a custom design reference, or a user-provided brand brief
+- source reference: this document, a custom design reference, or a user-provided brand brief
 - light/dark/system mode policy
 - brand adaptations: app name, logo/icon treatment, product-specific accent allowances, forbidden copied demo names/logos
 - layout shell: sidebar/topbar/footer presence, max width, grid density, card density, navigation style
 - typography: font family, scale, weights, line heights, numeric/table conventions
 - color tokens: CSS variables for surfaces, text, borders, primary/accent colors, status colors, chart colors, focus rings, and shadows
 - spacing/radius/elevation tokens
-- component rules: cards, buttons, forms, tables/lists, charts, badges, empty/error/loading states, toasts/modals where applicable
+- component rules: command strip, decision cards, cards, buttons, forms, tables/lists, charts, badges, empty/error/loading states, toasts/modals where applicable
 - accessibility constraints: contrast, focus visibility, color-not-alone status semantics, reduced motion expectations
 - generated asset expectations: `index.html` uses semantic landmarks, `app.css` defines tokens as CSS variables, TypeScript toggles only documented state/classes rather than hard-coded styling decisions
 
@@ -33,16 +43,16 @@ Every app UI style guide should define:
 # Web UI Style Guide
 
 ## Selection
-- selected theme: <theme-id | custom | unselected>
+- selected theme: <atlas-ops-supervisory-console | custom | unselected>
 - theme name: <name>
-- source reference: <docs/images/... | custom brief path | user answer>
-- mode policy: <light-only | dark-only | system with both light/dark tokens>
+- source reference: <docs/web-ui-style-guide.md | custom brief path | user answer>
+- mode policy: <system with light/dark tokens | light-only | dark-only>
 - status: <selected | pending-question | deferred-with-default>
 
 ## Brand adaptation
 - app/product name:
 - logo/icon treatment:
-- copied-demo-content rule: do not copy demo product names, logos, user names, or metrics from reference images
+- copied-demo-content rule: do not copy demo product names, logos, user names, or metrics from reference material
 - custom brand overrides:
 
 ## Design tokens
@@ -54,12 +64,18 @@ Every app UI style guide should define:
   - surfaces:
   - text:
   - primary/accent:
+  - AI accent:
   - status:
   - charts:
   - focus:
 
 ## Component style rules
 - shell/navigation:
+- AI command strip:
+- KPI summary cards:
+- decision/exception cards:
+- agent activity timeline/cards:
+- governance/trust controls:
 - cards/panels:
 - buttons/actions:
 - forms:
@@ -71,6 +87,7 @@ Every app UI style guide should define:
 - contrast:
 - focus:
 - keyboard:
+- status semantics:
 - narrow-screen layout:
 - reduced motion:
 
@@ -79,37 +96,6 @@ Every app UI style guide should define:
 - files expected to apply this guide:
 - tests/manual checks:
 ```
-
-## CSS token baseline
-
-Generated CSS should express the selected style with plain CSS variables. Prefer a token layer like:
-
-```css
-:root {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --shadow-card: 0 12px 32px rgb(15 23 42 / 0.10);
-  --color-bg: #f8fafc;
-  --color-surface: #ffffff;
-  --color-text: #0f172a;
-  --color-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-primary: #2563eb;
-  --color-focus: #2563eb;
-  --color-success: #16a34a;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-}
-```
-
-Adapt names as needed, but keep style decisions centralized in CSS instead of scattered through TypeScript.
 
 ## Default theme selection question
 
@@ -127,17 +113,13 @@ Use this durable pending-question shape when style is missing:
 - source:
   - app-description/55-ui/style-guide.md or specs/cross-cutting/NN-ui-style-guide.md is missing or unselected
 - question: >
-    Which default visual theme should generated web UI content use?
+    Which visual style should generated web UI content use?
 - why it matters: >
-    The selected theme drives generated HTML structure, CSS variables, spacing, typography, chart colors, component states, and accessibility review. Without it the harness would have to invent visual style during implementation.
+    The selected style drives generated HTML structure, CSS variables, spacing, typography, chart colors, component states, accessibility review, and regeneration consistency. Without it the harness would have to invent visual style during implementation.
 - options:
-  - A: theme-1-northpeak-analytics — clean blue SaaS analytics dashboard
-  - B: theme-2-promanage-violet — violet project-management workspace
-  - C: theme-3-nordic-crm-teal — teal CRM/data pipeline console
-  - D: theme-4-finflow-emerald — emerald finance/invoicing operations UI
-  - E: theme-5-acme-admin-blue — general blue admin/ops dashboard
-  - F: custom — user will provide a custom style brief or reference
-- default if deferred: none for production generation; theme-1-northpeak-analytics may be accepted explicitly for early evaluation only
+  - A: atlas-ops-supervisory-console — recommended canonical AI-first SaaS supervision UI
+  - B: custom — user will provide a custom style brief or reference that preserves AI-first supervision, decision, governance, audit, and outcome surfaces
+- default if deferred: none for production generation; atlas-ops-supervisory-console may be accepted explicitly for early evaluation only
 - answer: none
 - decision: pending
 - decision impact: pending
@@ -147,224 +129,289 @@ Use this durable pending-question shape when style is missing:
 
 When answered, reconcile the decision into `app-description/55-ui/style-guide.md` and/or the relevant `specs/cross-cutting/*ui-style-guide*.md` before marking the question `resolved`.
 
-## Default themes
+## Canonical theme: `atlas-ops-supervisory-console`
 
-The images under `docs/images/` are style references, not source assets to copy. Do not copy their app names, logos, people, data, or exact mock content into generated apps.
+Use this as the default choice for generated AI-first SaaS apps. It is an operational supervision interface for delegated agent work, not a generic dashboard skin.
 
-### theme-1-northpeak-analytics
+### Visual intent
 
-- source image: `docs/images/web-ui-theme-1.png`
-- best fit: SaaS analytics, executive reporting, customer/revenue dashboards
-- visual character: polished neutral dashboard with crisp cards, strong blue primary, multicolor metric accents, calm information hierarchy
-- mode policy: system mode with equivalent light and dark palettes
-- typography: Inter/system sans; 14px body, 12px labels, 20-24px page headings, 28-32px KPI numerals; font weights 500/600/700 for labels/headings/KPIs
-- layout:
-  - left sidebar around 224-248px on desktop with icon + label nav
-  - topbar with global search and compact account/actions area
-  - 12-column dashboard grid; KPI cards in 4-up desktop, 2-up tablet, 1-up mobile
-  - cards use airy 16-24px padding and rounded corners
-- light tokens:
-  - `--color-bg: #f6f8fb`
-  - `--color-sidebar: #ffffff`
-  - `--color-surface: #ffffff`
-  - `--color-surface-raised: #ffffff`
-  - `--color-text: #0f172a`
-  - `--color-muted: #64748b`
-  - `--color-border: #e2e8f0`
-  - `--color-primary: #2563eb`
-  - `--color-primary-strong: #1d4ed8`
-  - `--color-primary-soft: #dbeafe`
-- dark tokens:
-  - `--color-bg: #07111f`
-  - `--color-sidebar: #0b1626`
-  - `--color-surface: #111f2f`
-  - `--color-surface-raised: #142438`
-  - `--color-text: #f8fafc`
-  - `--color-muted: #94a3b8`
-  - `--color-border: #26384d`
-  - `--color-primary: #3b82f6`
-  - `--color-primary-strong: #60a5fa`
-  - `--color-primary-soft: #1e3a8a`
-- accents/charts: blue `#3b82f6`, violet `#8b5cf6`, emerald `#34d399`, orange `#fb923c`, cyan `#22d3ee`
-- radius/elevation: 12px cards, 10px controls, subtle 1px borders, light shadow `0 16px 40px rgb(15 23 42 / 0.08)`; dark mode relies more on borders/glow than heavy shadows
-- component rules:
-  - KPI cards include icon chip, label, numeric value, delta badge, and optional compact sparkline
-  - charts use thin grid lines and clear legends
-  - tables are clean with separated rows and restrained borders
-  - primary buttons are solid blue with white text; secondary buttons are outlined/ghost
+- calm operational SaaS interface for supervising delegated agent work
+- prioritizes decisions, exceptions, policy boundaries, auditability, and outcome visibility over decorative chrome
+- makes autonomous activity visible without hiding consequential work in chat transcripts
+- supports light, dark, and system mode with equivalent hierarchy and contrast
 
-### theme-2-promanage-violet
+### Theme scope
 
-- source image: `docs/images/web-ui-theme-2.png`
-- best fit: project management, task boards, planning portals, team workload dashboards
-- visual character: collaborative workspace with violet emphasis, soft card surfaces, kanban/timeline affordances, friendly status colors
-- mode policy: system mode with light and dark palettes
-- typography: Inter/system sans; 14px body, 12px metadata, 18-22px section headings, compact task-card labels; medium weights for navigational labels
-- layout:
-  - fixed left project/navigation sidebar around 240px
-  - task board columns scroll horizontally when needed
-  - dashboard cards use tighter 12-16px padding than analytics themes
-  - right-side support panels for workload/progress are acceptable on wide screens
-- light tokens:
-  - `--color-bg: #f7f7fb`
-  - `--color-sidebar: #ffffff`
-  - `--color-surface: #ffffff`
-  - `--color-surface-alt: #f5f3ff`
-  - `--color-text: #111827`
-  - `--color-muted: #6b7280`
-  - `--color-border: #e5e7eb`
-  - `--color-primary: #6d5dfc`
-  - `--color-primary-strong: #5846e8`
-  - `--color-primary-soft: #ede9fe`
-- dark tokens:
-  - `--color-bg: #0b1020`
-  - `--color-sidebar: #111827`
-  - `--color-surface: #1a2333`
-  - `--color-surface-alt: #241f3d`
-  - `--color-text: #f9fafb`
-  - `--color-muted: #a1a1aa`
-  - `--color-border: #2f3b52`
-  - `--color-primary: #8b7cff`
-  - `--color-primary-strong: #a78bfa`
-  - `--color-primary-soft: #312e81`
-- accents/charts/status: violet `#8b5cf6`, blue `#3b82f6`, green `#34d399`, amber `#f59e0b`, rose `#f43f5e`
-- radius/elevation: 10-14px cards, pill badges, soft shadows in light mode, low-contrast dark panels with clear column borders
-- component rules:
-  - kanban cards show title, priority chip, due date, assignee avatars, and status color
-  - timeline bars use translucent category colors
-  - workload bars use violet primary with muted tracks
-  - primary action buttons use violet gradient or solid violet; keep destructive actions red/rose
+Lightweight theme customization may change only:
 
-### theme-3-nordic-crm-teal
+- color tokens
+- font-family tokens
+- product name, logo/icon treatment, and safe brand accents
 
-- source image: `docs/images/web-ui-theme-3.png`
-- best fit: CRM, sales pipeline, contacts/accounts, data-dense business consoles
-- visual character: crisp teal/cyan identity with denser tables, pipeline visuals, professional sales dashboard tone
-- mode policy: system mode with light and dark palettes
-- typography: Inter/system sans; 14px body, 12px table labels, 22-28px page headings, prominent money/KPI numerals; table text should stay highly legible
-- layout:
-  - sidebar around 220px, topbar search prominent
-  - content cards can be more data-dense with 16px padding
-  - pipeline/funnel panels pair with adjacent tables/lists
-  - data tables should remain readable on narrow screens through card-list fallback or horizontal scroll with sticky first column when appropriate
-- light tokens:
-  - `--color-bg: #f7fafc`
-  - `--color-sidebar: #ffffff`
-  - `--color-surface: #ffffff`
-  - `--color-surface-alt: #ecfeff`
-  - `--color-text: #0f172a`
-  - `--color-muted: #64748b`
-  - `--color-border: #dbe4ee`
-  - `--color-primary: #0891b2`
-  - `--color-primary-strong: #0e7490`
-  - `--color-primary-soft: #cffafe`
-- dark tokens:
-  - `--color-bg: #07131d`
-  - `--color-sidebar: #0b1722`
-  - `--color-surface: #142333`
-  - `--color-surface-alt: #0f2a34`
-  - `--color-text: #f8fafc`
-  - `--color-muted: #94a3b8`
-  - `--color-border: #2a3f50`
-  - `--color-primary: #22d3ee`
-  - `--color-primary-strong: #67e8f9`
-  - `--color-primary-soft: #164e63`
-- accents/charts: cyan `#22d3ee`, blue `#3b82f6`, green `#22c55e`, violet `#8b5cf6`, amber `#f59e0b`
-- radius/elevation: 10px cards, 999px compact badges, restrained shadows, strong border clarity
-- component rules:
-  - use clear table headers, aligned numeric columns, and subtle row dividers
-  - entity avatars/initials use soft pastel tokens
-  - pipeline charts use teal-to-blue gradients with labels outside chart shapes
-  - upcoming task lists use colored icon chips and compact metadata
+It must not change:
 
-### theme-4-finflow-emerald
+- screen inventory
+- navigation structure
+- grid behavior
+- card anatomy
+- component sizes
+- spacing scale
+- border radii
+- icon/status semantics
+- UX copy rules
+- accessibility constraints
 
-- source image: `docs/images/web-ui-theme-4.png`
-- best fit: finance, invoicing, payments, cashflow, subscription/billing admin
-- visual character: trustworthy operations dashboard with emerald/teal primary, clear financial status semantics, compact quick actions
-- mode policy: system mode with light and dark palettes
-- typography: Inter/system sans; 14px body, 12px metadata/table labels, tabular numerals for currency, 24-32px KPI values; use `font-variant-numeric: tabular-nums` for financial data
-- layout:
-  - sidebar around 240px with business/account switcher region
-  - topbar can include product section label plus search/actions
-  - KPI row supports 4-up desktop and readable currency emphasis
-  - tables and quick actions use compact row height but generous touch targets
-- light tokens:
-  - `--color-bg: #f8fafc`
-  - `--color-sidebar: #ffffff`
-  - `--color-surface: #ffffff`
-  - `--color-surface-alt: #ecfdf5`
-  - `--color-text: #111827`
-  - `--color-muted: #64748b`
-  - `--color-border: #e2e8f0`
-  - `--color-primary: #10b981`
-  - `--color-primary-strong: #059669`
-  - `--color-primary-soft: #d1fae5`
-- dark tokens:
-  - `--color-bg: #07131c`
-  - `--color-sidebar: #091622`
-  - `--color-surface: #142634`
-  - `--color-surface-alt: #123528`
-  - `--color-text: #f8fafc`
-  - `--color-muted: #9ca3af`
-  - `--color-border: #2a3b4a`
-  - `--color-primary: #34d399`
-  - `--color-primary-strong: #6ee7b7`
-  - `--color-primary-soft: #064e3b`
-- accents/status: paid/success `#22c55e`, sent/info `#3b82f6`, overdue/danger `#ef4444`, draft/neutral `#94a3b8`, warning/orange `#f97316`, teal `#14b8a6`
-- radius/elevation: 10-12px panels, financial tables with low-shadow bordered cards, buttons 8-10px radius
-- component rules:
-  - financial values right-align and use tabular numerals
-  - positive values use green with directional icons; negative/overdue use red with text labels, not color alone
-  - charts should distinguish cash in, cash out, and net flow with both color and legend labels
-  - quick actions use icon chips and compact button groups
+### Font tokens
 
-### theme-5-acme-admin-blue
+```css
+:root {
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Roboto Mono", "SFMono-Regular", Consolas, monospace;
+}
+```
 
-- source image: `docs/images/web-ui-theme-5.png`
-- best fit: general admin portals, operations dashboards, customer/product/order back offices
-- visual character: versatile blue admin dashboard with balanced cards, strong primary actions, readable tables, friendly multicolor icon accents
-- mode policy: system mode with light and dark palettes
-- typography: Inter/system sans; 14px body, 12px metadata, 22-28px page headings, 28px KPI numerals; headings use 650-700 weight
-- layout:
-  - sidebar around 248px with bottom help/user region
-  - header supports search, notification, user, and primary/export actions
-  - dashboard grid favors one large chart, side activity/action cards, and full-width tables
-  - mobile collapses sidebar into menu and stacks cards by priority
-- light tokens:
-  - `--color-bg: #f7f9fc`
-  - `--color-sidebar: #ffffff`
-  - `--color-surface: #ffffff`
-  - `--color-surface-alt: #eff6ff`
-  - `--color-text: #111827`
-  - `--color-muted: #667085`
-  - `--color-border: #e5e7eb`
-  - `--color-primary: #2563eb`
-  - `--color-primary-strong: #1d4ed8`
-  - `--color-primary-soft: #dbeafe`
-- dark tokens:
-  - `--color-bg: #0a1320`
-  - `--color-sidebar: #0d1a29`
-  - `--color-surface: #182536`
-  - `--color-surface-alt: #10213a`
-  - `--color-text: #f9fafb`
-  - `--color-muted: #9ca3af`
-  - `--color-border: #2d3c4f`
-  - `--color-primary: #3b82f6`
-  - `--color-primary-strong: #60a5fa`
-  - `--color-primary-soft: #1e3a8a`
-- accents/status: blue `#3b82f6`, violet `#8b5cf6`, green `#22c55e`, orange `#fb923c`, cyan `#22d3ee`, danger `#ef4444`
-- radius/elevation: 12px cards, 10px buttons, soft light shadows, dark mode border-led depth
-- component rules:
-  - primary CTA buttons are solid blue; secondary action buttons are outlined with icons
-  - activity feeds use circular icon chips with semantic colors
-  - status pills use colored backgrounds plus readable text labels
-  - tables use clear hover/focus states and avoid low-contrast muted text for important values
+### Shared non-theme tokens
 
-## Applying a default theme safely
+```css
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-pill: 999px;
+
+  --shell-sidebar-width: 16rem;
+  --content-max-width: 96rem;
+  --card-padding: 1rem;
+  --control-height: 2.5rem;
+}
+```
+
+### Light mode color tokens
+
+```css
+:root,
+[data-mode="light"] {
+  --color-bg: #f8fafc;
+  --color-bg-subtle: #f1f5f9;
+  --color-sidebar: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-soft: #f8fafc;
+  --color-surface-accent: #f5f3ff;
+
+  --color-text: #0f172a;
+  --color-text-soft: #334155;
+  --color-muted: #64748b;
+  --color-inverse-text: #ffffff;
+
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  --color-primary: #2563eb;
+  --color-primary-strong: #1d4ed8;
+  --color-primary-soft: #dbeafe;
+  --color-ai: #7c3aed;
+  --color-ai-soft: #ede9fe;
+
+  --color-success: #16a34a;
+  --color-success-soft: #dcfce7;
+  --color-warning: #f59e0b;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #ef4444;
+  --color-danger-soft: #fee2e2;
+  --color-info: #0ea5e9;
+  --color-info-soft: #e0f2fe;
+
+  --color-chart-blue: #2563eb;
+  --color-chart-violet: #8b5cf6;
+  --color-chart-green: #22c55e;
+  --color-chart-amber: #f59e0b;
+  --color-chart-red: #ef4444;
+  --color-chart-cyan: #06b6d4;
+
+  --color-focus: #2563eb;
+  --shadow-card: 0 16px 40px rgb(15 23 42 / 0.08);
+  --shadow-glow-ai: 0 0 0 1px rgb(124 58 237 / 0.18), 0 20px 60px rgb(124 58 237 / 0.10);
+}
+```
+
+### Dark mode color tokens
+
+```css
+[data-mode="dark"] {
+  --color-bg: #07111f;
+  --color-bg-subtle: #0b1626;
+  --color-sidebar: #070d18;
+  --color-surface: #101a28;
+  --color-surface-raised: #142033;
+  --color-surface-soft: #0d1826;
+  --color-surface-accent: #17152d;
+
+  --color-text: #f8fafc;
+  --color-text-soft: #cbd5e1;
+  --color-muted: #94a3b8;
+  --color-inverse-text: #ffffff;
+
+  --color-border: #243247;
+  --color-border-strong: #38506d;
+
+  --color-primary: #3b82f6;
+  --color-primary-strong: #60a5fa;
+  --color-primary-soft: #1e3a8a;
+  --color-ai: #a855f7;
+  --color-ai-soft: #2e185c;
+
+  --color-success: #4ade80;
+  --color-success-soft: #123524;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #3a2a08;
+  --color-danger: #f87171;
+  --color-danger-soft: #3b1218;
+  --color-info: #38bdf8;
+  --color-info-soft: #0b3145;
+
+  --color-chart-blue: #3b82f6;
+  --color-chart-violet: #a855f7;
+  --color-chart-green: #4ade80;
+  --color-chart-amber: #fbbf24;
+  --color-chart-red: #f87171;
+  --color-chart-cyan: #22d3ee;
+
+  --color-focus: #93c5fd;
+  --shadow-card: 0 18px 50px rgb(0 0 0 / 0.28);
+  --shadow-glow-ai: 0 0 0 1px rgb(168 85 247 / 0.30), 0 20px 70px rgb(76 29 149 / 0.30);
+}
+```
+
+## Required AI-first component anatomy
+
+### App shell
+
+- left sidebar on desktop, approximately `--shell-sidebar-width`
+- product logo at top
+- primary nav items first, then grouped sections such as Intelligence and Governance
+- notifications and current user profile pinned near the bottom
+- active item uses soft primary background plus primary icon/text color
+- unavailable sections are hidden or disabled based on capabilities; backend authorization remains authoritative
+
+### Main content
+
+- responsive content grid with maximum width token
+- page title and subtitle above the AI command strip
+- dashboard regions use a 12-column grid on wide screens
+- cards stack by priority on narrow screens
+- decision/exception queues remain above lower-priority reports on narrow screens
+
+### AI command strip
+
+Purpose: let users ask for summaries, risk explanations, and safe actions without making chat the source of truth.
+
+Required elements:
+
+- AI icon or mark
+- command input/prompt adapted to the app name
+- suggested prompt chips
+- send/action button
+- visual distinction through AI accent token and subtle glow/border
+
+Consequential command results must become durable goals, decisions, approvals, policy proposals, or traceable actions.
+
+### KPI summary cards
+
+Required elements:
+
+- label
+- current value
+- trend/delta with direction and text
+- optional icon or sparkline
+- status color plus text, not color alone
+
+### Decision and exception cards
+
+Required elements:
+
+- subject/entity name
+- originating agent or system
+- status/risk/policy badge
+- recommendation
+- reason/evidence summary
+- impact or confidence when available
+- primary action
+- secondary evidence/details action
+
+### Agent activity timeline
+
+Required elements:
+
+- timestamp
+- agent name
+- action summary
+- automation/review/escalation badge
+- icon with semantic color
+- detail affordance
+
+### Agent/team cards
+
+Required elements:
+
+- agent/team name
+- autonomy or trust metric when relevant
+- trend
+- recent action count
+- success or quality metric
+- active/blocked/requires-input state
+
+### Governance/trust controls
+
+Required elements:
+
+- policy or control name
+- configured threshold/authority
+- enabled/verified status
+- link to edit policy guardrails or inspect policy history
+
+### Data visualization
+
+- charts use theme chart tokens only
+- legends are required for donut, map, and multi-series charts
+- status meaning must be represented with label text and/or icons, not color alone
+- critical metrics use tabular numerals
+
+## Required screen patterns
+
+Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashboards:
+
+- **Mission Control / Briefing:** page framing, AI command strip, operational KPI band, agent execution timeline, needs-your-attention queue, agent teams/trust summary, trust controls, upcoming autonomous actions.
+- **Goal Workbench:** objective form, success criteria, constraints, proposed execution plan, agent/team assignment, tool/data permissions, approval gates, launch simulation/review action.
+- **Decision Queue and Decision Detail:** filters by priority/policy/agent/due time, recommendation summary, evidence/risk, alternatives, approve/reject/counter/defer/escalate actions, trace and outcome links.
+- **Governance Center:** policy list and versions, thresholds, authority boundaries, proposed changes, simulations/replays, human-authorized commit flow, rollback and audit links.
+- **Audit Trace Explorer:** search/filter by goal, agent, decision, tool, user, policy, time; chronological trace entries; evidence/tool/data-access details; authorization and policy invocation details; outcome links.
+
+## Applying the theme safely
 
 1. Replace demo names, logos, users, and metrics with the target app's domain.
-2. Keep the chosen theme's visual system, not its literal content.
-3. Define tokens once in `app.css`; TypeScript may toggle theme classes such as `theme-dark` only when the style guide permits mode switching.
+2. Keep the AI-first component anatomy, not literal mockup content.
+3. Define tokens once in `app.css`; TypeScript may toggle mode classes/attributes only when the style guide permits mode switching.
 4. Preserve accessibility even when adapting brand colors: contrast and focus tokens override decorative brand fidelity.
 5. If users request custom styling later, update the authoritative style guide first, then regenerate affected web UI assets.
+
+## Deprecated legacy theme ids
+
+The previous default theme ids are deprecated for new generated AI-first SaaS work:
+
+- `theme-1-northpeak-analytics`
+- `theme-2-promanage-violet`
+- `theme-3-nordic-crm-teal`
+- `theme-4-finflow-emerald`
+- `theme-5-acme-admin-blue`
+
+If an existing app-description already selected one of these, do not break it during unrelated work. On the next UI style change, migrate it to `atlas-ops-supervisory-console` or a user-supplied `custom` style guide that preserves the required AI-first component anatomy.

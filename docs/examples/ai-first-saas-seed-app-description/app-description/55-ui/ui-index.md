@@ -1,6 +1,6 @@
 # UI Index
 
-- design reference: `../../../../../specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
+- design reference: `../../../../../docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` theme
 - `personas-and-journeys.md`
 - `ai-first-surfaces.md`
 - `screens-and-navigation.md`

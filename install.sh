@@ -445,11 +445,6 @@ PACK_DOC_FILES=(
   docs/examples/purchase-request-pending-tasks.md
   docs/examples/purchase-request-prd.md
   docs/examples/purchase-request-solution-plan.md
-  docs/images/web-ui-theme-1.png
-  docs/images/web-ui-theme-2.png
-  docs/images/web-ui-theme-3.png
-  docs/images/web-ui-theme-4.png
-  docs/images/web-ui-theme-5.png
   docs/intent-driven-usage-flow.md
   docs/internal-app-description-architecture.md
   docs/module-sprint-planning.md

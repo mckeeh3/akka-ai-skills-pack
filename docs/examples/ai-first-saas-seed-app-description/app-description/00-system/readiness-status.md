@@ -5,7 +5,7 @@
   - implementation planning
   - backlog/sprint decomposition
   - phase-1 scaffold design
-  - UI design validation against `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
+  - UI design validation against `docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` theme
   - localized frontend implementation planning for the seed app shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
   - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
 - not yet fully ready for:

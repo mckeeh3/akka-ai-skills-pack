@@ -4,7 +4,7 @@
 
 - selected theme: `atlas-ops-supervisory-console`
 - theme name: Atlas Ops supervisory console
-- source reference: `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md` and mockups in `specs/web-ui-design/images/`
+- source reference: `docs/web-ui-style-guide.md` canonical AI-first theme
 - mode policy: system with explicit light and dark token sets
 - status: selected for seed app validation
 
@@ -32,7 +32,7 @@
 - radius: 8px controls, 12px standard cards, 16px prominent panels, pill badges
 - elevation: light mode may use subtle card shadows; dark mode relies primarily on borders and restrained glow
 - colors:
-  - surfaces, text, borders, primary, AI accent, status, chart, focus, and shadows are defined in `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
+  - surfaces, text, borders, primary, AI accent, status, chart, focus, and shadows are defined by the `atlas-ops-supervisory-console` tokens in `docs/web-ui-style-guide.md`
   - lightweight themes may override only color and font tokens
 
 ## Component style rules
