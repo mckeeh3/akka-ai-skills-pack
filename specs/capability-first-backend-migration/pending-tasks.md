@@ -307,7 +307,7 @@
 
 ### TASK-03-001: Update agent tool and component-tool skills for capability-first design
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/03-component-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-003]
@@ -330,7 +330,9 @@
 - done criteria:
   - agent tool skills align with capability-first doctrine
 - notes:
-  - pending
+  - completed: updated local/external agent tool and component-tool skills to start from named capability contracts, treat tool exposure as a selected surface, require AuthContext/scope/permission checks, preserve idempotency/approval/audit semantics, and reject prompt/tool-description-only authorization
+  - checks: `rg` verified capability, AuthContext, scope, approval, audit, idempotency, and prompt-authorization guidance in both updated skill files
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Make agent tool skills capability-first`
 
 ### TASK-03-002: Update entity skills for capability surfaces
 
