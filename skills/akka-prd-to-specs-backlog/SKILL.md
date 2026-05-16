@@ -13,12 +13,13 @@ This is a **project-specific planning skill** that builds on the ideas in `akka-
 
 Generate a consistent planning package from a PRD, requirements document, or high-level feature set that:
 - interprets product intent through the full-stack secure AI-first SaaS operating model before record-management or component decomposition
-- produces a master Akka solution plan with explicit operating-model, governance, mandatory UI-surface, outcome, and substrate mapping sections for generated SaaS apps
+- derives governed backend capabilities before Akka component or exposure-surface selection
+- produces a master Akka solution plan with explicit operating-model, capability inventory, governance, mandatory UI-surface, outcome, and substrate mapping sections for generated SaaS apps
 - for large inputs, splits the plan into module-oriented vertical sprint specs
 - for smaller inputs, splits the plan into bounded vertical slice specs
 - turns each sprint or slice into a build backlog suitable for one or more independent harness operations
 - creates or updates `specs/pending-questions.md` when unresolved decisions should be answered before safe task generation, including AI-first authority, policy, evidence, risk, approval, trace, UI mode, and outcome blockers
-- creates or updates `specs/pending-tasks.md` as the durable execution queue when follow-on implementation work is sufficiently unblocked
+- creates or updates `specs/pending-tasks.md` as the durable execution queue when follow-on implementation work is sufficiently unblocked, preserving capability ids, authority, schemas, side effects, audit, approval, and exposure decisions
 - optionally materializes leaf task briefs when a backlog item is still too large for a single focused harness run
 - writes index files that make execution order and dependencies explicit
 - keeps files small enough to support focused downstream coding sessions
@@ -57,6 +58,7 @@ Read these first if present:
 - `../akka-saas-invitation-onboarding/SKILL.md` when planning complete email-invite onboarding tasks
 - `../ai-first-saas-admin-agents/SKILL.md` when planning the mandatory AI-assisted admin offload foundation: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, admin decision cards, and approval boundaries
 - `../ai-first-saas/SKILL.md` for high-level product, PRD, feature, governance, agentic, decision, supervision, audit, or outcome inputs
+- `../capability-first-backend/SKILL.md` for capability inventory, authority, schemas, side effects, audit, approval, exposure surfaces, and tests before component planning
 - `../akka-solution-decomposition/SKILL.md`
 - `../../docs/ai-first-saas-application-architecture.md` for the canonical AI-first doctrine
 - `../../specs/README.md`
@@ -74,7 +76,7 @@ Read these first if present:
 If the user provided a path to a PRD or requirements file:
 1. read that file completely
 2. first extract AI-first operating-model signals: delegated work, retained human authority, goals/plans, agents, policies, decisions, approvals, exceptions, evidence, risk, traces, outcome loops, and supervision/governance UI needs
-3. then extract capabilities, actors, commands, queries, workflows, timers, integrations, security constraints, and UI needs
+3. then extract governed backend capabilities before component choices: capability ids, actors/callers, AuthContext and tenant/customer scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace needs, candidate exposure surfaces, and tests
 4. then generate the file set
 
 If `specs/` already exists:
@@ -94,7 +96,7 @@ At minimum, create or update these files under `specs/`:
 
 ### Cross-cutting specs
 For every SaaS app PRD, create the secure foundation spec first:
-- `specs/cross-cutting/01-auth-tenancy-audit.md` — required for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, audit, support-access, billing boundary, and tenant-isolation tests unless the task is explicitly non-SaaS reference material.
+- `specs/cross-cutting/01-auth-tenancy-audit.md` — required for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, protected capability authorization, audit, support-access, billing boundary, and tenant-isolation tests unless the task is explicitly non-SaaS reference material.
 
 Create additional cross-cutting specs as justified by the PRD:
 - `specs/cross-cutting/00-common-domain-and-conventions.md`
@@ -194,13 +196,14 @@ The master plan must include:
 1. Inputs
 2. AI-first interpretation: objective, delegated work, retained human authority, durable substrate objects, governance/approval needs, supervision UI, audit/trace needs, and outcome loop when applicable
 3. Core secure SaaS foundation: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests
-4. Capability summary
-5. Chosen components
-6. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
-7. Skill routing
-8. Open questions and assumptions
-9. Recommended implementation order
-10. Required tests
+4. Capability inventory: stable ids/names, classes, actors/callers, AuthContext and scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected exposure surfaces or explicit non-exposure, and required tests
+5. Capability-to-component mapping
+6. Chosen components
+7. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
+8. Skill routing
+9. Open questions and assumptions
+10. Recommended implementation order
+11. Required tests, including capability success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-specific tests
 
 Write that to:
 - `specs/akka-solution-plan.md`
@@ -210,7 +213,7 @@ Write that to:
 Separate concerns that should not be duplicated across modules, sprints, or slices, such as:
 - ID and domain conventions
 - AI-first operating-model vocabulary: goals, plans, tasks, agent/team definitions, policy clauses, decisions, approvals, exceptions, traces, and outcomes for generated SaaS apps
-- tenancy, auth, permission, and authority-boundary rules
+- tenancy, auth, permission, capability-grant, and authority-boundary rules
 - policy, guardrail, approval-gate, and governance-versioning rules
 - audit, work-trace, decision-trace, tool-invocation, data-access, retention, and redaction rules
 - evaluation, replay, simulation, feedback, and outcome-metric conventions when agentic behavior or policy evolution is in scope
@@ -230,12 +233,12 @@ For large PRDs, prefer module-oriented vertical sprint planning:
 3. make each sprint testable through its backend and frontend surface for generated full-stack AI-first SaaS
 4. keep cross-cutting foundation work explicit rather than duplicating it in every module
 
-A good module spec contains boundaries, owned capabilities, actors, human operating roles, delegated work and retained authority when applicable, state ownership, agent/team ownership if any, policy/audit/outcome ownership, UI area, integrations, and related sprints.
+A good module spec contains boundaries, owned capabilities, actors/callers, AuthContext and scope rules, human operating roles, delegated work and retained authority when applicable, state ownership, agent/team ownership if any, policy/audit/outcome ownership, UI area, integrations, and related sprints.
 
 A good sprint spec contains:
 - one module or tightly related module increment
 - AI-first scope when applicable: goals/plans, agents, policies, decisions, approvals/exceptions, traces, governance surfaces, and outcome loop delivered by the sprint
-- backend scope: entities, workflows, views, consumers, timers, endpoints
+- backend scope: capability contracts first, then entities, workflows, views, consumers, timers, endpoints, agents, and selected exposure surfaces
 - frontend scope: screens, forms, navigation, API client calls, realtime behavior, and supervision/decision/governance/audit/outcome surfaces when applicable
 - acceptance behavior and module-level tests
 - pending questions and explicit defer list
@@ -259,6 +262,7 @@ For each sprint or slice, create a matching backlog file that includes:
 - purpose
 - delivery goal
 - AI-first operating-model scope when applicable: delegated work, retained authority, durable objects, agent/team responsibilities, policy/approval/exception rules, evidence/risk/confidence/impact requirements, audit traces, UI surfaces, and outcomes
+- capability contracts delivered or revised by the backlog: ids, actors/callers, AuthContext and scope, schemas, side effects, idempotency, approval, audit/trace, selected exposure surfaces, and tests
 - package layout additions if needed
 - class-by-class file list
 - endpoint list
@@ -334,6 +338,7 @@ The queue must:
 - include the smallest `required reads` needed for the task; include the AI-first doctrine and focused AI-first companion skills only when the task implements or verifies goals/plans, agents, policies, decisions, approvals, traces, UI surfaces, governance, or outcomes
 - include the exact implementation `skills` to load, pairing AI-first companion skills with the concrete Akka substrate skills rather than replacing them
 - include expected outputs, required checks, and done criteria
+- preserve capability context in each implementation task: capability id(s), authority/scope, schemas, side effects, idempotency, approval rules, audit/trace obligations, and exposure surfaces affected
 - point to a task brief when one exists, or use `task brief: none`
 
 The queue is the durable follow-on execution index. A user should be able to start a fresh harness session and ask to run `akka-do-next-pending-task` without rereading the whole PRD.
@@ -423,7 +428,7 @@ Adjust only if the domain clearly suggests another order.
 
 Each `specs/modules/*.md` file should contain:
 - Module boundary and purpose
-- Owned capabilities
+- Owned capabilities, including ids, classes, actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
 - Actors, human operating roles, and authorization/authority boundary
 - Delegated work, retained human authority, and outcome responsibility when AI-first concerns exist
 - Domain objects, AI-first substrate objects, and state ownership
@@ -456,6 +461,7 @@ Each `specs/slices/*.md` file should contain:
 - Scope
 - Business goal
 - AI-first interpretation when applicable: delegated work, retained authority, durable substrate objects, policy/approval/exception rules, trace needs, UI surfaces, and outcome loop
+- Capability contracts involved before Akka components: ids, actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
 - Akka components involved
 - Domain shape or business objects
 - Commands and write operations
@@ -473,6 +479,7 @@ Each `specs/backlog/*.md` file should contain:
 - Purpose
 - Delivery goal
 - AI-first scope when applicable, including delegated work, retained authority, durable objects, agent/team boundaries, policies, approvals/exceptions, evidence/risk/confidence/impact, traces, UI surfaces, and outcomes
+- Capability contracts: ids, actors/callers, AuthContext/scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected exposure surfaces, and required tests
 - Recommended package layout additions
 - Class-by-class file list
 - Concrete endpoint list
@@ -510,6 +517,7 @@ Create this queue only when open decisions are meaningful enough to affect plann
 - task ID and title
 - status
 - source backlog path
+- capability id(s) or explicit foundation/cross-cutting scope, when applicable
 - task brief path or `none`
 - dependencies
 - required reads
@@ -535,6 +543,7 @@ Avoid:
 - creating `specs/pending-questions.md` as a tedious cosmetic questionnaire instead of a design-impact queue
 - omitting `specs/pending-tasks.md` when follow-on implementation work exists and is sufficiently unblocked
 - generating queue tasks that are too broad for one fresh harness context
+- generating tasks that mention only component names while dropping capability authority, schemas, side effects, approval, audit, or exposure-surface decisions
 - inventing new directory structures when `specs/` already has an established pattern
 
 ## Final review checklist
@@ -548,11 +557,12 @@ Before finishing, verify:
 - AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
 - module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered
 - backlog files exist and align by number with sprint or slice specs
-- backlogs preserve AI-first operating-model, governance, audit, UI-surface, and outcome implications before Akka task breakdown
+- backlogs preserve AI-first operating-model, capability authority/schemas/side effects/approval/audit/exposure decisions, governance, UI-surface, and outcome implications before Akka task breakdown
 - `specs/pending-questions.md` exists when unresolved decisions block safe task generation
 - unresolved `blocking` questions do not silently become implementation assumptions
 - `specs/pending-tasks.md` exists when follow-on implementation work remains and is sufficiently unblocked
 - pending tasks map to backlog task-breakdown items
+- pending tasks preserve capability ids, authority/scope, schemas, side effects, idempotency, audit, approval, and exposure decisions when implementing capability behavior
 - pending tasks include required reads, skills, expected outputs, checks, and done criteria
 - AI-first pending tasks include relevant AI-first reads/skills plus concrete Akka substrate skills
 - cross-cutting concerns are not duplicated excessively across modules, sprints, or slices

@@ -256,7 +256,7 @@
 
 ### TASK-02-004: Update PRD/spec/backlog intake for capability semantics
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/02-description-and-decomposition-integration-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-005]
@@ -276,7 +276,9 @@
 - done criteria:
   - PRD/spec/backlog path emits capability-aware implementation tasks
 - notes:
-  - pending
+  - completed: updated `skills/akka-prd-to-specs-backlog/SKILL.md` so PRD/spec/backlog planning derives governed capabilities before component selection and carries capability ids, authority/scope, schemas, side effects, idempotency, approval, audit/trace, exposure surfaces, and tests into solution plans, specs, backlogs, and pending tasks
+  - checks: `rg` verified generated task guidance preserves capability authority, schemas, side effects, audit, approval, and exposure decisions; `test -f` verified the capability-first backend skill reference resolves
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Make PRD backlog planning capability-aware`
 
 ### TASK-02-005: Add or revise a small app-description capability example
 
