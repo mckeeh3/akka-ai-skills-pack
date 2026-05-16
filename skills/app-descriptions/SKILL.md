@@ -25,6 +25,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for governed capability inventory fields before Akka components or exposure surfaces
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation that every new app description, readiness review, and generation flow must preserve
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
@@ -98,7 +99,7 @@ Prefer this sequence unless the task is already narrowly scoped:
 3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `15-operating-model/` and `55-ui/` for generated full-stack AI-first SaaS apps
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`
-6. model capabilities with `app-description-capability-modeling` when scope or business outcomes changed
+6. model governed capability contracts with `app-description-capability-modeling` when scope, business outcomes, protected operations, queries, actors, authority, side effects, approval, audit, or exposure surfaces changed
 7. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
 8. update behavior with `app-description-behavior-specification`
 9. update tests with `app-description-test-specification`
@@ -130,16 +131,17 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 ## Core rules
 
 1. The app description is the source of truth.
-2. Generated code is a projection, not the definition of the app.
-3. Humans do not directly edit generated code or internal app-description artifacts.
-4. Tests are part of the app description, not only post-hoc verification.
-5. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
-6. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
-7. Auth/security and observability are first-class description concerns.
-8. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
-9. Readiness must be assessed before generation.
-10. Localized regeneration is an optimization, not a conceptual requirement.
-11. Review should focus on semantic change, not only file churn.
+2. Capability inventory in `10-capabilities/` is the backend contract layer: record actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, and tests before choosing Akka components or tools.
+3. Generated code is a projection, not the definition of the app.
+4. Humans do not directly edit generated code or internal app-description artifacts.
+5. Tests are part of the app description, not only post-hoc verification.
+6. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
+7. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
+8. Auth/security and observability are first-class description concerns.
+9. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
+10. Readiness must be assessed before generation.
+11. Localized regeneration is an optimization, not a conceptual requirement.
+12. Review should focus on semantic change, not only file churn.
 
 ## Decision guide
 

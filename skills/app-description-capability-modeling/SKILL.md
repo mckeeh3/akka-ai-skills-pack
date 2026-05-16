@@ -7,13 +7,14 @@ description: Update the authoritative capability layer of the app description by
 
 Use this skill when the harness needs to define or revise the **capability layer** of the app description.
 
-This skill maintains `10-capabilities/` as the inventory of what the app is for, what user-visible outcomes it supports, and what is in or out of scope.
+This skill maintains `10-capabilities/` as the inventory of what the app is for, what governed backend operations and queries exist, what user-visible outcomes they support, and what is in or out of scope.
 It does not generate code.
 
 ## Goal
 
 Create or update capability-oriented app-description artifacts that:
 - define the app's business or user-visible capabilities clearly
+- treat backend operations and queries as governed capability contracts before implementation or exposure choices
 - separate in-scope from out-of-scope outcomes
 - identify primary actors or callers
 - preserve AI-first operating semantics when a capability delegates work, shapes human authority, or requires outcome accountability
@@ -29,6 +30,7 @@ Read these first if present:
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-input-normalization/SKILL.md`
@@ -70,20 +72,28 @@ A capability should be:
 ## What this skill must capture
 
 For each capability, identify and describe as applicable:
-- capability name
-- business goal
-- primary actors or caller classes
+- stable capability id/name in product language
+- capability class: `read/evidence`, `command`, `proposal`, `approval`, `workflow`, `policy/governance`, `trace/audit`, `scheduled`, or `reactive`
+- business goal and purpose
+- primary actors or caller classes, including humans, agents, workflows, services, timers, consumers, support roles, or internal callers
+- AuthContext, tenant/customer scope, role, permission, scope, and named capability grants
+- typed input schema, validation, safe defaults, idempotency key, and correlation id expectations
+- typed output schema, redaction rules, user/agent-safe fields, safe denial/error shape, and evidence boundaries
+- data access boundaries, tenant/customer filters, PII/secret handling, and raw-state exposure limitations
+- side effects such as state changes, external calls, publications, timers, emails, notifications, workflow starts, or no side effects for read-only capabilities
 - delegated operational work, if any
 - retained human authority, approvals, exceptions, or supervision needs, if any
-- policy, permission, evidence, trace, learning, or outcome-accountability needs, if any
+- policy, permission, risk/confidence threshold, evidence, trace, learning, or outcome-accountability needs, if any
+- selected exposure surfaces: UI action, HTTP/gRPC API, agent tool, MCP tool/resource/prompt, workflow step, view/query, timer, consumer, or internal-only method
 - in-scope outcomes
 - out-of-scope outcomes
 - major constraints or assumptions
 - linked operating-model artifacts under the required `15-operating-model/` for generated AI-first SaaS semantics
 - linked behavior artifacts
-- linked test artifacts
+- linked test artifacts, including success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific cases
 - linked auth/security artifacts
 - linked observability artifacts
+- linked UI and traceability artifacts when relevant
 
 ## Standard capability output shape
 
@@ -96,9 +106,19 @@ Use this response shape when updating or summarizing capability work:
 - ...
 
 ## Capability definition
-- name:
+- id / name:
+- class:
 - business goal:
-- actors:
+- actors / callers:
+
+## Authority and contract
+- AuthContext / scope:
+- permissions / named capability grants:
+- inputs / validation / idempotency:
+- outputs / redaction / denial shape:
+- data access:
+- side effects:
+- exposure surfaces:
 
 ## AI-first operating semantics
 - delegated work:
@@ -122,12 +142,14 @@ Use this response shape when updating or summarizing capability work:
 - tests:
 - auth/security:
 - observability:
+- UI:
+- traceability:
 ```
 
 ## Capability modeling rules
 
 ### 1. Model capability before implementation structure
-Use business outcomes and user-visible purpose, not classes, services, or endpoints, as the primary definition.
+Use business outcomes, governed operation/query contracts, and user-visible purpose, not classes, services, endpoints, or agent tools, as the primary definition.
 
 ### 2. Keep scope boundaries explicit
 Every important capability should make clear what it does not include.
@@ -138,10 +160,10 @@ Do not create one giant capability for the whole app.
 Do not create tiny pseudo-capabilities that are really just implementation details.
 
 ### 4. Link forward deliberately
-A capability is incomplete if it cannot be linked to behavior and verification artifacts.
+A capability is incomplete if it cannot be linked to behavior, verification, security, observability, UI when exposed to humans, and traceability artifacts.
 
 ### 5. Separate capability change from behavior detail
-A new capability may require later behavior work, but capability modeling should first establish the business boundary and intended outcomes.
+A new capability may require later behavior work, but capability modeling should first establish the business boundary, authority model, contract shape, side-effect boundaries, audit/approval obligations, and intended outcomes.
 
 ### 6. Preserve AI-first semantics before component or CRUD framing
 When the capability involves delegated operational work, autonomous or semi-autonomous judgment, human approval, policy controls, exceptions, auditability, or outcome accountability, define those as capability semantics.
@@ -174,6 +196,9 @@ Examples:
 - "What outcome is the user trying to achieve through this capability?"
 - "What should explicitly remain out of scope for this capability right now?"
 - "Does this capability apply to all users, or only a specific actor type?"
+- "What AuthContext, tenant/customer scope, role, permission, or named capability grant is required?"
+- "Is this read-only, side-effecting, approval-gated, scheduled, reactive, or internal-only?"
+- "Which surfaces should expose it: browser UI, HTTP/gRPC, agent tool, MCP, workflow, timer, consumer, view/query, or none?"
 - "What work is delegated to the system or agents, and what authority remains with a human?"
 - "Which decisions require approval, exception handling, evidence, or audit trace?"
 
@@ -184,6 +209,7 @@ Avoid:
 - collapsing multiple unrelated outcomes into one vague capability
 - omitting out-of-scope boundaries
 - treating implementation tasks as capabilities
+- treating endpoints, agent tools, workflows, or entities as the capability inventory root
 - treating delegated operational work as generic CRUD plus a chatbot
 - hiding approval, policy, exception, or audit needs inside later implementation
 - leaving capability files unlinked to downstream behavior and tests
@@ -193,6 +219,7 @@ Avoid:
 Before finishing, verify:
 - the capability is named clearly
 - business goal and actors are explicit
+- AuthContext/scope, input/output shape, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests are explicit enough for downstream work
 - in-scope and out-of-scope outcomes are explicit
 - major assumptions are recorded when relevant
 - delegated work and retained human governance are explicit for generated AI-first SaaS semantics

@@ -47,17 +47,18 @@ Prefer this default sequence:
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
-5. update `15-operating-model/` for generated AI-first SaaS operating semantics
-6. update behavior-level meaning
-7. update verification expectations
-8. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
-9. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, and consequential AI/tool activity
-10. update mandatory UI descriptions, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS
-11. update traceability and impact understanding
-12. assess readiness
-13. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
-14. either stop at description maintenance or proceed to generation
-15. answer review questions through summaries
+5. update `10-capabilities/` with governed capability contracts before implementation or surface choices: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
+6. update `15-operating-model/` for generated AI-first SaaS operating semantics
+7. update behavior-level meaning
+8. update verification expectations
+9. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
+10. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, and consequential AI/tool activity
+11. update mandatory UI descriptions, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS
+12. update traceability and impact understanding
+13. assess readiness
+14. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
+15. either stop at description maintenance or proceed to generation
+16. answer review questions through summaries
 
 ## Change-only flow
 
@@ -76,8 +77,17 @@ Use `app-description-intake-router` to determine:
 - whether clarification is needed
 
 ### Step 3. Update capabilities when scope changed
-Use `app-description-capability-modeling` when the request changes business scope, actors, or intended outcomes.
+Use `app-description-capability-modeling` when the request changes business scope, actors, intended outcomes, protected operations, queries, or exposure surfaces.
 For AI-first apps, connect capabilities to durable goals, delegated work, agent/team responsibilities, governance boundaries, decision surfaces, audit needs, and outcome loops.
+
+Each affected capability should record enough backend contract detail to prevent generation-time invention:
+- capability id/name and class;
+- actors/callers and AuthContext with tenant/customer scope, role, permission, or named capability grants;
+- typed inputs/outputs, validation, safe denial/error shape, redaction, idempotency, and correlation expectations;
+- data access, side effects, policy/approval/escalation rules, and autonomy level;
+- audit/work-trace obligations;
+- selected exposure surfaces such as UI action, HTTP/gRPC API, agent tool, MCP, workflow, view/query, timer, consumer, or internal-only method;
+- linked success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
 
 ### Step 4. Update operating model when agentic semantics changed
 
@@ -184,6 +194,7 @@ Every description change should trigger a mental or explicit change-impact pass.
 
 The harness should ask:
 - which capabilities changed?
+- did any capability contract fields change: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, or tests?
 - which behavior artifacts changed?
 - which AI-first operating-model artifacts changed: goals, delegated work, retained authority, agents, policies, approvals, decisions, exceptions, traces, learning, or outcomes?
 - which tests now need updates?
@@ -199,6 +210,7 @@ The harness should ask:
 Readiness is a maintained state, not a one-time milestone.
 
 The harness should reassess readiness after material description changes, especially when they affect:
+- capability contract completeness: actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit, exposure surfaces, and tests
 - state transitions
 - failure semantics
 - delegated authority, approvals, exceptions, or policy controls

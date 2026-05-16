@@ -179,7 +179,7 @@
 
 ### TASK-02-001: Design app-description capability inventory
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/02-description-and-decomposition-integration-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-005]
@@ -199,7 +199,9 @@
 - done criteria:
   - description-first path has a clear place for capability models
 - notes:
-  - pending
+  - completed: defined the app-description capability inventory as governed backend capability contracts in `10-capabilities/`, including auth/scope, schemas, side effects, idempotency, approval, audit/trace, exposure surfaces, tests, and cross-layer links
+  - updated readiness guidance so missing capability contract details block generation readiness when they would otherwise be invented downstream
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Design app-description capability inventory`
 
 ### TASK-02-002: Update app-description skills for capability changes
 

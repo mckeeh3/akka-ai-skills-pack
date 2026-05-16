@@ -30,6 +30,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for capability contract completeness criteria
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation readiness criteria
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
@@ -63,7 +64,7 @@ Readiness is about **semantic completeness**, not about whether code could be gu
 
 A description is ready only when it is clear enough that generation is likely to preserve intended behavior without hiding major unresolved decisions.
 
-This skill should resist premature generation when important behavior, test, security, observability, in-scope frontend/UI, mandatory secure SaaS foundation, or AI-first operating-model semantics are still undefined.
+This skill should resist premature generation when important capability contracts, behavior, test, security, observability, in-scope frontend/UI, mandatory secure SaaS foundation, or AI-first operating-model semantics are still undefined.
 
 ## Readiness dimensions
 
@@ -95,16 +96,26 @@ Check this for generated AI-first SaaS apps and for any existing `15-operating-m
 - decision/exception semantics with evidence, risk, confidence, impact, alternatives, and precedents
 - audit/work/decision traces, policy invocations, tool/data-access events, feedback, replay/simulation, and outcome metrics
 
-### 3. Behavior completeness
+### 3. Capability contract completeness
+Check whether `10-capabilities/` is sufficiently defined for every in-scope capability:
+- stable id/name and capability class
+- purpose, in-scope outcomes, and out-of-scope boundaries
+- actors/callers and AuthContext with tenant/customer scope, role, permission, or named capability grants
+- input/output schemas, validation, redaction, safe denial/error shape, idempotency, and correlation expectations
+- data access boundaries, side effects, policy/approval/escalation rules, autonomy level, and audit/work-trace obligations
+- selected exposure surfaces or explicit non-exposure
+- links to operating-model, behavior, tests, auth/security, observability, UI, and traceability artifacts as applicable
+
+### 4. Behavior completeness
 Check whether the app meaning is sufficiently defined:
-- core capabilities
+- governed capability contracts
 - major flows and state changes
 - invariants
 - failure behavior
 - forbidden behavior
 - no-op or idempotency rules where relevant
 
-### 4. Test completeness
+### 5. Test completeness
 Check whether important behavior is backed by explicit verification expectations:
 - acceptance cases
 - regression cases
@@ -112,7 +123,7 @@ Check whether important behavior is backed by explicit verification expectations
 - repeated-request behavior
 - failure-path expectations
 
-### 5. Auth/security completeness
+### 6. Auth/security completeness
 Check whether required production security semantics are defined:
 - identity and trust model
 - authorization rules
@@ -121,7 +132,7 @@ Check whether required production security semantics are defined:
 - denial behavior
 - mechanical enforcement of agent/tool permissions and human authority boundaries when AI-first behavior is in scope
 
-### 6. Observability completeness
+### 7. Observability completeness
 Check whether required operational evidence is defined:
 - logs and audit events
 - metrics
@@ -131,7 +142,7 @@ Check whether required operational evidence is defined:
 - diagnosability expectations
 - AI-first work traces, decision traces, policy invocations, tool/data-access records, and outcome links when applicable
 
-### 7. Frontend/UI completeness
+### 8. Frontend/UI completeness
 Check this for generated full-stack AI-first SaaS apps:
 - user journeys and screens
 - navigation
@@ -143,7 +154,7 @@ Check this for generated full-stack AI-first SaaS apps:
 - selected web UI style guide, mode policy, core CSS tokens, component styling, and brand adaptation rules
 - for AI-first apps, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces instead of only CRUD navigation
 
-### 8. Generation stability
+### 9. Generation stability
 Check whether remaining ambiguity would likely cause incorrect or unstable generated outputs.
 
 ## Allowed outcomes
@@ -175,6 +186,10 @@ Use this response shape:
 - notes:
 
 ## AI-first operating-model completeness
+- status:
+- notes:
+
+## Capability contract completeness
 - status:
 - notes:
 
@@ -216,7 +231,7 @@ If a critical area is underspecified, say so directly.
 Do not mark the description ready just because generation is technically possible.
 
 ### 2. Weight missing production concerns appropriately
-Missing secure SaaS foundation, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
+Missing secure SaaS foundation, capability contracts, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, actors/callers, AuthContext/scope, schemas, side effects, idempotency, exposure surfaces, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
 ### 3. Allow limited assumptions only when localized
 `ready-with-assumptions` is valid only when the remaining assumptions are:

@@ -163,7 +163,7 @@ Should include:
 - required validation after generation
 
 ## `10-capabilities/`
-Business capability inventory.
+Business capability inventory and governed backend capability contracts.
 
 For generated SaaS apps, the first capability must be `01-secure-tenant-user-foundation.md`, covering Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, and tenant/customer isolation before app-specific capabilities.
 
@@ -171,8 +171,21 @@ This layer answers:
 - what business or user-visible capabilities exist?
 - what is in scope?
 - what is explicitly out of scope?
+- who may invoke each operation or query?
+- which authority, scope, side effects, audit, approval, and exposure rules apply before implementation choices are made?
 
-Each capability file should be narrowly focused and should link to the corresponding behavior, tests, security, and observability artifacts.
+`capabilities-index.md` should list stable capability ids, class (`read/evidence`, `command`, `proposal`, `approval`, `workflow`, `policy/governance`, `trace/audit`, `scheduled`, or `reactive`), primary actors/callers, protected scope, and selected exposure surfaces.
+
+Each capability file should be narrowly focused and should include or link to:
+- purpose and in-scope/out-of-scope outcomes;
+- actors/callers, AuthContext, tenant/customer scope, roles, permissions, and named capability grants;
+- input and output schemas, validation, safe denial/error shape, redaction rules, idempotency key, and correlation id expectations;
+- data access boundaries, side effects, policy/approval/escalation rules, and autonomy level;
+- audit/work-trace event requirements, retention/redaction expectations, and outcome/evidence links;
+- selected exposure surfaces such as UI action, HTTP/gRPC API, agent tool, MCP, workflow step, view/query, timer, consumer, or internal-only method;
+- linked operating-model, behavior, tests, auth/security, observability, UI, and traceability artifacts.
+
+Do not treat endpoints, agent tools, workflows, or entities as the capability inventory root. They are downstream realization or exposure choices for these capability contracts.
 
 ## `15-operating-model/`
 AI-first operating model and agentic substrate.
@@ -380,15 +393,16 @@ Default ownership should be:
 The harness should maintain these invariants:
 
 1. Every generated SaaS app must include the secure tenant/user foundation capability, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
-2. Every in-scope capability must link to at least one behavior artifact.
-3. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
-4. Every important behavior change must link to one or more test artifacts.
-5. Security-sensitive behavior must link to relevant auth/security artifacts.
-6. Operationally important behavior must link to relevant observability artifacts.
-7. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
-8. Readiness must be based on the actual state of operating model, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
-9. Generation policy must never override description correctness.
-10. Review summaries must be derivable from authoritative layers.
+2. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
+3. Every in-scope capability must link to at least one behavior artifact.
+4. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
+5. Every important behavior change must link to one or more test artifacts.
+6. Security-sensitive behavior must link to relevant auth/security artifacts.
+7. Operationally important behavior must link to relevant observability artifacts.
+8. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
+9. Readiness must be based on the actual state of operating model, capability contracts, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
+10. Generation policy must never override description correctness.
+11. Review summaries must be derivable from authoritative layers.
 
 ## File sizing rules
 
