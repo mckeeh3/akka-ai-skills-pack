@@ -7,6 +7,8 @@ description: Design Akka Java SDK View query methods that stream results or stre
 
 Use this skill when the main problem is streaming view query results.
 
+Capability-first framing: a streaming View query is a live read/evidence capability surface. Define who may subscribe, the AuthContext and tenant/customer scope, reconnect/cancellation behavior, row redaction, audit/data-access trace expectations, and whether the stream is browser SSE, gRPC, MCP/resource-like, agent evidence, or internal.
+
 ## Required reading
 
 Read these first if present:
@@ -16,6 +18,7 @@ Read these first if present:
 - `../../../src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
 - `../../../src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
+- `../../../docs/capability-first-backend-architecture.md`
 
 ## Two streaming modes
 
@@ -42,6 +45,8 @@ Repository examples:
 6. If a non-SSE stream query uses `ORDER BY`, every ordered column must also appear in the same query's `WHERE` conditions.
 7. Test non-updating streams by collecting the stream.
 8. Test updating streams through SSE or another consumer that can observe later updates.
+9. Protected streams must include tenant/customer scope filters in the query or wrapper and must enforce authorization before opening the stream.
+10. Record data-access/audit traces where the capability contract requires auditable streaming evidence access.
 
 ## SSE-backed view stream pattern
 
@@ -64,3 +69,4 @@ Before finishing, verify:
 - view queries forwarded to SSE do not contain `ORDER BY`
 - any non-SSE `ORDER BY` columns are also indexed by `WHERE` conditions
 - endpoints forwarding the stream preserve offset/reconnect semantics when relevant
+- protected stream exposure tests cover authorized subscription, forbidden/cross-scope denial, redacted rows, and audit/data-access trace behavior

@@ -382,7 +382,7 @@
 
 ### TASK-03-004: Update view skills for curated read capabilities
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/03-component-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-003]
@@ -399,7 +399,9 @@
 - done criteria:
   - views are positioned as safe evidence/read surfaces for agents and UIs
 - notes:
-  - pending
+  - completed: updated the view skill suite to frame Views as curated read/evidence capabilities with AuthContext, tenant/customer scope filters, redaction, audit/data-access traces, and safe UI/API/MCP/agent exposure guidance
+  - checks: `rg` verified view guidance covers read/evidence capabilities, AuthContext, tenant/customer scope, redaction, audit, and agent-safe exposure; `git diff --check` passed
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Make view skills capability-first`
 
 ### TASK-03-005: Update endpoint and MCP skills for selective capability exposure
 

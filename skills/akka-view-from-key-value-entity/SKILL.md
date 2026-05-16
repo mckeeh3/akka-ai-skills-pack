@@ -7,6 +7,8 @@ description: Implement Akka Java SDK Views that consume KeyValueEntity state cha
 
 Use this skill when the source of the view is a `KeyValueEntity`.
 
+Capability-first framing: use KVE-backed Views for current-state read/evidence capabilities such as directories, settings/search lists, operational summaries, and dashboards where the latest state is sufficient. Keep command authority in the entity/caller; the View provides scoped and redacted query access.
+
 ## Required reading
 
 Read these first if present:
@@ -17,6 +19,7 @@ Read these first if present:
 - `../../../src/main/java/com/example/application/DraftCartLifecycleView.java`
 - `../../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
 - `../../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
+- `../../../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
 
@@ -27,6 +30,7 @@ Read these first if present:
 5. Use `updateContext().eventSubject()` for the source entity id.
 6. Add `@DeleteHandler` only when you need custom delete behavior.
 7. Remember that intermediate state transitions may be skipped; only the latest state is guaranteed.
+8. Include tenant/customer scope, status, ownership, and redaction-ready fields needed by the capability's authorized query paths.
 
 ## Recommended implementation pattern
 
@@ -66,6 +70,7 @@ Before finishing, verify:
 - the updater uses `@Consume.FromKeyValueEntity(...)`
 - `onUpdate(...)` maps from the latest full state to the row type
 - the row type contains only fields needed by the queries
+- protected query rows carry scope fields and omit/redact fields not approved for the selected exposure surface
 - query wrappers and aliases match exactly
 - non-SSE `ORDER BY` columns also appear in the same query's `WHERE` conditions
 - view queries exposed as SSE do not include `ORDER BY`

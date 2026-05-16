@@ -7,12 +7,15 @@ description: Write Akka Java SDK View integration tests using TestKitSupport, mo
 
 Use this skill for view integration tests.
 
+For capability-first read/evidence capabilities, test the View projection and the protected exposure path that uses it. Direct View tests verify projection/query mechanics; endpoint, tool, MCP resource, or workflow tests verify AuthContext, tenant/customer scope, redaction, denial shape, and audit/data-access trace obligations.
+
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `../../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
 - `../../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../../../docs/capability-first-backend-architecture.md`
 
 ## Test kit rules
 
@@ -39,6 +42,9 @@ For each reusable view example, cover at least:
 4. delete or move-out-of-query behavior when relevant
 5. paginated result mapping when the view exposes a paginated query
 6. at least one invocation of every query method, including sorted, paginated, and SSE-backed stream queries, so unsupported query shapes such as invalid non-SSE `ORDER BY` indexes or `ORDER BY` on SSE view queries fail during tests
+7. tenant/customer scope filtering for protected read capabilities, including no leakage for wrong tenant/customer ids
+8. caller-safe redaction for rows exposed to browsers, APIs, MCP resources, or agent tools
+9. forbidden/permission-denied behavior and audit/data-access trace creation in the protected wrapper that exposes the View
 
 ## Repository examples
 
@@ -76,6 +82,7 @@ Avoid:
 - querying the source entity instead of the view under test
 - using endpoint integration patterns when the goal is direct view testing
 - forgetting explicit entity ids on published source updates
+- treating direct View projection tests as sufficient for protected capability exposure without separate auth/scope/redaction/audit tests
 
 ## Review checklist
 
@@ -88,3 +95,4 @@ Before finishing, verify:
 - every View query method is invoked at least once, especially queries with `ORDER BY`, `OFFSET`, `LIMIT`, or SSE-backed streaming
 - SSE-backed view stream queries contain no `ORDER BY`
 - tests assert transformed row fields, not only result size
+- protected read capability tests cover authorized, forbidden, cross-tenant/customer, redacted, and audited access through the selected exposure surface

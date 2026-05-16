@@ -16,9 +16,11 @@ Generate or review view code that is:
 - easy for AI agents to extend safely
 - backed by integration tests
 
-## AI-first substrate role
+## AI-first and capability-first substrate role
 
 In AI-first SaaS work, use Views for supervision and accountability read models: command centers, active goal/plan lists, agent activity feeds, approval and exception queues, decision-card indexes, policy catalogs, audit search, digest inputs, outcome dashboards, and first-slice admin read models such as UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView.
+
+In capability-first backend design, a View usually realizes a curated read/evidence capability: scoped lists, dashboards, queues, search results, audit lookups, decision evidence, and agent-safe context retrieval. Define the capability contract before coding the View: allowed actors/callers, AuthContext, tenant/customer filters, row redaction, query parameters, pagination/streaming behavior, denial shape, data-access audit expectations, and tests. Do not expose a raw projection just because the source component has data; expose only the query shape the UI, API, workflow, or agent tool is authorized to use.
 
 Views are derived projections, not the source of authority. Keep consequential decisions, policies, traces, approvals, and outcomes in entities, workflows, topics, or authoritative integrations, then project them into views for review, filtering, streaming, and reporting. Generated SaaS view rows and queries must carry tenant/customer scope fields where data is scoped, and endpoints exposing views must filter by authorized AuthContext rather than by frontend state.
 
@@ -36,6 +38,7 @@ Read these first if present:
 - `akka-context/reference/views/concepts/result-mapping.html.md`
 - `akka-context/reference/views/syntax/order-by.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../../../docs/capability-first-backend-architecture.md`
 - existing project view examples under `src/main/java/**/application/*View.java`
 - matching tests under `src/test/java/**`
 
@@ -110,10 +113,11 @@ Rules:
 12. For every non-SSE query, each `ORDER BY` column must also be present in that query's `WHERE` conditions; otherwise Akka may reject the query with `AK-00101`.
 13. For view queries exposed as SSE with `serverSentEventsForView(...)`, do **not** generate `ORDER BY`; SSE view events are delivered in created/event order.
 14. Prefer separate query methods over optional-filter `OR` expressions so each access path has explicit indexed fields.
-15. Include tenantId/customerId conditions in protected view queries and stream queries; never expose unscoped lists for tenant/customer data.
-16. Design forbidden-access behavior for view endpoints and tests: a caller outside scope receives `403` or resource-hidden behavior, not rows filtered only in the browser.
-17. For generated SaaS admin views, define first-slice query paths for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range where relevant.
-18. Apply backend authorization and redaction before returning view rows; tests must cover query authorization, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, and audit trace completeness.
+15. Treat every protected View query as a named read/evidence capability with explicit callers, AuthContext, scope filters, output redaction, audit/data-access expectations, and exposure surfaces.
+16. Include tenantId/customerId conditions in protected view queries and stream queries; never expose unscoped lists for tenant/customer data.
+17. Design forbidden-access behavior for view endpoints, tool/resource wrappers, and tests: a caller outside scope receives `403`/permission denial or resource-hidden behavior, not rows filtered only in the browser or prompt.
+18. For generated SaaS admin views, define first-slice query paths for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range where relevant.
+19. Apply backend authorization and redaction before returning view rows; tests must cover query authorization, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, data-access audit/trace completeness, and agent-safe evidence shape when exposed to tools.
 
 ## Decision guide
 
@@ -152,6 +156,7 @@ Repository examples:
 ## Advanced semantics to remember
 
 - Views are eventually consistent; do not assume entity writes are visible immediately.
+- Views are read/evidence capability surfaces, not authority boundaries. Enforce authorization at the endpoint/tool/resource/caller boundary before querying and keep scope fields in the view row so the backend can filter mechanically.
 - ESE, KVE, and Workflow-backed views have built-in exactly-once deduplication.
 - KVE-backed views may skip intermediate state transitions and reflect only the latest guaranteed state.
 - Topic-backed views rely on topic delivery and metadata such as `ce-subject`.
@@ -178,7 +183,7 @@ Before finishing, verify:
 - snapshot handling is present when an ESE-backed view should start from snapshots
 - tests publish incoming messages from the correct source type
 - tests use `Awaitility` instead of assuming immediate view updates
-- scoped views include tenant/customer filters in queries and endpoint callers enforce AuthContext before querying or streaming
+- scoped views include tenant/customer filters in queries and endpoint/tool/resource callers enforce AuthContext before querying or streaming
 - admin read models include required filters for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range where relevant
 - tests cover no cross-tenant/customer leakage, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, audit trace completeness, and forbidden access for protected view APIs
 

@@ -7,6 +7,8 @@ description: Design Akka Java SDK View query methods, result wrapper records, al
 
 Use this skill when the main problem is shaping the query result and Java return type.
 
+In capability-first backend design, each protected query method should correspond to a named read/evidence capability or one explicit access path of that capability. Carry the capability's AuthContext, tenant/customer scope, redaction requirements, pagination/streaming contract, and exposure surface into the query shape instead of building one broad raw-data query for every caller.
+
 ## Required reading
 
 Read these first if present:
@@ -16,6 +18,7 @@ Read these first if present:
 - `akka-context/reference/views/syntax/select.html.md`
 - `akka-context/reference/views/syntax/order-by.html.md`
 - `../../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../../docs/capability-first-backend-architecture.md`
 
 ## Core rules
 
@@ -30,6 +33,8 @@ Read these first if present:
 9. Do not use optional-filter `OR` patterns such as `(:customerId = '' OR customerId = :customerId)`; create separate query methods for the filtered and unfiltered access paths so each query has explicit indexes.
 10. For view queries consumed by SSE endpoints, do **not** include `ORDER BY`; SSE view events are delivered in created/event order. Use a dedicated unsorted `QueryStreamEffect` query for SSE and keep sorted/paginated `QueryEffect` methods separate.
 11. For streaming queries, keep the row shape simple and stable for downstream SSE or gRPC forwarding.
+12. Include tenantId/customerId and actor-visible status/risk/queue fields in protected query request records when the capability contract requires scope or governance filtering.
+13. Return only fields approved for the caller/exposure surface; create separate redacted row/result shapes for browser, API, MCP/resource, or agent evidence use when needed.
 
 ## ORDER BY and index rule
 
@@ -195,6 +200,7 @@ Avoid:
 - `ORDER BY` columns that are missing from the same non-SSE query's `WHERE` conditions
 - optional-filter `OR` expressions instead of separate query methods per access path
 - exposing domain-only names when the API needs a query-specific result shape
+- one raw unscoped query reused by browser, API, and agent tool callers with different authorization or redaction needs
 
 ## Review checklist
 
@@ -206,3 +212,4 @@ Before finishing, verify:
 - every non-SSE `ORDER BY` column also appears in the same query's `WHERE` conditions
 - SSE-backed view queries have no `ORDER BY`
 - optional filters are represented as separate query methods, not `OR` branches
+- protected queries include capability scope fields and return a caller-safe/redacted result shape

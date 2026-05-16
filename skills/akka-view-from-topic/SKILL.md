@@ -7,6 +7,8 @@ description: Implement Akka Java SDK Views that consume topic messages using Tab
 
 Use this skill when the source of the view is a topic.
 
+Capability-first framing: use topic-backed Views for read/evidence capabilities built from event streams, external signals, trace enrichment, integration reports, or cross-service summaries. The View should curate and scope evidence for callers; side effects from topic messages belong in Consumers, not Views.
+
 ## Required reading
 
 Read these first if present:
@@ -15,6 +17,7 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `../../../src/main/java/com/example/application/ShoppingCartTopicView.java`
 - `../../../src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
+- `../../../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
 
@@ -23,6 +26,7 @@ Read these first if present:
 3. Use `updateContext().eventSubject()` to recover that row key.
 4. Use `effects().ignore()` for message types or origin cases you do not want to project.
 5. Use `updateContext().hasLocalOrigin()` or `originRegion()` when the topic flow needs region-aware filtering.
+6. Preserve provenance, correlation id, tenant/customer scope, and redaction-ready fields when they are part of the read/evidence capability contract.
 
 ## Repository example
 
@@ -45,6 +49,7 @@ Before finishing, verify:
 - `@Consume.FromTopic` uses the intended topic name
 - published messages include `ce-subject`
 - ignored message types are explicit
+- protected evidence queries include scope/provenance filters and caller-safe fields for UI/API/MCP/agent exposure
 - non-SSE `ORDER BY` columns also appear in the same query's `WHERE` conditions
 - view queries exposed as SSE do not include `ORDER BY`
 - origin-aware logic is intentional when used

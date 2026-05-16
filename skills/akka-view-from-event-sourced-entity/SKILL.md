@@ -7,6 +7,8 @@ description: Implement Akka Java SDK Views that consume EventSourcedEntity event
 
 Use this skill when the source of the view is an `EventSourcedEntity`.
 
+Capability-first framing: use ESE-backed Views for read/evidence capabilities that need audit-grade event history projected into scoped, redacted query rows such as decision evidence, policy history, approval queues, trace search, or lifecycle reports. Keep the entity as the authority; the View is the query/evidence surface.
+
 ## Required reading
 
 Read these first if present:
@@ -17,6 +19,7 @@ Read these first if present:
 - `../../../src/main/java/com/example/application/ShoppingCartAuditView.java`
 - `../../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
+- `../../../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
 
@@ -28,6 +31,7 @@ Read these first if present:
 6. Model entity deletion explicitly in `onEvent(...)` when the delete is represented as a domain event.
 7. If the entity delete signal itself should be customized, add `@DeleteHandler`.
 8. If snapshots are relevant, add `@SnapshotHandler` with the entity state type.
+9. Preserve capability scope fields, correlation ids, audit references, and redaction-ready fields in the projected row when the read/evidence capability requires them.
 
 ## Recommended implementation pattern
 
@@ -73,5 +77,6 @@ Before finishing, verify:
 - delete events or delete callbacks remove or explicitly retain rows as intended
 - snapshot handling uses the entity state type when present
 - queries index by a field other than entity id when that is the purpose of the view
+- protected capability queries include tenant/customer scope and expose only redacted evidence fields appropriate for the caller
 - non-SSE `ORDER BY` columns also appear in the same query's `WHERE` conditions
 - view queries exposed as SSE do not include `ORDER BY`

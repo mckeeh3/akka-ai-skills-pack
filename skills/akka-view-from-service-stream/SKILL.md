@@ -7,6 +7,8 @@ description: Implement Akka Java SDK Views that subscribe to public service stre
 
 Use this skill when a View subscribes to a public stream published by another Akka service in the same Akka project.
 
+Capability-first framing: use service-stream Views for subscriber-owned read/evidence capabilities based on another service's public event contract. Treat the public stream as an integration boundary and expose only scoped, redacted query rows appropriate for the subscriber's UI/API/MCP/agent callers.
+
 ## Required reading
 
 Read these first if present:
@@ -16,12 +18,14 @@ Read these first if present:
 - `../../../docs/service-to-service-views.md`
 - `../../../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
 - `../../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../../../docs/capability-first-backend-architecture.md`
 
 ## Use this pattern when
 
 - another Akka service publishes a public event stream with `@Produce.ServiceStream`
 - this service needs a query model built from that public stream
 - the subscriber should store rows for later queries rather than trigger side effects
+- the subscriber needs a curated read/evidence capability, not a command or integration side-effect capability
 
 If the subscriber should trigger side effects or downstream writes instead of maintaining a query model, use a Consumer subscriber.
 
@@ -36,6 +40,7 @@ If the subscriber should trigger side effects or downstream writes instead of ma
 7. Keep query methods and wrapper aliases aligned with the projected row shape.
 8. For non-SSE `ORDER BY`, include each ordered column in the same query's `WHERE` conditions; split optional filters into separate query methods rather than using `OR` branches.
 9. For view queries exposed as SSE, do not include `ORDER BY`; SSE events are delivered in created/event order.
+10. Preserve tenant/customer scope, public-event provenance, correlation ids, and caller-safe/redacted fields required by the subscriber capability contract.
 
 ## Repository references
 
@@ -51,7 +56,7 @@ If the subscriber should trigger side effects or downstream writes instead of ma
 ## Design rules
 
 - Treat `service`, `id`, and the public event types as part of the cross-service API.
-- Prefer a transformed row model tailored to subscriber-side queries.
+- Prefer a transformed row model tailored to subscriber-side queries and authorization boundaries.
 - Do not couple the subscriber view to the producer's internal package layout or private event types.
 - If row selection depends on a stable aggregate id, require producer-side `ce-subject` metadata.
 - Remember eventual consistency when testing and when designing endpoint callers.
@@ -75,6 +80,7 @@ Before finishing, verify:
 - updater handlers accept only public event types
 - `updateContext().eventSubject()` is used when row identity depends on subject metadata
 - query wrappers and aliases match exactly
+- protected subscriber queries enforce scope/redaction in the selected exposure path and do not leak producer-private details
 - non-SSE `ORDER BY` columns also appear in the query `WHERE` conditions
 - view queries exposed as SSE do not include `ORDER BY`
 - tests and callers assume eventual consistency
