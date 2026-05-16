@@ -26,6 +26,9 @@ Options:
   --keep-temp         Keep the temporary download/extract directory
   --help              Show this help text
 
+Temporary files are created inside the target directory, not /tmp, to avoid
+small or quota-limited system temporary filesystems. Set --keep-temp to inspect them.
+
 Defaults:
   GitHub repo:  ${GITHUB_REPO}
   Release tag:  ${RELEASE_TAG}
@@ -107,7 +110,8 @@ if [[ -z "$ARCHIVE_URL" ]]; then
   ARCHIVE_URL="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${PACK_NAME}-${PACK_VERSION}.tar.gz"
 fi
 
-TMP_DIR="$(mktemp -d)"
+TMP_PARENT="$TARGET_DIR"
+TMP_DIR="$(mktemp -d "$TMP_PARENT/.${PACK_NAME}-install.XXXXXX")"
 ARCHIVE_PATH="$TMP_DIR/${PACK_NAME}-${PACK_VERSION}.tar.gz"
 EXTRACTED_DIR="$TMP_DIR/${PACK_NAME}-${PACK_VERSION}"
 
@@ -125,6 +129,11 @@ log "Archive URL:    $ARCHIVE_URL"
 
 run_cmd curl -fsSL "$ARCHIVE_URL" -o "$ARCHIVE_PATH"
 run_cmd tar -xzf "$ARCHIVE_PATH" -C "$TMP_DIR"
+
+if [[ "$DRY_RUN" == true ]]; then
+  log "Dry run complete; archive was not downloaded or extracted."
+  exit 0
+fi
 
 [[ -f "$EXTRACTED_DIR/install.sh" ]] || fail "Downloaded archive did not contain ${PACK_NAME}-${PACK_VERSION}/install.sh"
 
