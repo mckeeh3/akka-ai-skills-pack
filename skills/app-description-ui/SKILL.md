@@ -15,6 +15,7 @@ Read these first if present:
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for selected capability exposure surfaces, browser action authority, frontend API contracts, audit, and denial semantics
 - `../../docs/web-ui-frontend-decomposition.md`
 - `../../docs/web-ui-style-guide.md`
 - `../../docs/web-ui-quality-checklist.md`
@@ -80,12 +81,14 @@ Create only files justified by the app, but do not omit the UI layer for generat
 - submit/success/failure behavior
 - duplicate-submit/idempotency expectations
 
-### Frontend API contracts
-- browser API route and method
-- request DTO
-- success response DTO
-- error response DTO
-- auth/session behavior
+### Capability-backed actions and frontend API contracts
+- linked capability id/class for each protected browser action or query
+- browser API route and method as an exposure surface, when selected
+- request DTO and idempotency/correlation fields where applicable
+- success response DTO and redaction rules
+- error/denial response DTO
+- required AuthContext, capability grant, and tenant/customer scope
+- audit/trace expectation visible to users, supervisors, admins, or auditors when applicable
 
 ### States and realtime
 - loading/ready/empty/error/submitting/success/stale states
@@ -117,11 +120,12 @@ If no UI style is selected for a generated AI-first SaaS app, do **not** choose 
 
 For any UI change, update:
 1. affected UI description files, including `ai-first-surfaces.md` when delegated work surfaces change and `style-guide.md` when style system, branding, density, tokens, or component styling change
-2. behavior flows if user-visible behavior changes
-3. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, or trace-link expectations change
-4. auth/security if route visibility, roles, agent/tool permissions, approval authority, or trace access changes
-5. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, or outcome evidence
-6. readiness status if generation completeness changes
+2. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, or idempotency semantics
+3. behavior flows if user-visible behavior changes
+4. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
+5. auth/security if route visibility, roles, agent/tool permissions, approval authority, or trace access changes
+6. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, or outcome evidence
+7. readiness status if generation completeness changes
 
 ## Realization routing
 

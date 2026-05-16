@@ -31,6 +31,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for capability-level success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-surface test expectations
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation verification expectations
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -67,7 +68,8 @@ The purpose of this skill is to specify what must later be provable about the ap
 
 ## What this skill must capture
 
-For each behavior or change, specify as applicable:
+For each behavior, capability, or change, specify as applicable:
+- linked capability id/class and exposure surfaces under test
 - acceptance scenarios
 - regression scenarios
 - negative scenarios
@@ -78,6 +80,7 @@ For each behavior or change, specify as applicable:
 - baseline secure SaaS foundation scenarios for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, support-access, billing boundary, AdminAuditEvent, and tenant/customer-scoped commands and queries
 - auth/security verification scenarios
 - observability verification scenarios
+- capability contract verification: authorized AuthContext success, validation failure, forbidden/tenant isolation, duplicate/idempotent calls, audit/work-trace emission, approval/escalation behavior, and surface-specific UI/API/tool/MCP/workflow/timer/consumer behavior
 
 ## Test specification categories
 
@@ -125,8 +128,9 @@ Use this structure when updating or summarizing the test layer:
 ```md
 # Test Specification Update
 
-## Behavior under test
-- ...
+## Behavior or capability under test
+- linked capability id/class:
+- exposure surfaces:
 
 ## Acceptance cases
 - ...
@@ -189,8 +193,10 @@ If expected behavior is still uncertain, record the ambiguity instead of inventi
 ## Handoff rules
 
 Route onward as needed:
+- back to `app-description-capability-modeling` if the test work reveals missing capability actors, AuthContext, schemas, side effects, idempotency, approval, audit, or exposure surfaces
 - back to `app-description-behavior-specification` if the test work reveals missing behavioral semantics
 - to `app-description-auth-security` if security expectations need first-class refinement
+- to `app-description-ui` if browser action, supervision, decision, governance, digest, audit, realtime, accessibility, or frontend API behavior must be specified for verification
 - to `app-description-observability` if logging, metrics, work traces, decision traces, auditability, or alerts need explicit definition
 - to AI-first companion skills when tests reveal missing agent authority, policy, decision-card, audit-trace, UI-surface, evaluation, or outcome-loop semantics
 - to `app-description-readiness-assessment` when the user is asking whether the description is complete enough to realize

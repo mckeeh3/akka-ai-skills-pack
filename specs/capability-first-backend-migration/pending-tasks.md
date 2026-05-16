@@ -205,7 +205,7 @@
 
 ### TASK-02-002: Update app-description skills for capability changes
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/02-description-and-decomposition-integration-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001]
@@ -224,7 +224,9 @@
 - done criteria:
   - app-description maintenance can revise capabilities consistently
 - notes:
-  - pending
+  - completed: updated app-description normalization, routing, capability modeling, behavior, tests, auth/security, observability, UI, and change-impact skills so capability contract changes preserve linked behavior, auth/security, tests, UI, observability, readiness, and traceability impacts
+  - checks: `rg` verified capability-modeling/change-impact/intake routing references to behavior, auth/security, tests, UI, observability, and readiness
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Update app-description skills for capability changes`
 
 ### TASK-02-003: Update Akka solution decomposition for capability-first planning
 

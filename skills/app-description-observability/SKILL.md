@@ -30,6 +30,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for capability audit/trace, data-access, approval, side-effect, and exposure-surface evidence requirements
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
@@ -75,6 +76,7 @@ This skill should define what evidence must exist so that humans and systems can
 ## What this skill must capture
 
 For each requested change, identify and describe as applicable:
+- linked capability ids/classes and exposure surfaces that require evidence
 - important events that must be logged or audited
 - metrics that must be recorded
 - trace continuity expectations across requests, workflows, async steps, agent actions, tool calls, data access, approvals, policy use, and outcomes
@@ -94,6 +96,11 @@ Use this response shape when updating or summarizing observability changes:
 
 ## Requested change
 - ...
+
+## Linked capability evidence
+- capability ids/classes:
+- exposure surfaces:
+- required audit/work-trace facts:
 
 ## Logs and audit events
 - ...
@@ -177,9 +184,11 @@ Good questions include:
 ## Handoff to other skills
 
 When the observability update is established, route onward as needed:
+- to `app-description-capability-modeling` if observability needs reveal missing capability audit/trace obligations, data-access boundaries, approval evidence, side-effect records, or exposure-surface evidence
 - to `app-description-behavior-specification` if the observability request reveals missing process semantics
 - to `app-description-test-specification` to define evidence-verification cases
 - to `app-description-auth-security` if audit, masking, agent/tool/data access, or restricted visibility raises access-control concerns
+- to `app-description-ui` if supervisors, admins, auditors, or decision reviewers need UI surfaces for traces, digests, audit search, or outcome evidence
 - to `ai-first-saas-audit-trace`, `ai-first-saas-ui-surfaces`, or `ai-first-saas-outcomes-metrics` when work traces, supervision surfaces, digests, evaluations, or outcome loops need focused modeling
 - to `app-description-readiness-assessment` when the user is asking whether the description is sufficiently complete to realize
 
@@ -204,7 +213,7 @@ Before finishing, verify:
 - health or alert conditions are explicit where relevant
 - diagnosability expectations are explicit for important failures
 - security or masking implications are called out
-- linked impacts on behavior, tests, and auth/security are called out
+- linked impacts on capability contracts, behavior, tests, auth/security, UI, and readiness are called out
 - no code-generation step was assumed
 
 ## Response style

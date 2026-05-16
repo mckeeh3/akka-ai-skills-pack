@@ -26,6 +26,7 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-skills-plan-backlog.md`
@@ -73,7 +74,7 @@ A good normalized result:
 From user input, derive as applicable:
 - primary intent
 - secondary intents
-- capability or scope delta
+- capability or scope delta, including candidate actors/callers, AuthContext, schemas, side effects, idempotency, approval, audit/trace, and exposure surfaces
 - behavior delta
 - test delta
 - auth/security delta
@@ -102,12 +103,20 @@ Use this normalized shape internally:
 
 ## Confirmed deltas
 - capabilities:
+  - scope/outcome:
+  - actors/callers:
+  - AuthContext/scope:
+  - inputs/outputs:
+  - side effects/idempotency:
+  - approval/audit/exposure surfaces:
 - behavior:
 - tests:
 - auth/security:
 - observability:
 
 ## Candidate inferred deltas
+- capability contract gaps:
+- linked behavior/tests/auth-security/UI/observability impacts:
 - ...
 
 ## Realization request
@@ -135,12 +144,16 @@ Use `candidate inferred deltas` for plausible implications that still need confi
 
 ### 3. Preserve cross-layer separation
 Do not collapse these into one bucket:
+- capability contract
 - behavior
 - tests
 - auth/security
+- UI
 - observability
 - realization
 - review
+
+When a capability delta changes authority, side effects, approval, audit, or exposure surfaces, record the likely linked layer impacts instead of treating it as an isolated scope change.
 
 ### 4. Normalize to app-description language, not code language
 Prefer terms like:
@@ -180,8 +193,8 @@ Use when more than one of the above clearly applies in one prompt.
 Route onward as needed:
 - to `app-description-bootstrap` when the normalized intent is `bootstrap`
 - to `app-description-intake-router` when routing is still needed after normalization
-- to `app-description-capability-modeling` when capability scope, actors, or intended outcomes are the dominant delta
-- to focused maintenance skills when normalization already isolates the dominant delta clearly
+- to `app-description-capability-modeling` when capability scope, actors, AuthContext, schemas, side effects, idempotency, approval, audit, exposure surfaces, or intended outcomes are the dominant delta
+- to focused maintenance skills when normalization already isolates the dominant delta clearly, while preserving any linked behavior, tests, auth/security, UI, observability, or readiness impacts
 - to `app-description-change-impact` when the input is explicitly asking about affected areas or regeneration scope
 - to `app-description-readiness-assessment` when the input explicitly asks whether generation is appropriate
 

@@ -31,6 +31,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for protected capability AuthContext, permission, scope, exposure, and audit semantics
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation semantics
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -89,7 +90,7 @@ For each requested change, identify and describe as applicable:
 - authentication mechanism or trust source, including identity provider when known
 - frontend-to-backend token propagation expectations
 - local user/account linking rules
-- authorization rules by capability or operation
+- authorization rules by capability id/operation/query and selected exposure surface
 - tenancy or ownership boundaries
 - admin roles and scopes when user administration is in scope
 - bootstrap/invite/first-login behavior when relevant, including mandatory email delivery for production, explicit local/dev/test outbox capture, invitation status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency, and audit trail
@@ -118,7 +119,9 @@ Use this response shape when updating or summarizing auth/security changes:
 - ...
 
 ## Authorization rules
-- ...
+- capability grants by operation/query:
+- AuthContext and tenant/customer scope:
+- exposure-surface rules:
 
 ## Agent/tool/data authority
 - ...
@@ -239,8 +242,10 @@ Good questions include:
 ## Handoff to other skills
 
 When the auth/security update is established, route onward as needed:
+- to `app-description-capability-modeling` if the security change creates or changes protected capability ids, callers, AuthContext, permissions, named capability grants, exposure surfaces, side effects, approvals, or data-access boundaries
 - to `app-description-behavior-specification` if the security change alters core user-visible behavior
 - to `app-description-test-specification` to define authorization, denial, redaction, and isolation verification cases
+- to `app-description-ui` if route/action visibility, capability-gated navigation, decision cards, supervision queues, or trace access needs UI description updates
 - to `app-description-observability` if audit events, alerts, work traces, decision traces, policy invocations, tool/data access traces, or diagnosability expectations need explicit definition
 - to AI-first companion skills when authority, governance, decision, audit, or outcome semantics need focused modeling
 - to `app-description-readiness-assessment` when the user is asking whether the description is mature enough to realize
@@ -272,7 +277,7 @@ Before finishing, verify:
 - agent/tool/data/policy authority boundaries are explicit for generated AI-first SaaS semantics
 - forbidden access behavior is explicit
 - denial outcomes are explicit where relevant
-- linked impacts on behavior, tests, and observability are called out
+- linked impacts on capability contracts, behavior, tests, UI, observability, and readiness are called out
 - no code-generation step was assumed
 
 ## Response style

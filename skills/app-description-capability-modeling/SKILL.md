@@ -185,7 +185,9 @@ Route onward as needed:
 - to `app-description-test-specification` when acceptance, evaluation, or scope-verification scenarios need to be defined
 - to `app-description-auth-security` when the capability introduces differentiated actors, ownership, protected actions, or enforceable agent/human permissions
 - to `app-description-observability` when the capability introduces auditable, measurable, traceable, or diagnostically important flows
-- to `app-description-change-impact` when a capability change likely alters existing linked layers or realization scope
+- to `app-description-ui` when the capability adds, removes, or changes a human exposure surface, navigation/action availability, decision/supervision surface, frontend API contract, or capability-gated UI behavior
+- to `app-description-readiness-assessment` when missing capability contract fields would force generation to invent actors, AuthContext, schemas, side effects, idempotency, approval, audit, exposure surfaces, or tests
+- to `app-description-change-impact` when a capability change likely alters existing linked layers, realization scope, specs/backlogs, or pending tasks
 
 ## Clarification policy
 
@@ -220,6 +222,7 @@ Before finishing, verify:
 - the capability is named clearly
 - business goal and actors are explicit
 - AuthContext/scope, input/output shape, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests are explicit enough for downstream work
+- linked behavior, auth/security, tests, UI, observability, traceability, and readiness impacts are named whenever the capability contract changes
 - in-scope and out-of-scope outcomes are explicit
 - major assumptions are recorded when relevant
 - delegated work and retained human governance are explicit for generated AI-first SaaS semantics

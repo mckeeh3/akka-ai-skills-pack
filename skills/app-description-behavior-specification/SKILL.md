@@ -30,6 +30,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for preserving capability contracts when behavior changes alter authority, side effects, idempotency, approval, audit, or exposure
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
@@ -73,7 +74,7 @@ It should avoid prematurely locking in code structure unless the behavior itself
 ## What this skill must capture
 
 For each requested change, identify and describe as applicable:
-- capability or business purpose
+- linked capability id/class or business purpose
 - actors or callers
 - delegated work and retained human authority
 - triggers, commands, requests, agent actions, approvals, exceptions, or scheduled checks
@@ -87,7 +88,8 @@ For each requested change, identify and describe as applicable:
 - ordering or timing assumptions
 - evidence, risk, confidence, impact, and alternative requirements for decisions when applicable
 - learning, feedback, replay, simulation, or outcome-loop behavior when applicable
-- dependencies on operating-model, security, or observability layers
+- whether the behavior changes the capability contract: actors/callers, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, or exposure surfaces
+- dependencies on operating-model, security, UI, test, readiness, or observability layers
 
 ## Output contract
 
@@ -109,7 +111,8 @@ Use this response shape when updating or summarizing behavior changes:
 - ...
 
 ## Capability or scope change
-- ...
+- linked capability id/class:
+- contract changes: actors/callers, AuthContext/scope, inputs/outputs, side effects, idempotency, approval, audit, exposure surfaces
 
 ## AI-first operating semantics for generated SaaS apps
 - delegated work:
@@ -192,10 +195,12 @@ Good questions include:
 
 When the behavior update is established, route onward as needed:
 - to AI-first companion skills when the behavior changes goals, agent authority, policies, decision cards, audit traces, or outcome loops
+- to `app-description-capability-modeling` when the behavior implies a changed capability contract, new operation/query, caller, AuthContext, schema, side effect, idempotency rule, approval gate, audit obligation, or exposure surface
 - to `app-description-test-specification` when the behavior needs concrete acceptance, regression, evaluation, or edge-case tests
 - to `app-description-auth-security` when the change affects authentication, authorization, trust boundaries, sensitive-data rules, or enforceable agent/human permissions
+- to `app-description-ui` when changed behavior appears in browser journeys, forms/actions, supervision, decisions, governance, digests, or audit surfaces
 - to `app-description-observability` when the change affects logs, metrics, traces, audit events, work traces, decision traces, policy invocations, or diagnosability
-- to `app-description-readiness-assessment` only when the user is asking whether the description is ready to realize
+- to `app-description-readiness-assessment` when the user asks whether the description is ready or when missing behavior/capability semantics would otherwise be guessed during generation
 
 ## Anti-patterns
 

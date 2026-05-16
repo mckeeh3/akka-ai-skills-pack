@@ -28,6 +28,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for tracing capability contract changes across linked layers and exposure surfaces
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-skills-plan-backlog.md`
@@ -79,13 +80,13 @@ A one-line behavior change may still require:
 ## What this skill must determine
 
 For each change, determine as applicable:
-- which capability artifacts are impacted
+- which capability artifacts are impacted, including changes to actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, or selected exposure surfaces
 - which `15-operating-model/` artifacts are impacted for generated AI-first SaaS: goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, evidence, traces, learning, or outcomes
 - which behavior artifacts are impacted
 - which test artifacts are impacted
 - which auth/security artifacts are impacted, especially authority boundaries and permission enforcement
 - which observability artifacts are impacted, especially audit/work/decision traces, policy invocations, tool/data-access events, and outcome metrics
-- which UI artifacts are impacted, especially supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
+- which UI artifacts are impacted, especially capability-backed browser actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
 - which traceability maps must change
 - whether `00-system/readiness-status.md` must be updated
 - which generation surfaces are likely affected
@@ -176,6 +177,7 @@ When capability-to-behavior, operating-model-to-behavior, behavior-to-tests, or 
 ## Handoff rules
 
 Route onward as needed:
+- to `app-description-capability-modeling` when the change creates or revises a capability contract, operation/query, caller, AuthContext, schema, side effect, idempotency rule, approval gate, audit/trace obligation, or exposure surface
 - to `app-description-test-specification` when verification impact exists
 - to `app-description-auth-security` when access, identity, boundary, or data-protection implications exist
 - to `app-description-observability` when logging, metrics, audit, trace, outcome, or diagnosability implications exist
@@ -207,7 +209,7 @@ Avoid:
 ## Final review checklist
 
 Before finishing, verify:
-- impacted authoritative layers are named explicitly, including `15-operating-model/` for generated AI-first SaaS apps
+- impacted authoritative layers are named explicitly, including `10-capabilities/` and `15-operating-model/` for generated AI-first SaaS apps
 - impacted derived layers are named explicitly
 - readiness impact is called out when relevant
 - likely generated outputs are named at a useful level

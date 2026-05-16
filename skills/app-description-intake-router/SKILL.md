@@ -17,7 +17,7 @@ Interpret flexible user input and produce a routing decision that:
 - detects AI-first/delegated operating-model semantics before routing to CRUD, behavior, or generation work
 - detects when the user wants to generate the app or run it
 - consumes a normalized input envelope when available
-- extracts candidate behavior, test, security, and observability deltas when normalization has not yet happened
+- extracts candidate capability, behavior, test, security, UI, and observability deltas when normalization has not yet happened
 - identifies the smallest next focused skill to load
 - asks only the minimum clarification needed to avoid an incorrect next step
 
@@ -28,6 +28,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md` for capability contract routing before behavior, surfaces, or components
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -102,7 +103,7 @@ If the input contains both revision and generation requests:
 ## What this skill must extract
 
 From the user input or normalized input envelope, identify candidate deltas in these categories:
-- capability or scope
+- capability or scope, including actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, and exposure surfaces
 - AI-first operating-model concerns: goals, delegated work, retained human authority, agents, policies, approvals, decisions, exceptions, evidence, traces, learning, and outcomes
 - behavior and invariants
 - test and example expectations
@@ -135,9 +136,11 @@ Use focused AI-first companion skills only for the concerns in scope:
 - `ai-first-saas-ui-surfaces`
 - `ai-first-saas-outcomes-metrics`
 
-### If the input is primarily about capability scope, actors, or user-visible outcomes
+### If the input changes capability contracts
 Load next:
 - `app-description-capability-modeling`
+
+Use this route when the input changes capability scope, actors/callers, user-visible outcomes, AuthContext, input/output schema, data access, side effects, idempotency, approval/policy, audit/trace, or selected exposure surfaces. Then route linked impacts to behavior, tests, auth/security, UI, observability, change-impact, and readiness as needed.
 
 ### If the input is primarily behavior change
 Load next:
@@ -237,7 +240,8 @@ Avoid:
 Before finishing, verify:
 - the primary intent is explicit
 - generation is not assumed unless the user asked for it
-- candidate operating-model, behavior, test, security, UI, and observability deltas are separated when present
+- candidate capability, operating-model, behavior, test, security, UI, and observability deltas are separated when present
+- capability changes are not treated as isolated when they imply behavior, auth/security, tests, UI, observability, or readiness impacts
 - the next skill is the smallest focused skill that matches the request
 - clarification questions are minimal and justified
 
