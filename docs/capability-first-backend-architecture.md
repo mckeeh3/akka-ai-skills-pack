@@ -167,4 +167,4 @@ Future skills and planning artifacts should use this doctrine as the backend sub
 - PRD/spec/backlog planning should preserve capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks.
 - Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or exposure surfaces.
 
-The top-level routing skill for this doctrine is planned as `../skills/capability-first-backend/SKILL.md` in this migration. Until that file exists, route via `../skills/README.md` and this document.
+The top-level routing skill for this doctrine is `../skills/capability-first-backend/SKILL.md`. Use it with `../skills/README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure surfaces.

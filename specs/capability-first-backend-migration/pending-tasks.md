@@ -124,7 +124,7 @@
 
 ### TASK-01-004: Create top-level capability-first backend skill
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/01-capability-first-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-001, TASK-01-003]
@@ -145,7 +145,8 @@
 - done criteria:
   - top-level capability-first routing skill exists and is concise
 - notes:
-  - pending
+  - completed: created `skills/capability-first-backend/SKILL.md` and updated routing references that previously described the skill as planned/future
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add capability-first backend skill`
 
 ### TASK-01-005: Sprint 1 consistency review
 
