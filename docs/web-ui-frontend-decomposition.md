@@ -113,10 +113,10 @@ If the UI needs live updates, define:
 - merge/idempotency rules
 - cleanup behavior on navigation
 
-### 8. Style guide and theme
+### 8. Style guide
 
 Define:
-- selected theme id/name from `docs/web-ui-style-guide.md`, a custom style guide, or `unselected`
+- selected AI-first style id/name from `docs/web-ui-style-guide.md`, a custom style guide, or `unselected`
 - source reference and mode policy: light-only, dark-only, or system with both token sets
 - typography, spacing, radius, elevation, color, chart, and status tokens
 - layout density and shell/navigation treatment
@@ -188,7 +188,7 @@ A web UI decomposition is ready for implementation when a coding agent can answe
 - what happens while loading, empty, failed, unauthorized, or submitting?
 - what UX copy appears for buttons, empty states, validation, errors, and success?
 - what backend endpoints are required?
-- which style guide/theme and CSS tokens drive the frontend styling?
+- which style guide and CSS tokens drive the frontend styling?
 - which standard frontend project/framework conventions apply?
 - what frontend modules/components should be created?
 - what tests prove the browser app was delivered correctly?

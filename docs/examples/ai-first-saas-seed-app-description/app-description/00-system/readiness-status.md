@@ -5,7 +5,7 @@
   - implementation planning
   - backlog/sprint decomposition
   - phase-1 scaffold design
-  - UI design validation against `docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` theme
+  - UI design validation against `docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` AI-first style system
   - localized frontend implementation planning for the seed app shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
   - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
 - not yet fully ready for:
@@ -13,7 +13,7 @@
   - production authentication integration without provider decision
 - decisive reasons:
   - app class, SaaS foundation, complete invitation onboarding, full admin user management, AI-assisted admin offload, UI surfaces, security posture, and Akka component mapping are defined
-  - selected UI design, light/dark/system mode, lightweight theme constraints, AI-first surface semantics, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
+  - selected UI design, light/dark/system mode, lightweight style constraints, AI-first surface semantics, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
   - enough structure exists to plan implementation phases and generate initial scaffolding
 - blocking gaps before full code generation:
   - choose concrete authentication provider mode for runnable local development and cloud deployment
@@ -25,6 +25,6 @@
   - v1 may use a developer-friendly auth adapter while preserving production auth seams
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules
   - tenant isolation is mandatory even in local/demo mode
-  - UI design validation uses the `atlas-ops-supervisory-console` theme with no copied mockup content
+  - UI design validation uses the `atlas-ops-supervisory-console` style system with no copied mockup content
 - last readiness update basis:
   - seed app UI design review and next-step UI description updates

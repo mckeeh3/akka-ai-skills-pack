@@ -135,7 +135,7 @@ Route to:
 - Rank attention queues by stakes/risk/SLA, not only recency.
 - Compress routine activity, but always preserve drill-down to audit facts.
 - Do not make chat the primary control surface for consequential actions.
-- Do not choose a visual theme implicitly; for generated full-stack AI-first SaaS, the web UI is mandatory, so if no style guide is selected, use the existing UI style-selection guidance before implementation.
+- Do not choose visual styling implicitly; for generated full-stack AI-first SaaS, the web UI is mandatory, so if no style guide is selected, use the existing UI style-selection guidance before implementation.
 
 ## Output expectations
 

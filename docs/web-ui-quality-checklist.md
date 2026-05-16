@@ -51,10 +51,10 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 - [ ] Submit buttons are disabled while submitting.
 - [ ] Duplicate-submit/idempotency behavior is clear.
 
-## Style guide and theme
+## Style guide
 
-- [ ] A selected style guide/theme is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
-- [ ] The authored stylesheet or component styling implements the selected theme through CSS variables/tokens or project-standard theme configuration rather than scattered hard-coded values.
+- [ ] A selected style guide is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
+- [ ] The authored stylesheet or component styling implements the selected AI-first style guide through CSS variables/tokens or project-standard styling configuration rather than scattered hard-coded values.
 - [ ] Light/dark/system mode behavior matches the style guide.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration.

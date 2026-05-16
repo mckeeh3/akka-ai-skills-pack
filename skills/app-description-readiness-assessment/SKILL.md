@@ -140,7 +140,7 @@ Check this for generated full-stack AI-first SaaS apps:
 - loading, empty, error, submitting, success, and stale states
 - realtime behavior when needed
 - accessibility and responsive expectations
-- selected web UI style guide/theme, mode policy, core CSS tokens, component styling, and brand adaptation rules
+- selected web UI style guide, mode policy, core CSS tokens, component styling, and brand adaptation rules
 - for AI-first apps, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces instead of only CRUD navigation
 
 ### 8. Generation stability
@@ -225,7 +225,7 @@ Missing secure SaaS foundation, auth/security, observability, operating-model, o
 - low-risk
 - unlikely to distort the app's core behavior
 
-For browser UI generation, a missing style guide/theme is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
+For browser UI generation, a missing style guide is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
 
 For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 

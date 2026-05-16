@@ -137,7 +137,7 @@ Required fields:
 
 - `accountId`
 - default tenant/context selection if applicable
-- theme preference placeholder if used by the shell
+- style preference placeholder if used by the shell
 
 State owner expectation: Key Value Entity or embedded Account-adjacent state.
 

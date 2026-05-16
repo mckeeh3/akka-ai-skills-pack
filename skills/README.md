@@ -91,7 +91,7 @@ Default description-first flow:
 7. run `app-description-change-impact` to identify cross-layer and realization implications
 8. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, frontend/backend JWT security, WorkOS authentication, basic administration, or data protection
 9. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
-10. update UI with `app-description-ui` when the request changes screens, navigation, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style/theme
+10. update UI with `app-description-ui` when the request changes screens, navigation, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
 11. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
 12. realize outputs with `app-generate-app` only when generation is requested or accepted
 13. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
@@ -623,7 +623,7 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just asset-route wiring. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: screen intent, information hierarchy, UX copy, feedback/recovery states, navigation, selected style guide/theme, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just asset-route wiring. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: screen intent, information hierarchy, UX copy, feedback/recovery states, navigation, selected style guide, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
@@ -1052,7 +1052,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-For generated AI-first SaaS, this UI work is mandatory. If no style guide/theme is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory. If no style guide is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`

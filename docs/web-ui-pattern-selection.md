@@ -67,7 +67,7 @@ Generated API documentation assets are not a browser UI implementation path. If 
 
 Start with:
 
-- `docs/web-ui-style-guide.md` for theme/style-guide selection when browser UI styling is not yet selected
+- `docs/web-ui-style-guide.md` for style-guide selection when browser UI styling is not yet selected
 - `skills/akka-web-ui-apps/SKILL.md` for complete frontend apps
 - `skills/akka-web-ui-frontend-project/SKILL.md` for standard frontend project integration
 - `skills/akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and web UI delivery

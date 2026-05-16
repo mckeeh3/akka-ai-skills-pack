@@ -139,7 +139,7 @@ If a task is `superseded`, do not execute it unless the user explicitly asks to 
 
 If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. Treat unresolved AI-first authority, approval-gate, policy, evidence, risk-threshold, supervision UI, trace-obligation, evaluation, or outcome-metric questions as blockers for affected work. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
 
-If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing a theme.
+If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing visual styling.
 
 If a task is `in-progress` from a previous interrupted run:
 - inspect notes and changed files if needed

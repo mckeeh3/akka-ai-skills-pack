@@ -2,16 +2,16 @@
 
 ## Selection
 
-- selected theme: `atlas-ops-supervisory-console`
-- theme name: Atlas Ops supervisory console
-- source reference: `docs/web-ui-style-guide.md` canonical AI-first theme
+- selected style: `atlas-ops-supervisory-console`
+- style name: Atlas Ops supervisory console
+- source reference: `docs/web-ui-style-guide.md` canonical AI-first style system
 - mode policy: system with explicit light and dark token sets
-- status: selected; migrated from deprecated `theme-1-northpeak-analytics`
+- status: selected
 
 ## Brand adaptation
 
 - app/product name: AI-first DCA supplies autopilot reference UI
-- logo/icon treatment: simple text or neutral operations icon; do not copy Atlas Ops, Northpeak, or other demo marks
+- logo/icon treatment: simple text or neutral operations icon; do not copy Atlas Ops or other demo marks
 - copied-demo-content rule: do not copy demo product names, logos, user names, metrics, or chart data from reference material
 - custom brand overrides: use supplies-autopilot terminology, decision-card labels, policy/evidence/risk language, and trace-oriented navigation from this app description
 
@@ -88,4 +88,4 @@
 
 - CSS variable prefix: use global CSS custom properties with `--color-*`, `--space-*`, `--radius-*`, `--shadow-*`, and `--font-*` names unless a frontend framework requires a wrapper
 - files expected to apply this guide: supplies command-center UI, decision-card detail UI, API state rendering, static hosting assets, and frontend smoke tests generated for `TASK-08-006`
-- tests/manual checks: verify selected theme tokens are centralized in CSS; check light/dark/system behavior; confirm approval/rejection/suppression UI keeps evidence, policy, risk/confidence, and trace context visible; verify keyboard focus and responsive layout
+- tests/manual checks: verify selected style tokens are centralized in CSS; check light/dark/system behavior; confirm approval/rejection/suppression UI keeps evidence, policy, risk/confidence, and trace context visible; verify keyboard focus and responsive layout

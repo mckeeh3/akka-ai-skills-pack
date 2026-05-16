@@ -265,7 +265,7 @@ This layer answers:
 - what browser API contracts are needed
 - what loading, empty, error, submitting, success, stale, and realtime states exist
 - what accessibility and responsive behavior is required
-- which visual style guide/theme is selected, including light/dark policy, CSS tokens, layout density, component styling, and brand adaptations for generated HTML/CSS/TypeScript
+- which visual style guide is selected, including light/dark policy, CSS tokens, layout density, component styling, and brand adaptations for generated HTML/CSS/TypeScript
 
 ## `60-generation/`
 Realization policy and output mapping.

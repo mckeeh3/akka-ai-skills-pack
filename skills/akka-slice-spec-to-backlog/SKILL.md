@@ -92,7 +92,7 @@ The backlog file must include:
 5. Concrete endpoint list
 6. Write-model design decisions
 7. View/workflow/consumer/timer/integration design as relevant
-8. Web UI style-guide dependency and selected theme when the slice includes browser UI work
+8. Web UI style-guide dependency and selected AI-first style when the slice includes browser UI work
 9. Test plan by file/class
 10. Implementation order
 11. Suggested harness task breakdown

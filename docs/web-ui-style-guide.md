@@ -1,16 +1,16 @@
-# Web UI style guide and AI-first theme selection
+# Web UI style guide and AI-first style selection
 
 Use this document whenever an app includes a browser UI. The visual style is part of the maintained app specification, not an implementation detail that frontend generation may invent later.
 
 ## Policy
 
-Generated full-stack SaaS apps must use an AI-first supervision-oriented UI system by default. Do not select older dashboard/CRM/project-management visual themes for new generated AI-first SaaS apps; those patterns overfit conventional CRUD/analytics screens and do not make delegated work, authority, policy, evidence, decisions, traces, and outcomes prominent enough.
+Generated full-stack SaaS apps must use an AI-first supervision-oriented UI system by default. Do not select older dashboard/CRM/project-management visual styles for new generated AI-first SaaS apps; those patterns overfit conventional CRUD/analytics screens and do not make delegated work, authority, policy, evidence, decisions, traces, and outcomes prominent enough.
 
-Theme selection is intentionally narrow:
+Style selection is intentionally narrow:
 
-1. **Use the canonical AI-first theme** unless the user provides a custom brand brief or design system.
+1. **Use the canonical AI-first style system** unless the user provides a custom brand brief or design system.
 2. **Use `custom`** only when the user supplies enough tokens/component rules to preserve the AI-first UX anatomy.
-3. **Do not silently choose a legacy theme**. Legacy `theme-1-*` through `theme-5-*` ids are deprecated and should only be honored for existing app descriptions until they are migrated.
+3. **Do not offer or invent generic dashboard/CRM/project-management style choices**; those are outside the AI-first SaaS UI model.
 
 ## Authoritative locations
 
@@ -25,7 +25,7 @@ A generated web UI must read from that style guide before producing HTML, CSS, T
 
 Every app UI style guide should define:
 
-- selected theme id and name, or `unselected`
+- selected AI-first style id and name, or `unselected`
 - source reference: this document, a custom design reference, or a user-provided brand brief
 - light/dark/system mode policy
 - brand adaptations: app name, logo/icon treatment, product-specific accent allowances, forbidden copied demo names/logos
@@ -43,8 +43,8 @@ Every app UI style guide should define:
 # Web UI Style Guide
 
 ## Selection
-- selected theme: <atlas-ops-supervisory-console | custom | unselected>
-- theme name: <name>
+- selected style: <atlas-ops-supervisory-console | custom | unselected>
+- style name: <name>
 - source reference: <docs/web-ui-style-guide.md | custom brief path | user answer>
 - mode policy: <system with light/dark tokens | light-only | dark-only>
 - status: <selected | pending-question | deferred-with-default>
@@ -97,12 +97,12 @@ Every app UI style guide should define:
 - tests/manual checks:
 ```
 
-## Default theme selection question
+## Default style selection question
 
 Use this durable pending-question shape when style is missing:
 
 ```md
-### Q-<next>: Select web UI style guide theme
+### Q-<next>: Select web UI style guide
 
 - status: pending
 - priority: blocking
@@ -129,7 +129,7 @@ Use this durable pending-question shape when style is missing:
 
 When answered, reconcile the decision into `app-description/55-ui/style-guide.md` and/or the relevant `specs/cross-cutting/*ui-style-guide*.md` before marking the question `resolved`.
 
-## Canonical theme: `atlas-ops-supervisory-console`
+## Canonical AI-first style system: `atlas-ops-supervisory-console`
 
 Use this as the default choice for generated AI-first SaaS apps. It is an operational supervision interface for delegated agent work, not a generic dashboard skin.
 
@@ -140,9 +140,9 @@ Use this as the default choice for generated AI-first SaaS apps. It is an operat
 - makes autonomous activity visible without hiding consequential work in chat transcripts
 - supports light, dark, and system mode with equivalent hierarchy and contrast
 
-### Theme scope
+### Style customization scope
 
-Lightweight theme customization may change only:
+Lightweight style customization may change only:
 
 - color tokens
 - font-family tokens
@@ -170,7 +170,7 @@ It must not change:
 }
 ```
 
-### Shared non-theme tokens
+### Shared non-style tokens
 
 ```css
 :root {
@@ -381,7 +381,7 @@ Required elements:
 
 ### Data visualization
 
-- charts use theme chart tokens only
+- charts use selected style chart tokens only
 - legends are required for donut, map, and multi-series charts
 - status meaning must be represented with label text and/or icons, not color alone
 - critical metrics use tabular numerals
@@ -396,7 +396,7 @@ Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashbo
 - **Governance Center:** policy list and versions, thresholds, authority boundaries, proposed changes, simulations/replays, human-authorized commit flow, rollback and audit links.
 - **Audit Trace Explorer:** search/filter by goal, agent, decision, tool, user, policy, time; chronological trace entries; evidence/tool/data-access details; authorization and policy invocation details; outcome links.
 
-## Applying the theme safely
+## Applying the style safely
 
 1. Replace demo names, logos, users, and metrics with the target app's domain.
 2. Keep the AI-first component anatomy, not literal mockup content.
@@ -404,14 +404,6 @@ Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashbo
 4. Preserve accessibility even when adapting brand colors: contrast and focus tokens override decorative brand fidelity.
 5. If users request custom styling later, update the authoritative style guide first, then regenerate affected web UI assets.
 
-## Deprecated legacy theme ids
+## Removed generic style-gallery choices
 
-The previous default theme ids are deprecated for new generated AI-first SaaS work:
-
-- `theme-1-northpeak-analytics`
-- `theme-2-promanage-violet`
-- `theme-3-nordic-crm-teal`
-- `theme-4-finflow-emerald`
-- `theme-5-acme-admin-blue`
-
-If an existing app-description already selected one of these, do not break it during unrelated work. On the next UI style change, migrate it to `atlas-ops-supervisory-console` or a user-supplied `custom` style guide that preserves the required AI-first component anatomy.
+The skills pack no longer exposes multiple generic dashboard/CRM/admin style choices for generated AI-first SaaS apps. Treat any old gallery-style id as obsolete source history, not as an available planning option. When encountered in an existing artifact, migrate the authoritative style guide to `atlas-ops-supervisory-console` or a user-supplied `custom` style guide that preserves the required AI-first component anatomy.

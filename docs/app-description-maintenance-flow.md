@@ -209,7 +209,7 @@ The harness should reassess readiness after material description changes, especi
 
 ## UI style-selection rule
 
-For generated full-stack AI-first SaaS, the app description or specs must contain a selected web UI style guide before web UI implementation or generation starts. If style is missing, add or update a `category: ui` entry in `specs/pending-questions.md` using `docs/web-ui-style-guide.md` rather than silently choosing a theme. This blocks web UI work until answered; unrelated backend description or implementation work can continue.
+For generated full-stack AI-first SaaS, the app description or specs must contain a selected web UI style guide before web UI implementation or generation starts. If style is missing, add or update a `category: ui` entry in `specs/pending-questions.md` using `docs/web-ui-style-guide.md` rather than silently choosing visual styling. This blocks web UI work until answered; unrelated backend description or implementation work can continue.
 
 ## Regeneration rule
 

@@ -99,8 +99,8 @@ Create only files justified by the app, but do not omit the UI layer for generat
 - labels and errors
 - narrow-screen layout expectations
 
-### Style guide and theme selection
-- selected theme id/name from `../../docs/web-ui-style-guide.md`, custom style reference, or `unselected`
+### Style guide selection
+- selected AI-first style id/name from `../../docs/web-ui-style-guide.md`, custom style reference, or `unselected`
 - source image/reference and light/dark/system mode policy
 - typography, spacing, radius, elevation, color, chart, status, and focus tokens
 - layout shell/density and navigation treatment
@@ -116,7 +116,7 @@ If no UI style is selected for a generated AI-first SaaS app, do **not** choose 
 ## Change handling
 
 For any UI change, update:
-1. affected UI description files, including `ai-first-surfaces.md` when delegated work surfaces change and `style-guide.md` when theme, branding, density, tokens, or component styling change
+1. affected UI description files, including `ai-first-surfaces.md` when delegated work surfaces change and `style-guide.md` when style system, branding, density, tokens, or component styling change
 2. behavior flows if user-visible behavior changes
 3. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, or trace-link expectations change
 4. auth/security if route visibility, roles, agent/tool permissions, approval authority, or trace access changes

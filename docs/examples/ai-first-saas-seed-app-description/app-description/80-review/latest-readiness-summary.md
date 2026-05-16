@@ -13,7 +13,7 @@
   - production authentication integration without provider decision
 - UI readiness notes:
   - selected `atlas-ops-supervisory-console` style guide is recorded
-  - light/dark/system mode and lightweight theme constraints are defined
+  - light/dark/system mode and lightweight style constraints are defined
   - AI-first UI surfaces, form/action behavior, frontend API DTO sketches, realtime behavior, and design-specific acceptance checks are defined
 - main remaining decisions:
   - local/prod auth mode

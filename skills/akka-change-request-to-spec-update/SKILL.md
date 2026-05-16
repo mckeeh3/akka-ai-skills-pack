@@ -44,7 +44,7 @@ Read these first if present:
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
-- `../../docs/web-ui-style-guide.md` when the change affects web UI style/theme
+- `../../docs/web-ui-style-guide.md` when the change affects web UI style guide
 - `../app-descriptions/SKILL.md`
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-intake-router/SKILL.md`
@@ -68,7 +68,7 @@ Classify the input as one or more of:
 - observability/operations change
 - AI-first operating-model change: delegated work, retained human authority, agent/team responsibility, approval gates, exception handling, policy/permission rules, audit traces, evidence/risk thresholds, UI supervision surfaces, or outcome metrics
 - integration contract change
-- UI/API surface change, including web UI style-guide/theme selection or token changes
+- UI/API surface change, including web UI style-guide selection or token changes
 - implementation discovery
 - de-scope/removal
 - unclear change requiring clarification
@@ -101,7 +101,7 @@ If `app-description/` exists, update it before implementation specs:
 4. auth/security when identity, authorization, trust, or sensitive data changed
 5. observability when logs, metrics, traces, audit, health, or alerts changed
 6. AI-first operating model when delegated work, retained authority, agent/team boundaries, policy gates, decision cards, work traces, or outcome loops changed
-7. UI style guide when a browser frontend theme, mode policy, density, brand treatment, component styling, supervision surface, decision card, governance center, digest, or audit view changes
+7. UI style guide when a browser frontend style system, mode policy, density, brand treatment, component styling, supervision surface, decision card, governance center, digest, or audit view changes
 8. traceability and readiness as needed
 
 Do not bury new governance, audit, policy, approval, or outcome semantics only in backlog text or generated code.
@@ -110,7 +110,7 @@ Do not bury new governance, audit, policy, approval, or outcome semantics only i
 
 Update the smallest relevant `specs/` artifacts:
 - `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, authority boundaries, or global implementation order changed
-- `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI theme/style decisions
+- `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI style-guide decisions
 - `specs/slices/*.md` for business slice meaning
 - `specs/backlog/*-build-backlog.md` for implementation breakdown
 - `specs/tasks/**/*.md` when one task brief must change or a new leaf task is needed
@@ -129,7 +129,7 @@ Rules:
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
 - update required reads and skills for affected pending tasks, adding `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior
 - block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, or outcome semantics are now ambiguous
-- block web UI tasks whose source spec has no selected style guide/theme and add or update the pending style-selection question
+- block web UI tasks whose source spec has no selected style guide and add or update the pending style-selection question
 - block tasks whose source spec is now ambiguous
 - avoid renumbering
 

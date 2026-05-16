@@ -2,9 +2,9 @@
 
 ## Selection
 
-- selected theme: `atlas-ops-supervisory-console`
-- theme name: Atlas Ops supervisory console
-- source reference: `docs/web-ui-style-guide.md` canonical AI-first theme
+- selected style: `atlas-ops-supervisory-console`
+- style name: Atlas Ops supervisory console
+- source reference: `docs/web-ui-style-guide.md` canonical AI-first style system
 - mode policy: system with explicit light and dark token sets
 - status: selected for seed app validation
 
@@ -33,7 +33,7 @@
 - elevation: light mode may use subtle card shadows; dark mode relies primarily on borders and restrained glow
 - colors:
   - surfaces, text, borders, primary, AI accent, status, chart, focus, and shadows are defined by the `atlas-ops-supervisory-console` tokens in `docs/web-ui-style-guide.md`
-  - lightweight themes may override only color and font tokens
+  - lightweight style overrides may change only color and font tokens
 
 ## Component style rules
 

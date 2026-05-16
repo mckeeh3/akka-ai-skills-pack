@@ -153,7 +153,7 @@ From the initial user input, derive as applicable:
 - initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, and consequential AI/tool events
 - initial policy, approval, exception, audit, trace, and outcome expectations for the AI-first SaaS operating model
 - initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, and audit surfaces
-- selected web UI style guide/theme when supplied, or an explicit `unselected` style state when not supplied
+- selected web UI style guide when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
 - an initial readiness posture
 - a conservative generation policy

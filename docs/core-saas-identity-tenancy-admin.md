@@ -89,7 +89,7 @@ Base viewable and editable fields:
 - `uiMode`: `LIGHT` or `DARK`
 
 Initial rule:
-- support a light/dark UI setting first; do not introduce a broader theme model until the app explicitly requires themes.
+- support a light/dark UI setting first; do not introduce broader style customization until the app explicitly requires it.
 
 Settings extension rules:
 - app-specific implementations may add settings such as notification preferences, default landing page, digest cadence, table density, locale, timezone, or AI-assistance preferences;

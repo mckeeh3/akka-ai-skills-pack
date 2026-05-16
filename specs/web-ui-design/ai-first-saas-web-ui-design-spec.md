@@ -30,25 +30,25 @@ The interface is not a generic analytics dashboard with a chat box. The assistan
 - **Governance visibility:** policy/trust controls are first-class UI regions, not hidden settings.
 - **Traceable evidence path:** every recommendation, exception, and decision card should link to details, reasoning, evidence, or audit trace.
 - **Mode parity:** light and dark mode must preserve layout, hierarchy, status semantics, and contrast.
-- **Theme restraint:** lightweight themes may change only colors and fonts; layout, component anatomy, spacing scale, and interaction rules remain stable.
+- **Style restraint:** lightweight style variants may change only colors and fonts; layout, component anatomy, spacing scale, and interaction rules remain stable.
 
-## Supported modes and themes
+## Supported modes and style variants
 
 ### Mode policy
 
 - The design must support `light`, `dark`, and `system` color mode selection.
-- Both light and dark token sets are required for every theme.
+- Both light and dark token sets are required for the selected style system.
 - Mode switching must be token-driven through CSS variables, not hard-coded component branches.
-- Generated frontend code may toggle a documented theme/mode class or `data-theme` attribute only.
+- Generated frontend code may toggle a documented mode class or `data-mode` attribute only.
 
-### Lightweight theme scope
+### Lightweight style scope
 
-Themes are limited to:
+Style variants are limited to:
 
 - color tokens;
 - font-family tokens.
 
-Themes must not change:
+Style variants must not change:
 
 - screen inventory;
 - navigation structure;
@@ -61,9 +61,9 @@ Themes must not change:
 - UX copy rules;
 - accessibility constraints.
 
-## Seed theme: Atlas Ops supervisory console
+## Seed style system: Atlas Ops supervisory console
 
-This is the initial theme to test against the seed app.
+This is the initial AI-first style system to test against the seed app.
 
 ### Font tokens
 
@@ -74,9 +74,9 @@ This is the initial theme to test against the seed app.
 }
 ```
 
-### Shared non-theme tokens
+### Shared non-style tokens
 
-These tokens are stable across lightweight themes.
+These tokens are stable across lightweight style overrides.
 
 ```css
 :root {
@@ -303,7 +303,7 @@ Required elements:
 
 ### Data visualization
 
-- Charts use theme chart tokens only.
+- Charts use selected style chart tokens only.
 - Legends are required for donut, map, and multi-series charts.
 - Status meaning must be represented with label text and/or icons, not color alone.
 - Critical metrics use tabular numerals.
@@ -401,7 +401,7 @@ Authoritative seed app UI files to update during validation:
 Expected generated frontend shape when realization is requested:
 
 - React + Vite + TypeScript frontend;
-- tokenized CSS variables for theme and mode;
+- tokenized CSS variables for style and mode;
 - no copied demo names, users, logos, or metrics from mockups;
 - app-specific names and data from the seed app description;
 - components consume tokens and semantic props rather than hard-coded colors;
@@ -410,7 +410,7 @@ Expected generated frontend shape when realization is requested:
 ## Acceptance checklist
 
 - [ ] Light and dark modes are both specified and visually equivalent in hierarchy.
-- [ ] Theme overrides are limited to color and font tokens.
+- [ ] Style overrides are limited to color and font tokens.
 - [ ] App shell, command strip, KPI band, decision cards, agent activity, governance controls, and audit paths are represented.
 - [ ] AI-first surfaces expose human authority, agent activity, evidence/risk/policy, trace links, and outcome context.
 - [ ] Responsive behavior preserves the primary decision/action on narrow screens.

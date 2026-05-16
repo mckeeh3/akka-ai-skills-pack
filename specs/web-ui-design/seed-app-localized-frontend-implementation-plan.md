@@ -95,7 +95,7 @@ frontend/
       TenantSwitcher.tsx
       UserMenu.tsx
       NotificationsButton.tsx
-      ThemeModeToggle.tsx
+      ColorModeToggle.tsx
     api/
       types.ts
       ApiClient.ts
@@ -105,7 +105,7 @@ frontend/
       FixtureRealtimeClient.ts
     state/
       session.ts
-      themeMode.ts
+      colorMode.ts
       realtime.ts
     screens/
       briefing/
@@ -147,7 +147,7 @@ frontend/
 ## Design-system implementation rules
 
 - Define all colors and fonts in CSS variables.
-- Keep spacing, radius, component anatomy, and layout stable across lightweight themes.
+- Keep spacing, radius, component anatomy, and layout stable across lightweight style overrides.
 - Mode switch uses `data-mode="light|dark"` or equivalent documented root attribute.
 - System mode observes `prefers-color-scheme` and user preference.
 - Components consume semantic tokens, not raw hex values.
@@ -315,7 +315,7 @@ frontend/
 - primary action: save preferences.
 - components:
   - profile summary
-  - `ThemeModeToggle`
+  - `ColorModeToggle`
   - notification preferences placeholder
 - states:
   - ready
@@ -361,7 +361,7 @@ Outputs:
 - Vite/React/TypeScript project skeleton.
 - CSS token files for light/dark/system mode.
 - base layout and accessibility defaults.
-- theme mode state and persistence seam.
+- color-mode state and persistence seam.
 
 Validation:
 

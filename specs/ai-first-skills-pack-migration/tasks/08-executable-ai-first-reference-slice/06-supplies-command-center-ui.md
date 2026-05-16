@@ -25,7 +25,7 @@ Add a minimal AI-first supervision UI surface for the supplies autopilot referen
 
 - No full DCA navigation shell beyond what is needed for the reference slice.
 - No full policy governance center or digest UI.
-- Do not invent a new visual theme if an app-description/spec style is absent; block or add a style-selection question instead.
+- Do not invent visual styling if an app-description/spec style is absent; block or add a style-selection question instead.
 
 ## Skills
 

@@ -38,7 +38,7 @@ Read these first if present:
 - the UI should consume a WebSocket endpoint
 - you need route-shape guidance for `/ui`, `/api`, stream, and socket paths
 - a standard frontend project should build production assets into `src/main/resources/static-resources/`
-- generated CSS should apply the selected web UI style guide/theme
+- generated CSS should apply the selected web UI style guide
 - if a browser UI style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` before implementing affected UI assets
 - public frontend asset routes are separated from JWT-protected `/api/...` routes; generated SaaS APIs use request-context and backend authorization helpers by default
 

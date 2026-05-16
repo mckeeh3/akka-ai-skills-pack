@@ -6,7 +6,7 @@ This file defines the seed app's AI-first browser surfaces independently from ro
 
 Design reference:
 
-- `../../../../../docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` theme
+- `../../../../../docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` AI-first style system
 
 ## Cross-surface rules
 

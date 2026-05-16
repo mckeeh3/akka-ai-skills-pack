@@ -1214,8 +1214,8 @@
   - UI prioritizes supervision and decision quality over CRUD navigation
   - git commit created for this task
 - notes:
-  - unblocked by Q-001 resolution: selected `theme-1-northpeak-analytics` and reconciled it into `docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md`.
-  - completed: added packaged supplies command-center and decision-card UI, typed browser API client behavior, accessible/loading/empty/error/action states, Northpeak style tokens, Akka static hosting endpoint, and route/asset smoke tests; no separate frontend project existed, so no frontend build command was run
+  - unblocked by Q-001 resolution: selected `atlas-ops-supervisory-console` and reconciled it into `docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md`.
+  - completed: added packaged supplies command-center and decision-card UI, typed browser API client behavior, accessible/loading/empty/error/action states, Atlas Ops supervisory console style tokens, Akka static hosting endpoint, and route/asset smoke tests; no separate frontend project existed, so no frontend build command was run
   - checks: `mvn -q -Dtest=com.example.application.supplies.SupplyAutopilotUiEndpointIntegrationTest test`; `mvn -q -DskipTests compile`
   - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement supplies command center UI`
 
@@ -1615,7 +1615,7 @@
   - DCA seed app has an authenticated shell whose UX reflects roles/scopes but never replaces backend authorization
   - git commit created for this task
 - notes:
-  - completed: added React/Vite/AuthKit frontend project, same-origin bearer-token `/api/me` client behavior, role/capability-aware DCA navigation, supplies autopilot entry point, loading/signed-out/access-problem states, Northpeak style tokens, Akka static hosting routes for `/`, `/assets/**`, and `/favicon.ico`, and focused frontend/route smoke tests
+  - completed: added React/Vite/AuthKit frontend project, same-origin bearer-token `/api/me` client behavior, role/capability-aware DCA navigation, supplies autopilot entry point, loading/signed-out/access-problem states, Atlas Ops supervisory console style tokens, Akka static hosting routes for `/`, `/assets/**`, and `/favicon.ico`, and focused frontend/route smoke tests
   - checks: `cd frontend && npm test && npm run build`; `mvn -q -Dtest=com.example.application.security.DcaSeedFrontendEndpointIntegrationTest test`; `mvn -q -DskipTests compile`; `rg -n "WORKOS_API_KEY|RESEND_API_KEY|INVITE_EMAIL_FROM|sk_test_|sk_live_|re_x" frontend src/main/resources/static-resources || true`
   - commit hash: not embedded because amending the queue note changes the commit hash; see the task commit `Implement authenticated DCA React shell`
 

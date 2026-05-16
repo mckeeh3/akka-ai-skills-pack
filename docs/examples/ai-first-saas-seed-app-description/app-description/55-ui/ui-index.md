@@ -1,6 +1,6 @@
 # UI Index
 
-- design reference: `../../../../../docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` theme
+- design reference: `../../../../../docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` AI-first style system
 - `personas-and-journeys.md`
 - `ai-first-surfaces.md`
 - `screens-and-navigation.md`

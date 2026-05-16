@@ -68,7 +68,7 @@ Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and pr
 6. Frontend state model, including loading/empty/error/success states
 7. Real-time behavior, if any
 8. Frontend implementation shape: standard frontend project (for example React/Vite)
-9. Selected web UI style guide/theme, mode policy, CSS tokens, layout density, component styling, and brand adaptations
+9. Selected web UI style guide, mode policy, CSS tokens, layout density, component styling, and brand adaptations
 10. Accessibility and responsive requirements
 11. Akka HTTP endpoint route plan, including generated frontend asset and API route separation
 12. Auth/session/security UI contract: WorkOS/AuthKit entry, `/api/me` bootstrap, context selection, capability-gated navigation/actions, disabled-user state, forbidden recovery, and tenant/customer isolation expectations
@@ -145,5 +145,5 @@ Avoid:
 - hand-editing generated frontend build output under `static-resources/`
 - mixing static asset wildcards and backend API routes under ambiguous catch-all paths
 - treating auth/session/security as deferrable for generated SaaS UI; only public static assets are outside authenticated API authorization
-- silently choosing colors/theme when app-description/specs have not selected a style guide
+- silently choosing colors or visual styling when app-description/specs have not selected a style guide
 - skipping accessible labels, focus behavior, or responsive layout

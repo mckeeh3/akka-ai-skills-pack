@@ -29,7 +29,7 @@ Reviewed files:
 
 `style-guide.md` now records:
 
-- selected theme: `atlas-ops-supervisory-console`
+- selected style: `atlas-ops-supervisory-console`
 - light/dark/system mode policy
 - source reference to the design spec and mockups
 - no-copy rule for mockup names, logos, users, and metrics
@@ -53,16 +53,16 @@ This resolves the prior style-selection gap for seed validation.
 
 These align with the design spec and the canonical AI-first SaaS doctrine.
 
-### 3. Light/dark mode and lightweight theming are constrained
+### 3. Light/dark mode and lightweight style overrides are constrained
 
 The seed style guide correctly requires:
 
 - light, dark, and system support
 - token-driven CSS variables
-- themes limited to colors and fonts
-- stable layout/component anatomy across themes
+- style overrides limited to colors and fonts
+- stable layout/component anatomy across style variants
 
-This is suitable for testing the theme model before skills-pack integration.
+This is suitable for testing the style model before skills-pack integration.
 
 ### 4. Responsive and accessibility expectations are clearer
 
@@ -178,9 +178,9 @@ Recommended next action:
 
 | Area | Status | Notes |
 |---|---:|---|
-| Selected style guide | Pass | Theme and source reference are explicit. |
+| Selected style guide | Pass | Style guide and source reference are explicit. |
 | Light/dark/system mode | Pass | Required and token-driven. |
-| Theme scope limited to colors/fonts | Pass | Explicitly constrained. |
+| Style override scope limited to colors/fonts | Pass | Explicitly constrained. |
 | App shell/navigation | Pass | Desktop and mobile behavior described. |
 | AI command strip | Pass | Required on operational screens. |
 | KPI/summary band | Pass | Required on Mission Control. |

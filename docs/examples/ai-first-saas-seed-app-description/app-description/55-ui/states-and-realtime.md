@@ -65,8 +65,8 @@
 - backend authorization remains authoritative even if a UI stream shows an action affordance
 - rejected or expired actions must return explicit authorization or stale-state errors
 
-## Mode and theme state
+## Mode and style state
 
 - user preference supports light, dark, and system mode
 - mode changes are applied by documented CSS class or `data-mode` token switching
-- theme overrides are limited to color and font tokens
+- style overrides are limited to color and font tokens

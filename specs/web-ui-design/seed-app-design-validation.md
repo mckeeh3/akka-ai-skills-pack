@@ -76,11 +76,11 @@ The style guide and design spec require:
 
 Validation note: generated implementation must still run manual/automated contrast and focus checks after CSS exists.
 
-### 4. Lightweight theme model
+### 4. Lightweight style override model
 
 Pass.
 
-The seed style guide and design spec restrict lightweight themes to:
+The seed style guide and design spec restrict lightweight style overrides to:
 
 - color tokens;
 - font-family tokens.

@@ -216,7 +216,7 @@ Separate concerns that should not be duplicated across modules, sprints, or slic
 - evaluation, replay, simulation, feedback, and outcome-metric conventions when agentic behavior or policy evolution is in scope
 - ERP integration model
 - notification delivery model
-- mandatory web UI style guide/theme, design tokens, mode policy, and brand adaptation for generated full-stack AI-first SaaS
+- mandatory web UI style guide, design tokens, mode policy, and brand adaptation for generated full-stack AI-first SaaS
 - mandatory supervision, decision-card, governance-center, digest, audit, and outcome UI-surface conventions for generated AI-first SaaS apps
 - export/reporting conventions
 
@@ -309,7 +309,7 @@ The queue must:
 - include why each question matters and what artifacts or decisions it affects
 - avoid dumping a large interrogation list into the chat response
 
-If no selected style guide exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the default theme options from `../../docs/web-ui-style-guide.md`. This blocks web UI implementation/generation tasks until style is selected.
+If no selected style guide exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `atlas-ops-supervisory-console` or `custom` with a user-supplied style brief. This blocks web UI implementation/generation tasks until style is selected.
 
 If unresolved `blocking` questions affect planned implementation work, either:
 - stop before creating blocked implementation tasks and recommend `akka-do-next-pending-question`, or

@@ -85,13 +85,13 @@ Create questions only when the answer can change one or more of:
 - consumer/integration behavior
 - timer/reminder/expiry behavior
 - HTTP/gRPC/MCP/API contract
-- UI behavior, realtime requirements, or web UI style-guide/theme selection
+- UI behavior, realtime requirements, or web UI style-guide selection
 - auth, tenancy, audit, retention, or privacy model
 - failure handling, retries, idempotency, or compensation
 - acceptance, regression, evaluation, replay/simulation, or edge-case tests
 - backlog slicing, dependencies, or task generation
 
-For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the five default theme options from `../../docs/web-ui-style-guide.md`. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
+For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `atlas-ops-supervisory-console` or `custom` with a user-supplied style brief. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
 
 For AI-first SaaS inputs, prefer a small number of actionable blocker questions over broad product interviews. Queue a blocking question only when the harness cannot safely choose a default for a concrete implementation area. Good AI-first blocker patterns include:
 - `category: behavior` — what work is delegated to agents versus retained by humans?

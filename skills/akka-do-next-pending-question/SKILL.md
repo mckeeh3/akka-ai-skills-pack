@@ -40,7 +40,7 @@ Read these first if present:
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/ai-first-saas-application-architecture.md` when the selected question involves delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
-- `../../docs/web-ui-style-guide.md` when selected question is a UI style/theme question
+- `../../docs/web-ui-style-guide.md` when selected question is a UI style-guide question
 - target project `specs/pending-questions.md`
 
 Then read only the selected question's `source` and any artifacts needed to reconcile its answer.
@@ -113,10 +113,10 @@ For an `answered` question:
    - `specs/akka-solution-plan.md`
    - affected `specs/slices/*.md`
    - affected `specs/backlog/*.md`
-   - `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when reconciling a web UI style/theme answer
+   - `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when reconciling a web UI style-guide answer
    - `specs/pending-tasks.md` only if it already exists and the decision changes tasks
 3. when the answer resolves an AI-first blocker, carry the decision into affected backlog/task metadata so delegated authority, policy, decision-card, trace, UI-surface, evaluation, and outcome constraints remain visible to future implementation runs
-4. for web UI style/theme answers, write the selected theme id/name, source reference, mode policy, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
+4. for web UI style-guide answers, write the selected AI-first style id/name, source reference, mode policy, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
 5. update the question:
    - `status: resolved`
    - `decision:` final concise decision

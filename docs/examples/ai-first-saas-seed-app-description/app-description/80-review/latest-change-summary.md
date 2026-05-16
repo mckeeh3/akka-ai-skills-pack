@@ -4,7 +4,7 @@
 - defined secure multi-tenant SaaS foundation as mandatory baseline
 - defined AI-first operating-model substrate for goals, agents, policies, decisions, traces, and outcomes
 - selected the mockup-derived `atlas-ops-supervisory-console` UI design for seed validation
-- defined light/dark/system mode requirements and limited lightweight themes to color/font tokens
+- defined light/dark/system mode requirements and limited lightweight style overrides to color/font tokens
 - expanded UI shell, AI-first screen, realtime state, accessibility, and responsive expectations
 - reviewed seed UI readiness in `specs/web-ui-design/seed-app-ui-design-review.md`
 - added explicit `55-ui/ai-first-surfaces.md` for goal workbench, mission control, decision review, governance, digest, and audit surfaces
