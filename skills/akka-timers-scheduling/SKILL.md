@@ -32,15 +32,18 @@ Use this skill when the main task is registering, replacing, or deleting timers.
 
 Do not try to inject it into entities or views.
 
-## Core scheduling rules
+## Capability-first scheduling rules
 
-1. Use `createSingleTimer(name, delay, deferredCall)` for default retry behavior.
-2. Use `createSingleTimer(name, delay, maxRetries, deferredCall)` when retries must be bounded.
-3. Build the deferred call through `componentClient.forTimedAction().method(...).deferred(...)` or another component client supported by the timer API.
-4. Give each timer a deterministic purpose-specific name such as `order-expiration-<id>`.
-5. Remember that scheduling a timer with the same name replaces the previous timer.
-6. Delete timers as cleanup after the business process completes.
-7. Still make the eventual target call safe if delete never happens.
+1. Schedule timers only for a named scheduled capability with an explicit authority basis: human request, workflow state, system policy, or previously approved decision.
+2. Use `createSingleTimer(name, delay, deferredCall)` for default retry behavior.
+3. Use `createSingleTimer(name, delay, maxRetries, deferredCall)` when retries must be bounded.
+4. Build the deferred call through `componentClient.forTimedAction().method(...).deferred(...)` or another component client supported by the timer API.
+5. Give each timer a deterministic purpose-specific name such as `order-expiration-<tenantId>-<id>` when tenant/customer scope matters.
+6. Keep payloads compact but include or reload target id, tenant/customer scope, capability id, correlation id, and authorization/approval/audit reference required by the target.
+7. Remember that scheduling a timer with the same name replaces the previous timer; ensure replacement is authorized and audited when it changes consequential behavior.
+8. Delete timers as cleanup after the business process completes.
+9. Still make the eventual target call safe if delete never happens.
+10. Document whether stale/denied timer executions are terminal no-ops or retryable failures.
 
 ## Canonical endpoint pattern
 
@@ -103,7 +106,9 @@ Repository example:
 
 Avoid:
 - unstable timer names
-- large payloads instead of compact identifiers
+- timer names or payloads that omit required tenant/customer scope for protected work
+- large payloads instead of compact identifiers and references
 - scheduling methods whose signature may change soon
 - relying only on delete instead of making the target command timer-safe
+- scheduling consequential work without a capability id, system principal, approval/policy reference, and audit plan
 - swallowing all failures inside the timed action when retries are actually needed

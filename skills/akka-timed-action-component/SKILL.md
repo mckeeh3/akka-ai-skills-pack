@@ -25,11 +25,13 @@ Use this skill when the main task is the `TimedAction` class.
 1. Extend `akka.javasdk.timedaction.TimedAction`.
 2. Add `@Component(id = "...")`.
 3. Keep the class stateless.
-4. Inject only supported dependencies such as `ComponentClient`, `TimerScheduler`, `HttpClientProvider`, `Materializer`, config, or service-setup dependencies.
-5. Timed action methods return `TimedAction.Effect`.
-6. Use `effects().done()` when the timer work is successfully completed or should be treated as obsolete.
-7. Use `effects().error(...)` only when you intentionally want the timer invocation to fail.
-8. Allow unexpected downstream failures to surface when the retry behavior is desirable.
+4. Treat each timed action method as a scheduled capability execution surface; know the capability id, tenant/customer scope, system principal, approval/policy reference, idempotency key, and audit/trace requirement before writing the handler.
+5. Inject only supported dependencies such as `ComponentClient`, `TimerScheduler`, `HttpClientProvider`, `Materializer`, config, or service-setup dependencies.
+6. Timed action methods return `TimedAction.Effect`.
+7. Use `effects().done()` when the timer work is successfully completed or should be treated as obsolete, denied, stale, or already applied.
+8. Use `effects().error(...)` only when you intentionally want the timer invocation to fail.
+9. Allow unexpected downstream failures to surface when the retry behavior is desirable.
+10. Route consequential work to a workflow/entity command that rechecks authority/scope and records audit/work-trace events instead of committing hidden side effects in the timed action.
 
 ## Canonical pattern
 
@@ -62,8 +64,10 @@ public class MyTimedAction extends TimedAction {
 
 ## Design notes
 
-- Prefer one method per timer purpose.
-- Keep payloads small; timer payloads are limited to 1024 bytes.
+- Prefer one method per timer purpose/capability.
+- Keep payloads small; timer payloads are limited to 1024 bytes. Include only stable ids and references, then reload authority/context from the authoritative component when needed.
+- Make duplicate timer delivery idempotent by using target commands with stable dedupe keys or no-op semantics.
+- If a timed action receives a stale, forbidden, or cross-tenant payload, return terminal `done()` after recording the required denial/no-op audit rather than retrying forever.
 - If the timed action needs to schedule another timer while handling one, use `timers()` inside the handler.
 - The self-rescheduling reference pattern in this repository is `ReminderJobTimedAction#sendReminder`.
 - If a method used by timers must be renamed later, keep a legacy delegating method for compatibility.

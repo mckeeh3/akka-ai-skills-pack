@@ -15,9 +15,11 @@ Generate or review timer code that is:
 - safe under at-least-once execution and retries
 - easy for AI agents to extend without loading unrelated component families
 
-## AI-first substrate role
+## Capability-first AI-first substrate role
 
-In AI-first SaaS implementations, use timed actions for deadlines, reminders, expiries, periodic digests, stale-work rechecks, retry nudges, replay/simulation schedules, policy-review cadences, and outcome-measurement windows.
+In AI-first SaaS implementations, use timed actions for scheduled capabilities: deadlines, reminders, expiries, periodic digests, stale-work rechecks, retry nudges, replay/simulation schedules, policy-review cadences, and outcome-measurement windows.
+
+Treat each timer-backed operation as a selected execution surface for a named backend capability, not as hidden background logic. Before coding, identify the capability id, scheduler authority, system/service principal, tenant/customer scope, payload schema, idempotency key, approval or policy reference, retry budget, denial/no-op behavior, and audit/work-trace obligations.
 
 Timers should trigger bounded follow-up rather than make hidden consequential decisions. When a timer affects delegated work, approval SLAs, exceptions, policy changes, tenant/customer data, or outcome reporting, make the target command idempotent and ensure the authoritative entity or workflow records the actor or system principal, tenant/customer scope, authorization/approval reference, decision, timeout, escalation, and trace/outcome event.
 
@@ -88,8 +90,10 @@ If the timer flow is part of a broader component story, also load the relevant f
 7. Delete timers as housekeeping after successful completion, but also make the target flow safe if deletion does not happen.
 8. Keep timed actions stateless; coordinate with entities, workflows, views, or endpoints through `ComponentClient`.
 9. Timer payloads for scoped SaaS work must include target id plus tenant/customer scope and the authorization/approval/audit reference needed by the target component.
-10. The target component must reject or no-op obsolete timers without crossing tenant/customer boundaries.
+10. The target component must reject or no-op obsolete, unauthorized, stale, or cross-tenant timers without crossing tenant/customer boundaries.
 11. Timed actions that perform consequential work must use a system/service actor with explicit capability or route to a workflow/entity that reauthorizes before side effects.
+12. Define retry semantics explicitly: expected terminal denials/no-ops return `done()`, while transient dependency failures may fail the timed action to use timer retry.
+13. Audit or trace scheduled execution, denials/no-ops, retries when observable, and consequential side effects.
 
 ## Decision guide
 
@@ -132,11 +136,12 @@ Before finishing, verify:
 - `TimerScheduler` is injected only in supported component types
 - timer names are stable and unique
 - scheduled method signature is compatible with future deployments
-- timed action replies `done()` for obsolete timers
-- unexpected failures are not swallowed unless intentionally converted to terminal success
-- tenant/customer scope and authorization/approval/audit references are present for protected timer-triggered work
+- timed action replies `done()` for obsolete, stale, or expected denied timers that should not retry
+- unexpected/transient failures are not swallowed unless intentionally converted to terminal success
+- tenant/customer scope, system principal, capability id, and authorization/approval/audit references are present for protected timer-triggered work
+- target commands are idempotent under repeated timer delivery and use stable dedupe keys where side effects are possible
 - timer-triggered side effects cannot cross tenant/customer boundaries and are audited when consequential
-- tests cover both timer firing and explicit confirmation or cancellation paths, including stale/forbidden scoped timer attempts when relevant
+- tests cover timer firing, explicit confirmation/cancellation, duplicate retry safety, and stale/forbidden scoped timer attempts when relevant
 
 ## Response style
 

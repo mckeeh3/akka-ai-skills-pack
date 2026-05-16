@@ -7,6 +7,10 @@ description: Write Akka Java SDK Consumer integration tests using TestKitSupport
 
 Use this skill when testing Consumer behavior.
 
+## Capability-first test role
+
+Consumer tests should verify reactive capability behavior, not only that a handler runs. Cover authority/provenance, tenant/customer scope, idempotent duplicate delivery, retry versus terminal denial/no-op semantics, scoped publication, and audit/work-trace effects for protected or consequential reactions.
+
 ## Required reading
 
 Read these first if present:
@@ -60,6 +64,10 @@ Pattern:
 3. Use outgoing topic assertions when the consumer produces.
 4. Use `Awaitility` or polling when the flow is eventually consistent.
 5. Clear reused outgoing topics between tests when one suite contains multiple cases.
+6. Include tenant/customer, `ce-subject`, correlation, producer provenance, and authorization/approval metadata in test messages when the capability depends on them.
+7. Test duplicate delivery by publishing the same event/message twice and asserting idempotent downstream state, no duplicate unsafe side effects, or stable dedupe behavior.
+8. Test invalid, unauthorized, stale, and cross-tenant messages as terminal audited denials/no-ops when that is the intended semantics.
+9. Test transient dependency failures only when retry semantics are part of the capability contract.
 
 ## Review checklist
 
@@ -68,3 +76,4 @@ Before finishing, verify:
 - messages include `ce-subject` metadata when the consumer logic depends on it
 - tests assert observable behavior, not implementation details
 - eventual consistency is handled explicitly
+- protected reactive capabilities cover success, forbidden/cross-tenant, idempotent duplicate, audit/trace, and retry/no-op behavior

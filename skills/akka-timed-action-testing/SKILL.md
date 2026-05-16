@@ -7,6 +7,10 @@ description: Test Akka timer-backed flows with TimedActionTestkit for unit behav
 
 Use this skill when validating a timed action component or a full timer-backed flow.
 
+## Capability-first test role
+
+Timed action tests should verify scheduled capability behavior, not only timer mechanics. Cover scheduler authority, system/service principal, tenant/customer scope, approval/policy reference, idempotent duplicate execution, stale/forbidden no-op semantics, retry behavior, and audit/work-trace effects for protected or consequential scheduled work.
+
 ## Read first
 
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
@@ -61,10 +65,12 @@ Repository examples:
 
 ## Assertions to favor
 
-- `result.isDone()` for unit tests
+- `result.isDone()` for successful, obsolete, stale, or expected denied timer executions that should not retry
+- explicit failure/error assertions only when the capability expects retry on transient dependency failure
 - eventual state assertions with `Awaitility.await().atMost(...).untilAsserted(...)`
 - stable terminal state assertions after the timer window passes
 - HTTP-level assertions through `httpClient` when the timer is scheduled by an endpoint
+- audit/work-trace assertions for scheduled execution, denials/no-ops, approvals/timeouts, and consequential side effects when those records are part of the capability contract
 
 ## Common mistakes
 
@@ -73,3 +79,5 @@ Avoid:
 - assuming timers fire instantly without eventual assertions
 - asserting only timer registration while never verifying the later state change
 - ignoring the obsolete-timer path after confirmation or cancellation
+- skipping duplicate timer delivery/retry tests for side-effecting scheduled capabilities
+- treating missing tenant/customer scope, approval reference, or system authority as a happy path

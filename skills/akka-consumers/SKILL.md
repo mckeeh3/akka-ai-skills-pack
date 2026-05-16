@@ -16,11 +16,13 @@ Generate or review Consumer code that is:
 - clear about whether the consumer ignores, completes, or produces
 - backed by executable examples and tests
 
-## AI-first substrate role
+## Capability-first AI-first substrate role
 
-In AI-first SaaS implementations, use consumers for asynchronous trace fanout, enrichment, notifications, downstream publication, integration with external signals, and curation of material events for supervision, audit, digest, or outcome loops.
+In AI-first SaaS implementations, use consumers for reactive capabilities: asynchronous trace fanout, enrichment, notifications, downstream publication, integration with external signals, and curation of material events for supervision, audit, digest, or outcome loops.
 
-Keep consumers idempotent and side-effect boundaries explicit. Preserve actor, tenant/customer, policy, approval, and trace context from upstream messages when side effects or downstream publication are scoped. Do not hide authority transitions, approval decisions, or policy commits inside consumers; route consequential state changes to entities or workflows, then use consumers to react, enrich, publish, or project follow-on work.
+Treat each consumer reaction as a selected execution surface for a named backend capability, not as anonymous event glue. Before coding, identify the capability id, event provenance, allowed caller/system principal, tenant/customer scope, required prior authorization or approval decision, side effects, idempotency key, retry behavior, denial shape, and audit/work-trace obligations.
+
+Keep consumers idempotent and side-effect boundaries explicit. Preserve actor, tenant/customer, policy, approval, correlation, and trace context from upstream messages when side effects or downstream publication are scoped. If the upstream event does not carry enough authority context, reload it from the authoritative entity/workflow or reject/ignore safely with an audit record. Do not hide authority transitions, approval decisions, or policy commits inside consumers; route consequential state changes to entities or workflows, then use consumers to react, enrich, publish, or project follow-on work.
 
 Pair AI-first consumers with:
 - `akka-views` for command centers, decision queues, digests, and audit/outcome reporting
@@ -93,9 +95,11 @@ Load the companion skill that matches the current task:
 9. For service streams, add `@Acl` so other Akka services can subscribe.
 10. Test topic flows with `TestKitSupport` and mocked incoming/outgoing messages.
 11. For generated SaaS flows, include tenant/customer ids and actor/audit metadata in consumed messages or load them from the authoritative source before side effects.
-12. Recheck authorization or consume an explicit prior authorization/approval decision before consequential side effects.
+12. Recheck authorization, use a system/service principal with an explicit capability grant, or consume an explicit prior authorization/approval decision before consequential side effects.
 13. Prevent cross-tenant/customer fanout by preserving `ce-subject`, tenant/customer metadata, and scoped downstream command payloads.
-14. Emit or propagate AdminAuditEvent/work-trace records for data access, denials, publications, and consequential side effects.
+14. Emit or propagate AdminAuditEvent/work-trace records for data access, denials, publications, retries, and consequential side effects.
+15. Treat duplicate delivery and handler retry as normal: downstream commands need idempotency keys based on event id/source/subject or the consumer must detect duplicates before side effects.
+16. Define denial/retry semantics explicitly: invalid or unauthorized messages should usually become audited terminal `done()`/`ignore()` outcomes, while transient dependency failures may fail the handler to trigger retry.
 
 ## Decision guide
 
@@ -155,12 +159,14 @@ Before finishing, verify:
 - the correct `@Consume` source annotation is used
 - the handler input type matches the source semantics
 - `effects().ignore()` is explicit for unhandled events or states
-- downstream side effects are idempotent under redelivery
-- tenant/customer scope, actor, authorization/approval, and trace metadata are preserved or intentionally reloaded before side effects
+- downstream side effects are idempotent under redelivery and use a stable dedupe/idempotency key
+- tenant/customer scope, actor/system principal, authorization/approval, and trace metadata are preserved or intentionally reloaded before side effects
+- unauthorized, stale, invalid, or cross-tenant/customer messages have explicit audited denial/no-op behavior instead of accidental retries
+- transient failures that should retry are not converted to terminal success
 - cross-tenant/customer side effects are rejected or impossible by payload design
 - `ce-subject` metadata is added when producing ordered per-entity topic messages
 - `@Acl` is present for `@Produce.ServiceStream`
-- tests use the right TestKit incoming/outgoing message hooks
+- tests use the right TestKit incoming/outgoing message hooks and cover duplicate/retry and denial semantics
 
 ## Response style
 

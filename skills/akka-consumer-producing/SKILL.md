@@ -25,6 +25,12 @@ Read these first if present:
 - only selected message types should be published
 - downstream ordering depends on the original entity or workflow id
 
+## Capability publication rules
+
+Treat publication as a selected exposure surface for a named reactive/read-evidence capability. Publish only curated contracts that preserve required tenant/customer scope, subject, correlation id, provenance, redaction, and audit/trace references.
+
+For service streams and topics, do not leak internal state or policy-only events by default. Use explicit filters, redacted public DTOs, service ACLs, and `ce-subject` metadata. Publishing denials, data-access summaries, or consequential side-effect notifications should follow the capability's audit and privacy rules.
+
 ## Topic production rules
 
 1. Add `@Produce.ToTopic("topic-name")`.
@@ -58,3 +64,5 @@ Before finishing, verify:
 - `ce-subject` metadata is included when needed
 - ignored messages are intentional and explicit
 - `@Acl` is present for service streams
+- produced contracts are scoped/redacted and do not leak raw internal state, secrets, PII, or cross-tenant/customer data
+- duplicate source events cannot produce unsafe duplicate downstream side effects, or downstream consumers receive a stable dedupe/correlation key

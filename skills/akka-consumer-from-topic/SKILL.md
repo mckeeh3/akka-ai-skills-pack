@@ -22,6 +22,12 @@ Read these first if present:
 - CloudEvent subject metadata identifies the entity key
 - raw bytes handling is needed for non-JSON messages
 
+## Capability authority rules
+
+Topic ingestion is a reactive capability boundary. Define the capability id, trusted producer/service identity, tenant/customer scope source, message provenance, required authorization or prior approval reference, idempotency key, and audit/trace fields before forwarding to components.
+
+For protected or consequential commands, do not trust topic payloads as authorization by themselves. Verify service ACLs/signatures where available, reload or validate tenant/customer membership/policy from authoritative state, and call entity/workflow commands that enforce scope and idempotency. Invalid, unauthorized, stale, or cross-tenant messages should usually be audited and treated as terminal `done()`/`ignore()` outcomes; transient downstream failures may fail the handler for retry.
+
 ## Core pattern
 
 1. Annotate the class with `@Consume.FromTopic("topic-name")`.
@@ -59,3 +65,5 @@ Before finishing, verify:
 - `ce-subject` usage is explicit when routing depends on it
 - raw `byte[]` is used only for binary payloads
 - downstream calls are idempotent under redelivery
+- protected messages carry or resolve tenant/customer scope, capability id, producer provenance, correlation id, and authorization/approval/audit references
+- denial/no-op versus retry behavior is explicit for invalid, unauthorized, stale, duplicate, and transient-failure cases

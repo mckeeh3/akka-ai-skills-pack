@@ -428,7 +428,7 @@
 
 ### TASK-03-006: Update consumer, timer, and testing skills for capability execution
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/03-component-skill-reframing-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-003]
@@ -445,7 +445,9 @@
 - done criteria:
   - non-interactive execution paths are capability-aware
 - notes:
-  - pending
+  - completed: updated consumer, topic ingestion/publication, timed action, timer scheduling, and related testing skills so non-interactive reactive and scheduled execution paths preserve capability authority, tenant/customer scope, audit/trace obligations, idempotency, and denial/retry semantics
+  - checks: `rg` verified capability authority, audit, idempotency, tenant/customer scope, system principal, denial/no-op, and retry guidance across consumer/timer/testing skills; `git diff --check` passed
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Make async execution skills capability-first`
 
 ### TASK-04-001: Add read-only capability component-tool example
 
