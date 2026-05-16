@@ -61,18 +61,18 @@ Installed layout, at a high level:
 ## Quick install
 
 Current manifest version:
-- `0.1.9`
+- `0.1.10`
 
 Install the current GitHub release into the current directory as `<current-directory>/.agents`:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.9/install-akka-ai-skills-pack-0.1.9.sh | bash -s --
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.10/install-akka-ai-skills-pack-0.1.10.sh | bash -s --
 ```
 
 Install into a specific project directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.9/install-akka-ai-skills-pack-0.1.9.sh | bash -s -- --target-dir /path/to/project
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.10/install-akka-ai-skills-pack-0.1.10.sh | bash -s -- --target-dir /path/to/project
 ```
 
 For global installs, dry runs, archive installs, and detailed usage, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md).
