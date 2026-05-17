@@ -16,14 +16,13 @@
 - decisive reasons:
   - this tree is a vertical reference extension, not the canonical secure SaaS seed or a runnable app description
   - DCA operating-model, lifecycle, supplies-autopilot, policy, decision, trace, UI, and future-slice concepts are useful as source material
-  - current secure SaaS foundation alignment is incomplete: the foundation capability, auth/security layer, invitation lifecycle, admin/support-access semantics, and billing boundary still need refresh work
-  - current capability inventory does not yet use the full capability-first contract shape for each protected operation/query
-  - current tests are placeholders and do not yet define tenant-isolation, forbidden-access, disabled-user, role/scope denial, approval-bypass, idempotency, audit/trace, frontend secret-boundary, or outcome verification in generation-ready detail
+  - secure SaaS foundation and capability-first alignment now exist at description level, but runnable implementation details, provider fixtures, and downstream integration contracts remain undefined
+  - DCA-specific capabilities beyond the detailed Supplies Autopilot slice remain lightweight routing contracts rather than full implementation-ready contracts
+  - current tests now define concrete description-level foundation and Supplies Autopilot scenarios, but executable fixtures and provider/domain payloads are not yet defined
 - blocking gaps before code generation:
-  - add or align the secure tenant/user foundation capability with Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, `/api/me`, AdminAuditEvent, support access, billing boundary, and tenant/customer isolation
-  - refresh auth/security files so WorkOS authenticates while Akka-owned local state authorizes every route, command, query, stream, agent tool, workflow action, consumer side effect, timer action, and generated UI action
-  - convert DCA-specific capabilities into current capability-first contracts with actors/callers, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
-  - replace placeholder test guidance with concrete acceptance, negative, regression, security, operational, audit/trace, and outcome specifications
+  - refine lightweight DCA-specific capability contracts beyond `CAP-03` before implementing those later verticals
+  - preserve the refreshed foundation/auth/security contracts during any future code generation; do not infer provider-specific details from examples
+  - define executable fixtures and generated-test implementation details for the concrete acceptance, negative, regression, security, operational, audit/trace, and outcome specifications
   - define external integration contracts for DCA telemetry, fulfillment/ERP, billing, service systems, email delivery/outbox, and identity-provider modes
   - define or explicitly defer numeric policy thresholds, risk/confidence thresholds, retention periods, redaction classes, and evaluation fixtures
   - reconcile UI, observability, traceability, readiness summaries, and realization handoff after the foundation and capability refresh tasks land
@@ -33,5 +32,5 @@
   - future realization work must be explicitly requested and should start from a bounded slice rather than the whole DCA reference
   - style-guide selection may stay reference-level until a downstream realization target is chosen, but UI generation must not begin without a selected style contract
 - last readiness update basis:
-  - TASK-01-002 in `specs/dca-app-description-refresh-migration/pending-tasks.md`
-  - current system-control-file alignment with `docs/internal-app-description-architecture.md` and the seed app-description `00-system` control files
+  - TASK-04-001 in `specs/dca-app-description-refresh-migration/pending-tasks.md`
+  - concrete DCA test-layer refresh for `CAP-00` secure foundation and `CAP-03` Supplies Autopilot scenarios

@@ -182,7 +182,11 @@ This capability is the first detailed DCA vertical slice. It models governed sup
   - `../20-behavior/state-models/01-lifecycle-foundation.md`
 - tests:
   - `../30-tests/README.md`
-  - future test refresh should materialize this contract as acceptance, negative, regression, idempotency, approval, audit, integration, UI, and outcome specs
+  - `../30-tests/test-index.md`
+  - `../30-tests/acceptance/01-foundation-and-supplies-acceptance.md`
+  - `../30-tests/negative/01-security-and-approval-bypass.md`
+  - `../30-tests/regression/01-idempotency-and-policy-regression.md`
+  - `../30-tests/operational/01-audit-trace-and-outcomes.md`
 - auth/security:
   - `../40-auth-security/identity-and-trust.md`
   - `../40-auth-security/authorization-rules.md`

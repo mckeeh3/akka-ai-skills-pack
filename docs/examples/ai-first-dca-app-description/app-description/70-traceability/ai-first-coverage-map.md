@@ -85,7 +85,7 @@ This worked example is complete enough for future planning guidance, but it stil
 - external DCA, ERP, billing, fulfillment, and service-ticket API contracts;
 - detailed numeric policy thresholds and escalation SLAs beyond the illustrative supplies gates already recorded in `CAP-03`;
 - concrete frontend API contracts for every UI surface;
-- concrete test files beyond the current placeholders;
+- executable test fixtures for DCA telemetry, inventory, fulfillment, entitlement, WorkOS/JWT, email/outbox, policy thresholds, and deterministic agent/tool behavior;
 - concrete retention periods and redaction classes;
 - model/provider choices and evaluation fixtures for agents.
 

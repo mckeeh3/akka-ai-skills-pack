@@ -40,7 +40,7 @@ Required cross-layer checks for this slice:
 
 - Behavior: supplies flow includes auto-ship, decision-card, suppression, pause/resume, recheck, and outcome follow-up paths.
 - Security: backend authorization enforces `AuthContext`, tenant/customer scope, supplies capability grants, support-access limits, and agent-tool boundaries.
-- Tests: future test refresh must materialize CAP-03 success, validation, forbidden, tenant-isolation, approval-bypass, idempotency, audit/trace, frontend secret-boundary, and outcome checks.
+- Tests: `30-tests/` now materializes CAP-00 and CAP-03 success, validation, forbidden, tenant-isolation, approval-bypass, idempotency, audit/trace, frontend secret-boundary, integration-failure, UI, and outcome checks at description level.
 - Observability: trace events cite policy document/version, clause ids, evidence snapshots, actor/caller, correlation id, idempotency key, decision authority, external side-effect reference when safe, and redaction marker.
 - UI: Supplies Autopilot, Supply Decision Card, Shipment Trace Drawer, Approvals & Exceptions, and Audit & Outcomes all link back to the same recommendation/card/order/trace ids.
 - Generation: future realization remains localized to the seed foundation plus Slice 1 unless lifecycle, policy governance, or command-center behavior is intentionally broadened.

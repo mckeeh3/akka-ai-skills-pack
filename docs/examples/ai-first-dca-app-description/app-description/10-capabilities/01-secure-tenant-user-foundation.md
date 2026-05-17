@@ -150,7 +150,11 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
   - future foundation behavior refresh should add explicit tenant/user/invitation/access flows
 - tests:
   - `../30-tests/README.md`
-  - future test refresh should add foundation acceptance, negative, regression, and operational specs
+  - `../30-tests/test-index.md`
+  - `../30-tests/acceptance/01-foundation-and-supplies-acceptance.md`
+  - `../30-tests/negative/01-security-and-approval-bypass.md`
+  - `../30-tests/regression/01-idempotency-and-policy-regression.md`
+  - `../30-tests/operational/01-audit-trace-and-outcomes.md`
 - auth/security:
   - `../40-auth-security/identity-and-trust.md`
   - `../40-auth-security/authorization-rules.md`

@@ -304,7 +304,7 @@
 
 ### TASK-04-001: Replace test placeholders with concrete test specs
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/04-tests-ui-observability-readiness-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-002]
@@ -324,7 +324,9 @@
   - includes tenant isolation, disabled-user, forbidden role/scope, approval bypass, idempotency, audit/trace, frontend secret-boundary, and outcome checks
 - done criteria:
   - DCA tests are no longer placeholders
-- notes: []
+- notes:
+  - completed: replaced DCA test placeholders with concrete description-level acceptance, negative, regression, and operational specifications for the secure SaaS foundation and Supplies Autopilot; added a test index and refreshed readiness/traceability references to reflect remaining fixture gaps rather than placeholder tests
+  - commit: see git history for this task
 
 ### TASK-04-002: Strengthen observability and trace requirements
 
