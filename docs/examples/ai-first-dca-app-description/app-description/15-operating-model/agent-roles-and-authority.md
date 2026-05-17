@@ -45,9 +45,9 @@ Approval or review is required for:
 - DCA removal/deauthorization if ownership, contract, or access status is uncertain;
 - activation of policy, threshold, permission, prompt, or skill changes that expand automation authority.
 
-## Agent family placeholders
+## Agent family routing anchors
 
-Later artifacts fill exact permissions, tools, evidence, and escalation thresholds for these agent families:
+The detailed agent-team design and capability contracts refine exact permissions, tools, evidence, and escalation thresholds for these agent families:
 
 - Owner Briefing Agent;
 - Onboarding Agent;

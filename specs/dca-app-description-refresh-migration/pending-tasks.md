@@ -404,7 +404,7 @@
 
 ### TASK-05-001: Final DCA refresh consistency review
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/05-final-consistency-and-realization-prep-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-004]
@@ -427,7 +427,9 @@
   - no guidance presents DCA as canonical seed baseline
 - done criteria:
   - refreshed DCA example is coherent as a vertical reference
-- notes: []
+- notes:
+  - completed: added final consistency review notes; corrected stale/placeholder-oriented review wording; verified no DCA example links are broken, no stale Sprint 6 framing remains in the example tree, readiness remains non-runnable/reference-ready, and DCA is not presented as the canonical seed baseline
+  - commit: this commit
 
 ### TASK-05-002: Update realization prep and future-slice handoff
 
