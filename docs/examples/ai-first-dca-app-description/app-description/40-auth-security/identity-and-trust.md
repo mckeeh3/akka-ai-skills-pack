@@ -2,69 +2,66 @@
 
 ## Purpose
 
-Define the authenticated seed-app trust model for the AI-first DCA reference app. This adapts the working `examples/poc-user-auth-onboarding/` pattern: WorkOS authenticates browser users; Akka-owned local account state authorizes application behavior.
+Define the authenticated trust model for the AI-first DCA vertical reference. This file aligns the DCA auth/security layer with `../10-capabilities/01-secure-tenant-user-foundation.md`: WorkOS/AuthKit authenticates browser humans; Akka-owned local state authorizes every foundation and DCA capability.
 
-## Identity provider
+## Identity provider boundary
 
 - Browser users sign in through WorkOS/AuthKit.
-- The React/Vite frontend receives an access token from AuthKit.
-- The frontend calls Akka APIs with `Authorization: Bearer <token>`.
-- Akka API endpoints under `/api/...` validate bearer JWTs with `@JWT` before reading claims.
-- Public frontend build assets may be served without JWT; protected API routes must require JWT.
+- The React/Vite frontend receives a browser access token from AuthKit and calls Akka APIs with `Authorization: Bearer <token>`.
+- Akka API endpoints under `/api/...` validate bearer JWTs with `@JWT` before reading request-context claims.
+- Public frontend build assets may be served without JWT; protected `/api/...`, stream, admin, decision, trace, agent-tool, and domain APIs require authenticated request context unless explicitly documented otherwise.
+- WorkOS secrets, email provider secrets, bootstrap configuration, signing keys, and service credentials are backend-only and must never appear in frontend `VITE_` variables or built assets.
 
-## Local account authority
+## Akka-owned local authorization state
 
-WorkOS proves the external identity. Local Akka state determines app authority.
+WorkOS proves external identity only. Local Akka records determine app authority and must include:
 
-Local account state should include:
+- `Account` linked to a WorkOS subject and normalized email;
+- `UserProfile` for display/profile fields only;
+- `UserSettings` for preferences only;
+- `Membership` records scoped to SaaS Owner, Tenant, or Customer with status, roles, expiry where applicable, and audit metadata;
+- `Role` and `Permission/Capability` grants used by endpoints, component commands, view queries, workflows, consumers, timers, and agent tools;
+- `Invitation` state for invite-only onboarding;
+- selected `AuthContext` for the current account, membership, tenant/customer scope, roles/capabilities, actor metadata, and correlation id.
 
-- stable local user id;
-- normalized email;
-- optional display name;
-- WorkOS subject when linked;
-- account status: `INVITED`, `ACTIVE`, `DISABLED`;
-- role assignments and tenant/customer scopes;
-- audit metadata for privileged changes.
+`UserProfile`, `UserSettings`, frontend navigation, JWT role claims, hidden fields, and prompt text never grant application authority.
 
-`/api/me` is the browser-facing local account bootstrap contract. It must:
+## `/api/me` and first-login linking
 
-- validate JWT;
-- extract WorkOS subject and email claims;
-- link a matching invited local account idempotently;
-- activate the local account when policy allows;
-- reject disabled accounts even when the JWT is valid;
-- reject or return an explicit not-invited state for unknown identities when self-registration is disabled;
-- return only browser-safe profile, role, status, scope, and UI capability-hint data.
+`/api/me` is the browser-safe bootstrap and context contract. It must:
 
-Local account linking is idempotent: repeated `/api/me` calls with the same WorkOS subject/email must not duplicate users, widen scopes, or overwrite administrator-managed roles.
+- validate the WorkOS JWT;
+- resolve or link the local `Account` idempotently from WorkOS subject/email;
+- require a valid invitation, acceptance context, or explicitly modeled membership policy before activating or attaching privileged access;
+- reject disabled local accounts even when the JWT is valid;
+- return pending-invite/not-invited status for unknown identities when self-registration is disabled;
+- return only browser-safe account, profile, settings, membership summaries, selected/default context, roles/capabilities, and UI capability hints;
+- avoid duplicating accounts, widening scopes, or overwriting administrator-managed roles on repeated calls.
+
+Privileged self-registration from WorkOS claims alone is forbidden.
 
 ## Startup admin bootstrap
 
-The seed app may bootstrap initial administrators from backend-only environment variables such as `ADMIN_USERS`.
+Startup bootstrap may create the first SaaS Owner Admin or Tenant Admin from backend-only configuration such as `ADMIN_USERS` only as a bounded setup mechanism.
 
 Rules:
 
-- bootstrap is idempotent;
-- bootstrap secrets and API keys are never exposed in frontend `VITE_` variables or built assets;
-- invalid bootstrap configuration must fail loudly or surface an operational error;
-- repeated bootstrap may update only fields explicitly owned by bootstrap policy.
+- bootstrap is idempotent and auditable;
+- bootstrap may update only fields explicitly owned by bootstrap policy;
+- invalid bootstrap configuration fails loudly or surfaces an operational error;
+- bootstrap does not create a permanent bypass around invitations, memberships, roles, support-access, or tenant/customer scope checks;
+- bootstrap values and provider secrets are never exposed to frontend code or assets.
 
 ## Trust boundaries
 
-- Frontend route guards and hidden navigation are UX only, never authorization.
-- Backend endpoints must re-check local account status, roles, and scopes for every protected operation.
-- JWT role claims are not the mutable application authorization source unless a future product decision explicitly changes this.
-- AI agents, workflows, and tools do not inherit broad user authority implicitly; their effective permissions must be represented and audited.
+- WorkOS authenticates; Akka authorizes.
+- Backend endpoints re-check active local account status, active membership, selected `AuthContext`, tenant/customer scope, and named permission/capability for every protected operation.
+- SaaS Owner authority is limited to platform-safe Tenant setup, Tenant Admin bootstrap, and subscription/billing metadata unless a Tenant-created support-access membership grants time-limited tenant-scoped access.
+- Tenant and Customer boundaries are mechanical filters on reads and writes, not UI conventions.
+- Agents, workflows, consumers, timers, and tools do not inherit broad human authority implicitly; their effective principal, allowed scope, and permission grant must be represented in backend state and audited.
 
 ## Audit and readiness implications
 
-Identity and trust implementation must emit admin/security audit facts for bootstrap-created admins, invited users, first-login linking, activation, disable/enable, role or scope changes, and rejected privileged actions. These facts feed `../50-observability/audit-trace-and-outcomes.md` and make the seed slice testable without relying on application logs alone.
+Identity and trust behavior must emit `AdminAuditEvent` and/or work-trace facts for sign-in/linking, account creation/activation/disable/reactivate, profile/settings changes where required, context switches for privileged users, invitation acceptance, bootstrap-created admins, role/membership changes, support-access lifecycle/use, denials, and rejected privileged actions.
 
-## PoC source guidance
-
-Use these PoC ideas as implementation guidance, not as drop-in production policy:
-
-- `MeEndpoint` as the local account bootstrap route.
-- `AuthorizationService`-style centralization for auth context and role/scope checks.
-- WorkOS lookup/linking boundary in a security package.
-- React/AuthKit shell with same-origin `/api/...` bearer-token calls.
+Generation remains blocked until this identity model is linked to tests for `/api/me`, disabled users, uninvited identities, tenant/customer isolation, admin audit emission, and frontend secret-boundary checks.

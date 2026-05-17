@@ -148,7 +148,7 @@
 
 ### TASK-02-002: Align auth/security layer with foundation capability
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/02-secure-saas-foundation-alignment-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001]
@@ -171,7 +171,9 @@
   - agent/tool permissions require backend enforcement and audit
 - done criteria:
   - auth/security layer is consistent with the foundation capability and current doctrine
-- notes: []
+- notes:
+  - completed: refreshed DCA auth/security README, identity/trust, authorization, agent-permission, data-protection, and boundary/surface rules around the CAP-00 foundation contract; verified WorkOS authenticates while Akka local state authorizes, frontend navigation is not authorization, and agent/tool access requires backend enforcement plus audit/work traces
+  - commit: see git history for this task
 
 ### TASK-02-003: Add invitation, admin, support-access, and billing-boundary details
 

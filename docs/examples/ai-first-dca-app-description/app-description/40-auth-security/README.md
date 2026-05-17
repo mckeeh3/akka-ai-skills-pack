@@ -1,18 +1,28 @@
 # 40 Auth Security
 
+This layer defines the DCA vertical reference security contract. It is aligned with `../10-capabilities/01-secure-tenant-user-foundation.md`: WorkOS/AuthKit authenticates browser humans, while Akka-owned local `Account`, `Membership`, `Role`, `Permission/Capability`, `Invitation`, support-access, and selected `AuthContext` state authorizes all foundation and DCA capabilities.
+
 Current files:
-- `identity-and-trust.md` — WorkOS/AuthKit authentication, JWT-protected APIs, local Akka account authority, `/api/me`, startup admin bootstrap, and trust boundaries.
-- `authorization-rules.md` — DCA seed roles, tenant/customer scopes, backend enforcement rules, denial behavior, admin APIs, and optional impersonation guardrails.
-- `agent-permissions.md` — mechanical authority boundaries for agents, tools, workflows, action-boundary judging, supplies autopilot, and governed policy/prompt changes.
-- `data-protection.md` — sensitive data classes, frontend/backend secret separation, response/log minimization, audit retention, and deny-by-default cases.
-- `boundary-and-surface-rules.md` — public static routes versus protected `/api/...` routes, frontend UX boundaries, backend enforcement boundaries, and integration boundaries.
 
-Purpose: define human roles, tenant/customer boundaries, WorkOS/local-account trust, agent authority enforcement, sensitive data rules, and approval permissions for the authenticated DCA seed app.
+- `identity-and-trust.md` — WorkOS/AuthKit authentication, JWT-protected APIs, Akka-owned authorization state, `/api/me`, invite-only first-login linking, startup bootstrap limits, and trust boundaries.
+- `authorization-rules.md` — foundation roles, DCA extension-role mappings, backend authorization defaults, capability-oriented surface matrix, denial behavior, admin API families, and optional impersonation guardrails.
+- `agent-permissions.md` — mechanical authority boundaries for agents, tools, workflows, action-boundary judging, admin-assistant agents, supplies autopilot, governed policy/prompt changes, and audit traces.
+- `data-protection.md` — sensitive data classes, frontend/backend secret separation, response/log minimization, retention/trace visibility, deny-by-default cases, and linked tests.
+- `boundary-and-surface-rules.md` — public static routes versus protected `/api/...` routes, frontend UX boundaries, backend enforcement boundaries, integration boundaries, support-access, and PoC adaptation notes.
 
-Source reference: these files adapt the working `examples/poc-user-auth-onboarding/` proof-of-concept as implementation guidance, not as a drop-in production security system.
+Core rules:
+
+- Frontend navigation, hidden buttons, cached `/api/me`, JWT role claims, prompt text, and tool descriptions are never authorization controls.
+- Every protected route, component command, view query, stream, workflow action, consumer side effect, timer action, agent tool, and generated UI action must be backed by server-side authorization.
+- Tenant/customer scope and support-access limits are enforced mechanically and audited.
+- Consequential admin, policy, billing-boundary, support-access, DCA automation, and agent/tool activity emits `AdminAuditEvent` and/or work/decision trace facts.
+
+Source reference: these files may adapt patterns from `examples/poc-user-auth-onboarding/` as implementation guidance only; they are not a drop-in production security system.
 
 Linked layers:
+
+- Capability: `../10-capabilities/01-secure-tenant-user-foundation.md` is the foundation contract these files refine.
 - UI: `../55-ui/ui-surfaces.md` may hide or reveal navigation from `/api/me`, but every `/api/...` operation remains backend-authorized.
 - Observability: `../50-observability/audit-trace-and-outcomes.md` defines audit/work/decision trace facts that security-sensitive operations must emit.
-- Generation: `../60-generation/implementation-slices.md` uses this layer as the implementation contract for the authenticated seed-app foundation.
-- Tests: `../30-tests/` should cover missing JWT, disabled account, cross-scope denial, frontend-secret absence, admin audit emission, and agent/tool boundary denial.
+- Generation: `../60-generation/implementation-slices.md` uses this layer as the implementation contract for the authenticated reference foundation.
+- Tests: `../30-tests/` should cover missing JWT, `/api/me`, uninvited identities, disabled accounts, cross-scope denial, role/scope denial, support-access boundaries, frontend-secret absence, admin audit emission, and agent/tool boundary denial.
