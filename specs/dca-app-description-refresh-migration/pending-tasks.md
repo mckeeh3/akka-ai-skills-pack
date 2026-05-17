@@ -281,7 +281,7 @@
 
 ### TASK-03-004: Update traceability maps for capability-first and foundation links
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/03-capability-first-contracts-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-003]
@@ -298,7 +298,9 @@
   - traceability includes secure foundation and Supplies Autopilot detailed contract
 - done criteria:
   - future agents can navigate from capability to affected layers without guessing
-- notes: []
+- notes:
+  - completed: refreshed the DCA traceability layer with secure foundation and CAP-03 supplies autopilot coverage; added a capability-to-layer map connecting capabilities to behavior, tests, auth/security, observability, UI, and generation slices
+  - commit: see git history for this task
 
 ### TASK-04-001: Replace test placeholders with concrete test specs
 
