@@ -7,6 +7,14 @@ description: Implement Akka Java SDK agents that use remote MCP servers through 
 
 Use this skill when an agent should call remote MCP tools.
 
+## Capability-first boundary rule
+
+Treat every remote MCP tool as a selected cross-service exposure surface for a named backend capability. Before registering a remote MCP server, identify the capability id, allowed caller service/agent, `AuthContext` and tenant/customer scope propagation, input/output schemas, side effects, idempotency, approval policy, audit/trace obligations, and expected denial behavior.
+
+Register only the remote tools needed for the current agent task with `.withAllowedToolNames(...)` or `.withToolNameFilter(...)`. Do not rely on MCP tool descriptions, prompt text, or model instructions for authorization. The remote MCP endpoint must still enforce ACL/JWT/service identity, validate scope, redact outputs, and audit access according to the capability contract.
+
+Prefer read-only evidence capabilities for remote MCP tool use. Side-effecting remote MCP tools require an explicit capability contract and should usually be proposal or approval-request capabilities unless an accepted policy grants bounded autonomous authority.
+
 ## Required reading
 
 Read these first if present:
@@ -23,24 +31,30 @@ Read these first if present:
 
 ## Core pattern
 
-1. Build remote tool configs with `RemoteMcpTools.fromService(...)` or `fromServer(...)`.
-2. Use `.withAllowedToolNames(...)` or `.withToolNameFilter(...)` to narrow exposure.
-3. Add headers or interceptors only when required.
+1. Build remote tool configs with `RemoteMcpTools.fromService(...)` for another Akka service or `fromServer(...)` for an external HTTPS MCP server.
+2. Use `.withAllowedToolNames(...)` or `.withToolNameFilter(...)` to narrow exposure to the selected capability surface.
+3. Add caller headers, bearer tokens, or interceptors only when the capability contract requires them; never use spoofable headers as the only authority source.
 4. Keep timeouts explicit for remote calls.
 5. Treat MCP tools as remote dependencies and handle failures in the agent if graceful fallback is required.
+6. Keep tool results curated for the agent's purpose; do not ask a remote MCP tool for raw state when the capability requires redacted evidence.
 
 ## Repository example
 
 - `ShoppingCartToolsMcpEndpoint`
-  - default-path MCP server exposing `getCartSummary`
+  - default-path MCP server exposing the read-only `cart.summary.inspect` capability through `getCartSummary`
+  - uses a service ACL to show the remote MCP boundary is selective rather than open by default
+  - returns a compact cart summary, not raw entity state
 - `RemoteShoppingCartAgent`
-  - connects to `/mcp`
-  - allows only `getCartSummary`
+  - connects to an explicit remote MCP server URL
+  - allows only `getCartSummary` for the `cart.summary.inspect` capability
 
 ## Review checklist
 
 Before finishing, verify:
 - the MCP server URI or service name is explicit
+- the registered tool names map to named capability ids
 - only needed tool names are exposed
+- caller/service identity, tenant/customer scope, and required headers/tokens are deliberate
 - timeouts are set deliberately
+- remote read outputs are curated/redacted and side-effecting tools preserve approval/idempotency/audit rules
 - remote tools are not confused with local `@FunctionTool` methods

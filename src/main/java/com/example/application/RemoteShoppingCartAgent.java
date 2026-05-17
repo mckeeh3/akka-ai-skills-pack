@@ -5,7 +5,7 @@ import akka.javasdk.agent.RemoteMcpTools;
 import akka.javasdk.annotations.Component;
 import java.time.Duration;
 
-/** Agent example that uses tools from a remote MCP endpoint. */
+/** Agent example that uses a selected read-only capability from a remote MCP endpoint. */
 @Component(
     id = "remote-shopping-cart-agent",
     name = "Remote Shopping Cart Agent",
@@ -18,8 +18,9 @@ public class RemoteShoppingCartAgent extends Agent {
   private static final String SYSTEM_MESSAGE =
       """
       You help with shopping cart questions.
-      Use the remote MCP tool getCartSummary whenever you need current cart contents or checkout state.
-      Keep the final answer short and based only on the tool result and the user question.
+      Use only the remote MCP tool getCartSummary for the read-only cart.summary.inspect capability when you need current cart contents or checkout state.
+      Keep the final answer short and based only on the curated tool result and the user question.
+      Do not claim you can mutate carts through this remote MCP connection.
       """
           .stripIndent();
 

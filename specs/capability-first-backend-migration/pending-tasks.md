@@ -553,7 +553,7 @@
 
 ### TASK-04-005: Add MCP-exposed capability example or guidance update
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/04-reference-examples-and-tests-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-005]
@@ -573,7 +573,9 @@
 - done criteria:
   - MCP is represented as a capability exposure boundary
 - notes:
-  - pending
+  - completed: updated remote MCP tool guidance and the shopping-cart MCP example so MCP is represented as a selective capability exposure boundary for the read-only `cart.summary.inspect` capability, with allowed-tool filtering, scoped/curated output, service ACL guidance, and no mutation authority.
+  - checks: `mvn -q -Dtest=RemoteShoppingCartAgentTest test`; `git diff --check`; `rg` verified capability id, allowed tool filtering, remote boundary, service ACL, and curated/no-raw-state language.
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Represent MCP as capability exposure boundary`
 
 ### TASK-04-006: Add UI/API reuse capability example or guidance update
 

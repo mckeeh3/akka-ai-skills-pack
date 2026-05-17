@@ -10,13 +10,19 @@ import com.example.application.ShoppingCartEntity;
 import com.example.domain.ShoppingCart;
 import java.util.List;
 
-/** Default-path MCP endpoint kept intentionally small for remote agent tool examples. */
-@Acl(allow = @Acl.Matcher(principal = Acl.Principal.ALL))
+/**
+ * Default-path MCP endpoint kept intentionally small for remote agent tool examples.
+ *
+ * <p>Capability exposed: {@code cart.summary.inspect}. It is read-only evidence for a remote
+ * assistant and returns a curated summary instead of raw entity state.
+ */
+@Acl(allow = @Acl.Matcher(service = "shopping-assistant-service"))
 @McpEndpoint(
     path = "/mcp",
     serverName = "shopping-cart-tools",
     serverVersion = "1.0.0",
-    instructions = "Use these tools to inspect current shopping cart state.")
+    instructions =
+        "Use these tools only for the read-only cart.summary.inspect capability. Return curated cart evidence; do not treat this MCP endpoint as authority to mutate carts.")
 public class ShoppingCartToolsMcpEndpoint {
 
   public record CartItem(String productId, String name, int quantity) {}
@@ -36,8 +42,9 @@ public class ShoppingCartToolsMcpEndpoint {
 
   @McpTool(
       description =
-          "Return a compact JSON summary of a shopping cart so a remote agent can answer questions about items, quantities, and checkout readiness.")
-  public String getCartSummary(@Description("The shopping cart id to inspect") String cartId) {
+          "Capability cart.summary.inspect: return a compact, read-only JSON summary of a shopping cart so an authorized remote agent can answer questions about items, quantities, and checkout readiness. This tool does not expose raw cart state and does not mutate the cart.")
+  public String getCartSummary(
+      @Description("The shopping cart id to inspect within the caller's allowed scope") String cartId) {
     return JsonSupport.encodeToString(toSummary(loadCart(cartId)));
   }
 
