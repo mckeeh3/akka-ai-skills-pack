@@ -257,7 +257,7 @@
 
 ### TASK-03-003: Add lightweight contracts for remaining DCA capabilities
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/03-capability-first-contracts-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-002]
@@ -275,7 +275,9 @@
   - planned capabilities clearly identify missing downstream details instead of inventing thresholds/integration contracts
 - done criteria:
   - non-first-slice capabilities have enough shape for routing and future refinement
-- notes: []
+- notes:
+  - completed: added lightweight capability contract files for lifecycle orchestration, telemetry intelligence, service coordination, meter/billing review, onboarding/installation, offboarding/retention, policy governance, owner command center, and audit/outcome review; updated the capability README and index to route to them and preserved future-detail placeholders instead of inventing thresholds or integration contracts
+  - commit: see git history for this task
 
 ### TASK-03-004: Update traceability maps for capability-first and foundation links
 
