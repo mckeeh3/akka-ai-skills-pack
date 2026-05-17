@@ -529,7 +529,7 @@
 
 ### TASK-04-004: Add view-backed evidence capability example
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/04-reference-examples-and-tests-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-004]
@@ -547,7 +547,9 @@
 - done criteria:
   - read-model evidence capability pattern exists
 - notes:
-  - pending
+  - completed: added `SupervisedExportEvidenceView` as a workflow-backed `customer.data-export.evidence.list` read/evidence capability with tenant/customer scope, status and risk filters, and curated agent/UI-safe rows that omit raw AuthContext, idempotency keys, result URIs, and full audit traces
+  - checks: `mvn -q -Dtest=SupervisedExportEvidenceViewIntegrationTest test`; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add supervised export evidence view`
 
 ### TASK-04-005: Add MCP-exposed capability example or guidance update
 
