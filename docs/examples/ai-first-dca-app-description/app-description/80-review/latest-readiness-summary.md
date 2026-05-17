@@ -17,12 +17,10 @@ It is still not a runnable-app description. Future code generation would have to
 - Numeric policy thresholds, risk/confidence thresholds, retention periods, redaction classes, alert thresholds, and deterministic agent/evaluator fixtures remain future realization inputs.
 - DCA capabilities beyond the secure foundation and Supplies Autopilot remain lightweight routing contracts, not full implementation-ready contracts.
 - Executable tests have not been generated; current tests are authoritative description-level scenarios that future generated code must satisfy.
-- Generation handoff files still need final Sprint 5 reconciliation before any executable slice starts.
+- Future executable work must start as a separate explicitly requested realization effort with concrete fixtures, integration contracts, thresholds, UI/API contracts, and trace/evaluation expectations.
 
 ## Recommendation
 
-Continue description and realization-prep work. Do not generate the full DCA app yet.
+No additional refresh-migration work is required. Do not generate the full DCA app from this reference tree.
 
-## Suggested next step
-
-Run the final DCA refresh consistency review, then update the realization-slice handoff so any future executable work starts from a bounded slice with explicit fixtures, integration contracts, thresholds, UI/API contracts, and trace/evaluation expectations.
+If executable DCA work is ever requested later, start a separate bounded realization effort from the current handoff in `../60-generation/implementation-slices.md`.

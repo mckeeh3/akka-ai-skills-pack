@@ -25,7 +25,7 @@ Authoritative app meaning remains in the layer files. This file records final co
 ### Stale migration framing
 
 - No stale unqualified `Sprint 6` framing remains in the DCA example tree.
-- Remaining sprint references are limited to migration planning/review context or future Sprint 5 realization-handoff notes.
+- Remaining sprint references are limited to migration planning/review context.
 - No file claims this tree is a generated runnable application.
 
 ### Test, UI, observability, and readiness coherence
@@ -42,7 +42,7 @@ These are coherent reference limitations, not contradictions:
 - DCA capabilities beyond `CAP-00` and `CAP-03` remain lightweight routing contracts until future detailed slice work expands schemas, thresholds, integrations, and tests.
 - Executable fixtures and provider payloads remain undefined for WorkOS/JWT modes, email/outbox, DCA telemetry, inventory/fulfillment, service, billing, policy thresholds, and deterministic agents/tools.
 - Exact frontend endpoint schemas, realtime topics, generated components, CSS token implementation, and executable UI tests are deferred to future realization tasks.
-- Realization handoff files still need the dedicated `TASK-05-002` update before executable reference-slice work starts.
+- Realization handoff files are current for planning/reference use; executable work still requires a separate explicitly requested realization task with concrete fixtures and adapter decisions.
 
 ## Corrective edits made in this review
 

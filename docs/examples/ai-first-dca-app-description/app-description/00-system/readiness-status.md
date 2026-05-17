@@ -27,15 +27,16 @@
   - define executable fixtures and generated-test implementation details for the concrete acceptance, negative, regression, security, operational, audit/trace, and outcome specifications
   - define external integration contracts for DCA telemetry, fulfillment/ERP, billing, service systems, email delivery/outbox, WorkOS/JWT identity-provider modes, and deterministic agent/tool behavior
   - define or explicitly defer numeric policy thresholds, risk/confidence thresholds, retention periods, redaction classes, alert thresholds, and evaluation fixtures
-  - reconcile realization handoff files during Sprint 5 before any executable DCA slice starts
+  - start any executable DCA slice as a separate explicitly requested realization effort with its own spec, fixtures, provider/adaptor decisions, and readiness review
 - accepted assumptions:
   - this repository maintains the DCA tree as reference material for the skills pack, not as this repository's business application
   - the canonical secure AI-first SaaS seed remains the structural and foundation baseline; DCA supplies domain-rich vertical semantics layered on top
   - future realization work must be explicitly requested and should start from a bounded slice rather than the whole DCA reference
   - the selected `atlas-ops-supervisory-console` style guide is suitable for future generated UI, but generated code must still implement concrete CSS tokens, components, API state handling, accessibility, and frontend tests
 - last readiness update basis:
-  - TASK-04-004 in `specs/dca-app-description-refresh-migration/pending-tasks.md`
-  - TASK-04-001 concrete DCA test-layer refresh for `CAP-00` secure foundation and `CAP-03` Supplies Autopilot scenarios
-  - TASK-04-002 observability refresh covering foundation security events plus DCA work/decision/policy/tool/data-access/outcome traces
-  - TASK-04-003 UI refresh covering mandatory foundation administration surfaces, DCA operational surfaces, API/realtime needs, tests, accessibility, and selected style guidance
+  - completed DCA app-description refresh migration in `specs/dca-app-description-refresh-migration/`
+  - concrete DCA test-layer refresh for `CAP-00` secure foundation and `CAP-03` Supplies Autopilot scenarios
+  - observability refresh covering foundation security events plus DCA work/decision/policy/tool/data-access/outcome traces
+  - UI refresh covering mandatory foundation administration surfaces, DCA operational surfaces, API/realtime needs, tests, accessibility, and selected style guidance
+  - final realization handoff in `../60-generation/implementation-slices.md`
   - latest summary: `../80-review/latest-readiness-summary.md`

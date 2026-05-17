@@ -1,12 +1,14 @@
 # DCA App Description Refresh Migration Plan
 
-This planning package coordinates a multi-sprint refresh of `docs/examples/ai-first-dca-app-description/` so it remains useful under the current secure AI-first SaaS and capability-first backend direction.
+Status: **completed**. See `migration-completion-summary.md` for closeout details.
+
+This planning package coordinated a multi-sprint refresh of `docs/examples/ai-first-dca-app-description/` so it remains useful under the current secure AI-first SaaS and capability-first backend direction.
 
 The DCA example should remain a **vertical domain reference** for office-device/DCA lifecycle automation. It should not replace the canonical secure SaaS seed reference in `docs/examples/ai-first-saas-seed-app-description/`.
 
 ## Target positioning
 
-After this migration, future agents should interpret the DCA example as:
+Future agents should now interpret the DCA example as:
 
 ```text
 canonical secure AI-first SaaS seed baseline
@@ -15,9 +17,11 @@ canonical secure AI-first SaaS seed baseline
 → non-runnable app-description reference unless a later task explicitly realizes slices
 ```
 
-The migration should preserve the example's strengths: domain-rich lifecycle modeling, supplies autopilot as the first vertical slice, bounded agents, policy gates, decision cards, supervision UI, traces, outcomes, and Akka realization slicing.
+The migration preserved the example's strengths: domain-rich lifecycle modeling, supplies autopilot as the first vertical slice, bounded agents, policy gates, decision cards, supervision UI, traces, outcomes, and Akka realization slicing.
 
 ## Execution model
+
+This migration is closed. Historical execution rules were:
 
 - Execute one task per fresh harness context.
 - Use `pending-tasks.md` as the durable queue.
@@ -74,4 +78,6 @@ Each sprint has a matching backlog:
 
 ## Done state
 
-The migration is complete when the DCA example is current enough that future agents can use it as a high-quality vertical reference without copying outdated structure, skipping secure SaaS foundation requirements, or treating component choices/agent tools as the root backend design.
+Complete. The DCA example is current enough that future agents can use it as a high-quality vertical reference without copying outdated structure, skipping secure SaaS foundation requirements, or treating component choices/agent tools as the root backend design.
+
+No additional refresh work is planned for this migration package.
