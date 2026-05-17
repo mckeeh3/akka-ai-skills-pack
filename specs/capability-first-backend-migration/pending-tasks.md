@@ -803,7 +803,7 @@
 
 ### TASK-06-004: Write migration completion summary
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/06-final-consistency-review-build-backlog.md
 - task brief: none
 - depends on: [TASK-06-001, TASK-06-002, TASK-06-003]
@@ -822,4 +822,6 @@
 - done criteria:
   - migration status is explicit and ready for normal repository evolution
 - notes:
-  - pending
+  - completed: added `specs/capability-first-backend-migration/migration-completion-summary.md` with final migration status, completed outcomes, review links, and non-blocking residual backlog for future normal repository evolution
+  - checks: verified no remaining `status: pending` entries in this migration queue after the update; residual consumer/timer example gaps are documented as non-blocking future work rather than unfinished migration tasks
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Summarize capability-first migration completion`
