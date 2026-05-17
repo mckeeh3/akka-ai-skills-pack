@@ -8,7 +8,7 @@ For user-facing installation and usage guidance, see [`skills-pack-user-guide.md
 
 This repository is the **source project for the Akka AI Skills Pack**. It is not primarily an end-user Akka application.
 
-The pack turns Akka SDK knowledge into AI-first SaaS skills, examples, and guidance optimized for AI coding agents. The installable output is a `.agents/` resource pack that downstream projects can install at either:
+The pack turns Akka SDK knowledge into AI-first SaaS and capability-first backend skills, examples, and guidance optimized for AI coding agents. The installable output is a `.agents/` resource pack that downstream projects can install at either:
 
 - `<target-project>/.agents`
 - `~/.agents`
@@ -68,6 +68,7 @@ The Maven example project currently inherits from `io.akka:akka-javasdk-parent:3
 For high-level AI-first SaaS, routing, doctrine, app-description, PRD/spec/backlog, or skill-design work, also read:
 
 - `docs/ai-first-saas-application-architecture.md`
+- `docs/capability-first-backend-architecture.md`
 
 ## Maintaining skills and docs
 
@@ -76,6 +77,7 @@ The source skill library is an internal routing and implementation layer for AI 
 - users can speak naturally without knowing skill names
 - broad intent is interpreted through secure AI-first SaaS operating-model concepts when applicable
 - secure SaaS foundation work comes before domain-specific features
+- backend behavior is modeled as governed capabilities before Akka components or agent tools are selected
 - broad intent is decomposed before coding
 - open decisions are queued instead of guessed
 - pending tasks are sized for focused harness runs

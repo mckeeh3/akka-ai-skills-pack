@@ -2,7 +2,7 @@
 
 The **Akka AI Skills Pack** is an installable `.agents/` resource pack for AI coding harnesses such as Claude Code, Codex, and Pi. It helps the harness turn normal product and engineering intent into full-stack, secure, AI-first SaaS application plans, Akka Java SDK code, React/Vite/TypeScript web UI assets, tests, and delivery artifacts.
 
-This pack is intentionally **opinionated**. Its goal is to help agents design and build SaaS products where AI does bounded operational work, humans supervise and govern outcomes, security is present from the first planning step, and the browser UI is a required supervision, administration, decision, audit, and outcome surface.
+This pack is intentionally **opinionated**. Its goal is to help agents design and build SaaS products where AI does bounded operational work, humans supervise and govern outcomes, security is present from the first planning step, backend behavior is modeled as governed capabilities before component/tool exposure, and the browser UI is a required supervision, administration, decision, audit, and outcome surface.
 
 This pack is **not** intended as a general-purpose generator for traditional CRUD applications, backend-only services, or human-only workflow apps with no delegated AI work, governance model, audit trail, or outcome loop. Conventional forms, tables, and admin screens may exist, but they are subordinate to the secure AI-first SaaS operating model.
 
@@ -18,6 +18,7 @@ Use this pack when you are building or evolving an Akka application and want you
 
 - PRD/spec ingestion and implementation planning
 - secure AI-first SaaS foundation design
+- capability-first backend design: governed operations/queries with explicit authority, scope, schemas, side effects, audit, approval, exposure surfaces, and tests
 - WorkOS/JWT authentication seams and tenant/customer/user administration
 - app-description, specs, question queues, and pending task queues
 - Akka components such as entities, workflows, views, consumers, timed actions, endpoints, and agents

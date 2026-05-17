@@ -299,6 +299,7 @@ PACK_DOC_FILES=(
   docs/agent-skill-expansion-plan.md
   docs/ai-first-examples-and-tests-gap-list.md
   docs/ai-first-saas-application-architecture.md
+  docs/capability-first-backend-architecture.md
   docs/app-description-end-to-end-workflow-example.md
   docs/app-description-maintenance-flow.md
   docs/app-description-skills-plan-backlog.md

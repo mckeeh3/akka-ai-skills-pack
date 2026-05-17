@@ -43,6 +43,7 @@ Installed layout:
   AGENTS.md
   docs/
     ai-first-saas-application-architecture.md
+    capability-first-backend-architecture.md
     skills-pack-user-guide.md
     description-first-application-doctrine.md
     app-description-skills-plan-backlog.md
@@ -88,6 +89,8 @@ Installed layout:
     references/
       akka-entity-comparison.md
     ai-first-saas/
+      SKILL.md
+    capability-first-backend/
       SKILL.md
     ai-first-saas-object-model/
       SKILL.md

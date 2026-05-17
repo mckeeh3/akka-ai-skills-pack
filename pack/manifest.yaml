@@ -75,6 +75,9 @@ content:
     - id: ai-first-saas
       path: skills/ai-first-saas
       category: architecture
+    - id: capability-first-backend
+      path: skills/capability-first-backend
+      category: architecture
     - id: core-saas-foundation
       path: skills/core-saas-foundation
       category: architecture
@@ -452,6 +455,7 @@ content:
       category: component-suite
   references:
     - skills/README.md
+    - docs/capability-first-backend-architecture.md
     - docs/core-ai-first-saas-foundation.md
     - docs/core-saas-identity-tenancy-admin.md
     - docs/core-saas-owner-tenant-billing.md
@@ -491,6 +495,7 @@ bundles:
       - app-descriptions
       - app-generate-app
       - ai-first-saas
+      - capability-first-backend
       - core-saas-foundation
       - ai-first-saas-agent-team-design
       - ai-first-saas-admin-agents
