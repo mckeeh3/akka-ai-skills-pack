@@ -39,6 +39,7 @@ In this repository, prefer these examples:
 - `../../../src/main/java/com/example/application/TransferWorkflow.java`
 - `../../../src/main/java/com/example/application/ApprovalWorkflow.java`
 - `../../../src/main/java/com/example/application/RefundApprovalWorkflow.java`
+- `../../../src/main/java/com/example/application/SupervisedExportWorkflow.java`
 - `../../../src/main/java/com/example/application/ReviewWorkflow.java`
 - `../../../src/main/java/com/example/application/WalletEntity.java`
 - `../../../src/main/java/com/example/domain/TransferState.java`
@@ -51,7 +52,8 @@ In this repository, prefer these examples:
 - `../../../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
-- `../../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../../../src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
+- `../../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java
 - `../../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills
@@ -135,6 +137,7 @@ Repository examples:
 - `ApprovalWorkflow`
 - `ApprovalWorkflowEndpoint`
 - `RefundApprovalWorkflow` — consequential proposal/approval capability; side effects wait for approval unless bounded policy grants autonomy
+- `SupervisedExportWorkflow` — workflow-backed customer data export capability; high-risk work pauses for supervision while preserving tenant/customer scope and audit trace
 
 ### 4. Workflow as upstream source for views or consumers
 Use when other components react to workflow state snapshots.

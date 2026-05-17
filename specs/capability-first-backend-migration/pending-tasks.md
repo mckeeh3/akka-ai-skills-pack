@@ -505,7 +505,7 @@
 
 ### TASK-04-003: Add workflow-backed capability example
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/04-reference-examples-and-tests-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-003]
@@ -523,7 +523,9 @@
 - done criteria:
   - workflow capability pattern exists
 - notes:
-  - pending
+  - completed: added `SupervisedExportWorkflow`, `SupervisedExportState`, and `SupervisedExportWorkflowIntegrationTest` as a workflow-backed `customer.data-export.prepare` capability example with tenant/customer scope, AuthContext reference, trace ids, audit trace, risk-based supervision pause, approval/denial, and idempotency-key handling
+  - checks: `mvn -q -Dtest=SupervisedExportWorkflowIntegrationTest test`; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add supervised workflow capability example`
 
 ### TASK-04-004: Add view-backed evidence capability example
 
