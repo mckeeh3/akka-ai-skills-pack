@@ -479,7 +479,7 @@
 
 ### TASK-04-002: Add consequential proposal/approval capability example
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/04-reference-examples-and-tests-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-003]
@@ -499,7 +499,9 @@
 - done criteria:
   - canonical consequential capability pattern exists
 - notes:
-  - pending
+  - completed: added a minimal `refund.issue` consequential capability example with `RefundApprovalAgent`, proposal-only `RefundProposalTools`, `RefundApprovalWorkflow`, `RefundApprovalState`, and `RefundApprovalCapabilityTest`; side effects wait for approval unless an explicit bounded autonomous policy grant applies
+  - checks: `mvn -q -Dtest=RefundApprovalCapabilityTest test`; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add consequential approval capability example`
 
 ### TASK-04-003: Add workflow-backed capability example
 

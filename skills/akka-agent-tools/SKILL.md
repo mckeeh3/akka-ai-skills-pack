@@ -71,6 +71,8 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
   - external tool registration with `.tools(forecastTools)`
 - `WeatherForecastTools`
   - public external tool method with parameter descriptions
+- `RefundApprovalAgent` / `RefundProposalTools` / `RefundApprovalCapabilityTest`
+  - consequential `refund.issue` capability exposed as a proposal-only tool; approval workflow or explicit bounded policy grant commits the side effect
 
 ## Review checklist
 
