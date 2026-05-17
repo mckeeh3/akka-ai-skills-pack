@@ -5,7 +5,9 @@ description: Plan and implement fully capable browser apps hosted by Akka HTTP e
 
 # Akka Web UI Apps
 
-Use this as the top-level skill for complete browser app work in Akka services.
+Use this as the top-level skill for complete browser app work in Akka services when the UI is already selected as a human-facing exposure and supervision surface for backend capabilities.
+
+For broad product, PRD, feature, dashboard, admin, or portal requests, route through `ai-first-saas`, `capability-first-backend`, and `akka-solution-decomposition` before implementing screens. Do not start from CRUD navigation when the capability inventory, AuthContext, allowed actions, decision/supervision surfaces, audit needs, and backend authorization semantics are still unclear.
 
 This skill complements `akka-http-endpoint-web-ui`:
 - `akka-web-ui-apps` designs the frontend application experience and implementation plan.

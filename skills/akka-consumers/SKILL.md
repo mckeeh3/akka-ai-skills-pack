@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK Consumer work across entity/workflow/topi
 
 # Akka Consumers
 
-Use this as the top-level skill for Akka Java SDK Consumer work.
+Use this as the top-level skill for Akka Java SDK Consumer work when the consumer is already selected as a reactive execution surface for one or more backend capabilities.
+
+For broad product, PRD, feature, or integration requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing consumers. Do not start from event glue when capability authority, provenance, tenant/customer scope, side effects, idempotency, and audit semantics are still unclear.
 
 ## Goal
 

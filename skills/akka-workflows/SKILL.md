@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK Workflow work across state modeling, step
 
 # Akka Workflows
 
-Use this as the top-level skill for Akka Java SDK workflow work.
+Use this as the top-level skill for Akka Java SDK workflow work when the workflow is already selected as the durable carrier for one or more backend capabilities.
+
+For broad product, PRD, feature, or process requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing workflows. Do not start from a workflow class when capability authority, scope, side effects, approval, supervision, and audit semantics are still unclear.
 
 ## Goal
 
@@ -53,7 +55,7 @@ In this repository, prefer these examples:
 - `../../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
 - `../../../src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java
+- `../../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 - `../../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills

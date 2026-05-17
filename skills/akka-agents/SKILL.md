@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK Agent work across durable behavior profil
 
 # Akka Agents
 
-Use this as the top-level skill for Akka Java SDK agent work.
+Use this as the top-level skill for Akka Java SDK agent work when the agent responsibility, authority boundary, and selected capability surfaces are already clear enough to implement or review.
+
+For broad product, PRD, feature, or automation requests, route through `ai-first-saas`, `capability-first-backend`, and `akka-solution-decomposition` before implementing agents. Do not reduce delegated operational work to a standalone chatbot or tool list.
 
 ## Goal
 

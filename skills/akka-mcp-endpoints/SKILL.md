@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK MCP endpoint work across tools, resources
 
 # Akka MCP Endpoints
 
-Use this as the top-level skill for Akka Java SDK MCP endpoint work.
+Use this as the top-level skill for Akka Java SDK MCP endpoint work when MCP is already selected as a remote LLM-facing exposure surface for one or more backend capabilities.
+
+For broad product, PRD, feature, or agent-integration requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing tools, resources, or prompts. Do not start from an MCP tool list when capability authority, scope, side effects, approval, and audit semantics are still unclear.
 
 ## Goal
 

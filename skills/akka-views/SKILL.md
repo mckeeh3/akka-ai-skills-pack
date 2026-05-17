@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK View work across source selection, table 
 
 # Akka Views
 
-Use this as the top-level skill for Akka Java SDK view work.
+Use this as the top-level skill for Akka Java SDK view work when a View is already selected as a curated read/evidence surface for one or more backend capabilities.
+
+For broad product, PRD, feature, dashboard, reporting, or search requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing views. Do not start from raw projections when capability purpose, caller scope, redaction, tenant/customer filters, data-access audit, and exposure surfaces are still unclear.
 
 ## Goal
 

@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK HTTP endpoint work across request mapping
 
 # Akka HTTP Endpoints
 
-Use this as the top-level skill for Akka Java SDK HTTP endpoint work.
+Use this as the top-level skill for Akka Java SDK HTTP endpoint work when the endpoint is already selected as an exposure surface for one or more backend capabilities.
+
+For broad product, PRD, feature, or UI/API requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing routes. Do not start from endpoint paths or CRUD screens when capability authority, scope, side effects, approval, and audit semantics are still unclear.
 
 ## Goal
 

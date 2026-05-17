@@ -654,7 +654,7 @@
 
 ### TASK-05-003: Review component skills for stale CRUD/entity/tool-first language
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/05-review-and-stale-content-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-05-001]
@@ -672,7 +672,9 @@
 - done criteria:
   - stale component-skill language is resolved or queued
 - notes:
-  - pending
+  - completed: added `specs/capability-first-backend-migration/component-skills-review.md`; qualified top-level Stage 3 agent, workflow, view, consumer, timer, HTTP, gRPC, MCP, and web UI skill openings so broad product/PRD/feature input routes through capability-first decomposition before component implementation; fixed one malformed workflow example-test link
+  - checks: searched component skills for stale CRUD/entity/endpoint/tool-first and broad-product routing language; verified updated openings require selected capability/component or exposure-surface context; `git diff --check` passed
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review component skills for capability routing`
 
 ### TASK-05-004: Review examples and tests for stale unsafe tool patterns
 

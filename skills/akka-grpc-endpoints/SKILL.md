@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK gRPC endpoint work across protobuf contra
 
 # Akka gRPC Endpoints
 
-Use this as the top-level skill for Akka Java SDK gRPC endpoint work.
+Use this as the top-level skill for Akka Java SDK gRPC endpoint work when gRPC is already selected as an exposure surface for one or more backend capabilities.
+
+For broad product, PRD, feature, or service-contract requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing protobuf services. Do not start from RPC methods when capability authority, scope, side effects, approval, and audit semantics are still unclear.
 
 ## Goal
 

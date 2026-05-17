@@ -5,7 +5,9 @@ description: Orchestrate Akka Java SDK timer and TimedAction work across schedul
 
 # Akka Timed Actions and Timers
 
-Use this as the top-level skill for Akka Java SDK timer-backed flows.
+Use this as the top-level skill for Akka Java SDK timer-backed flows when a timer or TimedAction is already selected as a scheduled execution surface for one or more backend capabilities.
+
+For broad product, PRD, feature, reminder, expiry, or deadline requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing timers. Do not start from background jobs when scheduler authority, tenant/customer scope, idempotency, approval/policy references, no-op behavior, and audit semantics are still unclear.
 
 ## Goal
 
