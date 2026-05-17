@@ -229,7 +229,7 @@
 
 ### TASK-03-002: Add detailed Supplies Autopilot capability contract
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/03-capability-first-contracts-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-001]
@@ -251,7 +251,9 @@
   - consequential side effects default to policy-gated automation or decision-card approval
 - done criteria:
   - first DCA vertical slice has a current governed capability contract
-- notes: []
+- notes:
+  - completed: added the detailed CAP-03 supplies autopilot governed capability contract with actors/callers, AuthContext, schemas, data access, side effects, idempotency, approval gates, audit/trace, exposure surfaces, and tests; updated the capability README and index to route to the new file
+  - commit: see git history for this task
 
 ### TASK-03-003: Add lightweight contracts for remaining DCA capabilities
 
