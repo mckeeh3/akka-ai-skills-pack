@@ -379,7 +379,7 @@
 
 ### TASK-04-004: Update readiness summary after tests/UI/observability refresh
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/04-tests-ui-observability-readiness-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001, TASK-04-002, TASK-04-003]
@@ -398,7 +398,9 @@
   - readiness does not claim runnable-code readiness unless remaining integration/evaluation questions are answered
 - done criteria:
   - current readiness accurately reflects the refreshed reference state
-- notes: []
+- notes:
+  - completed: updated the DCA readiness status after the test, UI, and observability refreshes; added the latest readiness summary and review routing; corrected the structure gap summary so it no longer treats refreshed capability, auth/security, traceability, UI, or observability work as pending blockers while preserving not-ready-for-runnable-generation status
+  - commit: see git history for this task
 
 ### TASK-05-001: Final DCA refresh consistency review
 

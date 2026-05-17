@@ -5,32 +5,37 @@
   - DCA/domain-rich app-description review
   - comparison against the canonical secure AI-first SaaS seed app-description
   - capability-first planning for office-device/DCA lifecycle automation
-  - future specs, backlog, and implementation-slice planning
+  - bounded future specs, backlog, and implementation-slice planning
   - UI, trace, policy, decision-card, and outcome-loop discussion
+  - review of concrete description-level test expectations for `CAP-00` and `CAP-03`
 - not yet ready for:
   - runnable Akka/React application generation
   - complete code generation of the DCA reference app
   - production authentication, authorization, onboarding, support-access, or billing-boundary implementation
   - external DCA, ERP/fulfillment, service, billing, email, or identity-provider integration
-  - agent evaluation, threshold, retention, or fixture-backed automated validation
+  - agent evaluation, numeric threshold, retention/redaction, alert-threshold, or fixture-backed automated validation
 - decisive reasons:
   - this tree is a vertical reference extension, not the canonical secure SaaS seed or a runnable app description
-  - DCA operating-model, lifecycle, supplies-autopilot, policy, decision, trace, UI, and future-slice concepts are useful as source material
-  - secure SaaS foundation and capability-first alignment now exist at description level, but runnable implementation details, provider fixtures, and downstream integration contracts remain undefined
+  - secure SaaS foundation and capability-first alignment now exist at description level, including current auth/security, UI, observability, traceability, and concrete test expectations
+  - Supplies Autopilot (`CAP-03`) is the first detailed DCA vertical capability and is sufficiently described for future bounded realization planning
   - DCA-specific capabilities beyond the detailed Supplies Autopilot slice remain lightweight routing contracts rather than full implementation-ready contracts
-  - current tests now define concrete description-level foundation and Supplies Autopilot scenarios, but executable fixtures and provider/domain payloads are not yet defined
+  - current tests define concrete description-level foundation and Supplies Autopilot scenarios, but executable fixtures and provider/domain payloads are not yet defined
+  - refreshed UI and observability layers are internally consistent reference contracts, but runnable implementation still needs exact API schemas, realtime topics, provider adapters, thresholds, retention/redaction classes, and deterministic evaluation fixtures
 - blocking gaps before code generation:
   - refine lightweight DCA-specific capability contracts beyond `CAP-03` before implementing those later verticals
   - preserve the refreshed foundation/auth/security contracts during any future code generation; do not infer provider-specific details from examples
   - define executable fixtures and generated-test implementation details for the concrete acceptance, negative, regression, security, operational, audit/trace, and outcome specifications
-  - define external integration contracts for DCA telemetry, fulfillment/ERP, billing, service systems, email delivery/outbox, and identity-provider modes
-  - define or explicitly defer numeric policy thresholds, risk/confidence thresholds, retention periods, redaction classes, and evaluation fixtures
-  - reconcile UI, observability, traceability, readiness summaries, and realization handoff after the foundation and capability refresh tasks land
+  - define external integration contracts for DCA telemetry, fulfillment/ERP, billing, service systems, email delivery/outbox, WorkOS/JWT identity-provider modes, and deterministic agent/tool behavior
+  - define or explicitly defer numeric policy thresholds, risk/confidence thresholds, retention periods, redaction classes, alert thresholds, and evaluation fixtures
+  - reconcile realization handoff files during Sprint 5 before any executable DCA slice starts
 - accepted assumptions:
   - this repository maintains the DCA tree as reference material for the skills pack, not as this repository's business application
   - the canonical secure AI-first SaaS seed remains the structural and foundation baseline; DCA supplies domain-rich vertical semantics layered on top
   - future realization work must be explicitly requested and should start from a bounded slice rather than the whole DCA reference
-  - style-guide selection may stay reference-level until a downstream realization target is chosen, but UI generation must not begin without a selected style contract
+  - the selected `atlas-ops-supervisory-console` style guide is suitable for future generated UI, but generated code must still implement concrete CSS tokens, components, API state handling, accessibility, and frontend tests
 - last readiness update basis:
-  - TASK-04-001 in `specs/dca-app-description-refresh-migration/pending-tasks.md`
-  - concrete DCA test-layer refresh for `CAP-00` secure foundation and `CAP-03` Supplies Autopilot scenarios
+  - TASK-04-004 in `specs/dca-app-description-refresh-migration/pending-tasks.md`
+  - TASK-04-001 concrete DCA test-layer refresh for `CAP-00` secure foundation and `CAP-03` Supplies Autopilot scenarios
+  - TASK-04-002 observability refresh covering foundation security events plus DCA work/decision/policy/tool/data-access/outcome traces
+  - TASK-04-003 UI refresh covering mandatory foundation administration surfaces, DCA operational surfaces, API/realtime needs, tests, accessibility, and selected style guidance
+  - latest summary: `../80-review/latest-readiness-summary.md`
