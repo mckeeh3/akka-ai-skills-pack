@@ -53,15 +53,15 @@ Rules:
 ## Integration boundaries
 
 - WorkOS authenticates; Akka authorizes.
-- Email invite delivery is an adapter boundary. Production readiness requires configured delivery or accepted provider decision; local/dev/test must use an explicit captured outbox adapter with visible/auditable delivery failures.
-- SaaS Owner billing/subscription integration may access billing-safe Tenant metadata only and must not expose Tenant application data.
+- Email invite delivery is an adapter boundary. Production readiness requires configured delivery or accepted provider decision; local/dev/test must use an explicit captured outbox adapter with visible/auditable delivery failures, delivery attempts, provider/outbox ids, resend/revoke/expiry state, and no raw token exposure outside the delivery/acceptance boundary.
+- SaaS Owner billing/subscription integration may access billing-safe Tenant metadata only and must not expose Tenant application data, Customer service data, DCA telemetry, agent work traces, user settings, or non-billing profile details.
 - External DCA, ERP, supplier, shipping, meter, billing, and service integrations remain deferred until their capability contracts define auth, data minimization, idempotency, retries, redaction, and audit.
 - Agent tools must be narrower than broad administrative APIs whenever possible and must enforce the same backend capability contract as browser/API exposure.
 - MCP or service-to-service surfaces, if added later, must expose only selected tools/resources, use ACL/JWT/service identity, filter allowed tools by caller and scope, and audit remote access.
 
 ## Support-access boundary
 
-Support access is a Tenant-created, time-limited, reasoned, visible, revocable, and audited Tenant-scoped membership for SaaS Owner personnel. It is not impersonation by default and not a global super-admin bypass. Support-access use must cite tenant scope, reason, actor, target surface, expiry, and correlation id in audit/work traces.
+Support access is a Tenant-created, time-limited, reasoned, visible, revocable, and audited Tenant-scoped membership for SaaS Owner personnel. It is not impersonation by default and not a global super-admin bypass. Support-access create, use, extension, expiry, revocation, denied attempts, and review-agent recommendations must cite tenant scope, reason, actor, target surface, expiry, permission checked, decision-card link where present, and correlation id in audit/work traces.
 
 ## PoC adaptation note
 

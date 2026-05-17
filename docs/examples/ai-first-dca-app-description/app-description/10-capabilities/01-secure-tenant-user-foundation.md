@@ -27,13 +27,13 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
 - Canonical foundation roles: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR`.
 - DCA extension roles such as `DEALER_OWNER`, `OPERATIONS_SUPERVISOR`, and `POLICY_OWNER` mapped to scoped foundation roles and named permissions/capabilities.
 - `Permission/Capability` grants used by backend routes, commands, queries, workflows, views, timers, consumers, and agent tools.
-- `Invitation` lifecycle for SaaS Owner, Tenant, Customer, and user onboarding: create, deliver/capture email, resend, revoke/cancel, expire, accept, delivery status, delivery attempts, idempotency, and audit.
+- `Invitation` lifecycle for SaaS Owner, Tenant, Customer, and user onboarding: create local account/membership intent, deliver/capture email, expose delivery failure, resend, revoke/cancel, expire, accept/link WorkOS subject, track delivery status/attempts/resend count, enforce idempotency, and audit every step.
 - `/api/me` as the browser-safe account, profile, settings, membership, selected-context, role, and capability contract.
 - `AuthContext` containing account id, selected scope, tenant/customer ids when applicable, active membership, roles/capabilities, actor metadata, and correlation id.
 - `AdminAuditEvent` records for identity, account, membership, role, invitation, support-access, policy, approval, billing-boundary, data-access, denial, and consequential AI/tool activity.
 - Scoped admin read models: `UserDirectoryView`, `MembershipView`, `InvitationView`, `AdminAuditView`, and `AccessReviewQueueView`.
 - Tenant-created support-access memberships for SaaS Owner personnel, time-limited and auditable, with no global super-admin bypass.
-- SaaS Owner to Tenant subscription/billing boundary, including plan/subscription/entitlement metadata that excludes Tenant application data.
+- SaaS Owner to Tenant subscription/billing boundary, including plan/subscription/entitlement metadata, billing-safe contact/provider references, subscription status, and entitlement state that excludes Tenant application data.
 - AI-assisted admin offload: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and AdminPolicyProposalAgent where policy proposal drafting is enabled.
 - Foundation UI surfaces for sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, admin-agent recommendations, and decision cards.
 
@@ -42,7 +42,7 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
 - DCA supplies, service, telemetry, lifecycle, meter-review, or policy-threshold automation beyond the foundation permission and audit scaffolding.
 - Tenant-to-Customer billing, copier contract pricing, supply costs, service charges, and meter-billing calculations; those are DCA domain capabilities.
 - SaaS Owner access to Tenant application data without a Tenant-created support-access membership.
-- Self-registration of privileged users from WorkOS claims alone.
+- Self-registration of privileged users, Tenant access, Customer access, support access, or DCA authority from WorkOS claims alone.
 - Prompt-only, frontend-only, hidden-field, or navigation-only authorization.
 - Raw invitation tokens, provider secrets, WorkOS private identifiers, JWTs, or unrelated tenant/customer data in browser, view, log, audit summary, or agent-tool responses.
 
@@ -61,7 +61,7 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
 - AuthContext / scope:
   - WorkOS authenticates browser humans; Akka-owned local state authorizes all DCA and foundation actions.
   - Protected operations require an authenticated account, active local account status, selected `AuthContext`, active membership, matching tenant/customer scope, and required role/permission/capability.
-  - Invite acceptance and first-login linking may proceed only through a valid invitation, acceptance context, or explicitly modeled membership policy.
+  - Invite acceptance and first-login linking may proceed only through a valid invitation, acceptance context, or explicitly modeled membership policy; expired, revoked, cross-scope, delivery-failed-without-override, or already-accepted-by-another-subject invitations are denied.
   - SaaS Owner Admin authority is limited to platform-safe metadata, Tenant bootstrap, and SaaS Owner to Tenant billing/subscription state; it does not grant Tenant application-data access.
   - Support access is a normal Tenant-scoped membership created by a Tenant Admin, time-limited by default, reasoned, visible, revocable, and audited.
 - permissions / named capability grants:
@@ -70,6 +70,7 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
 - inputs / validation / idempotency:
   - commands include actor account id, selected scope, `tenantId` and `customerId` where required, target ids, correlation id, idempotency key, reason, and policy references where applicable.
   - invitations normalize email addresses and deduplicate active invites according to invitation policy.
+  - invitation commands include target scope, requested roles/capabilities, delivery policy, expiry, idempotency key, reason, and audit correlation id; raw tokens are limited to the delivery/acceptance boundary.
   - role/membership changes reject disabled actors or targets, unknown roles, invalid scopes, self-widening authority, cross-tenant ids, and last-admin removal.
   - `/api/me` linking is idempotent and must not duplicate accounts, widen scopes, or overwrite administrator-managed roles.
 - outputs / redaction / denial shape:
@@ -82,7 +83,7 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
   - every DCA domain read/write must include tenant/customer filters and apply redaction before browser or agent exposure.
 - side effects:
   - create/update local accounts, profiles, settings, tenants, customers, memberships, roles, invitations, support-access grants, billing-safe subscription/entitlement records, selected context, and admin audit events.
-  - send or capture invite/reminder email through a configured provider or safe outbox adapter.
+  - send or capture invite/reminder email through a configured production provider or explicit safe local/dev/test outbox adapter; delivery failures remain admin-visible and auditable.
   - schedule invitation expiry, support-access expiry, reminders, access-review checks, and billing/grace-period checks where modeled.
   - create decision cards for risky role, support-access, billing, account, policy, or admin-agent recommendations.
 - exposure surfaces:
@@ -155,6 +156,7 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
   - `../40-auth-security/authorization-rules.md`
   - `../40-auth-security/agent-permissions.md`
   - `../40-auth-security/data-protection.md`
+  - `../40-auth-security/foundation-onboarding-admin-boundaries.md`
   - `../40-auth-security/boundary-and-surface-rules.md`
 - observability:
   - `../50-observability/audit-trace-and-outcomes.md`

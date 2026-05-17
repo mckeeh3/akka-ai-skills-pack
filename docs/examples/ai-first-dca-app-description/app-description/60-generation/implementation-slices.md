@@ -16,7 +16,7 @@ This file translates the app-description example into future realization slices.
 
 Business goal: provide a secure, role-aware, Akka-hosted application foundation before broadening DCA operational automation.
 
-Source reference: adapt the working `examples/poc-user-auth-onboarding/` proof-of-concept for WorkOS/AuthKit, JWT-protected APIs, local Akka user/account authorization, startup admin bootstrap, admin audit logging, and React/Vite static hosting. Treat that PoC as implementation guidance, not a drop-in production security system.
+Source reference: adapt the working `examples/poc-user-auth-onboarding/` proof-of-concept for WorkOS/AuthKit, JWT-protected APIs, local Akka user/account authorization, admin audit logging, and React/Vite static hosting. Treat that PoC as implementation guidance only; the DCA foundation must add the current mandatory invitation lifecycle, scoped administration, support-access, and billing-boundary contracts rather than relying on bootstrap-only onboarding.
 
 Seed scope:
 
@@ -24,11 +24,12 @@ Seed scope:
 - WorkOS/AuthKit browser authentication;
 - frontend bearer-token calls to same-origin `/api/...` routes;
 - JWT-protected Akka API endpoints;
-- `/api/me` local account bootstrap with invited-user linking and active/disabled status;
+- `/api/me` local account resolution with invitation/acceptance-context linking, pending-invite/not-invited handling, selected context, and active/disabled status;
 - local Akka roles and scopes for app admin, dealer owner, operations supervisor, policy owner, auditor, customer admin, and baseline user access;
 - tenant/customer authorization boundaries enforced server-side;
-- startup admin bootstrap from backend-only environment variables;
-- admin invite, role assignment, activation/disable, tenant, and customer administration APIs;
+- bounded startup admin bootstrap from backend-only environment variables only for initial setup, not as the normal onboarding path;
+- complete invitation lifecycle APIs and behavior: create account/membership intent, deliver or capture email, delivery-failure visibility, resend, revoke/cancel, expire, accept, and audit;
+- admin user directory, membership, role assignment/replacement/removal, activation/disable, tenant, customer, support-access, access-review, admin-audit, and billing-boundary APIs;
 - admin/security audit entries for privileged operations;
 - role-aware frontend navigation as UX only, never as authorization;
 - unauthorized, forbidden, disabled-account, loading, empty, and error frontend states.
@@ -49,16 +50,17 @@ Implementation task groups:
 1. DCA auth/security app-description files for identity/trust, authorization, agent permissions, data protection, and route boundaries;
 2. user/account, tenant, customer, role, account-status, bootstrap, and admin-audit domain/components;
 3. WorkOS/JWT `/api/me`, local account linking, disabled-user denial, and centralized authorization helper;
-4. admin APIs for invites, roles, status, tenants, customers, and auditable privileged operations;
-5. React/Vite AuthKit shell, same-origin bearer-token API client, role-aware navigation, and Akka static hosting;
-6. security acceptance tests for missing JWT, first-login link, role/scope denial, audit, frontend auth state, and secret boundaries.
+4. admin APIs for invitation lifecycle, scoped user directory, memberships, roles, status, tenants, customers, support access, access review, admin audit, billing-boundary metadata, and auditable privileged operations;
+5. React/Vite AuthKit shell, same-origin bearer-token API client, role-aware navigation, invitation/admin/support-access screens, and Akka static hosting;
+6. security acceptance tests for missing JWT, no privileged self-registration, first-login invitation link, delivery failure/resend/revoke/expiry, role/scope denial, support-access expiry/revocation, admin audit, frontend auth state, billing-safe redaction, and secret boundaries.
 
 Done when a future app can demonstrate:
 
 ```text
 unauthenticated browser -> public shell/login prompt; protected APIs reject
-invited WorkOS user signs in -> /api/me links and activates local account
-SAAS_OWNER_ADMIN -> canonical foundation role for platform bootstrap/invites without direct Tenant application-data access
+invited WorkOS user signs in -> /api/me links and activates local account only through valid invitation or membership policy
+uninvited WorkOS user signs in -> no privileged self-registration; pending-invite/not-invited response
+SAAS_OWNER_ADMIN -> canonical foundation role for platform setup/invites/billing-safe metadata without direct Tenant application-data access
 APP_ADMIN -> DCA reference alias for SAAS_OWNER_ADMIN bootstrap capabilities only; prefer SAAS_OWNER_ADMIN in new generated apps
 TENANT_ADMIN/CUSTOMER_ADMIN -> can manage only assigned scopes
 DISABLED user with valid JWT -> backend rejects
@@ -205,7 +207,7 @@ Implementation task groups:
 
 Before or alongside slice work, downstream planning should create specs for:
 
-- authenticated seed-app foundation: WorkOS/AuthKit, JWT-protected APIs, `/api/me`, local Akka accounts/roles/scopes, startup admin bootstrap, admin audit, and Akka-hosted React/Vite shell;
+- authenticated seed-app foundation: WorkOS/AuthKit, JWT-protected APIs, `/api/me`, local Akka accounts/roles/scopes, complete invitation onboarding, bounded startup admin bootstrap, support-access lifecycle, billing-safe SaaS Owner boundary, admin audit, and Akka-hosted React/Vite shell;
 - tenancy, roles, and authority boundaries;
 - shared IDs, event names, trace correlation, and redaction classes;
 - frontend style guide and design tokens;

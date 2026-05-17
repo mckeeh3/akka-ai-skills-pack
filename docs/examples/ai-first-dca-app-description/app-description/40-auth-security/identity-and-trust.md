@@ -21,7 +21,7 @@ WorkOS proves external identity only. Local Akka records determine app authority
 - `UserSettings` for preferences only;
 - `Membership` records scoped to SaaS Owner, Tenant, or Customer with status, roles, expiry where applicable, and audit metadata;
 - `Role` and `Permission/Capability` grants used by endpoints, component commands, view queries, workflows, consumers, timers, and agent tools;
-- `Invitation` state for invite-only onboarding;
+- `Invitation` state for invite-only onboarding, including target scope, requested roles/capabilities, token hash or acceptance context, expiry, delivery status, delivery attempts, resend count, idempotency key, and audit metadata;
 - selected `AuthContext` for the current account, membership, tenant/customer scope, roles/capabilities, actor metadata, and correlation id.
 
 `UserProfile`, `UserSettings`, frontend navigation, JWT role claims, hidden fields, and prompt text never grant application authority.
@@ -33,12 +33,13 @@ WorkOS proves external identity only. Local Akka records determine app authority
 - validate the WorkOS JWT;
 - resolve or link the local `Account` idempotently from WorkOS subject/email;
 - require a valid invitation, acceptance context, or explicitly modeled membership policy before activating or attaching privileged access;
+- reject expired, revoked, delivery-failed-without-override, cross-scope, or already-accepted-by-another-subject invitations;
 - reject disabled local accounts even when the JWT is valid;
 - return pending-invite/not-invited status for unknown identities when self-registration is disabled;
 - return only browser-safe account, profile, settings, membership summaries, selected/default context, roles/capabilities, and UI capability hints;
 - avoid duplicating accounts, widening scopes, or overwriting administrator-managed roles on repeated calls.
 
-Privileged self-registration from WorkOS claims alone is forbidden.
+Privileged self-registration from WorkOS claims alone is forbidden. Invitation acceptance must be idempotent for the same linked subject and forbidden for a different subject.
 
 ## Startup admin bootstrap
 
@@ -49,7 +50,7 @@ Rules:
 - bootstrap is idempotent and auditable;
 - bootstrap may update only fields explicitly owned by bootstrap policy;
 - invalid bootstrap configuration fails loudly or surfaces an operational error;
-- bootstrap does not create a permanent bypass around invitations, memberships, roles, support-access, or tenant/customer scope checks;
+- bootstrap does not create a permanent bypass around invitations, memberships, roles, support-access, tenant/customer scope checks, or the normal Tenant/Customer onboarding lifecycle;
 - bootstrap values and provider secrets are never exposed to frontend code or assets.
 
 ## Trust boundaries
@@ -62,6 +63,6 @@ Rules:
 
 ## Audit and readiness implications
 
-Identity and trust behavior must emit `AdminAuditEvent` and/or work-trace facts for sign-in/linking, account creation/activation/disable/reactivate, profile/settings changes where required, context switches for privileged users, invitation acceptance, bootstrap-created admins, role/membership changes, support-access lifecycle/use, denials, and rejected privileged actions.
+Identity and trust behavior must emit `AdminAuditEvent` and/or work-trace facts for sign-in/linking, account creation/activation/disable/reactivate, profile/settings changes where required, context switches for privileged users, invitation create/delivery/resend/revoke/expire/acceptance/delivery failure, bootstrap-created admins, role/membership changes, support-access lifecycle/use, billing-boundary changes, denials, and rejected privileged actions.
 
 Generation remains blocked until this identity model is linked to tests for `/api/me`, disabled users, uninvited identities, tenant/customer isolation, admin audit emission, and frontend secret-boundary checks.

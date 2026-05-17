@@ -177,7 +177,7 @@
 
 ### TASK-02-003: Add invitation, admin, support-access, and billing-boundary details
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/02-secure-saas-foundation-alignment-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-002]
@@ -199,7 +199,9 @@
   - local invite/onboarding behavior is explicit and auditable
 - done criteria:
   - DCA foundation covers current mandatory SaaS onboarding/admin/billing boundary expectations
-- notes: []
+- notes:
+  - completed: added explicit invitation/onboarding lifecycle, auditable admin operations, support-access, and SaaS Owner billing-boundary guidance; updated the foundation capability, auth/security routing, and implementation slices to forbid privileged self-registration and avoid bootstrap-only onboarding assumptions
+  - commit: see git history for this task
 
 ### TASK-03-001: Refactor capability index to current capability-first shape
 

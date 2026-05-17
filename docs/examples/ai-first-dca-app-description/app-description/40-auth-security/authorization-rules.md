@@ -36,6 +36,7 @@ DCA-specific extension roles map onto foundation roles and named capabilities; t
 - Tenant-scoped roles may only list, query, mutate, or act within assigned tenant ids.
 - Customer-scoped roles may only list, query, mutate, or act within assigned customer ids.
 - SaaS Owner Admins may manage platform-safe metadata, Tenant bootstrap, and subscription/billing boundary records; they may not access Tenant application data without Tenant-created support-access.
+- Invitation onboarding is the normal path for privileged user activation; WorkOS claims alone must not create privileged users, Tenant access, Customer access, support access, or DCA authority.
 - No actor may grant a role, permission, support-access, or scope wider than their own authority.
 - Last-admin removal, high-privilege role assignment, account relink/reset, bulk admin actions, tenant suspension/reactivation, and billing overrides require policy evaluation and decision-card approval when configured.
 
@@ -47,7 +48,9 @@ DCA-specific extension roles map onto foundation roles and named capabilities; t
 | SaaS Owner/platform administration | `SAAS_OWNER_ADMIN` or explicit legacy DCA `APP_ADMIN` alias | manage platform-safe Tenant bootstrap and billing metadata only; all changes are audited |
 | Tenant administration | assigned `TENANT_ADMIN` | manage tenant users, invitations, memberships, roles, support-access, customer organizations, and tenant settings inside assigned tenant |
 | Customer administration | assigned `TENANT_ADMIN` or assigned `CUSTOMER_ADMIN` | manage customer-scoped users and memberships inside assigned tenant/customer scope |
+| Invitation lifecycle | scoped admin with invitation/manage capability | create local account/membership intent, deliver or capture email, resend, revoke/cancel, expire, accept, expose delivery failure, and audit every lifecycle step without exposing raw tokens |
 | Support access | Tenant Admin grant plus accepted support operator membership | time-limited, reasoned, visible, revocable, audited; no global super-admin bypass |
+| SaaS Owner billing boundary | `SAAS_OWNER_ADMIN` with billing capability | manage billing-safe Tenant metadata, plans, subscriptions, invoices/payment summaries, and entitlement state without reading Tenant application data |
 | Supplies decisions/exceptions | `DEALER_OWNER` or `OPERATIONS_SUPERVISOR` with matching scope and supply capability | actions target decision cards/workflows in actor tenant/customer/device scope and honor policy gates |
 | Policy proposals | `POLICY_OWNER`, `DEALER_OWNER`, or permitted supervisor within scope | proposals may be drafted without activation authority |
 | Policy commits/authority expansion | `POLICY_OWNER` or approved admin role plus approval gate and matching scope | activation requires simulation/replay evidence and audit/decision trace |
@@ -74,8 +77,10 @@ POST /api/admin/users/{userId}/roles
 POST /api/admin/users/{userId}/disable
 POST /api/admin/users/{userId}/activate
 GET  /api/admin/invitations
+GET  /api/admin/invitations/{invitationId}
 POST /api/admin/invitations/{invitationId}/resend
 POST /api/admin/invitations/{invitationId}/revoke
+GET  /api/admin/invitations/{invitationId}/audit
 GET  /api/admin/audit
 GET  /api/tenants
 POST /api/tenants
