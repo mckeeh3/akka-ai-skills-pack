@@ -1,28 +1,44 @@
 # Capabilities Index
 
-## Capability map
+This inventory is reference material for the skills pack's DCA vertical app-description example. It extends the canonical secure AI-first SaaS seed with DCA lifecycle-operations capabilities. In a target project, the equivalent `app-description/10-capabilities/` tree belongs to that project and should be maintained as the application's source of truth.
 
-| ID | Capability | AI-first purpose | Initial status |
-|---|---|---|---|
-| CAP-00 | Secure tenant and user foundation | Establish WorkOS-authenticated humans, Akka-owned authorization, SaaS Owner/Tenant/Customer boundaries, memberships, roles, invitations, `/api/me`, support access, billing boundary, admin audit, and tenant/customer isolation before DCA-specific automation. | mandatory foundation |
-| CAP-01 | Lifecycle orchestration | Keep customers, devices, and DCA collectors moving through explicit lifecycle states and gates. | foundation |
-| CAP-02 | Telemetry intelligence | Convert meter reads, consumable levels, faults, collector health, and availability signals into actionable work. | foundation |
-| CAP-03 | Supplies autopilot | Forecast depletion, verify entitlement and stock, prepare shipments, and escalate high-cost or abnormal cases. | first implementation slice |
-| CAP-04 | Service coordination | Detect service needs, prepare tickets, recommend remote fixes or dispatches, and escalate SLA risk. | planned |
-| CAP-05 | Meter and billing review | Prepare billing-impacting records from telemetry while surfacing anomalies and missing reads for review. | planned |
-| CAP-06 | Onboarding and installation | Plan new customer onboarding, coordinate installation, verify DCA reporting, map devices to contracts, and open operational service. | planned |
-| CAP-07 | Offboarding and retention | Stop automation safely, remove or deauthorize devices and collectors, resolve final billing, and apply retention policy. | planned |
-| CAP-08 | Policy governance | Maintain approval thresholds, contract/service/supply/billing rules, and governed policy improvements. | planned |
-| CAP-09 | Owner command center | Present active objectives, agent work, blocked lifecycle gates, pending decisions, risk, and outcomes. | planned |
-| CAP-10 | Audit and outcome review | Explain what happened, who/what authorized it, which evidence and policies applied, and whether outcomes improved. | planned |
+Capabilities are governed backend operations or queries. Endpoints, workflows, agents, entities, timers, consumers, and UI actions are selected exposure or realization surfaces; they are not capability roots.
+
+## Capability inventory
+
+| Capability id | File | Class | Primary actors/callers | Protected scope | Selected exposure surfaces |
+|---|---|---|---|---|---|
+| `secure-tenant-user-foundation` (`CAP-00`) | `01-secure-tenant-user-foundation.md` | command, read/evidence, workflow, scheduled, trace/audit, policy/governance | SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, tenant member, invited user, support operator, admin-assistant agents, invitation workflow, expiry/reminder timers, email/outbox consumer | authenticated account, selected `AuthContext`, SaaS Owner/Tenant/Customer scope, active membership, role/permission/capability grants, support-access grant, billing-boundary authority | browser foundation/admin UI, JWT HTTP APIs including `/api/me`, admin views, invitation/support-access workflows, expiry/reminder timers, email/outbox consumer, scoped admin-agent tools |
+| `lifecycle-orchestration` (`CAP-01`) | planned lightweight contract | workflow, command, read/evidence, approval | Tenant operations supervisor, dealer owner, lifecycle coordinator agent, installation/service workflows, customer admin where delegated | selected tenant/customer, customer lifecycle authority, device lifecycle authority, collector lifecycle authority, lifecycle gate permissions | lifecycle operations UI, HTTP APIs, workflow steps, lifecycle views, decision cards, scoped agent recommendations |
+| `telemetry-intelligence` (`CAP-02`) | planned lightweight contract | reactive, read/evidence, scheduled, proposal | DCA telemetry ingest service, tenant operations users, telemetry analyst agent, scheduled refresh/recheck timers, exception workflow | selected tenant/customer, device/collector scope, telemetry ingest permission, data-source trust boundary | service/event ingestion surface, scoped telemetry views, scheduled health/depletion refresh, exception decision cards, read-only evidence tools |
+| `supplies-autopilot` (`CAP-03`) | planned detailed contract: `03-supplies-autopilot.md` | workflow, proposal, approval, command, read/evidence, reactive | Tenant operations supervisor, dealer owner, supplies coordinator agent, inventory/shipping integration caller, telemetry consumer, approval workflow | selected tenant/customer, device/contract entitlement scope, supplies policy grants, shipment/approval permission, inventory/shipping integration boundary | supplies autopilot UI, HTTP APIs, workflow steps, scoped evidence views, decision cards, policy-gated agent tools, integration calls, work/outcome traces |
+| `service-coordination` (`CAP-04`) | planned lightweight contract | workflow, proposal, approval, command, read/evidence, reactive | Tenant service dispatcher, operations supervisor, service coordinator agent, telemetry/fault consumer, technician/service integration caller | selected tenant/customer, device/service-ticket scope, SLA policy grants, dispatch/remote-fix permissions | service coordination UI, HTTP APIs, workflow steps, ticket/fault views, decision cards, scoped agent recommendations, integration calls |
+| `meter-billing-review` (`CAP-05`) | planned lightweight contract | read/evidence, proposal, approval, workflow, command | Tenant billing analyst, dealer owner, billing-review agent, meter telemetry consumer, billing integration caller | selected tenant/customer, meter-read scope, contract/billing authority, billing-impact approval permission | billing review UI, HTTP APIs, review workflow, anomaly/evidence views, decision cards, scoped agent recommendations, billing integration handoff |
+| `onboarding-installation` (`CAP-06`) | planned lightweight contract | workflow, command, read/evidence, approval | Tenant onboarding coordinator, customer admin, installation coordinator agent, installer/service integration caller | selected tenant/customer, customer onboarding scope, device/collector installation scope, contract mapping authority | onboarding UI, HTTP APIs, installation workflow, lifecycle views, decision cards, customer-safe status views, scoped agent recommendations |
+| `offboarding-retention` (`CAP-07`) | planned lightweight contract | workflow, command, approval, scheduled, read/evidence | Tenant operations supervisor, dealer owner, customer admin where delegated, offboarding coordinator agent, retention/expiry timers | selected tenant/customer, customer/device/collector offboarding scope, retention policy, final billing and deauthorization permissions | offboarding UI, HTTP APIs, offboarding workflow, retention timers, decision cards, audit/evidence views, scoped agent recommendations |
+| `policy-governance` (`CAP-08`) | planned lightweight contract | policy/governance, proposal, approval, read/evidence, trace/audit | Policy Owner, dealer owner, operations supervisor, governance reviewer, policy proposal agent, evaluator agent | selected tenant/customer, policy family, approval authority, activation/rollback permission, policy simulation data boundary | governance UI, HTTP APIs, policy review/approval workflow, simulation/evidence views, decision cards, scoped proposal tools, audit traces |
+| `owner-command-center` (`CAP-09`) | planned lightweight contract | read/evidence, command, approval | Dealer owner, operations supervisor, auditor, agent coordinator, decision/workflow callers | selected tenant/customer, objective/work/decision visibility, role-scoped operational and audit permissions | command-center UI, HTTP APIs, dashboard/evidence views, decision queue, supervision actions, realtime/progress surfaces, scoped summary tools |
+| `audit-outcome-review` (`CAP-10`) | planned lightweight contract | trace/audit, read/evidence, scheduled | Auditor, dealer owner, operations supervisor, SaaS support with support access, audit summary agent, outcome evaluator, retention/export timers | selected tenant/customer, audit visibility grant, support-access grant, outcome metric boundary, retention/export policy | audit/outcome UI, HTTP APIs, audit/outcome views, scheduled digests/retention/export jobs, scoped summary/evaluation tools |
+
+## Capability contract expectations
+
+Each capability contract should define or link to:
+
+- purpose, in-scope outcomes, and out-of-scope outcomes;
+- actors/callers and `AuthContext` with tenant/customer scope, role, permission, and named capability grants;
+- input/output schemas, validation, safe denial/error shape, redaction, idempotency, and correlation expectations;
+- data access boundaries, side effects, policy/approval/escalation rules, and autonomy level;
+- audit/work-trace obligations and retention/redaction expectations;
+- selected exposure surfaces or explicit non-exposure;
+- links to operating-model, behavior, tests, auth/security, observability, UI, generation, and traceability artifacts.
 
 ## Mandatory secure SaaS foundation
 
 `01-secure-tenant-user-foundation.md` is the first capability contract for the DCA vertical reference. It defines the required secure SaaS substrate: `Account`, `UserProfile`, `UserSettings`, `Membership`, `Role`, `Permission/Capability`, `Invitation`, `AuthContext`, `/api/me`, `AdminAuditEvent`, support access, SaaS Owner to Tenant billing boundary, admin read models, and tenant/customer isolation. DCA-specific capabilities must consume this foundation instead of redefining authentication or authorization.
 
-## Lifecycle foundation
+## Current lifecycle vocabulary
 
-The app centers work around three lifecycle families instead of isolated records.
+The app centers DCA work around three lifecycle families. These are domain state vocabularies used by multiple capabilities, not capability roots by themselves.
 
 ### Customer lifecycle
 
@@ -82,9 +98,9 @@ Required
 → Archived
 ```
 
-## First slice: supplies autopilot
+## First detailed vertical slice: supplies autopilot
 
-The first implementation slice should prove the operating model with bounded automation:
+The first detailed DCA capability contract should prove the operating model with bounded automation:
 
 1. receive or refresh device consumable telemetry;
 2. forecast depletion and urgency;
@@ -97,3 +113,5 @@ The first implementation slice should prove the operating model with bounded aut
 ## Scope boundaries
 
 The example intentionally preserves CRM, ERP, and DCA concepts as source/integration domains, but the product boundary is lifecycle operations. It may read from or write to existing systems, yet its own authoritative description focuses on goals, delegated work, policies, decisions, traces, and outcomes.
+
+Planned capability entries intentionally avoid inventing vendor-specific thresholds, API contracts, pricing rules, or shipment/billing semantics before the corresponding capability contract task defines accepted details.

@@ -205,7 +205,7 @@
 
 ### TASK-03-001: Refactor capability index to current capability-first shape
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/03-capability-first-contracts-build-backlog.md
 - task brief: none
 - depends on: [TASK-02-001]
@@ -223,7 +223,9 @@
   - foundation capability appears before DCA-specific automation
 - done criteria:
   - DCA capability index matches current capability-first inventory expectations
-- notes: []
+- notes:
+  - completed: refactored the DCA capability index into the current capability-first inventory shape with capability ids, classes, actors/callers, protected scopes, and exposure surfaces; preserved the secure foundation before DCA-specific automation and clarified that endpoints, workflows, agents, entities, timers, consumers, and UI actions are not capability roots
+  - commit: see git history for this task
 
 ### TASK-03-002: Add detailed Supplies Autopilot capability contract
 
