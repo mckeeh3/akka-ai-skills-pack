@@ -777,7 +777,7 @@
 
 ### TASK-06-003: Example and test coverage review
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/06-final-consistency-review-build-backlog.md
 - task brief: none
 - depends on: [TASK-06-001]
@@ -796,7 +796,10 @@
 - done criteria:
   - example/test coverage state is clear
 - notes:
-  - pending
+  - completed: added `specs/capability-first-backend-migration/example-test-coverage-review.md` and updated `docs/agent-coverage-matrix.md` with a capability-first exposure coverage addendum
+  - coverage: documented test-backed examples for read-only component tools, browser/API reuse, remote MCP exposure, consequential proposal/approval, supervised workflows, and scoped evidence views; marked timer coverage as broader supply-slice coverage and event-reactive consumer capability coverage as an explicit residual gap
+  - checks: `mvn -q -Dtest=CartInspectorAgentTest,RefundApprovalCapabilityTest,SupervisedExportWorkflowIntegrationTest,SupervisedExportEvidenceViewIntegrationTest,RemoteShoppingCartAgentTest,ShoppingCartMcpEndpointTest,ShoppingCartIntegrationTest test`; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review capability example test coverage`
 
 ### TASK-06-004: Write migration completion summary
 

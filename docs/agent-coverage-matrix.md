@@ -44,14 +44,30 @@ Legend:
 | In-code model override and multiple configured model choices | `akka-context/sdk/agents.html.md` | `akka-agent-component` | `ConfiguredModelActivityAgent.java`, `src/main/resources/application.conf` (`openai-low-temperature`) | `ConfiguredModelActivityAgentTest.java` | ✅ |
 | Custom model provider integration | `akka-context/sdk/agents.html.md` | none yet | no focused local example yet | no focused test yet | △ |
 
+## Capability-first exposure coverage addendum
+
+Use this addendum when checking whether agent-facing examples preserve governed capability semantics across tools, APIs, MCP, workflows, views, timers, and consumers.
+
+| Capability-first pattern | Canonical local examples | Test/reference coverage | Status |
+|---|---|---|---|
+| Read-only entity/component-tool capability with curated output | `ShoppingCartEntity.inspectCartSummary`, `CartInspectorAgent` | `CartInspectorAgentTest` | ✅ |
+| Same read-only capability reused by browser/API | `ShoppingCartEndpoint` `GET /carts/{cartId}/summary` | `ShoppingCartIntegrationTest.browserApiReusesReadOnlyInspectSummaryCapability` | ✅ |
+| Remote MCP boundary with selected read-only tool/resource exposure | `ShoppingCartToolsMcpEndpoint`, `ShoppingCartMcpEndpoint`, `RemoteShoppingCartAgent` | `RemoteShoppingCartAgentTest`, `ShoppingCartMcpEndpointTest` | ✅ |
+| Consequential capability uses proposal/approval before side effect | `RefundProposalTools`, `RefundApprovalAgent`, `RefundApprovalWorkflow` | `RefundApprovalCapabilityTest` | ✅ |
+| Workflow-backed supervised capability with trace, approval/denial, idempotency, and validation | `SupervisedExportWorkflow` | `SupervisedExportWorkflowIntegrationTest` | ✅ |
+| View-backed scoped evidence capability with redaction | `SupervisedExportEvidenceView` | `SupervisedExportEvidenceViewIntegrationTest` | ✅ |
+| Timer-backed capability execution | `SupplyDecisionTimedAction`, `SupplyAutopilotWorkflow` | `SupplyDecisionTimedActionTest`, `SupplyAutopilotWorkflowIntegrationTest`, `SupplySliceAcceptanceIntegrationTest` | ◑ covered by the broader AI-first supply slice, not a minimal standalone capability-first example |
+| Event-reactive consumer capability execution | existing consumer examples plus supply slice event flow | consumer integration tests exist, but no minimal capability-first consumer reference was added in the migration | △ |
+
 ## Current cleanup backlog
 
 Small, high-value follow-ups for the next sprint:
 
-1. Add focused coverage for `SessionMemoryCompactionStreamEndpoint`; current compaction coverage stops at agent + consumer + audit-view path.
-2. Add a minimal custom-model-provider reference only if the repository decides that hosted/local built-ins are no longer enough.
-3. Add a small classpath-backed skill-tool example if harness-like runtime skill loading becomes a common application pattern.
-4. Consider a direct stream-agent test if endpoint-level streaming coverage becomes too indirect for future agents.
+1. Add a minimal event-reactive capability example when consumer authority, provenance, idempotency, and audit semantics need a small standalone reference.
+2. Add focused coverage for `SessionMemoryCompactionStreamEndpoint`; current compaction coverage stops at agent + consumer + audit-view path.
+3. Add a minimal custom-model-provider reference only if the repository decides that hosted/local built-ins are no longer enough.
+4. Add a small classpath-backed skill-tool example if harness-like runtime skill loading becomes a common application pattern.
+5. Consider a direct stream-agent test if endpoint-level streaming coverage becomes too indirect for future agents.
 
 ## Fast routing guide
 
