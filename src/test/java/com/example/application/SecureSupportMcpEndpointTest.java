@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 class SecureSupportMcpEndpointTest {
 
   @Test
-  void callerContextToolReturnsJwtAndHeaderDetails() throws Exception {
+  void callerContextToolReturnsRedactedJwtAndHeaderSummary() throws Exception {
     var endpoint = new SecureSupportMcpEndpoint();
     endpoint._internalSetRequestContext(
         new TestMcpRequestContext(
@@ -41,6 +41,8 @@ class SecureSupportMcpEndpointTest {
     assertEquals("acme", caller.tenant());
     assertTrue(caller.internetPrincipal());
     assertEquals(2, caller.headerCount());
+    assertTrue(json.contains("headerCount"));
+    assertTrue(!json.contains("X-Request-Id"));
   }
 
   @Test
@@ -54,7 +56,7 @@ class SecureSupportMcpEndpointTest {
 
     var prompt = endpoint.triagePrompt("Payment confirmation email missing", "high");
 
-    assertTrue(prompt.contains("tenant globex"));
+    assertTrue(prompt.contains("tenant globex after backend authorization confirms this scope"));
     assertTrue(prompt.contains("bob"));
     assertTrue(prompt.contains("Issue severity: high"));
     assertTrue(prompt.contains("Payment confirmation email missing"));

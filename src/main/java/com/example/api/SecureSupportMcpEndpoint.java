@@ -24,7 +24,7 @@ import java.util.Optional;
     serverName = "support-operations",
     serverVersion = "1.0.0",
     instructions =
-        "Use these prompts and tools only for authenticated support workflows. Read caller context before generating tenant-specific guidance.")
+        "Use these prompts and tools only for authenticated support workflows. Read the redacted caller context before generating tenant-specific guidance; JWT validation is authentication, not tenant authorization.")
 public class SecureSupportMcpEndpoint extends AbstractMcpEndpoint {
 
   public record CallerSummary(
@@ -37,7 +37,7 @@ public class SecureSupportMcpEndpoint extends AbstractMcpEndpoint {
 
   @McpTool(
       description =
-          "Return authenticated caller context as compact JSON, including bearer-token claims and request headers useful for support workflows.")
+          "Capability support.caller-context.read: return redacted authenticated caller context as compact JSON for support routing. Do not return raw bearer tokens, all request headers, or treat tenant headers as authorization.")
   public String callerContext() {
     return JsonSupport.encodeToString(currentCallerSummary());
   }
@@ -51,7 +51,7 @@ public class SecureSupportMcpEndpoint extends AbstractMcpEndpoint {
     var caller = currentCallerSummary();
 
     return """
-        You are assisting tenant %s.
+        You are assisting tenant %s after backend authorization confirms this scope.
         The authenticated support agent is %s with role %s.
         Token issuer: %s
         Issue severity: %s

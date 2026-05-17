@@ -16,15 +16,20 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * MCP endpoint example that exposes shopping-cart tools, resources, and prompts for LLM clients.
+ * MCP endpoint example that exposes selected shopping-cart capabilities for LLM clients.
+ *
+ * <p>Capability exposed: {@code cart.summary.inspect}. It is read-only evidence for a remote
+ * assistant and returns a curated summary instead of raw entity state. Production SaaS variants
+ * must additionally enforce caller AuthContext, tenant/customer scope, and data-access audit before
+ * loading protected carts.
  */
-@Acl(allow = @Acl.Matcher(principal = Acl.Principal.ALL))
+@Acl(allow = @Acl.Matcher(service = "shopping-assistant-service"))
 @McpEndpoint(
     path = "/mcp/shopping",
     serverName = "shopping-cart-assistant",
     serverVersion = "1.0.0",
     instructions =
-        "Use tools to inspect cart state. Read the checkout guidelines resource before suggesting checkout steps.")
+        "Use these tools only for selected read-only shopping-cart evidence capabilities. Read the checkout guidelines resource before suggesting checkout steps; do not treat this MCP endpoint as authority to mutate carts.")
 public class ShoppingCartMcpEndpoint {
 
   public record CartItem(String productId, String name, int quantity) {}
@@ -51,15 +56,16 @@ public class ShoppingCartMcpEndpoint {
 
   @McpTool(
       description =
-          "Return a compact JSON summary of a shopping cart so an LLM can answer questions about items, quantities, and checkout readiness.")
-  public String getCartSummary(@Description("The shopping cart id to inspect") String cartId) {
+          "Capability cart.summary.inspect: return compact, read-only JSON evidence for an authorized shopping cart, including items, quantities, and checkout readiness. This tool does not expose raw cart state and does not mutate the cart.")
+  public String getCartSummary(
+      @Description("The shopping cart id to inspect within the caller's allowed scope") String cartId) {
     return JsonSupport.encodeToString(toSummary(loadCart(cartId)));
   }
 
   @McpTool(
       name = "suggest-next-action",
       description =
-          "Given a cart id and the customer's goal, return the next assistant action to take as compact JSON.",
+          "Capability cart.next-action.suggest: given a scoped cart id and the customer's goal, return a read-only next-action suggestion as compact JSON without mutating the cart.",
       inputSchema =
           """
           {
@@ -120,7 +126,7 @@ public class ShoppingCartMcpEndpoint {
   @McpResource(
       uriTemplate = "cart://summary/{cartId}",
       name = "Cart summary",
-      description = "Structured JSON summary for a specific shopping cart id.",
+      description = "Curated JSON summary for a specific shopping cart id within the caller's allowed scope.",
       mimeType = "application/json")
   public CartSummary cartSummaryResource(String cartId) {
     return toSummary(loadCart(cartId));

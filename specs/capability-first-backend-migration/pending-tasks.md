@@ -678,7 +678,7 @@
 
 ### TASK-05-004: Review examples and tests for stale unsafe tool patterns
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/05-review-and-stale-content-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-05-001]
@@ -697,7 +697,9 @@
 - done criteria:
   - stale example/test patterns are resolved or queued
 - notes:
-  - pending
+  - completed: added `specs/capability-first-backend-migration/example-test-safety-review.md`; tightened older MCP/support examples so they use selected read-only capabilities, service-scoped MCP ACLs, curated/redacted evidence, explicit AuthContext/tenant-audit caveats, and no raw header/token exposure; confirmed current agent-tool tests use deterministic `TestModelProvider` patterns and bounded/proposal-only authority for consequential refund examples
+  - checks: reviewed agent/MCP/tool examples and tests with `rg`; `mvn -q -Dtest=SecureSupportMcpEndpointTest,ShoppingCartMcpEndpointTest test`; targeted search for remaining MCP `ALL` ACL, raw-state, raw bearer/header, and generic cart-state language
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review examples for safe tool authority`
 
 ### TASK-05-005: Remove, archive, or supersede duplicate capability migration content
 
