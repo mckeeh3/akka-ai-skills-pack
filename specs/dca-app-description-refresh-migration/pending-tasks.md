@@ -330,7 +330,7 @@
 
 ### TASK-04-002: Strengthen observability and trace requirements
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/04-tests-ui-observability-readiness-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-001]
@@ -348,7 +348,9 @@
   - captures foundation security events and DCA work/decision/policy/tool/data-access/outcome traces
 - done criteria:
   - observability requirements are generation-ready enough for future slices
-- notes: []
+- notes:
+  - completed: split and strengthened the DCA observability layer with logs/audit, metrics, traces/correlation, health/alerts, and expanded audit/trace/outcome guidance; verified foundation security events and DCA work/decision/policy/tool/data-access/outcome traces are explicitly covered
+  - commit: see git history for this task
 
 ### TASK-04-003: Reconcile UI surfaces and style guide
 
