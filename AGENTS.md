@@ -61,7 +61,7 @@ Treat this repository as a **requirements-first, intent-driven Akka pack for AI 
 
 The canonical doctrine is `docs/ai-first-saas-application-architecture.md`. Former temporary concept files are archived under `specs/ai-first-skills-pack-migration/archive/inbox/` as provenance/source material only.
 
-For high-level product input, begin from the secure AI-first SaaS operating model: durable goals and plans, bounded agent or agent-team execution, policy/permission controls, human supervision, decision/exception handling, audit traces, outcome loops, and a mandatory SaaS security foundation. Then choose the description-first, decomposition, or focused implementation path.
+For high-level product input, begin from the secure AI-first SaaS operating model: durable goals and plans, bounded agent or agent-team execution, policy/permission controls, human supervision, decision/exception handling, audit traces, outcome loops, and a mandatory SaaS security foundation. Then model backend behavior as governed capabilities before choosing the description-first, decomposition, or focused implementation path.
 
 Security and the web UI are **mandatory from project start** for every generated application unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. The baseline foundation must model identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, security review, and browser UI surfaces for sign-in, context selection, administration, supervision, decisions, governance, audit, and outcomes before app-specific features are treated as generation-ready.
 
@@ -70,9 +70,10 @@ AI-first is the default interpretation for delegated operational work, autonomou
 Its job is to help an agent go from:
 1. high-level input
 2. secure AI-first SaaS operating-model interpretation
-3. either to authoritative app-description maintenance and review, or to Akka solution decomposition
-4. to foundation-first skill selection and realization planning
-5. to component-by-component code and test generation when realization is requested
+3. governed backend capability inventory and authority/exposure semantics
+4. either to authoritative app-description maintenance and review, or to Akka solution decomposition
+5. to foundation-first skill selection and realization planning
+6. to component-by-component code and test generation when realization is requested
 
 Important distinction:
 - `akka-context/` contains official Akka reference material and semantic source-of-truth docs
@@ -90,7 +91,7 @@ prefer the **agent-friendly structure**.
 
 This repository now has an AI-first SaaS interpretation layer followed by two first-class operating modes.
 
-For broad product input, inspect the intent through the AI-first architecture doctrine before decomposing into CRUD screens or isolated Akka components. Existing Akka component skills remain the implementation substrate; they are selected after the operating model, durable objects, governance needs, mandatory UI surfaces, and delivery path are clear enough.
+For broad product input, inspect the intent through the AI-first architecture doctrine and capability-first backend doctrine before decomposing into CRUD screens or isolated Akka components. Existing Akka component skills remain the implementation substrate; they are selected after the operating model, durable objects, governed capabilities, authority/exposure rules, mandatory UI surfaces, and delivery path are clear enough.
 
 ### Mode A: description-first application maintenance
 Use this when the user is primarily describing, revising, reviewing, or validating the app as a maintained internal description before realization.
@@ -115,11 +116,12 @@ Use this when the goal is to derive the Akka solution shape and then write or re
 
 For most Mode B tasks, follow this flow:
 1. read the user's input completely
-2. if the solution shape is not yet clear, decompose first
-3. resolve any focused architecture choice that remains open
-4. load only the smallest relevant implementation skills
-5. generate code and tests component by component
-6. repeat that loop as the app evolves over time
+2. model governed backend capabilities before component selection
+3. if the solution shape is not yet clear, decompose from the capability contracts
+4. resolve any focused architecture choice that remains open
+5. load only the smallest relevant implementation skills
+6. generate code and tests component by component
+7. repeat that loop as the app evolves over time
 
 A good decomposition result is not a stopping point.
 It is an **implementation contract** for downstream coding.
@@ -134,7 +136,7 @@ It sits alongside the description-first `app-descriptions` path rather than repl
 ### Stage 1: Intent and architecture
 Use when the task starts from requirements, a prompt, a PRD, a specification file, a feature request, or any other high-level input and the Akka solution shape is not yet known.
 
-For high-level product input, apply the AI-first SaaS default first when the product involves delegated work, agents, governance, decisions, supervision, audit, or outcomes; then decompose into the Akka substrate.
+For high-level product input, apply the AI-first SaaS default first when the product involves delegated work, agents, governance, decisions, supervision, audit, or outcomes; then identify governed backend capabilities before decomposing into the Akka substrate.
 
 Start with:
 - `akka-solution-decomposition`
@@ -257,7 +259,7 @@ At the start of a new session:
 1. read `AGENTS.md`
 2. read this file
 3. read `skills/README.md`
-4. read `docs/ai-first-saas-application-architecture.md` for high-level product, routing, doctrine, app-description, PRD/spec/backlog, or skill-design work
+4. read `docs/ai-first-saas-application-architecture.md` and `docs/capability-first-backend-architecture.md` for high-level product, routing, doctrine, app-description, PRD/spec/backlog, or skill-design work
 5. if the task is agent-related, read `docs/agent-coverage-matrix.md`
 6. if the task is app-description-related, read:
    - `docs/description-first-application-doctrine.md`
@@ -275,9 +277,9 @@ At the start of a new session:
    - docs/snippet generation
    - cross-cutting topic
    - repo structure / skill design
-8. for high-level product input, interpret agentic operating model needs before CRUD/component decomposition
-9. if the task starts from high-level input and the user wants description-first maintenance or realization, start with `app-descriptions`
-10. if the task starts from high-level input and the component set is not yet known, start with `akka-solution-decomposition`
+8. for high-level product input, interpret agentic operating model needs and governed backend capabilities before CRUD/component decomposition
+9. if the task starts from high-level input and the user wants description-first maintenance or realization, start with `app-descriptions` and preserve capability inventory semantics
+10. if the task starts from high-level input and the component set is not yet known, start with `akka-solution-decomposition` after identifying capability contracts
 11. if the task is narrowed to a stateful core but entity type is still open, use `akka-entity-type-selection`
 12. otherwise, load the smallest relevant local skill set first
 13. use `akka-context/sdk/...` when you need official semantics or a feature not yet well represented locally

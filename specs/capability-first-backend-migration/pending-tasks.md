@@ -604,7 +604,7 @@
 
 ### TASK-05-001: Review doctrine and routing for stale/conflicting content
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/05-review-and-stale-content-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-04-006]
@@ -623,7 +623,9 @@
 - done criteria:
   - doctrine/routing stale content findings are resolved or queued
 - notes:
-  - pending
+  - completed: reviewed top-level doctrine/routing and added `specs/capability-first-backend-migration/doctrine-routing-review.md`; refined `AGENTS.md` so high-level product/routing guidance explicitly routes through governed backend capability modeling before description/decomposition/component implementation
+  - checks: `rg` review of doctrine/routing broad-input, CRUD, Stage 3, and agent-tool language; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review capability-first doctrine routing`
 
 ### TASK-05-002: Review app-description and decomposition paths for stale content
 
