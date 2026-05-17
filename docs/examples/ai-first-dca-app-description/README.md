@@ -3,15 +3,17 @@
 ## Purpose
 
 This directory is a worked AI-first app-description reference example for the `akka-ai-skills-pack`.
-It describes an AI-first DCA and office-device lifecycle platform for small office-device dealers.
+It describes an AI-first DCA and office-device lifecycle platform for small office-device dealers as a **domain-rich vertical extension** of the canonical secure AI-first SaaS seed example.
+
+Use `../ai-first-saas-seed-app-description/` as the canonical baseline for secure SaaS foundation shape, app-description structure, and reusable generated-app starting points. Use this DCA example when an agent needs a richer vertical reference for lifecycle automation, telemetry-driven delegated work, policies, approvals, decision cards, traces, and outcome loops.
 
 This is a **reference asset for the skills pack**, not the business app of this repository.
 In a downstream project, an installed skills pack would maintain that project's real `app-description/` tree in the target project workspace.
 
 ## Source material mapping
 
-This example intentionally promotes selected ideas from temporary migration source material into the canonical app-description shape.
-Installed-pack users do not need those source-only provenance files; use this example and the canonical docs below as operative guidance.
+This example intentionally promotes selected ideas from temporary migration source material into the current app-description shape.
+Installed-pack users do not need those source-only provenance files; use the seed example and canonical docs below as the baseline guidance, then use this DCA example as a vertical/domain extension reference.
 
 | Source | How this example uses it |
 |---|---|
@@ -39,7 +41,7 @@ Non-goals for this reference example:
 
 ## Current structure
 
-The Sprint 6 worked example includes product vision, operating model, agent-team, governance, decision-card, workflow, UI, audit/trace/outcome, traceability, and implementation-slice reference files. It remains a reference app-description asset, not runnable application code.
+The current DCA reference includes product vision, operating model, agent-team, governance, decision-card, workflow, UI, audit/trace/outcome, traceability, and implementation-slice reference files. It remains a non-runnable reference app-description asset, not the canonical seed template and not application code.
 
 ```text
 app-description/
@@ -70,7 +72,7 @@ The reference now covers:
 - bounded coordinator/specialist/evaluator agents and approval/escalation boundaries;
 - policy clauses, thresholds, governed policy changes, decision-card evidence, and exception handling;
 - supervision-oriented UI surfaces, audit/work/decision traces, outcome metrics, and traceability maps;
-- WorkOS/JWT/local-account seed-app auth/security semantics adapted from the working user-auth onboarding PoC;
+- DCA-specific adaptation points for the secure SaaS foundation described by the seed example;
 - non-runnable realization slices that show how future Akka/React implementation work can be decomposed.
 
-Remaining work belongs in future executable reference slices and tests, not in this app-description reference.
+Refresh work is aligning this vertical example with the current seed/foundation doctrine. Future executable reference slices and tests should start from the seed baseline plus this DCA vertical description rather than treating DCA as the structural template.

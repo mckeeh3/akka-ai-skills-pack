@@ -6,7 +6,7 @@ AI-First DCA and Office Device Lifecycle Platform.
 
 ## Reference-asset status
 
-This app description is a worked reference example for the `akka-ai-skills-pack`. It is not the business application of this repository and does not define runnable Akka code.
+This app description is a worked vertical reference example for the `akka-ai-skills-pack`. It extends the canonical secure AI-first SaaS seed example with DCA/office-device lifecycle domain semantics. It is not the business application of this repository, not the canonical structural template, and does not define runnable Akka code.
 
 ## Product thesis
 
@@ -43,4 +43,4 @@ A downstream realization would target:
 
 ## Current readiness
 
-`reference-ready`: this Sprint 6 example is complete enough to guide future agents through AI-first app-description, planning, UI, trace, outcome, and implementation-slice shape. It remains intentionally non-runnable and still requires downstream project-specific answers for external integrations, numeric thresholds, tenant/user roles, style guide, retention periods, and concrete evaluation fixtures before code generation.
+`reference-ready`: this vertical example is complete enough to guide future agents through DCA-specific AI-first app-description, planning, UI, trace, outcome, and implementation-slice shape. It remains intentionally non-runnable and still requires alignment with the canonical seed foundation plus downstream project-specific answers for external integrations, numeric thresholds, tenant/user roles, style guide, retention periods, and concrete evaluation fixtures before code generation.
