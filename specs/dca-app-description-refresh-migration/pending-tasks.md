@@ -120,7 +120,7 @@
 
 ### TASK-02-001: Add secure tenant/user foundation capability
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/02-secure-saas-foundation-alignment-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-002]
@@ -142,7 +142,9 @@
   - includes Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, `/api/me`, AdminAuditEvent, support access, billing boundary, and tenant/customer isolation
 - done criteria:
   - DCA app description has a first-class current secure SaaS foundation capability before DCA-specific capabilities
-- notes: []
+- notes:
+  - completed: added the DCA secure tenant/user foundation capability as CAP-00, updated the capabilities index and README, and verified the required foundation objects and tenant/customer isolation language are present
+  - commit: see git history for this task
 
 ### TASK-02-002: Align auth/security layer with foundation capability
 

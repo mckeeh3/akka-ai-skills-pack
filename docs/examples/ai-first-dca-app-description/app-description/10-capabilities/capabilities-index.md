@@ -4,6 +4,7 @@
 
 | ID | Capability | AI-first purpose | Initial status |
 |---|---|---|---|
+| CAP-00 | Secure tenant and user foundation | Establish WorkOS-authenticated humans, Akka-owned authorization, SaaS Owner/Tenant/Customer boundaries, memberships, roles, invitations, `/api/me`, support access, billing boundary, admin audit, and tenant/customer isolation before DCA-specific automation. | mandatory foundation |
 | CAP-01 | Lifecycle orchestration | Keep customers, devices, and DCA collectors moving through explicit lifecycle states and gates. | foundation |
 | CAP-02 | Telemetry intelligence | Convert meter reads, consumable levels, faults, collector health, and availability signals into actionable work. | foundation |
 | CAP-03 | Supplies autopilot | Forecast depletion, verify entitlement and stock, prepare shipments, and escalate high-cost or abnormal cases. | first implementation slice |
@@ -14,6 +15,10 @@
 | CAP-08 | Policy governance | Maintain approval thresholds, contract/service/supply/billing rules, and governed policy improvements. | planned |
 | CAP-09 | Owner command center | Present active objectives, agent work, blocked lifecycle gates, pending decisions, risk, and outcomes. | planned |
 | CAP-10 | Audit and outcome review | Explain what happened, who/what authorized it, which evidence and policies applied, and whether outcomes improved. | planned |
+
+## Mandatory secure SaaS foundation
+
+`01-secure-tenant-user-foundation.md` is the first capability contract for the DCA vertical reference. It defines the required secure SaaS substrate: `Account`, `UserProfile`, `UserSettings`, `Membership`, `Role`, `Permission/Capability`, `Invitation`, `AuthContext`, `/api/me`, `AdminAuditEvent`, support access, SaaS Owner to Tenant billing boundary, admin read models, and tenant/customer isolation. DCA-specific capabilities must consume this foundation instead of redefining authentication or authorization.
 
 ## Lifecycle foundation
 
