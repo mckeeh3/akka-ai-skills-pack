@@ -751,7 +751,7 @@
 
 ### TASK-06-002: Security and governance consistency review
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/06-final-consistency-review-build-backlog.md
 - task brief: none
 - depends on: [TASK-06-001]
@@ -770,7 +770,10 @@
 - done criteria:
   - security/governance alignment is verified
 - notes:
-  - pending
+  - completed: added `specs/capability-first-backend-migration/security-governance-consistency-review.md`; verified capability-first changes preserve mandatory auth, tenant/customer scope, permissions/capabilities, audit/work traces, approval gates, complete invitation/support-access governance, and security tests
+  - fixes: strengthened `docs/security-pattern-selection.md` and `docs/security-review-checklist.md` with capability-first security/governance review rules, cross-surface authority consistency, approval/idempotency/audit requirements, invitation/support-access checks, and frontend secret-boundary testing
+  - checks: targeted `rg` searches for security/governance language, prompt/frontend/tool-description authorization anti-patterns, tenant scope, audit, approval, and test coverage; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review capability security governance consistency`
 
 ### TASK-06-003: Example and test coverage review
 

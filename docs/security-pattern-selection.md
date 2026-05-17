@@ -15,6 +15,12 @@ Use this doc when an Akka service needs authentication, authorization, route exp
 | gRPC JWT security | `akka-grpc-endpoint-jwt` |
 | MCP request context/JWT security | `akka-mcp-endpoint-request-context` |
 
+## Capability-first security rule
+
+Before choosing an endpoint, admin, WorkOS, or JWT pattern, identify the protected backend capability being exposed: capability id, allowed actors/callers, selected `AuthContext`, tenant/customer scope, required role/permission/capability, inputs/outputs, side effects, idempotency, policy/approval rule, audit/work-trace requirement, exposure surfaces, and tests.
+
+Browser routes, HTTP/gRPC/MCP methods, workflow steps, timers, consumers, and agent tools are exposure/execution surfaces. They must preserve the same backend authorization, tenant isolation, approval, idempotency, audit, and denial semantics for the shared capability.
+
 ## Common web app security shape
 
 ```text
@@ -32,8 +38,10 @@ Flow:
 3. Frontend calls Akka with `Authorization: Bearer <token>`.
 4. Akka endpoint uses `@JWT` to validate the token.
 5. Endpoint reads claims through `requestContext().getJwtClaims()`.
-6. Endpoint loads local Akka user/account state.
-7. Backend enforces roles and scopes server-side.
+6. Endpoint loads local Akka user/account, memberships, selected context, and capability state.
+7. Backend builds or verifies `AuthContext`.
+8. Backend enforces active status, tenant/customer scope, role/permission/capability grants, approval gates, and side-effect rules server-side.
+9. Backend records required audit/work-trace facts for protected data access, denials, approvals, and consequential side effects.
 
 ## Authentication vs authorization
 
@@ -49,7 +57,7 @@ Authorization answers: what may this caller do?
 - tenant/customer/self scopes
 - business operation-specific rules
 
-Do not let frontend navigation or JWT presence alone authorize admin operations.
+Do not let frontend navigation, JWT presence, email domain, route names, hidden fields, prompts, or tool descriptions authorize admin operations.
 
 ## Basic administration defaults
 
@@ -83,8 +91,13 @@ Backend-only:
 - missing token rejected
 - valid token claims available in request context
 - wrong issuer/audience/claim rejected when configured
-- `/api/me` returns only browser-facing DTO
+- `/api/me` returns only browser-facing DTO with selected context and browser-safe capabilities
 - role and tenant/customer scope checks enforced server-side
 - disabled user rejected
-- admin bootstrap idempotent
+- forbidden access, cross-tenant/customer access, and role/scope denial behavior verified
+- admin bootstrap idempotent and does not create a permanent bypass
+- complete invitation lifecycle tests cover send/capture, resend, revoke/cancel, expiry, acceptance, delivery failure, idempotency, and no raw-token leakage
+- support-access lifecycle tests cover grant, expiry, revoke, visibility, audit, and no SaaS Owner super-admin bypass
+- audit/work-trace creation verified for protected data access, denials, approvals, and consequential side effects
+- approval-gated consequential actions cannot commit without approval unless a documented bounded autonomy policy allows it
 - frontend built assets do not contain backend secrets
