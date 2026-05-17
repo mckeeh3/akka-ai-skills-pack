@@ -703,7 +703,7 @@
 
 ### TASK-05-005: Remove, archive, or supersede duplicate capability migration content
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/05-review-and-stale-content-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-05-001, TASK-05-002, TASK-05-003, TASK-05-004]
@@ -719,7 +719,9 @@
 - done criteria:
   - duplicate or superseded migration content is intentionally handled
 - notes:
-  - pending
+  - completed: added `specs/capability-first-backend-migration/duplicate-superseded-content-cleanup.md`; reviewed migration-local planning, sprint, backlog, review, queue, and task-brief-index artifacts and found no referenced duplicate or superseded file safe to delete or archive
+  - checks: listed tracked migration files; searched duplicate/superseded/planned/future markers; searched references to the migration `tasks/` index before retaining it; no referenced file was deleted
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review duplicate capability migration content`
 
 ### TASK-06-001: Whole-pack capability-first consistency review
 
