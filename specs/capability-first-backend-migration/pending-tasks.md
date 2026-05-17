@@ -725,7 +725,7 @@
 
 ### TASK-06-001: Whole-pack capability-first consistency review
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/06-final-consistency-review-build-backlog.md
 - task brief: none
 - depends on: [TASK-05-005]
@@ -744,7 +744,10 @@
 - done criteria:
   - whole-pack consistency issues are resolved or explicitly queued
 - notes:
-  - pending
+  - completed: added `specs/capability-first-backend-migration/whole-pack-consistency-review.md`; verified coherent routing from natural-language product input through secure AI-first SaaS, mandatory SaaS foundation, governed capability inventory, and downstream description/decomposition/PRD/Stage 3 implementation paths
+  - fixes: aligned the capability-first doctrine sequence so exposure decisions precede component realization; tightened component-tool routing in `skills/README.md` to require selected capability surfaces and permitted model-invoked access
+  - checks: `rg` review of broad routing, capability references, prompt/frontend authorization language, all-tools exposure language, and CRUD/entity/tool/component-first routing; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review whole-pack capability consistency`
 
 ### TASK-06-002: Security and governance consistency review
 

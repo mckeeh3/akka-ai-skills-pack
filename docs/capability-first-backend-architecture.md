@@ -11,8 +11,8 @@ product intent
 → mandatory secure SaaS foundation
 → capability inventory
 → authority, scope, schemas, side effects, audit, approval, and supervision rules
-→ Akka component realization
 → selected exposure surfaces
+→ Akka component realization
 ```
 
 A capability is the backend design object. Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for a capability.

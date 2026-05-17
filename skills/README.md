@@ -414,7 +414,7 @@ Use when the agent should call local or external function tools.
 - `akka-agent-tools`
 
 ### Component tools
-Use when the agent should call Akka Views, entities, or workflows as tools.
+Use when an agent should call selected Akka View, entity, or workflow capability surfaces as tools after the capability contract permits model-invoked access.
 - `akka-agent-component-tools`
 
 ### MCP tools
