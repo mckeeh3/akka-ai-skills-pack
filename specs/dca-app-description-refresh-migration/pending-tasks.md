@@ -98,7 +98,7 @@
 
 ### TASK-01-003: Create structure gap map
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/01-positioning-and-structure-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-002]
@@ -114,7 +114,9 @@
   - gap map distinguishes intentional vertical-example omissions from refresh blockers
 - done criteria:
   - later tasks have a concise map of remaining DCA alignment gaps
-- notes: []
+- notes:
+  - completed: added a derived DCA structure gap summary that maps current layer shape against seed/current architecture expectations and separates intentional vertical-reference omissions from refresh blockers; updated the review README to route to it
+  - commit: see git history for this task
 
 ### TASK-02-001: Add secure tenant/user foundation capability
 
