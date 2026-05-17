@@ -70,7 +70,7 @@
 
 ### TASK-01-002: Add current system control files
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/01-positioning-and-structure-build-backlog.md
 - task brief: none
 - depends on: [TASK-01-001]
@@ -92,7 +92,9 @@
   - generation policy keeps this as non-runnable reference unless realization is explicitly requested
 - done criteria:
   - DCA system layer matches current control-file expectations
-- notes: []
+- notes:
+  - completed: added DCA readiness and generation-policy control files; updated the system README to describe current non-runnable reference status and generation blockers
+  - commit: see git history for this task
 
 ### TASK-01-003: Create structure gap map
 

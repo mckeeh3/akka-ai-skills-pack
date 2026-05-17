@@ -1,0 +1,37 @@
+# Readiness Status
+
+- current-state: not-ready-for-code-generation; reference-ready-for-description-and-planning
+- ready for:
+  - DCA/domain-rich app-description review
+  - comparison against the canonical secure AI-first SaaS seed app-description
+  - capability-first planning for office-device/DCA lifecycle automation
+  - future specs, backlog, and implementation-slice planning
+  - UI, trace, policy, decision-card, and outcome-loop discussion
+- not yet ready for:
+  - runnable Akka/React application generation
+  - complete code generation of the DCA reference app
+  - production authentication, authorization, onboarding, support-access, or billing-boundary implementation
+  - external DCA, ERP/fulfillment, service, billing, email, or identity-provider integration
+  - agent evaluation, threshold, retention, or fixture-backed automated validation
+- decisive reasons:
+  - this tree is a vertical reference extension, not the canonical secure SaaS seed or a runnable app description
+  - DCA operating-model, lifecycle, supplies-autopilot, policy, decision, trace, UI, and future-slice concepts are useful as source material
+  - current secure SaaS foundation alignment is incomplete: the foundation capability, auth/security layer, invitation lifecycle, admin/support-access semantics, and billing boundary still need refresh work
+  - current capability inventory does not yet use the full capability-first contract shape for each protected operation/query
+  - current tests are placeholders and do not yet define tenant-isolation, forbidden-access, disabled-user, role/scope denial, approval-bypass, idempotency, audit/trace, frontend secret-boundary, or outcome verification in generation-ready detail
+- blocking gaps before code generation:
+  - add or align the secure tenant/user foundation capability with Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, `/api/me`, AdminAuditEvent, support access, billing boundary, and tenant/customer isolation
+  - refresh auth/security files so WorkOS authenticates while Akka-owned local state authorizes every route, command, query, stream, agent tool, workflow action, consumer side effect, timer action, and generated UI action
+  - convert DCA-specific capabilities into current capability-first contracts with actors/callers, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
+  - replace placeholder test guidance with concrete acceptance, negative, regression, security, operational, audit/trace, and outcome specifications
+  - define external integration contracts for DCA telemetry, fulfillment/ERP, billing, service systems, email delivery/outbox, and identity-provider modes
+  - define or explicitly defer numeric policy thresholds, risk/confidence thresholds, retention periods, redaction classes, and evaluation fixtures
+  - reconcile UI, observability, traceability, readiness summaries, and realization handoff after the foundation and capability refresh tasks land
+- accepted assumptions:
+  - this repository maintains the DCA tree as reference material for the skills pack, not as this repository's business application
+  - the canonical secure AI-first SaaS seed remains the structural and foundation baseline; DCA supplies domain-rich vertical semantics layered on top
+  - future realization work must be explicitly requested and should start from a bounded slice rather than the whole DCA reference
+  - style-guide selection may stay reference-level until a downstream realization target is chosen, but UI generation must not begin without a selected style contract
+- last readiness update basis:
+  - TASK-01-002 in `specs/dca-app-description-refresh-migration/pending-tasks.md`
+  - current system-control-file alignment with `docs/internal-app-description-architecture.md` and the seed app-description `00-system` control files
