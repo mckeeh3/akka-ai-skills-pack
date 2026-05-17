@@ -33,13 +33,14 @@ class CartInspectorAgentTest extends TestKitSupport {
         .whenMessage(message -> message.contains("cart-tool-1"))
         .reply(
             new ToolInvocationRequest(
-                "ShoppingCartEntity_getCart", "{\"uniqueId\":\"cart-tool-1\"}"));
+                "ShoppingCartEntity_inspectCartSummary", "{\"uniqueId\":\"cart-tool-1\"}"));
     inspectorModel
-        .whenToolResult(result -> result.name().equals("ShoppingCartEntity_getCart"))
+        .whenToolResult(result -> result.name().equals("ShoppingCartEntity_inspectCartSummary"))
         .thenReply(
             result ->
                 new AiResponse(
                     result.content().contains("\"checkedOut\":false")
+                            && result.content().contains("\"totalQuantity\":2")
                             && result.content().contains("\"Tea\"")
                         ? "Cart cart-tool-1 has 2 units of Tea and is not checked out."
                         : "Cart details unavailable."));
@@ -54,11 +55,13 @@ class CartInspectorAgentTest extends TestKitSupport {
     assertTrue(answer.contains("Tea"));
     assertTrue(answer.contains("not checked out"));
 
-    var state =
+    var summary =
         componentClient
             .forEventSourcedEntity("cart-tool-1")
-            .method(ShoppingCartEntity::getCart)
+            .method(ShoppingCartEntity::inspectCartSummary)
             .invoke();
-    assertEquals(1, state.items().size());
+    assertEquals(1, summary.items().size());
+    assertEquals(2, summary.totalQuantity());
+    assertEquals("Tea", summary.items().get(0).name());
   }
 }

@@ -49,12 +49,13 @@ Do not use this pattern to expose arbitrary component internals. Component tools
 
 ## Repository example
 
-- `ShoppingCartEntity#getCart`
-  - read-only EventSourcedEntity tool
+- `ShoppingCartEntity#inspectCartSummary`
+  - read-only EventSourcedEntity capability tool for `cart.inspect-summary`
+  - returns a curated `CartSummary` rather than raw entity state or event history
   - generated schema adds `uniqueId` for the cart id
 - `CartInspectorAgent`
   - registers `ShoppingCartEntity.class` as a tool
-  - instructs the model to use `ShoppingCartEntity_getCart`
+  - instructs the model to use `ShoppingCartEntity_inspectCartSummary`
 
 ## Review checklist
 

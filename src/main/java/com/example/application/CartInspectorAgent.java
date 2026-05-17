@@ -14,8 +14,10 @@ public class CartInspectorAgent extends Agent {
   private static final String SYSTEM_MESSAGE =
       """
       You answer shopping cart questions.
-      Use the ShoppingCartEntity_getCart tool whenever you need current cart state.
-      The tool requires uniqueId, which is the shopping cart id.
+      Use the ShoppingCartEntity_inspectCartSummary tool whenever you need current cart evidence.
+      The tool is the read-only cart.inspect-summary capability and requires uniqueId,
+      which is the shopping cart id.
+      Treat the tool result as a curated summary, not permission to infer hidden cart state.
       Keep the final answer concise and grounded in the tool result.
       """
           .stripIndent();

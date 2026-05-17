@@ -37,12 +37,40 @@ public class ShoppingCartEntity extends EventSourcedEntity<ShoppingCart.State, S
     return ShoppingCart.State.empty(cartId);
   }
 
-  @FunctionTool(
-      description =
-          "Return the current shopping cart state for the given uniqueId cart id, including items, quantities, and checkout status.")
   public ReadOnlyEffect<ShoppingCart.State> getCart() {
     return effects().reply(currentState());
   }
+
+  /**
+   * Read-only evidence capability exposed as an agent component tool.
+   *
+   * <p>Capability: {@code cart.inspect-summary}. The output is a curated, agent-safe summary of
+   * cart contents and checkout state. It intentionally avoids exposing event history or component
+   * internals; production SaaS variants would also enforce AuthContext, tenant scope, data-access
+   * audit, and field redaction before returning protected cart evidence.
+   */
+  @FunctionTool(
+      description =
+          "Read-only capability cart.inspect-summary. Return a curated, agent-safe cart "
+              + "summary for the given uniqueId cart id, including line item names, quantities, "
+              + "total quantity, and checkout status. This tool does not change cart state.")
+  public ReadOnlyEffect<CartSummary> inspectCartSummary() {
+    return effects().reply(CartSummary.from(currentState()));
+  }
+
+  public record CartSummary(
+      String cartId, List<ItemSummary> items, int totalQuantity, boolean checkedOut) {
+    static CartSummary from(ShoppingCart.State state) {
+      var summaries =
+          state.items().stream()
+              .map(item -> new ItemSummary(item.name(), item.quantity()))
+              .toList();
+      var totalQuantity = summaries.stream().mapToInt(ItemSummary::quantity).sum();
+      return new CartSummary(state.cartId(), summaries, totalQuantity, state.checkedOut());
+    }
+  }
+
+  public record ItemSummary(String name, int quantity) {}
 
   /**
    * Exposes a live notification stream of persisted shopping cart events.

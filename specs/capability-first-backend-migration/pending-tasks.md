@@ -451,7 +451,7 @@
 
 ### TASK-04-001: Add read-only capability component-tool example
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/04-reference-examples-and-tests-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-001]
@@ -473,7 +473,9 @@
 - done criteria:
   - canonical read-only component-tool capability example exists
 - notes:
-  - pending
+  - completed: revised the shopping cart component-tool example so the agent exposes a named read-only `cart.inspect-summary` capability via `ShoppingCartEntity#inspectCartSummary`, returns a curated `CartSummary` rather than raw entity state, and updates `CartInspectorAgent` plus the component-tool skill guidance to use the selected capability surface
+  - checks: `mvn -q -Dtest=CartInspectorAgentTest test` verified deterministic component-tool invocation and curated summary output
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add read-only component tool capability example`
 
 ### TASK-04-002: Add consequential proposal/approval capability example
 
