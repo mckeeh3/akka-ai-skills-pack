@@ -1,0 +1,332 @@
+# Pending Tasks: Governed Runtime Agent Foundation
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Do not combine adjacent tasks.
+- Update this file before finishing the harness response.
+- Every task must create a git commit for its completed work.
+- Commit message format: `agent-foundation: <short task title>`.
+- Record the task commit hash in `notes` when practical.
+
+## Tasks
+
+### TASK-001: Promote governed runtime agent foundation in core doctrine
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/01-core-doctrine-and-routing-build-backlog.md
+- task brief: none
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - README.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/capability-first-backend-architecture.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+- skills:
+  - ai-first-saas
+  - core-saas-foundation
+  - akka-agent-behavior-profiles
+  - akka-agent-governed-documents
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+- expected outputs:
+  - Update core doctrine so the mandatory generated AI-first SaaS foundation includes AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace.
+  - State the runtime assembly contract: resolve active AgentDefinition, assemble active governed prompt, include compact skill manifest, authorize readSkill(skillId), trace prompt assembly and skill loads.
+  - State that prompt/skill content is behavior guidance only and cannot grant tool/data/authorization authority.
+  - Update README getting-started expectations if needed so the initial core app includes the managed-agent foundation.
+- required checks:
+  - `rg -n "AgentDefinition|PromptDocument|SkillDocument|AgentSkillManifest|PromptAssemblyTrace|SkillLoadTrace|AgentWorkTrace|readSkill" README.md docs/ai-first-saas-application-architecture.md docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md skills/core-saas-foundation/SKILL.md skills/README.md`
+  - `git diff --check`
+- done criteria:
+  - Core doctrine and foundation guidance make governed runtime agent behavior management mandatory for generated AI-first SaaS foundations.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-002: Reframe admin agents as governed responsibilities and skilled agents
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/01-core-doctrine-and-routing-build-backlog.md
+- task brief: none
+- depends on: [TASK-001]
+- required reads:
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/ai-first-saas-agent-team-design/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+- skills:
+  - ai-first-saas-admin-agents
+  - akka-agent-behavior-profiles
+  - akka-agent-skill-governance
+- expected outputs:
+  - Change mandatory admin-agent wording from requiring many physical agents/classes to requiring bounded responsibilities.
+  - Explicitly allow a single governed `UserAdminAgent` with skills such as access-review, admin-risk-scoring, invitation-drafting, role-recommendation, support-access-review, and audit-summary.
+  - Preserve the option to implement separate specialized agents when useful.
+  - Ensure high-risk admin actions still route to decision cards and approval gates.
+- required checks:
+  - `rg -n "UserAdminAgent|responsibilities|AccessReviewAgent|AdminRiskAgent|InvitationDraftAgent|RoleRecommendationAgent|SupportAccessReviewAgent|AdminAuditSummaryAgent|AgentSkillManifest" skills/ai-first-saas-admin-agents/SKILL.md skills/core-saas-foundation/SKILL.md docs/core-ai-first-saas-foundation.md docs/core-saas-identity-tenancy-admin.md`
+  - `git diff --check`
+- done criteria:
+  - Guidance distinguishes required responsibilities from required agent-class count.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-003: Add behavior-editing agent guidance to prompt and skill governance
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/01-core-doctrine-and-routing-build-backlog.md
+- task brief: none
+- depends on: [TASK-001]
+- required reads:
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/ai-first-saas-policy-governance/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - docs/ai-first-saas-application-architecture.md
+- skills:
+  - akka-agent-governed-documents
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+- expected outputs:
+  - Add normal maintenance flow where humans request prompt/skill/manifest/tool-boundary changes through editing agents.
+  - Define `AgentBehaviorEditorAgent` or equivalent responsibilities: interpret change request, identify affected documents, draft patch/diff, explain rationale, flag risk, create draft version, route for review/approval.
+  - State that direct text editing may exist as an admin surface only when explicitly allowed, but generated AI-first foundations default to agent-mediated document maintenance.
+  - Add tests/readiness expectations for edit proposals, diff review, approval, activation, audit, and denial of unauthorized authority expansion.
+- required checks:
+  - `rg -n "AgentBehaviorEditorAgent|editing agent|agent-mediated|proposed diff|draft version|review/approval|authority expansion" skills/akka-agent-governed-documents/SKILL.md skills/akka-agent-prompt-governance/SKILL.md skills/akka-agent-skill-governance/SKILL.md docs/ai-first-saas-application-architecture.md`
+  - `git diff --check`
+- done criteria:
+  - Prompt and skill governance guidance no longer implies direct human text edits are the only or primary maintenance model.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-004: Update app-description bootstrap and readiness for managed-agent foundation
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/02-app-description-and-seed-build-backlog.md
+- task brief: none
+- depends on: [TASK-001, TASK-003]
+- required reads:
+  - skills/app-description-bootstrap/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - skills/app-generate-app/SKILL.md
+  - skills/app-description-ui/SKILL.md
+  - docs/internal-app-description-architecture.md
+  - docs/app-description-maintenance-flow.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+- skills:
+  - app-description-bootstrap
+  - app-description-readiness-assessment
+  - app-description-ui
+  - app-generate-app
+  - core-saas-foundation
+- expected outputs:
+  - Update bootstrap minimum outputs to seed managed-agent files under operating-model, behavior, tests, auth/security, observability, and UI layers.
+  - Add UI artifacts for agent catalog, agent detail, prompt governance, skill governance, skill manifests, tool permissions, edit-agent proposals, and traces.
+  - Update readiness/generation checks so missing managed-agent foundation blocks generated AI-first SaaS realization.
+- required checks:
+  - `rg -n "agent catalog|agent detail|PromptDocument|SkillDocument|AgentSkillManifest|tool permission|editing agent|SkillLoadTrace|PromptAssemblyTrace" skills/app-description-bootstrap/SKILL.md skills/app-description-readiness-assessment/SKILL.md skills/app-generate-app/SKILL.md skills/app-description-ui/SKILL.md`
+  - `git diff --check`
+- done criteria:
+  - App-description bootstraps include governed runtime agent foundation structure.
+  - Readiness/generation blocks missing managed-agent foundation surfaces.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-005: Update AI-first SaaS seed app-description for managed agents
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/02-app-description-and-seed-build-backlog.md
+- task brief: none
+- depends on: [TASK-004]
+- required reads:
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/agent-roles-and-authority.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/authorization-rules.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/logs-and-audit.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/realization-scope.md
+- skills:
+  - app-descriptions
+  - app-description-capability-modeling
+  - app-description-behavior-specification
+  - app-description-test-specification
+  - app-description-auth-security
+  - app-description-observability
+  - app-description-ui
+- expected outputs:
+  - Update or add seed app-description files for AgentDefinition, governed prompts, governed skills, skill manifests, tool boundaries, behavior editing agents, prompt assembly traces, skill load traces, and agent work traces.
+  - Add UI expectations for agent catalog/detail, prompt/skill governance, manifest management, tool permission management, edit-agent proposal review, and traces.
+  - Add acceptance/negative/regression expectations for tenant isolation, unauthorized prompt/skill/tool changes, disabled-agent denial, unassigned skill denial, trace creation, and approval-required authority expansion.
+- required checks:
+  - `rg -n "AgentDefinition|PromptDocument|PromptVersion|SkillDocument|SkillVersion|AgentSkillManifest|readSkill|SkillLoadTrace|PromptAssemblyTrace|AgentBehaviorEditorAgent|agent catalog|agent detail" docs/examples/ai-first-saas-seed-app-description`
+  - `git diff --check`
+- done criteria:
+  - Preferred seed example visibly includes the fully backed governed runtime agent foundation.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-006: Update solution and PRD planning to materialize managed-agent foundation work
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/03-planning-and-task-generation-build-backlog.md
+- task brief: none
+- depends on: [TASK-001, TASK-004]
+- required reads:
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - docs/module-sprint-planning.md
+  - docs/pending-task-queue.md
+- skills:
+  - akka-solution-decomposition
+  - akka-prd-to-specs-backlog
+  - core-saas-foundation
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+- expected outputs:
+  - Update planning guidance so first foundation sprint/slice includes concrete managed-agent tasks before domain features.
+  - Require solution plans/backlogs to include AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, dynamic prompt assembly/readSkill, traces, behavior editing agents, tool-boundary UI, and tests.
+  - Ensure web UI style/pending-question handling still applies to agent governance UI.
+- required checks:
+  - `rg -n "AgentDefinition|PromptDocument|SkillDocument|AgentSkillManifest|readSkill|SkillLoadTrace|PromptAssemblyTrace|behavior editing agent|agent catalog|agent detail" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md`
+  - `git diff --check`
+- done criteria:
+  - New planning packages reliably generate managed-agent foundation work as separate foundation tasks.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-007: Update task materialization skills to prevent vague agent-governance tasks
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/03-planning-and-task-generation-build-backlog.md
+- task brief: none
+- depends on: [TASK-006]
+- required reads:
+  - skills/akka-backlog-to-pending-tasks/SKILL.md
+  - skills/akka-slice-spec-to-backlog/SKILL.md
+  - skills/akka-backlog-item-to-task-brief/SKILL.md
+  - docs/pending-task-queue.md
+  - specs/governed-runtime-agent-foundation/pending-tasks.md
+- skills:
+  - akka-backlog-to-pending-tasks
+  - akka-slice-spec-to-backlog
+  - akka-backlog-item-to-task-brief
+- expected outputs:
+  - Update task-generation guidance so agent foundation work is split into small tasks by component/UI/test family.
+  - Prevent one broad task from spanning AgentDefinition, prompt governance, skill governance, manifests, tools, traces, editing agents, UI, and tests.
+  - Require each task to preserve capability ids, AuthContext/scope, approval, audit/trace, UI, and checks.
+- required checks:
+  - `rg -n "AgentDefinition|PromptDocument|SkillDocument|AgentSkillManifest|readSkill|SkillLoadTrace|PromptAssemblyTrace|behavior editing|too broad|split" skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/pending-task-queue.md`
+  - `git diff --check`
+- done criteria:
+  - Pending-task materialization cannot collapse managed-agent foundation into a vague single task.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-008: Add verification guardrails for governed runtime agent foundation
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/04-verification-and-final-audit-build-backlog.md
+- task brief: none
+- depends on: [TASK-001, TASK-006, TASK-007]
+- required reads:
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+  - package.json
+  - README.md
+  - skills/README.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+- skills:
+  - core-saas-foundation
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+- expected outputs:
+  - Extend verification to check for required governed runtime agent foundation references.
+  - Cover AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing agents, agent catalog/detail UI, and planning/task-generation references.
+  - Add or update package script/docs if consistent with repo conventions.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `bash -n tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `git diff --check`
+- done criteria:
+  - Automated verification guards against regressions to static or under-governed agent guidance.
+  - Verification passes locally.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-009: Final audit and repair for governed runtime agent foundation
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/04-verification-and-final-audit-build-backlog.md
+- task brief: none
+- depends on: [TASK-008]
+- required reads:
+  - specs/governed-runtime-agent-foundation/README.md
+  - specs/governed-runtime-agent-foundation/pending-tasks.md
+  - AGENTS.md
+  - README.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+- skills:
+  - ai-first-saas
+  - core-saas-foundation
+  - akka-agent-behavior-profiles
+  - akka-agent-governed-documents
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+- expected outputs:
+  - Run final audit for contradictions after TASK-001 through TASK-008.
+  - Verify README getting-started prompt now implies the fully backed managed-agent core.
+  - Repair contradictions found in routing, doctrine, app-description, planning, examples, verification, or packaging guidance.
+  - Mark this queue's completed tasks done if they were not already updated by prior sessions, preserving history.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `rg -n "AgentDefinition|PromptDocument|SkillDocument|AgentSkillManifest|readSkill|SkillLoadTrace|PromptAssemblyTrace|AgentBehaviorEditorAgent|agent catalog|agent detail" README.md AGENTS.md pack/AGENTS.md skills docs tools specs/governed-runtime-agent-foundation`
+  - `git status --short`
+  - `git diff --check`
+- done criteria:
+  - Final audit passes.
+  - No known contradiction remains.
+  - A git commit exists for the final audit/repair.
+- notes:
