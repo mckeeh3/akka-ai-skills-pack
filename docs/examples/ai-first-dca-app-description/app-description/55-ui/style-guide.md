@@ -87,5 +87,5 @@
 ## Implementation notes
 
 - CSS variable prefix: use global CSS custom properties with `--color-*`, `--space-*`, `--radius-*`, `--shadow-*`, and `--font-*` names unless a frontend framework requires a wrapper
-- files expected to apply this guide: supplies command-center UI, decision-card detail UI, API state rendering, static hosting assets, and frontend smoke tests generated for `TASK-08-006`
-- tests/manual checks: verify selected style tokens are centralized in CSS; check light/dark/system behavior; confirm approval/rejection/suppression UI keeps evidence, policy, risk/confidence, and trace context visible; verify keyboard focus and responsive layout
+- files expected to apply this guide: generated React/Vite frontend CSS, shell/navigation components, foundation administration screens, supplies command-center UI, decision-card detail UI, shipment trace drawer, API state rendering, static hosting assets, and frontend smoke tests for any future DCA realization slice
+- tests/manual checks: verify selected style tokens are centralized in CSS; check light/dark/system behavior; confirm foundation admin and approval/rejection/suppression UI keeps evidence, policy, risk/confidence, authority boundary, and trace context visible; verify keyboard focus, status labels, frontend secret-boundary behavior, and responsive layout

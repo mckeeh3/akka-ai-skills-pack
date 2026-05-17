@@ -354,7 +354,7 @@
 
 ### TASK-04-003: Reconcile UI surfaces and style guide
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/04-tests-ui-observability-readiness-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-004]
@@ -373,7 +373,9 @@
   - style guide is selected and not contradicted by `ui-surfaces.md`
 - done criteria:
   - UI layer is current and internally consistent
-- notes: []
+- notes:
+  - completed: refreshed the DCA UI layer to remove stale style placeholder wording, preserve mandatory foundation administration surfaces, and link operational/foundation surfaces to capabilities, API/realtime needs, tests, accessibility, and selected Atlas Ops style guidance
+  - commit: see git history for this task
 
 ### TASK-04-004: Update readiness summary after tests/UI/observability refresh
 

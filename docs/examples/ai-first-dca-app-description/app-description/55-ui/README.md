@@ -1,16 +1,12 @@
 # 55 UI
 
+Purpose: define the DCA vertical reference UI as a secure AI-first SaaS browser experience for supervision, decisions, governance, audit, outcomes, and foundation administration.
+
 Current files:
-- `ui-surfaces.md` — supervision-oriented surface catalog, first-slice supplies screens, realtime/state behavior, accessibility expectations, and web UI/Akka routing.
-- `style-guide.md` — selected Atlas Ops supervisory console visual style guide for generated AI-first browser UI.
+- `ui-surfaces.md` — authoritative surface catalog linking foundation/admin and DCA operational screens to capabilities, API needs, tests, realtime/state behavior, accessibility expectations, and Akka/web UI routing.
+- `style-guide.md` — selected `atlas-ops-supervisory-console` visual style guide for generated AI-first browser UI.
 
-Future downstream realization may split this into:
-- `personas-and-journeys.md`
-- `screens-and-navigation.md`
-- `interactions-and-forms.md`
-- `frontend-api-contracts.md`
-- `states-and-realtime.md`
-- `accessibility-and-responsive.md`
-- `style-guide.md`
-
-Purpose: define supervision-oriented UI surfaces such as owner brief, mission control, supplies autopilot, approvals/exceptions queue, policy center, audit trace, and lifecycle workbench.
+Key routing notes:
+- DCA extends the canonical secure SaaS seed; it does not replace mandatory sign-in, context selection, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, `/api/me`, or backend authorization surfaces.
+- Supplies Autopilot is the first detailed DCA UI slice and must link to `CAP-03`, related tests, trace/outcome requirements, and selected API/realtime contracts before realization.
+- Future downstream realization may split this layer into `personas-and-journeys.md`, `screens-and-navigation.md`, `interactions-and-forms.md`, `frontend-api-contracts.md`, `states-and-realtime.md`, and `accessibility-and-responsive.md`; until then, `ui-surfaces.md` is the consolidated UI contract.
