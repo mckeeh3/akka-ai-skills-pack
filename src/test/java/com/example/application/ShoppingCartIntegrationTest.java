@@ -16,6 +16,15 @@ class ShoppingCartIntegrationTest extends TestKitSupport {
 
   record CartResponse(String cartId, List<CartItemResponse> items, boolean checkedOut) {}
 
+  record CartSummaryItemResponse(String name, int quantity) {}
+
+  record CartSummaryResponse(
+      String capabilityId,
+      String cartId,
+      List<CartSummaryItemResponse> items,
+      int totalQuantity,
+      boolean checkedOut) {}
+
   record StatusResponse(String status) {}
 
   @Test
@@ -46,6 +55,41 @@ class ShoppingCartIntegrationTest extends TestKitSupport {
     assertEquals(cartId, getResponse.body().cartId());
     assertEquals(1, getResponse.body().items().size());
     assertEquals("Akka T-Shirt", getResponse.body().items().getFirst().name());
+  }
+
+  @Test
+  void browserApiReusesReadOnlyInspectSummaryCapability() {
+    var cartId = "cart-http-summary-1";
+
+    await(
+        httpClient
+            .POST("/carts/" + cartId + "/items")
+            .withRequestBody(new AddItemRequest("secret-sku", "Akka Mug", 3))
+            .responseBodyAs(CartResponse.class)
+            .invokeAsync());
+
+    var response =
+        await(
+            httpClient
+                .GET("/carts/" + cartId + "/summary")
+                .responseBodyAs(CartSummaryResponse.class)
+                .invokeAsync());
+
+    assertTrue(response.status().isSuccess());
+    assertEquals("cart.inspect-summary", response.body().capabilityId());
+    assertEquals(cartId, response.body().cartId());
+    assertEquals(1, response.body().items().size());
+    assertEquals("Akka Mug", response.body().items().getFirst().name());
+    assertEquals(3, response.body().items().getFirst().quantity());
+    assertEquals(3, response.body().totalQuantity());
+
+    var componentToolSummary =
+        componentClient
+            .forEventSourcedEntity(cartId)
+            .method(ShoppingCartEntity::inspectCartSummary)
+            .invoke();
+    assertEquals(componentToolSummary.totalQuantity(), response.body().totalQuantity());
+    assertEquals(componentToolSummary.items().getFirst().name(), response.body().items().getFirst().name());
   }
 
   @Test

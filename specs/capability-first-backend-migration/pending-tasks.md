@@ -579,7 +579,7 @@
 
 ### TASK-04-006: Add UI/API reuse capability example or guidance update
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/04-reference-examples-and-tests-build-backlog.md
 - task brief: none
 - depends on: [TASK-03-005]
@@ -598,7 +598,9 @@
 - done criteria:
   - capability reuse across surfaces is demonstrated or documented
 - notes:
-  - pending
+  - completed: added a browser/API exposure for the read-only `cart.inspect-summary` capability at `GET /carts/{cartId}/summary`, reusing the same `ShoppingCartEntity#inspectCartSummary` backend capability used by the `CartInspectorAgent` component tool and returning a curated summary response.
+  - checks: `mvn -q -Dtest=ShoppingCartIntegrationTest,CartInspectorAgentTest test`; `git diff --check`; test verifies the browser/API response preserves the same capability id and summary semantics as the component-tool capability.
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add UI API capability reuse example`
 
 ### TASK-05-001: Review doctrine and routing for stale/conflicting content
 
