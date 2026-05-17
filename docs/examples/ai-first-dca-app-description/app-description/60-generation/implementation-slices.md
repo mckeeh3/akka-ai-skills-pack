@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file translates the app-description example into future realization slices. It is not a request to generate runnable code in this repository; it is a reference planning asset that shows how a downstream project could sequence Akka backend, React/Vite frontend, tests, and trace/outcome work.
+This file translates the app-description example into future realization slices. It is not a request to generate runnable code in this repository; it is a reference planning asset that shows how a downstream project could sequence Akka backend, React/Vite frontend, tests, and trace/outcome work from the refreshed DCA app-description contracts.
 
 ## Slice sequencing principles
 
@@ -11,12 +11,28 @@ This file translates the app-description example into future realization slices.
 - Keep agents narrow; workflows coordinate; policies decide authority; humans approve consequential boundaries.
 - Add views and UI surfaces only when backed by durable facts and clear actions.
 - Preserve fail-safe behavior and trace completeness in every slice.
+- Treat each slice as a projection from the refreshed app description. If a future implementation finds missing authority, schema, policy, trace, fixture, or integration detail, update the app-description/source spec first rather than inventing semantics in generated code.
+
+## Current handoff source map
+
+Future realization tasks should start from these refreshed description files before selecting Akka components or generating code:
+
+| Concern | Current source files | Handoff use |
+|---|---|---|
+| secure SaaS foundation | `../10-capabilities/01-secure-tenant-user-foundation.md`, `../40-auth-security/identity-and-trust.md`, `../40-auth-security/authorization-rules.md`, `../40-auth-security/foundation-onboarding-admin-boundaries.md`, `../40-auth-security/boundary-and-surface-rules.md` | define WorkOS authentication seam, local Akka authorization, Account/Profile/Settings, Tenant/Customer scope, Membership/Role/Permission, Invitation, `/api/me`, support access, billing boundary, and admin audit before DCA automation |
+| capability inventory | `../10-capabilities/capabilities-index.md` plus `../10-capabilities/02-lifecycle-orchestration.md` through `../10-capabilities/11-audit-outcome-review.md` | preserve capability ids/classes, actors/callers, protected scope, selected exposure surfaces, and known future-detail gaps |
+| first executable DCA slice | `../10-capabilities/03-supplies-autopilot.md`, `../20-behavior/flows/01-supplies-autopilot-flow.md`, `../15-operating-model/policies-and-approval-gates.md`, `../15-operating-model/decisions-exceptions-and-evidence.md` | derive Supplies Autopilot workflow, policy gates, decision cards, authority, evidence, side effects, and no-op/idempotency behavior |
+| tests and fixtures | `../30-tests/test-index.md`, `../30-tests/acceptance/01-foundation-and-supplies-acceptance.md`, `../30-tests/negative/01-security-and-approval-bypass.md`, `../30-tests/regression/01-idempotency-and-policy-regression.md`, `../30-tests/operational/01-audit-trace-and-outcomes.md` | turn description-level acceptance, negative, regression, operational, tenant-isolation, approval-bypass, idempotency, audit/trace, and outcome cases into executable tests; add concrete fixtures without weakening scenarios |
+| UI and style | `../55-ui/ui-surfaces.md`, `../55-ui/style-guide.md` | realize mandatory foundation administration screens plus Supplies Command Center, Supply Decision Card, and Shipment Trace Drawer using the selected Atlas Ops supervisory console style |
+| observability and traces | `../50-observability/logs-and-audit.md`, `../50-observability/traces-and-correlation.md`, `../50-observability/metrics.md`, `../50-observability/health-and-alerts.md`, `../50-observability/audit-trace-and-outcomes.md` | implement structured logs, AdminAuditEvent/work traces, correlation ids, metrics, health/alert surfaces, redaction, retention, and outcome links |
+| traceability and readiness | `../70-traceability/capability-to-layer-map.md`, `../70-traceability/ai-first-coverage-map.md`, `../80-review/latest-readiness-summary.md`, `../00-system/readiness-status.md`, `../00-system/generation-policy.md` | verify affected layers, current readiness blockers, and non-runnable reference status before future executable planning |
+| future implementation sprint | `../../../../../specs/ai-first-skills-pack-migration/sprints/08-executable-ai-first-reference-slice-sprint.md` | use as historical executable-slice plan for Supplies Autopilot, but refresh any task against the current source map above before coding |
 
 ## Seed foundation: authenticated full-stack app shell
 
 Business goal: provide a secure, role-aware, Akka-hosted application foundation before broadening DCA operational automation.
 
-Source reference: adapt the working `examples/poc-user-auth-onboarding/` proof-of-concept for WorkOS/AuthKit, JWT-protected APIs, local Akka user/account authorization, admin audit logging, and React/Vite static hosting. Treat that PoC as implementation guidance only; the DCA foundation must add the current mandatory invitation lifecycle, scoped administration, support-access, and billing-boundary contracts rather than relying on bootstrap-only onboarding.
+Primary source references: `../10-capabilities/01-secure-tenant-user-foundation.md`, the `../40-auth-security/` layer, `../30-tests/*`, `../55-ui/ui-surfaces.md`, and `../50-observability/*`. A future task may adapt the working `examples/poc-user-auth-onboarding/` proof-of-concept for WorkOS/AuthKit, JWT-protected APIs, local Akka user/account authorization, admin audit logging, and React/Vite static hosting. Treat that PoC as implementation guidance only; the DCA foundation must add the current mandatory invitation lifecycle, scoped administration, support-access, billing-boundary, admin-agent recommendation, tenant-isolation, frontend secret-boundary, and audit/trace contracts rather than relying on bootstrap-only onboarding.
 
 Seed scope:
 
@@ -68,6 +84,8 @@ frontend hidden navigation -> never substitutes for backend authorization
 ```
 
 ## Slice 1: Supplies autopilot foundation
+
+Primary source references: `../10-capabilities/03-supplies-autopilot.md`, `../20-behavior/flows/01-supplies-autopilot-flow.md`, `../15-operating-model/policies-and-approval-gates.md`, `../15-operating-model/decisions-exceptions-and-evidence.md`, `../30-tests/*`, `../55-ui/ui-surfaces.md`, and `../50-observability/*`.
 
 Business goal: make supply fulfillment timely and policy-safe for active monitored devices.
 
@@ -207,30 +225,31 @@ Implementation task groups:
 
 Before or alongside slice work, downstream planning should create specs for:
 
-- authenticated seed-app foundation: WorkOS/AuthKit, JWT-protected APIs, `/api/me`, local Akka accounts/roles/scopes, complete invitation onboarding, bounded startup admin bootstrap, support-access lifecycle, billing-safe SaaS Owner boundary, admin audit, and Akka-hosted React/Vite shell;
-- tenancy, roles, and authority boundaries;
-- shared IDs, event names, trace correlation, and redaction classes;
-- frontend style guide and design tokens;
-- integration contracts for DCA, ERP/fulfillment, billing, and service systems;
-- evaluation/guardrail strategy for agent outputs;
-- pending questions for thresholds, role names, retention policy, external system contracts, and UI style if not selected.
+- authenticated seed-app foundation from `CAP-00`: WorkOS/AuthKit, JWT-protected APIs, `/api/me`, local Akka accounts/roles/scopes, complete invitation onboarding, bounded startup admin bootstrap, support-access lifecycle, billing-safe SaaS Owner boundary, admin audit, admin-agent recommendation surfaces, and Akka-hosted React/Vite shell;
+- tenancy, roles, capability grants, selected `AuthContext`, backend authorization helper, support-access enforcement, and tenant/customer isolation boundaries shared by all endpoints, components, timers, consumers, workflows, views, tools, and UI actions;
+- shared IDs, natural dedupe keys, event names, expected versions, idempotency keys, correlation ids, trace ids, outcome ids, and redaction classes;
+- frontend style guide and design tokens from `../55-ui/style-guide.md`, including loading/empty/error/forbidden/stale/reconnecting states and frontend secret-boundary checks;
+- integration contracts and deterministic fake adapters for DCA telemetry, ERP/fulfillment, inventory, billing, service, WorkOS/JWT, email outbox, and agent tools before runnable tests depend on provider behavior;
+- evaluation/guardrail strategy for agent outputs, including deterministic structured-response fixtures, backend policy enforcement, approval-bypass tests, and trace requirements for every tool/data access;
+- fixture datasets for policy thresholds (`SUP-1.0` through `SUP-5.0`, `OFF-3.0`), WorkOS test principals, tenant/customer/device assignments, contract entitlement summaries, inventory/fulfillment responses, support-access state, and outcome evidence;
+- pending questions for provider payloads, concrete metric/alert thresholds, retention periods, external system contracts, and any role/capability names not already fixed in the capability contracts.
 
 ## Reference pending-task shape
 
-A future `specs/pending-tasks.md` created from these slices should keep tasks bounded, for example:
+A future executable-slice `specs/pending-tasks.md` created from these slices should keep tasks bounded and planning-first. Recommended task sequence:
 
-- `TASK-SEED-001`: update DCA auth/security app-description files;
-- `TASK-SEED-002`: implement local account, tenant, customer, role, and admin-audit domain/components;
-- `TASK-SEED-003`: implement WorkOS/JWT `/api/me` and centralized backend authorization;
-- `TASK-SEED-004`: implement admin APIs and startup bootstrap lifecycle;
-- `TASK-SEED-005`: implement authenticated React/Vite shell and Akka hosting;
-- `TASK-SEED-006`: add seed security acceptance tests and PoC alignment notes;
-- `TASK-SUP-001`: implement supply domain records and trace vocabulary;
-- `TASK-SUP-002`: implement supply recommendation/decision event-sourced model;
-- `TASK-SUP-003`: implement supplies workflow with policy-gated paths;
-- `TASK-SUP-004`: implement supplies views and timed rechecks;
-- `TASK-SUP-005`: implement supplies endpoints and integration stubs;
-- `TASK-SUP-006`: implement supplies command-center and decision-card frontend;
-- `TASK-SUP-007`: run slice-level integration, trace, and outcome tests.
+- `TASK-DCA-SEED-001`: create executable-slice scaffold and copy the current handoff source map into the implementation spec; no code generation yet.
+- `TASK-DCA-SEED-002`: define foundation domain model and authorization contracts for Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, SupportAccessGrant, subscription/billing metadata, and AdminAuditEvent from `CAP-00`.
+- `TASK-DCA-SEED-003`: implement WorkOS/JWT request context, `/api/me`, invitation acceptance/linking, centralized backend authorization, selected `AuthContext`, disabled-user denial, support-access enforcement, and billing-boundary checks.
+- `TASK-DCA-SEED-004`: implement invitation, user, membership, role, access-review, support-access, admin-audit, tenant/customer settings, and billing-boundary APIs/views/workflows/timers/consumers with audit and idempotency tests.
+- `TASK-DCA-SEED-005`: implement authenticated React/Vite shell, context selection, administration screens, admin-agent recommendation surfaces, and Akka static hosting using `../55-ui/style-guide.md`.
+- `TASK-DCA-SEED-006`: add foundation security, tenant-isolation, invitation lifecycle, support-access, admin-agent boundary, frontend secret-boundary, and audit/trace executable tests from `../30-tests/*`.
+- `TASK-DCA-SUP-001`: create concrete fixtures for telemetry, lifecycle, entitlement, inventory, fulfillment, policy thresholds, WorkOS/JWT principals, support-access state, agent stubs, and outcome evidence; keep provider integrations fake/deterministic unless separately specified.
+- `TASK-DCA-SUP-002`: implement supply domain records, trace vocabulary, natural dedupe keys, policy clause references, and validation helpers from `CAP-03`.
+- `TASK-DCA-SUP-003`: implement supply recommendation/decision event-sourced model for recommendation, decision-card state, approval/rejection/modification/deferral/escalation, suppression, shipment-prepared, stale/expired decision, no-op, and outcome linkage.
+- `TASK-DCA-SUP-004`: implement `SupplyAutopilotWorkflow` with deterministic forecast/contract/policy/inventory agent/tool stubs, policy-gated auto-ship, pause/resume approval, suppression, stale-decision handling, idempotent retries, and no-op paths.
+- `TASK-DCA-SUP-005`: implement supplies views, timed rechecks, telemetry/inventory/fulfillment/outcome consumers, and trace fanout for risk queues, pending decisions, auto-ship history, suppressed shipments, trace lookup, and outcome review.
+- `TASK-DCA-SUP-006`: implement supplies HTTP APIs and minimal Supplies Command Center, Supply Decision Card, and Shipment Trace Drawer UI surfaces with backend authorization, idempotency keys, expected versions, stale/realtime behavior, and trace links.
+- `TASK-DCA-SUP-007`: run slice-level integration, endpoint, workflow, view, agent/tool-boundary, frontend smoke, trace-completeness, idempotency, approval-bypass, tenant-isolation, and outcome-linkage tests.
 
-Each task should load AI-first companion skills only for its concern plus the concrete Akka implementation skills for the component family being built.
+Each task should load AI-first companion skills only for its concern plus the concrete Akka implementation skills for the component family being built. Do not start code generation from this handoff alone; first create or update an executable-slice spec, verify readiness against `../00-system/readiness-status.md`, and keep the generated app as a reference projection rather than the source of truth.

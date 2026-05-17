@@ -433,7 +433,7 @@
 
 ### TASK-05-002: Update realization prep and future-slice handoff
 
-- status: pending
+- status: done
 - source: specs/dca-app-description-refresh-migration/backlog/05-final-consistency-and-realization-prep-build-backlog.md
 - task brief: none
 - depends on: [TASK-05-001]
@@ -453,4 +453,6 @@
   - handoff remains planning/reference only and does not start code generation
 - done criteria:
   - future executable DCA work has a current, scoped starting point
-- notes: []
+- notes:
+  - completed: updated the DCA implementation-slices handoff with a current source map for foundation, capabilities, tests, UI, observability, traceability, readiness, and the historical executable Supplies Autopilot sprint; refreshed seed and supplies slice source references; replaced older broad task examples with scoped future executable-slice task recommendations while preserving planning/reference-only status and not generating code
+  - commit: this commit
