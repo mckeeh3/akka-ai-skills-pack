@@ -14,7 +14,7 @@ This skill exists for a **description-first operating model** where the applicat
 Interpret flexible user input and produce a routing decision that:
 - defaults to maintaining the app description unless generation is explicitly requested
 - detects when the user wants to change only the app description
-- detects AI-first/delegated operating-model semantics before routing to CRUD, behavior, or generation work
+- detects AI-first/delegated operating-model semantics before routing to capability, behavior, UI, or generation work
 - detects when the user wants to generate the app or run it
 - consumes a normalized input envelope when available
 - extracts candidate capability, behavior, test, security, UI, and observability deltas when normalization has not yet happened

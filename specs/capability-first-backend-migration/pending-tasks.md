@@ -629,7 +629,7 @@
 
 ### TASK-05-002: Review app-description and decomposition paths for stale content
 
-- status: pending
+- status: done
 - source: specs/capability-first-backend-migration/backlog/05-review-and-stale-content-cleanup-build-backlog.md
 - task brief: none
 - depends on: [TASK-05-001]
@@ -648,7 +648,9 @@
 - done criteria:
   - stale description/decomposition content is resolved or queued
 - notes:
-  - pending
+  - completed: reviewed description-first and direct decomposition paths; added `specs/capability-first-backend-migration/description-decomposition-review.md`; refined stale CRUD-oriented intake wording; expanded the older app-description skill planning contract; updated purchase-request app-description and solution-plan mechanics examples to preserve capability ids/classes, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure surfaces, tests, and capability-to-component mapping
+  - checks: `rg` review of app-description/decomposition docs and skills for CRUD/component/tool-first language; `git diff --check`
+  - commit hash: not embedded because this queue update is included in the same task commit; see commit `Review description decomposition capability paths`
 
 ### TASK-05-003: Review component skills for stale CRUD/entity/tool-first language
 

@@ -209,14 +209,15 @@ Produce a structured routing result with:
 The harness needs to define or revise business capabilities, scope boundaries, actors, or intended outcomes in `10-capabilities/`.
 
 ### Must capture
-- capability names and goals
-- actors
-- in-scope outcomes
-- out-of-scope outcomes
-- links to behavior, tests, security, and observability
+- stable capability ids/names and classes
+- purpose, in-scope outcomes, and out-of-scope outcomes
+- actors/callers, AuthContext, tenant/customer scope, role, permission, or named capability grants
+- input/output schemas, validation, denial/error shape, redaction, idempotency, and correlation expectations
+- data access, side effects, policy/approval/escalation rules, autonomy level, audit/work-trace obligations, and selected exposure surfaces
+- links to behavior, tests, security, observability, UI, readiness, and traceability artifacts
 
 ### Output contract
-Update the authoritative capability layer so downstream behavior and verification work have a clear business boundary.
+Update the authoritative capability layer so downstream behavior, verification, auth/security, observability, UI, and implementation planning have governed operation/query contracts rather than only broad business boundaries.
 
 ## 3. `app-description-behavior-specification`
 
