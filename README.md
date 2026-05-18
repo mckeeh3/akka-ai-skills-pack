@@ -80,18 +80,19 @@ For global installs, dry runs, archive installs, and detailed usage, see the [Sk
 
 ## Getting started prompt
 
-After installing the pack into a new target project, you can ask your harness to bootstrap only the secure AI-first SaaS foundation:
+After installing the pack into a new target project, put the initial app intent in `docs/input/initial/core-foundation.md`, then ask your harness to bootstrap only the secure AI-first SaaS foundation planning artifacts:
 
 ```text
-Create a new AI-first SaaS app with only the core foundation functionality:
-secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding,
-admin user management, memberships/roles/capabilities, admin audit/search,
-governed runtime agent behavior management (AgentDefinition, governed prompts/skills,
-skill manifests, tool permission boundaries, prompt/skill/work traces),
-and AI-assisted admin offload. Do not add any domain-specific CRM/product features yet.
+First read .agents/AGENTS.md and .agents/skills/README.md.
+Then read docs/input/initial/core-foundation.md.
+
+Bootstrap only the app-description, solution plan, pending questions, and pending task queue
+for a secure AI-first SaaS core foundation. Do not generate application source code yet.
+Queue questions instead of guessing. Mark generation not-ready if required secure AI-first
+SaaS foundation decisions are missing.
 ```
 
-The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
+The input file can describe requirements such as secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding, admin user management, memberships/roles/capabilities, admin audit/search, governed runtime agent behavior management, AI-assisted admin offload, and whether domain-specific features are intentionally out of scope. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough and explicitly approved.
 
 ## Repository status
 
