@@ -28,7 +28,8 @@ Options:
 Notes:
   - This installer always installs the full packaged skill library, repository docs, examples, and pack-facing AGENTS.md guidance
   - This installer uses cross-harness locations, not project-local .pi directories
-  - project mode installs into <project-root>/.agents
+  - project mode installs into <project-root>/.agents and offers to install pack guidance at <project-root>/AGENTS.md
+  - if <project-root>/AGENTS.md exists, choose replace, append, or skip; --force replaces it
   - akka-context is intentionally NOT installed
   - repo-internal maintainer guidance files are NOT installed
   - installed skill files are rewritten so they point to installed examples rather than repo-only src paths
@@ -163,6 +164,87 @@ copy_dir_replace() {
   fi
   ensure_dir "$(dirname "$dest")"
   run_cmd cp -R "$src" "$dest"
+}
+
+prompt_project_agents_action() {
+  local dest="$1"
+
+  if [[ "$FORCE" == true ]]; then
+    printf 'replace\n'
+    return
+  fi
+
+  if [[ ! -t 0 ]]; then
+    fail "$dest already exists and interactive input is unavailable. Re-run with --force to replace it, or run interactively to choose replace, append, or skip."
+  fi
+
+  while true; do
+    cat >&2 <<EOF
+Project guidance file already exists:
+  $dest
+
+Choose how to install Akka AI skills pack project guidance:
+  1) replace existing AGENTS.md
+  2) append pack guidance to existing AGENTS.md
+  3) skip / do not copy project AGENTS.md
+EOF
+    read -r -p "Enter choice [1-3]: " choice
+    case "$choice" in
+      1|r|R|replace)
+        printf 'replace\n'
+        return
+        ;;
+      2|a|A|append)
+        printf 'append\n'
+        return
+        ;;
+      3|s|S|skip)
+        printf 'skip\n'
+        return
+        ;;
+      *)
+        warn "Invalid choice: $choice"
+        ;;
+    esac
+  done
+}
+
+install_project_agents_guidance() {
+  [[ "$LOCATION" == "project" ]] || return
+
+  local src="$AGENTS_ROOT/AGENTS.md"
+  local dest="$PROJECT_ROOT/AGENTS.md"
+  local action="replace"
+
+  if [[ -e "$dest" ]]; then
+    action="$(prompt_project_agents_action "$dest")"
+  fi
+
+  case "$action" in
+    replace)
+      log "Installing project guidance: $dest"
+      copy_file "$src" "$dest"
+      ;;
+    append)
+      log "Appending project guidance: $dest"
+      if [[ "$DRY_RUN" == true ]]; then
+        printf '[dry-run] append %q to %q\n' "$src" "$dest"
+      else
+        {
+          printf '\n\n---\n\n'
+          printf '<!-- Begin Akka AI skills pack guidance -->\n\n'
+          cat "$src"
+          printf '\n<!-- End Akka AI skills pack guidance -->\n'
+        } >> "$dest"
+      fi
+      ;;
+    skip)
+      log "Skipping project guidance: $dest"
+      ;;
+    *)
+      fail "Unsupported project guidance action: $action"
+      ;;
+  esac
 }
 
 rewrite_installed_docs() {
@@ -487,6 +569,7 @@ ensure_dir "$EXAMPLES_DIR"
 
 copy_file "$REPO_ROOT/pack/manifest.yaml" "$PACK_MANIFEST_TARGET"
 copy_file "$REPO_ROOT/pack/AGENTS.md" "$AGENTS_ROOT/AGENTS.md"
+install_project_agents_guidance
 copy_file "$REPO_ROOT/skills/README.md" "$SKILLS_DIR/README.md"
 copy_dir_replace "$REPO_ROOT/skills/references" "$SKILLS_DIR/references"
 
@@ -512,8 +595,11 @@ if [[ "$DRY_RUN" == true ]]; then
   log "Dry run complete"
 else
   log "Install complete"
-  log "Installed guidance: $AGENTS_ROOT/AGENTS.md"
-  log "Installed docs:     $DOCS_DIR"
+  log "Installed pack guidance:    $AGENTS_ROOT/AGENTS.md"
+  if [[ "$LOCATION" == "project" ]]; then
+    log "Project guidance target: $PROJECT_ROOT/AGENTS.md"
+  fi
+  log "Installed docs:             $DOCS_DIR"
   log "Installed manifest: $PACK_MANIFEST_TARGET"
   log "Installed skills:   $SKILLS_DIR"
   log "Installed examples: $EXAMPLES_DIR"

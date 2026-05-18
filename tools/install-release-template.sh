@@ -150,7 +150,13 @@ if [[ "$DRY_RUN" == true ]]; then
   installer_cmd+=(--dry-run)
 fi
 
-run_cmd "${installer_cmd[@]}"
+if [[ "$DRY_RUN" == true ]]; then
+  run_cmd "${installer_cmd[@]}"
+elif [[ -r /dev/tty ]]; then
+  "${installer_cmd[@]}" < /dev/tty
+else
+  run_cmd "${installer_cmd[@]}"
+fi
 
 if [[ "$DRY_RUN" == false ]]; then
   log "Install complete in $TARGET_DIR/.agents"
