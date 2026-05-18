@@ -1,6 +1,7 @@
 package com.example.application.agentfoundation;
 
 import com.example.domain.agentfoundation.ReferenceAgentWorkTrace;
+import com.example.domain.agentfoundation.ReferenceBehaviorEditTrace;
 import com.example.domain.agentfoundation.ReferencePromptAssemblyTrace;
 import com.example.domain.agentfoundation.ReferenceSkillLoadTrace;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ public final class ReferenceTraceSink {
   private final List<ReferencePromptAssemblyTrace> promptAssemblyTraces = new ArrayList<>();
   private final List<ReferenceSkillLoadTrace> skillLoadTraces = new ArrayList<>();
   private final List<ReferenceAgentWorkTrace> agentWorkTraces = new ArrayList<>();
+  private final List<ReferenceBehaviorEditTrace> behaviorEditTraces = new ArrayList<>();
 
   public void recordPromptAssembly(ReferencePromptAssemblyTrace trace) {
     promptAssemblyTraces.add(trace);
@@ -24,6 +26,10 @@ public final class ReferenceTraceSink {
     agentWorkTraces.add(trace);
   }
 
+  public void recordBehaviorEdit(ReferenceBehaviorEditTrace trace) {
+    behaviorEditTraces.add(trace);
+  }
+
   public List<ReferencePromptAssemblyTrace> promptAssemblyTraces() {
     return List.copyOf(promptAssemblyTraces);
   }
@@ -34,5 +40,9 @@ public final class ReferenceTraceSink {
 
   public List<ReferenceAgentWorkTrace> agentWorkTraces() {
     return List.copyOf(agentWorkTraces);
+  }
+
+  public List<ReferenceBehaviorEditTrace> behaviorEditTraces() {
+    return List.copyOf(behaviorEditTraces);
   }
 }

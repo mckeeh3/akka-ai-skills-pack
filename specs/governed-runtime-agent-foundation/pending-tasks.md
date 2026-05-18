@@ -892,7 +892,7 @@
 
 ### TASK-026: Add behavior editor proposal helper and prompt/skill diff tests
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
 - task brief: none
 - depends on: [TASK-025]
@@ -920,7 +920,7 @@
 - done criteria:
   - Prompt/skill edit proposal flow is executable and tested.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-027: Add manifest and tool-boundary proposal risk classification tests
 
