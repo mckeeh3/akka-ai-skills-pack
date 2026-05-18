@@ -3,8 +3,14 @@ package com.example.application.agentfoundation;
 import com.example.domain.agentfoundation.ReferenceAgentDefinition;
 import com.example.domain.agentfoundation.ReferenceAgentSkillManifest;
 import com.example.domain.agentfoundation.ReferenceAuthContext;
+import com.example.domain.agentfoundation.ReferenceBehaviorChangeRequest;
+import com.example.domain.agentfoundation.ReferenceBehaviorEditDecision;
+import com.example.domain.agentfoundation.ReferenceBehaviorEditProposal;
+import com.example.domain.agentfoundation.ReferenceBehaviorEditRisk;
+import com.example.domain.agentfoundation.ReferenceBehaviorEditTrace;
 import com.example.domain.agentfoundation.ReferencePromptDocument;
 import com.example.domain.agentfoundation.ReferencePromptVersion;
+import com.example.domain.agentfoundation.ReferenceProposedDocumentDiff;
 import com.example.domain.agentfoundation.ReferenceSkillDocument;
 import com.example.domain.agentfoundation.ReferenceSkillVersion;
 import com.example.domain.agentfoundation.ReferenceToolPermissionBoundary;
@@ -26,6 +32,8 @@ public final class ReferenceAgentFoundationFixtures {
   public static final String TOOL_BOUNDARY_ID = "tool-boundary-activity-guide";
   public static final String READ_SKILL_TOOL_ID = "readSkill";
   public static final String RUNTIME_MODE = "runtime";
+  public static final String BEHAVIOR_REQUEST_ID = "behavior-request-safe-wording";
+  public static final String BEHAVIOR_PROPOSAL_ID = "behavior-proposal-safe-wording";
 
   private ReferenceAgentFoundationFixtures() {}
 
@@ -137,6 +145,135 @@ public final class ReferenceAgentFoundationFixtures {
         true);
   }
 
+  public static ReferenceBehaviorChangeRequest safeWordingChangeRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        TENANT_ID,
+        BEHAVIOR_REQUEST_ID,
+        "account-admin-1",
+        AGENT_ID,
+        "prompt",
+        PROMPT_DOCUMENT_ID,
+        "Clarify that rainy-day suggestions should be concise and friendly.",
+        Set.of(),
+        "corr-behavior-safe-wording");
+  }
+
+  public static ReferenceBehaviorChangeRequest skillEditRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        TENANT_ID,
+        "behavior-request-skill-edit",
+        "account-admin-1",
+        AGENT_ID,
+        "skill",
+        ASSIGNED_SKILL_ID,
+        "Add guidance to ask whether children are joining before suggesting indoor options.",
+        Set.of(),
+        "corr-behavior-skill-edit");
+  }
+
+  public static ReferenceBehaviorChangeRequest manifestAdditionRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        TENANT_ID,
+        "behavior-request-manifest-addition",
+        "account-admin-1",
+        AGENT_ID,
+        "manifest",
+        SKILL_MANIFEST_ID,
+        "Add the premium upsell skill to the agent manifest for review.",
+        Set.of("skill_assignment"),
+        "corr-behavior-manifest-addition");
+  }
+
+  public static ReferenceBehaviorChangeRequest toolBoundaryExpansionRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        TENANT_ID,
+        "behavior-request-tool-boundary-expansion",
+        "account-admin-1",
+        AGENT_ID,
+        "tool_boundary",
+        TOOL_BOUNDARY_ID,
+        "Allow the agent to call createBookingHold after recommending an activity.",
+        Set.of("tool", "external_side_effect"),
+        "corr-behavior-tool-expansion");
+  }
+
+  public static ReferenceBehaviorChangeRequest authorityExpansionRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        TENANT_ID,
+        "behavior-request-authority-expansion",
+        "account-admin-1",
+        AGENT_ID,
+        "agent_definition",
+        AGENT_ID,
+        "Let the agent approve booking charges without human review.",
+        Set.of("approval", "autonomy", "billing"),
+        "corr-behavior-authority-expansion");
+  }
+
+  public static ReferenceBehaviorChangeRequest crossTenantBehaviorChangeRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        OTHER_TENANT_ID,
+        "behavior-request-cross-tenant",
+        "account-admin-1",
+        AGENT_ID,
+        "prompt",
+        PROMPT_DOCUMENT_ID,
+        "Read and change the other tenant's prompt.",
+        Set.of("tenant_scope"),
+        "corr-behavior-cross-tenant");
+  }
+
+  public static ReferenceProposedDocumentDiff safePromptDiff() {
+    return new ReferenceProposedDocumentDiff(
+        "prompt",
+        PROMPT_DOCUMENT_ID,
+        PROMPT_VERSION_ID,
+        "prompt-version-draft-safe-wording",
+        "summary",
+        "Append: Keep rainy-day suggestions concise and friendly.",
+        "Low-risk wording clarification for the active prompt draft.");
+  }
+
+  public static ReferenceBehaviorEditProposal safeWordingProposal() {
+    return new ReferenceBehaviorEditProposal(
+        TENANT_ID,
+        BEHAVIOR_PROPOSAL_ID,
+        BEHAVIOR_REQUEST_ID,
+        AGENT_ID,
+        List.of(safePromptDiff()),
+        ReferenceBehaviorEditRisk.LOW,
+        false,
+        Set.of(),
+        false,
+        "The request changes wording only and does not expand tool, data, or approval authority.",
+        "create_draft",
+        "corr-behavior-safe-wording");
+  }
+
+  public static ReferenceBehaviorEditDecision safeApprovalDecision() {
+    return new ReferenceBehaviorEditDecision(
+        TENANT_ID,
+        BEHAVIOR_PROPOSAL_ID,
+        "behavior-decision-approve-safe-wording",
+        "account-reviewer-1",
+        ReferenceBehaviorEditDecision.DecisionType.APPROVE,
+        "Approved wording-only draft for follow-on activation command.",
+        "corr-behavior-safe-wording");
+  }
+
+  public static ReferenceBehaviorEditTrace safeProposalTrace() {
+    return new ReferenceBehaviorEditTrace(
+        TENANT_ID,
+        "behavior-trace-safe-wording",
+        BEHAVIOR_REQUEST_ID,
+        BEHAVIOR_PROPOSAL_ID,
+        AGENT_ID,
+        ReferenceBehaviorEditTrace.TraceEvent.PROPOSAL_CREATED,
+        ReferenceBehaviorEditRisk.LOW,
+        "Created low-risk behavior edit proposal without mutating active prompt.",
+        "corr-behavior-safe-wording");
+  }
+
   public static List<Object> minimalFixtureSet() {
     return List.of(
         authContext(),
@@ -149,6 +286,15 @@ public final class ReferenceAgentFoundationFixtures {
         activeAssignedSkillVersion(),
         unassignedSkillDocument(),
         unassignedSkillVersion(),
-        activeToolBoundary());
+        activeToolBoundary(),
+        safeWordingChangeRequest(),
+        skillEditRequest(),
+        manifestAdditionRequest(),
+        toolBoundaryExpansionRequest(),
+        authorityExpansionRequest(),
+        crossTenantBehaviorChangeRequest(),
+        safeWordingProposal(),
+        safeApprovalDecision(),
+        safeProposalTrace());
   }
 }

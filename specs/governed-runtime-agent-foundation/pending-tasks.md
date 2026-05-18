@@ -860,7 +860,7 @@
 
 ### TASK-025: Add behavior-editing reference records and fixtures
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
 - task brief: none
 - depends on: [TASK-024]
@@ -888,7 +888,7 @@
 - done criteria:
   - Behavior-editing records and fixtures compile and support follow-on proposal tests.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-026: Add behavior editor proposal helper and prompt/skill diff tests
 
