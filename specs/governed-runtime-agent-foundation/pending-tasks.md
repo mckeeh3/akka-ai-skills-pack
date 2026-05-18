@@ -624,7 +624,7 @@
 
 ### TASK-018: Add reference governed-agent domain records and fixtures
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
 - task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
 - depends on: [TASK-017]
@@ -653,7 +653,7 @@
 - done criteria:
   - Reference domain records and fixtures compile and provide stable inputs for follow-on resolver/authorizer tests.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-019: Add ReferenceAgentRuntimeResolver and prompt assembly tests
 

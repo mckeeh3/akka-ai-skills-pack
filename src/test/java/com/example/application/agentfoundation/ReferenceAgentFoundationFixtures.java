@@ -1,0 +1,154 @@
+package com.example.application.agentfoundation;
+
+import com.example.domain.agentfoundation.ReferenceAgentDefinition;
+import com.example.domain.agentfoundation.ReferenceAgentSkillManifest;
+import com.example.domain.agentfoundation.ReferenceAuthContext;
+import com.example.domain.agentfoundation.ReferencePromptDocument;
+import com.example.domain.agentfoundation.ReferencePromptVersion;
+import com.example.domain.agentfoundation.ReferenceSkillDocument;
+import com.example.domain.agentfoundation.ReferenceSkillVersion;
+import com.example.domain.agentfoundation.ReferenceToolPermissionBoundary;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/** Stable reference fixtures for governed runtime agent resolver and authorizer tests. */
+public final class ReferenceAgentFoundationFixtures {
+  public static final String TENANT_ID = "tenant-reference-1";
+  public static final String OTHER_TENANT_ID = "tenant-other";
+  public static final String AGENT_ID = "agent-activity-guide";
+  public static final String DISABLED_AGENT_ID = "agent-disabled";
+  public static final String PROMPT_DOCUMENT_ID = "prompt-activity-guide";
+  public static final String PROMPT_VERSION_ID = "prompt-version-active";
+  public static final String SKILL_MANIFEST_ID = "manifest-activity-guide";
+  public static final String ASSIGNED_SKILL_ID = "skill-rainy-day-planning";
+  public static final String UNASSIGNED_SKILL_ID = "skill-premium-upsell";
+  public static final String TOOL_BOUNDARY_ID = "tool-boundary-activity-guide";
+  public static final String READ_SKILL_TOOL_ID = "readSkill";
+  public static final String RUNTIME_MODE = "runtime";
+
+  private ReferenceAgentFoundationFixtures() {}
+
+  public static ReferenceAuthContext authContext() {
+    return new ReferenceAuthContext(
+        TENANT_ID,
+        "account-admin-1",
+        Set.of("TENANT_ADMIN"),
+        Set.of("agent-runtime.invoke-managed-agent.reference"),
+        RUNTIME_MODE);
+  }
+
+  public static ReferenceAuthContext crossTenantAuthContext() {
+    return authContext().forTenant(OTHER_TENANT_ID);
+  }
+
+  public static ReferenceAgentDefinition activeAgent() {
+    return new ReferenceAgentDefinition(
+        TENANT_ID,
+        AGENT_ID,
+        "Activity Guide",
+        ReferenceAgentDefinition.LifecycleStatus.ACTIVE,
+        PROMPT_DOCUMENT_ID,
+        PROMPT_VERSION_ID,
+        SKILL_MANIFEST_ID,
+        TOOL_BOUNDARY_ID,
+        "model-config-reference-small",
+        "advisory");
+  }
+
+  public static ReferenceAgentDefinition disabledAgent() {
+    return new ReferenceAgentDefinition(
+        TENANT_ID,
+        DISABLED_AGENT_ID,
+        "Disabled Activity Guide",
+        ReferenceAgentDefinition.LifecycleStatus.DISABLED,
+        PROMPT_DOCUMENT_ID,
+        PROMPT_VERSION_ID,
+        SKILL_MANIFEST_ID,
+        TOOL_BOUNDARY_ID,
+        "model-config-reference-small",
+        "advisory");
+  }
+
+  public static ReferencePromptDocument activePromptDocument() {
+    return new ReferencePromptDocument(
+        TENANT_ID, PROMPT_DOCUMENT_ID, "Activity Guide Prompt", PROMPT_VERSION_ID, true);
+  }
+
+  public static ReferencePromptVersion activePromptVersion() {
+    return new ReferencePromptVersion(
+        TENANT_ID,
+        PROMPT_DOCUMENT_ID,
+        PROMPT_VERSION_ID,
+        ReferencePromptVersion.VersionStatus.ACTIVE,
+        "You are an activity guide. Use governed skills only after readSkill authorization.",
+        "prompt-checksum-active");
+  }
+
+  public static ReferenceAgentSkillManifest activeManifest() {
+    return new ReferenceAgentSkillManifest(
+        TENANT_ID,
+        SKILL_MANIFEST_ID,
+        "manifest-version-active",
+        AGENT_ID,
+        Set.of(ASSIGNED_SKILL_ID),
+        Map.of(ASSIGNED_SKILL_ID, "skill-version-active"),
+        true);
+  }
+
+  public static ReferenceSkillDocument activeAssignedSkillDocument() {
+    return new ReferenceSkillDocument(
+        TENANT_ID, ASSIGNED_SKILL_ID, "Rainy Day Planning", "skill-version-active", true);
+  }
+
+  public static ReferenceSkillVersion activeAssignedSkillVersion() {
+    return new ReferenceSkillVersion(
+        TENANT_ID,
+        ASSIGNED_SKILL_ID,
+        "skill-version-active",
+        ReferenceSkillVersion.VersionStatus.ACTIVE,
+        "Recommend indoor activities first when weather risk is high.",
+        "skill-checksum-active");
+  }
+
+  public static ReferenceSkillDocument unassignedSkillDocument() {
+    return new ReferenceSkillDocument(
+        TENANT_ID, UNASSIGNED_SKILL_ID, "Premium Upsell", "skill-version-unassigned", true);
+  }
+
+  public static ReferenceSkillVersion unassignedSkillVersion() {
+    return new ReferenceSkillVersion(
+        TENANT_ID,
+        UNASSIGNED_SKILL_ID,
+        "skill-version-unassigned",
+        ReferenceSkillVersion.VersionStatus.ACTIVE,
+        "This skill is intentionally not assigned to the reference agent.",
+        "skill-checksum-unassigned");
+  }
+
+  public static ReferenceToolPermissionBoundary activeToolBoundary() {
+    return new ReferenceToolPermissionBoundary(
+        TENANT_ID,
+        TOOL_BOUNDARY_ID,
+        "tool-boundary-version-active",
+        AGENT_ID,
+        Set.of(READ_SKILL_TOOL_ID),
+        Set.of(RUNTIME_MODE, "test", "replay"),
+        true);
+  }
+
+  public static List<Object> minimalFixtureSet() {
+    return List.of(
+        authContext(),
+        activeAgent(),
+        disabledAgent(),
+        activePromptDocument(),
+        activePromptVersion(),
+        activeManifest(),
+        activeAssignedSkillDocument(),
+        activeAssignedSkillVersion(),
+        unassignedSkillDocument(),
+        unassignedSkillVersion(),
+        activeToolBoundary());
+  }
+}
