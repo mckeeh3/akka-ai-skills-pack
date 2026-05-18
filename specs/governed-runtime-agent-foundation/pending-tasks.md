@@ -1257,7 +1257,7 @@
 
 ### TASK-038: Final audit for executable closed-loop improvement sprint
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
 - task brief: none
 - depends on: [TASK-037]
@@ -1288,3 +1288,4 @@
   - Remaining agent gaps are explicitly recorded.
   - A git commit exists for the final audit/repair.
 - notes:
+  - Sprint 08 final audit passed. Verification and focused closed-loop improvement tests passed; no contradiction repairs were needed. Remaining agent gaps are recorded in `docs/agent-coverage-matrix.md` cleanup backlog.
