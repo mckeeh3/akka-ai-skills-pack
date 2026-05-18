@@ -1172,7 +1172,7 @@
 
 ### TASK-035: Add improvement decision, activation, rollback, and trace tests
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
 - task brief: none
 - depends on: [TASK-034]
@@ -1197,7 +1197,7 @@
 - done criteria:
   - Improvement decision/activation/rollback reference semantics are executable and tested.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-036: Link improvement proposals to behavior-editing proposals
 
