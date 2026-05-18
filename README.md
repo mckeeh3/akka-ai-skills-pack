@@ -80,7 +80,25 @@ For global installs, dry runs, archive installs, and detailed usage, see the [Sk
 
 ## Getting started prompt
 
-After installing the pack into a new target project, put the initial app intent in `docs/input/initial/core-foundation.md`, then ask your harness to bootstrap only the secure AI-first SaaS foundation planning artifacts:
+After installing the pack into a new target project, first create the initial app intent file that the harness will ingest:
+
+```bash
+mkdir -p docs/input/initial
+cat > docs/input/initial/core-foundation.md <<'EOF'
+# Core foundation app intent
+
+Create a new AI-first SaaS app with only the core foundation functionality:
+secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding,
+admin user management, memberships/roles/capabilities, admin audit/search,
+governed runtime agent behavior management (AgentDefinition, governed prompts/skills,
+skill manifests, tool permission boundaries, prompt/skill/work traces),
+and AI-assisted admin offload.
+
+Do not add any domain-specific CRM/product features yet.
+EOF
+```
+
+Then ask your harness to bootstrap only the secure AI-first SaaS foundation planning artifacts:
 
 ```text
 First read .agents/AGENTS.md and .agents/skills/README.md.
