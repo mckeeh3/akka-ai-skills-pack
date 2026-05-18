@@ -101,6 +101,48 @@ require_rg "AdminRiskAgent" skills/akka-solution-decomposition/SKILL.md skills/a
 require_rg "AccessReviewAgent" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
 require_rg "decision cards for risky admin" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
 
+log "checking governed runtime agent foundation doctrine guardrails"
+require_rg "AgentDefinition" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-behavior-profiles/SKILL.md
+require_rg "PromptDocument" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-prompt-governance/SKILL.md
+require_rg "SkillDocument" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-skill-governance/SKILL.md
+require_rg "AgentSkillManifest" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-skill-governance/SKILL.md
+require_rg "ToolPermissionBoundary" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-behavior-profiles/SKILL.md skills/akka-agent-skill-governance/SKILL.md
+require_rg "readSkill\(skillId\)" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-skill-governance/SKILL.md
+require_rg "PromptAssemblyTrace" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-prompt-governance/SKILL.md
+require_rg "SkillLoadTrace" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md skills/akka-agent-skill-governance/SKILL.md
+require_rg "AgentWorkTrace" README.md skills/README.md docs/core-ai-first-saas-foundation.md skills/core-saas-foundation/SKILL.md
+require_rg "AgentBehaviorEditorAgent|behavior editing agent|editing-agent" docs/ai-first-saas-application-architecture.md skills/akka-agent-governed-documents/SKILL.md skills/akka-agent-prompt-governance/SKILL.md skills/akka-agent-skill-governance/SKILL.md
+require_rg 'prompt maintenance through an `AgentBehaviorEditorAgent`|skill, manifest, and tool-boundary changes through an `AgentBehaviorEditorAgent`|editing-agent proposal' skills/akka-agent-prompt-governance/SKILL.md skills/akka-agent-skill-governance/SKILL.md
+require_rg "Prompt and skill content is behavior guidance only|cannot grant tool permissions|does not grant tool permissions" skills/core-saas-foundation/SKILL.md skills/akka-agent-skill-governance/SKILL.md docs/ai-first-saas-application-architecture.md
+
+log "checking governed runtime agent foundation planning and task-generation guardrails"
+require_rg "AgentDefinition" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "PromptDocument" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "SkillDocument" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "AgentSkillManifest" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "readSkill" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "PromptAssemblyTrace" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "SkillLoadTrace" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "behavior editing|AgentBehaviorEditorAgent" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "too broad|split" skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/pending-task-queue.md
+require_rg "agent catalog" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+require_rg "agent detail" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
+
+log "checking governed runtime agent foundation seed app-description assets"
+require_rg "AgentDefinition" docs/examples/ai-first-saas-seed-app-description
+require_rg "PromptDocument" docs/examples/ai-first-saas-seed-app-description
+require_rg "SkillDocument" docs/examples/ai-first-saas-seed-app-description
+require_rg "AgentSkillManifest" docs/examples/ai-first-saas-seed-app-description
+require_rg "ToolPermissionBoundary|tool permission" docs/examples/ai-first-saas-seed-app-description
+require_rg "readSkill" docs/examples/ai-first-saas-seed-app-description
+require_rg "PromptAssemblyTrace" docs/examples/ai-first-saas-seed-app-description
+require_rg "SkillLoadTrace" docs/examples/ai-first-saas-seed-app-description
+require_rg "AgentWorkTrace" docs/examples/ai-first-saas-seed-app-description
+require_rg "AgentBehaviorEditorAgent|editing-agent" docs/examples/ai-first-saas-seed-app-description
+require_rg "agent catalog" docs/examples/ai-first-saas-seed-app-description
+require_rg "agent detail" docs/examples/ai-first-saas-seed-app-description
+require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent denial|authority expansion" docs/examples/ai-first-saas-seed-app-description
+
 log "checking packaged docs and seed app-description assets"
 require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml tools/build-pack.sh install.sh
 require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml tools/build-pack.sh install.sh

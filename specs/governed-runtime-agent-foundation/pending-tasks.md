@@ -252,7 +252,7 @@
 
 ### TASK-008: Add verification guardrails for governed runtime agent foundation
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/04-verification-and-final-audit-build-backlog.md
 - task brief: none
 - depends on: [TASK-001, TASK-006, TASK-007]
@@ -284,7 +284,7 @@
   - Automated verification guards against regressions to static or under-governed agent guidance.
   - Verification passes locally.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; commit hash reported in harness response.
 
 ### TASK-009: Final audit and repair for governed runtime agent foundation
 
