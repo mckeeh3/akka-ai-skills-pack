@@ -395,6 +395,10 @@ Use when agent system prompts need tenant-scoped review, approval, activation, v
 Use when agents need tenant-scoped shared skills, skill versions, per-agent skill manifests, compact manifest prompt context, `readSkill(skillId)`, SkillLoadTrace, skill editor/review/diff UI, or a skill-loading test console.
 - `akka-agent-skill-governance`
 
+### Behavior editing
+Use when an `AgentBehaviorEditorAgent` drafts prompt, skill, manifest, tool-boundary, policy, rubric, or example changes with structured proposed diffs, risk classification, draft versions, review/approval routing, decision cards, and denial of unauthorized authority expansion.
+- `akka-agent-behavior-editing`
+
 ### Agent work trace
 Use when agent activity needs audit/work trace events, prompt/skill/model/tool/data references, authorization basis, redaction, correlation ids, trace search, or investigation timelines.
 - `akka-agent-work-trace`
@@ -820,6 +824,7 @@ Load:
 - `akka-agent-behavior-profiles`
 - `akka-agent-governed-documents`
 - `akka-agent-skill-governance`
+- `akka-agent-behavior-editing`
 - `akka-agent-tools`
 - `core-saas-foundation`
 - `ai-first-saas-audit-trace`
@@ -1274,6 +1279,7 @@ Routing references:
 - `akka-agent-governed-documents` for tenant-scoped governed prompts, skills, rubrics, policies, and examples with immutable versions, review, activation, diff/history, and audit
 - `akka-agent-prompt-governance` for governed runtime-managed system prompts, PromptDocument/PromptVersion, effective prompt assembly, PromptAssemblyTrace, and prompt test consoles
 - `akka-agent-skill-governance` for governed runtime skills, SkillDocument/SkillVersion, AgentSkillManifest, compact manifest prompt context, readSkill(skillId), and SkillLoadTrace
+- `akka-agent-behavior-editing` for AgentBehaviorEditorAgent proposal flows, proposed diffs, draft versions, review/approval routing, decision cards, and authority-expansion denial
 - `akka-agent-work-trace` for AgentWorkTrace and agent-specific prompt/skill/model/tool/data/policy usage traces, authorization basis, redaction, correlation, and timelines
 - `akka-agent-closed-loop-improvement` for EvaluationRun/Finding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback loops
 

@@ -28,6 +28,7 @@ Legend:
 | Agent-specific work trace with prompt/skill/model/tool/data/policy references, authorization basis, redaction, and correlation | core seed Module 6 PRD | `akka-agent-work-trace`, `ai-first-saas-audit-trace` | pattern documented in `skills/akka-agent-work-trace/SKILL.md` | no executable local example yet | △ |
 | Durable AgentDefinition and behavior profiles | core seed Module 3 PRD | `akka-agent-behavior-profiles`, `akka-agent-governed-documents` | pattern documented in `skills/akka-agent-behavior-profiles/SKILL.md` | no executable local example yet | △ |
 | Governed behavior document/version pattern for prompts, skills, rubrics, policies, and examples | core seed Modules 4, 5, and 7 PRDs | `akka-agent-governed-documents` | pattern documented in `skills/akka-agent-governed-documents/SKILL.md` | no executable local example yet | △ |
+| Agent-mediated behavior editing with proposals, proposed diffs, draft versions, decision cards, and authority-expansion denial | core governed runtime agent foundation sprint | `akka-agent-behavior-editing`, `akka-agent-governed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance` | pattern documented in `skills/akka-agent-behavior-editing/SKILL.md` | no executable local example yet | △ |
 | Akka component tools used as agent tools | `akka-context/sdk/agents/extending.html.md` | `akka-agent-component-tools`, `akka-agent-tools` | `CartInspectorAgent.java`, `src/main/java/com/example/application/ShoppingCartEntity.java` | `CartInspectorAgentTest.java` | ✅ |
 | Remote MCP tools | `akka-context/sdk/agents/extending.html.md` | `akka-agent-mcp-tools` | `RemoteShoppingCartAgent.java`, `src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java` | `RemoteShoppingCartAgentTest.java` | ✅ |
 | Multimodal inputs and custom content loading | `akka-context/sdk/agents/extending.html.md`, `akka-context/sdk/agents.html.md` | `akka-agent-multimodal` | `DocumentAnalysisAgent.java` | `DocumentAnalysisAgentTest.java` | ✅ |
@@ -75,6 +76,7 @@ Small, high-value follow-ups for the next sprint:
 - Need governed prompt/skill/rubric/policy/example documents: read `skills/akka-agent-governed-documents/SKILL.md`
 - Need governed runtime prompts, prompt versions, diff/review/activation, or prompt assembly traces: read `skills/akka-agent-prompt-governance/SKILL.md`
 - Need governed runtime skills, manifests, readSkill, or skill load traces: read `skills/akka-agent-skill-governance/SKILL.md`
+- Need behavior-editing proposals, proposed diffs, draft versions, decision cards, or authority-expansion denial: read `skills/akka-agent-behavior-editing/SKILL.md`
 - Need agent work traces, prompt/skill/model/tool/data references, redaction, or timelines: read `skills/akka-agent-work-trace/SKILL.md`
 - Need a plain agent class: start with `skills/akka-agent-component/SKILL.md`
 - Need tools: read `skills/akka-agent-tools/SKILL.md`

@@ -157,6 +157,8 @@ human change request
 
 Direct text editing can still exist as a protected admin surface when explicitly allowed, but it is secondary to the default editing-agent proposal path and must use the same review/approval, diff, activation, and audit controls.
 
+For implementation details, load `akka-agent-behavior-editing` to define the AgentBehaviorEditorAgent structured proposal, proposed diff schema, risk classification, draft version creation, decision card routing, and authority expansion denial behavior.
+
 ## Rules
 
 1. Governed documents are tenant-scoped. Include `tenantId` in commands, state, events, views, endpoints, and runtime lookups.

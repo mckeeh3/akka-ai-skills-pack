@@ -109,6 +109,8 @@ Load the companion skill that matches the current task:
   - runtime-managed agent system prompts with PromptDocument/PromptVersion, review, activation, diff/history UI, effective prompt assembly, PromptAssemblyTrace, and safe test consoles
 - `akka-agent-skill-governance`
   - governed runtime skills with SkillDocument/SkillVersion, per-agent AgentSkillManifest, compact skill manifests, readSkill(skillId), SkillLoadTrace, and skill editor/test UI
+- `akka-agent-behavior-editing`
+  - AgentBehaviorEditorAgent flows for structured proposed diffs, draft versions, risk classification, review/approval routing, decision cards, and denial of unauthorized authority expansion
 - `akka-agent-work-trace`
   - agent-specific audit/work traces for AgentDefinition, prompt/skill/model/tool/data/policy usage, authorization decisions, redaction, correlation, and trace timelines
 - `akka-agent-closed-loop-improvement`
@@ -205,7 +207,12 @@ Use when agents need tenant-scoped shared skills, skill versions, per-agent skil
 
 Load `akka-agent-skill-governance`. Use `akka-agent-harness-skills` instead only for small deploy-time packaged skill resources.
 
-### 5. Agent work trace
+### 5. Behavior editing agent
+Use when admins or stewards ask an `AgentBehaviorEditorAgent` to draft changes to prompts, skills, manifests, tool boundaries, policies, rubrics, or examples.
+
+Load `akka-agent-behavior-editing` with `akka-agent-structured-responses`, the affected governance skill, and `ai-first-saas-decision-cards` when risk, approval, or authority expansion is involved.
+
+### 6. Agent work trace
 Use when agent activity needs audit/work trace events, prompt/skill/model/tool/data references, authorization basis, redaction, correlation ids, trace search, or investigation timelines.
 
 Load `akka-agent-work-trace` together with `ai-first-saas-audit-trace`.

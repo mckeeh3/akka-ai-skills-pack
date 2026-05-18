@@ -178,6 +178,8 @@ Direct human text editing may be offered only as an explicitly authorized admin 
 
 Editing-agent proposals must be denied or escalated when prompt text attempts to expand data access, tool permissions, role capabilities, approval authority, tenant scope, or hidden platform policy. Prompt text remains behavior guidance only.
 
+For implementation details, load `akka-agent-behavior-editing` to define the AgentBehaviorEditorAgent structured prompt-change proposal, proposed diff, risk classification, draft version creation, decision card routing, and authority expansion denial behavior.
+
 ## Prompt validation and safety
 
 Validate before review or activation:

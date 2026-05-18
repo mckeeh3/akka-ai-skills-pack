@@ -200,6 +200,8 @@ The editing agent may recommend new skill text, manifest entries, version pins, 
 
 Direct text editing may exist only as an explicitly authorized admin surface. It must still create draft versions or proposals, show a proposed diff, require review/approval for activation, deny unauthorized authority expansion, and emit audit/work traces.
 
+For implementation details, load `akka-agent-behavior-editing` to define the AgentBehaviorEditorAgent structured skill/manifest/tool-boundary proposal, proposed diff, risk classification, draft version or proposal creation, decision card routing, and authority expansion denial behavior.
+
 ## Skill content validation and safety
 
 Before approval or activation:

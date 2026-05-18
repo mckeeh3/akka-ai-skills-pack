@@ -375,7 +375,7 @@
 
 ### TASK-011: Add dedicated behavior-editing agent skill
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-010]
@@ -408,7 +408,7 @@
 - done criteria:
   - Behavior editing has a first-class skill rather than being only distributed across prompt/skill governance docs.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-012: Add tool permission boundary implementation guidance
 

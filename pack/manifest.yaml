@@ -108,6 +108,9 @@ content:
     - id: akka-agent-behavior-profiles
       path: skills/akka-agent-behavior-profiles
       category: focused
+    - id: akka-agent-behavior-editing
+      path: skills/akka-agent-behavior-editing
+      category: focused
     - id: akka-agent-governed-documents
       path: skills/akka-agent-governed-documents
       category: focused
@@ -506,6 +509,7 @@ bundles:
       - ai-first-saas-policy-governance
       - ai-first-saas-ui-surfaces
       - akka-agent-behavior-profiles
+      - akka-agent-behavior-editing
       - akka-agent-governed-documents
       - akka-agent-prompt-governance
       - akka-agent-skill-governance
