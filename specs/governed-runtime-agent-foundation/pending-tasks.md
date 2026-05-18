@@ -758,7 +758,7 @@
 
 ### TASK-022: Add optional managed-agent HTTP/test-console reference surface
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
 - task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
 - depends on: [TASK-021]
@@ -786,7 +786,7 @@
 - done criteria:
   - Optional endpoint is implemented and tested, or intentionally deferred with a documented reason.
   - A git commit exists for the changes.
-- notes:
+- notes: Added a narrow managed-agent HTTP/test-console reference endpoint with deterministic integration tests. Final hash reported in harness response.
 
 ### TASK-023: Update coverage matrix for executable governed-agent reference slice
 
