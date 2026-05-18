@@ -621,3 +621,238 @@
   - Next remaining agent gaps, if any, are explicitly recorded.
   - A git commit exists for the final audit/repair.
 - notes: Sprint 05 final audit passed. Verification passed, routing/manifest references are present, and remaining agent gaps are recorded in `docs/agent-coverage-matrix.md` cleanup backlog. Commit hash recorded in harness response.
+
+### TASK-018: Add reference governed-agent domain records and fixtures
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+- task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+- depends on: [TASK-017]
+- required reads:
+  - AGENTS.md
+  - specs/governed-runtime-agent-foundation/sprints/06-executable-governed-agent-reference-slice-sprint.md
+  - specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+  - specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+  - docs/agent-runtime-invocation-pattern.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/domain/security/SecurityRole.java
+  - src/test/java/com/example/application/ActivityAgentTest.java
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-testing
+- expected outputs:
+  - Add immutable reference records under `src/main/java/com/example/domain/agentfoundation/` for AuthContext, AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, and resolved runtime state.
+  - Add a small fixture factory under `src/test/java/com/example/application/agentfoundation/` or an equivalent test package for one tenant, one active agent, one disabled agent, one active prompt, one active assigned skill, one unassigned skill, and one tool boundary.
+  - Keep records minimal and clearly reference-only.
+- required checks:
+  - `find src/main/java/com/example/domain/agentfoundation -type f | sort`
+  - `rg -n "ReferenceAgentDefinition|ReferencePromptVersion|ReferenceSkillVersion|ReferenceAgentSkillManifest|ReferenceToolPermissionBoundary|ReferencePromptAssemblyTrace|ReferenceSkillLoadTrace|ReferenceAgentWorkTrace|ReferenceAuthContext" src/main/java/com/example/domain/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -DskipTests compile`
+  - `git diff --check`
+- done criteria:
+  - Reference domain records and fixtures compile and provide stable inputs for follow-on resolver/authorizer tests.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-019: Add ReferenceAgentRuntimeResolver and prompt assembly tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+- task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+- depends on: [TASK-018]
+- required reads:
+  - docs/agent-runtime-invocation-pattern.md
+  - specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - Add `ReferenceAgentRuntimeResolver`, `ReferencePromptAssembler`, and `ReferenceTraceSink` under `src/main/java/com/example/application/agentfoundation/` or another consistent application package.
+  - Implement active runtime resolution, compact manifest prompt assembly, checksum/correlation fields, safe denial results, and PromptAssemblyTrace recording.
+  - Add tests for active success, disabled-agent denial before model invocation, cross-tenant prompt/manifest denial, compact manifest-only prompt, and allowed/denied PromptAssemblyTrace creation.
+- required checks:
+  - `rg -n "ReferenceAgentRuntimeResolver|ReferencePromptAssembler|ReferenceTraceSink|PromptAssemblyTrace|compact" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceAgentRuntimeResolverTest test`
+  - `git diff --check`
+- done criteria:
+  - Runtime resolver reference path is executable and tested without real model/provider calls.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-020: Add ReferenceSkillReadAuthorizer and readSkill tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+- task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+- depends on: [TASK-018, TASK-019]
+- required reads:
+  - docs/agent-runtime-invocation-pattern.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - Add `ReferenceSkillReadAuthorizer` and a minimal `ReferenceAgentSkillTools` wrapper exposing the `readSkill(skillId)` shape.
+  - Enforce tenant, active agent, active manifest, assigned skill id, active skill version, runtime/test mode, and `ToolPermissionBoundary` grant checks.
+  - Add tests for assigned active skill success, unassigned skill denial, inactive/cross-tenant skill denial, missing `readSkill` tool grant denial, safe denial strings, and SkillLoadTrace creation for every result.
+- required checks:
+  - `rg -n "ReferenceSkillReadAuthorizer|ReferenceAgentSkillTools|readSkill|SkillLoadTrace|unassigned|ToolPermissionBoundary" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceSkillReadAuthorizerTest test`
+  - `git diff --check`
+- done criteria:
+  - Governed skill loading is executable and tests prove allowed and denied load behavior.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-021: Add minimal managed reference agent invocation test
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+- task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+- depends on: [TASK-019, TASK-020]
+- required reads:
+  - docs/agent-runtime-invocation-pattern.md
+  - skills/akka-agent-component/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - src/main/java/com/example/application/ActivityAgent.java
+  - src/main/java/com/example/application/TemplateBackedActivityAgent.java
+  - src/test/java/com/example/application/ActivityAgentTest.java
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-component
+  - akka-agent-tools
+  - akka-agent-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - Add `ManagedReferenceActivityAgent` or an equivalent minimal agent invocation reference using assembled governed prompt context.
+  - Add deterministic tests showing assembled prompt invocation succeeds, no full skill text appears in the initial prompt fixture, work trace correlates prompt assembly and skill load when used, and disabled/denied paths do not invoke the model.
+  - If direct SDK tool injection makes this too large, add the minimal agent invocation without tool integration and record a precise follow-up; do not broaden the task beyond one session.
+- required checks:
+  - `rg -n "ManagedReferenceActivityAgent|AgentWorkTrace|TestModelProvider|assembled prompt|full skill text" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ManagedReferenceActivityAgentTest test`
+  - `git diff --check`
+- done criteria:
+  - Minimal managed reference agent invocation is executable and deterministic, or a narrowly justified follow-up is recorded if SDK integration is deferred.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-022: Add optional managed-agent HTTP/test-console reference surface
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+- task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+- depends on: [TASK-021]
+- required reads:
+  - docs/agent-runtime-invocation-pattern.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-http-endpoint-component-client/SKILL.md
+  - skills/akka-http-endpoint-testing/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-http-endpoints
+  - akka-http-endpoint-component-client
+  - akka-http-endpoint-testing
+  - akka-agent-testing
+- expected outputs:
+  - Add a narrow protected/test-console-like endpoint only if it stays small and consistent with reference examples.
+  - The endpoint should call the resolver, preserve correlation id, return safe denial responses, and never expose provider secrets or hidden prompt/skill text.
+  - If an endpoint is not worthwhile after reviewing scope, mark this task done by adding a brief reference note explaining why tests are sufficient and updating the queue/coverage accordingly.
+- required checks:
+  - If endpoint added: `rg -n "ManagedReference.*Endpoint|correlation|safe denial|agentfoundation" src/main/java/com/example/api src/test/java/com/example` and run the focused endpoint test.
+  - If endpoint deferred: `rg -n "HTTP|test-console|endpoint" specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md docs/agent-coverage-matrix.md`
+  - `git diff --check`
+- done criteria:
+  - Optional endpoint is implemented and tested, or intentionally deferred with a documented reason.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-023: Update coverage matrix for executable governed-agent reference slice
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+- task brief: none
+- depends on: [TASK-021, TASK-022]
+- required reads:
+  - docs/agent-coverage-matrix.md
+  - specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agents
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - Update `docs/agent-coverage-matrix.md` rows for governed prompt docs, governed skills/manifests/readSkill, work trace, AgentDefinition behavior profiles, ToolPermissionBoundary, and governed runtime testing to reference executable files/tests where implemented.
+  - Leave any still-missing behavior-editing or closed-loop improvement rows accurately marked as gaps.
+  - Update cleanup backlog to remove completed reference-slice item and retain genuine remaining gaps.
+- required checks:
+  - `rg -n "ReferenceAgentRuntimeResolver|ReferenceSkillReadAuthorizer|ManagedReferenceActivityAgent|ReferenceAgentRuntimeResolverTest|ReferenceSkillReadAuthorizerTest|ManagedReferenceActivityAgentTest" docs/agent-coverage-matrix.md`
+  - `git diff --check`
+- done criteria:
+  - Coverage matrix accurately reflects executable governed-agent reference coverage.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-024: Final audit for executable governed-agent reference slice
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+- task brief: none
+- depends on: [TASK-023]
+- required reads:
+  - specs/governed-runtime-agent-foundation/sprints/06-executable-governed-agent-reference-slice-sprint.md
+  - specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
+  - specs/governed-runtime-agent-foundation/pending-tasks.md
+  - specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+  - docs/agent-coverage-matrix.md
+  - docs/agent-runtime-invocation-pattern.md
+  - skills/README.md
+  - skills/akka-agents/SKILL.md
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+- skills:
+  - akka-agents
+  - akka-agent-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - Run final consistency audit for Sprint 06.
+  - Repair contradictions between docs, matrix, reference code, and tasks.
+  - Mark completed Sprint 06 tasks done if prior sessions missed queue updates, preserving history.
+  - Record any remaining executable agent gaps for a future sprint.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `mvn -q -Dtest=ReferenceAgentRuntimeResolverTest,ReferenceSkillReadAuthorizerTest,ManagedReferenceActivityAgentTest test`
+  - `rg -n "ReferenceAgentRuntimeResolver|ReferenceSkillReadAuthorizer|ManagedReferenceActivityAgent|PromptAssemblyTrace|SkillLoadTrace|AgentWorkTrace" docs skills specs/governed-runtime-agent-foundation src/main/java src/test/java`
+  - `git status --short`
+  - `git diff --check`
+- done criteria:
+  - Sprint 06 audit passes.
+  - Remaining agent gaps are explicitly recorded.
+  - A git commit exists for the final audit/repair.
+- notes:
