@@ -102,9 +102,11 @@ The backlog file must include:
 The suggested harness task breakdown is the default leaf layer for implementation.
 Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
 
-When the target slice or sprint is the SaaS foundation, split the breakdown into concrete first-slice user-admin tasks before app-specific domain features: invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests. Do not produce one broad `auth/admin` item for this work.
+When the target slice or sprint is the SaaS foundation, split the breakdown into concrete first-slice user-admin tasks before app-specific domain features: invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests. Do not produce one broad `auth/admin` item for this work.
 
-For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`.
+Also split governed runtime agent foundation work into separate backlog and pending-task items by component/UI/test family: `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance with prompt assembly and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, authorized `readSkill(skillId)` and `SkillLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents and proposed-diff approval, prompt/skill/manifest/tool-boundary UI, trace UI, and security/admin/agent-governance tests. Do not produce one broad managed-agent or `agent governance` item that spans all of these.
+
+For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant source capability ids, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, audit/trace requirements, UI surface, and concrete checks rather than reducing the work to a vague implementation label.
 If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
 Preserve existing task IDs and statuses when updating an existing queue.
 
@@ -146,7 +148,7 @@ Not allowed:
 ### Detail level
 The backlog should be detailed enough for several small harness runs, but not so detailed that it becomes source code.
 If one task item still spans multiple unrelated component families or too many files, call that out and recommend a further task-brief decomposition before coding.
-Do not add an oversized item to `specs/pending-tasks.md` as if it were ready; either split it into smaller pending tasks or mark the queue item `blocked` with a note that a task brief is required. In particular, a task spanning invitation lifecycle plus admin AI plus UI must be split before it becomes runnable.
+Do not add an oversized item to `specs/pending-tasks.md` as if it were ready; either split it into smaller pending tasks or mark the queue item `blocked` with a note that a task brief is required. In particular, a task spanning invitation lifecycle plus admin AI plus UI must be split before it becomes runnable. A task spanning `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `SkillLoadTrace`, `PromptAssemblyTrace`, behavior editing agents, tool boundaries, traces, UI, and tests is too broad and must be split or blocked for `akka-backlog-item-to-task-brief`.
 
 ## Sizing rules
 

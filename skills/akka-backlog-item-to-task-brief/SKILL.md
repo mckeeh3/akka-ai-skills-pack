@@ -97,7 +97,7 @@ Each task brief must include:
 8. Required tests
 9. Done criteria
 
-The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, and done criteria from the brief.
+The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, and done criteria from the brief. It must also preserve relevant source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, audit/trace obligations, UI surfaces, and test/check expectations from the backlog item.
 
 ## AI-first context preservation
 
@@ -156,7 +156,9 @@ A task brief is too large if it still spans:
 - unresolved architecture questions
 
 If that happens, split again before coding.
-Only add queue entries that are small enough for one focused harness run; if the work remains too broad, create multiple task briefs or mark the corresponding queue item `blocked` with the exact split needed. For SaaS foundation backlog items, never keep one task brief that spans invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests; split those into separate harness tasks before app-specific domain features.
+Only add queue entries that are small enough for one focused harness run; if the work remains too broad, create multiple task briefs or mark the corresponding queue item `blocked` with the exact split needed. For SaaS foundation backlog items, never keep one task brief that spans invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents such as AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests; split those into separate harness tasks before app-specific domain features.
+
+Managed-agent foundation task briefs must also be split before coding when they span multiple agent-governance families. Do not make one runnable brief cover `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, authorized `readSkill(skillId)`, `SkillLoadTrace`, `PromptAssemblyTrace`, behavior editing agents, tool boundaries, traces, UI, and tests. Split into focused briefs such as AgentDefinition lifecycle/profile, prompt governance and prompt assembly traces, skill governance and skill-load traces, manifest/readSkill enforcement, tool permission boundaries, AgentWorkTrace, behavior editing proposal flow, UI surfaces, and security/admin/agent-governance tests.
 
 ## Naming rules
 
@@ -195,6 +197,7 @@ Before finishing, verify:
 - the reads are the minimum needed
 - non-goals are explicit
 - outputs are specific files or a tightly bounded file family
+- managed-agent task briefs name their exact foundation scope, such as AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, SkillLoadTrace, PromptAssemblyTrace, behavior editing, ToolPermissionBoundary, AgentWorkTrace, UI, or tests, instead of using one vague agent-governance label
 - AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome context from the backlog item is either preserved in the brief or explicitly out of scope
 - unresolved AI-first blockers are captured as pending questions and block only affected queue entries
 - required tests are named clearly

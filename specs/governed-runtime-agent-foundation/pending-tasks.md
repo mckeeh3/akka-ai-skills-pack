@@ -224,7 +224,7 @@
 
 ### TASK-007: Update task materialization skills to prevent vague agent-governance tasks
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/03-planning-and-task-generation-build-backlog.md
 - task brief: none
 - depends on: [TASK-006]
@@ -248,7 +248,7 @@
 - done criteria:
   - Pending-task materialization cannot collapse managed-agent foundation into a vague single task.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; commit hash reported in harness response.
 
 ### TASK-008: Add verification guardrails for governed runtime agent foundation
 

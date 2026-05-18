@@ -119,6 +119,21 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
 
 If no separate task brief exists, omit `task brief:` or set it to `none` and make the `source` backlog item specific enough to execute.
 
+## Managed-agent foundation splitting guardrails
+
+Generated SaaS queues must never collapse governed runtime agent foundation work into one vague `agent governance`, `managed agents`, or `AI foundation` task. If a backlog item spans `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, behavior editing agents, `ToolPermissionBoundary`, `AgentWorkTrace`, UI, and tests, the item is too broad and must be split or blocked for a task brief.
+
+Use bounded task families such as:
+- `AgentDefinition` lifecycle/profile, authority, disabled-agent denial, agent catalog/detail UI, and direct tests
+- `PromptDocument`/`PromptVersion` governance, prompt assembly, `PromptAssemblyTrace`, prompt governance UI, and tests
+- `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, authorized `readSkill(skillId)`, `SkillLoadTrace`, skill/manifest UI, and tests
+- `ToolPermissionBoundary` management, approval-required authority expansion denial, tool-boundary UI, and tests
+- behavior editing agents, proposed diff creation, review/approval routing, activation/denial audit, and tests
+- `AgentWorkTrace` recording/search/detail UI and trace-retention/security tests
+- focused security/admin/agent-governance regression tests across tenant isolation, AuthContext/scope, approval, audit/trace, disabled agents, unassigned skills, and unauthorized prompt/skill/tool changes
+
+Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation scope it covers.
+
 ## Selection algorithm
 
 To choose the next task:

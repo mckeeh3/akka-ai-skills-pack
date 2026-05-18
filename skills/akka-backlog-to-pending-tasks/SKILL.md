@@ -81,7 +81,9 @@ Use the contract in `../../docs/pending-task-queue.md`.
 
 Derive queue tasks from each backlog file's `Suggested harness task breakdown` section.
 
-Security and web UI baseline tasks must never be omitted as cross-cutting polish. For SaaS app queues, ensure the first runnable tasks implement or verify the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, frontend shell/context selection, and security/admin/frontend tests. If the source backlogs lack those tasks, repair the queue only after adding or flagging the missing foundation backlog coverage instead of silently proceeding to domain work.
+Security and web UI baseline tasks must never be omitted as cross-cutting polish. For SaaS app queues, ensure the first runnable tasks implement or verify the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, governed runtime agent foundation, AI admin agents including AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, admin UI surfaces, frontend shell/context selection, and security/admin/frontend tests. If the source backlogs lack those tasks, repair the queue only after adding or flagging the missing foundation backlog coverage instead of silently proceeding to domain work.
+
+Governed runtime agent foundation work must be materialized as multiple bounded tasks, not one broad `agent governance` task. Split queue entries by component/UI/test family, for example: `AgentDefinition` lifecycle/profile and agent catalog/detail; `PromptDocument`/`PromptVersion` governance, prompt assembly, and `PromptAssemblyTrace`; `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, authorized `readSkill(skillId)`, and `SkillLoadTrace`; `ToolPermissionBoundary` management; `AgentWorkTrace` recording/search/detail; behavior editing agents and proposed-diff approval flows; prompt/skill/manifest/tool-boundary UI surfaces; and security/admin/agent-governance tests.
 
 Do not create one queue task per class name unless the backlog explicitly frames each class as a separate harness-sized task.
 
@@ -121,6 +123,7 @@ Good queue tasks usually map to:
 If a backlog task item is too broad:
 - prefer creating multiple smaller queue tasks when the split is obvious from the backlog
 - split any broad `auth/admin`, `user administration`, or `foundation` item that spans invitation lifecycle plus admin AI plus UI into separate queue tasks for invitation lifecycle, email delivery/outbox, user directory/search views, membership/role management, admin audit/search, access review queues, AI admin agents, decision cards for risky admin actions, admin UI surfaces, and security/admin tests
+- split any broad managed-agent item that spans `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `SkillLoadTrace`, `PromptAssemblyTrace`, behavior editing agents, tool boundaries, traces, UI, and tests into separate component/UI/test queue tasks; a task covering all of these is too broad and must not be runnable
 - otherwise create one `blocked` queue task with a note that `akka-backlog-item-to-task-brief` should split it first
 
 ### Existing queue preservation
@@ -149,7 +152,9 @@ Set dependencies conservatively:
 
 Avoid over-serializing independent work.
 
-### Required reads
+### Required reads and preserved task context
+
+Each generated task must preserve the source capability ids when available, the actor/caller and `AuthContext`, required role/scope or permission checks, approval gates, audit/trace obligations, UI surfaces affected, and concrete checks. For governed runtime agent foundation tasks, record which foundation scope is in the task (`AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing, tool-boundary UI, or tests) so later runs do not merge adjacent agent-governance work.
 
 Each task should list the smallest useful reads, usually:
 - `specs/akka-solution-plan.md`
