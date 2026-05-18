@@ -330,3 +330,294 @@
   - No known contradiction remains.
   - A git commit exists for the final audit/repair.
 - notes: Final audit passed; no contradiction repairs were needed. Commit hash reported in harness response.
+
+### TASK-010: Add managed agent runtime invocation resolver guidance
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-009]
+- required reads:
+  - AGENTS.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/agent-coverage-matrix.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - skills/akka-agent-component/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-workflows/SKILL.md
+- skills:
+  - akka-agents
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-work-trace
+  - capability-first-backend
+- expected outputs:
+  - Create `docs/agent-runtime-invocation-pattern.md` or an equivalent focused reference doc.
+  - Define the runtime invocation sequence from HTTP/workflow/timer/consumer/test-console request through AuthContext, active AgentDefinition lookup, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and trace emission.
+  - Clarify what should be Akka components, what may be application service/helper code, and which checks must happen before model invocation.
+  - Update `skills/akka-agents/SKILL.md`, `skills/akka-agent-behavior-profiles/SKILL.md`, and `skills/README.md` with routing references to the new pattern.
+- required checks:
+  - `test -f docs/agent-runtime-invocation-pattern.md`
+  - `rg -n "AgentRuntimeResolver|PromptAssemblyTrace|SkillLoadTrace|AgentDefinition|AgentSkillManifest|ToolPermissionBoundary|readSkill|AuthContext" docs/agent-runtime-invocation-pattern.md skills/akka-agents/SKILL.md skills/akka-agent-behavior-profiles/SKILL.md skills/README.md`
+  - `git diff --check`
+- done criteria:
+  - Managed runtime agent invocation has a concrete implementation handoff pattern.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-011: Add dedicated behavior-editing agent skill
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-010]
+- required reads:
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - skills/ai-first-saas-policy-governance/SKILL.md
+  - skills/akka-agent-structured-responses/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - pack/manifest.yaml
+- skills:
+  - akka-agent-governed-documents
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-structured-responses
+  - akka-agent-testing
+- expected outputs:
+  - Create `skills/akka-agent-behavior-editing/SKILL.md`.
+  - Define `AgentBehaviorEditorAgent` responsibilities, structured outputs, proposal/diff schemas, risk classification, affected document selection, draft version creation, review/approval routing, and denial of unauthorized authority expansion.
+  - Add routing references in `skills/README.md`, `skills/akka-agents/SKILL.md`, governed document/prompt/skill skills, app-description or planning skills only where needed.
+  - Add skill to `pack/manifest.yaml`.
+- required checks:
+  - `test -f skills/akka-agent-behavior-editing/SKILL.md`
+  - `rg -n "akka-agent-behavior-editing" skills/README.md skills/akka-agents/SKILL.md skills/akka-agent-governed-documents/SKILL.md skills/akka-agent-prompt-governance/SKILL.md skills/akka-agent-skill-governance/SKILL.md pack/manifest.yaml`
+  - `rg -n "AgentBehaviorEditorAgent|proposed diff|draft version|authority expansion|decision card|structured" skills/akka-agent-behavior-editing/SKILL.md`
+  - `git diff --check`
+- done criteria:
+  - Behavior editing has a first-class skill rather than being only distributed across prompt/skill governance docs.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-012: Add tool permission boundary implementation guidance
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-010]
+- required reads:
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-component-tools/SKILL.md
+  - skills/akka-agent-mcp-tools/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - docs/capability-first-backend-architecture.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md
+  - pack/manifest.yaml
+- skills:
+  - akka-agent-tools
+  - akka-agent-component-tools
+  - akka-agent-mcp-tools
+  - akka-agent-work-trace
+  - capability-first-backend
+- expected outputs:
+  - Create `skills/akka-agent-tool-boundaries/SKILL.md` or a focused doc if a skill is not warranted; prefer a skill if it routes implementation work.
+  - Define ToolPermissionBoundary model, tool registry/catalog, allowed tool ids/categories/scopes, read-only vs side-effecting tools, component tools, MCP tools, approval-required expansion, runtime denial semantics, and trace fields.
+  - Route from `skills/README.md`, `skills/akka-agents/SKILL.md`, `skills/akka-agent-tools/SKILL.md`, `skills/akka-agent-component-tools/SKILL.md`, and `skills/akka-agent-mcp-tools/SKILL.md`.
+  - Add the skill to `pack/manifest.yaml` if created.
+- required checks:
+  - `test -f skills/akka-agent-tool-boundaries/SKILL.md`
+  - `rg -n "akka-agent-tool-boundaries|ToolPermissionBoundary|tool registry|read-only|side-effecting|approval|required|denied" skills/README.md skills/akka-agents/SKILL.md skills/akka-agent-tools/SKILL.md skills/akka-agent-component-tools/SKILL.md skills/akka-agent-mcp-tools/SKILL.md skills/akka-agent-tool-boundaries/SKILL.md pack/manifest.yaml`
+  - `git diff --check`
+- done criteria:
+  - Tool/data/side-effect authority for agents has concrete focused implementation guidance.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-013: Add governed-agent testing guidance
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-010, TASK-011, TASK-012]
+- required reads:
+  - skills/akka-agent-testing/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - docs/agent-coverage-matrix.md
+- skills:
+  - akka-agent-testing
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - Update `skills/akka-agent-testing/SKILL.md` with a governed runtime agent test section, or create `skills/akka-agent-governance-testing/SKILL.md` if the guidance is large.
+  - Cover active profile resolution, disabled/archived denial, draft prompt only in test/replay, unapproved prompt/skill activation denial, unassigned skill denial, cross-tenant denial, prompt assembly trace, skill load trace, tool-boundary denial, behavior-editing proposal flow, and authority-expansion approval.
+  - Add routing references and manifest entry if a new skill is created.
+- required checks:
+  - `rg -n "disabled.*agent|unassigned skill|PromptAssemblyTrace|SkillLoadTrace|ToolPermissionBoundary|authority expansion|AgentBehaviorEditorAgent|cross-tenant" skills/akka-agent-testing/SKILL.md skills/README.md pack/manifest.yaml`
+  - `git diff --check`
+- done criteria:
+  - Governed runtime agent testing is concrete enough for downstream code-generation tasks.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-014: Add model configuration governance guidance
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-010]
+- required reads:
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-component/SKILL.md
+  - docs/agent-coverage-matrix.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/ai-first-saas-application-architecture.md
+  - src/main/java/com/example/application/ConfiguredModelActivityAgent.java
+  - src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java
+  - pack/manifest.yaml
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-component
+  - akka-agent-work-trace
+- expected outputs:
+  - Create `skills/akka-agent-model-governance/SKILL.md` or update behavior profile/component skills with a sufficiently focused section.
+  - Define `ModelConfigRef`, model policy, provider secret boundary, tenant/agent/task model selection, fallback model policy, audit/trace for model config changes and use, and tests for forbidden provider/secret exposure.
+  - Add routing and manifest references if a new skill is created.
+- required checks:
+  - `rg -n "ModelConfigRef|model policy|provider secret|fallback model|model config|ConfiguredModelActivityAgent" skills/akka-agent-behavior-profiles/SKILL.md skills/akka-agent-component/SKILL.md skills/README.md docs/agent-coverage-matrix.md pack/manifest.yaml`
+  - `git diff --check`
+- done criteria:
+  - Model configuration governance is explicit and aligned with managed AgentDefinition profiles.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-015: Add one-agent vs agent-team responsibility shaping guidance
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-011, TASK-012]
+- required reads:
+  - skills/ai-first-saas-agent-team-design/SKILL.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - skills/akka-agent-orchestration/SKILL.md
+  - skills/akka-agents/SKILL.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/core-ai-first-saas-foundation.md
+- skills:
+  - ai-first-saas-agent-team-design
+  - ai-first-saas-admin-agents
+  - akka-agent-orchestration
+  - akka-agents
+- expected outputs:
+  - Add a decision guide for one governed skilled agent vs multiple specialized agents vs workflow-supervised team vs evaluator agent.
+  - Include criteria for shared/different authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs.
+  - Update admin-agent guidance to reference the generalized decision guide.
+- required checks:
+  - `rg -n "single governed|one governed|specialized agents|agent team|different authority|tool boundary|model config|lifecycle|steward|evaluator" skills/ai-first-saas-agent-team-design/SKILL.md skills/ai-first-saas-admin-agents/SKILL.md skills/akka-agent-orchestration/SKILL.md skills/akka-agents/SKILL.md docs/ai-first-saas-application-architecture.md`
+  - `git diff --check`
+- done criteria:
+  - Agent decomposition avoids both unnecessary agent sprawl and unsafe over-consolidation.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-016: Add minimal governed runtime agent reference slice plan or executable example
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-010, TASK-011, TASK-012, TASK-013]
+- required reads:
+  - docs/agent-coverage-matrix.md
+  - docs/agent-runtime-invocation-pattern.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - src/main/java/com/example/application/ActivityAgent.java
+  - src/main/java/com/example/application/TemplateBackedActivityAgent.java
+  - src/test/java/com/example/application/ActivityAgentTest.java
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - Decide whether the next increment should add executable Java reference code now or create a follow-on implementation queue if too large.
+  - At minimum, add a focused reference plan under `specs/governed-runtime-agent-foundation/` for a minimal governed runtime agent slice with classes, tests, and task breakdown.
+  - If small enough, add executable examples for a minimal AgentDefinition, prompt/skill manifest resolver, readSkill tool, and deterministic tests.
+  - Update `docs/agent-coverage-matrix.md` to reflect what is now covered vs still planned.
+- required checks:
+  - `rg -n "governed runtime agent|AgentDefinition|PromptDocument|SkillDocument|AgentSkillManifest|readSkill|SkillLoadTrace|PromptAssemblyTrace" docs/agent-coverage-matrix.md specs/governed-runtime-agent-foundation src/main/java src/test/java`
+  - `git diff --check`
+  - Run relevant tests if executable source is added; otherwise explain why this task is planning-only.
+- done criteria:
+  - The largest remaining executable/reference gap has either been implemented or decomposed into a clear follow-on queue.
+  - Coverage matrix is accurate.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-017: Final audit for agent implementation hardening sprint
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+- task brief: none
+- depends on: [TASK-016]
+- required reads:
+  - specs/governed-runtime-agent-foundation/README.md
+  - specs/governed-runtime-agent-foundation/sprints/05-agent-implementation-hardening-sprint.md
+  - specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
+  - specs/governed-runtime-agent-foundation/pending-tasks.md
+  - docs/agent-coverage-matrix.md
+  - skills/README.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+- skills:
+  - akka-agents
+  - akka-agent-behavior-profiles
+  - akka-agent-governed-documents
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-work-trace
+- expected outputs:
+  - Run final consistency audit for Sprint 05.
+  - Repair contradictions or missing routing caused by new skills/docs.
+  - Ensure any new skills are in `pack/manifest.yaml` and `skills/README.md`.
+  - Ensure `docs/agent-coverage-matrix.md` accurately reports remaining gaps.
+  - Mark completed Sprint 05 tasks done if prior sessions missed queue updates.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `rg -n "agent-runtime-invocation-pattern|akka-agent-behavior-editing|ToolPermissionBoundary|governed.*testing|ModelConfigRef|single governed|AgentDefinition|AgentSkillManifest|readSkill" docs skills specs/governed-runtime-agent-foundation pack/manifest.yaml`
+  - `git status --short`
+  - `git diff --check`
+- done criteria:
+  - Sprint 05 audit passes with no known contradictions.
+  - Next remaining agent gaps, if any, are explicitly recorded.
+  - A git commit exists for the final audit/repair.
+- notes:
