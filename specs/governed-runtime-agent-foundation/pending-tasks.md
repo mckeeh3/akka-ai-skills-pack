@@ -1143,7 +1143,7 @@
 
 ### TASK-034: Add replay and simulation evidence helper tests
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
 - task brief: none
 - depends on: [TASK-033]
@@ -1168,7 +1168,7 @@
 - done criteria:
   - Replay/simulation evidence is executable and required before activation.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-035: Add improvement decision, activation, rollback, and trace tests
 
