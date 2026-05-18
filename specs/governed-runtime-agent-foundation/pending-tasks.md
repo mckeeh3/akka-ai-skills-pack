@@ -1042,7 +1042,7 @@
 
 ### TASK-031: Final audit for executable behavior-editing sprint
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
 - task brief: none
 - depends on: [TASK-030]
@@ -1074,3 +1074,4 @@
   - Remaining agent gaps are explicitly recorded.
   - A git commit exists for the final audit/repair.
 - notes:
+  - Sprint 07 final audit passed. Verification and focused behavior-editing tests passed; no contradiction repairs were needed. Behavior-editing executable coverage is marked complete in `docs/agent-coverage-matrix.md`; remaining improvement-loop gaps are recorded in the coverage matrix cleanup backlog.
