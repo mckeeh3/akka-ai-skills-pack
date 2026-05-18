@@ -8,6 +8,13 @@ import com.example.domain.agentfoundation.ReferenceBehaviorEditDecision;
 import com.example.domain.agentfoundation.ReferenceBehaviorEditProposal;
 import com.example.domain.agentfoundation.ReferenceBehaviorEditRisk;
 import com.example.domain.agentfoundation.ReferenceBehaviorEditTrace;
+import com.example.domain.agentfoundation.ReferenceEvaluationFinding;
+import com.example.domain.agentfoundation.ReferenceEvaluationRun;
+import com.example.domain.agentfoundation.ReferenceImprovementDecision;
+import com.example.domain.agentfoundation.ReferenceImprovementProposal;
+import com.example.domain.agentfoundation.ReferenceImprovementTrace;
+import com.example.domain.agentfoundation.ReferenceReplaySimulation;
+import com.example.domain.agentfoundation.ReferenceAgentWorkTrace;
 import com.example.domain.agentfoundation.ReferencePromptDocument;
 import com.example.domain.agentfoundation.ReferencePromptVersion;
 import com.example.domain.agentfoundation.ReferenceProposedDocumentDiff;
@@ -34,6 +41,12 @@ public final class ReferenceAgentFoundationFixtures {
   public static final String RUNTIME_MODE = "runtime";
   public static final String BEHAVIOR_REQUEST_ID = "behavior-request-safe-wording";
   public static final String BEHAVIOR_PROPOSAL_ID = "behavior-proposal-safe-wording";
+  public static final String EVALUATION_RUN_ID = "evaluation-run-rainy-day-regression";
+  public static final String EVALUATION_FINDING_ID = "evaluation-finding-overlong-rainy-day";
+  public static final String SOURCE_WORK_TRACE_ID = "agent-work-trace-rainy-day-overlong";
+  public static final String IMPROVEMENT_PROPOSAL_ID = "improvement-proposal-concise-rainy-day";
+  public static final String REPLAY_SIMULATION_ID = "replay-simulation-concise-rainy-day";
+  public static final String ROLLBACK_BASELINE_ID = "rollback-baseline-prompt-version-active";
 
   private ReferenceAgentFoundationFixtures() {}
 
@@ -300,6 +313,104 @@ public final class ReferenceAgentFoundationFixtures {
         "corr-behavior-safe-wording");
   }
 
+  public static ReferenceAgentWorkTrace sourceAgentWorkTrace() {
+    return new ReferenceAgentWorkTrace(
+        TENANT_ID,
+        AGENT_ID,
+        "corr-improvement-rainy-day",
+        "prompt-assembly-trace-rainy-day",
+        "skill-load-trace-rainy-day",
+        RUNTIME_MODE,
+        true,
+        "Agent produced an overlong rainy-day recommendation later flagged by evaluation.");
+  }
+
+  public static ReferenceEvaluationRun failedEvaluationRun() {
+    return new ReferenceEvaluationRun(
+        TENANT_ID,
+        EVALUATION_RUN_ID,
+        AGENT_ID,
+        SOURCE_WORK_TRACE_ID,
+        "rubric-concise-helpful-activity-answer",
+        ReferenceEvaluationRun.EvaluationStatus.COMPLETED,
+        false,
+        58,
+        List.of(EVALUATION_FINDING_ID),
+        "corr-improvement-rainy-day");
+  }
+
+  public static ReferenceEvaluationFinding failedEvaluationFinding() {
+    return new ReferenceEvaluationFinding(
+        TENANT_ID,
+        EVALUATION_FINDING_ID,
+        EVALUATION_RUN_ID,
+        ReferenceEvaluationFinding.FindingCategory.USER_VALUE,
+        ReferenceEvaluationFinding.FindingSeverity.MEDIUM,
+        0.87,
+        AGENT_ID,
+        "prompt",
+        PROMPT_DOCUMENT_ID,
+        "prompt_wording_change",
+        List.of(SOURCE_WORK_TRACE_ID),
+        "Rainy-day answer was helpful but too long for the concise-response rubric.",
+        "corr-improvement-rainy-day");
+  }
+
+  public static ReferenceImprovementProposal safeImprovementProposal() {
+    return new ReferenceImprovementProposal(
+        TENANT_ID,
+        IMPROVEMENT_PROPOSAL_ID,
+        AGENT_ID,
+        List.of(EVALUATION_RUN_ID),
+        List.of(EVALUATION_FINDING_ID),
+        BEHAVIOR_PROPOSAL_ID,
+        "prompt_wording_change",
+        ReferenceImprovementProposal.ImprovementStatus.DRAFT,
+        "Increase concise-answer score without changing tool, data, or approval authority.",
+        ROLLBACK_BASELINE_ID,
+        List.of(),
+        "corr-improvement-rainy-day");
+  }
+
+  public static ReferenceReplaySimulation passingReplaySimulation() {
+    return new ReferenceReplaySimulation(
+        TENANT_ID,
+        REPLAY_SIMULATION_ID,
+        IMPROVEMENT_PROPOSAL_ID,
+        ROLLBACK_BASELINE_ID,
+        "candidate-prompt-version-draft-safe-wording",
+        true,
+        58,
+        91,
+        List.of("No new tool use, data access, authority expansion, or safety regression detected."),
+        "Candidate prompt improved concise-answer score in deterministic replay.",
+        "corr-improvement-rainy-day");
+  }
+
+  public static ReferenceImprovementDecision improvementApprovalDecision() {
+    return new ReferenceImprovementDecision(
+        TENANT_ID,
+        IMPROVEMENT_PROPOSAL_ID,
+        "improvement-decision-approve-concise-rainy-day",
+        "account-reviewer-1",
+        ReferenceImprovementDecision.DecisionType.APPROVE,
+        true,
+        "Approved after passing replay evidence; activation remains a separate governed command.",
+        "corr-improvement-rainy-day");
+  }
+
+  public static ReferenceImprovementTrace improvementProposalTrace() {
+    return new ReferenceImprovementTrace(
+        TENANT_ID,
+        "improvement-trace-proposal-concise-rainy-day",
+        IMPROVEMENT_PROPOSAL_ID,
+        EVALUATION_RUN_ID,
+        SOURCE_WORK_TRACE_ID,
+        ReferenceImprovementTrace.TraceEvent.PROPOSAL_CREATED,
+        "Created governed improvement proposal linked to behavior-edit proposal and source work trace.",
+        "corr-improvement-rainy-day");
+  }
+
   public static List<Object> minimalFixtureSet() {
     return List.of(
         authContext(),
@@ -323,6 +434,13 @@ public final class ReferenceAgentFoundationFixtures {
         crossTenantBehaviorChangeRequest(),
         safeWordingProposal(),
         safeApprovalDecision(),
-        safeProposalTrace());
+        safeProposalTrace(),
+        sourceAgentWorkTrace(),
+        failedEvaluationRun(),
+        failedEvaluationFinding(),
+        safeImprovementProposal(),
+        passingReplaySimulation(),
+        improvementApprovalDecision(),
+        improvementProposalTrace());
   }
 }
