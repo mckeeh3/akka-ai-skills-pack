@@ -145,6 +145,7 @@ System-level control artifacts.
 Defines the high-level identity and scope of the described app.
 Should include:
 - app name or working identity
+- Java base package for generated code; ask the initial package question when absent and use `ai.first` only when accepted/deferred
 - current status or maturity
 - top-level goals
 - non-goals
@@ -164,6 +165,7 @@ Should include:
 Defines realization policy.
 Should include:
 - when generation is allowed
+- selected Java base package and the rule that `com.example` reference examples are not a generation default
 - default full vs localized regeneration preference
 - acceptable assumption policy
 - required validation after generation

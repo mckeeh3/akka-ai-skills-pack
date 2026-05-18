@@ -36,6 +36,20 @@ This pack supports a secure AI-first interpretation layer plus two complementary
 Users should be able to speak in natural language.
 They do not need to know the pack's internal skill taxonomy.
 
+## Java base package intake
+
+Before creating a new Java Akka project, scaffolding Java source files, or realizing an app description into Java code, ask the user for the application's Java base package unless it is already present in project configuration or the user has already provided it.
+
+Use this initial question:
+
+> What Java base package should I use for generated code? Press Enter to use `ai.first`.
+
+Rules:
+- default to `ai.first` only when the user accepts the default or defers the choice
+- never use `com.example` as the generated application package unless the user explicitly requests it
+- treat `com.example` paths in bundled examples as reference examples only, not as a generation default
+- record the selected base package in planning/app-description generation artifacts and use it consistently for Maven/Gradle group id, Java package declarations, imports, tests, and generated source paths
+
 ## Core usage model
 
 Treat the installed skills as an **internal routing layer for the harness**.

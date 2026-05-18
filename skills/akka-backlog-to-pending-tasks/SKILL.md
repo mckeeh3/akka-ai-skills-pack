@@ -154,13 +154,13 @@ Avoid over-serializing independent work.
 
 ### Required reads and preserved task context
 
-Each generated task must preserve the source capability ids when available, the actor/caller and `AuthContext`, required role/scope or permission checks, approval gates, audit/trace obligations, UI surfaces affected, and concrete checks. For governed runtime agent foundation tasks, record which foundation scope is in the task (`AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing, tool-boundary UI, or tests) so later runs do not merge adjacent agent-governance work.
+Each generated task must preserve the source capability ids when available, the selected Java base package for Java source tasks, the actor/caller and `AuthContext`, required role/scope or permission checks, approval gates, audit/trace obligations, UI surfaces affected, and concrete checks. For governed runtime agent foundation tasks, record which foundation scope is in the task (`AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing, tool-boundary UI, or tests) so later runs do not merge adjacent agent-governance work. Do not create Java implementation tasks that would require guessing the package root; queue or depend on the base-package question, whose default is `ai.first` if deferred.
 
 Each task should list the smallest useful reads, usually:
 - `specs/akka-solution-plan.md`
 - the source backlog file
 - the matching task brief when one exists
-- relevant cross-cutting spec files, including `specs/cross-cutting/01-auth-tenancy-audit.md` for secure foundation, authorization, tenant/customer scope, audit, or tenant-isolation work, and AI-first operating-model, governance, audit, outcome, and UI-surface specs when they constrain the task
+- relevant cross-cutting spec files, including `specs/cross-cutting/00-common-domain-and-conventions.md` for Java base package/package-root conventions and `specs/cross-cutting/01-auth-tenancy-audit.md` for secure foundation, authorization, tenant/customer scope, audit, or tenant-isolation work, and AI-first operating-model, governance, audit, outcome, and UI-surface specs when they constrain the task
 - `docs/ai-first-saas-application-architecture.md` when the task must preserve AI-first semantics and the local specs do not fully capture them
 - relevant cross-cutting spec files, including `*ui-style-guide*.md` for browser UI tasks
 - relevant module and sprint specs when module-oriented planning is present

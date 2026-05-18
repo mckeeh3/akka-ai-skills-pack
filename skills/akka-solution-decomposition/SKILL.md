@@ -87,18 +87,21 @@ In this repository, prefer these cross-component examples:
 
 Before any coding, produce a component plan with these sections:
 1. Inputs
-2. AI-first interpretation
-3. Core secure SaaS foundation
-4. Capability summary
-5. Capability-to-component mapping
-6. Chosen components
-7. Why each component exists
-8. Skill routing
-9. Open questions and assumptions
-10. Recommended implementation order
-11. Required tests
+2. Java base package for generated code
+3. AI-first interpretation
+4. Core secure SaaS foundation
+5. Capability summary
+6. Capability-to-component mapping
+7. Chosen components
+8. Why each component exists
+9. Skill routing
+10. Open questions and assumptions
+11. Recommended implementation order
+12. Required tests
 
-Treat sections 5, 7, 9, and 10 as the implementation handoff.
+For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not use `com.example` as the generated application package unless explicitly requested; `com.example` in local examples is only reference material.
+
+Treat sections 6, 8, 10, and 11 as the implementation handoff.
 The plan is not complete if it only names components.
 It must also tell the downstream implementation phase:
 - which capability id and contract each component implements or exposes
@@ -108,6 +111,16 @@ It must also tell the downstream implementation phase:
 - whether endpoint generation, web UI generation, or documentation/snippet generation belong downstream
 
 ## Decomposition workflow
+
+### 0. Resolve Java base package
+
+Before planning work that will generate Java source files, determine the application base package. Prefer an existing Maven/Gradle group id or existing package root in the target project. If no package is present and the user has not supplied one, ask the initial package question:
+
+```text
+What Java base package should I use for generated code? Press Enter to use `ai.first`.
+```
+
+Record the selected package in the solution plan and apply it consistently to group id, package declarations, imports, tests, and source paths. Never infer `com.example` from this repository's examples unless the user explicitly asks for `com.example`.
 
 ### 1. Apply core secure SaaS foundation
 

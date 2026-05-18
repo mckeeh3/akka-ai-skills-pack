@@ -5,6 +5,12 @@ This directory contains AI-focused skills for creating full-stack secure AI-firs
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
 
+Java base package intake for generated code:
+- before creating a new Java Akka project, scaffolding Java source files, or realizing an app description into Java code, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`."
+- use `ai.first` as the default only when the user accepts or defers the choice
+- do not use `com.example` as a generated application package unless explicitly requested; bundled `com.example` examples are reference material only
+- record the selected package in app-description/spec/generation artifacts and apply it consistently to group id, packages, imports, tests, and source paths
+
 This file serves both:
 - the **source repository**, where app-description trees under `docs/examples/` are reference assets for the pack itself
 - the **installed pack** in a real development project, where the project's maintained `app-description/` tree belongs in the project workspace rather than under `.agents/`, unless that project explicitly chooses another internal location

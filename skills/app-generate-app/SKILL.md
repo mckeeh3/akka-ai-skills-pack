@@ -67,6 +67,7 @@ For AI-first/delegated operations, never invent missing authority, policy, appro
 
 When generating, this skill must:
 - identify the current description baseline
+- resolve the Java base package from existing project configuration, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred; never use `com.example` for generated application code unless explicitly requested
 - verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
 - block generation or return to readiness if Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete invitation onboarding, `/api/me`, backend authorization, audit, admin/support-access/billing-boundary semantics, AI-assisted admin offload, governed runtime agent foundation, tenant isolation, forbidden access, disabled-user, role/scope denial, or foundation tests are missing
 - block generation or return to readiness if `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap import of implementation-developed default behavior documents, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposals, or agent catalog/detail/prompt/skill/manifest/tool-permission UI surfaces are missing for generated AI-first SaaS
@@ -100,7 +101,7 @@ It must never override description correctness.
 
 As applicable, generation may include:
 - secure SaaS foundation outputs first: identity/tenancy/domain types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete Invitation lifecycle with email delivery/outbox, resend, revoke, expiry, acceptance, delivery status and delivery attempts, AuthContext, `/api/me`, backend authorization service, AdminAuditEvent/audit views, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, support-access, subscription/billing boundary, mandatory governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`), behavior editing agent proposals, mandatory AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent or one governed `UserAdminAgent` with equivalent skills), agent catalog/detail, prompt governance, skill governance, skill manifest, tool permission, edit-agent proposal, and trace UI surfaces, decision cards for risky admin actions, mandatory admin/context-selection/supervision UI surfaces, and tenant-isolation/security tests for forbidden access, disabled users, role/scope denial, audit, invite lifecycle, membership lifecycle, last-admin protection, admin-agent approval boundaries, disabled-agent denial, unassigned skill denial, unauthorized prompt/skill/tool-boundary change denial, trace creation, audit/search views, UI behavior, and frontend secret boundaries
-- source code
+- source code under the selected Java base package, with Maven/Gradle group id, package declarations, imports, tests, and source paths kept consistent
 - generated tests
 - configuration or deployment assets
 - runtime startup commands or scripts
@@ -125,6 +126,7 @@ Use this response shape when summarizing generation:
 - operating-model basis:
 - secure SaaS foundation basis:
 - assumptions used:
+- Java base package:
 
 ## Regeneration scope
 - full | localized
@@ -163,6 +165,7 @@ After generation, route onward as needed:
 Ask only the smallest questions needed to avoid an obviously wrong realization step.
 
 Examples:
+- "What Java base package should I use for generated code? Press Enter to use `ai.first`."
 - "Do you want full regeneration or should I localize regeneration to the changed description area if possible?"
 - "Should I stop after generation, or also run tests and start the app if available?"
 - "Is this generation mainly for early evaluation, or do you want the strictest production-oriented realization possible from the current description?"
@@ -176,6 +179,7 @@ Avoid:
 - performing manual-style code edits as if they were the correct response to semantic gaps
 - hiding assumptions used during `ready-with-assumptions` generation
 - generating AI-first apps from CRUD-only or chatbot-only descriptions when goals, authority, policies, decisions, traces, outcomes, or supervision surfaces are actually in scope
+- copying `com.example` from reference examples into generated application code unless the user explicitly selected it
 
 ## Final review checklist
 
@@ -186,6 +190,7 @@ Before finishing, verify:
 - missing foundation/security semantics block generation instead of becoming assumptions
 - operating-model basis is explicit for generated AI-first SaaS
 - assumptions are explicit when used
+- Java base package is explicit and is not accidentally inherited from `com.example` reference examples
 - regeneration scope is explicit
 - outputs in scope are listed clearly
 - executed steps and results are reported clearly

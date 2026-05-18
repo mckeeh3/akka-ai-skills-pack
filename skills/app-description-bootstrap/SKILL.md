@@ -156,6 +156,7 @@ Add deeper files only when the user's input already justifies them. For generate
 
 From the initial user input, derive as applicable:
 - app identity or working name
+- Java base package for generated code; ask "What Java base package should I use for generated code? Press Enter to use `ai.first`." when absent, default to `ai.first` only if accepted/deferred, and never assume `com.example` from reference examples
 - top-level goal
 - whether the app has AI-first/delegated operating-model semantics
 - delegated work versus retained human authority when applicable
@@ -179,6 +180,7 @@ Keep all uncertain details explicit as assumptions rather than pretending they a
 ### 1. Establish app identity
 Create `00-system/app-manifest.md` with:
 - app id or working name
+- Java base package for generated code, defaulting to `ai.first` only when the user accepts or defers the package question
 - current status
 - top-level goals
 - non-goals
@@ -192,7 +194,7 @@ For most fresh bootstraps, prefer:
 - or `ready-with-assumptions` only if the input is already unusually complete
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, and forbids using `com.example` for generated application code unless explicitly requested.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.
@@ -316,6 +318,7 @@ After bootstrap, route onward as needed:
 Ask only the smallest questions needed to avoid bootstrapping the wrong app identity or wrong primary capability.
 
 Examples:
+- "What Java base package should I use for generated code? Press Enter to use `ai.first`."
 - "What short working name should I use for the app-description root manifest?"
 - "What is the single most important capability to capture first?"
 - "Do you want this bootstrap to stay minimal, or should I expand it from the full PRD now?"

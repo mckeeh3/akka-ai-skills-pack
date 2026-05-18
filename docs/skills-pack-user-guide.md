@@ -82,7 +82,7 @@ After installing the pack into a new target project, put the initial app intent 
 Read docs/input/initial/core-foundation.md and bootstrap the app from that input. Queue questions instead of guessing, and do not add functionality beyond the input file.
 ```
 
-The input file can describe requirements such as secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding, admin user management, memberships/roles/capabilities, admin audit/search, AI-assisted admin offload, and whether domain-specific features are intentionally out of scope. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
+The input file can describe requirements such as secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding, admin user management, memberships/roles/capabilities, admin audit/search, AI-assisted admin offload, and whether domain-specific features are intentionally out of scope. The harness should also ask for the Java base package before it generates Java code: "What Java base package should I use for generated code? Press Enter to use `ai.first`." If you accept or defer, `ai.first` is used. `com.example` appears only in reference examples and is not the generated-code default. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
 
 ## Installed layout
 

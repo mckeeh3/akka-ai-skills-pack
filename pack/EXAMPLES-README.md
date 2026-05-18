@@ -14,6 +14,8 @@ Use these files as:
 - pattern examples for component structure
 - test examples for calling patterns and expected behavior
 
+The examples may use `com.example` package names. Treat those names as reference-only. For generated application code, ask for the target Java base package first and default to `ai.first` only when the user accepts or defers the choice.
+
 ## How to use the examples
 
 When an installed skill points to a local example file, read the example here rather than expecting source-repo paths to exist.

@@ -14,7 +14,7 @@ This is a **project-specific planning skill** that builds on the ideas in `akka-
 Generate a consistent planning package from a PRD, requirements document, or high-level feature set that:
 - interprets product intent through the full-stack secure AI-first SaaS operating model before record-management or component decomposition
 - derives governed backend capabilities before Akka component or exposure-surface selection
-- produces a master Akka solution plan with explicit operating-model, capability inventory, governance, mandatory UI-surface, outcome, and substrate mapping sections for generated SaaS apps
+- produces a master Akka solution plan with explicit Java base package, operating-model, capability inventory, governance, mandatory UI-surface, outcome, and substrate mapping sections for generated SaaS apps
 - for large inputs, splits the plan into module-oriented vertical sprint specs
 - for smaller inputs, splits the plan into bounded vertical slice specs
 - turns each sprint or slice into a build backlog suitable for one or more independent harness operations
@@ -99,7 +99,7 @@ For every SaaS app PRD, create the secure foundation spec first:
 - `specs/cross-cutting/01-auth-tenancy-audit.md` — required for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, protected capability authorization, audit, support-access, billing boundary, and tenant-isolation tests unless the task is explicitly non-SaaS reference material.
 
 Create additional cross-cutting specs as justified by the PRD:
-- `specs/cross-cutting/00-common-domain-and-conventions.md`
+- `specs/cross-cutting/00-common-domain-and-conventions.md` — include the selected Java base package; if absent, queue or ask "What Java base package should I use for generated code? Press Enter to use `ai.first`." and default to `ai.first` only when accepted/deferred
 - `specs/cross-cutting/02-ui-style-guide.md` for generated full-stack AI-first SaaS when style is selected
 - `specs/cross-cutting/03-<integration-or-platform-concern>.md`
 
@@ -312,6 +312,8 @@ The queue must:
 - mark questions `blocking` only for the work they actually block
 - include why each question matters and what artifacts or decisions it affects
 - avoid dumping a large interrogation list into the chat response
+
+If no Java base package exists in project configuration, `specs/cross-cutting/00-common-domain-and-conventions.md`, app-description system artifacts, or equivalent project convention, create a `category: generation` question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`. This blocks only Java source generation/scaffolding tasks. Never use `com.example` as the generated package unless the user explicitly selects it.
 
 If no selected style guide exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `atlas-ops-supervisory-console` or `custom` with a user-supplied style brief. This blocks web UI implementation/generation tasks until style is selected.
 
