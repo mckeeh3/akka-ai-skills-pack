@@ -171,6 +171,19 @@ public final class ReferenceAgentFoundationFixtures {
         "corr-behavior-skill-edit");
   }
 
+  public static ReferenceBehaviorChangeRequest manifestMetadataChangeRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        TENANT_ID,
+        "behavior-request-manifest-metadata",
+        "account-admin-1",
+        AGENT_ID,
+        "manifest",
+        SKILL_MANIFEST_ID,
+        "Clarify the manifest description for the rainy-day skill without changing assignments.",
+        Set.of(),
+        "corr-behavior-manifest-metadata");
+  }
+
   public static ReferenceBehaviorChangeRequest manifestAdditionRequest() {
     return new ReferenceBehaviorChangeRequest(
         TENANT_ID,
@@ -182,6 +195,19 @@ public final class ReferenceAgentFoundationFixtures {
         "Add the premium upsell skill to the agent manifest for review.",
         Set.of("skill_assignment"),
         "corr-behavior-manifest-addition");
+  }
+
+  public static ReferenceBehaviorChangeRequest promptTextAuthorityExpansionRequest() {
+    return new ReferenceBehaviorChangeRequest(
+        TENANT_ID,
+        "behavior-request-prompt-authority-expansion",
+        "account-admin-1",
+        AGENT_ID,
+        "prompt",
+        PROMPT_DOCUMENT_ID,
+        "Tell the agent it may approve booking charges whenever confidence is high.",
+        Set.of("approval", "billing"),
+        "corr-behavior-prompt-authority-expansion");
   }
 
   public static ReferenceBehaviorChangeRequest toolBoundaryExpansionRequest() {
@@ -289,7 +315,9 @@ public final class ReferenceAgentFoundationFixtures {
         activeToolBoundary(),
         safeWordingChangeRequest(),
         skillEditRequest(),
+        manifestMetadataChangeRequest(),
         manifestAdditionRequest(),
+        promptTextAuthorityExpansionRequest(),
         toolBoundaryExpansionRequest(),
         authorityExpansionRequest(),
         crossTenantBehaviorChangeRequest(),

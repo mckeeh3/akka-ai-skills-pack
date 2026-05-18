@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.domain.agentfoundation.ReferenceAgentDefinition;
+import com.example.domain.agentfoundation.ReferenceAgentSkillManifest;
 import com.example.domain.agentfoundation.ReferenceBehaviorEditRisk;
 import com.example.domain.agentfoundation.ReferenceBehaviorEditTrace;
 import com.example.domain.agentfoundation.ReferencePromptVersion;
 import com.example.domain.agentfoundation.ReferenceSkillDocument;
 import com.example.domain.agentfoundation.ReferenceSkillVersion;
+import com.example.domain.agentfoundation.ReferenceToolPermissionBoundary;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -136,6 +138,101 @@ class ReferenceAgentBehaviorEditorTest {
   }
 
   @Test
+  void lowRiskManifestMetadataChangeRemainsDraftProposal() {
+    var traceSink = new ReferenceTraceSink();
+    var editor = editor(traceSink);
+
+    var proposal =
+        editor.propose(
+            ReferenceAgentFoundationFixtures.authContext(),
+            ReferenceAgentFoundationFixtures.manifestMetadataChangeRequest());
+
+    assertEquals(ReferenceBehaviorEditRisk.LOW, proposal.risk());
+    assertFalse(proposal.authorityExpansionDetected());
+    assertFalse(proposal.decisionCardRequired());
+    assertEquals("create_draft", proposal.recommendedNextAction());
+    assertEquals("manifest", proposal.proposedDiffs().getFirst().artifactType());
+    assertEquals(
+        ReferenceAgentFoundationFixtures.SKILL_MANIFEST_ID,
+        proposal.proposedDiffs().getFirst().artifactId());
+    assertTrue(proposal.rationale().contains("metadata"));
+  }
+
+  @Test
+  void manifestSkillAssignmentAuthorityExpansionRequiresDecisionCard() {
+    var traceSink = new ReferenceTraceSink();
+    var editor = editor(traceSink);
+
+    var proposal =
+        editor.propose(
+            ReferenceAgentFoundationFixtures.authContext(),
+            ReferenceAgentFoundationFixtures.manifestAdditionRequest());
+
+    assertEquals(ReferenceBehaviorEditRisk.HIGH, proposal.risk());
+    assertTrue(proposal.authorityExpansionDetected());
+    assertTrue(proposal.expansionTypes().contains("skill_assignment"));
+    assertTrue(proposal.decisionCardRequired());
+    assertEquals("create_decision_card", proposal.recommendedNextAction());
+    assertEquals("manifest", proposal.proposedDiffs().getFirst().artifactType());
+    assertTrue(proposal.rationale().contains("decision card"));
+  }
+
+  @Test
+  void toolBoundaryExpansionRequiresDecisionCardReview() {
+    var traceSink = new ReferenceTraceSink();
+    var editor = editor(traceSink);
+
+    var proposal =
+        editor.propose(
+            ReferenceAgentFoundationFixtures.authContext(),
+            ReferenceAgentFoundationFixtures.toolBoundaryExpansionRequest());
+
+    assertEquals(ReferenceBehaviorEditRisk.HIGH, proposal.risk());
+    assertTrue(proposal.authorityExpansionDetected());
+    assertTrue(proposal.expansionTypes().contains("tool"));
+    assertTrue(proposal.expansionTypes().contains("external_side_effect"));
+    assertTrue(proposal.decisionCardRequired());
+    assertEquals("tool_boundary", proposal.proposedDiffs().getFirst().artifactType());
+    assertTrue(proposal.proposedDiffs().getFirst().summary().contains("active boundary unchanged"));
+  }
+
+  @Test
+  void directAuthorityExpansionOnAgentDefinitionRequiresDecisionCard() {
+    var traceSink = new ReferenceTraceSink();
+    var editor = editor(traceSink);
+
+    var proposal =
+        editor.propose(
+            ReferenceAgentFoundationFixtures.authContext(),
+            ReferenceAgentFoundationFixtures.authorityExpansionRequest());
+
+    assertEquals(ReferenceBehaviorEditRisk.HIGH, proposal.risk());
+    assertTrue(proposal.decisionCardRequired());
+    assertTrue(proposal.expansionTypes().contains("approval"));
+    assertTrue(proposal.expansionTypes().contains("autonomy"));
+    assertEquals("create_decision_card", proposal.recommendedNextAction());
+    assertEquals("agent_definition", proposal.proposedDiffs().getFirst().artifactType());
+  }
+
+  @Test
+  void promptTextAloneCannotGrantAuthority() {
+    var traceSink = new ReferenceTraceSink();
+    var editor = editor(traceSink);
+
+    var proposal =
+        editor.propose(
+            ReferenceAgentFoundationFixtures.authContext(),
+            ReferenceAgentFoundationFixtures.promptTextAuthorityExpansionRequest());
+
+    assertEquals(ReferenceBehaviorEditRisk.HIGH, proposal.risk());
+    assertTrue(proposal.authorityExpansionDetected());
+    assertTrue(proposal.decisionCardRequired());
+    assertEquals("create_decision_card", proposal.recommendedNextAction());
+    assertTrue(proposal.rationale().contains("cannot grant tool, data, or approval authority"));
+    assertEquals("prompt", proposal.proposedDiffs().getFirst().artifactType());
+  }
+
+  @Test
   void crossTenantRequestIsDeniedAndTracedWithoutProposedDiff() {
     var traceSink = new ReferenceTraceSink();
     var editor = editor(traceSink);
@@ -153,7 +250,13 @@ class ReferenceAgentBehaviorEditorTest {
 
   private static ReferenceAgentBehaviorEditor editor(ReferenceTraceSink traceSink) {
     return new ReferenceAgentBehaviorEditor(
-        agentDefinitions(), promptVersions(), skillDocuments(), skillVersions(), traceSink);
+        agentDefinitions(),
+        promptVersions(),
+        skillDocuments(),
+        skillVersions(),
+        manifests(),
+        toolBoundaries(),
+        traceSink);
   }
 
   private static Map<String, ReferenceAgentDefinition> agentDefinitions() {
@@ -184,5 +287,17 @@ class ReferenceAgentBehaviorEditorTest {
         ReferenceAgentFoundationFixtures.activeAssignedSkillVersion(),
         "skill-version-unassigned",
         ReferenceAgentFoundationFixtures.unassignedSkillVersion());
+  }
+
+  private static Map<String, ReferenceAgentSkillManifest> manifests() {
+    return Map.of(
+        ReferenceAgentFoundationFixtures.SKILL_MANIFEST_ID,
+        ReferenceAgentFoundationFixtures.activeManifest());
+  }
+
+  private static Map<String, ReferenceToolPermissionBoundary> toolBoundaries() {
+    return Map.of(
+        ReferenceAgentFoundationFixtures.TOOL_BOUNDARY_ID,
+        ReferenceAgentFoundationFixtures.activeToolBoundary());
   }
 }

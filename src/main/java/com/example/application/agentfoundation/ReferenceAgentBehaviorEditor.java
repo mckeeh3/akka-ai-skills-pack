@@ -1,6 +1,7 @@
 package com.example.application.agentfoundation;
 
 import com.example.domain.agentfoundation.ReferenceAgentDefinition;
+import com.example.domain.agentfoundation.ReferenceAgentSkillManifest;
 import com.example.domain.agentfoundation.ReferenceAuthContext;
 import com.example.domain.agentfoundation.ReferenceBehaviorChangeRequest;
 import com.example.domain.agentfoundation.ReferenceBehaviorEditProposal;
@@ -10,6 +11,7 @@ import com.example.domain.agentfoundation.ReferencePromptVersion;
 import com.example.domain.agentfoundation.ReferenceProposedDocumentDiff;
 import com.example.domain.agentfoundation.ReferenceSkillDocument;
 import com.example.domain.agentfoundation.ReferenceSkillVersion;
+import com.example.domain.agentfoundation.ReferenceToolPermissionBoundary;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +25,8 @@ public final class ReferenceAgentBehaviorEditor {
   private final Map<String, ReferencePromptVersion> promptVersions;
   private final Map<String, ReferenceSkillDocument> skillDocuments;
   private final Map<String, ReferenceSkillVersion> skillVersions;
+  private final Map<String, ReferenceAgentSkillManifest> manifests;
+  private final Map<String, ReferenceToolPermissionBoundary> toolBoundaries;
   private final ReferenceTraceSink traceSink;
 
   public ReferenceAgentBehaviorEditor(
@@ -31,10 +35,23 @@ public final class ReferenceAgentBehaviorEditor {
       Map<String, ReferenceSkillDocument> skillDocuments,
       Map<String, ReferenceSkillVersion> skillVersions,
       ReferenceTraceSink traceSink) {
+    this(agentDefinitions, promptVersions, skillDocuments, skillVersions, Map.of(), Map.of(), traceSink);
+  }
+
+  public ReferenceAgentBehaviorEditor(
+      Map<String, ReferenceAgentDefinition> agentDefinitions,
+      Map<String, ReferencePromptVersion> promptVersions,
+      Map<String, ReferenceSkillDocument> skillDocuments,
+      Map<String, ReferenceSkillVersion> skillVersions,
+      Map<String, ReferenceAgentSkillManifest> manifests,
+      Map<String, ReferenceToolPermissionBoundary> toolBoundaries,
+      ReferenceTraceSink traceSink) {
     this.agentDefinitions = Map.copyOf(agentDefinitions);
     this.promptVersions = Map.copyOf(promptVersions);
     this.skillDocuments = Map.copyOf(skillDocuments);
     this.skillVersions = Map.copyOf(skillVersions);
+    this.manifests = Map.copyOf(manifests);
+    this.toolBoundaries = Map.copyOf(toolBoundaries);
     this.traceSink = traceSink;
   }
 
@@ -56,7 +73,10 @@ public final class ReferenceAgentBehaviorEditor {
         switch (request.targetArtifactType()) {
           case "prompt" -> proposePromptDiff(request, agent);
           case "skill" -> proposeSkillDiff(request, agent);
-          default -> denied(request, "unsupported behavior artifact type for prompt/skill diff helper");
+          case "manifest" -> proposeManifestDiff(request, agent);
+          case "tool_boundary" -> proposeToolBoundaryDiff(request, agent);
+          case "agent_definition" -> proposeAgentDefinitionDiff(request, agent);
+          default -> denied(request, "unsupported behavior artifact type for behavior edit helper");
         };
     recordProposalTrace(proposal, proposal.recommendedNextAction());
     return proposal;
@@ -81,6 +101,13 @@ public final class ReferenceAgentBehaviorEditor {
             "summary",
             "Proposed diff: append clarification - " + request.requestedChange(),
             "PromptDocument wording proposal; creates a draft version and leaves active prompt unchanged.");
+    if (request.requestsAuthorityExpansion()) {
+      return allowedProposal(
+          request,
+          List.of(diff),
+          ReferenceBehaviorEditRisk.HIGH,
+          "PromptDocument text can propose authority expansion for review, but cannot grant tool, data, or approval authority.");
+    }
     return allowedProposal(
         request,
         List.of(diff),
@@ -113,11 +140,95 @@ public final class ReferenceAgentBehaviorEditor {
             "Proposed diff: update governed skill guidance - " + request.requestedChange(),
             (assignedToAgent ? "Assigned" : "Candidate")
                 + " SkillDocument proposal; creates a draft version and leaves active skill unchanged.");
+    if (request.requestsAuthorityExpansion()) {
+      return allowedProposal(
+          request,
+          List.of(diff),
+          ReferenceBehaviorEditRisk.HIGH,
+          "SkillDocument text can propose authority expansion for review, but cannot grant tool, data, or approval authority.");
+    }
     return allowedProposal(
         request,
         List.of(diff),
         ReferenceBehaviorEditRisk.MEDIUM,
         "SkillDocument guidance change affects agent behavior but does not grant authority by text.");
+  }
+
+  private ReferenceBehaviorEditProposal proposeManifestDiff(
+      ReferenceBehaviorChangeRequest request, ReferenceAgentDefinition agent) {
+    var manifest = manifests.get(request.targetArtifactId());
+    if (manifest == null
+        || !manifest.tenantId().equals(request.tenantId())
+        || !manifest.agentDefinitionId().equals(agent.agentDefinitionId())
+        || !manifest.active()
+        || !request.targetArtifactId().equals(agent.skillManifestId())) {
+      return denied(request, "active AgentSkillManifest denied");
+    }
+
+    var risk = request.requestsAuthorityExpansion() ? ReferenceBehaviorEditRisk.HIGH : ReferenceBehaviorEditRisk.LOW;
+    var diff =
+        new ReferenceProposedDocumentDiff(
+            "manifest",
+            manifest.skillManifestId(),
+            manifest.skillManifestVersionId(),
+            draftVersionId("manifest", request.requestId()),
+            "summary",
+            "Proposed diff: update AgentSkillManifest - " + request.requestedChange(),
+            request.requestsAuthorityExpansion()
+                ? "AgentSkillManifest skill assignment or authority expansion proposal; decision-card review required."
+                : "Low-risk AgentSkillManifest metadata proposal; leaves active manifest unchanged.");
+    return allowedProposal(
+        request,
+        List.of(diff),
+        risk,
+        request.requestsAuthorityExpansion()
+            ? "AgentSkillManifest changes that add skills or authority are authority expansion and require a decision card."
+            : "AgentSkillManifest metadata change does not expand tool, data, skill, or approval authority.");
+  }
+
+  private ReferenceBehaviorEditProposal proposeToolBoundaryDiff(
+      ReferenceBehaviorChangeRequest request, ReferenceAgentDefinition agent) {
+    var boundary = toolBoundaries.get(request.targetArtifactId());
+    if (boundary == null
+        || !boundary.tenantId().equals(request.tenantId())
+        || !boundary.agentDefinitionId().equals(agent.agentDefinitionId())
+        || !boundary.active()
+        || !request.targetArtifactId().equals(agent.toolBoundaryId())) {
+      return denied(request, "active ToolPermissionBoundary denied");
+    }
+
+    var diff =
+        new ReferenceProposedDocumentDiff(
+            "tool_boundary",
+            boundary.toolBoundaryId(),
+            boundary.boundaryVersionId(),
+            draftVersionId("tool-boundary", request.requestId()),
+            "summary",
+            "Proposed diff: update ToolPermissionBoundary - " + request.requestedChange(),
+            "ToolPermissionBoundary authority expansion proposal; decision-card review required and active boundary unchanged.");
+    return allowedProposal(
+        request,
+        List.of(diff),
+        ReferenceBehaviorEditRisk.HIGH,
+        "ToolPermissionBoundary changes can broaden tool/data/side-effect authority and require decision-card approval.");
+  }
+
+  private ReferenceBehaviorEditProposal proposeAgentDefinitionDiff(
+      ReferenceBehaviorChangeRequest request, ReferenceAgentDefinition agent) {
+    var diff =
+        new ReferenceProposedDocumentDiff(
+            "agent_definition",
+            agent.agentDefinitionId(),
+            agent.agentDefinitionId(),
+            draftVersionId("agent-definition", request.requestId()),
+            "summary",
+            "Proposed diff: update AgentDefinition authority - " + request.requestedChange(),
+            "AgentDefinition authority expansion proposal; decision-card review required and active runtime state unchanged.");
+    return allowedProposal(
+        request,
+        List.of(diff),
+        ReferenceBehaviorEditRisk.HIGH,
+        "AgentDefinition approval, autonomy, billing, model, role, or tenant-scope authority changes require decision-card approval.");
   }
 
   private ReferenceBehaviorEditProposal allowedProposal(
@@ -132,11 +243,11 @@ public final class ReferenceAgentBehaviorEditor {
         request.targetAgentDefinitionId(),
         proposedDiffs,
         risk,
-        request.requestsAuthorityExpansion(),
+        risk.authorityReviewRequired() || request.requestsAuthorityExpansion(),
         request.requestedExpansionTypes(),
         risk.decisionCardRequired(),
         rationale,
-        "create_draft",
+        risk.decisionCardRequired() ? "create_decision_card" : "create_draft",
         request.correlationId());
   }
 

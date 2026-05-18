@@ -924,7 +924,7 @@
 
 ### TASK-027: Add manifest and tool-boundary proposal risk classification tests
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
 - task brief: none
 - depends on: [TASK-026]
@@ -951,7 +951,7 @@
 - done criteria:
   - Manifest/tool-boundary behavior-editing risks are classified and tested.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-028: Add behavior edit proposal review and trace tests
 
