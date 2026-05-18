@@ -32,25 +32,25 @@ Your durable project state should live in your application workspace. Human-supp
 ## Install the pack
 
 Current manifest version:
-- `0.1.12`
+- `0.1.13`
 
 Project install from the current directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.12/install-akka-ai-skills-pack-0.1.12.sh | bash -s --
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.13/install-akka-ai-skills-pack-0.1.13.sh | bash -s --
 ```
 
 Project install into a specific directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.12/install-akka-ai-skills-pack-0.1.12.sh | bash -s -- --target-dir /path/to/project
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1.13/install-akka-ai-skills-pack-0.1.13.sh | bash -s -- --target-dir /path/to/project
 ```
 
 Install from an unpacked archive:
 
 ```bash
-tar -xzf akka-ai-skills-pack-0.1.12.tar.gz
-cd akka-ai-skills-pack-0.1.12
+tar -xzf akka-ai-skills-pack-0.1.13.tar.gz
+cd akka-ai-skills-pack-0.1.13
 bash install.sh --location project --project /path/to/project
 ```
 
