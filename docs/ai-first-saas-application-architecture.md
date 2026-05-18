@@ -154,6 +154,19 @@ resolve active AgentDefinition
 → trace prompt assembly, allowed/denied skill loads, tool/data access, and consequential results
 ```
 
+Normal runtime behavior maintenance should also be governed. Generated AI-first SaaS foundations default to an `AgentBehaviorEditorAgent` or equivalent editing-agent responsibility for prompt, skill, manifest, and tool-boundary changes:
+
+```text
+human behavior-change request
+→ editing agent identifies affected AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, and ToolPermissionBoundary records
+→ drafts a proposed diff, rationale, risk/impact notes, and test/replay suggestions
+→ creates a draft version or proposal
+→ routes to review/approval or decision-card flow
+→ activation uses governed commands and emits audit/work traces
+```
+
+Direct text editing may exist as an explicitly authorized admin surface, but it must still create draft versions or proposals, expose proposed diff review, require approval for activation, deny unauthorized authority expansion, and preserve audit. Editing agents may recommend authority changes, but expanded tool, data, tenant, approval, or role authority requires backend-enforced approval; prompt and skill content cannot grant it.
+
 Prompt and skill content is behavior guidance only. It cannot grant tool permissions, data access, role capabilities, tenant/customer scope, or approval authority; backend authorization and `ToolPermissionBoundary` enforcement remain authoritative.
 
 Treat other prompts, skills, policies, rules, thresholds, approval gates, and permissions as runtime business logic:
@@ -192,6 +205,7 @@ Before calling a generated design AI-first, verify:
 - [ ] Agent tools are treated as one optional exposure surface for selected capabilities, not as the backend design root.
 - [ ] Managed runtime agent foundation is present: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
 - [ ] Agents have explicit responsibilities, versioned prompts/skills, permissions, thresholds, escalation rules, and traces.
+- [ ] Agent-mediated behavior maintenance exists for prompts, skills, manifests, and tool boundaries, including `AgentBehaviorEditorAgent` proposals, proposed diff review, draft version creation, approval, activation, audit, and denial of unauthorized authority expansion.
 - [ ] Execution plans are inspectable, policy-bound, and auditable before or during activation.
 - [ ] Policies and clauses are versioned, addressable, testable, and cited by actions or decisions.
 - [ ] Approval and exception flows include evidence, risk, confidence, impact, alternatives, and learning options.

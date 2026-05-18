@@ -39,6 +39,7 @@ Read these first if present:
 - skill-load authorization, denied skill loads, or SkillLoadTrace
 - assigning approved skills to AgentDefinitions
 - skill diff/history UI or skill governance UI
+- agent-mediated skill or manifest maintenance, an `AgentBehaviorEditorAgent`, proposed skill diff, or draft skill version proposal
 
 ## Core model
 
@@ -180,6 +181,25 @@ public final class AgentSkillTools {
 
 Do not use raw filesystem paths or model-supplied resource paths. Use stable skill ids mapped through tenant-scoped manifest state.
 
+## Agent-mediated skill and manifest maintenance
+
+Generated AI-first SaaS foundations default to skill, manifest, and tool-boundary changes through an `AgentBehaviorEditorAgent` or equivalent editing-agent responsibility.
+
+Normal flow:
+
+```text
+human behavior-change request
+→ editing agent identifies affected SkillDocument, SkillVersion, AgentSkillManifest, AgentDefinition, and ToolPermissionBoundary records
+→ drafts proposed diff plus rationale, risk/impact notes, affected agents, and readSkill/test expectations
+→ creates a draft SkillVersion, manifest proposal, or tool-boundary proposal
+→ routes to protected review/approval or decision-card flow for activation
+→ activation updates active versions/manifests through governed commands and emits audit/trace records
+```
+
+The editing agent may recommend new skill text, manifest entries, version pins, or tool-boundary adjustments, but it must not grant itself or another agent new data/tool/approval authority. Authority expansion requires explicit review/approval and backend-enforced permission changes.
+
+Direct text editing may exist only as an explicitly authorized admin surface. It must still create draft versions or proposals, show a proposed diff, require review/approval for activation, deny unauthorized authority expansion, and emit audit/work traces.
+
 ## Skill content validation and safety
 
 Before approval or activation:
@@ -201,7 +221,8 @@ Provide protected UI for:
 - agent skill manifest management from agent detail;
 - compact manifest preview;
 - skill-loading test console;
-- skill lifecycle, manifest, and load trace links.
+- skill lifecycle, manifest, and load trace links;
+- editing-agent proposal queue for skill text, manifest, version-pin, and tool-boundary changes with proposed diff, rationale, risk flags, and approval/denial actions.
 
 ## Test console rules
 
@@ -238,3 +259,5 @@ Before finishing, verify:
 - skill editor/review/diff/manifest/test UI is protected by backend authorization
 - version pinning or active-version policy is explicit
 - tenant isolation, unassigned-skill denial, disabled-agent denial, and audit tests are planned
+- AgentBehaviorEditorAgent skill/manifest proposals, draft version creation, review/approval, activation, rejection, and audit paths are planned
+- unauthorized authority expansion through skill text, manifest assignment, or tool-boundary change is denied and traced

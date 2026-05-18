@@ -33,6 +33,8 @@ Read these first if present:
 - activation, deprecation, archival, rollback, or immutable snapshots
 - approved prompt version, approved skill version, policy version, rubric version, or reference-example version
 - content checksum, provenance, author/reviewer, secret scanning, or change rationale
+- agent-mediated prompt, skill, manifest, tool-boundary, policy, rubric, or example maintenance
+- an `AgentBehaviorEditorAgent`, editing agent, proposed diff, draft version, or review/approval flow for behavior changes
 
 ## Core pattern
 
@@ -128,6 +130,33 @@ Typical events:
 - `BehaviorDocumentRolledBack`
 - `BehaviorDocumentArchived`
 
+## Agent-mediated maintenance flow
+
+Generated AI-first SaaS foundations should default to **agent-mediated** behavior-document maintenance instead of assuming admins directly edit prompt or skill text as the primary path.
+
+Normal flow:
+
+```text
+human change request
+→ AgentBehaviorEditorAgent interprets intent and authority context
+→ identifies affected PromptDocument, SkillDocument, AgentSkillManifest, ToolPermissionBoundary, policy, rubric, or example records
+→ drafts a proposed diff plus rationale, risk flags, and test/replay suggestions
+→ creates a draft version or manifest/tool-boundary proposal
+→ routes the proposal to protected review/approval or decision-card flow
+→ activation happens only through the existing governed document/manifest commands
+```
+
+`AgentBehaviorEditorAgent` responsibilities:
+- translate natural-language maintenance requests into bounded document changes;
+- preserve tenant/customer scope, AuthContext, and caller capability limits;
+- produce a proposed diff rather than silently mutating active behavior;
+- explain rationale, affected agents/workflows, risk, impact, and authority changes;
+- flag attempted authority expansion, data/tool permission expansion, secret-like content, or cross-tenant references;
+- create only draft versions or review proposals unless a documented policy grants narrower autonomous authority;
+- emit audit/work traces for proposal creation, denial, review, approval, activation, and rejection.
+
+Direct text editing can still exist as a protected admin surface when explicitly allowed, but it is secondary to the default editing-agent proposal path and must use the same review/approval, diff, activation, and audit controls.
+
 ## Rules
 
 1. Governed documents are tenant-scoped. Include `tenantId` in commands, state, events, views, endpoints, and runtime lookups.
@@ -171,6 +200,7 @@ Provide protected surfaces for:
 - active version and rollback controls
 - runtime usage trace links
 - impacted agent definitions and workflows
+- editing-agent proposal queue with proposed diff, rationale, risk flags, affected documents, and decision-card links
 
 ## Implementation order
 
@@ -191,6 +221,8 @@ Before finishing, verify:
 - immutable version snapshots are created and checksumed
 - secret-like content is blocked or flagged before activation
 - diff/history/review surfaces are authorization-protected
+- editing-agent proposals, draft versions, review/approval outcomes, activations, and denials are tested
+- unauthorized authority expansion through prompt, skill, manifest, or tool-boundary text is denied and audited
 - activation, deprecation, rollback, and archive actions emit audit events
 - runtime agents pin or resolve explicit versions rather than reading mutable draft content
 - governed document text does not grant tool/data permissions by itself

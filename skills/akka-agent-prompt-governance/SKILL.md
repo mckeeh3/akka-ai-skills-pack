@@ -36,6 +36,7 @@ Read these first if present:
 - effective prompt assembly for each request
 - prompt assembly trace, prompt checksum, or prompt version pinning
 - prompt test console using active or draft prompt content
+- agent-mediated prompt maintenance, an `AgentBehaviorEditorAgent`, proposed prompt diff, or draft prompt version proposal
 
 ## PromptTemplate vs governed PromptDocument
 
@@ -158,6 +159,25 @@ Rules:
 - do not include raw secrets, provider tokens, or frontend-only trust claims;
 - include full skill text only after explicit `readSkill(skillId)` tool calls, not during initial assembly.
 
+## Agent-mediated prompt maintenance
+
+Generated AI-first SaaS foundations default to prompt maintenance through an `AgentBehaviorEditorAgent` or equivalent editing-agent responsibility.
+
+Normal flow:
+
+```text
+human prompt-change request
+→ editing agent identifies affected AgentDefinition and PromptDocument records
+→ drafts proposed diff, rationale, risk/impact notes, and test prompts
+→ creates a draft PromptVersion or proposal, never directly mutating active runtime prompt text
+→ routes to prompt review/approval or a decision card when authority, tool use, compliance, or risk changes
+→ approved activation emits audit events and PromptAssemblyTrace-visible version references
+```
+
+Direct human text editing may be offered only as an explicitly authorized admin surface. It must still create draft versions, show proposed diff/review state, require approval for activation, and preserve audit; it cannot bypass the agent-mediated readiness expectations for generated foundations.
+
+Editing-agent proposals must be denied or escalated when prompt text attempts to expand data access, tool permissions, role capabilities, approval authority, tenant scope, or hidden platform policy. Prompt text remains behavior guidance only.
+
 ## Prompt validation and safety
 
 Validate before review or activation:
@@ -179,7 +199,8 @@ Provide protected UI for:
 - side-by-side version diff;
 - active version display and rollback controls;
 - minimal prompt test console;
-- prompt assembly/audit trace links.
+- prompt assembly/audit trace links;
+- editing-agent proposal review with proposed diff, rationale, risk flags, affected prompt documents, and approval/denial actions.
 
 ## Test console rules
 
@@ -205,3 +226,5 @@ Before finishing, verify:
 - skill manifests are compact references, not full skill text
 - prompt text cannot grant data/tool permissions by itself
 - prompt lifecycle, assembly, and test actions emit audit/work trace events
+- AgentBehaviorEditorAgent prompt proposals, draft version creation, review/approval, activation, and rejection paths are tested
+- unauthorized authority expansion through prompt edits is denied, audited, and routed to review/approval when appropriate

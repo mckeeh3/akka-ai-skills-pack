@@ -85,7 +85,7 @@
 
 ### TASK-003: Add behavior-editing agent guidance to prompt and skill governance
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/01-core-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: [TASK-001]
@@ -114,7 +114,7 @@
 - done criteria:
   - Prompt and skill governance guidance no longer implies direct human text edits are the only or primary maintenance model.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed; commit hash reported in harness response.
 
 ### TASK-004: Update app-description bootstrap and readiness for managed-agent foundation
 
