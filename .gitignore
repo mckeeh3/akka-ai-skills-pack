@@ -45,3 +45,5 @@ akka-context/
 .github-bak
 
 .tmp
+
+.agents
