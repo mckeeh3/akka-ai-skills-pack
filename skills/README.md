@@ -465,7 +465,7 @@ Use when the task involves built-in PromptTemplate or SessionMemoryEntity state,
 
 ### Testing
 Use:
-- `akka-agent-testing`
+- `akka-agent-testing` — deterministic `TestModelProvider` tests plus governed runtime checks for active profile resolution, disabled agent denial, draft prompt test/replay limits, unassigned skill denial, cross-tenant denial, `PromptAssemblyTrace`, `SkillLoadTrace`, `ToolPermissionBoundary` denial, `AgentBehaviorEditorAgent` proposal flow, and authority expansion approval/denial
 
 ## Event Sourced Entity skills
 
