@@ -121,6 +121,8 @@ Load the companion skill that matches the current task:
   - `responseConformsTo(...)`, `responseAs(...)`, field descriptions, and fallback mapping
 - `akka-agent-tools`
   - local `@FunctionTool` methods and external tool classes registered with `.tools(...)`
+- `akka-agent-tool-boundaries`
+  - backend-enforced `ToolPermissionBoundary` grants, tool registry/catalog, read-only vs side-effecting authority, component/MCP/readSkill tool permission, approval-required expansion, runtime denied-tool semantics, and tool invocation traces
 - `akka-agent-component-tools`
   - Views, entities, and workflows used as tools through `.tools(ComponentClass.class)`
 - `akka-agent-mcp-tools`
@@ -234,6 +236,8 @@ Use when the model must call functions to fetch data, trigger actions, or load a
 Repository examples:
 - `WeatherAgent`
 - `WeatherForecastTools`
+
+For protected or managed-agent tools, load `akka-agent-tool-boundaries` before exposing local, component, MCP, or `readSkill` tools so the implementation resolves `ToolPermissionBoundary`, denies ungranted tools, distinguishes read-only from side-effecting authority, requires approval for expansion, and emits tool invocation traces.
 
 For model-loadable guidance that approximates harness skills inside an Akka service, load `akka-agent-harness-skills` in addition to `akka-agent-tools`.
 

@@ -419,6 +419,10 @@ Use when the agent should return typed JSON-mapped output.
 Use when the agent should call local or external function tools.
 - `akka-agent-tools`
 
+### Tool permission boundaries
+Use when managed agents need backend-enforced `ToolPermissionBoundary` grants, a tool registry/catalog, read-only vs side-effecting tool rules, component/MCP/readSkill tool authority, approval-required expansion, runtime denied-tool semantics, or tool invocation traces.
+- `akka-agent-tool-boundaries`
+
 ### Component tools
 Use when an agent should call selected Akka View, entity, or workflow capability surfaces as tools after the capability contract permits model-invoked access.
 - `akka-agent-component-tools`

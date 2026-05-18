@@ -165,6 +165,9 @@ content:
     - id: akka-agent-testing
       path: skills/akka-agent-testing
       category: testing
+    - id: akka-agent-tool-boundaries
+      path: skills/akka-agent-tool-boundaries
+      category: focused
     - id: akka-agent-tools
       path: skills/akka-agent-tools
       category: focused
@@ -528,6 +531,7 @@ bundles:
       - akka-agent-streaming
       - akka-agent-structured-responses
       - akka-agent-testing
+      - akka-agent-tool-boundaries
       - akka-agent-tools
       - akka-agents
       - akka-consumer-from-event-sourced-entity

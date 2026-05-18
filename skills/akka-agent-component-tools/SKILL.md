@@ -24,20 +24,22 @@ Read these first if present:
 - a View, entity, or workflow already exposes the exact capability operation the agent needs
 - you want the model to choose when to fetch current application state
 
-Do not use this pattern to expose arbitrary component internals. Component tools are one exposure surface for capabilities, not the backend design root.
+Do not use this pattern to expose arbitrary component internals. Component tools are one exposure surface for capabilities, not the backend design root. For managed agents or protected component tools, also load `akka-agent-tool-boundaries` and enforce the active `ToolPermissionBoundary` against the component tool id/category before executing the component method.
 
 ## Core pattern
 
 1. Start from the capability contract: id/name, actor/caller, AuthContext, input/output schemas, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests.
 2. Annotate only the selected component method with `@FunctionTool`.
-3. Keep component tools public, focused, and aligned to one capability operation/query.
-4. Register the component class with `.tools(ComponentClass.class)`.
-5. For entities and workflows, remember the generated tool schema includes `uniqueId`; describe how it maps to the scoped aggregate/workflow id.
-6. Prefer read-only evidence component tools unless state changes are truly required.
-7. Describe side effects, required permissions, tenant/customer scope, approval gates, and audit behavior when a tool can mutate state.
-8. Enforce authorization, tenant/customer scope, validation, idempotency, and denial behavior in backend code; tool descriptions and prompts only help the model choose the tool.
-9. Record audit/work-trace events for protected data access, denials, approvals, and side effects as required by the capability contract.
-10. Return scoped, redacted output; do not expose raw state dumps unless the capability explicitly allows that data shape.
+3. Register the component method in the tool registry/catalog with a stable tool id, capability id, tool category, read-only or side-effecting classification, and tenant/customer scope rules.
+4. Keep component tools public, focused, and aligned to one capability operation/query.
+5. Register the component class with `.tools(ComponentClass.class)`.
+6. For entities and workflows, remember the generated tool schema includes `uniqueId`; describe how it maps to the scoped aggregate/workflow id.
+7. Before protected component tool execution, check `ToolPermissionBoundary` for the stable tool id, component category, capability id, operation type, side-effect class, and current AuthContext.
+8. Prefer read-only evidence component tools unless state changes are truly required.
+9. Describe side effects, required permissions, tenant/customer scope, approval gates, and audit behavior when a tool can mutate state.
+10. Enforce authorization, tenant/customer scope, validation, idempotency, and denial behavior in backend code; tool descriptions and prompts only help the model choose the tool.
+11. Record audit/work-trace events for protected data access, denials, approvals, and side effects as required by the capability contract.
+12. Return scoped, redacted output; do not expose raw state dumps unless the capability explicitly allows that data shape.
 
 ## Capability-first component-tool guidance
 
@@ -66,5 +68,6 @@ Before finishing, verify:
 - AuthContext, tenant/customer scope, permission/capability checks, validation, denial shape, and redaction are enforced before protected reads or writes
 - read-only, scoped evidence tools are preferred for lookup-style tasks
 - state-changing tools define side effects, idempotency, approval/autonomy rules, and audit/work-trace records
+- managed-agent component tools have stable tool ids and denied ToolPermissionBoundary checks for ungranted or side-effecting operations
 - tests cover deterministic tool invocation plus forbidden, tenant-isolation, audit, idempotency, and approval behavior when applicable
 - agents are not passed as tools

@@ -17,6 +17,7 @@ Read these first if present:
 - `../../../src/main/java/com/example/application/WeatherForecastTools.java`
 
 If the main task is not local or external tool classes, load the focused companion skill instead:
+- `akka-agent-tool-boundaries` for backend-enforced ToolPermissionBoundary grants, tool registry/catalog, denied-tool semantics, approval-required expansion, and tool invocation traces
 - `akka-agent-component-tools`
 - `akka-agent-mcp-tools`
 - `akka-agent-harness-skills` for model-loadable internal guidance backed by packaged resources
@@ -38,22 +39,23 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 
 1. Start from the capability contract: id/name, purpose, actor/caller, AuthContext, schemas, data access, side effects, idempotency, policy/approval, audit/trace, and tests.
 2. Expose only capabilities the agent is allowed to request; do not register helper methods merely because they exist.
-3. Annotate tools with `@FunctionTool`.
-4. Add `@Description` to parameters when the model needs argument hints.
-5. Register external tool classes with `.tools(instance)` or `.tools(Class)`.
-6. Agent-local `@FunctionTool` methods are automatically available.
-7. Keep tool behavior deterministic and fast.
-8. Handle tool failures with `.onFailure(...)` in the agent, returning safe denial/failure shapes.
-9. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
-10. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
-11. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
-12. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`.
-13. Do not try to use one agent as a tool for another agent.
-14. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
-15. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
-16. Skill-loading tools must check AgentSkillManifest and must not grant external tool/data permission by returning skill text.
-17. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
-18. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
+3. For managed agents or protected tools, load `akka-agent-tool-boundaries` and enforce the active `ToolPermissionBoundary` and tool registry/catalog before tool execution.
+4. Annotate tools with `@FunctionTool`.
+5. Add `@Description` to parameters when the model needs argument hints.
+6. Register external tool classes with `.tools(instance)` or `.tools(Class)`.
+7. Agent-local `@FunctionTool` methods are automatically available.
+8. Keep tool behavior deterministic and fast.
+9. Handle tool failures with `.onFailure(...)` in the agent, returning safe denial/failure shapes.
+10. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
+11. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
+12. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
+13. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`.
+14. Do not try to use one agent as a tool for another agent.
+15. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
+16. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
+17. Skill-loading tools must check AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
+18. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
+19. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
 
 ## Capability-first tool design
 

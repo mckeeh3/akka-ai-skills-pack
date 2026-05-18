@@ -412,7 +412,7 @@
 
 ### TASK-012: Add tool permission boundary implementation guidance
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-010]
@@ -443,7 +443,7 @@
 - done criteria:
   - Tool/data/side-effect authority for agents has concrete focused implementation guidance.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-013: Add governed-agent testing guidance
 
