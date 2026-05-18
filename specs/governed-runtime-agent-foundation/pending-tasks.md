@@ -151,7 +151,7 @@
 
 ### TASK-005: Update AI-first SaaS seed app-description for managed agents
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/02-app-description-and-seed-build-backlog.md
 - task brief: none
 - depends on: [TASK-004]
@@ -184,7 +184,7 @@
 - done criteria:
   - Preferred seed example visibly includes the fully backed governed runtime agent foundation.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; commit hash reported in harness response.
 
 ### TASK-006: Update solution and PRD planning to materialize managed-agent foundation work
 

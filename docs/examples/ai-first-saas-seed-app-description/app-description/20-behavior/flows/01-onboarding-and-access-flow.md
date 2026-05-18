@@ -26,10 +26,13 @@
 
 ## AI-assisted admin offload
 
-1. AccessReviewAgent scans scoped UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for stale invites, dormant access, failed delivery, support-access expiry, and last-admin risk.
-2. AdminRiskAgent scores proposed high-risk access changes and creates decision cards when policy requires human review.
-3. InvitationDraftAgent drafts invite copy and role rationale without exposing raw tokens.
-4. RoleRecommendationAgent recommends least-privilege roles with evidence and confidence.
-5. SupportAccessReviewAgent recommends support-access expiry or revocation candidates.
-6. AdminAuditSummaryAgent summarizes selected admin audit/search results with links to audit traces and decision cards.
-7. Agents may draft, summarize, recommend, and create low-risk tasks, but must not autonomously grant admin roles, remove last admins, expand support access, bulk disable users, or change policy/permissions.
+1. Runtime resolves an active `AgentDefinition` for the admin assistant or `UserAdminAgent`, assembles active governed `PromptDocument`/`PromptVersion` content, includes compact `AgentSkillManifest` entries, enforces `ToolPermissionBoundary`, and creates `PromptAssemblyTrace` before work begins.
+2. Access-review responsibility scans scoped UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for stale invites, dormant access, failed delivery, support-access expiry, and last-admin risk.
+3. Admin-risk-scoring responsibility scores proposed high-risk access changes and creates decision cards when policy requires human review.
+4. Invitation-drafting responsibility drafts invite copy and role rationale without exposing raw tokens.
+5. Role-recommendation responsibility recommends least-privilege roles with evidence and confidence.
+6. Support-access-review responsibility recommends support-access expiry or revocation candidates.
+7. Admin-audit-summary responsibility summarizes selected admin audit/search results with links to audit traces and decision cards.
+8. Responsibilities may be implemented by one governed skilled `UserAdminAgent` or by specialized agents; in both cases, full skill text loads require authorized `readSkill(skillId)` and create `SkillLoadTrace`.
+9. Agents may draft, summarize, recommend, and create low-risk tasks, but must not autonomously grant admin roles, remove last admins, expand support access, bulk disable users, or change policy/permissions.
+10. Consequential recommendations, tool/data access, denials, decisions, and approvals create `AgentWorkTrace` records.

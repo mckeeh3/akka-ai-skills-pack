@@ -7,6 +7,7 @@
   - `flows/01-onboarding-and-access-flow.md`
   - `flows/02-goal-execution-flow.md`
   - `flows/03-decision-and-approval-flow.md`
+  - `flows/04-managed-agent-foundation-flow.md`
 - rules:
   - `rules/01-tenant-authz-rules.md`
   - `rules/02-agent-authority-rules.md`

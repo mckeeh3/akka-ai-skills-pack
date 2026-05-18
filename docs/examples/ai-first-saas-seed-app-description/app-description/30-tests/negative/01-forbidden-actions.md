@@ -12,7 +12,12 @@
 - admin cannot remove/suspend/reactivate the last admin without last-admin protection and required decision-card approval
 - admin cannot reset/relink identity subject outside policy and authority scope
 - agent cannot execute a tool without permission grant
-- AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent cannot access unscoped tenant/customer data
+- disabled agent cannot assemble prompts, load skills, call tools, or perform work
+- agent cannot read unassigned skill content; denied `readSkill(skillId)` creates `SkillLoadTrace`
+- unauthorized user cannot create, edit, approve, activate, rollback, or delete `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, or `ToolPermissionBoundary` records
+- prompt or skill text cannot grant new tenant, data, tool, role, or approval authority
+- approval-required authority expansion cannot activate without approved decision card
+- AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and skilled UserAdminAgent responsibilities cannot access unscoped tenant/customer data
 - AI admin agents cannot autonomously grant admin roles, remove last admins, expand support access, bulk disable users, or change policy/permissions
 - agent cannot activate policy changes directly
 - reviewer without approval permission cannot decide a decision card

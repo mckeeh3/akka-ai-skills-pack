@@ -15,3 +15,10 @@
   - `../55-ui/screens-and-navigation.md`
   - `../55-ui/frontend-api-contracts.md`
   - `../55-ui/states-and-realtime.md`
+- managed-agent-foundation:
+  - `../20-behavior/flows/04-managed-agent-foundation-flow.md`
+  - `../20-behavior/rules/02-agent-authority-rules.md`
+  - `../55-ui/agent-catalog-and-detail.md`
+  - `../55-ui/prompt-and-skill-governance.md`
+  - `../55-ui/skill-manifests-and-tool-permissions.md`
+  - `../55-ui/edit-agent-proposals-and-traces.md`

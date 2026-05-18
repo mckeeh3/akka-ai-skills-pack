@@ -5,8 +5,8 @@
 - left sidebar navigation with grouped sections:
   - Work: Briefing / Mission Control, Goal Workbench, Goals
   - Decisions: Decision Queue, Exceptions
-  - Governance: Policies, Approval Gates, Learning / Proposals
-  - Audit: Trace Explorer, Outcome Review
+  - Governance: Policies, Approval Gates, Learning / Proposals, Agent Catalog, Prompt Governance, Skill Governance, Skill Manifests, Tool Permissions, Edit-Agent Proposals
+  - Audit: Trace Explorer, Outcome Review, Prompt Assembly Traces, Skill Load Traces, Agent Work Traces
   - Admin: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings
 - top or page header region:
   - page title and short operational subtitle
@@ -104,6 +104,36 @@
   - commit/rollback history
   - audit links
 
+### Agent Catalog / Agent Detail
+
+- routes: `/ui/agents`, `/ui/agents/:agentId`
+- user goal: inspect and govern active, disabled, draft, and archived `AgentDefinition` records
+- required regions:
+  - agent list/search with owner/steward, tenant/customer scope, authority level, active prompt, skill manifest, tool permission boundary, status, and recent trace summary
+  - agent detail with lifecycle controls, disabled-agent denial state, effective capability grants, prompt/skill/manifest/tool-boundary references, and recent `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` links
+
+### Prompt and Skill Governance
+
+- routes: `/ui/governance/prompts`, `/ui/governance/skills`
+- user goal: review, propose, approve, activate, rollback, and audit governed `PromptDocument`/`PromptVersion` and `SkillDocument`/`SkillVersion` records
+- required regions:
+  - document/version lists, proposed diffs, rationale, risk/impact notes, review/approval status, activation/rollback controls, prompt assembly preview, and `readSkill(skillId)` test console
+  - explicit warning that prompt/skill content is behavior guidance only and cannot grant tool/data/authorization authority
+
+### Skill Manifests and Tool Permissions
+
+- routes: `/ui/governance/skill-manifests`, `/ui/governance/tool-permissions`
+- user goal: govern agent skill discovery, full skill loading, and allowed tools/data/side effects
+- required regions:
+  - `AgentSkillManifest` assignment UI, unassigned skill denial visibility, compact manifest metadata, `ToolPermissionBoundary` editor/review, scoped tool/data grants, approval-required authority expansion warnings, policy citations, and decision-card links
+
+### Edit-Agent Proposals
+
+- route: `/ui/governance/agent-edit-proposals`
+- user goal: review behavior changes proposed by `AgentBehaviorEditorAgent`
+- required regions:
+  - proposed diff, rationale, risk/impact notes, affected AgentDefinition/PromptDocument/SkillDocument/AgentSkillManifest/ToolPermissionBoundary records, suggested tests/replays, review actions, denial reasons, activation status, rollback result, and trace/audit links
+
 ### Audit Trace Explorer
 
 - route: `/ui/audit/traces`
@@ -111,8 +141,8 @@
 - AI-first surface type: audit/work trace
 - primary action: search and inspect a trace
 - required regions:
-  - filters by goal, agent, decision, policy, tool, actor, tenant, and time
-  - chronological trace entries
+  - filters by goal, agent, decision, policy, tool, actor, tenant, prompt version, skill version, manifest, tool boundary, and time
+  - chronological trace entries including PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace
   - evidence/tool/data-access detail
   - authorization and policy invocation detail
   - outcome links

@@ -6,7 +6,7 @@ Purpose:
 - define the canonical seed app before implementation
 - provide a reusable source asset for the skills pack
 - describe secure multi-tenant SaaS foundations shared by generated apps
-- describe a functional AI-first operating-model baseline: goals, plans, bounded agents, decisions, policy gates, traces, and outcomes
+- describe a functional AI-first operating-model baseline: goals, plans, governed runtime agents, managed prompts/skills/manifests/tool boundaries, decisions, policy gates, traces, and outcomes
 - map the seed app to Akka Java components and frontend/backend integration patterns
 
 Example root:

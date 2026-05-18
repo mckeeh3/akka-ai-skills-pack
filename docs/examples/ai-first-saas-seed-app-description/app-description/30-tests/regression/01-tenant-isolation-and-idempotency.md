@@ -11,7 +11,11 @@
 - membership lifecycle retries for add/suspend/reactivate/remove preserve current status and audit facts
 - last-admin protection remains enforced after role replacement/removal retries and view rebuilds
 - AccessReviewQueueView remains correct for stale invites, dormant access, support-access expiry, and last-admin risk after projection updates
-- AdminRiskAgent, AccessReviewAgent, and RoleRecommendationAgent recommendations do not create side effects when replayed or retried
+- AdminRiskAgent, AccessReviewAgent, RoleRecommendationAgent, and governed UserAdminAgent responsibility recommendations do not create side effects when replayed or retried
+- AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace remain tenant/customer scoped after projection updates and replay
+- repeated prompt/skill/manifest/tool-boundary proposal submission preserves idempotency, expected-version checks, approval state, and audit history
+- prompt or skill wording changes alone never expand authority after retry, replay, projection rebuild, rollback, or service restart
+- disabled-agent denial, unassigned skill denial, and tool-boundary denial remain enforced after projection rebuilds
 - repeated approval command on an already decided card is rejected or no-op according to command semantics
 - repeated workflow resume after a resolved exception does not duplicate side effects
 - view queries remain tenant scoped after projection updates

@@ -14,6 +14,10 @@
 - AccessReviewAgent identifies stale invites, dormant access, expiring support access, and last-admin risk in AccessReviewQueueView
 - AdminRiskAgent and RoleRecommendationAgent produce evidence, risk, confidence, alternatives, and decision cards for risky admin actions
 - AdminAuditSummaryAgent summarizes AdminAuditView search results with redacted details and audit trace links
+- governed `UserAdminAgent` can fulfill access-review, admin-risk-scoring, invitation-drafting, role-recommendation, support-access-review, and audit-summary responsibilities through approved `AgentSkillManifest` skills
+- authorized Agent Steward can create `AgentDefinition`, draft `PromptDocument`/`PromptVersion` and `SkillDocument`/`SkillVersion`, assign `AgentSkillManifest`, configure `ToolPermissionBoundary`, route approval, activate approved behavior, and invoke the active agent
+- runtime agent invocation creates `PromptAssemblyTrace`, authorized `readSkill(skillId)` creates `SkillLoadTrace`, and consequential recommendations/actions create `AgentWorkTrace`
+- AgentBehaviorEditorAgent creates a proposed diff with rationale, risk/impact notes, affected artifacts, draft version, and review/approval route
 - active user can switch only among tenants where membership is active
 
 ## AI-first work management
@@ -24,6 +28,7 @@
 - auditor can find trace entries for goal, plan, agent, tool, policy, and decision activity
 - frontend shell shows authenticated layout, tenant switcher, navigation, loading/empty/error states, and validation feedback
 - admin UI exposes Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings with capability-gated actions
+- managed-agent UI exposes agent catalog, agent detail, prompt governance, skill governance, skill manifest management, tool permission management, edit-agent proposal review, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace exploration
 
 ## UI design acceptance checks
 

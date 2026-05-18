@@ -14,6 +14,7 @@
   - provide secure human-user access to a multi-tenant SaaS application
   - provide reusable tenant, customer, user, membership, role, and permission foundations
   - provide a functional AI-first operating-model shell for delegated goals, plans, decisions, approvals, audit traces, and outcomes
+  - provide governed runtime agent behavior management with AgentDefinition, governed prompts, governed skills, skill manifests, tool permission boundaries, editing-agent proposals, and prompt/skill/work traces
   - demonstrate common Akka Java component patterns in a coherent application
   - demonstrate common browser UI and frontend/backend integration patterns
   - support modular expansion by adding app modules and required features
@@ -27,6 +28,7 @@
   - every browser API request is authenticated and authorized
   - authorization is enforced mechanically in backend endpoints and commands
   - AI/agent actions are bounded by explicit permissions, approval gates, and trace capture
+  - runtime agents resolve active AgentDefinition records, assemble active governed PromptDocument/PromptVersion content, include compact AgentSkillManifest entries, authorize readSkill(skillId), enforce ToolPermissionBoundary records, and emit PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace evidence
   - the frontend is a first-class generated output, not a static demo shell
 - primary linked artifacts:
   - `../10-capabilities/capabilities-index.md`

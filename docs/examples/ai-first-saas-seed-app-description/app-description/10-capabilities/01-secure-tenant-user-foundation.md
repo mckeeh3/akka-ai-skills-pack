@@ -27,7 +27,8 @@ This is a reference capability contract for the skills pack's seed app, not this
 - Account disable/reactivate and reset/relink identity subject under policy.
 - Support-access grant, revoke, expiry, and review.
 - Admin audit/search over identity, membership, role, invitation, support-access, and authorization events.
-- AI-assisted admin offload with AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and decision cards for risky admin actions.
+- AI-assisted admin offload with governed admin responsibilities that may be implemented by a single `UserAdminAgent` with access-review, admin-risk-scoring, invitation-drafting, role-recommendation, support-access-review, and audit-summary skills, or by separate AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent classes when useful.
+- Governed runtime agent foundation for admin assistants: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and authorized `readSkill(skillId)`.
 - Tenant/customer context switching for users with multiple memberships.
 - Tenant/customer-scoped settings and browser navigation/action availability.
 
@@ -49,7 +50,8 @@ This is a reference capability contract for the skills pack's seed app, not this
 - Invited user.
 - Support operator with time-bound support-access grant.
 - AI admin assistant supervisor.
-- Scoped admin-assistant agents for access review, invitation drafting, role recommendations, support-access review, and audit summarization.
+- Scoped admin-assistant agents or skilled `UserAdminAgent` responsibilities for access review, invitation drafting, role recommendations, support-access review, and audit summarization.
+- AgentBehaviorEditorAgent for governed prompt, skill, manifest, and tool-boundary change proposals.
 - InvitationWorkflow, expiry/reminder TimedAction, email/outbox Consumer, and admin views as internal callers.
 
 ## Authority and contract
@@ -70,6 +72,7 @@ This is a reference capability contract for the skills pack's seed app, not this
   - denials use a stable forbidden/not-found shape that does not reveal cross-tenant resource existence
 - data access:
   - Account, UserProfile, UserSettings, Tenant/Customer, Membership, Role, Permission/Capability, Invitation, SupportAccessGrant, AdminAuditEvent
+  - AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace
   - UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView
   - all reads and writes are filtered by tenant/customer scope unless explicitly SaaS-owner scoped
 - side effects:
@@ -77,6 +80,7 @@ This is a reference capability contract for the skills pack's seed app, not this
   - email/outbox records for invitations and reminders
   - timers for invitation expiry, reminder, support-access expiry, and access-review cadence
   - AdminAuditEvent and work-trace records for protected reads, writes, denials, approvals, support access, and consequential AI/tool activity
+  - PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace records for runtime agent prompt assembly, authorized or denied readSkill requests, and consequential agent work
 - exposure surfaces:
   - browser UI actions for sign-in shell, context selection, profile/settings, admin users, invitations, roles/memberships, access review, support access, and admin audit
   - HTTP APIs including `/api/me` and protected admin routes
@@ -85,6 +89,7 @@ This is a reference capability contract for the skills pack's seed app, not this
   - consumer surface for email delivery/outbox
   - view/query surfaces for user directory, memberships, invitations, access reviews, and audit
   - scoped agent tools for read/evidence, draft, summarize, and recommend operations only; committing risky admin actions remains human-approved unless a policy grants a narrow autonomous path
+  - managed-agent UI and API surfaces for agent catalog/detail, prompt/skill governance, manifest management, tool permission boundaries, editing-agent proposal review, and trace review
 
 ## Policy, approval, and autonomy
 
@@ -124,6 +129,7 @@ This is a reference capability contract for the skills pack's seed app, not this
   - success, denial, protected reads, approvals, support-access use, and consequential AI/tool activity create AdminAuditEvent/work-trace records
 - surface-specific:
   - `/api/me` returns browser-safe capabilities only; UI hides unavailable actions but backend still denies; agent tools receive only scoped/redacted evidence; timers and consumers are retry-safe
+  - disabled agents, unassigned skill reads, unauthorized prompt/skill/tool changes, and approval-required authority expansion are denied and traced
 
 ## Linked layers
 
