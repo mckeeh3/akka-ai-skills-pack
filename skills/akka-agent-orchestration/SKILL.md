@@ -25,8 +25,10 @@ Read these first if present:
 
 For generated SaaS apps, workflow-supervised agent orchestration must carry AuthContext, tenant/customer scope, policy/approval references, and trace identifiers through the workflow state or command payload so retries and resumes cannot lose authorization boundaries.
 
+Before choosing workflow-supervised orchestration, apply the one-agent vs agent-team decision guide in `ai-first-saas-agent-team-design`: keep one governed skilled agent when responsibilities share authority, tool boundary, model config, lifecycle, steward, memory, audit, and approval needs; split into specialized agents or evaluator agents when those boundaries differ; add a workflow supervisor when durable retries, pauses, handoffs, approval gates, or progress visibility are required.
+
 - agent calls need retries and durable recovery
-- several agents collaborate on the same request
+- several agents collaborate on the same request because they have different authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, or approval needs
 - a workflow should own the shared session id
 - a caller needs a final result separate from intermediate agent outputs
 

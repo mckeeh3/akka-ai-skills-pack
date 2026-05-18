@@ -27,6 +27,8 @@ human objective
 
 Agents should do as much bounded work as the product safely permits. Humans retain ownership of outcomes and supervise, decide, approve, audit, teach, correct, and govern authority changes.
 
+Choose agent shape by responsibility boundaries, not by a desire for either one assistant or many classes. A single governed skilled agent is appropriate when responsibilities share authority, tool boundary, model config, lifecycle, owner/steward, memory, risk, audit, and approval needs. Use specialized agents when those boundaries differ, workflow-supervised agent teams when durable handoffs/retries/approvals/progress visibility are needed, and evaluator agents when independent quality, policy, completeness, or risk judgment must gate work.
+
 AI-first does not mean every app must use every AI-first pattern. It means every generated app begins with secure SaaS foundations, then applies only the agentic substrate objects, governance surfaces, and Akka components justified by product intent.
 
 Backend behavior should be modeled as governed capabilities before selecting Akka components or exposure surfaces. A capability is a named operation or query with explicit actors, auth context, inputs, outputs, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, tests, and selected exposure surfaces. Agent tools, browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, and internal component methods are possible surfaces for capabilities; they are not the root abstraction.

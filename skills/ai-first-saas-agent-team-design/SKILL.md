@@ -41,6 +41,44 @@ Do not design an agent team when:
 - authority, tools, policy, or escalation boundaries are too vague to implement safely
 - the request is only to add a chatbot interface without durable delegated work
 
+## One-agent vs agent-team decision guide
+
+Before naming agent classes, decide whether the work is safest as one governed skilled agent, multiple specialized agents, a workflow-supervised team, or a separate evaluator.
+
+Use a **single governed skilled agent** when:
+- responsibilities share the same authority level, lifecycle, owner/steward, model config policy, memory/session rules, tool boundary, approval thresholds, and audit requirements;
+- the agent can keep one clear primary responsibility while using focused governed skills through an `AgentSkillManifest`;
+- skills differ by task guidance, not by data/tool authority or risk class;
+- one admin/review surface can safely manage the agent definition, prompt, skills, model, tool boundary, and traces.
+
+Use **multiple specialized agents** when any responsibility needs:
+- different authority, tenant/customer scope, tool boundary, model config, memory, lifecycle, owner/steward, scaling profile, prompt governance cadence, or approval policy;
+- a materially different risk class, trace retention, redaction rule, or audit review path;
+- independent enable/disable, rollout, evaluation, replay, or rollback;
+- separation of duties, such as drafter vs approver, operator vs auditor, or worker vs reviewer.
+
+Use a **workflow-supervised agent team** when:
+- the objective spans durable multi-step execution, retries, pauses, deadlines, compensation, or human approval gates;
+- separate agents produce handoff artifacts that must survive restarts or be inspected by supervisors;
+- policy, confidence, risk, or side-effect checks must occur between model calls;
+- humans need a command-center view of progress, exceptions, and pending decisions.
+
+Use a **reviewer/evaluator agent** when:
+- output quality, policy fit, completeness, risk, or hallucination detection must be judged separately from the worker that produced the output;
+- evaluator authority is advisory by default and its structured result gates automation or human review;
+- high-impact actions need an independent confidence/risk signal before approval.
+
+Unsafe over-consolidation signals:
+- one agent would need broad tools only some tasks justify;
+- prompt/skill text is expected to substitute for backend authorization;
+- unrelated responsibilities would share memory, traces, or model settings by convenience;
+- disabling a risky function would also disable unrelated low-risk work.
+
+Unnecessary sprawl signals:
+- proposed specialized agents share the same authority, tools, model config, lifecycle, steward, memory, approval, and audit needs;
+- differences are only prompt sections or governed skills;
+- coordination would add no durable state, retry, approval, or trace value.
+
 ## Team shape patterns
 
 ### Single bounded agent

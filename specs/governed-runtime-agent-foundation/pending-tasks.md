@@ -511,7 +511,7 @@
 
 ### TASK-015: Add one-agent vs agent-team responsibility shaping guidance
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-011, TASK-012]
@@ -537,7 +537,7 @@
 - done criteria:
   - Agent decomposition avoids both unnecessary agent sprawl and unsafe over-consolidation.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-016: Add minimal governed runtime agent reference slice plan or executable example
 

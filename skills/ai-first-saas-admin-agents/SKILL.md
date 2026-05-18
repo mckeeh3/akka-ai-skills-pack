@@ -30,7 +30,7 @@ Then load component skills for the chosen substrate: `akka-workflows`, `akka-vie
 
 Initial generated SaaS foundations must include these bounded admin offload responsibilities or an explicitly equivalent design. This is a requirement for capability coverage, not a requirement to create one physical agent class per row.
 
-A small foundation may implement a single governed `UserAdminAgent` with an active `AgentDefinition` and an `AgentSkillManifest` that assigns focused skills such as `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`. Larger foundations may implement separate specialized agents such as `AccessReviewAgent` or `AdminRiskAgent` when separate lifecycle, model, prompt, tool boundary, steward, or scaling concerns justify it.
+Use the one-agent vs agent-team decision guide in `ai-first-saas-agent-team-design` before choosing physical agent classes. A small foundation may implement a single governed `UserAdminAgent` with an active `AgentDefinition` and an `AgentSkillManifest` that assigns focused skills such as `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary` when those responsibilities share authority, tool boundary, model config, lifecycle, steward, memory, audit, and approval needs. Larger foundations may implement separate specialized agents such as `AccessReviewAgent` or `AdminRiskAgent` when separate lifecycle, model, prompt, tool boundary, steward, memory, risk, approval, audit, or scaling concerns justify it.
 
 | Responsibility | Typical specialized agent name | Typical output |
 |---|---|---|
@@ -130,7 +130,7 @@ Include tests for:
 ## Done criteria
 
 A generated SaaS foundation is incomplete if it has user administration but no AI-assisted admin offload. Before domain-specific features are considered generation-ready, verify:
-- all mandatory admin offload responsibilities are planned and mapped either to one governed `UserAdminAgent` with an `AgentSkillManifest` or to equivalent bounded specialized agents;
+- all mandatory admin offload responsibilities are planned and mapped either to one governed `UserAdminAgent` with an `AgentSkillManifest` or to equivalent bounded specialized agents using the generalized one-agent vs agent-team decision guide;
 - autonomous actions and approval-required actions are explicit;
 - high-risk recommendations route to decision cards;
 - agent tools enforce AuthContext, scope, redaction, and audit mechanically;

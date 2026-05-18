@@ -137,6 +137,8 @@ Load the companion skill that matches the current task:
   - session ids, `MemoryProvider`, limited windows, `readOnly()`, and filtered memory reads
 - `akka-agent-streaming`
   - `StreamEffect`, `tokenStream(...)`, streaming endpoints, and grouped token delivery
+- `ai-first-saas-agent-team-design`
+  - one governed skilled agent vs specialized agents vs workflow-supervised team vs evaluator decisions based on authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs
 - `akka-agent-orchestration`
   - calling agents from workflows, shared session ids, and multi-agent supervisor patterns
 - `akka-agent-guardrails`
@@ -252,7 +254,10 @@ Repository examples:
 - `StreamingActivityAgent`
 - `ActivityAgentEndpoint#stream`
 
-### 6. Workflow-supervised agent team
+### 6. Agent responsibility shape
+Use `ai-first-saas-agent-team-design` before creating multiple agent classes. Prefer a single governed skilled agent when responsibilities share authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs and differ only by governed skills in an `AgentSkillManifest`. Prefer specialized agents when those boundaries differ. Add an evaluator agent for independent quality, policy, completeness, or risk judgment. Use a workflow-supervised agent team when durable retries, handoffs, approvals, pauses, or progress visibility are required.
+
+### 7. Workflow-supervised agent team
 Use when AI calls need durable retries, shared sessions, or multi-step orchestration.
 
 Repository example:
