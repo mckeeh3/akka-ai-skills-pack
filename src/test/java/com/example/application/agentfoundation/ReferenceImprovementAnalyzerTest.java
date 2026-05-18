@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.example.domain.agentfoundation.ReferenceAgentDefinition;
 import com.example.domain.agentfoundation.ReferenceAgentSkillManifest;
 import com.example.domain.agentfoundation.ReferenceAgentWorkTrace;
+import com.example.domain.agentfoundation.ReferenceBehaviorEditRisk;
+import com.example.domain.agentfoundation.ReferenceBehaviorEditTrace;
 import com.example.domain.agentfoundation.ReferenceEvaluationFinding;
 import com.example.domain.agentfoundation.ReferenceEvaluationRun;
 import com.example.domain.agentfoundation.ReferenceImprovementProposal;
@@ -75,7 +77,7 @@ class ReferenceImprovementAnalyzerTest {
     assertEquals(List.of(ReferenceAgentFoundationFixtures.EVALUATION_FINDING_ID), proposal.findingIds());
     assertTrue(proposal.behaviorEditProposalId().startsWith("behavior-proposal-behavior-request-from-"));
     assertEquals("prompt_wording_change", proposal.proposedChangeKind());
-    assertTrue(proposal.expectedOutcome().contains("behavior-edit proposal"));
+    assertTrue(proposal.expectedOutcome().contains("behavior edit proposal"));
   }
 
   @Test
@@ -120,9 +122,54 @@ class ReferenceImprovementAnalyzerTest {
     assertEquals(ReferenceImprovementProposal.ImprovementStatus.DRAFT, proposal.status());
     assertTrue(proposal.replaySimulationIds().isEmpty());
     assertTrue(proposal.expectedOutcome().contains("no direct activation"));
+    assertTrue(proposal.expectedOutcome().contains("no behavior-edit control bypass"));
     assertSame(activePromptBefore, promptVersions.get(ReferenceAgentFoundationFixtures.PROMPT_VERSION_ID));
     assertEquals(ReferencePromptVersion.VersionStatus.ACTIVE, activePromptBefore.status());
     assertFalse(traceSink.behaviorEditTraces().isEmpty());
+  }
+
+  @Test
+  void cannotBypassBehaviorEditRiskClassificationForAuthorityExpansion() {
+    var traceSink = new ReferenceTraceSink();
+    var analyzer = analyzer(traceSink);
+    var toolBoundaryFinding =
+        new ReferenceEvaluationFinding(
+            ReferenceAgentFoundationFixtures.TENANT_ID,
+            "evaluation-finding-tool-boundary-expansion",
+            ReferenceAgentFoundationFixtures.EVALUATION_RUN_ID,
+            ReferenceEvaluationFinding.FindingCategory.TOOL_USE,
+            ReferenceEvaluationFinding.FindingSeverity.HIGH,
+            0.93,
+            ReferenceAgentFoundationFixtures.AGENT_ID,
+            "tool_boundary",
+            ReferenceAgentFoundationFixtures.TOOL_BOUNDARY_ID,
+            "tool_boundary_change",
+            List.of(ReferenceAgentFoundationFixtures.SOURCE_WORK_TRACE_ID),
+            "The agent needs a new side-effecting booking-hold tool to improve task completion.",
+            "corr-improvement-tool-boundary");
+
+    var proposal =
+        analyzer.proposeImprovement(
+            ReferenceAgentFoundationFixtures.authContext(),
+            ReferenceAgentFoundationFixtures.failedEvaluationRun(),
+            List.of(toolBoundaryFinding));
+
+    assertEquals(ReferenceImprovementProposal.ImprovementStatus.DRAFT, proposal.status());
+    assertTrue(proposal.behaviorEditProposalId().contains(toolBoundaryFinding.findingId()));
+    assertTrue(proposal.expectedOutcome().contains("no behavior-edit control bypass"));
+    assertTrue(
+        traceSink.behaviorEditTraces().stream()
+            .anyMatch(
+                trace ->
+                    trace.event() == ReferenceBehaviorEditTrace.TraceEvent.PROPOSAL_CREATED
+                        && trace.risk() == ReferenceBehaviorEditRisk.HIGH
+                        && trace.safeSummary().equals("create_decision_card")));
+    assertTrue(
+        traceSink.improvementTraces().stream()
+            .anyMatch(
+                trace ->
+                    trace.event() == ReferenceImprovementTrace.TraceEvent.BEHAVIOR_EDIT_LINKED
+                        && trace.safeSummary().contains("cannot bypass behavior-edit risk classification")));
   }
 
   @Test

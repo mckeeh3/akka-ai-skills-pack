@@ -1201,7 +1201,7 @@
 
 ### TASK-036: Link improvement proposals to behavior-editing proposals
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
 - task brief: none
 - depends on: [TASK-033, TASK-035]
@@ -1226,7 +1226,7 @@
 - done criteria:
   - Closed-loop improvement is safely routed through behavior-edit controls.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-037: Update coverage matrix for executable closed-loop improvement
 

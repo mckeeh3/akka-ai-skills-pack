@@ -65,7 +65,9 @@ public final class ReferenceImprovementAnalyzer {
             evaluationRun.evaluationRunId(),
             evaluationRun.sourceWorkTraceId(),
             ReferenceImprovementTrace.TraceEvent.BEHAVIOR_EDIT_LINKED,
-            "Linked improvement proposal to behavior-edit proposal " + behaviorEditProposal.proposalId(),
+            "Linked improvement proposal to behavior edit proposal "
+                + behaviorEditProposal.proposalId()
+                + "; closed-loop improvement cannot bypass behavior-edit risk classification.",
             evaluationRun.correlationId()));
 
     var sourceTraceSummary = sourceTraceSummary(evaluationRun.sourceWorkTraceId());
@@ -79,9 +81,9 @@ public final class ReferenceImprovementAnalyzer {
             behaviorEditProposal.proposalId(),
             primaryFinding.suggestedImprovementKind(),
             ReferenceImprovementProposal.ImprovementStatus.DRAFT,
-            "Create governed behavior-edit proposal from evaluation finding; source trace: "
+            "Create governed behavior edit proposal from evaluation finding; source trace: "
                 + sourceTraceSummary
-                + "; no direct activation.",
+                + "; no direct activation and no behavior-edit control bypass.",
             rollbackBaselineId(primaryFinding),
             List.of(),
             evaluationRun.correlationId());
