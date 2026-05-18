@@ -580,7 +580,7 @@
 
 ### TASK-017: Final audit for agent implementation hardening sprint
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-016]
@@ -620,4 +620,4 @@
   - Sprint 05 audit passes with no known contradictions.
   - Next remaining agent gaps, if any, are explicitly recorded.
   - A git commit exists for the final audit/repair.
-- notes:
+- notes: Sprint 05 final audit passed. Verification passed, routing/manifest references are present, and remaining agent gaps are recorded in `docs/agent-coverage-matrix.md` cleanup backlog. Commit hash recorded in harness response.
