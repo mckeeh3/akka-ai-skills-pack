@@ -14,7 +14,7 @@
 
 ### TASK-001: Promote governed runtime agent foundation in core doctrine
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/01-core-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: []
@@ -50,7 +50,7 @@
 - done criteria:
   - Core doctrine and foundation guidance make governed runtime agent behavior management mandatory for generated AI-first SaaS foundations.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in commit d6a3a76 (`agent-foundation: promote governed runtime agent foundation`).
 
 ### TASK-002: Reframe admin agents as governed responsibilities and skilled agents
 
