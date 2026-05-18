@@ -1075,3 +1075,216 @@
   - A git commit exists for the final audit/repair.
 - notes:
   - Sprint 07 final audit passed. Verification and focused behavior-editing tests passed; no contradiction repairs were needed. Behavior-editing executable coverage is marked complete in `docs/agent-coverage-matrix.md`; remaining improvement-loop gaps are recorded in the coverage matrix cleanup backlog.
+
+### TASK-032: Add closed-loop improvement reference records and fixtures
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+- task brief: none
+- depends on: [TASK-031]
+- required reads:
+  - AGENTS.md
+  - specs/governed-runtime-agent-foundation/sprints/08-executable-closed-loop-improvement-sprint.md
+  - specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+  - skills/akka-agent-evaluation/SKILL.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/ReferenceAgentFoundationFixtures.java
+- skills:
+  - akka-agent-closed-loop-improvement
+  - akka-agent-evaluation
+  - akka-agent-testing
+- expected outputs:
+  - Add immutable reference records under `src/main/java/com/example/domain/agentfoundation/` for `ReferenceEvaluationRun`, `ReferenceEvaluationFinding`, `ReferenceImprovementProposal`, `ReferenceReplaySimulation`, `ReferenceImprovementDecision`, and `ReferenceImprovementTrace` or equivalent names.
+  - Extend fixtures with one failed evaluation, one source AgentWorkTrace, one safe improvement target, and one rollback baseline.
+  - Keep records deterministic and reference-only.
+- required checks:
+  - `rg -n "ReferenceEvaluationRun|ReferenceEvaluationFinding|ReferenceImprovementProposal|ReferenceReplaySimulation|ReferenceImprovementDecision|ReferenceImprovementTrace" src/main/java/com/example/domain/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -DskipTests compile`
+  - `git diff --check`
+- done criteria:
+  - Closed-loop improvement records and fixtures compile and support follow-on tests.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-033: Add improvement analyzer and proposal creation tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+- task brief: none
+- depends on: [TASK-032]
+- required reads:
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+  - skills/akka-agent-evaluation/SKILL.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-closed-loop-improvement
+  - akka-agent-evaluation
+  - akka-agent-behavior-editing
+  - akka-agent-work-trace
+- expected outputs:
+  - Add `ReferenceImprovementAnalyzer` or equivalent helper that consumes evaluation findings and trace summaries and produces an improvement proposal.
+  - Link prompt/skill changes to existing behavior-edit proposal records rather than bypassing behavior-editing controls.
+  - Add tests for finding normalization, proposal creation, source trace linkage, and no direct activation.
+- required checks:
+  - `rg -n "ReferenceImprovementAnalyzer|EvaluationFinding|ImprovementProposal|behavior-edit|source trace|no direct activation" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceImprovementAnalyzerTest test`
+  - `git diff --check`
+- done criteria:
+  - Findings can create governed improvement proposals with trace links and no active mutation.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-034: Add replay and simulation evidence helper tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+- task brief: none
+- depends on: [TASK-033]
+- required reads:
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+  - skills/akka-agent-evaluation/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-closed-loop-improvement
+  - akka-agent-evaluation
+  - akka-agent-testing
+- expected outputs:
+  - Add `ReferenceReplaySimulationService` or equivalent helper that compares current vs proposed behavior using deterministic fixtures.
+  - Add tests proving replay/simulation evidence is attached to improvement proposals, includes pass/fail/risk notes, and records trace facts.
+  - Ensure activation remains blocked when replay/simulation evidence is missing or failing.
+- required checks:
+  - `rg -n "ReferenceReplaySimulation|ReplaySimulation|current.*proposed|evidence|activation.*blocked" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceReplaySimulationServiceTest,ReferenceImprovementAnalyzerTest test`
+  - `git diff --check`
+- done criteria:
+  - Replay/simulation evidence is executable and required before activation.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-035: Add improvement decision, activation, rollback, and trace tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+- task brief: none
+- depends on: [TASK-034]
+- required reads:
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-closed-loop-improvement
+  - akka-agent-governed-documents
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - Add `ReferenceImprovementDecisionService` or equivalent helper for approve, reject, request changes, activate, monitor, and rollback.
+  - Tests must prove approval requires replay evidence, activation requires approval, rollback is explicit, all transitions emit traces, and rejected/request-changes proposals do not activate.
+- required checks:
+  - `rg -n "ReferenceImprovementDecision|approve|reject|request changes|activate|rollback|monitor|ImprovementTrace" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceImprovementDecisionServiceTest,ReferenceReplaySimulationServiceTest test`
+  - `git diff --check`
+- done criteria:
+  - Improvement decision/activation/rollback reference semantics are executable and tested.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-036: Link improvement proposals to behavior-editing proposals
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+- task brief: none
+- depends on: [TASK-033, TASK-035]
+- required reads:
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - src/main/java/com/example/application/agentfoundation/ReferenceAgentBehaviorEditor.java
+  - src/main/java/com/example/application/agentfoundation/ReferenceImprovementAnalyzer.java
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-closed-loop-improvement
+  - akka-agent-behavior-editing
+  - akka-agent-testing
+- expected outputs:
+  - Ensure improvement proposals that change prompt/skill/manifest/tool-boundary behavior create or reference behavior-edit proposals.
+  - Tests must prove closed-loop improvement cannot bypass behavior-edit risk classification, authority-expansion escalation, or no-active-mutation rules.
+  - Add trace linkage between improvement proposal and behavior-edit proposal.
+- required checks:
+  - `rg -n "behavior edit proposal|ReferenceBehaviorEditProposal|cannot bypass|authority expansion|improvement.*trace" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceImprovementAnalyzerTest,ReferenceAgentBehaviorEditorTest test`
+  - `git diff --check`
+- done criteria:
+  - Closed-loop improvement is safely routed through behavior-edit controls.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-037: Update coverage matrix for executable closed-loop improvement
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+- task brief: none
+- depends on: [TASK-036]
+- required reads:
+  - docs/agent-coverage-matrix.md
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-closed-loop-improvement
+  - akka-agent-testing
+- expected outputs:
+  - Update `docs/agent-coverage-matrix.md` closed-loop improvement row to reference executable records/helpers/tests.
+  - Update cleanup backlog to remove or refine the closed-loop improvement gap.
+  - Preserve remaining genuine gaps such as custom model provider or optional classpath skill-tool example.
+- required checks:
+  - `rg -n "ReferenceImprovementAnalyzer|ReferenceReplaySimulation|ReferenceImprovementDecision|ReferenceImprovementAnalyzerTest|ReferenceReplaySimulationServiceTest|ReferenceImprovementDecisionServiceTest" docs/agent-coverage-matrix.md`
+  - `git diff --check`
+- done criteria:
+  - Coverage matrix accurately reflects closed-loop improvement executable coverage.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-038: Final audit for executable closed-loop improvement sprint
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+- task brief: none
+- depends on: [TASK-037]
+- required reads:
+  - specs/governed-runtime-agent-foundation/sprints/08-executable-closed-loop-improvement-sprint.md
+  - specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
+  - specs/governed-runtime-agent-foundation/pending-tasks.md
+  - docs/agent-coverage-matrix.md
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+- skills:
+  - akka-agent-closed-loop-improvement
+  - akka-agent-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - Run final consistency audit for Sprint 08.
+  - Repair contradictions between docs, matrix, reference code, and tasks.
+  - Mark completed Sprint 08 tasks done if prior sessions missed queue updates, preserving history.
+  - Record any remaining closed-loop or agent gaps for a future sprint.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `mvn -q -Dtest=ReferenceImprovementAnalyzerTest,ReferenceReplaySimulationServiceTest,ReferenceImprovementDecisionServiceTest test`
+  - `rg -n "ReferenceImprovementAnalyzer|ReferenceReplaySimulation|ReferenceImprovementDecision|ImprovementTrace|rollback|activation" docs skills specs/governed-runtime-agent-foundation src/main/java src/test/java`
+  - `git status --short`
+  - `git diff --check`
+- done criteria:
+  - Sprint 08 audit passes.
+  - Remaining agent gaps are explicitly recorded.
+  - A git commit exists for the final audit/repair.
+- notes:
