@@ -657,7 +657,7 @@
 
 ### TASK-019: Add ReferenceAgentRuntimeResolver and prompt assembly tests
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
 - task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
 - depends on: [TASK-018]
@@ -686,7 +686,7 @@
 - done criteria:
   - Runtime resolver reference path is executable and tested without real model/provider calls.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-020: Add ReferenceSkillReadAuthorizer and readSkill tests
 
