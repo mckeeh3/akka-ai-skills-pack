@@ -984,7 +984,7 @@
 
 ### TASK-029: Add optional deterministic AgentBehaviorEditorAgent wrapper
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
 - task brief: none
 - depends on: [TASK-028]
@@ -1011,7 +1011,7 @@
 - done criteria:
   - Optional wrapper is implemented and tested, or intentionally deferred with a documented reason.
   - A git commit exists for the changes.
-- notes:
+- notes: Added a minimal deterministic `ReferenceAgentBehaviorEditorAgent` wrapper and focused tests showing structured proposal intent is handed to the deterministic behavior-editing helper without direct active-behavior mutation. Final hash reported in harness response.
 
 ### TASK-030: Update coverage matrix for executable behavior-editing reference
 
