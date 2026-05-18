@@ -723,7 +723,7 @@
 
 ### TASK-021: Add minimal managed reference agent invocation test
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
 - task brief: specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
 - depends on: [TASK-019, TASK-020]
@@ -754,7 +754,7 @@
 - done criteria:
   - Minimal managed reference agent invocation is executable and deterministic, or a narrowly justified follow-up is recorded if SDK integration is deferred.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-022: Add optional managed-agent HTTP/test-console reference surface
 
