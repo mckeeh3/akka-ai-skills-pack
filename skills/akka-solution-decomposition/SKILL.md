@@ -113,7 +113,7 @@ It must also tell the downstream implementation phase:
 
 For every new app/PRD/spec handled by this skill, load `core-saas-foundation` and include a `Core secure SaaS foundation` section before app-specific capability decomposition unless the user explicitly asks for non-SaaS reference material.
 
-That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests. Unknown provider-specific details may become questions, but they must not erase local authorization and tenancy contracts. Route complete invitation onboarding work to `akka-saas-invitation-onboarding` for InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests.
+That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation objects (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, authorized `readSkill(skillId)`), and tenant-isolation tests. Unknown provider-specific details may become questions, but they must not erase local authorization, tenancy, managed-agent behavior, prompt/skill governance, trace, or tool-boundary contracts. Route complete invitation onboarding work to `akka-saas-invitation-onboarding` for InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests.
 
 ### 2. Interpret AI-first operating model
 
@@ -251,7 +251,7 @@ The secure foundation is mandatory; this step refines provider-specific and deli
 ### 13. Generate the implementation order
 
 Prefer this order unless requirements force another:
-1. core secure SaaS foundation: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with a concrete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, admin UI surfaces, support-access, billing boundary, and security/admin tests before app-specific domain features
+1. core secure SaaS foundation before app-specific domain features: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with a concrete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, support-access, and billing boundary; then concrete managed-agent foundation tasks for `AgentDefinition` lifecycle/profile, `PromptDocument`/`PromptVersion` governance, `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest` and compact manifest assembly, authorized `readSkill(skillId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent (`AgentBehaviorEditorAgent`) proposal flow, agent catalog/detail UI, prompt/skill/manifest/tool-boundary UI, trace UI, AI admin responsibilities (for example one governed `UserAdminAgent` with admin skills or specialized agents such as AccessReviewAgent and AdminRiskAgent), decision cards for risky admin actions, and security/admin/agent-governance/UI tests
 2. AI-first object model, authority boundaries, policies, trace/outcome records, and domain invariants
 3. stateful app-specific core components: entities and workflows
 4. views
@@ -506,6 +506,11 @@ Load:
 - `akka-agents`
 
 Then add only what is needed:
+- `akka-agent-behavior-profiles` for `AgentDefinition`, lifecycle, authority, tool-boundary references, agent catalog, and agent detail
+- `akka-agent-governed-documents` for governed behavior document lifecycle and editing-agent proposal surfaces
+- `akka-agent-prompt-governance` for `PromptDocument`/`PromptVersion`, deterministic prompt assembly, `PromptAssemblyTrace`, and prompt governance UI
+- `akka-agent-skill-governance` for `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, compact manifest prompt context, authorized `readSkill(skillId)`, `SkillLoadTrace`, and skill/manifest/tool-boundary UI
+- `akka-agent-work-trace` for `AgentWorkTrace`, trace search/detail UI, and agent authorization/data/tool trace records
 - `akka-agent-component`
 - `akka-agent-structured-responses`
 - `akka-agent-tools`
@@ -557,6 +562,7 @@ Use this exact response shape whenever the task starts from requirements:
 - `/api/me` and AuthContext:
 - backend authorization:
 - tenant/customer isolation:
+- governed runtime agents: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals, agent catalog/detail UI, and prompt/skill/manifest/tool-boundary UI
 - audit and security tests:
 
 ## Capability summary
@@ -627,6 +633,7 @@ Before moving from planning to coding, verify:
 - delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
 - governed capabilities were derived before Akka component selection
 - every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests, or an explicit open question
+- the core foundation implementation order includes separate managed-agent work for behavior profiles, prompt governance, skill governance/manifests/readSkill, trace records, behavior editing agent proposals, agent governance UI, and tests before app-specific domain features
 - every user-facing capability maps to at least one concrete component/surface or an explicit decision not to add one
 - each chosen component has a clear capability responsibility and owning package
 - entity type decisions are justified

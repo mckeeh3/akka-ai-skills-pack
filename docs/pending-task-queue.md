@@ -70,7 +70,7 @@ Choose one format per project and keep it consistent. When using module-oriented
 
 ## Required queue shape
 
-Use this structure. For SaaS app queues, the first runnable tasks must cover the secure user-admin foundation before app-specific domain features and must not collapse this work into a vague `auth/admin` item. Split foundation work into bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests.
+Use this structure. For SaaS app queues, the first runnable tasks must cover the secure user-admin and governed runtime agent foundation before app-specific domain features and must not collapse this work into a vague `auth/admin` or `agent governance` item. Split foundation work into bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, `AgentDefinition` lifecycle/profile, `PromptDocument`/`PromptVersion` governance and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, authorized `readSkill(skillId)`, `SkillLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents, AI admin agents such as AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, agent catalog/detail, prompt/skill/manifest/tool-boundary UI surfaces, trace UI, and security/admin/agent-governance tests.
 
 ```md
 # Pending Tasks
@@ -95,6 +95,10 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - specs/backlog/01-<slice>-build-backlog.md
   - specs/tasks/01-<slice>/01-<task>.md
   - docs/ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
+  - skills/akka-agent-behavior-profiles/SKILL.md when the task implements AgentDefinition, lifecycle, authority, agent catalog, or agent detail
+  - skills/akka-agent-prompt-governance/SKILL.md when the task implements PromptDocument, PromptVersion, prompt assembly, PromptAssemblyTrace, or prompt governance UI
+  - skills/akka-agent-skill-governance/SKILL.md when the task implements SkillDocument, SkillVersion, AgentSkillManifest, readSkill, SkillLoadTrace, or skill/manifest/tool-boundary UI
+  - skills/akka-agent-work-trace/SKILL.md when the task implements AgentWorkTrace or agent trace search/detail UI
 - skills:
   - <skill-name>
   - ai-first-saas when the task must preserve AI-first operating-model semantics
@@ -108,6 +112,7 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - <optional assumptions, constraints, provenance, or links>
   - source requirement ids: <optional stable requirement IDs when available>
   - source capability ids: <optional app-description capability IDs when available>
+  - foundation scope: <optional AgentDefinition/PromptDocument/SkillDocument/AgentSkillManifest/readSkill/PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace scope for managed-agent foundation tasks>
   - supersedes: <optional task IDs this task replaces>
   - superseded by: <optional replacement task ID when this task is superseded>
 ```

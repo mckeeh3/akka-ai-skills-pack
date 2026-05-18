@@ -118,7 +118,7 @@ For smaller plans, or when preserving an existing project shape, create numbered
 - `specs/slices/02-<slice-name>.md`
 - `specs/slices/03-<slice-name>.md`
 
-For SaaS app PRDs, the first slice must be a full-stack secure foundation slice unless the task is explicitly non-SaaS reference material. It must cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, mandatory AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend secret-boundary tests before CRM/domain-specific slices.
+For SaaS app PRDs, the first slice must be a full-stack secure foundation slice unless the task is explicitly non-SaaS reference material. It must cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, governed runtime agent foundation work (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, deterministic prompt assembly, authorized `readSkill(skillId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`), behavior editing agent proposals, agent catalog/detail, prompt/skill/manifest/tool-boundary UI, mandatory AI admin responsibilities (for example one governed `UserAdminAgent` with admin skills or specialized agents such as AccessReviewAgent and AdminRiskAgent), decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend secret-boundary/agent-governance tests before CRM/domain-specific slices.
 
 Do not create both `specs/slices/` and `specs/sprints/` for new planning output unless project history requires it.
 
@@ -195,7 +195,7 @@ Start with the same architecture reasoning as `akka-solution-decomposition` and 
 The master plan must include:
 1. Inputs
 2. AI-first interpretation: objective, delegated work, retained human authority, durable substrate objects, governance/approval needs, supervision UI, audit/trace needs, and outcome loop when applicable
-3. Core secure SaaS foundation: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests
+3. Core secure SaaS foundation: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals), and tenant-isolation/agent-governance tests
 4. Capability inventory: stable ids/names, classes, actors/callers, AuthContext and scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected exposure surfaces or explicit non-exposure, and required tests
 5. Capability-to-component mapping
 6. Chosen components
@@ -327,7 +327,7 @@ Create or update:
 Use `../../docs/pending-task-queue.md` as the queue contract.
 
 The queue must:
-- start with runnable full-stack secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend tests
+- start with runnable full-stack secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin invite UI/APIs, concrete managed-agent tasks for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, deterministic prompt assembly, authorized `readSkill(skillId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposal flow, agent catalog/detail UI, prompt/skill/manifest/tool-boundary UI, AI admin responsibilities, decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend/agent-governance tests
 - contain one task for each bounded, unblocked item in each backlog's `Suggested harness task breakdown`
 - block or omit work still gated by unresolved `blocking` questions in `specs/pending-questions.md`
 - use stable task IDs such as `TASK-001`, `TASK-002`, `TASK-003`
@@ -491,7 +491,7 @@ Each `specs/backlog/*.md` file should contain:
 - Done criteria
 - Explicit defer list
 
-For the first SaaS foundation backlog, the `Suggested harness task breakdown` must split user-admin foundation work into concrete tasks instead of one vague `auth/admin` item. Include bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests before app-specific domain features.
+For the first SaaS foundation backlog, the `Suggested harness task breakdown` must split user-admin and governed runtime agent foundation work into concrete tasks instead of one vague `auth/admin` or `agent governance` item. Include bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance and prompt assembly/`PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, compact manifest assembly and authorized `readSkill(skillId)`/`SkillLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace` search/detail, behavior editing agent proposal/review flow, AI admin responsibilities such as AdminRiskAgent and AccessReviewAgent or a skilled `UserAdminAgent`, decision cards for risky admin actions, admin/agent-governance UI surfaces, and security/admin/agent-governance tests before app-specific domain features.
 
 ## Required content for the pending question queue
 
@@ -527,7 +527,7 @@ Create this queue only when open decisions are meaningful enough to affect plann
 - done criteria
 - notes when useful
 
-Create queue tasks from backlog `Suggested harness task breakdown` items, not from every class name. A queue task should be one focused harness implementation run. For SaaS foundation work, never collapse invitation lifecycle, email delivery, user directory/search, membership/role management, admin audit/search, access review queues, AI admin, decision cards for risky admin recommendations, admin UI, and security/admin tests into a single broad `auth/admin` queue item.
+Create queue tasks from backlog `Suggested harness task breakdown` items, not from every class name. A queue task should be one focused harness implementation run. For SaaS foundation work, never collapse invitation lifecycle, email delivery, user directory/search, membership/role management, admin audit/search, access review queues, `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, behavior editing agents, AI admin, decision cards for risky admin recommendations, admin/agent-governance UI, and security/admin/agent-governance tests into a single broad `auth/admin` or `agent governance` queue item.
 
 ## Anti-patterns
 
@@ -552,7 +552,7 @@ Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
 - `core-saas-foundation` was applied and `specs/cross-cutting/01-auth-tenancy-audit.md` plus a first foundation sprint/slice were created for SaaS apps
-- first runnable pending tasks implement the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent), decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend tests
+- first runnable pending tasks implement the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, managed-agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent flow), AI admin responsibilities, decision cards for risky admin actions, audit, frontend shell/context selection/admin/agent-governance surfaces, and tenant-isolation/frontend/agent-governance tests
 - high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition
 - AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
 - module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered
@@ -566,7 +566,7 @@ Before finishing, verify:
 - pending tasks include required reads, skills, expected outputs, checks, and done criteria
 - AI-first pending tasks include relevant AI-first reads/skills plus concrete Akka substrate skills
 - cross-cutting concerns are not duplicated excessively across modules, sprints, or slices
-- browser UI work has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created
+- browser UI work, including agent catalog/detail, prompt governance, skill governance, manifest management, tool-boundary, behavior editing proposal, and trace screens, has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created
 - each backlog supports bounded implementation work
 - optional task briefs exist when backlog items are still too broad
 - execution-order docs point to the correct files

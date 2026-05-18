@@ -6,7 +6,7 @@ Goal: decompose work into **vertical module sprints** that can be implemented an
 
 Before splitting modules, classify the generated product as full-stack secure AI-first SaaS by default: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision UI, audit traces, and outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
-For SaaS app planning, the first sprint or slice is always the full-stack core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin agents, decision cards for risky admin actions, mandatory admin UI surfaces, audit, frontend shell/context selection, and security/admin/frontend tests before app-specific CRM/domain features.
+For SaaS app planning, the first sprint or slice is always the full-stack core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, deterministic prompt assembly, authorized `readSkill(skillId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`), behavior editing agent proposal/review flow, agent catalog/detail, prompt/skill/manifest/tool-boundary UI, AI admin responsibilities, decision cards for risky admin actions, mandatory admin UI surfaces, audit, frontend shell/context selection, and security/admin/frontend/agent-governance tests before app-specific CRM/domain features.
 
 ## When to use
 
@@ -107,7 +107,7 @@ specs/backlog/02-purchase-request-core-build-backlog.md
 The backlog should break the sprint into harness-sized tasks. Prefer this order when applicable:
 
 1. secure foundation records and contracts: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, AuthContext, central authorization, audit metadata, and tenant/customer scope types
-2. WorkOS/JWT seam, `/api/me`, complete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents such as AdminRiskAgent and AccessReviewAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin tests
+2. WorkOS/JWT seam, `/api/me`, complete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, managed-agent foundation tasks for `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals, agent catalog/detail and governance UI, AI admin responsibilities such as AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin/agent-governance tests
 3. shared domain/API records for the app-specific module
 4. write model entity or workflow
 5. views/read models
@@ -129,7 +129,7 @@ Rules:
 - block only affected tasks, not the whole project
 - allow unblocked foundation or module work to continue
 - let unknown security-provider details block provider-specific WorkOS/JWT integration tasks, but not the foundation slice's local authorization contracts, Tenant/Customer boundaries, `/api/me` contract, audit model, or tenant-isolation test design
-- if no style guide is selected for generated AI-first SaaS, create a UI style-selection question and block web UI implementation tasks until answered
+- if no style guide is selected for generated AI-first SaaS, create a UI style-selection question and block web UI implementation tasks, including agent catalog/detail, prompt governance, skill governance, manifest management, tool-boundary, behavior editing proposal, and trace screens, until answered
 - for AI-first scope, create scoped questions when implementation would otherwise guess delegated authority, approval gates, policy/risk thresholds, evidence requirements, trace visibility, evaluation strategy, or outcome metrics
 
 ## Pending tasks

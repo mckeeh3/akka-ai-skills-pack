@@ -188,7 +188,7 @@
 
 ### TASK-006: Update solution and PRD planning to materialize managed-agent foundation work
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/03-planning-and-task-generation-build-backlog.md
 - task brief: none
 - depends on: [TASK-001, TASK-004]
@@ -220,7 +220,7 @@
 - done criteria:
   - New planning packages reliably generate managed-agent foundation work as separate foundation tasks.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; commit hash reported in harness response.
 
 ### TASK-007: Update task materialization skills to prevent vague agent-governance tasks
 
