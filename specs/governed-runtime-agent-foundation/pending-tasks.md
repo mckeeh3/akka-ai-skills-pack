@@ -857,3 +857,220 @@
   - A git commit exists for the final audit/repair.
 - notes:
   - Sprint 06 final audit passed. Verification and focused governed-agent tests passed; no contradiction repairs were needed. Remaining executable agent gaps are recorded in `docs/agent-coverage-matrix.md` cleanup backlog. Final commit hash reported in harness response.
+
+### TASK-025: Add behavior-editing reference records and fixtures
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+- task brief: none
+- depends on: [TASK-024]
+- required reads:
+  - AGENTS.md
+  - specs/governed-runtime-agent-foundation/sprints/07-executable-behavior-editing-sprint.md
+  - specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/ReferenceAgentFoundationFixtures.java
+- skills:
+  - akka-agent-behavior-editing
+  - akka-agent-governed-documents
+  - akka-agent-testing
+- expected outputs:
+  - Add minimal immutable reference records under `src/main/java/com/example/domain/agentfoundation/` for behavior edit requests, proposed document diffs, behavior edit proposals, risk classification, review decisions, and behavior edit trace facts.
+  - Extend fixtures with safe wording-change, skill-edit, manifest-addition, tool-boundary-expansion, authority-expansion, and cross-tenant behavior-change requests.
+  - Keep the records reference-only and independent of production SaaS state.
+- required checks:
+  - `rg -n "ReferenceBehaviorChangeRequest|ReferenceProposedDocumentDiff|ReferenceBehaviorEditProposal|ReferenceBehaviorEditRisk|ReferenceBehaviorEditDecision|ReferenceBehaviorEditTrace" src/main/java/com/example/domain/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -DskipTests compile`
+  - `git diff --check`
+- done criteria:
+  - Behavior-editing records and fixtures compile and support follow-on proposal tests.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-026: Add behavior editor proposal helper and prompt/skill diff tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+- task brief: none
+- depends on: [TASK-025]
+- required reads:
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-behavior-editing
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-testing
+- expected outputs:
+  - Add `ReferenceAgentBehaviorEditor` or equivalent helper that accepts behavior change requests and produces proposed prompt/skill diffs without mutating active prompt or skill versions.
+  - Add trace emission through existing or extended `ReferenceTraceSink`.
+  - Add tests for safe wording prompt proposal, skill-guidance proposal, affected artifact selection, no active mutation, and behavior edit trace creation.
+- required checks:
+  - `rg -n "ReferenceAgentBehaviorEditor|proposed diff|no active mutation|BehaviorEditTrace|PromptDocument|SkillDocument" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceAgentBehaviorEditorTest test`
+  - `git diff --check`
+- done criteria:
+  - Prompt/skill edit proposal flow is executable and tested.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-027: Add manifest and tool-boundary proposal risk classification tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+- task brief: none
+- depends on: [TASK-026]
+- required reads:
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-behavior-editing
+  - akka-agent-tool-boundaries
+  - akka-agent-skill-governance
+  - ai-first-saas-decision-cards
+- expected outputs:
+  - Extend behavior editor helper to classify manifest additions, skill assignment changes, tool-boundary expansions, data/tool authority expansion, and approval-required risk.
+  - Add tests proving low-risk manifest metadata changes remain proposals, while new tool/data/authority expansion escalates to decision-card-required status.
+  - Ensure prompt/skill text alone cannot grant authority.
+- required checks:
+  - `rg -n "manifest|tool-boundary|ToolPermissionBoundary|authority expansion|decision-card|required|cannot grant authority" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceAgentBehaviorEditorTest test`
+  - `git diff --check`
+- done criteria:
+  - Manifest/tool-boundary behavior-editing risks are classified and tested.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-028: Add behavior edit proposal review and trace tests
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+- task brief: none
+- depends on: [TASK-027]
+- required reads:
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-behavior-editing
+  - ai-first-saas-decision-cards
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - Add `ReferenceBehaviorEditReviewService` or equivalent helper for approve, reject, request changes, and escalate decisions.
+  - Tests must prove approval does not directly mutate active runtime records in this reference slice, rejection/request-changes preserve proposal history, escalation is required for authority expansion, and trace facts are emitted for each review outcome.
+- required checks:
+  - `rg -n "ReferenceBehaviorEditReview|approve|reject|request changes|escalate|BehaviorEditTrace|does not.*mutate" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation`
+  - `mvn -q -Dtest=ReferenceBehaviorEditReviewServiceTest,ReferenceAgentBehaviorEditorTest test`
+  - `git diff --check`
+- done criteria:
+  - Behavior-edit review/approval semantics are executable and tested.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-029: Add optional deterministic AgentBehaviorEditorAgent wrapper
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+- task brief: none
+- depends on: [TASK-028]
+- required reads:
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-component/SKILL.md
+  - skills/akka-agent-structured-responses/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-behavior-editing
+  - akka-agent-component
+  - akka-agent-structured-responses
+  - akka-agent-testing
+- expected outputs:
+  - Add a minimal `ReferenceAgentBehaviorEditorAgent` wrapper only if it remains small and deterministic.
+  - It should return structured proposal intent/classification that is handed to the reference helper, not directly mutate active behavior.
+  - If a Java Agent wrapper is too large or redundant, document why the deterministic helper coverage is sufficient and defer wrapper implementation explicitly.
+- required checks:
+  - If wrapper added: `rg -n "ReferenceAgentBehaviorEditorAgent|responseConformsTo|BehaviorEditProposal|TestModelProvider" src/main/java/com/example/application/agentfoundation src/test/java/com/example/application/agentfoundation` and run focused test.
+  - If deferred: `rg -n "ReferenceAgentBehaviorEditorAgent|deferred|deterministic helper" docs/agent-coverage-matrix.md specs/governed-runtime-agent-foundation`
+  - `git diff --check`
+- done criteria:
+  - Optional wrapper is implemented and tested, or intentionally deferred with a documented reason.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-030: Update coverage matrix for executable behavior-editing reference
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+- task brief: none
+- depends on: [TASK-028, TASK-029]
+- required reads:
+  - docs/agent-coverage-matrix.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - src/main/java/com/example/domain/agentfoundation/
+  - src/main/java/com/example/application/agentfoundation/
+  - src/test/java/com/example/application/agentfoundation/
+- skills:
+  - akka-agent-behavior-editing
+  - akka-agent-testing
+- expected outputs:
+  - Update the behavior-editing row in `docs/agent-coverage-matrix.md` to reference executable records/helpers/tests.
+  - Update governed runtime testing row if behavior-editing proposal flow is now covered.
+  - Update cleanup backlog to remove or refine the behavior-editing follow-up item.
+- required checks:
+  - `rg -n "ReferenceAgentBehaviorEditor|ReferenceBehaviorEditReview|ReferenceBehaviorChangeRequest|ReferenceAgentBehaviorEditorTest|ReferenceBehaviorEditReviewServiceTest" docs/agent-coverage-matrix.md`
+  - `git diff --check`
+- done criteria:
+  - Coverage matrix accurately reflects behavior-editing executable coverage and remaining gaps.
+  - A git commit exists for the changes.
+- notes:
+
+### TASK-031: Final audit for executable behavior-editing sprint
+
+- status: pending
+- source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+- task brief: none
+- depends on: [TASK-030]
+- required reads:
+  - specs/governed-runtime-agent-foundation/sprints/07-executable-behavior-editing-sprint.md
+  - specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
+  - specs/governed-runtime-agent-foundation/pending-tasks.md
+  - docs/agent-coverage-matrix.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - tools/verify-opinionated-ai-first-saas-pack.sh
+- skills:
+  - akka-agent-behavior-editing
+  - akka-agent-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - Run final consistency audit for Sprint 07.
+  - Repair contradictions between docs, matrix, reference code, and tasks.
+  - Mark completed Sprint 07 tasks done if prior sessions missed queue updates, preserving history.
+  - Record any remaining behavior-editing or improvement-loop gaps for a future sprint.
+- required checks:
+  - `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - `mvn -q -Dtest=ReferenceAgentBehaviorEditorTest,ReferenceBehaviorEditReviewServiceTest test`
+  - `rg -n "ReferenceAgentBehaviorEditor|ReferenceBehaviorEditReview|BehaviorEditTrace|authority expansion|proposed diff" docs skills specs/governed-runtime-agent-foundation src/main/java src/test/java`
+  - `git status --short`
+  - `git diff --check`
+- done criteria:
+  - Sprint 07 audit passes.
+  - Remaining agent gaps are explicitly recorded.
+  - A git commit exists for the final audit/repair.
+- notes:
