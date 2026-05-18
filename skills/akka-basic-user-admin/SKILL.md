@@ -115,7 +115,7 @@ APP_BASE_URL="http://localhost:9000"
 WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 ```
 
-Invite-email delivery settings are backend-only and mandatory for production readiness unless an accepted provider decision supplies equivalent delivery:
+Invite-email delivery settings are backend-only and mandatory for production readiness. Use Resend (resend.com) by default unless an accepted provider override decision supplies equivalent delivery:
 
 ```bash
 RESEND_API_KEY="re_xxxxxxxxx"
@@ -131,7 +131,7 @@ Bootstrap rules:
 - create missing invited/admin users idempotently
 - create Invitation records with expiry, delivery status, delivery attempts, and audit metadata
 - send invite emails in production or capture them in the local/dev/test outbox adapter
-- block production readiness when email delivery configuration is missing
+- block production readiness when Resend configuration is missing unless an explicitly selected alternate provider is configured
 - update only allowed bootstrap-managed fields on repeated startup
 - never expose bootstrap secrets to frontend assets
 - surface invalid bootstrap or email provider config clearly at startup or in operational status
@@ -210,7 +210,7 @@ Add tests for:
 - customer admin cannot manage tenant-wide users
 - tenant/customer-scoped list queries cannot leak cross-scope rows and preserve cross-scope filtering guarantees
 - tenant admin cannot grant `SAAS_OWNER_ADMIN` or other out-of-scope capabilities
-- production readiness blocks missing email delivery configuration or equivalent accepted provider decision
+- production readiness blocks missing Resend configuration unless an explicitly selected alternate provider has equivalent configuration
 - local/dev/test invite adapter captures outbound messages in an outbox without external delivery
 - invite send, resend, revoke/cancel, expiry, acceptance, replayed acceptance, duplicate email handling, delivery failure, and delivery-attempt audit behavior
 - user directory list/search filters by authorized scope and does not require caller-supplied user IDs

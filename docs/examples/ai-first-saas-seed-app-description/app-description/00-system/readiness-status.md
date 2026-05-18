@@ -10,13 +10,14 @@
   - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
 - not yet fully ready for:
   - complete code generation of all phases at once
-  - production authentication integration without provider decision
+  - production WorkOS authentication setup values and Resend invite-email setup values
 - decisive reasons:
   - app class, SaaS foundation, complete invitation onboarding, full admin user management, AI-assisted admin offload, UI surfaces, security posture, and Akka component mapping are defined
   - selected UI design, light/dark/system mode, lightweight style constraints, AI-first surface semantics, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
   - enough structure exists to plan implementation phases and generate initial scaffolding
 - blocking gaps before full code generation:
-  - choose concrete authentication provider mode for runnable local development and cloud deployment
+  - choose concrete WorkOS/JWT mode for runnable local development and cloud deployment
+  - provide Resend production invite-email settings or record an explicit alternate-provider override
   - choose first implementation slice boundary
   - confirm persistence model expectations for local test execution
   - confirm whether MCP and gRPC are in v1 or deferred examples

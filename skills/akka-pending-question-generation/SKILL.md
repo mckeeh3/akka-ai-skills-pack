@@ -70,7 +70,7 @@ Do not read the entire codebase. This skill is about planning decisions, not imp
 
 ## Question discovery rules
 
-Do not ask security-provider setup questions in a way that blocks the core model itself. Unknown WorkOS or alternate-provider details may block provider-specific integration tasks, but must not block modeling Tenant/Customer boundaries, local Account/Membership/Role/Permission authorization, AuthContext, `/api/me`, AdminAuditEvent, tenant/customer-scoped commands and queries, or tenant-isolation tests.
+Do not ask security-provider setup questions in a way that blocks the core model itself. WorkOS is the default browser authentication provider and Resend (resend.com) is the default production invite-email provider. Unknown WorkOS setup values, missing Resend settings, or explicit alternate-provider details may block only provider-specific integration tasks; they must not block modeling Tenant/Customer boundaries, local Account/Membership/Role/Permission authorization, AuthContext, `/api/me`, AdminAuditEvent, tenant/customer-scoped commands and queries, or tenant-isolation tests.
 
 Create questions only when the answer can change one or more of:
 - AI-first operating model: delegated work, retained human authority, supervision mode, or outcome loop

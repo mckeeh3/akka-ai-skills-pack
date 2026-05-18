@@ -72,7 +72,7 @@ Use it for:
 
 Treat security as part of the app's authoritative meaning, not as a later implementation hardening step.
 
-For every generated SaaS app, start from the `core-saas-foundation` baseline: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, tenant/customer scoping, and tenant isolation. Provider-specific unknowns may remain questions, but local authorization, tenancy, audit, and denial semantics are mandatory.
+For every generated SaaS app, start from the `core-saas-foundation` baseline: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, tenant/customer scoping, and tenant isolation. WorkOS is the default browser authentication provider and Resend (resend.com) is the default production invite-email provider. Provider setup values or explicit non-default provider choices may remain questions, but local authorization, tenancy, audit, and denial semantics are mandatory.
 
 This skill should define:
 - who the actors are
@@ -189,7 +189,7 @@ Basic administration is part of the secure SaaS foundation for generated SaaS ap
 - SaaS Owner, Tenant Admin, Customer Admin, and user/member roles appropriate to the scope
 - scope boundaries such as SaaS Owner platform metadata, tenant id, customer id, support-access tenant scope, or self
 - startup admin bootstrap source, such as `ADMIN_USERS`, and how it creates the first SaaS Owner or Tenant admin without creating a permanent bypass
-- complete email-invite onboarding and first-login account-linking behavior: production delivery configuration is required, local/dev/test must use an explicit captured outbox adapter, failed delivery must be visible/auditable, and `/api/me` must link only through a valid invitation or accepted membership policy
+- complete email-invite onboarding and first-login account-linking behavior: Resend production delivery configuration is required by default, local/dev/test must use an explicit captured outbox adapter, failed delivery must be visible/auditable, and `/api/me` must link only through a valid invitation or accepted membership policy
 - disabled-user behavior and inactive-membership denial
 - server-side checks and AdminAuditEvent records for every admin operation
 

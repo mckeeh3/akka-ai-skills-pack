@@ -12,9 +12,9 @@ Required lifecycle:
 
 1. An authorized admin creates an invitation for a target SaaS Owner, Tenant, or Customer scope.
 2. Backend normalizes target email, validates requested roles/capabilities, creates or reuses local `Account` and `Membership` intent in `INVITED` state, and stores an `Invitation` with token hash or acceptance context, expiry, delivery status, delivery attempts, idempotency key, inviter, reason, and policy references.
-3. `InvitationWorkflow` enqueues email delivery through a configured production provider or an explicit safe captured-outbox adapter for local/dev/test.
+3. `InvitationWorkflow` enqueues email delivery through Resend (resend.com) by default for production or an explicit safe captured-outbox adapter for local/dev/test; alternate production providers require an accepted override decision.
 4. Delivery success or failure updates `InvitationView` and emits `AdminAuditEvent`; failed delivery remains visible to scoped admins.
-5. Admins may resend or revoke only within their authority boundary. Resend is idempotent and records resend count; revoke prevents later acceptance and suspends pending membership activation.
+5. Admins may resend or revoke only within their authority boundary. The resend-invite action is idempotent and records resend count; revoke prevents later acceptance and suspends pending membership activation.
 6. Expiry/reminder timers are stable and retry-safe. Expiry of already accepted, revoked, or expired invitations is a terminal no-op.
 7. First login through `/api/me` or an acceptance endpoint validates the WorkOS JWT plus invitation token/acceptance context, target email, tenant/customer scope, invitation status, membership policy, and expiry before linking the WorkOS subject.
 8. Acceptance activates the local account and scoped membership only when invitation and membership policy are still valid; replay by the same linked subject is idempotent, and replay by another subject is forbidden.
@@ -65,4 +65,4 @@ High-impact billing actions such as suspension, reactivation, cancellation, grac
 
 ## Readiness implications
 
-Future generation remains blocked until invitation lifecycle, captured-outbox or provider decision, scoped admin read models, support-access lifecycle, billing-safe data boundary, admin audit facts, and tests for no privileged self-registration are defined in implementation specs and acceptance tests.
+Future generation remains blocked until invitation lifecycle, Resend production delivery or local captured-outbox behavior, scoped admin read models, support-access lifecycle, billing-safe data boundary, admin audit facts, and tests for no privileged self-registration are defined in implementation specs and acceptance tests; alternate production providers require an accepted override decision.

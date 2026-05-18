@@ -35,11 +35,13 @@ Read these first when implementing invitation onboarding:
 ## Mandatory outcome
 
 Complete email-invite onboarding is mandatory for generated SaaS foundations:
-- production readiness requires configured email delivery or an accepted provider decision;
+- production readiness defaults to Resend (resend.com) for configured email delivery; use another provider only when the project explicitly records an accepted override decision;
 - local/dev/test must use an explicit safe captured-outbox adapter when external delivery is unavailable;
-- missing provider configuration blocks production readiness rather than silently omitting onboarding;
+- missing Resend configuration blocks production readiness rather than silently omitting onboarding, unless an explicitly selected alternate provider is configured;
 - failed delivery is visible to authorized admins and auditable;
 - first-login linking and `/api/me` activation require a valid invitation, invite token, acceptance context, or explicit membership policy.
+
+Default production configuration uses backend-only Resend settings such as `RESEND_API_KEY`, `INVITE_EMAIL_FROM`, and `INVITE_EMAIL_SUBJECT`. Never require a provider-selection question just to proceed with the default; ask only when the user wants a non-Resend provider or the app has provider-specific constraints.
 
 ## Core components
 
@@ -49,7 +51,7 @@ Recommended Akka substrate:
 |---|---|
 | `Invitation` entity or audit-grade record | Authoritative invite intent, target email/scope/roles, status, token hash or acceptance context, expiry, delivery status, delivery attempts, idempotency key, and audit metadata. Use Event Sourced Entity when lifecycle history is first-class; use a Key Value Entity only when AdminAuditEvent captures immutable lifecycle facts. |
 | `InvitationWorkflow` | Durable invite orchestration: create local account/membership intent, enqueue delivery, wait for delivery/acceptance, handle resend/revoke/expire, link WorkOS subject on acceptance, activate membership, and emit audit facts. |
-| Email delivery/outbox `Consumer` | Consumes invitation delivery commands/events, sends through configured provider in production, captures into local/dev/test outbox, records provider ids, delivery status, delivery attempts, and failure details. |
+| Email delivery/outbox `Consumer` | Consumes invitation delivery commands/events, sends through Resend (resend.com) in production by default, captures into local/dev/test outbox, records provider ids, delivery status, delivery attempts, and failure details. |
 | Expiry/reminder `TimedAction` | Schedules invite expiry and optional reminder checks with stable names like `invitation-expire-<invitationId>` and `invitation-reminder-<invitationId>`. Obsolete timers must return done/no-op. |
 | `InvitationView` | Scoped admin read model for invitation list/search by tenant/customer, target email, status, delivery status, expiry, created time, inviter, and scope. Never expose raw tokens. |
 | Admin endpoints/UI | Invite, resend, revoke/cancel, view status, delivery failure detail, acceptance help, and audit links; enforce tenant/customer/admin scope server-side. |
@@ -68,13 +70,13 @@ Recommended Akka substrate:
 
 ### Delivery
 
-- Production sends through the configured provider and records provider/message ids.
+- Production sends through Resend (resend.com) by default and records provider/message ids; alternate providers require an explicit accepted override decision.
 - Local/dev/test writes to a captured outbox that tests and developers can inspect.
 - Delivery attempts are idempotent by invitation id plus attempt/retry key.
 - Failed delivery sets visible `DELIVERY_FAILED` state, records last error, and emits AdminAuditEvent.
 - Admins can retry/resend according to policy; resend may reuse or rotate acceptance context but must invalidate obsolete raw links when policy requires rotation.
 
-### Resend
+### Resend invite
 
 - Require current invite status to be resendable, usually `SENT`, `PENDING_DELIVERY`, or `DELIVERY_FAILED`, not `ACCEPTED`, `EXPIRED`, or `REVOKED`.
 - Reauthorize caller and target scope.
@@ -160,7 +162,7 @@ Include tenant/customer scope columns in every scoped row and endpoint query. En
 
 Add unit and integration tests for:
 - invite creation success with local account/membership intent;
-- production readiness failure when delivery provider configuration is missing;
+- production readiness failure when Resend (or explicitly selected alternate provider) configuration is missing;
 - local/dev/test captured outbox behavior;
 - email delivery success, provider id recording, delivery status, delivery attempts, and audit facts;
 - delivery failure visibility to admins and audit events;

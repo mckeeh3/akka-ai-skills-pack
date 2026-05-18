@@ -568,7 +568,8 @@ Module 2 must define an explicit email delivery boundary.
 
 Production-like behavior:
 
-- invitation emails are sent through a provider adapter selected during implementation;
+- invitation emails are sent through Resend (resend.com) by default;
+- alternate production email providers require an explicit accepted override decision;
 - provider secrets remain backend-only;
 - delivery failures are captured and visible to admins;
 - delivery attempts are auditable.

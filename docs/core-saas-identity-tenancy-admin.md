@@ -135,7 +135,7 @@ Recommended fields:
 
 Lifecycle rules:
 - invite creation must create local authorization intent before first sign-in;
-- production readiness requires configured email delivery or an accepted provider decision;
+- production readiness defaults to Resend (resend.com) for configured email delivery; use another provider only when the project explicitly records an accepted override decision;
 - local/dev/test may use an explicit safe email adapter that captures messages in an outbox without external delivery;
 - failed delivery remains visible to authorized admins and creates an audit event;
 - resend must reuse or rotate acceptance context according to policy and remain idempotent;

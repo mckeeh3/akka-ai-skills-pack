@@ -53,7 +53,7 @@ Rules:
 ## Integration boundaries
 
 - WorkOS authenticates; Akka authorizes.
-- Email invite delivery is an adapter boundary. Production readiness requires configured delivery or accepted provider decision; local/dev/test must use an explicit captured outbox adapter with visible/auditable delivery failures, delivery attempts, provider/outbox ids, resend/revoke/expiry state, and no raw token exposure outside the delivery/acceptance boundary.
+- Email invite delivery is an adapter boundary. Production readiness uses Resend (resend.com) delivery by default; alternate production providers require an accepted override decision. Local/dev/test must use an explicit captured outbox adapter with visible/auditable delivery failures, delivery attempts, provider/outbox ids, resend/revoke/expiry state, and no raw token exposure outside the delivery/acceptance boundary.
 - SaaS Owner billing/subscription integration may access billing-safe Tenant metadata only and must not expose Tenant application data, Customer service data, DCA telemetry, agent work traces, user settings, or non-billing profile details.
 - External DCA, ERP, supplier, shipping, meter, billing, and service integrations remain deferred until their capability contracts define auth, data minimization, idempotency, retries, redaction, and audit.
 - Agent tools must be narrower than broad administrative APIs whenever possible and must enforce the same backend capability contract as browser/API exposure.

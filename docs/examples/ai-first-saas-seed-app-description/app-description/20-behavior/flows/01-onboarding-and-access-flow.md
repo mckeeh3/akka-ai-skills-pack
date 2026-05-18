@@ -5,7 +5,7 @@
 1. Tenant admin, Customer Admin, or SaaS Owner Admin invites a user within their authority boundary with one or more roles.
 2. System validates scope, role-grant authority, tenant/customer status, last-admin risk, duplicate email state, and idempotency key.
 3. System creates or reuses a pending invitation, records target email, roles, expiry, inviter, delivery status, delivery attempts, and emits an AdminAuditEvent.
-4. Email delivery/outbox sends the invite through the configured provider; local/dev/test uses an explicit captured outbox adapter.
+4. Email delivery/outbox sends the invite through Resend (resend.com) by default; local/dev/test uses an explicit captured outbox adapter; alternate production providers require an accepted override decision.
 5. Admin can view invitation status in InvitationView, resend invite after delivery failure or stale delivery, and revoke invite before acceptance.
 6. Delivery failure remains visible to admins with delivery status and delivery attempts; it is never silently treated as a successful invite.
 7. Expired invitations cannot be accepted and are marked by timed action; revoked invitations cannot be accepted and retain audit history.

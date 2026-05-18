@@ -10,7 +10,7 @@
   - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
 - not yet fully ready for:
   - complete code generation of all phases at once
-  - production authentication integration without provider decision
+  - production WorkOS authentication setup values and Resend invite-email setup values
 - UI readiness notes:
   - selected `atlas-ops-supervisory-console` style guide is recorded
   - light/dark/system mode and lightweight style constraints are defined
