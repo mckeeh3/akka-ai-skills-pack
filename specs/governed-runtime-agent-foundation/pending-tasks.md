@@ -1015,7 +1015,7 @@
 
 ### TASK-030: Update coverage matrix for executable behavior-editing reference
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/07-executable-behavior-editing-build-backlog.md
 - task brief: none
 - depends on: [TASK-028, TASK-029]
@@ -1038,7 +1038,7 @@
 - done criteria:
   - Coverage matrix accurately reflects behavior-editing executable coverage and remaining gaps.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-031: Final audit for executable behavior-editing sprint
 
