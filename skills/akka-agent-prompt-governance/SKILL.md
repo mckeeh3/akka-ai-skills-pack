@@ -30,6 +30,7 @@ Read these first if present:
 ## Use when the request mentions
 
 - runtime-managed system prompts that need governance
+- implementation-developed default system prompts that must be loaded as the initial governed prompt versions at install or tenant bootstrap
 - prompt editor, prompt review, prompt approval, or prompt activation
 - prompt version history, prompt diff, rollback, or deprecation
 - active prompt version for an `AgentDefinition`
@@ -159,6 +160,18 @@ Rules:
 - do not include raw secrets, provider tokens, or frontend-only trust claims;
 - include full skill text only after explicit `readSkill(skillId)` tool calls, not during initial assembly.
 
+## Initial seeded prompt versions
+
+When an app ships with implementation-developed default system prompts, load them through `akka-agent-seed-documents` into `PromptDocument`/`PromptVersion` state during first install or tenant bootstrap.
+
+Rules:
+- seed prompt content is packaged with the application artifact and validated by a seed manifest;
+- seed import creates the first approved/active prompt version only under an accepted deployment policy;
+- every seeded prompt version stores seed bundle id, source resource id, checksum, app/content version, import actor, timestamp, and correlation id;
+- seed import is idempotent and safe to retry;
+- app upgrades must not overwrite tenant-customized active prompts; create a proposed draft/diff when the tenant prompt diverged from prior seed checksum;
+- runtime assembly reads active governed `PromptVersion` records, never packaged seed files directly.
+
 ## Agent-mediated prompt maintenance
 
 Generated AI-first SaaS foundations default to prompt maintenance through an `AgentBehaviorEditorAgent` or equivalent editing-agent responsibility.
@@ -227,6 +240,7 @@ Before finishing, verify:
 - prompt assembly is deterministic and traceable
 - skill manifests are compact references, not full skill text
 - prompt text cannot grant data/tool permissions by itself
-- prompt lifecycle, assembly, and test actions emit audit/work trace events
+- prompt lifecycle, assembly, test actions, and first-install seed imports emit audit/work trace events
+- packaged default prompts are imported into governed storage before runtime use and upgrades preserve tenant-customized active prompt versions
 - AgentBehaviorEditorAgent prompt proposals, draft version creation, review/approval, activation, and rejection paths are tested
 - unauthorized authority expansion through prompt edits is denied, audited, and routed to review/approval when appropriate

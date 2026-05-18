@@ -15,9 +15,11 @@
 - AdminRiskAgent and RoleRecommendationAgent produce evidence, risk, confidence, alternatives, and decision cards for risky admin actions
 - AdminAuditSummaryAgent summarizes AdminAuditView search results with redacted details and audit trace links
 - governed `UserAdminAgent` can fulfill access-review, admin-risk-scoring, invitation-drafting, role-recommendation, support-access-review, and audit-summary responsibilities through approved `AgentSkillManifest` skills
+- first tenant bootstrap imports implementation-developed default `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, and `ToolPermissionBoundary` seed resources into governed storage as initial approved/active records with seed provenance and audit
 - authorized Agent Steward can create `AgentDefinition`, draft `PromptDocument`/`PromptVersion` and `SkillDocument`/`SkillVersion`, assign `AgentSkillManifest`, configure `ToolPermissionBoundary`, route approval, activate approved behavior, and invoke the active agent
 - runtime agent invocation creates `PromptAssemblyTrace`, authorized `readSkill(skillId)` creates `SkillLoadTrace`, and consequential recommendations/actions create `AgentWorkTrace`
 - AgentBehaviorEditorAgent creates a proposed diff with rationale, risk/impact notes, affected artifacts, draft version, and review/approval route
+- app upgrade seed import creates proposed diffs instead of overwriting tenant-customized prompt, skill, manifest, or tool-boundary active versions
 - active user can switch only among tenants where membership is active
 
 ## AI-first work management

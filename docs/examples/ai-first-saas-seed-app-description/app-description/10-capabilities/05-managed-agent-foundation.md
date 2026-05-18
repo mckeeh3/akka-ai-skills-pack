@@ -21,6 +21,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 - Tenant/customer-scoped `AgentDefinition` lifecycle: draft, active, disabled, archived, owner/steward, model reference, prompt reference, skill manifest reference, tool permission boundary reference, and authority level.
 - Governed prompt lifecycle: `PromptDocument`, `PromptVersion`, draft/proposed diff, review, approval, activation, rollback, checksum, status, and assembly preview.
 - Governed skill lifecycle: `SkillDocument`, `SkillVersion`, compact manifest hint, full skill text, review, approval, activation/deprecation, and tenant/customer visibility.
+- First-install/tenant-bootstrap default document loading: implementation-developed default `AgentDefinition`, prompt, skill, manifest, and tool-boundary seed resources are validated and imported into governed storage as the initial approved/active versions with checksums, provenance, idempotency, and audit.
 - `AgentSkillManifest` assignment that exposes only approved compact skill metadata to an agent until `readSkill(skillId)` is authorized.
 - `ToolPermissionBoundary` lifecycle for scoped tool/data permissions, policy citations, denial reasons, and approval-required authority expansion.
 - Runtime assembly contract: resolve active `AgentDefinition`, assemble active governed prompt, include compact skill manifest, authorize every `readSkill(skillId)`, and create `PromptAssemblyTrace` plus `SkillLoadTrace` records.
@@ -31,6 +32,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 
 - Prompt or skill content granting data, tool, tenant, role, or approval authority by itself.
 - Hidden static prompts or bundled skills that bypass governed document/version records for generated AI-first foundations.
+- Runtime agents reading packaged seed files directly after bootstrap instead of resolving active governed records.
 - Unreviewed direct text activation unless a tenant explicitly enables a separate restricted admin path with audit and approval controls.
 - Cross-tenant skill, prompt, manifest, tool-boundary, or trace visibility without SaaS Owner/support-access authority and audit.
 
@@ -48,7 +50,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 - permissions / named capability grants:
   - `tenant.agent.read`, `tenant.agent.manage`, `tenant.agent.disable`, `tenant.prompt.read`, `tenant.prompt.propose`, `tenant.prompt.approve`, `tenant.skill.read`, `tenant.skill.propose`, `tenant.skill.approve`, `tenant.manifest.manage`, `tenant.tool_boundary.manage`, `tenant.agent_trace.read`
 - inputs / validation / idempotency:
-  - commands include tenant/customer id, document or agent ids, expected version, idempotency key, correlation id, requested authority change, rationale, and risk classification where applicable
+  - commands include tenant/customer id, document or agent ids, expected version, idempotency key, correlation id, requested authority change, rationale, risk classification where applicable, and seed bundle/content version when importing implementation defaults
   - activation rejects stale expected versions, disabled owners, missing approval, checksum mismatch, unassigned skills, and tool-boundary expansion without approval
 - outputs / redaction / denial shape:
   - browser and agent responses expose behavior metadata, compact skill hints, effective grants, review status, trace ids, and redacted diffs
@@ -57,7 +59,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 - data access:
   - `AgentDefinition`, `PromptDocument`, `PromptVersion`, `SkillDocument`, `SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, decision cards, and AdminAuditEvent
 - side effects:
-  - create draft/proposed versions, route approvals, activate/rollback versions, disable/enable agents, assign manifests/tool boundaries, emit audit events, and persist traces
+  - import missing default seed documents on install/tenant bootstrap, create draft/proposed versions, route approvals, activate/rollback versions, disable/enable agents, assign manifests/tool boundaries, emit audit events, and persist traces
 - exposure surfaces:
   - browser UI for agent catalog/detail, prompt governance, skill governance, manifest and tool-boundary management, editing-agent proposals, and traces
   - protected HTTP APIs for governed document/version/manifest/boundary management and trace queries
@@ -79,7 +81,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 ## Audit and trace requirements
 
 - Audit events:
-  - document/version create, proposed diff, approval/rejection, activation, rollback, manifest assignment, tool-boundary change, agent disable/reactivate, authorized/denied `readSkill`, and runtime assembly
+  - seed bundle import, seeded document/version create, proposed diff, approval/rejection, activation, rollback, manifest assignment, tool-boundary change, agent disable/reactivate, authorized/denied `readSkill`, and runtime assembly
 - Work-trace fields:
   - agent id, prompt document/version, skill document/version ids, manifest id, tool-boundary id, caller AuthContext, tenant/customer id, policy citations, approval ids, correlation id, redaction marker, and checksum/version facts
 - Trace records:
@@ -90,9 +92,9 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 ## Required tests
 
 - success:
-  - authorized steward can create draft prompt/skill versions, assign an approved `AgentSkillManifest`, set a `ToolPermissionBoundary`, activate approved versions, invoke an active agent, and find `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`
+  - first tenant bootstrap imports implementation-developed default AgentDefinition, prompt v1, skill v1 records, AgentSkillManifest, and ToolPermissionBoundary into governed storage; authorized steward can create draft prompt/skill versions, assign an approved `AgentSkillManifest`, set a `ToolPermissionBoundary`, activate approved versions, invoke an active agent, and find `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`
 - validation:
-  - stale versions, checksum mismatch, missing references, invalid manifest entries, unknown skill ids, and missing idempotency keys are rejected safely
+  - stale versions, seed checksum mismatch, missing seed resources, missing references, invalid manifest entries, unknown skill ids, and missing idempotency keys are rejected safely
 - forbidden and tenant isolation:
   - cross-tenant artifact reads, unauthorized prompt/skill/tool changes, disabled-agent invocation, unassigned skill reads, and tool-boundary violations are denied without leaking artifact existence
 - approval:
@@ -100,7 +102,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 - audit/trace:
   - edit proposals, diff review, approval/rejection, activation/rollback, authorized `readSkill`, denied `readSkill`, prompt assembly, and consequential agent work create durable audit/trace records
 - regression:
-  - prompt or skill wording changes alone never grant new tool/data/authorization authority; manifest and tool-boundary enforcement remains authoritative after retries, replay, and projection rebuilds
+  - prompt or skill wording changes alone never grant new tool/data/authorization authority; manifest and tool-boundary enforcement remains authoritative after retries, replay, projection rebuilds, and seed re-imports; tenant-customized active prompt/skill content is not overwritten by app upgrade seed imports
 
 ## Linked layers
 

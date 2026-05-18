@@ -114,6 +114,9 @@ content:
     - id: akka-agent-governed-documents
       path: skills/akka-agent-governed-documents
       category: focused
+    - id: akka-agent-seed-documents
+      path: skills/akka-agent-seed-documents
+      category: focused
     - id: akka-agent-prompt-governance
       path: skills/akka-agent-prompt-governance
       category: focused
@@ -517,6 +520,7 @@ bundles:
       - akka-agent-behavior-profiles
       - akka-agent-behavior-editing
       - akka-agent-governed-documents
+      - akka-agent-seed-documents
       - akka-agent-prompt-governance
       - akka-agent-skill-governance
       - akka-agent-work-trace

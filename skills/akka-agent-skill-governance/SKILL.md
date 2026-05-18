@@ -32,6 +32,7 @@ Read these first if present:
 ## Use when the request mentions
 
 - governed agent skills or shared runtime skills
+- implementation-developed default skills that must be loaded as initial governed SkillDocument/SkillVersion records at install or tenant bootstrap
 - skill catalog, skill editor, skill review, skill activation, or skill version history
 - per-agent skill allowlist or `AgentSkillManifest`
 - compact skill manifest in the prompt
@@ -115,6 +116,20 @@ Prefer:
 - Views for skill catalog, active skill lookup, version history, diff inputs, review queues, agent manifests, and assigned-agent counts.
 - HTTP endpoints and web UI for skill catalog/editor/review/diff/manifest/test surfaces.
 - An `@FunctionTool` class for `readSkill(skillId)` that enforces tenant, agent, manifest, skill status, version, and mode checks.
+
+## Initial seeded skill versions and manifests
+
+When the app implementation defines default runtime skills and manifests, load them through `akka-agent-seed-documents` into governed storage during first install or tenant bootstrap.
+
+Rules:
+- package default skill text, compact manifest entries, and default manifest assignments with the app artifact;
+- validate seed manifest references, checksums, token limits, stable ids/slugs, and secret-like content before import;
+- create initial approved/active `SkillDocument`/`SkillVersion` records and `AgentSkillManifest` assignments only under an accepted deployment policy;
+- store seed bundle id, resource id, checksum, app/content version, import actor, timestamp, and correlation id on versions/manifests;
+- make seed import idempotent and safe to retry;
+- do not overwrite tenant-customized active skills or manifests on upgrade; create draft/proposed diffs instead;
+- treat new manifest entries and tool-boundary changes as governance-impacting, with approval required for authority expansion;
+- runtime `readSkill(skillId)` loads only governed active `SkillVersion` records, never packaged seed files directly.
 
 ## Compact skill manifest
 
@@ -253,6 +268,7 @@ A skill-loading test console should:
 
 Before finishing, verify:
 - SkillDocument/SkillVersion follow the governed document/version pattern
+- implementation-developed default skills and manifests are seeded into governed storage with provenance, idempotency, audit, and customization-preserving upgrade behavior
 - AgentSkillManifest is tenant-scoped and tied to AgentDefinition
 - prompt assembly includes compact manifest only
 - `readSkill(skillId)` enforces tenant, agent, manifest, status, version, and mode checks
