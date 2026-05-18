@@ -54,7 +54,7 @@
 
 ### TASK-002: Reframe admin agents as governed responsibilities and skilled agents
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/01-core-doctrine-and-routing-build-backlog.md
 - task brief: none
 - depends on: [TASK-001]
@@ -81,7 +81,7 @@
 - done criteria:
   - Guidance distinguishes required responsibilities from required agent-class count.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed; commit hash reported in harness response.
 
 ### TASK-003: Add behavior-editing agent guidance to prompt and skill governance
 

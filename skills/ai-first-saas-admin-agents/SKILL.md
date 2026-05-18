@@ -26,19 +26,21 @@ Read first:
 
 Then load component skills for the chosen substrate: `akka-workflows`, `akka-views`, `akka-http-endpoints`, and `akka-web-ui-apps` for admin queues, decision cards, and UI surfaces.
 
-## Mandatory admin offload agents
+## Mandatory admin offload responsibilities
 
-Initial generated SaaS foundations must include these bounded agent responsibilities or an explicitly equivalent design:
+Initial generated SaaS foundations must include these bounded admin offload responsibilities or an explicitly equivalent design. This is a requirement for capability coverage, not a requirement to create one physical agent class per row.
 
-| Agent | Single responsibility | Typical output |
+A small foundation may implement a single governed `UserAdminAgent` with an active `AgentDefinition` and an `AgentSkillManifest` that assigns focused skills such as `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`. Larger foundations may implement separate specialized agents such as `AccessReviewAgent` or `AdminRiskAgent` when separate lifecycle, model, prompt, tool boundary, steward, or scaling concerns justify it.
+
+| Responsibility | Typical specialized agent name | Typical output |
 |---|---|---|
-| `AccessReviewAgent` | Identify stale invitations, dormant access, orphaned admin coverage, risky role combinations, and overdue review items from scoped admin views. | Access-review recommendations and low-risk cleanup tasks. |
-| `AdminRiskAgent` | Score proposed admin actions such as role grants, support-access changes, tenant suspension, identity relink, and bulk operations. | Risk summary, policy triggers, confidence, alternatives, and required approval level. |
-| `InvitationDraftAgent` | Draft invite messages, onboarding notes, role rationale, and bulk invite preparation from authorized admin intent. | Draft invitation package, never raw token exposure. |
-| `RoleRecommendationAgent` | Recommend roles/capabilities for invited or existing users based on scoped job context and policy. | Role recommendation with evidence and least-privilege explanation. |
-| `SupportAccessReviewAgent` | Review support-access grants, expiry, purpose, usage, and revocation candidates. | Support-access risk findings and expiry/revoke recommendations. |
-| `AdminAuditSummaryAgent` | Summarize admin audit/search results for supervisors and auditors. | Audit summary with actor, target, scope, policy, decision-card, and trace links. |
-| `AdminPolicyProposalAgent` | Optional: draft policy, threshold, prompt, or permission-change proposals from repeated admin corrections. | Draft proposal only; activation requires governed human commit. |
+| Access review | `AccessReviewAgent` | Access-review recommendations and low-risk cleanup tasks for stale invitations, dormant access, orphaned admin coverage, risky role combinations, and overdue review items from scoped admin views. |
+| Admin risk scoring | `AdminRiskAgent` | Risk summary, policy triggers, confidence, alternatives, and required approval level for role grants, support-access changes, tenant suspension, identity relink, and bulk operations. |
+| Invitation drafting | `InvitationDraftAgent` | Draft invitation package, onboarding notes, role rationale, and bulk invite preparation from authorized admin intent; never raw token exposure. |
+| Role recommendation | `RoleRecommendationAgent` | Least-privilege role/capability recommendation with evidence and policy rationale for invited or existing users. |
+| Support-access review | `SupportAccessReviewAgent` | Support-access risk findings and expiry/revoke recommendations for grants, expiry, purpose, usage, and revocation candidates. |
+| Admin audit summary | `AdminAuditSummaryAgent` | Audit summary with actor, target, scope, policy, decision-card, and trace links for supervisors and auditors. |
+| Admin policy proposal drafting | `AdminPolicyProposalAgent` when enabled | Draft policy, threshold, prompt, or permission-change proposal only; activation requires governed human commit. |
 
 ## Autonomous actions allowed
 
@@ -104,7 +106,7 @@ Required tool rules:
 ## Akka substrate routing
 
 Use:
-- `akka-agents`, `akka-agent-tools`, and `akka-agent-structured-responses` for bounded recommendation, draft, risk, and summary agents;
+- `akka-agents`, `akka-agent-tools`, and `akka-agent-structured-responses` for bounded recommendation, draft, risk, and summary responsibilities, whether implemented as one governed `UserAdminAgent` with multiple assigned skills or as separate specialized agents;
 - `akka-agent-orchestration` plus `akka-workflows` for durable admin review flows, retries, approval gates, and multi-agent coordination;
 - `akka-views` and `akka-view-query-patterns` for UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView inputs;
 - `ai-first-saas-decision-cards` for high-risk admin approvals;
@@ -116,7 +118,7 @@ Use:
 ## Required tests
 
 Include tests for:
-- deterministic AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent outputs;
+- deterministic outputs for each required admin offload responsibility, either through one `UserAdminAgent` with assigned skills or through specialized AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent classes;
 - forbidden cross-tenant/customer tool access;
 - disabled caller and missing-capability denials;
 - last admin and bulk action recommendations becoming decision cards, not side effects;
@@ -128,7 +130,7 @@ Include tests for:
 ## Done criteria
 
 A generated SaaS foundation is incomplete if it has user administration but no AI-assisted admin offload. Before domain-specific features are considered generation-ready, verify:
-- all mandatory admin agents or equivalent bounded responsibilities are planned;
+- all mandatory admin offload responsibilities are planned and mapped either to one governed `UserAdminAgent` with an `AgentSkillManifest` or to equivalent bounded specialized agents;
 - autonomous actions and approval-required actions are explicit;
 - high-risk recommendations route to decision cards;
 - agent tools enforce AuthContext, scope, redaction, and audit mechanically;

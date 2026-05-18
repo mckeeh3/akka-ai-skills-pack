@@ -327,7 +327,7 @@ API rules:
 
 ## AI-first administration behavior
 
-Core administration should include AI-first features from the start. Generated foundations must manage these agents as governed runtime actors, not only as static code classes. Each foundation agent needs an active tenant-scoped `AgentDefinition`, approved active `PromptDocument`/`PromptVersion`, assigned `SkillDocument`/`SkillVersion` entries through an `AgentSkillManifest`, a deny-by-default `ToolPermissionBoundary`, and durable `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` records.
+Core administration should include AI-first features from the start. Generated foundations must manage admin offload as governed runtime behavior, not only as static code classes. Each physical foundation agent, including a consolidated `UserAdminAgent` when used, needs an active tenant-scoped `AgentDefinition`, approved active `PromptDocument`/`PromptVersion`, assigned `SkillDocument`/`SkillVersion` entries through an `AgentSkillManifest`, a deny-by-default `ToolPermissionBoundary`, and durable `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` records.
 
 ### Decision cards
 
@@ -353,16 +353,16 @@ Decision card fields:
 
 ### Mandatory AI-assisted admin offload
 
-The foundation must include bounded admin agents that recommend or draft work, not autonomously execute high-risk access changes.
+The foundation must include bounded admin offload responsibilities that recommend or draft work, not autonomously execute high-risk access changes. These responsibilities may be implemented by one governed `UserAdminAgent` with approved skills such as `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`, or by separate specialized agents when separate lifecycle, model, prompt, tool boundary, steward, or scaling concerns justify it.
 
-Required agents:
-- `AccessReviewAgent` identifies stale invited accounts, dormant admins, users with multiple high-privilege memberships, orphaned customer organizations with no active admin, and last-admin risks;
-- `AdminRiskAgent` scores proposed admin actions and produces risk, confidence, policy triggers, alternatives, and approval needs;
-- `InvitationDraftAgent` drafts invitation copy, role rationale, and bulk invite preparation without exposing raw tokens;
-- `RoleRecommendationAgent` recommends least-privilege roles/capabilities from scoped context;
-- `SupportAccessReviewAgent` reviews support memberships nearing expiry, unusual use, purpose, and revocation candidates;
-- `AdminAuditSummaryAgent` summarizes admin audit/search results with actor, target user, scope, policy, and trace links;
-- `AdminPolicyProposalAgent`, when enabled for policy governance, drafts policy/permission/threshold proposals only; human governance is required for commits.
+Required responsibilities:
+- access review, often `AccessReviewAgent`, identifies stale invited accounts, dormant admins, users with multiple high-privilege memberships, orphaned customer organizations with no active admin, and last-admin risks;
+- admin risk scoring, often `AdminRiskAgent`, scores proposed admin actions and produces risk, confidence, policy triggers, alternatives, and approval needs;
+- invitation drafting, often `InvitationDraftAgent`, drafts invitation copy, role rationale, and bulk invite preparation without exposing raw tokens;
+- role recommendation, often `RoleRecommendationAgent`, recommends least-privilege roles/capabilities from scoped context;
+- support-access review, often `SupportAccessReviewAgent`, reviews support memberships nearing expiry, unusual use, purpose, and revocation candidates;
+- admin audit summary, often `AdminAuditSummaryAgent`, summarizes admin audit/search results with actor, target user, scope, policy, and trace links;
+- policy proposal drafting, often `AdminPolicyProposalAgent` when enabled for policy governance, drafts policy/permission/threshold proposals only; human governance is required for commits.
 
 Agents may autonomously draft invites, summarize risk, recommend roles, identify stale/dormant access, prepare bulk invite drafts, create low-risk admin tasks, generate audit summaries, and create decision cards. They must not autonomously grant admin roles, remove last admin, expand support access, suspend tenants, bulk disable users, change policy/permissions, or access tenant/customer data outside authorized tool scope.
 
@@ -403,13 +403,14 @@ Record audit events for:
 | `SkillDocumentEntity` / `SkillVersionEntity` | Governed runtime skill lifecycle and immutable skill snapshots that can be assigned to agents. |
 | `AgentSkillManifestEntity` | Per-agent allowed skill manifest used as compact prompt context and as the authorization basis for `readSkill(skillId)`. |
 | `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace` | Durable trace records for prompt assembly, allowed/denied skill loads, and agent execution/tool/data decisions. |
-| `AccessReviewAgent` | Mandatory bounded agent that reads scoped access views and recommends stale/dormant access cleanup, last-admin risk review, and low-risk admin tasks. |
-| `AdminRiskAgent` | Mandatory read-only analysis and recommendation agent for risky admin actions. |
-| `InvitationDraftAgent` | Mandatory agent that drafts invite messages, role rationale, and bulk invite preparation without sending or exposing tokens. |
-| `RoleRecommendationAgent` | Mandatory least-privilege role/capability recommendation agent. |
-| `SupportAccessReviewAgent` | Mandatory support-access review agent for expiry, purpose, usage, and revocation recommendations. |
-| `AdminAuditSummaryAgent` | Mandatory audit/search summarization agent for supervisors and auditors. |
-| `AdminPolicyProposalAgent` | Conditional proposal-drafting agent for products that allow policy governance drafts; policy commits remain human-governed. |
+| `UserAdminAgent` | Optional consolidated governed agent that carries approved admin skills in its `AgentSkillManifest` for access review, admin risk scoring, invitation drafting, role recommendation, support-access review, and audit summaries. |
+| `AccessReviewAgent` | Optional specialized agent for the mandatory access-review responsibility: reads scoped access views and recommends stale/dormant access cleanup, last-admin risk review, and low-risk admin tasks. |
+| `AdminRiskAgent` | Optional specialized agent for the mandatory admin-risk responsibility: read-only analysis and recommendation for risky admin actions. |
+| `InvitationDraftAgent` | Optional specialized agent for the mandatory invitation-drafting responsibility: drafts invite messages, role rationale, and bulk invite preparation without sending or exposing tokens. |
+| `RoleRecommendationAgent` | Optional specialized agent for the mandatory role-recommendation responsibility: least-privilege role/capability recommendations. |
+| `SupportAccessReviewAgent` | Optional specialized agent for the mandatory support-access review responsibility: expiry, purpose, usage, and revocation recommendations. |
+| `AdminAuditSummaryAgent` | Optional specialized agent for the mandatory audit-summary responsibility: audit/search summaries for supervisors and auditors. |
+| `AdminPolicyProposalAgent` | Optional specialized agent for conditional policy-proposal responsibility when products allow policy governance drafts; policy commits remain human-governed. |
 | `AdminDecisionWorkflow` | Approval gate for risky admin changes and agent-generated decision cards. |
 
 ## Acceptance checklist
@@ -431,6 +432,6 @@ Record audit events for:
 - [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView are first-slice read models with required query filters, scoped query authorization, redaction, pagination, stale invite/access-review correctness, and audit trace completeness tests.
 - [ ] Risky admin actions can produce decision cards.
 - [ ] Governed runtime agent foundation is present for foundation agents: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
-- [ ] AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent are present or equivalently modeled.
+- [ ] Access-review, admin-risk-scoring, invitation-drafting, role-recommendation, support-access-review, and admin-audit-summary responsibilities are present, either through one governed `UserAdminAgent` with assigned skills or through specialized agents such as AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent.
 - [ ] Admin agents produce recommendations, drafts, audit summaries, and decision cards without unauthorized automatic changes.
 - [ ] Audit views can answer who changed what, in which scope, when, why, and under which policy.
