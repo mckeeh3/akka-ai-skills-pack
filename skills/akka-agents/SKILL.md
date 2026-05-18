@@ -123,6 +123,8 @@ Load the companion skill that matches the current task:
   - local `@FunctionTool` methods and external tool classes registered with `.tools(...)`
 - `akka-agent-tool-boundaries`
   - backend-enforced `ToolPermissionBoundary` grants, tool registry/catalog, read-only vs side-effecting authority, component/MCP/readSkill tool permission, approval-required expansion, runtime denied-tool semantics, and tool invocation traces
+- `akka-agent-model-governance`
+  - governed `ModelConfigRef`, model policy, tenant/agent/task model selection, fallback model policy, provider secret boundaries, model config audit/work traces, and forbidden provider/secret-exposure tests
 - `akka-agent-component-tools`
   - Views, entities, and workflows used as tools through `.tools(ComponentClass.class)`
 - `akka-agent-mcp-tools`
@@ -239,6 +241,8 @@ Repository examples:
 
 For protected or managed-agent tools, load `akka-agent-tool-boundaries` before exposing local, component, MCP, or `readSkill` tools so the implementation resolves `ToolPermissionBoundary`, denies ungranted tools, distinguishes read-only from side-effecting authority, requires approval for expansion, and emits tool invocation traces.
 
+For tenant-, agent-, task-, or mode-specific model selection, load `akka-agent-model-governance` so the implementation resolves `ModelConfigRef`, enforces model policy and fallback model policy, keeps provider secrets out of frontend/model-visible context, and emits model config/use traces before invocation.
+
 For model-loadable guidance that approximates harness skills inside an Akka service, load `akka-agent-harness-skills` in addition to `akka-agent-tools`.
 
 ### 9. Streaming agent
@@ -273,7 +277,7 @@ Before finishing, verify:
 - harness-like skill tools are whitelisted and backed by packaged resources or MCP, not arbitrary filesystem reads
 - structured response records are small and descriptive
 - workflow orchestration is used instead of agent-to-agent tool chaining
-- managed runtime agents have durable behavior profiles with tenant scope, lifecycle status, owner/steward, authority level, model references, tool permission boundaries, and active prompt/skill references
+- managed runtime agents have durable behavior profiles with tenant scope, lifecycle status, owner/steward, authority level, governed `ModelConfigRef`/model policy references, tool permission boundaries, and active prompt/skill references
 - governed behavior documents use tenant-scoped version history, immutable snapshots, checksums, approval/activation rules, protected diff/history surfaces, and audit events
 - AI-first agents have explicit authority boundaries, tenant/customer scope, required permissions, policy/approval gates, escalation criteria, and trace obligations
 - agent tools enforce backend authorization and audit before consequential data access or side effects

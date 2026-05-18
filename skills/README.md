@@ -423,6 +423,10 @@ Use when the agent should call local or external function tools.
 Use when managed agents need backend-enforced `ToolPermissionBoundary` grants, a tool registry/catalog, read-only vs side-effecting tool rules, component/MCP/readSkill tool authority, approval-required expansion, runtime denied-tool semantics, or tool invocation traces.
 - `akka-agent-tool-boundaries`
 
+### Model governance
+Use when managed agents need governed `ModelConfigRef` records, model policy, tenant/agent/task model selection, fallback model policy, provider secret boundaries, model config audit/work traces, or tests for forbidden provider/secret exposure.
+- `akka-agent-model-governance`
+
 ### Component tools
 Use when an agent should call selected Akka View, entity, or workflow capability surfaces as tools after the capability contract permits model-invoked access.
 - `akka-agent-component-tools`
@@ -830,6 +834,7 @@ Load:
 - `akka-agent-skill-governance`
 - `akka-agent-behavior-editing`
 - `akka-agent-tools`
+- `akka-agent-model-governance`
 - `core-saas-foundation`
 - `ai-first-saas-audit-trace`
 - `akka-event-sourced-entities`

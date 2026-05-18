@@ -15,6 +15,7 @@ Read these first if present:
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/agent-coverage-matrix.md`
 - `../../docs/agent-runtime-invocation-pattern.md`
+- `../akka-agent-model-governance/SKILL.md` when model config policy, provider aliases, fallbacks, or provider secret boundaries are in scope
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`
 - `../akka-agents/SKILL.md`
@@ -30,7 +31,7 @@ Read these first if present:
 - agent owner, steward, maintainer, reviewer, or responsible team
 - lifecycle states: draft, active, disabled, archived
 - authority level: advisory, draft-only, approval-required, or autonomous within limits
-- model configuration reference or model policy
+- model configuration reference, `ModelConfigRef`, fallback model policy, provider secret boundary, or model policy
 - allowed tools, denied tools, tool categories, or per-agent tool permission boundaries
 - policy, approval, audit, trace, or tenant/customer scope for agent execution
 
@@ -117,7 +118,7 @@ Typical events:
 1. Agent definitions are tenant-scoped. Include `tenantId` in commands, state, events, views, and endpoints.
 2. Backend authorization is authoritative. Do not trust frontend-visible role labels or prompt instructions.
 3. Tool permissions are denied by default. Add explicit allow rules by tool id/category/scope.
-4. Model config references must not contain provider secrets or frontend-exposed credentials.
+4. Model config references must not contain provider secrets or frontend-exposed credentials; use `akka-agent-model-governance` when defining `ModelConfigRef`, model policy, fallback model policy, provider-secret boundaries, model-use traces, or tenant/agent/task model selection.
 5. Disabled or archived agents cannot be used by runtime flows, workflows, tools, scheduled jobs, or test consoles except for authorized inspection/replay.
 6. Draft agents cannot perform consequential production actions.
 7. Authority changes that expand autonomy or tool access require an explicit approval rule unless the product has a documented single-admin simplification.
@@ -157,7 +158,7 @@ Before finishing, verify:
 - disabled/archived agents cannot run
 - tool permissions default to deny
 - authority expansion has approval/audit semantics
-- model config references are secret-free
+- model config references are secret-free and governed by explicit model policy/fallback rules when runtime selection is tenant-, agent-, or task-specific
 - prompt/skill/model/tool references are versioned or intentionally simple
 - admin views and endpoints filter by authorized tenant/customer context
 - audit events are emitted for lifecycle, authority, and behavior-profile reference changes

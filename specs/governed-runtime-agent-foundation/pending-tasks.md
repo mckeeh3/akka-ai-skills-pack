@@ -480,7 +480,7 @@
 
 ### TASK-014: Add model configuration governance guidance
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-010]
@@ -507,7 +507,7 @@
 - done criteria:
   - Model configuration governance is explicit and aligned with managed AgentDefinition profiles.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-015: Add one-agent vs agent-team responsibility shaping guidance
 
