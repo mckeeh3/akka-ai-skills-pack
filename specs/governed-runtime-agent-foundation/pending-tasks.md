@@ -333,7 +333,7 @@
 
 ### TASK-010: Add managed agent runtime invocation resolver guidance
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-009]
@@ -371,7 +371,7 @@
 - done criteria:
   - Managed runtime agent invocation has a concrete implementation handoff pattern.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-011: Add dedicated behavior-editing agent skill
 

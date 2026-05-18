@@ -40,6 +40,7 @@ Read these first if present:
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 - `../../../docs/agent-coverage-matrix.md`
 - `../../../docs/agent-runtime-state-reference.md`
+- `../../../docs/agent-runtime-invocation-pattern.md`
 
 In this repository, prefer these examples:
 - `../../../src/main/java/com/example/application/ActivityAgent.java`
@@ -100,6 +101,8 @@ Load the companion skill that matches the current task:
 
 - `akka-agent-behavior-profiles`
   - durable tenant-scoped AgentDefinition, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin views, and runtime profile lookup
+- `../../../docs/agent-runtime-invocation-pattern.md`
+  - concrete runtime invocation sequence from AuthContext through active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
 - `akka-agent-governed-documents`
   - tenant-scoped governed prompts, skills, rubrics, policies, and examples with version history, immutable snapshots, review, activation, diff UI, and audit
 - `akka-agent-prompt-governance`
@@ -185,7 +188,7 @@ Before implementation, identify:
 ### 1. Durable behavior profile / managed runtime agent
 Use when the app manages agents as tenant-scoped runtime actors with lifecycle, owner/steward, authority, model configuration references, prompt/skill references, tool permission boundaries, or admin UI.
 
-Load `akka-agent-behavior-profiles` before prompt, skill, tool, orchestration, or Java agent implementation details.
+Load `akka-agent-behavior-profiles` before prompt, skill, tool, orchestration, or Java agent implementation details. For managed runtime invocation handoff, read `../../../docs/agent-runtime-invocation-pattern.md` and use an `AgentRuntimeResolver`-style helper to resolve AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace before model invocation.
 
 ### 2. Governed behavior documents
 Use when prompts, skills, rubrics, policies, or examples need tenant-scoped version history, review, approval, activation, immutable snapshots, diff/history UI, or audit.

@@ -14,6 +14,7 @@ This is not the skill for writing the Java `Agent` class itself. Use it before `
 Read these first if present:
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/agent-coverage-matrix.md`
+- `../../docs/agent-runtime-invocation-pattern.md`
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`
 - `../akka-agents/SKILL.md`
@@ -123,6 +124,7 @@ Typical events:
 8. Lifecycle, authority, prompt reference, skill manifest, model, and tool-boundary changes emit audit events.
 9. Prompts and skills are not security boundaries. Mechanical authorization checks still gate data and tool access.
 10. Runtime flows must resolve the active behavior profile before invoking the Java `Agent` class.
+11. Use `../../docs/agent-runtime-invocation-pattern.md` for the concrete `AgentRuntimeResolver` handoff: AuthContext validation, active AgentDefinition lookup, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission must happen before or around model invocation.
 
 ## Admin API and UI surfaces
 
@@ -144,7 +146,8 @@ Pair these with tenant-isolation, forbidden-access, disabled-agent, archived-age
 4. Add protected endpoints and UI surfaces.
 5. Add audit/work-trace emission for lifecycle and authority changes.
 6. Integrate runtime lookup so workflows/endpoints refuse disabled, archived, unauthorized, or out-of-scope agents.
-7. Only then route to prompt, skill, tools, memory, orchestration, or component implementation skills.
+7. Add an `AgentRuntimeResolver`-style application helper or service boundary that coordinates AuthContext, AgentDefinition, prompt versions, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and trace ids according to `../../docs/agent-runtime-invocation-pattern.md`.
+8. Only then route to prompt, skill, tools, memory, orchestration, or component implementation skills.
 
 ## Review checklist
 

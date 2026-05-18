@@ -204,6 +204,7 @@ You can also consult the comparison/reference files:
 - `references/akka-grpc-jwt-patterns.md`
 - `../docs/agent-coverage-matrix.md`
 - `../docs/agent-runtime-state-reference.md`
+- `../docs/agent-runtime-invocation-pattern.md` — managed runtime invocation sequence from AuthContext through AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
 - `../docs/workflow-endpoint-pattern.md`
 - `../docs/timer-pattern-selection.md`
 
@@ -379,7 +380,7 @@ Start with:
 Then load the focused skill that matches the current task:
 
 ### Behavior profiles
-Use when agents are managed as tenant-scoped runtime actors with durable `AgentDefinition`, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin UI, or runtime profile lookup.
+Use when agents are managed as tenant-scoped runtime actors with durable `AgentDefinition`, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin UI, or runtime profile lookup. For implementation handoff, pair this with `../docs/agent-runtime-invocation-pattern.md` to define the `AgentRuntimeResolver` sequence across AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace.
 - `akka-agent-behavior-profiles`
 
 ### Governed documents
