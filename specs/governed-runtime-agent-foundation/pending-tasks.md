@@ -1111,7 +1111,7 @@
 
 ### TASK-033: Add improvement analyzer and proposal creation tests
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
 - task brief: none
 - depends on: [TASK-032]
@@ -1139,7 +1139,7 @@
 - done criteria:
   - Findings can create governed improvement proposals with trace links and no active mutation.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-034: Add replay and simulation evidence helper tests
 
