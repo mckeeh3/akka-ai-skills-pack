@@ -541,7 +541,7 @@
 
 ### TASK-016: Add minimal governed runtime agent reference slice plan or executable example
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/05-agent-implementation-hardening-build-backlog.md
 - task brief: none
 - depends on: [TASK-010, TASK-011, TASK-012, TASK-013]
@@ -576,7 +576,7 @@
   - The largest remaining executable/reference gap has either been implemented or decomposed into a clear follow-on queue.
   - Coverage matrix is accurate.
   - A git commit exists for the changes.
-- notes:
+- notes: Added a planning-only reference slice because executable Java coverage would span multiple component/helper/test families and exceed one fresh-session task. Final commit hash reported in harness response.
 
 ### TASK-017: Final audit for agent implementation hardening sprint
 
