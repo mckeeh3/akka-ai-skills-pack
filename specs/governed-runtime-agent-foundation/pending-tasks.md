@@ -118,7 +118,7 @@
 
 ### TASK-004: Update app-description bootstrap and readiness for managed-agent foundation
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/02-app-description-and-seed-build-backlog.md
 - task brief: none
 - depends on: [TASK-001, TASK-003]
@@ -147,7 +147,7 @@
   - App-description bootstraps include governed runtime agent foundation structure.
   - Readiness/generation blocks missing managed-agent foundation surfaces.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; commit hash reported in harness response.
 
 ### TASK-005: Update AI-first SaaS seed app-description for managed agents
 

@@ -99,6 +99,7 @@ app-description/
   15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
     agent-roles-and-authority.md
+    governed-runtime-agents.md
     policies-and-approval-gates.md
     decisions-exceptions-and-evidence.md
     audit-trace-and-outcomes.md
@@ -106,33 +107,45 @@ app-description/
     behavior-index.md
     state-models/
       01-tenant-user-access-model.md
+      02-governed-agent-behavior-model.md
     flows/
       01-secure-foundation-access-flow.md
-      02-<primary-flow>.md
+      02-governed-agent-behavior-maintenance-flow.md
+      03-<primary-flow>.md
     rules/
       01-tenant-authz-rules.md
+      02-agent-prompt-skill-tool-boundary-rules.md
   30-tests/
     test-index.md
     acceptance/
       01-secure-foundation-acceptance.md
-      02-<primary-capability>-acceptance.md
+      02-governed-agent-foundation-acceptance.md
+      03-<primary-capability>-acceptance.md
     regression/
       01-tenant-isolation-and-idempotency.md
+      02-agent-prompt-skill-manifest-trace-regression.md
     negative/
       01-security-denial-baseline.md
+      02-agent-authority-and-skill-denial-baseline.md
   40-auth-security/
     secure-saas-foundation.md
     identity-and-trust.md
     authorization-rules.md
     data-protection.md
     boundary-and-surface-rules.md
+    governed-agent-security.md
   50-observability/
     logs-and-audit.md
     security-and-admin-audit-events.md
+    governed-agent-traces.md
   55-ui/                  # required for generated full-stack AI-first SaaS apps
     ui-index.md
     secure-shell-and-context-selection.md
     admin-and-audit-surfaces.md
+    agent-catalog-and-detail.md
+    prompt-and-skill-governance.md
+    skill-manifests-and-tool-permissions.md
+    edit-agent-proposals-and-traces.md
     screens-and-navigation.md
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
@@ -150,9 +163,10 @@ From the initial user input, derive as applicable:
 - likely primary behavior flow, starting with sign-in, `/api/me`, context selection, Account/Profile/Settings maintenance, administration, invitations, support-access, audit viewing, and tenant/customer-scoped access
 - first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
 - initial auth/security expectations based on `core-saas-foundation`, including explicit default-deny authorization for every route, agent tool, data access, workflow action, view query, stream, and generated UI action
-- initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, and consequential AI/tool events
+- initial governed runtime agent expectations: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, behavior-editing agent proposals, and denial of unauthorized authority expansion
+- initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and consequential AI/tool events
 - initial policy, approval, exception, audit, trace, and outcome expectations for the AI-first SaaS operating model
-- initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, and audit surfaces
+- initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, audit, agent catalog, agent detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, and trace surfaces
 - selected web UI style guide when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
 - an initial readiness posture
@@ -191,6 +205,7 @@ Create `15-operating-model/` for generated AI-first SaaS apps. The secure founda
 Seed only the files justified by the input, but prefer the standard operating-model files when the app is clearly agentic:
 - `goals-and-objectives.md`
 - `agent-roles-and-authority.md`
+- `governed-runtime-agents.md` for `AgentDefinition`, governed prompt and skill documents, `AgentSkillManifest`, `ToolPermissionBoundary`, behavior-editing agent responsibilities, `readSkill(skillId)`, and prompt/skill load tracing
 - `policies-and-approval-gates.md`
 - `decisions-exceptions-and-evidence.md`
 - `audit-trace-and-outcomes.md`
@@ -200,16 +215,22 @@ Capture durable goals, delegated work, retained human authority, agent/team boun
 ### 6. Create the first behavior layer
 Create a `20-behavior/` index plus secure foundation behavior artifacts before app-specific flows:
 - `state-models/01-tenant-user-access-model.md` for Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, support-access, and billing-boundary state semantics
+- `state-models/02-governed-agent-behavior-model.md` for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` lifecycle semantics
 - `flows/01-secure-foundation-access-flow.md` for sign-in, `/api/me`, context selection, profile/settings, invitation, admin, support-access, audit, and tenant/customer-scoped access
+- `flows/02-governed-agent-behavior-maintenance-flow.md` for editing agent change requests, proposed diffs, draft versions, review/approval, activation, rollback, authorized `readSkill(skillId)`, and trace creation
 - `rules/01-tenant-authz-rules.md` for default-deny authorization, tenant/customer isolation, disabled-user behavior, role/scope checks, and forbidden access behavior
+- `rules/02-agent-prompt-skill-tool-boundary-rules.md` for prompt/skill guidance limits, manifest assignment, tool permission boundaries, skill-load authorization, disabled-agent denial, and authority expansion denial
 
 Then add one primary app-specific flow file when the input supports it. Add deeper app state-model or rules files only if the input clearly contains lifecycle or invariant semantics already.
 
 ### 7. Create the first test layer
 Create a `30-tests/` index plus mandatory secure foundation test artifacts before app-specific tests:
 - `acceptance/01-secure-foundation-acceptance.md` for sign-in seam, `/api/me`, context selection, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, invitation, support-access, admin, audit, and billing-boundary behavior
+- `acceptance/02-governed-agent-foundation-acceptance.md` for agent catalog/detail, prompt governance, skill governance, manifest and tool permission management, editing agent proposals, prompt assembly, authorized `readSkill(skillId)`, and trace search behavior
 - `regression/01-tenant-isolation-and-idempotency.md` for cross-tenant isolation, duplicate invite/acceptance, repeated role changes, repeated support-access revoke/expiry, and idempotent `/api/me` reads
+- `regression/02-agent-prompt-skill-manifest-trace-regression.md` for immutable active versions, deterministic prompt assembly, unassigned skill denial, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` creation
 - `negative/01-security-denial-baseline.md` for forbidden access, disabled user, role/scope denial, cross-customer denial, unauthorized stream/query/tool/action attempts, and frontend secret-boundary checks
+- `negative/02-agent-authority-and-skill-denial-baseline.md` for disabled-agent denial, unauthorized prompt/skill/tool-boundary changes, unauthorized `readSkill(skillId)`, and approval-required authority expansion
 
 Then add app-specific acceptance files. Capture only the strongest initial app-specific expectations plus obvious negative or regression expectations if the input already supports them.
 
@@ -220,8 +241,10 @@ Create:
 - `40-auth-security/authorization-rules.md`
 - `40-auth-security/data-protection.md`
 - `40-auth-security/boundary-and-surface-rules.md`
+- `40-auth-security/governed-agent-security.md` for `AgentDefinition`, prompt/skill/manifest/tool-boundary authorization, disabled-agent denial, authorized `readSkill(skillId)`, and approval-required authority expansion
 - `50-observability/logs-and-audit.md`
 - `50-observability/security-and-admin-audit-events.md`
+- `50-observability/governed-agent-traces.md` for `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, prompt/skill activation audit, and denied skill/tool attempts
 
 These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; provider-specific unknowns may remain explicit open questions, but authorization, tenancy, audit, and tenant isolation are not optional. The bootstrap must state that no route, agent tool, data access, workflow action, view query, stream, or generated UI action is public or authorized by default except deliberately public static assets.
 

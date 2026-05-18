@@ -40,6 +40,10 @@ app-description/55-ui/
   ui-index.md
   personas-and-journeys.md
   ai-first-surfaces.md
+  agent-catalog-and-detail.md
+  prompt-and-skill-governance.md
+  skill-manifests-and-tool-permissions.md
+  edit-agent-proposals-and-traces.md
   screens-and-navigation.md
   interactions-and-forms.md
   frontend-api-contracts.md
@@ -48,7 +52,7 @@ app-description/55-ui/
   style-guide.md
 ```
 
-Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For a very small app, one `ui-index.md`, `ai-first-surfaces.md`, `screens-and-navigation.md`, and `style-guide.md` may be enough. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata.
+Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For a very small app, one `ui-index.md`, `ai-first-surfaces.md`, `agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, `edit-agent-proposals-and-traces.md`, `screens-and-navigation.md`, and `style-guide.md` may be enough because managed-agent foundation UI is mandatory. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata.
 
 ## What to capture
 
@@ -66,6 +70,15 @@ Create only files justified by the app, but do not omit the UI layer for generat
 - Policy / Governance / Learning Center: policy versions, clause IDs, examples, proposals, diffs, simulations/replays, approvals, commits, and rollback controls
 - Async Digest / Executive Briefing: routine-activity compression, material events, pending decisions, prior outcomes, and links to traces
 - Audit / Work Trace: chronological agent steps, tool calls, data access, policy invocations, approvals, actions, rollbacks, and outcome links
+
+### Managed-agent foundation UI
+- Agent catalog: tenant-scoped list/search/filter of active, disabled, draft, and archived `AgentDefinition` records with owner/steward, authority level, model reference, prompt reference, skill manifest, tool permission boundary, status, and trace summary.
+- Agent detail: lifecycle controls, prompt/skill/manifest/tool-boundary references, effective capability grants, disabled-agent denial state, recent `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` links.
+- Prompt governance: `PromptDocument`/`PromptVersion` list, editor/proposal intake, diff/history, review/approval, activation, rollback, checksum/status, test console, and prompt assembly preview.
+- Skill governance: `SkillDocument`/`SkillVersion` list, compact manifest hints, full skill text review, diff/history, approval, activation/deprecation, and `readSkill(skillId)` test console.
+- Skill manifests and tool permissions: `AgentSkillManifest` assignment UI, unassigned skill denial visibility, `ToolPermissionBoundary` editor/review, scoped tool/data permissions, approval-required authority expansion, and policy citations.
+- Editing agent proposals: `AgentBehaviorEditorAgent` or equivalent proposed diff review, rationale, risk/impact notes, affected artifacts, suggested tests/replays, approval actions, denial reasons, and activation/rollback results.
+- Trace surfaces: prompt assembly, allowed/denied skill loads, tool/data access, policy decisions, approval outcomes, and consequential agent work traces with tenant/customer scope, correlation ids, redaction, and auditor views.
 
 ### Screens and navigation
 - screens/pages
@@ -88,6 +101,7 @@ Create only files justified by the app, but do not omit the UI layer for generat
 - success response DTO and redaction rules
 - error/denial response DTO
 - required AuthContext, capability grant, and tenant/customer scope
+- governed agent artifact ids when the action reads or changes `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `ToolPermissionBoundary`, editing agent proposal, `PromptAssemblyTrace`, `SkillLoadTrace`, or `AgentWorkTrace`
 - audit/trace expectation visible to users, supervisors, admins, or auditors when applicable
 
 ### States and realtime
@@ -123,8 +137,8 @@ For any UI change, update:
 2. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, or idempotency semantics
 3. behavior flows if user-visible behavior changes
 4. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
-5. auth/security if route visibility, roles, agent/tool permissions, approval authority, or trace access changes
-6. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, or outcome evidence
+5. auth/security if route visibility, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes
+6. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, or outcome evidence
 7. readiness status if generation completeness changes
 
 ## Realization routing

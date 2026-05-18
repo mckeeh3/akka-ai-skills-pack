@@ -43,7 +43,7 @@ Use only when the user explicitly asks to realize outputs or accepts a harness r
 
 Prefer this default sequence:
 
-1. bootstrap the internal app-description tree if no usable root exists yet, seeding the secure SaaS foundation capability, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces
+1. bootstrap the internal app-description tree if no usable root exists yet, seeding the secure SaaS foundation capability, governed runtime agent foundation, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
@@ -52,8 +52,8 @@ Prefer this default sequence:
 7. update behavior-level meaning
 8. update verification expectations
 9. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
-10. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, and consequential AI/tool activity
-11. update mandatory UI descriptions, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS
+10. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and consequential AI/tool activity
+11. update mandatory UI descriptions, including agent catalog/detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, trace surfaces, and `55-ui/style-guide.md`, for generated full-stack AI-first SaaS
 12. update traceability and impact understanding
 13. assess readiness
 14. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
@@ -196,11 +196,12 @@ The harness should ask:
 - which capabilities changed?
 - did any capability contract fields change: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, or tests?
 - which behavior artifacts changed?
-- which AI-first operating-model artifacts changed: goals, delegated work, retained authority, agents, policies, approvals, decisions, exceptions, traces, learning, or outcomes?
+- which AI-first operating-model artifacts changed: goals, delegated work, retained authority, agents, governed runtime behavior artifacts, policies, approvals, decisions, exceptions, traces, learning, or outcomes?
+- did the change affect `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `ToolPermissionBoundary`, behavior editing agent proposals, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, or `AgentWorkTrace`?
 - which tests now need updates?
 - are there new or changed security implications, especially permission enforcement and authority boundaries?
 - are there new or changed observability implications, especially work traces, decision traces, policy invocations, audit events, and outcome metrics?
-- is a style guide selected and do supervision, decision, governance, digest, or audit surfaces need to change?
+- is a style guide selected and do supervision, decision, governance, digest, agent catalog/detail, prompt/skill governance, manifest/tool permissions, edit-agent proposal, or audit/trace surfaces need to change?
 - does readiness status change?
 - would generation scope be localized or broad?
 - do any existing specs, backlogs, task briefs, or pending tasks need to be updated, blocked, deferred, or superseded?

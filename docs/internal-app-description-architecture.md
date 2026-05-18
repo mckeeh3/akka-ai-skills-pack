@@ -64,6 +64,7 @@ app-description/
   15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
     agent-roles-and-authority.md
+    governed-runtime-agents.md
     policies-and-approval-gates.md
     decisions-exceptions-and-evidence.md
     audit-trace-and-outcomes.md
@@ -104,6 +105,11 @@ app-description/
   55-ui/                  # required for generated full-stack AI-first SaaS apps
     ui-index.md
     personas-and-journeys.md
+    ai-first-surfaces.md
+    agent-catalog-and-detail.md
+    prompt-and-skill-governance.md
+    skill-manifests-and-tool-permissions.md
+    edit-agent-proposals-and-traces.md
     screens-and-navigation.md
     interactions-and-forms.md
     frontend-api-contracts.md
@@ -202,6 +208,7 @@ This layer answers:
 Default files:
 - `goals-and-objectives.md` for durable human objectives, success criteria, constraints, and definitions of done
 - `agent-roles-and-authority.md` for agent/team responsibilities, tools, data access, autonomous decisions, escalation rules, and non-responsibilities
+- `governed-runtime-agents.md` for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, behavior editing agent proposals, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`
 - `policies-and-approval-gates.md` for policies, clauses, guardrails, thresholds, approval rules, and governed policy-change semantics
 - `decisions-exceptions-and-evidence.md` for decision cards, exception handling, recommendation evidence, risk/confidence/impact, and alternatives
 - `audit-trace-and-outcomes.md` for trace requirements, feedback loops, replay/simulation needs, outcome metrics, and links between decisions and results
@@ -503,6 +510,8 @@ app-description/
   55-ui/
     ui-index.md
     secure-shell-and-context-selection.md
+    agent-catalog-and-detail.md
+    prompt-and-skill-governance.md
     style-guide.md
 ```
 
