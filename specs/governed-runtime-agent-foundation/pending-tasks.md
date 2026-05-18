@@ -288,7 +288,7 @@
 
 ### TASK-009: Final audit and repair for governed runtime agent foundation
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/04-verification-and-final-audit-build-backlog.md
 - task brief: none
 - depends on: [TASK-008]
@@ -329,4 +329,4 @@
   - Final audit passes.
   - No known contradiction remains.
   - A git commit exists for the final audit/repair.
-- notes:
+- notes: Final audit passed; no contradiction repairs were needed. Commit hash reported in harness response.
