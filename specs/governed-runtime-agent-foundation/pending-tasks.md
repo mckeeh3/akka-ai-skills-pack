@@ -1230,7 +1230,7 @@
 
 ### TASK-037: Update coverage matrix for executable closed-loop improvement
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/08-executable-closed-loop-improvement-build-backlog.md
 - task brief: none
 - depends on: [TASK-036]
@@ -1253,7 +1253,7 @@
 - done criteria:
   - Coverage matrix accurately reflects closed-loop improvement executable coverage.
   - A git commit exists for the changes.
-- notes:
+- notes: Updated coverage matrix to reference executable closed-loop improvement records, helpers, and tests. Final hash reported in harness response.
 
 ### TASK-038: Final audit for executable closed-loop improvement sprint
 
