@@ -790,7 +790,7 @@
 
 ### TASK-023: Update coverage matrix for executable governed-agent reference slice
 
-- status: pending
+- status: done
 - source: specs/governed-runtime-agent-foundation/backlog/06-executable-governed-agent-reference-slice-build-backlog.md
 - task brief: none
 - depends on: [TASK-021, TASK-022]
@@ -818,7 +818,7 @@
 - done criteria:
   - Coverage matrix accurately reflects executable governed-agent reference coverage.
   - A git commit exists for the changes.
-- notes:
+- notes: Completed in task commit; final hash reported in harness response.
 
 ### TASK-024: Final audit for executable governed-agent reference slice
 
