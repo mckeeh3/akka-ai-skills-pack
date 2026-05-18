@@ -327,7 +327,7 @@ API rules:
 
 ## AI-first administration behavior
 
-Core administration should include AI-first features from the start.
+Core administration should include AI-first features from the start. Generated foundations must manage these agents as governed runtime actors, not only as static code classes. Each foundation agent needs an active tenant-scoped `AgentDefinition`, approved active `PromptDocument`/`PromptVersion`, assigned `SkillDocument`/`SkillVersion` entries through an `AgentSkillManifest`, a deny-by-default `ToolPermissionBoundary`, and durable `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` records.
 
 ### Decision cards
 
@@ -366,6 +366,8 @@ Required agents:
 
 Agents may autonomously draft invites, summarize risk, recommend roles, identify stale/dormant access, prepare bulk invite drafts, create low-risk admin tasks, generate audit summaries, and create decision cards. They must not autonomously grant admin roles, remove last admin, expand support access, suspend tenants, bulk disable users, change policy/permissions, or access tenant/customer data outside authorized tool scope.
 
+Runtime assembly contract: resolve the active `AgentDefinition`; reject disabled, archived, cross-tenant, or unauthorized agents; assemble only approved active prompt versions; include compact skill manifest entries rather than full skill text; authorize `readSkill(skillId)` against tenant, agent, manifest, skill status/version, mode, and `AuthContext`; trace prompt assembly and every allowed or denied skill load. Prompt and skill content is behavior guidance only and cannot grant tool permissions, data access, role capabilities, tenant/customer scope, or approval authority.
+
 High-risk recommendations route to decision cards with evidence, risk, confidence, alternatives, policy triggers, and audit links.
 
 ### Audit trace
@@ -396,6 +398,11 @@ Record audit events for:
 | `InvitationView` | Scoped invitation status, delivery status, resend/revoke visibility, expiry, and delivery failure rows. |
 | `AdminAuditView` | Queryable admin audit trail with actor, target user, action type, scope, role, membership status, invitation status, risk/policy metadata, and time-range filters. |
 | `AccessReviewQueueView` | Stale invite, dormant access, risky role combination, support-access, last-admin review queue, due/expiry time, and agent-generated recommendation index. |
+| `AgentDefinitionEntity` | Governed runtime profile for foundation agents: lifecycle, owner/steward, authority, prompt reference, skill manifest reference, model config reference, and tool permission boundary. |
+| `PromptDocumentEntity` / `PromptVersionEntity` | Governed prompt lifecycle and immutable active prompt snapshots used during prompt assembly. |
+| `SkillDocumentEntity` / `SkillVersionEntity` | Governed runtime skill lifecycle and immutable skill snapshots that can be assigned to agents. |
+| `AgentSkillManifestEntity` | Per-agent allowed skill manifest used as compact prompt context and as the authorization basis for `readSkill(skillId)`. |
+| `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace` | Durable trace records for prompt assembly, allowed/denied skill loads, and agent execution/tool/data decisions. |
 | `AccessReviewAgent` | Mandatory bounded agent that reads scoped access views and recommends stale/dormant access cleanup, last-admin risk review, and low-risk admin tasks. |
 | `AdminRiskAgent` | Mandatory read-only analysis and recommendation agent for risky admin actions. |
 | `InvitationDraftAgent` | Mandatory agent that drafts invite messages, role rationale, and bulk invite preparation without sending or exposing tokens. |
@@ -423,6 +430,7 @@ Record audit events for:
 - [ ] Tenant-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review screens.
 - [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView are first-slice read models with required query filters, scoped query authorization, redaction, pagination, stale invite/access-review correctness, and audit trace completeness tests.
 - [ ] Risky admin actions can produce decision cards.
+- [ ] Governed runtime agent foundation is present for foundation agents: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
 - [ ] AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent are present or equivalently modeled.
 - [ ] Admin agents produce recommendations, drafts, audit summaries, and decision cards without unauthorized automatic changes.
 - [ ] Audit views can answer who changed what, in which scope, when, why, and under which policy.

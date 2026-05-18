@@ -31,7 +31,7 @@ Every protected capability must mechanically enforce:
 - audit/work-trace records for denials, data access, approvals, side effects, policy decisions, and consequential AI/tool activity;
 - security tests for cross-tenant access, disabled users, denied roles/scopes, audit creation, and frontend secret boundaries where applicable.
 
-Prompt text, tool descriptions, UI copy, route names, and hidden form fields are never authorization controls.
+Prompt text, skill content, tool descriptions, UI copy, route names, and hidden form fields are never authorization controls. Generated AI-first SaaS foundations must use governed runtime agent artifacts (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`) as behavior configuration only; authority still comes from AuthContext, permissions/capabilities, approval policy, and backend checks. Prompt assembly and skill loading must emit `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
 
 ## Definition: backend capability
 
@@ -66,7 +66,7 @@ Capability-first interpretation of those tools:
 - `@FunctionTool` exposes a capability operation to an agent for model-selected invocation.
 - `.tools(ComponentClass.class)` exposes selected component command/query handlers as tools; it does not make the component itself the product boundary.
 - MCP tools expose capabilities across an explicit remote boundary and must preserve service ACLs, allowed-tool filtering, tenant scope, and audit.
-- Tool descriptions should communicate impact and required inputs to the model, but capability enforcement must happen in backend code.
+- Tool descriptions and loaded skill text should communicate impact and required inputs to the model, but capability enforcement must happen in backend code.
 - Not every capability should be exposed as a tool. Many capabilities remain browser-only, workflow-only, timer-only, consumer-only, service-only, or internal-only.
 
 Default stance: expose read-only evidence capabilities to agents more readily than side-effecting capabilities. Consequential side effects should default to recommendation, proposal, or approval-request capabilities unless an accepted policy grants bounded autonomous authority.
@@ -140,6 +140,7 @@ Use conservative defaults unless accepted product specs say otherwise:
 
 - Read-only scoped evidence may be agent-accessible when it is redacted and audited appropriately.
 - Side-effecting agent tools require explicit permission and should prefer proposal/approval flows.
+- `readSkill(skillId)` is a governed guidance-loading capability, not an authorization grant; it must check tenant, active AgentDefinition, AgentSkillManifest assignment, skill version/status, mode, AuthContext, and trace allowed or denied loads.
 - High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, or external-side-effect capabilities require human approval or a documented autonomous policy boundary.
 - Agents may recommend governance changes; humans approve activation unless a narrow safe boundary is explicitly defined.
 - Support access and SaaS owner operations require separate authority, audit, and tenant/customer context rules.

@@ -16,6 +16,7 @@ For high-level product input, treat the target as secure AI-first SaaS unless th
 Mandatory secure SaaS and web UI foundation before app-specific features:
 - identity and authentication seam, typically WorkOS for browser user authentication
 - local Akka-owned authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, and selected AuthContext
+- governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, deterministic prompt assembly, and authorized readSkill(skillId)
 - SaaS Owner, Tenant, and Customer organization model with tenant/customer-scoped commands and queries
 - `/api/me` for the signed-in account, memberships, selected context, profile, settings, and browser-safe capabilities
 - backend authorization checks for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action
@@ -34,7 +35,7 @@ Top-level AI-first entry skill:
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model, identify mandatory foundation/security requirements, delegated work, and retained human authority, then route to app-description, decomposition, PRD planning, or focused implementation skills
 
 Mandatory foundation skill:
-- `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
+- `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, authorized `readSkill(skillId)`), support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
 
 Mandatory foundation companion skill:
 - `akka-saas-invitation-onboarding` — implement complete email-invite onboarding with Invitation entity/audit record, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, resend, revoke, expiry, acceptance, delivery failure visibility, idempotency, and lifecycle tests
@@ -42,7 +43,7 @@ Mandatory foundation companion skill:
 AI-first companion skills:
 - `ai-first-saas-object-model` — select durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects before choosing Akka components
 - `ai-first-saas-agent-team-design` — design bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision
-- `ai-first-saas-admin-agents` — make AI-assisted admin offload mandatory for generated SaaS foundations with AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and bounded approval rules
+- `ai-first-saas-admin-agents` — make AI-assisted admin offload mandatory for generated SaaS foundations with bounded admin responsibilities backed by governed `AgentDefinition`, prompts, skills, manifests, tool boundaries, traces, decision cards, and approval rules
 - `ai-first-saas-policy-governance` — model policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits
 - `ai-first-saas-decision-cards` — design recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions
 - `ai-first-saas-audit-trace` — design durable work, decision, policy, tool, data-access, approval, and outcome traces
@@ -1272,7 +1273,7 @@ Routing references:
 - `akka-agent-governed-documents` for tenant-scoped governed prompts, skills, rubrics, policies, and examples with immutable versions, review, activation, diff/history, and audit
 - `akka-agent-prompt-governance` for governed runtime-managed system prompts, PromptDocument/PromptVersion, effective prompt assembly, PromptAssemblyTrace, and prompt test consoles
 - `akka-agent-skill-governance` for governed runtime skills, SkillDocument/SkillVersion, AgentSkillManifest, compact manifest prompt context, readSkill(skillId), and SkillLoadTrace
-- `akka-agent-work-trace` for agent-specific prompt/skill/model/tool/data/policy usage traces, authorization basis, redaction, correlation, and timelines
+- `akka-agent-work-trace` for AgentWorkTrace and agent-specific prompt/skill/model/tool/data/policy usage traces, authorization basis, redaction, correlation, and timelines
 - `akka-agent-closed-loop-improvement` for EvaluationRun/Finding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback loops
 
 Core agent examples:

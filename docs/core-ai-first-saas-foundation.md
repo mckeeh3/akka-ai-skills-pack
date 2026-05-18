@@ -79,6 +79,7 @@ Core AI-first features must include:
 
 - durable audit traces for identity, role, scope, tenant, customer, and billing administration;
 - policy-controlled administrative actions, such as role assignment, tenant suspension, and billing-plan changes, using the canonical foundation roles `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` as the baseline;
+- mandatory governed runtime agent foundation: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` for all foundation agents;
 - mandatory AI-assisted admin offload agents: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and AdminPolicyProposalAgent when the product allows policy/permission/threshold proposal drafting;
 - decision cards for risky or high-impact administration changes;
 - anomaly and risk signals for suspicious account, access, or billing events;
@@ -105,7 +106,7 @@ Example AI-first core scenarios:
 | Invitations and onboarding | Workflow for mandatory email invite delivery, token/acceptance context, link/activate, resend, revoke/cancel, expiry, idempotency, and multi-step onboarding. |
 | Access review and support-access expiry | Timed Actions plus Views and Consumers. |
 | Administrative dashboards | Views for scoped lists, queues, tenant health, subscription state, and audit search. |
-| AI recommendations and summaries | Mandatory admin agents with bounded tools and read-only access unless explicitly approved. |
+| AI recommendations and summaries | Mandatory admin agents managed through active `AgentDefinition` records, governed prompt/skill versions, `AgentSkillManifest`, `ToolPermissionBoundary`, authorized `readSkill(skillId)`, and read-only access unless explicitly approved. |
 | Policy gates and approvals | Workflows plus decision-card records and audit events. |
 | Browser APIs | JWT-protected HTTP endpoints using WorkOS authentication and Akka-owned authorization state. |
 
@@ -121,4 +122,5 @@ Example AI-first core scenarios:
 8. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
 9. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
 10. Cross-scope audit trace and access review views.
-11. AI-assisted admin offload: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, AdminPolicyProposalAgent when policy proposal drafting is allowed, and decision cards for risky role, support-access, tenant suspension, bulk, identity relink, and billing changes.
+11. Governed runtime agent foundation: `AgentDefinition` lifecycle/profile state, governed `PromptDocument`/`PromptVersion`, governed `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
+12. AI-assisted admin offload: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, AdminPolicyProposalAgent when policy proposal drafting is allowed, and decision cards for risky role, support-access, tenant suspension, bulk, identity relink, and billing changes.
