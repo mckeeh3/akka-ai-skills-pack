@@ -75,7 +75,7 @@
 
 ### TASK-WUI-01-002: Define workstream UI target architecture
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/01-inventory-and-target-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/01-inventory-and-target/02-define-workstream-ui-target-architecture.md
 - depends on: [TASK-WUI-01-001]
@@ -97,7 +97,9 @@
 - done criteria:
   - implementation target is specific enough for component-library tasks
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Define workstream UI reference architecture`
+  - completed: added target `frontend/src/workstream/**` source layout, `/api/me`/AuthContext/functional-agent/workstream/surface/action/event contracts, realtime/deep-link semantics, fixture/test requirements, and migration boundaries.
 
 ### TASK-WUI-02-001: Add workstream UI types and fixtures
 
