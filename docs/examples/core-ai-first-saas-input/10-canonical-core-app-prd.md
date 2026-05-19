@@ -11,6 +11,7 @@ Read first:
 - `00-document-development-process-context.md`
 - `01-core-seed-progression-plan.md`
 - `03-module-auth-app-access-prd.md`
+- `03a-module-agent-workstream-runtime-bootstrap-prd.md`
 - `04-module-user-admin-prd.md`
 - `05-module-agent-definition-prd.md`
 - `06-module-prompt-governance-prd.md`
@@ -46,8 +47,13 @@ A full core app may not omit user administration or agent administration. If eit
 
 A narrower Module 1-only scope is allowed only when explicitly recorded before generation. It includes minimal authentication, `/api/me`, selected AuthContext, profile/context display, an authenticated shell, and protected sample access.
 
+### Agent runtime bootstrap sequencing
+
+Full core implementation should not jump from basic auth directly to full User Admin CRUD. Because authenticated work is organized through functional agents and workstreams, the implementation sequence includes `03a-module-agent-workstream-runtime-bootstrap-prd.md` after Module 1 and before full User Admin. This bootstrap creates the minimal seeded `AgentDefinition`, prompt, skill, manifest, tool-boundary, runtime resolver, composer invocation, and trace path needed for Access/Profile and User Admin workstream surfaces to be backed by a real protected agent-runtime path. It is not a substitute for full Agent Admin, prompt governance, skill governance, or Audit/Trace modules; it is the dependency bridge that makes later manually testable workstream UI features honest.
+
 Module 1-only scope must explicitly defer:
 
+- agent workstream runtime bootstrap beyond static/minimal shell behavior;
 - User Admin functional agent;
 - Agent Admin functional agent;
 - invitation lifecycle and email outbox;

@@ -1,8 +1,8 @@
-# Module 3 PRD: Agent Definition Foundation
+# Module 4 PRD: Agent Definition Foundation
 
 ## Status
 
-Detailed PRD for the third MVP module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the Agent Definition Foundation module in the progressive core AI-first SaaS seed app. This module follows the agent workstream runtime bootstrap and full User Administration modules.
 
 Read first:
 
@@ -10,6 +10,7 @@ Read first:
 - `01-core-seed-progression-plan.md`
 - `02-persistent-discussion-capture.md`
 - `03-module-auth-app-access-prd.md`
+- `03a-module-agent-workstream-runtime-bootstrap-prd.md`
 - `04-module-user-admin-prd.md`
 
 
@@ -19,11 +20,11 @@ This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../a
 
 ## 1. Module purpose
 
-Module 3 introduces the first durable AI-first administration surface: governed agent definitions.
+This module expands the bootstrap agent runtime records into the first durable AI-first administration surface: governed agent definitions.
 
 The module lets authorized tenant admins define, inspect, enable/disable, and audit basic agent records before advanced runtime prompt editing, skill manifests, work traces, and evaluation loops are added in later modules.
 
-An `AgentDefinition` is the app-owned description of an agent's purpose, tenant/customer scope, lifecycle status, model configuration placeholder, tool permission boundary, and governance metadata. It is not yet the full runtime prompt, skill catalog, or autonomous execution system.
+An `AgentDefinition` is the app-owned description of an agent's purpose, tenant/customer scope, lifecycle status, model configuration placeholder, tool permission boundary, and governance metadata. Module 2 may have seeded minimal AgentDefinitions for workstream bootstrapping; this module makes those records inspectable and governable. It is not yet the full runtime prompt editor, skill catalog, or autonomous execution system.
 
 ## 2. User-visible outcome
 

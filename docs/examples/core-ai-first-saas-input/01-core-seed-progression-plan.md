@@ -6,7 +6,9 @@ This document captures the recommended progressive module sequence for the core 
 
 Use `10-canonical-core-app-prd.md` as the full-core PRD target. Full core scope requires the agent workstream shell plus Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents. If User Admin or Agent Admin are deferred, the selected scope is explicitly `Module 1-only / not full core` rather than full core.
 
-The seed app is not implemented all at once. It is planned and delivered as a sequence of modules, each broken into sprints and harness-sized tasks. Each sprint should produce demonstrable behavior through UI and/or APIs, with tests.
+The seed app is not implemented all at once. It is planned and delivered as a sequence of modules, each broken into sprints and harness-sized tasks. Each sprint should produce demonstrable behavior through the live app UI and/or APIs, with tests.
+
+Because the canonical UI is workstream-agent-backed, basic auth must be followed by a narrow agent workstream runtime bootstrap before full User Admin. Otherwise User Admin would be generated as a page-first CRUD console or as hard-coded shell state instead of a functional-agent workstream backed by governed runtime behavior. The bootstrap is deliberately small: seeded agent definitions, prompts, skills, manifests, tool boundaries, deterministic runtime invocation, composer integration, and trace facts for Access/Profile and User Admin orientation/status behavior. Full Agent Admin and full prompt/skill governance still arrive later as their own modules.
 
 ## Delivery model
 
@@ -58,15 +60,47 @@ A user can authenticate, land in the app, see their profile/context, and encount
 - Full user administration.
 - Invitation lifecycle beyond what is required for first access.
 - Advanced roles/permissions UI.
+- Agent workstream runtime bootstrap beyond minimal/static shell behavior.
 - Agent definitions.
 - Prompt/skill governance.
 - Closed-loop improvement.
 
-## Module 2: User Administration
+## Module 2: Agent Workstream Runtime Bootstrap
 
 ### Goal
 
-Authorized admins can manage people and access within tenant/customer boundaries through the User Admin functional agent.
+The authenticated shell becomes backed by a real protected agent-runtime path before full User Admin is implemented.
+
+### Required visible outcome
+
+A seeded tenant admin can select Access/Profile or User Admin in the functional-agent rail, submit a composer request, and receive deterministic backend-agent-runtime-backed workstream responses and structured surfaces. Runtime invocation resolves AuthContext, active seeded AgentDefinition, active prompt, compact AgentSkillManifest, ToolPermissionBoundary, deterministic model/test provider, and trace facts before returning a response.
+
+### Core scope
+
+- Seeded `AgentDefinition` records for Access/Profile and User Admin bootstrap functional agents.
+- Seeded prompt versions, skill versions, compact manifests, and deny-by-default tool boundaries.
+- `AgentRuntimeResolver`-style backend boundary.
+- Authorized `readSkill(skillId)` for assigned active skills.
+- Deterministic local/test invocation path; no production model provider required.
+- Workstream composer endpoint/action that returns agent responses and structured surfaces.
+- PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace facts sufficient for diagnostics and later Audit/Trace normalization.
+- Tests for successful invocation, disabled/cross-tenant agent denial, non-admin User Admin denial, unassigned skill denial, missing tool grant denial, side-effect denial, and frontend rendering.
+
+### Explicit defers
+
+- User/membership/invitation mutations.
+- Full Agent Admin CRUD/governance UI.
+- Prompt/skill editors and approval workflows.
+- Production LLM provider configuration.
+- Full Audit/Trace explorer.
+
+Detailed PRD: `03a-module-agent-workstream-runtime-bootstrap-prd.md`.
+
+## Module 3: User Administration
+
+### Goal
+
+Authorized admins can manage people and access within tenant/customer boundaries through the User Admin functional agent. User Admin must reuse the Module 2 workstream runtime, composer, structured surface, AuthContext, and trace patterns instead of becoming a page-first admin console.
 
 ### Required visible outcome
 
@@ -85,7 +119,7 @@ An admin can view users, invite users, manage memberships/roles, disable access,
 - User Admin functional agent surfaces: users, invitations, roles/memberships, access review, and admin audit.
 - Tests for role denial, disabled user denial, forbidden tenant access, invitation idempotency, and audit emission.
 
-## Module 3: Agent Definition Foundation
+## Module 4: Agent Definition Foundation
 
 ### Goal
 
@@ -107,7 +141,7 @@ An admin can create or view agent definitions and see their purpose, status, ass
 - Audit for agent definition changes.
 - Tests for authorization and audit.
 
-## Module 4: Prompt Governance
+## Module 5: Prompt Governance
 
 ### Goal
 
@@ -129,7 +163,7 @@ An admin can draft a prompt change, review differences, activate a version, and 
 - Basic agent test console.
 - Tests for versioning, activation, diff/history, authorization, and trace capture.
 
-## Module 5: Skill Governance
+## Module 6: Skill Governance
 
 ### Goal
 
@@ -151,7 +185,7 @@ An admin can create or inspect a skill, assign it to an agent, and observe an ag
 - Agent test flow demonstrating skill loading.
 - Tests for unauthorized skill denial, version pinning, audit trace, and prompt-injection-sensitive skill content handling.
 
-## Module 6: Audit and Work Trace
+## Module 7: Audit and Work Trace
 
 ### Goal
 
@@ -172,7 +206,7 @@ A reviewer can search and inspect trace timelines for admin actions, agent execu
 - Redaction/access-control rules for trace details.
 - Tests for trace emission and trace access authorization.
 
-## Module 7: Evaluation and Closed-Loop Improvement
+## Module 8: Evaluation and Closed-Loop Improvement
 
 ### Goal
 

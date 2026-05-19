@@ -1,8 +1,8 @@
-# Module 4 PRD: Prompt Governance
+# Module 5 PRD: Prompt Governance
 
 ## Status
 
-Detailed PRD for the fourth MVP module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the Prompt Governance module in the progressive core AI-first SaaS seed app.
 
 Read first:
 
@@ -10,6 +10,7 @@ Read first:
 - `01-core-seed-progression-plan.md`
 - `02-persistent-discussion-capture.md`
 - `03-module-auth-app-access-prd.md`
+- `03a-module-agent-workstream-runtime-bootstrap-prd.md`
 - `04-module-user-admin-prd.md`
 - `05-module-agent-definition-prd.md`
 
@@ -20,7 +21,7 @@ This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../a
 
 ## 1. Module purpose
 
-Module 4 introduces governed, runtime-managed agent prompts.
+This module introduces governed, runtime-managed agent prompts.
 
 The module lets authorized tenant admins and agent stewards create, edit, review, version, activate, and inspect system prompt documents associated with AgentDefinitions from Module 3. It establishes prompts as durable behavior-shaping artifacts rather than hard-coded strings hidden in application code.
 

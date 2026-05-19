@@ -65,6 +65,7 @@ README.md
 01-core-seed-progression-plan.md
 02-product-vision-and-progressive-delivery.md
 03-module-auth-app-access-prd.md
+03a-module-agent-workstream-runtime-bootstrap-prd.md
 04-module-user-admin-prd.md
 05-module-agent-definition-prd.md
 06-module-prompt-governance-prd.md
@@ -76,7 +77,7 @@ README.md
 12-acceptance-scenarios-and-demo-flows.md
 ```
 
-Adjust numbering only if later repository work establishes a better sequence.
+The `03a` bridge PRD is intentional: workstream-agent-backed UI needs a minimal seeded runtime after basic auth and before full User Admin. Stable legacy filenames are retained for continuity; downstream planning should follow the progression plan rather than filename numbering alone.
 
 ## Document contract
 

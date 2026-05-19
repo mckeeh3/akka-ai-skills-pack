@@ -1,8 +1,8 @@
-# Module 6 PRD: Audit and Work Trace
+# Module 7 PRD: Audit and Work Trace
 
 ## Status
 
-Detailed PRD for the sixth MVP module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the Audit and Work Trace module in the progressive core AI-first SaaS seed app.
 
 Read first:
 
@@ -10,6 +10,7 @@ Read first:
 - `01-core-seed-progression-plan.md`
 - `02-persistent-discussion-capture.md`
 - `03-module-auth-app-access-prd.md`
+- `03a-module-agent-workstream-runtime-bootstrap-prd.md`
 - `04-module-user-admin-prd.md`
 - `05-module-agent-definition-prd.md`
 - `06-module-prompt-governance-prd.md`
@@ -22,11 +23,11 @@ This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../a
 
 ## 1. Module purpose
 
-Module 6 turns security audit events and agent-governance activity into a unified, tenant-scoped audit and work trace experience.
+This module turns security audit events and agent-governance activity into a unified, tenant-scoped audit and work trace experience.
 
 The module lets authorized users investigate what happened, who or what initiated it, which tenant/context was used, which permissions and governed artifacts were involved, which prompt/skill/model/tool versions shaped behavior, and why an action was allowed, denied, reviewed, or escalated.
 
-This module does not introduce evaluator agents or closed-loop improvement. It creates the trace substrate that Module 7 will use for evaluation, replay, proposals, and outcome learning.
+This module does not introduce evaluator agents or closed-loop improvement. It creates the trace substrate that the Evaluation and Closed-Loop Improvement module will use for evaluation, replay, proposals, and outcome learning.
 
 ## 2. User-visible outcome
 

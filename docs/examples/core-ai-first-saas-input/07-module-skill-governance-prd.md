@@ -1,8 +1,8 @@
-# Module 5 PRD: Skill Governance
+# Module 6 PRD: Skill Governance
 
 ## Status
 
-Detailed PRD for the fifth MVP module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the Skill Governance module in the progressive core AI-first SaaS seed app.
 
 Read first:
 
@@ -10,6 +10,7 @@ Read first:
 - `01-core-seed-progression-plan.md`
 - `02-persistent-discussion-capture.md`
 - `03-module-auth-app-access-prd.md`
+- `03a-module-agent-workstream-runtime-bootstrap-prd.md`
 - `04-module-user-admin-prd.md`
 - `05-module-agent-definition-prd.md`
 - `06-module-prompt-governance-prd.md`
@@ -21,7 +22,7 @@ This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../a
 
 ## 1. Module purpose
 
-Module 5 introduces governed skills for application-managed agents.
+This module introduces governed skills for application-managed agents.
 
 A skill is a durable, versioned guidance document that an agent may load during execution through an approved tool instead of receiving all guidance in its initial system prompt. This module creates the tenant-scoped skill catalog, skill versioning, per-agent skill manifests, and the `readSkill(skillId)` tool contract required for later governed agent execution.
 

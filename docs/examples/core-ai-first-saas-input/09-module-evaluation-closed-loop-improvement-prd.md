@@ -1,8 +1,8 @@
-# Module 7 PRD: Evaluation and Closed-Loop Improvement
+# Module 8 PRD: Evaluation and Closed-Loop Improvement
 
 ## Status
 
-Detailed PRD for the seventh MVP module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the Evaluation and Closed-Loop Improvement module in the progressive core AI-first SaaS seed app.
 
 Read first:
 
@@ -10,6 +10,7 @@ Read first:
 - `01-core-seed-progression-plan.md`
 - `02-persistent-discussion-capture.md`
 - `03-module-auth-app-access-prd.md`
+- `03a-module-agent-workstream-runtime-bootstrap-prd.md`
 - `04-module-user-admin-prd.md`
 - `05-module-agent-definition-prd.md`
 - `06-module-prompt-governance-prd.md`
@@ -23,7 +24,7 @@ This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../a
 
 ## 1. Module purpose
 
-Module 7 completes the core AI-first SaaS seed loop by turning agent activity and trace evidence into governed evaluation and improvement.
+This module completes the core AI-first SaaS seed loop by turning agent activity and trace evidence into governed evaluation and improvement.
 
 The module lets authorized users define evaluation rubrics, run evaluator agents or deterministic checks against agent outputs and work traces, classify failures, create improvement proposals, review evidence, approve or reject behavior changes, activate approved changes safely, monitor outcomes, and roll back when needed.
 

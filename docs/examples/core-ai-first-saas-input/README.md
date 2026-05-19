@@ -14,14 +14,15 @@ Use `10-canonical-core-app-prd.md` as the hard PRD target for full core generati
 
 Then create and refine the module PRDs one document at a time.
 
-The seed app is delivered progressively:
+The seed app is delivered progressively. Because the core UI is workstream-agent-backed, a narrow agent runtime bootstrap follows basic auth before full User Admin:
 
 1. minimal auth and app access MVP;
-2. user administration;
-3. agent definition foundation;
-4. prompt governance;
-5. skill governance;
-6. audit and work trace;
-7. evaluation and closed-loop improvement.
+2. agent workstream runtime bootstrap;
+3. user administration;
+4. agent definition foundation;
+5. prompt governance;
+6. skill governance;
+7. audit and work trace;
+8. evaluation and closed-loop improvement.
 
 Each module should be implemented through visible, demonstrable full-stack sprints, not as a large backend-only foundation phase.

@@ -1,8 +1,8 @@
-# Module 2 PRD: User Administration
+# Module 3 PRD: User Administration
 
 ## Status
 
-Detailed PRD for the second MVP module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the User Administration module in the progressive core AI-first SaaS seed app. This module follows the agent workstream runtime bootstrap even though the stable file name is retained for input-document continuity.
 
 Read first:
 
@@ -10,6 +10,7 @@ Read first:
 - `01-core-seed-progression-plan.md`
 - `02-persistent-discussion-capture.md`
 - `03-module-auth-app-access-prd.md`
+- `03a-module-agent-workstream-runtime-bootstrap-prd.md`
 
 
 ## Workstream architecture alignment
@@ -18,17 +19,17 @@ This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../a
 
 ## 1. Module purpose
 
-Module 2 turns the minimal authenticated app from Module 1 into an administrable SaaS access foundation.
+This module turns the authenticated, agent-runtime-backed shell from Modules 1 and 2 into an administrable SaaS access foundation.
 
 The module gives authorized tenant administrators a visible, secure way to invite people, inspect users, manage memberships and roles, disable access, review access state, and inspect admin audit events. It completes the user administration foundation that later agent, prompt, skill, audit, and evaluation modules rely on.
 
-This module is still a core SaaS foundation module, not an agent governance module. AI-assisted admin offload may be planned as an optional/early companion only if the generated app scope includes the mandatory AI-first admin-agent foundation; the baseline Module 2 outcome must work without requiring later agent-definition modules.
+This module is still a core SaaS foundation module, not full Agent Admin or prompt/skill governance. It must, however, reuse the Module 2 workstream runtime bootstrap so the User Admin experience is a functional-agent workstream backed by protected backend runtime behavior, not a page-first CRUD console. The baseline User Admin outcome must work without requiring the later full Agent Admin UI.
 
 ## 2. User-visible outcome
 
 At completion, an authorized tenant admin can:
 
-1. open an Admin area from the authenticated app shell;
+1. open the User Admin functional agent from the authenticated workstream shell;
 2. view users and memberships within the selected tenant;
 3. invite a user by email with a selected role/capability set;
 4. see invitation delivery/status information;
@@ -44,7 +45,7 @@ At completion, an authorized tenant admin can:
 
 ### In scope
 
-- Tenant-scoped admin area integrated into the Module 1 app shell.
+- Tenant-scoped User Admin functional-agent workstream integrated into the Module 1 shell and Module 2 runtime bootstrap.
 - User/member directory for the selected tenant.
 - Invitation lifecycle: create, resend, revoke/cancel, expire, accept, and delivery status.
 - Explicit email delivery boundary with captured outbox adapter for local/dev/test.
@@ -63,7 +64,7 @@ At completion, an authorized tenant admin can:
 - Billing/subscription enforcement beyond preserving the boundary.
 - Customer-level administration unless the seed app chooses to introduce Customers in this module.
 - Support-access grant workflow beyond a placeholder or explicitly deferred UI card.
-- Advanced policy governance, risk scoring, and AI-drafted admin recommendations unless pulled in by a later admin-agent module.
+- Advanced policy governance, risk scoring, and AI-drafted admin recommendations beyond simple orientation/status behavior provided by the Module 2 bootstrap runtime.
 - Agent definitions, prompt governance, skill governance, work trace timelines, evaluator agents, and closed-loop improvement.
 - Rich notification preferences and production email template management.
 
