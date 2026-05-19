@@ -266,7 +266,7 @@
 
 ### TASK-AW-02-004: Update app-description readiness gates
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/02-description-model-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/02-app-description/04-update-readiness-gates.md
 - depends on: [TASK-AW-02-003]
@@ -284,7 +284,10 @@
 - done criteria:
   - readiness assessment enforces workstream architecture
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update app-description readiness gates for workstreams`
+  - completed: revised readiness assessment to add an agent workstream application completeness dimension, block generation when consequential authenticated work lacks functional agents or structured surfaces, and require User Admin and Agent Admin for full core SaaS scope unless an explicit narrower scope is recorded.
+  - checks: verified readiness guidance marks missing functional agents/surfaces as not ready and marks missing User Admin or Agent Admin as blocking for full core app scope unless explicitly narrowed.
 
 ### TASK-AW-02-005: Refresh app-description examples for workstream model
 
