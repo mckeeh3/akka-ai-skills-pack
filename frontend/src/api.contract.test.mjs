@@ -8,6 +8,10 @@ const fixtureApi = readFileSync(new URL('./api/FixtureApiClient.ts', import.meta
 const httpApi = readFileSync(new URL('./api/HttpApiClient.ts', import.meta.url), 'utf8');
 const realtime = readFileSync(new URL('./api/RealtimeClient.ts', import.meta.url), 'utf8');
 const fixtureRealtime = readFileSync(new URL('./api/FixtureRealtimeClient.ts', import.meta.url), 'utf8');
+const workstreamApi = readFileSync(new URL('./api/WorkstreamApiClient.ts', import.meta.url), 'utf8');
+const fixtureWorkstreamApi = readFileSync(new URL('./api/FixtureWorkstreamApiClient.ts', import.meta.url), 'utf8');
+const workstreamRealtime = readFileSync(new URL('./api/WorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
+const fixtureWorkstreamRealtime = readFileSync(new URL('./api/FixtureWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 
 test('DTOs include seed frontend API contract families', () => {
   assert.match(types, /export type MeResponse/);
@@ -59,4 +63,27 @@ test('fixture realtime client simulates duplicate events and stale recovery', ()
   assert.match(fixtureRealtime, /this.setState\('stale'\)/);
   assert.match(fixtureRealtime, /this.setState\('connected'\)/);
   assert.match(fixtureRealtime, /decision-3/);
+});
+
+test('workstream fixture API client exposes bootstrap, surfaces, actions, and /api/me-shaped contracts', () => {
+  assert.match(workstreamApi, /WorkstreamBootstrapResponse/);
+  assert.match(workstreamApi, /bootstrap\(\)/);
+  assert.match(workstreamApi, /getMe\(\)/);
+  assert.match(workstreamApi, /listFunctionalAgents\(\)/);
+  assert.match(workstreamApi, /listWorkstreamItems/);
+  assert.match(workstreamApi, /getSurface/);
+  assert.match(workstreamApi, /runCapabilityAction/);
+  assert.match(fixtureWorkstreamApi, /meTenantAdmin/);
+  assert.match(fixtureWorkstreamApi, /canonicalSurfaceEnvelopes/);
+  assert.match(fixtureWorkstreamApi, /initialWorkstreamItems/);
+  assert.match(fixtureWorkstreamApi, /actionResultsByStatus/);
+});
+
+test('workstream fixture realtime client emits workstream events and visible stale state', () => {
+  assert.match(workstreamRealtime, /WorkstreamRealtimeClient/);
+  assert.match(workstreamRealtime, /selectedContextId/);
+  assert.match(fixtureWorkstreamRealtime, /workstreamEvents/);
+  assert.match(fixtureWorkstreamRealtime, /duplicateReplayEvent/);
+  assert.match(fixtureWorkstreamRealtime, /outOfOrderEvent/);
+  assert.match(fixtureWorkstreamRealtime, /status: 'stale'/);
 });

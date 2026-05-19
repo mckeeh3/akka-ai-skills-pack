@@ -29,12 +29,23 @@ test('deep links select functional agents, stream items, and surfaces', () => {
 });
 
 test('workstream shell uses fixture contracts and capability action feedback', () => {
+  assert.match(main, /FixtureWorkstreamApiClient/);
   assert.match(main, /canonicalSurfaceEnvelopes/);
   assert.match(main, /initialWorkstreamItems/);
+  assert.match(main, /workstreamClient\.bootstrap\(\)/);
   assert.match(main, /handleSurfaceAction/);
+  assert.match(main, /runCapabilityAction/);
   assert.match(main, /kind: 'action-feedback'/);
-  assert.match(main, /action\.capabilityId/);
+  assert.match(main, /buildCapabilityActionRequest/);
   assert.match(main, /Backend authority, idempotency, audit, and result-surface handling/);
+});
+
+test('workstream entry wires fixture realtime client into stream state', () => {
+  assert.match(main, /FixtureWorkstreamRealtimeClient/);
+  assert.match(main, /realtimeClient\.connect/);
+  assert.match(main, /applyWorkstreamRealtimeEvent/);
+  assert.match(main, /realtimeStatusLabel/);
+  assert.match(main, /selectedContextId: bootstrap\.me\.selectedAuthContext\.selectedContextId/);
 });
 
 test('mode switching uses root data attributes and persists preference', () => {

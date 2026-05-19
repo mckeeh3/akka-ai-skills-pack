@@ -4,21 +4,33 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
+import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient } from './api';
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
 import { SurfaceRenderer } from './workstream/surfaces';
+import { buildCapabilityActionRequest } from './workstream/actions';
+import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
   canonicalSurfaceEnvelopes,
   initialWorkstreamItems,
   meTenantAdmin,
+  type MeResponse,
+  type RealtimeConnectionState,
   type SurfaceAction,
   type SurfaceEnvelope,
   type WorkstreamItem,
   type WorkstreamSelection
 } from './workstream';
 
+const workstreamClient = new FixtureWorkstreamApiClient();
+const realtimeClient = new FixtureWorkstreamRealtimeClient();
+
 type ModePreference = 'light' | 'dark' | 'system';
+type BootstrapState =
+  | { status: 'loading' }
+  | { status: 'ready'; me: MeResponse; items: WorkstreamItem[]; surfaces: SurfaceEnvelope<unknown>[] }
+  | { status: 'error'; message: string };
 
 const modeStorageKey = 'seed-ui-mode';
 // Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · fixture client; Guarded · backend authority.
@@ -26,7 +38,25 @@ const modeStorageKey = 'seed-ui-mode';
 function App() {
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
-  const [items, setItems] = React.useState<WorkstreamItem[]>(initialWorkstreamItems);
+  const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
+  const [realtimeConnection, setRealtimeConnection] = React.useState<RealtimeConnectionState>({ status: 'connecting' });
+  const seenEventIds = React.useRef(new Set<string>());
+  const realtimeLastEventId = React.useRef<string | undefined>(undefined);
+
+  React.useEffect(() => {
+    let active = true;
+    workstreamClient.bootstrap().then((result) => {
+      if (!active) return;
+      setBootstrap(
+        result.ok
+          ? { status: 'ready', me: result.value.me, items: result.value.items, surfaces: result.value.surfaces }
+          : { status: 'error', message: result.error.message }
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     const root = document.documentElement;
@@ -54,9 +84,45 @@ function App() {
     };
   }, []);
 
-  const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? meTenantAdmin.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId;
-  const selectedItems = items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId);
-  const selectedSurfaceId = selection.selectedSurfaceId ?? selectedItems.find((item) => item.surfaceId)?.surfaceId ?? surfaceForAgent(selectedFunctionalAgentId)?.surfaceId;
+  const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
+  const me = ready.me;
+  const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? me.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId;
+  const selectedItems = ready.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId);
+  const selectedSurfaceId = selection.selectedSurfaceId ?? selectedItems.find((item) => item.surfaceId)?.surfaceId ?? surfaceForAgent(ready.surfaces, selectedFunctionalAgentId)?.surfaceId;
+
+  React.useEffect(() => {
+    if (bootstrap.status !== 'ready') return;
+    const stateSubscription = realtimeClient.onState((state) => setRealtimeConnection(state));
+    const eventSubscription = realtimeClient.onEvent((event) => {
+      setBootstrap((current) => {
+        if (current.status !== 'ready') return current;
+        const merged = applyWorkstreamRealtimeEvent(
+          {
+            connection: realtimeConnection,
+            items: current.items,
+            seenEventIds: seenEventIds.current,
+            diagnostics: [],
+            lastEventId: realtimeLastEventId.current
+          },
+          event,
+          current.me.selectedAuthContext.tenantId
+        );
+        seenEventIds.current = merged.seenEventIds;
+        realtimeLastEventId.current = merged.lastEventId;
+        return { ...current, items: merged.items };
+      });
+    });
+    const connectionSubscription = realtimeClient.connect({
+      selectedContextId: bootstrap.me.selectedAuthContext.selectedContextId,
+      functionalAgentId: selectedFunctionalAgentId,
+      lastEventId: realtimeLastEventId.current
+    });
+    return () => {
+      connectionSubscription.unsubscribe();
+      eventSubscription.unsubscribe();
+      stateSubscription.unsubscribe();
+    };
+  }, [bootstrap.status, selectedFunctionalAgentId]);
 
   function updateSelection(nextSelection: Partial<WorkstreamSelection>) {
     const merged = { ...selection, ...nextSelection };
@@ -65,13 +131,13 @@ function App() {
   }
 
   function selectAgent(functionalAgentId: string) {
-    const defaultSurface = surfaceForAgent(functionalAgentId)?.surfaceId;
+    const defaultSurface = surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
     updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
   }
 
   function openSurface(surfaceId: string) {
-    const surface = canonicalSurfaceEnvelopes.find((candidate) => candidate.surfaceId === surfaceId);
+    const surface = ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
     updateSelection({
       selectedFunctionalAgentId: surface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId,
       selectedSurfaceId: surfaceId,
@@ -79,52 +145,79 @@ function App() {
     });
   }
 
-  function handleSurfaceAction(action: SurfaceAction, surfaceId: string) {
+  async function handleSurfaceAction(action: SurfaceAction, surfaceId: string) {
+    const request = buildCapabilityActionRequest(action, {
+      selectedContextId: me.selectedAuthContext.selectedContextId,
+      surfaceId,
+      input: {},
+      surfaceCorrelationId: `corr-${action.actionId}`
+    });
+    const result = await workstreamClient.runCapabilityAction(request);
     const feedbackItem: WorkstreamItem = {
       itemId: `feedback-${Date.now()}`,
       functionalAgentId: selectedFunctionalAgentId ?? 'agent-user-admin',
       kind: 'action-feedback',
       createdAt: new Date().toISOString(),
-      correlationId: `corr-${action.actionId}`,
-      traceIds: [`trace-${action.capabilityId}`],
-      surfaceId,
-      title: `${action.label} requested`,
-      body: `Fixture client accepted ${action.capabilityId}. Backend authority, idempotency, audit, and result-surface handling remain capability-backed.`,
-      status: action.disabled ? 'blocked' : 'ready'
+      correlationId: result.ok ? result.value.correlationId : result.error.correlationId,
+      traceIds: result.ok ? result.value.traceIds : [],
+      surfaceId: result.ok ? result.value.resultSurface?.surfaceId ?? surfaceId : surfaceId,
+      title: result.ok ? `${action.label} ${result.value.status}` : `${action.label} failed`,
+      body: result.ok ? `${result.value.message} Backend authority, idempotency, audit, and result-surface handling remain capability-backed.` : result.error.message,
+      status: result.ok && result.value.status === 'accepted' ? 'ready' : 'blocked'
     };
-    setItems((current) => [...current, feedbackItem]);
+    setBootstrap((current) => {
+      if (current.status !== 'ready') return current;
+      const nextSurfaces = result.ok && result.value.resultSurface && !current.surfaces.some((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId)
+        ? [...current.surfaces, result.value.resultSurface]
+        : current.surfaces;
+      return { ...current, surfaces: nextSurfaces, items: [...current.items, feedbackItem] };
+    });
+  }
+
+  if (bootstrap.status === 'loading') {
+    return <main className="content workstream-panel"><p className="eyebrow">Fixture client</p><h1>Loading workstream shell</h1></main>;
+  }
+
+  if (bootstrap.status === 'error') {
+    return <main className="content workstream-panel"><p className="eyebrow">Fixture client error</p><h1>Could not load workstream shell</h1><p>{bootstrap.message}</p></main>;
   }
 
   return (
     <WorkstreamShell
       key={selectedFunctionalAgentId}
-      me={meTenantAdmin}
+      me={me}
       initialFunctionalAgentId={selectedFunctionalAgentId}
       items={selectedItems}
       onSelectAgent={selectAgent}
       onComposerSubmit={(request) => {
-        setItems((current) => [
-          ...current,
-          {
-            itemId: `composer-${Date.now()}`,
-            functionalAgentId: request.functionalAgentId,
-            kind: 'user-request',
-            createdAt: new Date().toISOString(),
-            correlationId: request.idempotencyKey,
-            traceIds: [],
-            title: 'Composer request captured',
-            body: request.prompt,
-            status: 'ready'
-          }
-        ]);
+        setBootstrap((current) => current.status === 'ready'
+          ? {
+              ...current,
+              items: [
+                ...current.items,
+                {
+                  itemId: `composer-${Date.now()}`,
+                  functionalAgentId: request.functionalAgentId,
+                  kind: 'user-request',
+                  createdAt: new Date().toISOString(),
+                  correlationId: request.idempotencyKey,
+                  traceIds: [],
+                  title: 'Composer request captured',
+                  body: request.prompt,
+                  status: 'ready'
+                }
+              ]
+            }
+          : current)
       }}
     >
       <WorkstreamStream items={selectedItems} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} />
-      <SurfaceRenderer envelopes={canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[]} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
+      <SurfaceRenderer envelopes={ready.surfaces} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
       <section className="ds-card" aria-label="Reference fixture status">
         <p className="eyebrow">Fixture client</p>
         <h3>Workstream-first shell reference</h3>
         <p>Routes are deep links into functional agents, stream items, and structured surfaces; they are not the primary app decomposition.</p>
+        <p className="text-muted">Realtime status: {realtimeStatusLabel(realtimeConnection)}</p>
         <ThemeModeToggle mode={mode} onModeChange={setMode} />
       </section>
     </WorkstreamShell>
@@ -150,8 +243,8 @@ function readDeepLinkSelection(): Partial<WorkstreamSelection> {
   return parseWorkstreamDeepLink(window.location.search || hashQuery);
 }
 
-function surfaceForAgent(functionalAgentId?: string) {
-  return canonicalSurfaceEnvelopes.find((surface) => surface.ownerFunctionalAgentId === functionalAgentId);
+function surfaceForAgent(surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string) {
+  return surfaces.find((surface) => surface.ownerFunctionalAgentId === functionalAgentId);
 }
 
 function readStoredMode(): ModePreference {

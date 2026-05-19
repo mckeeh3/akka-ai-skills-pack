@@ -238,7 +238,7 @@
 
 ### TASK-WUI-03-002: Connect fixture clients and deep links
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/03-frontend-migration-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/03-frontend-migration/02-connect-fixture-clients-and-deep-links.md
 - depends on: [TASK-WUI-03-001]
@@ -259,7 +259,9 @@
 - done criteria:
   - fixture clients and deep links support workstream reference use
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Connect workstream fixture clients and deep links`
+  - completed: added workstream-first fixture API and realtime clients, wired bootstrap/action/realtime handling into the migrated shell, preserved deep-link selection for agents/items/surfaces, added realtime merge helpers, updated contract tests, and rebuilt static assets.
 
 ### TASK-WUI-04-001: Implement User Admin dashboard and list surfaces
 

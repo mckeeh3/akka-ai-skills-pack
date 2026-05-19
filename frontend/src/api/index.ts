@@ -6,3 +6,7 @@ export { FixtureApiClient } from './FixtureApiClient';
 export type * from './RealtimeClient';
 export { mergeRealtimeEvent } from './RealtimeClient';
 export { FixtureRealtimeClient } from './FixtureRealtimeClient';
+export type * from './WorkstreamApiClient';
+export { FixtureWorkstreamApiClient } from './FixtureWorkstreamApiClient';
+export type * from './WorkstreamRealtimeClient';
+export { FixtureWorkstreamRealtimeClient } from './FixtureWorkstreamRealtimeClient';
