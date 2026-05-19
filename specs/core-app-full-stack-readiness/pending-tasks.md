@@ -217,7 +217,7 @@
 
 ### TASK-CORE-03-001: Inventory Agent Admin and hybrid runtime gaps
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/03-agent-admin-runtime-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/03-agent-admin-runtime/01-inventory-agent-admin-runtime-gaps.md
 - depends on: [TASK-CORE-01-001]
@@ -244,6 +244,8 @@
 - done criteria:
   - gaps are concrete and ordered for follow-up tasks
   - task changes and queue update are committed
+- notes:
+  - commit message: `Inventory agent admin runtime gaps`
 
 ### TASK-CORE-03-002: Specify Agent Admin component and API slice
 
