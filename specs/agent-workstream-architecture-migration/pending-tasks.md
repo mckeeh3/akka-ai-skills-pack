@@ -154,7 +154,7 @@
 
 ### TASK-AW-01-005: Sprint 1 consistency review
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/01-agent-workstream-doctrine-and-routing-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/01-doctrine-routing/05-sprint-1-consistency-review.md
 - depends on: [TASK-AW-01-004]
@@ -175,7 +175,11 @@
 - done criteria:
   - Sprint 1 is ready for app-description realignment
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Review Sprint 1 workstream consistency`
+  - completed: reviewed Sprint 1 doctrine, routing map, new top-level skill, manifest exposure, and migration plan for default architecture clarity and scope control.
+  - checks: ran the required `rg` query; reviewed Sprint 1 commit stats and confirmed no broad app-description or UI skill rewrite occurred.
+  - small fix: aligned `docs/capability-first-backend-architecture.md` default sequence, design sequence, and routing implications so capability-first remains the backend substrate after secure SaaS and agent workstream interpretation.
 
 ### TASK-AW-02-001: Revise app-description architecture for workstream verticals
 

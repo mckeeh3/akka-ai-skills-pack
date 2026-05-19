@@ -9,13 +9,14 @@ Default generated-application interpretation:
 ```text
 product intent
 → mandatory secure SaaS foundation
+→ agent workstream application model: role-authorized functional agents, workstreams, and structured surfaces
 → capability inventory
 → authority, scope, schemas, side effects, audit, approval, and supervision rules
 → selected exposure surfaces
 → Akka component realization
 ```
 
-A capability is the backend design object. Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for a capability.
+A capability is the backend design object. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for a capability.
 
 ## Non-negotiable foundation
 
@@ -111,12 +112,13 @@ Choose Akka components from the capability shape, not from CRUD intuition.
 For broad product input or implementation planning:
 
 1. Preserve the mandatory secure SaaS foundation.
-2. Interpret AI-first operating-model needs: delegated work, retained human authority, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
-3. Build a capability inventory before selecting Akka components.
-4. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
-5. Decide which surfaces expose the capability, if any.
-6. Select Akka components that realize the capability semantics.
-7. Generate code/tests component by component while preserving the capability contract.
+2. Interpret the agent workstream application model: functional agents, internal agents, workstreams, structured surfaces, and retained human authority.
+3. Interpret AI-first operating-model needs: delegated work, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
+4. Build a capability inventory before selecting Akka components.
+5. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
+6. Decide which surfaces expose the capability, if any.
+7. Select Akka components that realize the capability semantics.
+8. Generate code/tests component by component while preserving the capability contract.
 
 Do not jump from a product request directly to an entity, endpoint, or agent tool unless the capability contract is already clear enough.
 
@@ -161,9 +163,9 @@ Capability tests should verify behavior, not just component mechanics:
 
 ## Routing implications
 
-Future skills and planning artifacts should use this doctrine as the backend substrate after secure AI-first SaaS interpretation:
+Future skills and planning artifacts should use this doctrine as the backend substrate after secure AI-first SaaS and agent workstream interpretation:
 
-- Description-first paths should maintain capability inventories alongside behavior, auth/security, UI, observability, readiness, and tests.
+- Description-first paths should maintain capability inventories alongside functional agents, internal agents, workstreams, surfaces, behavior, auth/security, UI, observability, readiness, and tests.
 - Direct Akka decomposition should derive capabilities before component selection.
 - PRD/spec/backlog planning should preserve capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks.
 - Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or exposure surfaces.
