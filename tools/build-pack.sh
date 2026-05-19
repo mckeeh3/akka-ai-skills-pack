@@ -168,6 +168,8 @@ PACK_DOC_FILES=(
   docs/agent-skill-expansion-plan.md
   docs/ai-first-examples-and-tests-gap-list.md
   docs/ai-first-saas-application-architecture.md
+  docs/agent-workstream-application-architecture.md
+  docs/structured-surface-contracts.md
   docs/capability-first-backend-architecture.md
   docs/app-description-end-to-end-workflow-example.md
   docs/app-description-maintenance-flow.md
@@ -256,14 +258,22 @@ PACK_DOC_FILES=(
   docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/metrics.md
   docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/traces-and-correlation.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/accessibility-and-responsive.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/agent-catalog-and-detail.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ai-first-surfaces.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/edit-agent-proposals-and-traces.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/functional-agent-rail.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/interactions-and-forms.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/personas-and-journeys.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/prompt-and-skill-governance.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/routes-and-deep-links.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/states-and-realtime.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/structured-surface-rendering.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
   docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ui-index.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/workstream-panel-and-composer.md
+  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/workstream-shell.md
   docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/output-surfaces.md
   docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/realization-scope.md
   docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/regeneration-map.md

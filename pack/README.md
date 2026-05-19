@@ -43,6 +43,8 @@ Installed layout:
   AGENTS.md
   docs/
     ai-first-saas-application-architecture.md
+    agent-workstream-application-architecture.md
+    structured-surface-contracts.md
     capability-first-backend-architecture.md
     skills-pack-user-guide.md
     description-first-application-doctrine.md
@@ -91,6 +93,8 @@ Installed layout:
     references/
       akka-entity-comparison.md
     ai-first-saas/
+      SKILL.md
+    agent-workstream-apps/
       SKILL.md
     capability-first-backend/
       SKILL.md

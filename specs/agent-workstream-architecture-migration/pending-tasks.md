@@ -508,7 +508,7 @@
 
 ### TASK-AW-06-001: Final migration consistency review
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/06-final-consistency-review-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/06-review/01-final-consistency-review.md
 - depends on: [TASK-AW-05-002]
@@ -529,4 +529,8 @@
 - done criteria:
   - migration completion status is documented
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Complete agent workstream migration review`
+  - completed: wrote the migration completion summary, verified routing/docs/examples/skills alignment, confirmed remaining legacy-term hits are anti-drift or route/deep-link implementation notes, and found no required follow-up tasks.
+  - fixes: added workstream doctrine and structured surface docs to pack build output, updated stale seed UI packaging entries, and refreshed installed layout documentation.
+  - checks: ran whole-pack drift search; verified `PACK_DOC_FILES` has no missing paths; ran `bash -n tools/build-pack.sh`, `git diff --check`, and `bash tools/build-pack.sh --output-dir /tmp/akka-ai-skills-pack-review-build --clean --no-archive`.
