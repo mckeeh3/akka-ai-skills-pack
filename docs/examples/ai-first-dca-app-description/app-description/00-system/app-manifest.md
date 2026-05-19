@@ -28,7 +28,7 @@ The reference example covers:
 ## Non-goals
 
 - replacing every CRM, ERP, or DCA feature at once;
-- modeling the product as a chatbot attached to static records;
+- modeling the product as a chatbot, conventional record app, or static-record UI instead of functional agents, workstreams, structured surfaces, governed capabilities, and horizontal Akka implementation;
 - allowing agents to expand their own authority without human-governed policy changes;
 - treating lifecycle state changes, billing-impacting records, customer-sensitive communications, data deletion, or unusual costs as invisible background automation;
 - generating runnable application code from this reference before downstream realization questions are answered.

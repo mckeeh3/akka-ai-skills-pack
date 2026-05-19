@@ -26,5 +26,5 @@
   - `states-and-realtime.md`
   - `accessibility-and-responsive.md`
   - `style-guide.md`
-- legacy compatibility note:
-  - `screens-and-navigation.md` is not the primary UI structure; routes/pages are subordinate implementation details
+- route/deep-link realization detail:
+  - `routes-and-deep-links.md` opens functional-agent workstreams and structured surfaces; routes/pages are subordinate implementation details

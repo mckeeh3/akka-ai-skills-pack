@@ -1,13 +1,13 @@
 ---
 name: app-description-ui
-description: Maintain authoritative frontend/UI descriptions for description-first Akka apps, including user journeys, screens, navigation, interactions, frontend API contracts, accessibility, and responsive behavior.
+description: Maintain authoritative frontend/UI descriptions for description-first Akka apps, including agent workstream shell semantics, functional-agent surfaces, typed surface contracts, routes/deep links, interactions, frontend API contracts, accessibility, and responsive behavior.
 ---
 
 # App Description UI
 
 Use this skill for the mandatory browser frontend of generated full-stack AI-first SaaS apps, and for any description-first work that changes UI meaning.
 
-This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. Preserve supervision, decision, governance, digest, audit, and goal-to-execution surfaces before falling back to CRUD-oriented screens.
+This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, and structured surfaces. Preserve supervision, decision, governance, digest, audit, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
 
 ## Required reading
 
@@ -27,7 +27,7 @@ Read these first if present:
 
 ## Use this skill when
 
-- the user describes screens, pages, dashboards, portals, admin consoles, or browser workflows
+- the user uses UI vocabulary such as screens, pages, dashboards, portals, admin consoles, or browser workflows; normalize generated SaaS requests into functional-agent workstreams, structured surfaces, routes/deep links, and frontend realization details
 - the user describes command centers, mission control, approval queues, decision cards, policy/governance centers, async digests, audit traces, or goal launch workbenches
 - frontend behavior needs to be captured before code generation
 - the app-description needs UI readiness for generation
@@ -40,13 +40,17 @@ Prefer this structure for generated full-stack AI-first SaaS apps:
 ```text
 app-description/55-ui/
   ui-index.md
+  workstream-shell.md
+  functional-agent-rail.md
+  workstream-panel-and-composer.md
+  structured-surface-rendering.md
+  routes-and-deep-links.md
   personas-and-journeys.md
   ai-first-surfaces.md
   agent-catalog-and-detail.md
   prompt-and-skill-governance.md
   skill-manifests-and-tool-permissions.md
   edit-agent-proposals-and-traces.md
-  screens-and-navigation.md
   interactions-and-forms.md
   frontend-api-contracts.md
   states-and-realtime.md
@@ -54,7 +58,7 @@ app-description/55-ui/
   style-guide.md
 ```
 
-Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For a very small app, one `ui-index.md`, `ai-first-surfaces.md`, `agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, `edit-agent-proposals-and-traces.md`, `screens-and-navigation.md`, and `style-guide.md` may be enough because managed-agent foundation UI is mandatory. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata.
+Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For a very small app, one `ui-index.md`, `workstream-shell.md`, `functional-agent-rail.md`, `structured-surface-rendering.md`, `routes-and-deep-links.md`, `ai-first-surfaces.md`, `agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, `edit-agent-proposals-and-traces.md`, and `style-guide.md` may be enough because the workstream shell and managed-agent foundation UI are mandatory. Use `screens-and-navigation.md` only as a legacy compatibility note when maintaining older app descriptions; new generated SaaS descriptions should use `routes-and-deep-links.md`. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata.
 
 ## What to capture
 
@@ -82,12 +86,12 @@ Create only files justified by the app, but do not omit the UI layer for generat
 - Editing agent proposals: `AgentBehaviorEditorAgent` or equivalent proposed diff review, rationale, risk/impact notes, affected artifacts, suggested tests/replays, approval actions, denial reasons, and activation/rollback results.
 - Trace surfaces: prompt assembly, allowed/denied skill loads, tool/data access, policy decisions, approval outcomes, and consequential agent work traces with tenant/customer scope, correlation ids, redaction, and auditor views.
 
-### Screens and navigation
-- screens/pages
-- route or UI path
-- primary and secondary actions
-- empty/not-found states
-- navigation entry/exit points
+### Routes and deep links
+- implementation routes, UI paths, direct surface URLs, and auth-transition/public-static paths
+- mapping from each route/deep link to the selected functional agent, workstream item, or structured surface it opens
+- navigation entry/exit points as shell behavior, not as the primary application decomposition
+- empty/not-found/forbidden route states and recovery actions
+- reminder: primary/secondary actions, loading/error states, and authorization semantics belong first in structured surface contracts and governed capability contracts
 
 ### Interactions and forms
 - forms and fields
@@ -127,7 +131,7 @@ Create only files justified by the app, but do not omit the UI layer for generat
 - brand adaptations and forbidden copied demo content from reference images
 - CSS variable/token expectations for frontend styling
 - frontend implementation shape: standard frontend project
-- UX handoff for each non-trivial screen: primary action, information hierarchy, UX copy, feedback/recovery states, responsive behavior, and keyboard/focus path
+- UX handoff for each non-trivial structured surface or route/deep-link target: primary action, information hierarchy, UX copy, feedback/recovery states, responsive behavior, and keyboard/focus path
 - static asset output and Akka hosting route expectations
 
 If no UI style is selected for a generated AI-first SaaS app, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks web UI implementation/generation tasks until style is selected.

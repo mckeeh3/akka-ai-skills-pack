@@ -484,7 +484,7 @@
 
 ### TASK-AW-05-002: Remove or revise legacy UI alternatives
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/05-legacy-content-removal-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/05-legacy-cleanup/02-remove-revise-legacy-ui.md
 - depends on: [TASK-AW-05-001]
@@ -501,7 +501,10 @@
 - done criteria:
   - known legacy UI alternatives are removed or reframed
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Remove legacy UI architecture drift`
+  - completed: reframed app-description UI routing around the workstream shell, functional-agent surfaces, typed surface contracts, and routes/deep links; updated bootstrap UI skeleton; removed the seed example legacy `screens-and-navigation.md`; and refreshed DCA UI/example wording.
+  - checks: ran the whole-pack drift search across `docs`, `skills`, `pack`, and `README.md`; ran a pack-only drift check confirming no installed-pack guidance presents a conflicting default UX architecture; ran `git diff --check`.
 
 ### TASK-AW-06-001: Final migration consistency review
 

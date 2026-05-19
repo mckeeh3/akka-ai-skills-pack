@@ -140,13 +140,16 @@ app-description/
     governed-agent-traces.md
   55-ui/                  # required for generated full-stack AI-first SaaS apps
     ui-index.md
+    workstream-shell.md
+    functional-agent-rail.md
+    structured-surface-rendering.md
+    routes-and-deep-links.md
     secure-shell-and-context-selection.md
     admin-and-audit-surfaces.md
     agent-catalog-and-detail.md
     prompt-and-skill-governance.md
     skill-manifests-and-tool-permissions.md
     edit-agent-proposals-and-traces.md
-    screens-and-navigation.md
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
