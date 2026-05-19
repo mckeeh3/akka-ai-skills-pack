@@ -4,38 +4,29 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import { CommandStrip, KpiCard, PageHeader as DsPageHeader } from './design-system';
-import { FixtureApiClient, FixtureRealtimeClient, type ApiClient, type RealtimeClient } from './api';
-import { AuditTraceExplorerPage } from './screens/audit/AuditTraceExplorerPage';
-import { AdminUsersPage } from './screens/admin/AdminUsersPage';
-import { BriefingPage } from './screens/briefing/BriefingPage';
-import { DecisionQueuePage } from './screens/decisions/DecisionQueuePage';
-import { GoalWorkbenchPage } from './screens/goals/GoalWorkbenchPage';
-import { GovernancePoliciesPage } from './screens/governance/GovernancePoliciesPage';
-import { ProfilePreferencesPage } from './screens/profile/ProfilePreferencesPage';
+import { WorkstreamShell } from './workstream/shell';
+import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
+import { WorkstreamStream } from './workstream/stream';
+import { SurfaceRenderer } from './workstream/surfaces';
+import {
+  canonicalSurfaceEnvelopes,
+  initialWorkstreamItems,
+  meTenantAdmin,
+  type SurfaceAction,
+  type SurfaceEnvelope,
+  type WorkstreamItem,
+  type WorkstreamSelection
+} from './workstream';
 
 type ModePreference = 'light' | 'dark' | 'system';
-type RouteId = 'briefing' | 'goals' | 'decisions' | 'governance' | 'audit' | 'admin' | 'profile';
 
 const modeStorageKey = 'seed-ui-mode';
-// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · shell route; Pending · fixture client; Guarded · backend authority.
-
-const routes: Array<{ id: RouteId; label: string; group: 'Work' | 'Decisions' | 'Governance' | 'Audit' | 'Admin'; icon: string; path: string }> = [
-  { id: 'briefing', label: 'Briefing', group: 'Work', icon: '⌁', path: '/ui/briefing' },
-  { id: 'goals', label: 'Goals', group: 'Work', icon: '◎', path: '/ui/goals/new' },
-  { id: 'decisions', label: 'Decision queue', group: 'Decisions', icon: '◇', path: '/ui/decisions' },
-  { id: 'governance', label: 'Policies', group: 'Governance', icon: '◈', path: '/ui/governance/policies' },
-  { id: 'audit', label: 'Audit traces', group: 'Audit', icon: '☷', path: '/ui/audit/traces' },
-  { id: 'admin', label: 'Users', group: 'Admin', icon: '◉', path: '/ui/admin/users' },
-  { id: 'profile', label: 'Profile', group: 'Admin', icon: '☼', path: '/ui/profile' }
-];
+// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · fixture client; Guarded · backend authority.
 
 function App() {
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
-  const [route, setRoute] = React.useState<RouteId>(() => routeFromHash());
-  const [navOpen, setNavOpen] = React.useState(false);
-  const apiClient = React.useMemo(() => new FixtureApiClient(), []);
-  const realtimeClient = React.useMemo(() => new FixtureRealtimeClient(), []);
+  const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
+  const [items, setItems] = React.useState<WorkstreamItem[]>(initialWorkstreamItems);
 
   React.useEffect(() => {
     const root = document.documentElement;
@@ -54,130 +45,90 @@ function App() {
   }, [mode]);
 
   React.useEffect(() => {
-    const onHashChange = () => setRoute(routeFromHash());
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    const onLocationChange = () => setSelection(readDeepLinkSelection());
+    window.addEventListener('popstate', onLocationChange);
+    window.addEventListener('hashchange', onLocationChange);
+    return () => {
+      window.removeEventListener('popstate', onLocationChange);
+      window.removeEventListener('hashchange', onLocationChange);
+    };
   }, []);
 
-  function navigate(nextRoute: RouteId) {
-    setRoute(nextRoute);
-    setNavOpen(false);
-    window.location.hash = nextRoute;
-    requestAnimationFrame(() => document.getElementById('main-content')?.focus());
+  const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? meTenantAdmin.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId;
+  const selectedItems = items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId);
+  const selectedSurfaceId = selection.selectedSurfaceId ?? selectedItems.find((item) => item.surfaceId)?.surfaceId ?? surfaceForAgent(selectedFunctionalAgentId)?.surfaceId;
+
+  function updateSelection(nextSelection: Partial<WorkstreamSelection>) {
+    const merged = { ...selection, ...nextSelection };
+    setSelection(merged);
+    window.history.pushState(null, '', serializeWorkstreamDeepLink(merged));
+  }
+
+  function selectAgent(functionalAgentId: string) {
+    const defaultSurface = surfaceForAgent(functionalAgentId)?.surfaceId;
+    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface });
+    requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
+  }
+
+  function openSurface(surfaceId: string) {
+    const surface = canonicalSurfaceEnvelopes.find((candidate) => candidate.surfaceId === surfaceId);
+    updateSelection({
+      selectedFunctionalAgentId: surface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId,
+      selectedSurfaceId: surfaceId,
+      surfacePlacement: 'inline'
+    });
+  }
+
+  function handleSurfaceAction(action: SurfaceAction, surfaceId: string) {
+    const feedbackItem: WorkstreamItem = {
+      itemId: `feedback-${Date.now()}`,
+      functionalAgentId: selectedFunctionalAgentId ?? 'agent-user-admin',
+      kind: 'action-feedback',
+      createdAt: new Date().toISOString(),
+      correlationId: `corr-${action.actionId}`,
+      traceIds: [`trace-${action.capabilityId}`],
+      surfaceId,
+      title: `${action.label} requested`,
+      body: `Fixture client accepted ${action.capabilityId}. Backend authority, idempotency, audit, and result-surface handling remain capability-backed.`,
+      status: action.disabled ? 'blocked' : 'ready'
+    };
+    setItems((current) => [...current, feedbackItem]);
   }
 
   return (
-    <AppShell
-      route={route}
-      mode={mode}
-      navOpen={navOpen}
-      onNavigate={navigate}
-      onModeChange={setMode}
-      onToggleNav={() => setNavOpen((open) => !open)}
-      onCloseNav={() => setNavOpen(false)}
-      apiClient={apiClient}
-      realtimeClient={realtimeClient}
-    />
+    <WorkstreamShell
+      key={selectedFunctionalAgentId}
+      me={meTenantAdmin}
+      initialFunctionalAgentId={selectedFunctionalAgentId}
+      items={selectedItems}
+      onSelectAgent={selectAgent}
+      onComposerSubmit={(request) => {
+        setItems((current) => [
+          ...current,
+          {
+            itemId: `composer-${Date.now()}`,
+            functionalAgentId: request.functionalAgentId,
+            kind: 'user-request',
+            createdAt: new Date().toISOString(),
+            correlationId: request.idempotencyKey,
+            traceIds: [],
+            title: 'Composer request captured',
+            body: request.prompt,
+            status: 'ready'
+          }
+        ]);
+      }}
+    >
+      <WorkstreamStream items={selectedItems} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} />
+      <SurfaceRenderer envelopes={canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[]} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
+      <section className="ds-card" aria-label="Reference fixture status">
+        <p className="eyebrow">Fixture client</p>
+        <h3>Workstream-first shell reference</h3>
+        <p>Routes are deep links into functional agents, stream items, and structured surfaces; they are not the primary app decomposition.</p>
+        <ThemeModeToggle mode={mode} onModeChange={setMode} />
+      </section>
+    </WorkstreamShell>
   );
-}
-
-function AppShell({
-  route,
-  mode,
-  navOpen,
-  onNavigate,
-  onModeChange,
-  onToggleNav,
-  onCloseNav,
-  apiClient,
-  realtimeClient
-}: {
-  route: RouteId;
-  mode: ModePreference;
-  navOpen: boolean;
-  onNavigate: (route: RouteId) => void;
-  onModeChange: (mode: ModePreference) => void;
-  onToggleNav: () => void;
-  onCloseNav: () => void;
-  apiClient: ApiClient;
-  realtimeClient: RealtimeClient;
-}) {
-  const activeRoute = routes.find((item) => item.id === route) ?? routes[0];
-
-  return (
-    <div className="app-shell">
-      <a className="skip-link" href="#main-content">Skip to main content</a>
-      <SidebarNav activeRoute={route} open={navOpen} onNavigate={onNavigate} onClose={onCloseNav} />
-      {navOpen && <button type="button" className="nav-backdrop" aria-label="Close navigation" onClick={onCloseNav} />}
-
-      <div className="main-column">
-        <header className="topbar">
-          <button type="button" className="mobile-menu-button" aria-expanded={navOpen} aria-controls="sidebar-navigation" onClick={onToggleNav}>
-            ☰ <span>Menu</span>
-          </button>
-          <TenantSwitcher />
-          <div className="topbar-actions">
-            <NotificationsButton />
-            <ThemeModeToggle mode={mode} onModeChange={onModeChange} />
-            <UserMenu />
-          </div>
-        </header>
-
-        <main id="main-content" className="content" tabIndex={-1}>
-          <PageHeader route={activeRoute} />
-          <RouteShell route={route} mode={mode} onModeChange={onModeChange} apiClient={apiClient} realtimeClient={realtimeClient} />
-        </main>
-      </div>
-    </div>
-  );
-}
-
-function SidebarNav({ activeRoute, open, onNavigate, onClose }: { activeRoute: RouteId; open: boolean; onNavigate: (route: RouteId) => void; onClose: () => void }) {
-  const grouped = groupRoutes(routes);
-  return (
-    <aside id="sidebar-navigation" className={open ? 'sidebar open' : 'sidebar'} aria-label="Seed app navigation">
-      <div className="brand-lockup" aria-label="AI-First SaaS Seed">
-        <span className="brand-mark" aria-hidden="true">✦</span>
-        <div>
-          <strong>AI-First SaaS Seed</strong>
-          <span>Supervisory console</span>
-        </div>
-      </div>
-      <nav className="nav-groups" aria-label="Primary navigation">
-        {Object.entries(grouped).map(([group, items]) => (
-          <section key={group} className="nav-group" aria-labelledby={`nav-group-${group}`}>
-            <h2 id={`nav-group-${group}`}>{group}</h2>
-            <div className="nav-list">
-              {items.map((item) => (
-                <button key={item.id} type="button" className={activeRoute === item.id ? 'nav-item active' : 'nav-item'} aria-current={activeRoute === item.id ? 'page' : undefined} onClick={() => onNavigate(item.id)}>
-                  <span className="nav-icon" aria-hidden="true">{item.icon}</span>
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-        ))}
-      </nav>
-      <div className="sidebar-bottom">
-        <div className="notification-summary" aria-label="Notification summary"><span className="notification-dot">3</span> pending reviews</div>
-        <p className="fixture-defer-note">Fixture frontend defers real authenticated backend integration, policy commit, trace export, admin authorization, and durable Akka state.</p>
-        <button type="button" className="collapse-button" onClick={onClose}>Collapse</button>
-      </div>
-    </aside>
-  );
-}
-
-function TenantSwitcher() {
-  return (
-    <button type="button" className="tenant-switcher" aria-label="Current tenant: Seed tenant. Tenant switching placeholder.">
-      <span className="tenant-avatar" aria-hidden="true">ST</span>
-      <span><strong>Seed tenant</strong><small>Fixture context</small></span>
-    </button>
-  );
-}
-
-function NotificationsButton() {
-  return <button type="button" className="icon-ghost" aria-label="3 notifications requiring attention">🔔<span className="notification-dot">3</span></button>;
 }
 
 function ThemeModeToggle({ mode, onModeChange }: { mode: ModePreference; onModeChange: (mode: ModePreference) => void }) {
@@ -194,102 +145,18 @@ function ThemeModeToggle({ mode, onModeChange }: { mode: ModePreference; onModeC
   );
 }
 
-function UserMenu() {
-  return (
-    <button type="button" className="user-menu" aria-label="User menu for seed supervisor">
-      <span className="user-avatar" aria-hidden="true">SS</span>
-      <span><strong>Seed Supervisor</strong><small>Supervisor</small></span>
-    </button>
-  );
+function readDeepLinkSelection(): Partial<WorkstreamSelection> {
+  const hashQuery = window.location.hash.includes('?') ? window.location.hash.slice(window.location.hash.indexOf('?')) : '';
+  return parseWorkstreamDeepLink(window.location.search || hashQuery);
 }
 
-function PageHeader({ route }: { route: (typeof routes)[number] }) {
-  return <DsPageHeader eyebrow={route.group} title={route.label}>{pageSubtitle(route.id)}</DsPageHeader>;
-}
-
-function RouteShell({ route, mode, onModeChange, apiClient, realtimeClient }: { route: RouteId; mode: ModePreference; onModeChange: (mode: ModePreference) => void; apiClient: ApiClient; realtimeClient: RealtimeClient }) {
-  if (route === 'profile') {
-    return <ProfilePreferencesPage apiClient={apiClient} mode={mode} onModeChange={onModeChange} />;
-  }
-
-  if (route === 'briefing') {
-    return <BriefingPage apiClient={apiClient} realtimeClient={realtimeClient} />;
-  }
-
-  if (route === 'goals') {
-    return <GoalWorkbenchPage apiClient={apiClient} />;
-  }
-
-  if (route === 'decisions') {
-    return <DecisionQueuePage apiClient={apiClient} />;
-  }
-
-  if (route === 'governance') {
-    return <GovernancePoliciesPage apiClient={apiClient} />;
-  }
-
-  if (route === 'audit') {
-    return <AuditTraceExplorerPage apiClient={apiClient} />;
-  }
-
-  if (route === 'admin') {
-    return <AdminUsersPage apiClient={apiClient} />;
-  }
-
-  return null;
-}
-
-function routeFromHash(): RouteId {
-  const hash = window.location.hash.replace(/^#/, '');
-  return routes.some((item) => item.id === hash) ? hash as RouteId : 'briefing';
+function surfaceForAgent(functionalAgentId?: string) {
+  return canonicalSurfaceEnvelopes.find((surface) => surface.ownerFunctionalAgentId === functionalAgentId);
 }
 
 function readStoredMode(): ModePreference {
   const stored = window.localStorage.getItem(modeStorageKey);
   return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
-}
-
-function groupRoutes(items: typeof routes) {
-  return items.reduce<Record<string, typeof routes>>((groups, item) => {
-    groups[item.group] = [...(groups[item.group] ?? []), item];
-    return groups;
-  }, {});
-}
-
-function pageSubtitle(route: RouteId) {
-  return {
-    briefing: 'Supervise autonomous work, exceptions, policy edges, and strategic decisions.',
-    goals: 'Turn intent into durable goals, plan reviews, tool permissions, and launch gates.',
-    decisions: 'Review recommendations, evidence, risk, policy triggers, and allowed actions.',
-    governance: 'Manage policies, proposals, simulations, commits, and rollback context.',
-    audit: 'Search traces by goal, agent, decision, policy, tool, actor, and time.',
-    admin: 'Manage users, invitations, roles, and tenant access seams.',
-    profile: 'Manage display mode and local user preferences.'
-  }[route];
-}
-
-function routeShellTitle(route: RouteId) {
-  return {
-    briefing: 'Mission control shell',
-    goals: 'Goal workbench shell',
-    decisions: 'Decision review shell',
-    governance: 'Governance center shell',
-    audit: 'Audit explorer shell',
-    admin: 'Admin users shell',
-    profile: 'Profile preferences'
-  }[route];
-}
-
-function routeShellCopy(route: RouteId) {
-  return {
-    briefing: 'Future panels will show KPI bands, agent activity, attention queues, trust controls, and upcoming actions.',
-    goals: 'Future panels will capture objectives, success criteria, constraints, draft plans, and approval gates.',
-    decisions: 'Decision cards show evidence, risk, confidence, impact, policy triggers, allowed actions, stale conflicts, and trace links.',
-    governance: 'Future panels will show policy versions, proposals, simulations, human-authorized commits, and audit links.',
-    audit: 'Future panels will show trace filters, chronological trace results, authorization basis, and correlation ids.',
-    admin: 'Future panels will show invitations, role assignments, validation, and high-impact confirmations.',
-    profile: 'Manage local display preferences.'
-  }[route];
 }
 
 createRoot(document.getElementById('root')!).render(<App />);

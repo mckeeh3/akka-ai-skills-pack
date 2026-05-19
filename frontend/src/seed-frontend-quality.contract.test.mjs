@@ -27,23 +27,17 @@ const screens = Object.fromEntries(
 
 const sourceFiles = collectSourceFiles(new URL('.', import.meta.url).pathname);
 
-test('Slice 8 route shell smoke coverage includes every localized seed route', () => {
-  const routeExpectations = [
-    ['briefing', '/ui/briefing', 'BriefingPage'],
-    ['goals', '/ui/goals/new', 'GoalWorkbenchPage'],
-    ['decisions', '/ui/decisions', 'DecisionQueuePage'],
-    ['governance', '/ui/governance/policies', 'GovernancePoliciesPage'],
-    ['audit', '/ui/audit/traces', 'AuditTraceExplorerPage'],
-    ['admin', '/ui/admin/users', 'AdminUsersPage'],
-    ['profile', '/ui/profile', 'ProfilePreferencesPage']
-  ];
-
-  for (const [id, path, component] of routeExpectations) {
-    assert.match(main, new RegExp(`id: '${id}'`));
-    assert.match(main, new RegExp(`path: '${escapeRegex(path)}'`));
-    assert.match(main, new RegExp(`route === '${id}'`));
-    assert.match(main, new RegExp(`<${component}`));
-  }
+test('Slice 8 route shell has been replaced by workstream deep-link smoke coverage', () => {
+  assert.match(main, /<WorkstreamShell/);
+  assert.match(main, /parseWorkstreamDeepLink/);
+  assert.match(main, /serializeWorkstreamDeepLink/);
+  assert.match(main, /selectedFunctionalAgentId/);
+  assert.match(main, /selectedItemId/);
+  assert.match(main, /selectedSurfaceId/);
+  assert.match(main, /surfacePlacement: 'inline'/);
+  assert.doesNotMatch(main, /route === 'briefing'/);
+  assert.doesNotMatch(main, /path: '\/ui\/briefing'/);
+  assert.doesNotMatch(main, /<BriefingPage/);
 });
 
 test('Slice 8 design-specific acceptance markers remain covered by source contracts', () => {
@@ -67,13 +61,18 @@ test('Slice 8 design-specific acceptance markers remain covered by source contra
 });
 
 test('Slice 8 light dark system accessibility and responsive checklist has source evidence', () => {
+  const workstreamPanel = readFileSync(new URL('./workstream/shell/WorkstreamPanel.tsx', import.meta.url), 'utf8');
+  const workstreamShell = readFileSync(new URL('./workstream/shell/WorkstreamShell.tsx', import.meta.url), 'utf8');
+
   assert.match(tokens, /\[data-mode="light"\]/);
   assert.match(tokens, /\[data-mode="dark"\]/);
   assert.match(main, /mode === 'system'/);
   assert.match(base, /:focus-visible/);
   assert.match(base, /prefers-reduced-motion/);
-  assert.match(main, /<main id="main-content"/);
-  assert.match(main, /Skip to main content/);
+  assert.match(workstreamPanel, /<main id="main-content" className="content workstream-panel"/);
+  assert.match(workstreamPanel, /aria-labelledby="workstream-panel-title"/);
+  assert.match(workstreamShell, /Skip to main workstream/);
+  assert.match(workstreamShell, /FunctionalAgentRail/);
   assert.match(components, /Status is always textual, not color-only|status-pill/);
   assert.match(layout + components, /@media \(max-width: 640px\)/);
   assert.match(components, /\.mission-grid/);
@@ -103,6 +102,3 @@ function collectSourceFiles(dir) {
   });
 }
 
-function escapeRegex(text) {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}

@@ -212,7 +212,7 @@
 
 ### TASK-WUI-03-001: Migrate app shell to workstream shell
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/03-frontend-migration-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/03-frontend-migration/01-migrate-app-shell-to-workstream-shell.md
 - depends on: [TASK-WUI-02-004]
@@ -232,7 +232,9 @@
 - done criteria:
   - primary frontend reference is workstream-first
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Migrate app shell to workstream shell`
+  - completed: replaced the page/route-first React entry with the reusable workstream shell, functional-agent rail, persistent composer, stream, structured surfaces, capability action feedback, deep-link selection, accessibility skip target, aligned stale route tests to quarantine legacy screens, and rebuilt static assets.
 
 ### TASK-WUI-03-002: Connect fixture clients and deep links
 

@@ -9,7 +9,7 @@ type WorkstreamPanelProps = {
 
 export function WorkstreamPanel({ selectedAgent, items = [], children }: WorkstreamPanelProps) {
   return (
-    <main className="content workstream-panel" aria-labelledby="workstream-panel-title">
+    <main id="main-content" className="content workstream-panel" aria-labelledby="workstream-panel-title" tabIndex={-1}>
       <section className="page-header">
         <p className="eyebrow">Continuous workstream</p>
         <h2 id="workstream-panel-title">{selectedAgent?.label ?? 'Select a functional agent'}</h2>

@@ -60,7 +60,7 @@ test('workstream shell composes rail, context bar, panel, and persistent compose
   assert.match(shell, /<WorkstreamPanel/);
   assert.match(shell, /<WorkstreamComposer/);
   assert.match(shell, /aria-label="Persistent composer region"/);
-  assert.match(panel, /<main className="content workstream-panel"/);
+  assert.match(panel, /<main id="main-content" className="content workstream-panel"/);
   assert.match(panel, /aria-labelledby="workstream-panel-title"/);
   assert.match(panel, /tabIndex=\{-1\}/);
 });

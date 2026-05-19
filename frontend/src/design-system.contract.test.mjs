@@ -39,11 +39,16 @@ test('primitives use semantic classes backed by tokenized CSS', () => {
   assert.match(componentsCss, /var\(--color-/);
 });
 
-test('app shell consumes reusable command, KPI, and page-header primitives', () => {
-  assert.match(main, /CommandStrip/);
-  assert.match(main, /KpiCard/);
-  assert.match(main, /PageHeader as DsPageHeader/);
-  assert.match(main, /<DsPageHeader/);
+test('app shell now consumes workstream primitives while design-system primitives remain reusable', () => {
+  const shell = readFileSync(new URL('./workstream/shell/WorkstreamShell.tsx', import.meta.url), 'utf8');
+  const surface = readFileSync(new URL('./workstream/surfaces/DashboardSurface.tsx', import.meta.url), 'utf8');
+
+  assert.match(main, /<WorkstreamShell/);
+  assert.match(shell, /FunctionalAgentRail/);
+  assert.match(shell, /ContextAuthorityBar/);
+  assert.match(shell, /WorkstreamComposer/);
+  assert.match(surface, /ds-card|status-pill/);
+  assert.doesNotMatch(main, /PageHeader as DsPageHeader/);
 });
 
 test('form and dialog primitives expose accessibility attributes', () => {

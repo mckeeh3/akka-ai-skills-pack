@@ -10,19 +10,23 @@ const profile = readFileSync(new URL('./screens/profile/ProfilePreferencesPage.t
 const fixture = readFileSync(new URL('./api/FixtureApiClient.ts', import.meta.url), 'utf8');
 const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
 
-test('Slice 7 wires governance, audit, admin, and profile screens to route shells', () => {
+test('Slice 7 legacy governance, audit, admin, and profile screens remain quarantined while app entry uses workstream shell', () => {
+  const agents = readFileSync(new URL('./workstream/fixtures/agents.ts', import.meta.url), 'utf8');
+  const surfaces = readFileSync(new URL('./workstream/fixtures/surfaces.ts', import.meta.url), 'utf8');
+
   assert.ok(existsSync(new URL('./screens/governance/GovernancePoliciesPage.tsx', import.meta.url)));
   assert.ok(existsSync(new URL('./screens/audit/AuditTraceExplorerPage.tsx', import.meta.url)));
   assert.ok(existsSync(new URL('./screens/admin/AdminUsersPage.tsx', import.meta.url)));
   assert.ok(existsSync(new URL('./screens/profile/ProfilePreferencesPage.tsx', import.meta.url)));
-  assert.match(main, /import \{ GovernancePoliciesPage \}/);
-  assert.match(main, /import \{ AuditTraceExplorerPage \}/);
-  assert.match(main, /import \{ AdminUsersPage \}/);
-  assert.match(main, /import \{ ProfilePreferencesPage \}/);
-  assert.match(main, /route === 'governance'/);
-  assert.match(main, /route === 'audit'/);
-  assert.match(main, /route === 'admin'/);
-  assert.match(main, /route === 'profile'/);
+  assert.match(main, /<WorkstreamShell/);
+  assert.match(agents, /agent-user-admin/);
+  assert.match(agents, /agent-audit-trace/);
+  assert.match(agents, /agent-governance-policy/);
+  assert.match(surfaces, /surface-user-list/);
+  assert.match(surfaces, /surface-audit-timeline/);
+  assert.match(surfaces, /surface-governance-diff/);
+  assert.doesNotMatch(main, /import \{ GovernancePoliciesPage \}/);
+  assert.doesNotMatch(main, /route === 'governance'/);
 });
 
 test('Governance Center implements proposal, simulation, commit warning, and audit links', () => {

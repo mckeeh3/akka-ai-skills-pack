@@ -28,6 +28,7 @@ export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], chil
 
   return (
     <div className="app-shell workstream-shell" data-selected-functional-agent={selectedFunctionalAgentId}>
+      <a className="skip-link" href="#main-content">Skip to main workstream</a>
       <FunctionalAgentRail
         agents={me.functionalAgents}
         selectedFunctionalAgentId={selectedFunctionalAgentId}

@@ -8,32 +8,33 @@ const base = readFileSync(new URL('./styles/base.css', import.meta.url), 'utf8')
 const layout = readFileSync(new URL('./styles/layout.css', import.meta.url), 'utf8');
 const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
 
-test('slice 1 foundation remains present while slice 2 adds route shells', () => {
-  assert.match(main, /data-mode-preference/);
-  assert.match(main, /function AppShell/);
-  assert.match(main, /function SidebarNav/);
-  assert.match(main, /function RouteShell/);
+test('frontend entry composes the canonical workstream shell instead of route pages', () => {
+  assert.match(main, /<WorkstreamShell/);
+  assert.match(main, /<WorkstreamStream/);
+  assert.match(main, /<SurfaceRenderer/);
+  assert.match(main, /meTenantAdmin/);
+  assert.doesNotMatch(main, /function RouteShell/);
+  assert.doesNotMatch(main, /function SidebarNav/);
+  assert.doesNotMatch(main, /from '.\/screens\//);
 });
 
-test('app shell declares planned seed app routes', () => {
-  assert.match(main, /id: 'briefing'/);
-  assert.match(main, /id: 'goals'/);
-  assert.match(main, /id: 'decisions'/);
-  assert.match(main, /id: 'governance'/);
-  assert.match(main, /id: 'audit'/);
-  assert.match(main, /id: 'admin'/);
-  assert.match(main, /id: 'profile'/);
-  assert.match(main, /path: '\/ui\/briefing'/);
-  assert.match(main, /path: '\/ui\/governance\/policies'/);
+test('deep links select functional agents, stream items, and surfaces', () => {
+  assert.match(main, /parseWorkstreamDeepLink/);
+  assert.match(main, /serializeWorkstreamDeepLink/);
+  assert.match(main, /selectedFunctionalAgentId/);
+  assert.match(main, /selectedItemId/);
+  assert.match(main, /selectedSurfaceId/);
+  assert.match(main, /surfacePlacement: 'inline'/);
+  assert.match(main, /window\.history\.pushState/);
 });
 
-test('shell includes tenant, notifications, user, and responsive nav seams', () => {
-  assert.match(main, /function TenantSwitcher/);
-  assert.match(main, /function NotificationsButton/);
-  assert.match(main, /function UserMenu/);
-  assert.match(main, /aria-expanded=\{navOpen\}/);
-  assert.match(main, /aria-controls="sidebar-navigation"/);
-  assert.match(main, /nav-backdrop/);
+test('workstream shell uses fixture contracts and capability action feedback', () => {
+  assert.match(main, /canonicalSurfaceEnvelopes/);
+  assert.match(main, /initialWorkstreamItems/);
+  assert.match(main, /handleSurfaceAction/);
+  assert.match(main, /kind: 'action-feedback'/);
+  assert.match(main, /action\.capabilityId/);
+  assert.match(main, /Backend authority, idempotency, audit, and result-surface handling/);
 });
 
 test('mode switching uses root data attributes and persists preference', () => {
@@ -54,7 +55,7 @@ test('atlas ops supervisory console tokens include light and dark palettes', () 
   assert.match(tokens, /--color-ai: #a855f7/);
 });
 
-test('focus, skip link, reduced motion, and responsive rules are present', () => {
+test('focus, skip link, reduced motion, and responsive shell rules are present', () => {
   assert.match(base, /:focus-visible/);
   assert.match(base, /\.skip-link/);
   assert.match(base, /prefers-reduced-motion/);
@@ -70,7 +71,7 @@ test('status and command-strip components use tokenized semantic classes', () =>
   assert.match(components, /\.status-pill\.success/);
   assert.match(components, /\.status-pill\.warning/);
   assert.match(components, /\.status-pill\.danger/);
-  assert.match(main, /Ready .* shell route/);
+  assert.match(main, /Ready .* workstream shell/);
   assert.match(main, /Pending .* fixture client/);
   assert.match(main, /Guarded .* backend authority/);
 });

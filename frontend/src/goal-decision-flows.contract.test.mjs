@@ -8,13 +8,17 @@ const decisions = readFileSync(new URL('./screens/decisions/DecisionQueuePage.ts
 const fixture = readFileSync(new URL('./api/FixtureApiClient.ts', import.meta.url), 'utf8');
 const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
 
-test('Slice 6 wires goal and decision screens to existing route shells', () => {
+test('Slice 6 legacy goal and decision screens remain quarantined while app entry uses workstream surfaces', () => {
+  const surfaces = readFileSync(new URL('./workstream/fixtures/surfaces.ts', import.meta.url), 'utf8');
+
   assert.ok(existsSync(new URL('./screens/goals/GoalWorkbenchPage.tsx', import.meta.url)));
   assert.ok(existsSync(new URL('./screens/decisions/DecisionQueuePage.tsx', import.meta.url)));
-  assert.match(main, /import \{ GoalWorkbenchPage \}/);
-  assert.match(main, /import \{ DecisionQueuePage \}/);
-  assert.match(main, /route === 'goals'/);
-  assert.match(main, /route === 'decisions'/);
+  assert.match(main, /<WorkstreamShell/);
+  assert.match(main, /<SurfaceRenderer/);
+  assert.match(surfaces, /surface-decision-card/);
+  assert.match(surfaces, /surface-governance-diff|surface-outcome/);
+  assert.doesNotMatch(main, /import \{ GoalWorkbenchPage \}/);
+  assert.doesNotMatch(main, /route === 'goals'/);
 });
 
 test('Goal Workbench implements create, draft plan, launch, and approval acknowledgement states', () => {
