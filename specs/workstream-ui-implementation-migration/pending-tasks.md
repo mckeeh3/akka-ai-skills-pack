@@ -129,7 +129,7 @@
 
 ### TASK-WUI-02-002: Add shell, rail, context, and composer components
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/02-component-library-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/02-component-library/02-add-shell-rail-composer-components.md
 - depends on: [TASK-WUI-02-001]
@@ -153,7 +153,9 @@
 - done criteria:
   - reusable shell components exist
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add workstream shell rail and composer components`
+  - completed: added reusable shell, functional-agent rail, context/authority bar, workstream panel, persistent composer, deep-link/state helpers, and focused component contract tests. Frontend typecheck, tests, and build passed; generated static asset change from build was reverted per component-library migration boundary.
 
 ### TASK-WUI-02-003: Add stream and structured surface components
 
