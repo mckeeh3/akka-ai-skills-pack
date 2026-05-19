@@ -375,7 +375,7 @@
 
 ### TASK-WUI-06-001: Final workstream UI implementation review
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/06-final-review-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/06-review/01-final-workstream-ui-implementation-review.md
 - depends on: [TASK-WUI-05-002]
@@ -400,4 +400,6 @@
   - migration completion summary exists
   - remaining gaps are tracked or explicitly accepted
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Complete workstream UI implementation review`
+  - completed: added migration completion summary with drift-search notes, refreshed frontend/static metadata away from stale seed-console wording, rewrote frontend README around canonical workstream contracts, removed unreferenced generated Vite hash assets, and verified frontend typecheck, tests, and build.
