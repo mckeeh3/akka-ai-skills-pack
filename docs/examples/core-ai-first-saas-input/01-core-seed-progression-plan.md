@@ -4,6 +4,8 @@
 
 This document captures the recommended progressive module sequence for the core AI-first SaaS seed app. It is the implementation progression that future PRD/spec input documents should support.
 
+Use `10-canonical-core-app-prd.md` as the full-core PRD target. Full core scope requires the agent workstream shell plus Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents. If User Admin or Agent Admin are deferred, the selected scope is explicitly `Module 1-only / not full core` rather than full core.
+
 The seed app is not implemented all at once. It is planned and delivered as a sequence of modules, each broken into sprints and harness-sized tasks. Each sprint should produce demonstrable behavior through UI and/or APIs, with tests.
 
 ## Delivery model
@@ -23,7 +25,11 @@ The first sprint of each module should create user-visible value. Backend compon
 
 ### Goal
 
-Users can sign in, enter the app, retrieve their current identity/context, and use a functional authenticated browser shell.
+Users can sign in, enter the app, retrieve their current identity/context, and use a functional authenticated agent workstream shell with an Access/Profile functional agent.
+
+### Scope label
+
+Module 1 by itself is `Module 1-only / not full core`. It explicitly defers User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents.
 
 ### Required visible outcome
 
@@ -39,9 +45,10 @@ A user can authenticate, land in the app, see their profile/context, and encount
 - Selected `AuthContext`.
 - `/api/me` endpoint.
 - Central backend authorization helper/pattern.
-- Frontend authenticated app shell.
+- Frontend authenticated agent workstream shell.
+- Access/Profile functional agent in the role-authorized left rail.
 - Sign-in/sign-out UI.
-- Authenticated landing page.
+- Authenticated landing surface in the main workstream.
 - Context display and minimal context selection if multiple memberships exist.
 - Forbidden and unauthenticated UI states.
 - Security tests for `/api/me`, forbidden access, tenant isolation basics, and frontend secret boundary.
@@ -59,7 +66,7 @@ A user can authenticate, land in the app, see their profile/context, and encount
 
 ### Goal
 
-Authorized admins can manage people and access within tenant/customer boundaries.
+Authorized admins can manage people and access within tenant/customer boundaries through the User Admin functional agent.
 
 ### Required visible outcome
 
@@ -75,14 +82,14 @@ An admin can view users, invite users, manage memberships/roles, disable access,
 - Admin audit events.
 - Access review basics.
 - Support access boundary if included in the seed scope.
-- Admin UI: users, invitations, roles/memberships, access review, admin audit.
+- User Admin functional agent surfaces: users, invitations, roles/memberships, access review, and admin audit.
 - Tests for role denial, disabled user denial, forbidden tenant access, invitation idempotency, and audit emission.
 
 ## Module 3: Agent Definition Foundation
 
 ### Goal
 
-Admins can define, inspect, and govern basic agent records before advanced prompt/skill behavior is added.
+Admins can define, inspect, and govern basic agent records through the Agent Admin functional agent before advanced prompt/skill behavior is added.
 
 ### Required visible outcome
 
@@ -96,7 +103,7 @@ An admin can create or view agent definitions and see their purpose, status, ass
 - Tenant/customer scope.
 - Model configuration placeholder.
 - Tool permission model placeholder.
-- Agent list/detail UI.
+- Agent Admin functional agent list/detail surfaces.
 - Audit for agent definition changes.
 - Tests for authorization and audit.
 

@@ -400,7 +400,7 @@
 
 ### TASK-AW-04-001: Create canonical core app PRD for workstream foundation
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/04-core-app-prd-and-seed-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/04-core-app-prd/01-create-core-app-prd.md
 - depends on: [TASK-AW-03-003]
@@ -422,7 +422,10 @@
 - done criteria:
   - getting-started generation has a hard PRD target
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add canonical core app PRD`
+  - completed: added `10-canonical-core-app-prd.md` as the hard full-core PRD target and updated the core input README/progression plan to require the workstream shell plus Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents.
+  - checks: verified full core requires User Admin and Agent Admin functional agents and that Module 1-only scope is explicitly labeled `Module 1-only / not full core` when User/Admin/Agent Admin are deferred.
 
 ### TASK-AW-04-002: Update getting-started prompt/docs
 

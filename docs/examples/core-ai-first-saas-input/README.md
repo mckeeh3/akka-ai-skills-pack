@@ -8,6 +8,9 @@ Start with:
 
 1. `00-document-development-process-context.md`
 2. `01-core-seed-progression-plan.md`
+3. `10-canonical-core-app-prd.md`
+
+Use `10-canonical-core-app-prd.md` as the hard PRD target for full core generation. Full core scope requires the agent workstream shell plus Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents. If User Admin or Agent Admin are deferred, the selected scope must be recorded as `Module 1-only / not full core` before generation.
 
 Then create and refine the module PRDs one document at a time.
 
