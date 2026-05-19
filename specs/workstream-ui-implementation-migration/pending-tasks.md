@@ -159,7 +159,7 @@
 
 ### TASK-WUI-02-003: Add stream and structured surface components
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/02-component-library-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/02-component-library/03-add-stream-and-surface-components.md
 - depends on: [TASK-WUI-02-002]
@@ -181,7 +181,9 @@
 - done criteria:
   - reusable stream and surface components exist
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add workstream stream and surface components`
+  - completed: added reusable stream item components, trace links, action feedback, stream merge helpers, structured surface renderer, base surface frame/action bar, canonical surface components, and contract tests. Frontend typecheck, tests, and build passed; generated static asset change from build was reverted per component-library migration boundary.
 
 ### TASK-WUI-02-004: Add capability action components
 
