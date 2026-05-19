@@ -76,7 +76,7 @@
 
 ### TASK-CORE-01-002: Harden readiness and generation gates
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/01-scope-and-generation-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/01-scope-and-generation/02-harden-readiness-and-generation-gates.md
 - depends on: [TASK-CORE-01-001]
@@ -99,6 +99,8 @@
 - done criteria:
   - full-core omissions are blocked or explicitly labeled as narrower scope
   - task changes and queue update are committed
+- notes:
+  - commit message: `Harden full-core readiness gates`
 
 ### TASK-CORE-01-003: Create golden-path generation walkthrough
 

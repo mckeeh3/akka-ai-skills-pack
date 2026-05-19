@@ -63,12 +63,16 @@ If generation reveals a semantic gap, the fix belongs in the app description, no
 For every generated SaaS app, never invent missing secure foundation semantics during generation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete Invitation lifecycle, AuthContext, `/api/me`, backend authorization, audit, support-access, billing boundary, admin surfaces, AI-assisted admin offload, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap default behavior seed import, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`), agent governance UI, tenant-isolation, disabled-user, forbidden-access, role/scope-denial, and frontend secret-boundary tests must already be described or generation must stop/mark not-ready.
 For AI-first/delegated operations, never invent missing authority, policy, approval, decision, evidence, trace, outcome, or supervision semantics during generation.
 
+Full-core generation has an additional hard gate: the generation basis must be labeled `full core` and include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records and `readSkill`; workstream UI; and acceptance/security/agent-governance/frontend tests. If any are absent, stop generation unless the requested output is explicitly labeled `Module 1-only / not full core` or another named narrower scope with the omitted full-core areas listed.
+
 ## Generation responsibilities
 
 When generating, this skill must:
 - identify the current description baseline
+- identify the generation scope label (`full core`, `Module 1-only / not full core`, or another narrower scope) from the app description/specs/user instruction and report it in the summary
 - resolve the Java base package from existing project configuration, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred; never use `com.example` for generated application code unless explicitly requested
 - verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
+- block full-core generation or return to readiness if User Admin, Agent Admin, complete invitation onboarding, full user administration, governed runtime agents, workstream UI, or required tests are missing without an explicit narrower-scope label
 - block generation or return to readiness if Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete invitation onboarding, `/api/me`, backend authorization, audit, admin/support-access/billing-boundary semantics, AI-assisted admin offload, governed runtime agent foundation, tenant isolation, forbidden access, disabled-user, role/scope denial, or foundation tests are missing
 - block generation or return to readiness if `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap import of implementation-developed default behavior documents, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposals, or agent catalog/detail/prompt/skill/manifest/tool-permission UI surfaces are missing for generated AI-first SaaS
 - verify readiness did not ignore the required `15-operating-model/` for generated AI-first SaaS apps
@@ -123,6 +127,7 @@ Use this response shape when summarizing generation:
 ## Generation basis
 - description state:
 - readiness state:
+- generation scope label: full core | Module 1-only / not full core | other narrower scope
 - operating-model basis:
 - secure SaaS foundation basis:
 - assumptions used:
@@ -186,6 +191,7 @@ Avoid:
 Before finishing, verify:
 - the description basis for generation is explicit
 - readiness state is explicit
+- generation scope label is explicit and full-core omissions are blocked or labeled as Module 1-only / not full core or another narrower scope
 - secure SaaS foundation basis is explicit and complete enough for generation, including foundation behavior, auth/security, observability, mandatory web UI, and baseline tests
 - missing foundation/security semantics block generation instead of becoming assumptions
 - operating-model basis is explicit for generated AI-first SaaS

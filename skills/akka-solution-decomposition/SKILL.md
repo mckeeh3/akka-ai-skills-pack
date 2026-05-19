@@ -88,20 +88,23 @@ In this repository, prefer these cross-component examples:
 Before any coding, produce a component plan with these sections:
 1. Inputs
 2. Java base package for generated code
-3. AI-first interpretation
-4. Core secure SaaS foundation
-5. Capability summary
-6. Capability-to-component mapping
-7. Chosen components
-8. Why each component exists
-9. Skill routing
-10. Open questions and assumptions
-11. Recommended implementation order
-12. Required tests
+3. Scope label (`full core`, `Module 1-only / not full core`, or another explicit narrower scope)
+4. AI-first interpretation
+5. Core secure SaaS foundation
+6. Capability summary
+7. Capability-to-component mapping
+8. Chosen components
+9. Why each component exists
+10. Skill routing
+11. Open questions and assumptions
+12. Recommended implementation order
+13. Required tests
 
 For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not use `com.example` as the generated application package unless explicitly requested; `com.example` in local examples is only reference material.
 
-Treat sections 6, 8, 10, and 11 as the implementation handoff.
+For section 3, label scope before choosing components. `full core` requires Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, manifests, tool boundaries, prompt/skill/work traces, and authorized `readSkill`); workstream UI; and acceptance/security/agent-governance/frontend tests. `Module 1-only / not full core` is allowed only when the plan explicitly defers User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, unified audit/work trace UI, and governance loops. Any other narrower scope must be named and must list deferred full-core areas.
+
+Treat sections 7, 9, 11, and 12 as the implementation handoff.
 The plan is not complete if it only names components.
 It must also tell the downstream implementation phase:
 - which capability id and contract each component implements or exposes
@@ -125,6 +128,8 @@ Record the selected package in the solution plan and apply it consistently to gr
 ### 1. Apply core secure SaaS foundation
 
 For every new app/PRD/spec handled by this skill, load `core-saas-foundation` and include a `Core secure SaaS foundation` section before app-specific capability decomposition unless the user explicitly asks for non-SaaS reference material.
+
+Do not silently narrow a full-core request to a Module 1-only foundation. If the user asks for full-core generated app readiness, the plan must carry User Admin, Agent Admin, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests through the capability summary, component mapping, implementation order, and required tests. If the plan intentionally covers only Module 1, label it `Module 1-only / not full core` and list the full-core areas deferred.
 
 That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation objects (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, authorized `readSkill(skillId)`), and tenant-isolation tests. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service; missing WorkOS/Resend runtime setting values may become questions, but they must not erase local authorization, tenancy, managed-agent behavior, prompt/skill governance, trace, or tool-boundary contracts. Route complete invitation onboarding work to `akka-saas-invitation-onboarding` for InvitationWorkflow, Resend email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests. Route reusable email service, future feature emails, and agent `@FunctionTool` email surfaces to `akka-resend-email-service`.
 
@@ -562,6 +567,13 @@ Use this exact response shape whenever the task starts from requirements:
 - source:
 - assumptions:
 
+## Java base package
+- package:
+
+## Scope label
+- full core | Module 1-only / not full core | other narrower scope:
+- deferred full-core areas, if not full core:
+
 ## AI-first interpretation
 - operating model:
 - delegated work:
@@ -644,6 +656,8 @@ Avoid:
 
 Before moving from planning to coding, verify:
 - high-level input was explicitly classified as AI-first-applicable or clearly non-agentic
+- scope label is explicit, and any Module 1-only or narrower plan lists deferred full-core areas rather than presenting itself as full core
+- full-core plans include User Admin, Agent Admin, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests in capability summary, component mapping, implementation order, and test plan
 - delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
 - governed capabilities were derived before Akka component selection
 - every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests, or an explicit open question

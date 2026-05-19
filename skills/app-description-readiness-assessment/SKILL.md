@@ -73,6 +73,14 @@ This skill should resist premature generation when important agent workstream, c
 
 Assess the current description across these dimensions:
 
+### 0. Scope-label and full-core gate
+Before scoring readiness, identify the app's declared generation scope from `00-system/app-manifest.md`, `00-system/readiness-status.md`, `00-system/generation-policy.md`, specs, or user instruction:
+- `full core`: readiness is blocked unless the description includes Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`); workstream UI; and acceptance/security/agent-governance/frontend tests.
+- `Module 1-only / not full core`: readiness may be assessed for minimal authentication, `/api/me`, selected AuthContext, Access/Profile, and authenticated shell only, but the result must state that User Admin, Agent Admin, Invitation lifecycle, governed prompts/skills/manifests/tool boundaries, unified audit/work trace UI, and governance loops are deferred.
+- other narrower scope: readiness may be assessed only when the scope is named and every omitted full-core area is listed as out of scope.
+
+If the scope is unlabeled and the user asks for generated AI-first SaaS, assume full-core expectations for readiness. Do not return `ready` or `ready-with-assumptions` for a full-core request that silently omits User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, or required tests.
+
 ### 1. Core secure SaaS foundation completeness
 For every generated SaaS app, this is blocking readiness. Check that the description explicitly defines:
 - SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, and subscription/billing boundary
@@ -199,6 +207,11 @@ Use this response shape:
 ## Overall state
 - not-ready | ready-with-assumptions | ready
 
+## Scope label and full-core gate
+- scope label: full core | Module 1-only / not full core | other narrower scope | unlabeled
+- status:
+- notes:
+
 ## Core secure SaaS foundation completeness
 - status:
 - notes:
@@ -314,6 +327,8 @@ Avoid:
 
 Before finishing, verify:
 - the result uses one of the three allowed states
+- scope label and full-core gate were assessed before readiness state selection
+- full-core omissions of User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, or required tests blocked readiness unless the output explicitly labeled a narrower scope
 - core secure SaaS foundation completeness was assessed explicitly for generated SaaS apps
 - missing foundation/security blocks generation or marks the description `not-ready`
 - agent workstream application completeness was assessed explicitly for generated full-stack AI-first SaaS apps

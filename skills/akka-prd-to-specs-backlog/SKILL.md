@@ -84,6 +84,15 @@ If `specs/` already exists:
 - update indexes rather than duplicating them
 - keep names aligned with the existing module/sprint/backlog or slice/backlog naming pattern
 
+## Full-core planning gate
+
+For generated AI-first SaaS PRDs, classify and record the planning scope before creating specs, backlogs, or pending tasks:
+- `full core`: specs/backlogs/tasks must include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, manifests, tool boundaries, prompt/skill/work traces, and authorized `readSkill`); workstream UI; and acceptance/security/agent-governance/frontend tests.
+- `Module 1-only / not full core`: plans may include only WorkOS/AuthKit sign-in, `/api/me`, selected AuthContext, minimal profile/context display, authenticated shell, and Access/Profile, but every generated artifact must say it is not full core and list User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, unified audit/work trace UI, and governance loops as deferred.
+- any other narrower scope must be named, must list deferred full-core areas, and must not be described as full-core-ready.
+
+Do not create a full-core `specs/pending-tasks.md` queue that collapses or omits User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, or required tests. If the PRD or user asks for full core but these areas cannot be planned yet, create/update `specs/pending-questions.md` or block the affected tasks instead of silently narrowing scope.
+
 ## What this skill must produce
 
 At minimum, create or update these files under `specs/`:
@@ -194,16 +203,17 @@ Start with the same architecture reasoning as `akka-solution-decomposition` and 
 
 The master plan must include:
 1. Inputs
-2. AI-first interpretation: objective, delegated work, retained human authority, durable substrate objects, governance/approval needs, supervision UI, audit/trace needs, and outcome loop when applicable
-3. Core secure SaaS foundation: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals), and tenant-isolation/agent-governance tests
-4. Capability inventory: stable ids/names, classes, actors/callers, AuthContext and scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected exposure surfaces or explicit non-exposure, and required tests
-5. Capability-to-component mapping
-6. Chosen components
-7. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
-8. Skill routing
-9. Open questions and assumptions
-10. Recommended implementation order
-11. Required tests, including capability success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-specific tests
+2. Scope label: `full core`, `Module 1-only / not full core`, or another explicit narrower scope, with deferred full-core areas listed when not full core
+3. AI-first interpretation: objective, delegated work, retained human authority, durable substrate objects, governance/approval needs, supervision UI, audit/trace needs, and outcome loop when applicable
+4. Core secure SaaS foundation: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals), and tenant-isolation/agent-governance tests
+5. Capability inventory: stable ids/names, classes, actors/callers, AuthContext and scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected exposure surfaces or explicit non-exposure, and required tests
+6. Capability-to-component mapping
+7. Chosen components
+8. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
+9. Skill routing
+10. Open questions and assumptions
+11. Recommended implementation order
+12. Required tests, including capability success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-specific tests
 
 Write that to:
 - `specs/akka-solution-plan.md`
@@ -553,6 +563,8 @@ Avoid:
 Before finishing, verify:
 - the PRD has been fully read
 - the solution plan exists
+- every solution plan, sprint/slice, backlog, and pending queue has an explicit scope label when full core could be confused with Module 1-only or another narrower scope
+- full-core plans do not omit or collapse User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, or required tests; narrower plans are explicitly labeled `Module 1-only / not full core` or otherwise named
 - `core-saas-foundation` was applied and `specs/cross-cutting/01-auth-tenancy-audit.md` plus a first foundation sprint/slice were created for SaaS apps
 - first runnable pending tasks implement the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, managed-agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent flow), AI admin responsibilities, decision cards for risky admin actions, audit, frontend shell/context selection/admin/agent-governance surfaces, and tenant-isolation/frontend/agent-governance tests
 - high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition

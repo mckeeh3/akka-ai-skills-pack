@@ -15,9 +15,9 @@ It is the description-first equivalent of project scaffolding, but for the autho
 Create a minimum viable internal app-description tree that:
 - gives the harness a stable root to maintain
 - establishes the mandatory secure SaaS foundation for Account/Profile/Settings/Membership/Tenant/Customer/admin/audit before app-specific features
-- establishes authoritative layers for capabilities, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
+- establishes authoritative layers for capabilities, role-authorized functional-agent workstreams, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
 - records an initial readiness posture
-- defines a generation policy
+- defines a generation policy that labels scope as `full core`, `Module 1-only / not full core`, or another explicit narrower scope
 - creates enough cross-linking that later changes can stay localized and traceable
 
 ## Required reading
@@ -96,6 +96,15 @@ app-description/
     capabilities-index.md
     01-secure-tenant-user-foundation.md
     02-<primary-app-capability>.md
+  12-workstreams/          # required for generated full-stack AI-first SaaS apps
+    functional-agents.md
+    surfaces-index.md
+    surface-contracts/
+      01-access-profile.md
+      02-user-admin.md
+      03-agent-admin.md
+      04-audit-trace.md
+      05-governance-policy.md
   15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
     agent-roles-and-authority.md
@@ -155,6 +164,15 @@ app-description/
 
 Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
+## Full-core scope gate
+
+At bootstrap time, classify the requested generation scope before writing readiness or generation policy:
+- `full core` means the app-description must include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, manifests, tool boundaries, traces, and `readSkill`); workstream UI; and full security/test coverage.
+- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, Access/Profile, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, audit/work trace UI, and governance loops.
+- any other narrower scope must be named in `00-system/app-manifest.md`, repeated in `00-system/readiness-status.md`, and enforced by `00-system/generation-policy.md`.
+
+Do not allow a bootstrap to imply full-core readiness while omitting User Admin, Agent Admin, Invitation onboarding, governed runtime agents, the workstream UI, or required tests. Missing full-core elements are acceptable only when the generated app is explicitly labeled as Module 1-only or another accepted narrower scope.
+
 ## What this skill must derive from input
 
 From the initial user input, derive as applicable:
@@ -163,6 +181,7 @@ From the initial user input, derive as applicable:
 - top-level goal
 - whether the app has AI-first/delegated operating-model semantics
 - delegated work versus retained human authority when applicable
+- selected scope label: `full core`, `Module 1-only / not full core`, or another explicit narrower scope
 - first in-scope capability set, starting with the secure SaaS foundation capability
 - likely primary behavior flow, starting with sign-in, `/api/me`, context selection, Account/Profile/Settings maintenance, administration, invitations, support-access, audit viewing, and tenant/customer-scoped access
 - first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
@@ -185,6 +204,7 @@ Create `00-system/app-manifest.md` with:
 - app id or working name
 - Java base package for generated code, defaulting to `ai.first` only when the user accepts or defers the package question
 - current status
+- selected scope label and whether the current bootstrap is full core or explicitly not full core
 - top-level goals
 - non-goals
 - primary generation targets
@@ -197,7 +217,7 @@ For most fresh bootstraps, prefer:
 - or `ready-with-assumptions` only if the input is already unusually complete
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, and forbids using `com.example` for generated application code unless explicitly requested.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels full-core versus narrower generation scope, blocks unlabeled omissions of User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, and forbids using `com.example` for generated application code unless explicitly requested.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.
