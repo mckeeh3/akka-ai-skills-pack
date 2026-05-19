@@ -9,9 +9,9 @@ Use this skill when the browser UI has forms, commands, mutations, approvals, up
 
 ## Required reading
 
-- `../../../docs/web-ui-frontend-decomposition.md`
-- `../../../docs/web-ui-api-contract-patterns.md`
-- `../../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-frontend-decomposition.md`
+- `../../docs/web-ui-api-contract-patterns.md`
+- `../../docs/web-ui-quality-checklist.md`
 - `../akka-http-endpoint-component-client/SKILL.md`
 
 ## Form rules

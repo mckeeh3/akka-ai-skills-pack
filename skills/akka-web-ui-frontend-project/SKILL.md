@@ -14,9 +14,9 @@ This skill is about web UI project integration only. Defer authentication, autho
 ## Required reading
 
 Read these first if present:
-- `../../../docs/web-ui-frontend-project-integration.md`
-- `../../../docs/web-ui-frontend-decomposition.md`
-- `../../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-frontend-project-integration.md`
+- `../../docs/web-ui-frontend-decomposition.md`
+- `../../docs/web-ui-quality-checklist.md`
 - `../akka-http-endpoint-web-ui/SKILL.md`
 - project `frontend/package.json`
 - project `frontend/vite.config.ts` or equivalent frontend build config
@@ -25,7 +25,7 @@ Read these first if present:
 - matching Akka frontend hosting endpoint and endpoint tests
 
 Reference example document:
-- `../../../frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
+- `../../frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
 
 ## Use this skill when
 
@@ -37,11 +37,16 @@ Reference example document:
 
 For interactive web app work, use this full frontend project path. Keep Akka static-resource guidance focused on generated React/Vite/TypeScript frontend build output.
 
-For workstream apps, organize frontend source around shell regions and reusable surface renderers, for example:
-- `frontend/src/shell/` for the authenticated app shell, rail, workstream panel, composer, and context indicators;
-- `frontend/src/surfaces/` for typed dashboard, form, table, chart, decision, diff, approval, audit timeline, detail, workflow status, and outcome components;
-- `frontend/src/api/` for browser-safe DTO clients and error mapping;
-- `frontend/src/state/` for selected functional agent, stream state, surface state, realtime connection state, and `/api/me` session bootstrap.
+For workstream apps, organize frontend source around the canonical reusable workstream reference, for example:
+- `frontend/src/workstream/shell/` for the authenticated shell, workstream panel, context indicators, and deep-link helpers;
+- `frontend/src/workstream/rail/` for role-authorized functional-agent rail behavior;
+- `frontend/src/workstream/composer/` for the persistent selected-agent composer;
+- `frontend/src/workstream/stream/` for workstream items, action feedback, trace links, and stream merge helpers;
+- `frontend/src/workstream/surfaces/` for typed dashboard, list/search, detail/edit, decision, diff, approval, audit timeline, workflow status, and outcome surface components;
+- `frontend/src/workstream/actions/` for capability-backed action controls and idempotency/result-surface helpers;
+- `frontend/src/workstream/realtime/` for surface/workstream event parsing, dedupe, reconnect, and stale markers;
+- `frontend/src/workstream/types/` and `frontend/src/workstream/fixtures/` for reusable contracts and fixture examples;
+- `frontend/src/api/` for browser-safe DTO clients and error mapping, including `WorkstreamApiClient.ts`, `WorkstreamRealtimeClient.ts`, and fixture implementations.
 
 Do not organize the primary frontend solely as a conventional route/page tree unless the task is public/static, non-SaaS, or explicitly outside the generated workstream default.
 

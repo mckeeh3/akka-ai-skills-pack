@@ -35,28 +35,28 @@ Pair AI-first web UI work with `agent-workstream-apps` and `ai-first-saas-ui-sur
 ## Required reading
 
 Read these first if present:
-- `../../../docs/workstream-ui-reference-architecture.md` for the canonical reusable `frontend/src/workstream/**` implementation shape and User Admin vertical reference
-- `../../../docs/web-ui-frontend-decomposition.md`
-- `../../../docs/web-ui-style-guide.md`
-- `../../../docs/web-ui-ux-patterns.md`
-- `../../../docs/web-ui-frontend-project-integration.md`
-- `../../../docs/structured-surface-contracts.md`
-- `../../../docs/web-ui-api-contract-patterns.md`
-- `../../../docs/web-ui-quality-checklist.md`
-- `../../../docs/web-ui-pattern-selection.md`
+- `../../docs/workstream-ui-reference-architecture.md` for the canonical reusable `frontend/src/workstream/**` implementation shape and User Admin vertical reference
+- `../../docs/web-ui-frontend-decomposition.md`
+- `../../docs/web-ui-style-guide.md`
+- `../../docs/web-ui-ux-patterns.md`
+- `../../docs/web-ui-frontend-project-integration.md`
+- `../../docs/structured-surface-contracts.md`
+- `../../docs/web-ui-api-contract-patterns.md`
+- `../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-pattern-selection.md`
 - `../akka-http-endpoint-web-ui/SKILL.md`
 - existing `frontend/**`
 - existing `src/main/resources/static-resources/**`
 - matching endpoint and endpoint tests under `src/main/java/**/api` and `src/test/java/**`
 
 Canonical frontend project integration reference:
-- `../../../frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
+- `../../frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
 
 Canonical source-repository workstream UI reference:
-- reusable implementation modules: `../../../frontend/src/workstream/**`
-- fixture client seams: `../../../frontend/src/api/workstreamClient.ts` and `../../../frontend/src/api/workstreamRealtime.ts`
-- integrated shell example: `../../../frontend/src/main.tsx`
-- User Admin dashboard/list/detail-edit vertical: `../../../frontend/src/workstream/fixtures/**` and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- reusable implementation modules: `../../frontend/src/workstream/**`
+- fixture client seams: `../../frontend/src/api/WorkstreamApiClient.ts` and `../../frontend/src/api/WorkstreamRealtimeClient.ts`
+- integrated shell example: `../../frontend/src/main.tsx`
+- User Admin dashboard/list/detail-edit vertical: `../../frontend/src/workstream/fixtures/**` and `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
 Use these files as implementation examples for generated SaaS workstream shells. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
 
@@ -73,7 +73,7 @@ Do not use this as the main skill for generated API documentation assets or raw 
 
 ## Planning output before coding
 
-Before implementing generated AI-first SaaS UI, verify that a selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
+Before implementing generated AI-first SaaS UI, verify that a selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
 
 Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and produce a frontend plan with:
 1. User goals and personas

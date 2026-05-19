@@ -15,8 +15,8 @@ Prefer state names that match the human operating model, for example `requiresAp
 
 ## Required reading
 
-- `../../../docs/web-ui-frontend-decomposition.md`
-- `../../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-frontend-decomposition.md`
+- `../../docs/web-ui-quality-checklist.md`
 - existing frontend state/rendering code under `frontend/src/**` if present
 
 ## State model rules

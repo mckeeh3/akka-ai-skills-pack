@@ -154,7 +154,7 @@ For any UI change, update:
 
 When realization is requested, preserve the description-level functional-agent and structured-surface contracts, then use the source-repository reference implementation as a concrete realization target:
 - reusable workstream components and types: `frontend/src/workstream/**`
-- fixture API/realtime seams: `frontend/src/api/workstreamClient.ts` and `frontend/src/api/workstreamRealtime.ts`
+- fixture API/realtime seams: `frontend/src/api/WorkstreamApiClient.ts` and `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell/deep-link example: `frontend/src/main.tsx`
 - User Admin dashboard → list/search → detail/edit vertical: `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 

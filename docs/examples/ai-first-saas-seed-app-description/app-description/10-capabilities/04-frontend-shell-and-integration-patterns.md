@@ -17,8 +17,8 @@
 - implementation reference:
   - `../../../../../docs/workstream-ui-reference-architecture.md`
   - `../../../../../frontend/src/workstream/**`
-  - `../../../../../frontend/src/api/workstreamClient.ts`
-  - `../../../../../frontend/src/api/workstreamRealtime.ts`
+  - `../../../../../frontend/src/api/WorkstreamApiClient.ts`
+  - `../../../../../frontend/src/api/WorkstreamRealtimeClient.ts`
   - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 - surface/workstream links:
   - `../12-workstreams/functional-agents.md`

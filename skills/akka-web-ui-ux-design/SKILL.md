@@ -29,10 +29,10 @@ Do not hide consequential AI behavior behind generic dashboards, page-first CRUD
 
 ## Required reading
 
-- `../../../docs/web-ui-frontend-decomposition.md`
-- `../../../docs/web-ui-ux-patterns.md`
-- `../../../docs/web-ui-style-guide.md`
-- `../../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-frontend-decomposition.md`
+- `../../docs/web-ui-ux-patterns.md`
+- `../../docs/web-ui-style-guide.md`
+- `../../docs/web-ui-quality-checklist.md`
 - relevant app-description UI files under `app-description/55-ui/**` or specs under `specs/**` when present
 
 ## Use this skill when

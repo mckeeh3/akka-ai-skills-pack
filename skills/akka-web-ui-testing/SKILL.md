@@ -9,8 +9,8 @@ Use this skill when adding or reviewing tests for Akka-hosted browser apps.
 
 ## Required reading
 
-- `../../../docs/web-ui-quality-checklist.md`
-- `../../../docs/web-ui-style-guide.md`
+- `../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-style-guide.md`
 - `../akka-http-endpoint-testing/SKILL.md`
 - existing `src/test/java/**WebUi*Test.java`
 - project `frontend/package.json` when present

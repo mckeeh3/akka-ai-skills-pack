@@ -14,7 +14,7 @@ Canonical doctrine:
 
 Current implementation reference:
 - reusable React/Vite/TypeScript modules: `frontend/src/workstream/**`
-- fixture API and realtime seams: `frontend/src/api/workstreamClient.ts`, `frontend/src/api/workstreamRealtime.ts`
+- fixture API and realtime seams: `frontend/src/api/WorkstreamApiClient.ts`, `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `frontend/src/main.tsx`
 - canonical User Admin vertical: fixtures in `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`

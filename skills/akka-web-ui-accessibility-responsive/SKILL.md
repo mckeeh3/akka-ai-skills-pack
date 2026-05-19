@@ -15,8 +15,8 @@ Ensure keyboard and screen-reader paths reach consequential actions such as appr
 
 ## Required reading
 
-- `../../../docs/web-ui-quality-checklist.md`
-- `../../../docs/web-ui-style-guide.md`
+- `../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-style-guide.md`
 - the selected `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when present
 - existing frontend source under `frontend/src/**`
 

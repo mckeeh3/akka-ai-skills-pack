@@ -17,8 +17,8 @@ Realtime UX must make freshness visible. Show when the stream is connecting, liv
 
 - `../akka-http-endpoint-sse/SKILL.md`
 - `../akka-http-endpoint-websocket/SKILL.md`
-- `../../../docs/web-ui-frontend-decomposition.md`
-- `../../../docs/web-ui-quality-checklist.md`
+- `../../docs/web-ui-frontend-decomposition.md`
+- `../../docs/web-ui-quality-checklist.md`
 - existing frontend realtime code under `frontend/src/**` if present
 
 ## Choose SSE vs WebSocket
