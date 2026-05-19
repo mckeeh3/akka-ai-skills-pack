@@ -189,7 +189,7 @@
 
 ### TASK-CORE-02-003: Specify full user administration reference slice
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/02-auth-user-admin-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/02-auth-user-admin/03-spec-full-user-admin-reference-slice.md
 - depends on: [TASK-CORE-02-002]
@@ -212,6 +212,8 @@
 - done criteria:
   - component/API/view/test contracts are ready for future implementation tasks
   - task changes and queue update are committed
+- notes:
+  - commit message: `Specify user admin reference slice`
 
 ### TASK-CORE-03-001: Inventory Agent Admin and hybrid runtime gaps
 
