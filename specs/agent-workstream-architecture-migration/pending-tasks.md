@@ -457,7 +457,7 @@
 
 ### TASK-AW-05-001: Inventory legacy architecture drift
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/05-legacy-content-removal-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/05-legacy-cleanup/01-inventory-legacy-drift.md
 - depends on: [TASK-AW-04-002]
@@ -476,7 +476,11 @@
 - done criteria:
   - migration has an actionable legacy-content inventory
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Inventory legacy workstream drift`
+  - completed: created an actionable legacy-content inventory covering docs, skills, examples, pack guidance, and README exposure.
+  - checks: ran the required drift search across `docs`, `skills`, `pack`, and `README.md`; identified remaining cleanup candidates around app-description UI/bootstrap and example `screens-and-navigation` references.
+  - follow-up: no new task IDs were needed because existing `TASK-AW-05-002` is broad enough to perform the identified cleanup.
 
 ### TASK-AW-05-002: Remove or revise legacy UI alternatives
 
