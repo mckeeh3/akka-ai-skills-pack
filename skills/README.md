@@ -672,7 +672,7 @@ Use when the browser UI is a real frontend application, not just asset-route wir
 
 Then load the focused skill that matches the current task:
 
-- `akka-web-ui-ux-design` — screen intent, information hierarchy, UX copy, feedback/recovery, responsive behavior, and keyboard/focus path for non-trivial browser apps
+- `akka-web-ui-ux-design` — workstream shell and structured surface intent, information hierarchy, UX copy, feedback/recovery, responsive behavior, and keyboard/focus path for non-trivial browser apps
 - `akka-web-ui-frontend-project` — standard frontend project integration, build output, Akka static hosting, and SPA route shape
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
 - `akka-web-ui-state-rendering` — state model, rendering/component update boundaries, loading/empty/error/success states

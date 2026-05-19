@@ -11,6 +11,11 @@ Read first:
 - `02-persistent-discussion-capture.md`
 - `03-module-auth-app-access-prd.md`
 
+
+## Workstream architecture alignment
+
+This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../agent-workstream-application-architecture.md`. Any legacy references to pages, screens, navigation, or route inventory mean structured workstream surfaces, surface actions, and route/deep-link implementation details inside the agent workstream shell. They must not be used to generate a page-first admin console or chatbot-bolt-on app.
+
 ## 1. Module purpose
 
 Module 2 turns the minimal authenticated app from Module 1 into an administrable SaaS access foundation.
@@ -31,7 +36,7 @@ At completion, an authorized tenant admin can:
 6. complete or simulate invitation acceptance through a safe onboarding flow;
 7. change a member's role or disable/re-enable membership access;
 8. see disabled users denied by the app;
-9. run a basic access review screen showing who has access and why;
+9. run a basic access review surface showing who has access and why;
 10. inspect admin audit events for invite, membership, role, and denial activity;
 11. confirm through tests that tenant isolation, role denial, disabled-user denial, invitation idempotency, and audit emission are enforced.
 
@@ -67,7 +72,7 @@ At completion, an authorized tenant admin can:
 | Actor | Description | Module 2 expectations |
 |---|---|---|
 | Tenant Admin | Active member with user-administration capabilities in the selected tenant. | Can manage invitations, memberships, roles, disabled access, access review, and admin audit within that tenant. |
-| Tenant Member | Active member without admin capabilities. | Can view their own profile/context from Module 1 but cannot access admin pages or APIs. |
+| Tenant Member | Active member without admin capabilities. | Can view their own profile/context from Module 1 but cannot access User Admin functional-agent surfaces or APIs. |
 | Invited User | Email recipient with a pending valid invitation. | Can accept invitation and become a member after authenticating/linking identity. |
 | Disabled Member | Account or membership disabled by an admin. | Cannot access protected app areas for that tenant; denial is visible to admin audit. |
 | Revoked/Expired Invitee | Email recipient whose invitation is no longer valid. | Cannot accept the invitation; receives a safe expired/revoked state. |
@@ -84,7 +89,7 @@ Required capabilities:
 - `admin.invitations.manage` — create, resend, revoke, and inspect invitations.
 - `admin.memberships.manage` — enable, disable, revoke, or change member roles.
 - `admin.roles.manage` — assign supported roles/capabilities. Full role editing may be limited.
-- `admin.access_review.read` — view access review screen.
+- `admin.access_review.read` — view access review surface.
 - `admin.access_review.commit` — mark review items as reviewed or take recommended access actions.
 - `admin.audit.read` — inspect admin audit events.
 - `app.access` — inherited baseline app access.
@@ -236,9 +241,9 @@ State owner expectation: append-only audit storage/query pattern compatible with
 
 ### 7.1 Admin navigation and access gate
 
-The app shell must show an Admin navigation entry only to users with appropriate capabilities. Direct URL access must still be checked by the backend and show a forbidden page if denied.
+The app shell must show a User Admin functional-agent rail entry only to users with appropriate capabilities. Direct URL/deep-link access must still be checked by the backend and show a forbidden surface if denied.
 
-Admin pages must be scoped to the selected tenant from Module 1 AuthContext.
+User Admin surfaces must be scoped to the selected tenant from Module 1 AuthContext.
 
 ### 7.2 User/member directory
 
@@ -258,7 +263,7 @@ List columns:
 Behaviors:
 
 - search/filter by email/name/status/role;
-- open member detail panel/page;
+- open member detail surface/panel;
 - show empty state for no additional members;
 - show forbidden state for non-admins;
 - never show users from other tenants.
@@ -365,9 +370,9 @@ Required UI behavior:
 
 ### 7.10 Access review basics
 
-Module 2 includes a lightweight access review page.
+Module 2 includes a lightweight access review surface.
 
-The page should show:
+The surface should show:
 
 - all active admins;
 - all active members;
@@ -405,7 +410,7 @@ Audit UI must not expose raw tokens, invitation secret values, provider secrets,
 
 ## 8. UI requirements
 
-### 8.1 Page and route inventory
+### 8.1 Workstream surfaces and route/deep-link inventory
 
 Minimum routes:
 
@@ -490,7 +495,7 @@ Invitation acceptance route must handle:
 
 ### 8.7 Access review UI
 
-Access review page should present reviewable rows with:
+Access review surface should present reviewable rows with:
 
 - person/email;
 - current role/status;
@@ -500,7 +505,7 @@ Access review page should present reviewable rows with:
 
 ### 8.8 Accessibility and responsive behavior
 
-- Admin tables must support keyboard navigation and accessible labels.
+- Admin tables must support keyboard interaction and accessible labels.
 - Forms must associate labels, help text, and errors.
 - Destructive actions require confirmation and clear result messages.
 - Important status badges must not rely on color alone.
@@ -695,7 +700,7 @@ Given audit events exist in two tenants, when a Tenant A admin opens audit list,
 
 Minimum test coverage:
 
-- Admin navigation visible for admin and hidden/forbidden for non-admin.
+- User Admin rail entry visible for admin and hidden/forbidden for non-admin.
 - User directory returns only selected-tenant members.
 - Invitation creation success with outbox message and audit events.
 - Invitation create validation errors.
@@ -800,7 +805,7 @@ Module 2 is ready for decomposition when the following are true:
 - [ ] Minimal roles and capabilities are accepted.
 - [ ] Last-admin and self-demotion safety rules are accepted.
 - [ ] Membership lifecycle states are accepted.
-- [ ] Admin page inventory and form/list states are accepted.
+- [ ] User Admin surface inventory and form/list states are accepted.
 - [ ] Access review MVP scope is accepted.
 - [ ] Admin audit event coverage is accepted.
 - [ ] Tenant isolation, forbidden access, disabled-user, idempotency, expiry, audit, and frontend secret-boundary tests are accepted.

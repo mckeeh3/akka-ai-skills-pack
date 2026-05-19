@@ -14,6 +14,11 @@ Read first:
 - `05-module-agent-definition-prd.md`
 - `06-module-prompt-governance-prd.md`
 
+
+## Workstream architecture alignment
+
+This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../agent-workstream-application-architecture.md`. Any legacy references to pages, screens, navigation, or route inventory mean structured workstream surfaces, surface actions, and route/deep-link implementation details inside the agent workstream shell. They must not be used to generate a page-first admin console or chatbot-bolt-on app.
+
 ## 1. Module purpose
 
 Module 5 introduces governed skills for application-managed agents.
@@ -327,7 +332,7 @@ Required behavior:
 
 ## 8. UI requirements
 
-### 8.1 Page and route inventory
+### 8.1 Workstream surfaces and route/deep-link inventory
 
 Minimum routes:
 
@@ -335,7 +340,7 @@ Minimum routes:
 - `/app/skills/new` create skill;
 - `/app/skills/:skillDocumentId` skill detail;
 - `/app/skills/:skillDocumentId/edit` skill editor;
-- `/app/skills/:skillDocumentId/review` review screen;
+- `/app/skills/:skillDocumentId/review` review surface;
 - `/app/skills/:skillDocumentId/versions` version history;
 - `/app/skills/:skillDocumentId/versions/:version` version detail;
 - `/app/skills/:skillDocumentId/diff` diff view;
@@ -368,7 +373,7 @@ Editor should include:
 
 ### 8.4 Manifest UI
 
-Agent skill manifest page should show:
+Agent skill manifest surface should show:
 
 - linked AgentDefinition summary;
 - active prompt status if available;
@@ -643,7 +648,7 @@ Deferred to Module 6 Audit and Work Trace:
 - full skill-load and agent execution timeline;
 - unified prompt/skill/model/tool/data-access traces;
 - redaction policy UI;
-- trace search and detail pages.
+- trace search and detail surfaces.
 
 Deferred to Module 7 Evaluation and Closed-Loop Improvement:
 
@@ -673,7 +678,7 @@ Module 5 is ready for decomposition when the following are true:
 - [ ] Compact manifest format is accepted.
 - [ ] Skill content validation and secret-boundary rules are accepted.
 - [ ] Test console scope is accepted as safe demonstration, not production orchestration.
-- [ ] UI route inventory and catalog/editor/review/diff/manifest/test states are accepted.
+- [ ] Workstream surface, route/deep-link, catalog/editor/review/diff/manifest/test states are accepted.
 - [ ] Audit/trace event coverage is accepted.
 - [ ] Tenant isolation, capability denial, versioning, manifest enforcement, skill-load denial, audit/trace, and frontend secret-boundary tests are accepted.
 - [ ] Deferred work trace, evaluation, and production orchestration features are confirmed as not part of Module 5.

@@ -30,7 +30,7 @@ Treat these categories as sensitive:
 ## Response and log minimization
 
 - `/api/me` returns browser-safe account, profile, settings, membership summaries, selected context, role/capability hints, and no secrets.
-- Admin list/search APIs return only fields needed by the administration screen, filtered and paginated server-side by tenant/customer scope.
+- Admin list/search APIs return only fields needed by the administration surface, filtered and paginated server-side by tenant/customer scope.
 - Agent tools receive the least evidence required for the task, with redacted or summarized sensitive fields where possible.
 - Authorization denials must not leak unnecessary cross-tenant/customer data or confirm unrelated resource existence.
 - Logs should include correlation ids, operation ids, outcome categories, and safe identifiers; they must not include raw tokens, provider secrets, full customer/device payloads, or unredacted sensitive tool I/O.

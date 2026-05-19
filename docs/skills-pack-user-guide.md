@@ -238,7 +238,7 @@ A sprint plan should make clear:
 - parent module or capability
 - backend components
 - API or integration surfaces
-- frontend screens if applicable
+- functional-agent workstream surfaces and route/deep-link details if applicable
 - acceptance behavior
 - manual test paths
 - automated checks

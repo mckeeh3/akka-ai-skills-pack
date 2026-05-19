@@ -1,6 +1,6 @@
 ---
 name: akka-web-ui-ux-design
-description: Design excellent user experience for Akka-hosted browser apps before frontend implementation, including screen intent, information hierarchy, interaction quality, UX copy, feedback, recovery, accessibility, and responsive behavior.
+description: Design excellent user experience for Akka-hosted browser apps before frontend implementation, including agent workstream shell intent, structured surface intent, information hierarchy, interaction quality, UX copy, feedback, recovery, accessibility, and responsive behavior.
 ---
 
 # Akka Web UI UX Design
@@ -37,9 +37,9 @@ Do not hide consequential AI behavior behind generic dashboards, page-first CRUD
 
 ## Use this skill when
 
-- a UI brief needs to become implementable screens
-- the user asks for a dashboard, portal, admin console, or browser workflow
-- a screen has forms, decisions, multi-step flows, dense data, status, or errors
+- a UI brief needs to become implementable functional agents, workstream shell regions, or structured surfaces
+- the user asks for a dashboard, portal, admin console, or browser workflow; normalize generated SaaS work into functional agents and surfaces
+- a structured surface has forms, decisions, multi-step flows, dense data, status, or errors
 - UX quality matters, not just route/static asset delivery
 - existing UI work needs review for clarity, polish, accessibility, or task efficiency
 
@@ -47,7 +47,7 @@ Do not use this for static file serving or a single documentation page unless th
 
 ## UX plan required before implementation
 
-For each workstream shell region, structured surface, screen, or major region, define:
+For each workstream shell region, structured surface, or major region, define:
 
 1. **User goal** — what the user is trying to accomplish.
 2. **Primary decision/action** — the one thing that must be obvious.
@@ -87,7 +87,7 @@ Avoid generic copy:
 
 ## Interaction quality rules
 
-- Each screen has one dominant purpose.
+- Each structured surface has one dominant purpose.
 - The primary action is visually obvious and reachable without scrolling on common layouts when practical.
 - Secondary/destructive actions do not compete with the primary action.
 - Dense data has search, filter, sort, grouping, or progressive disclosure when needed.
@@ -126,7 +126,7 @@ Deep-link behavior:
 Implementation notes:
 ```
 
-For AI-first screens, add:
+For AI-first structured surfaces, add:
 
 ```text
 AI-first surface type:

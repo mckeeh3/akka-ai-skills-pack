@@ -156,7 +156,7 @@ Build a capability inventory before deciding entities, workflows, views, endpoin
 - policy, approval, escalation, risk/confidence/impact thresholds, supervision, and governance requirements
 - audit/work-trace obligations for access, denials, approvals, side effects, tool activity, and data references
 - selected exposure surfaces: browser UI, HTTP/gRPC, MCP, agent tool/component tool, workflow step, timer action, consumer reaction, view/query, or internal-only
-- browser UI needs, including screens, navigation, forms, frontend state, realtime behavior, accessibility, and responsive requirements
+- browser UI needs, including functional agents, workstream shell regions, structured surfaces, surface actions/forms, route/deep-link details, frontend state, realtime behavior, accessibility, and responsive requirements
 - AI and LLM needs, if genuinely prompt-driven
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and surface-specific tests
 
@@ -241,7 +241,7 @@ Do not introduce an agent for deterministic business rules that should stay in c
 
 Choose surfaces after capability semantics are fixed:
 - `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
-- `Akka-hosted web UI app` for full browser applications with screens, typed API clients, forms, state, selected frontend project shape, and frontend quality requirements; prioritize supervision, decision, governance, digest, audit, and outcome surfaces when AI-first concerns exist
+- `Akka-hosted web UI app` for full browser applications with an agent workstream shell, structured surfaces, typed API clients, surface actions/forms, state, selected frontend project shape, and frontend quality requirements; prioritize supervision, decision, governance, digest, audit, and outcome surfaces when AI-first concerns exist
 - `gRPC endpoint` for protobuf-first service APIs
 - `MCP endpoint` for selectively exposed LLM-oriented tools, resources, or prompts
 
@@ -457,7 +457,7 @@ Then add only what is needed:
 - `akka-http-endpoint-jwt` for protected browser/API routes; only public static asset routes are outside authenticated API authorization
 - `akka-http-endpoint-testing`
 
-The implementation handoff must include frontend screens, frontend project shape, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, static asset route plan, SPA routing choice, and tests.
+The implementation handoff must include functional agents, structured surfaces, surface actions/forms, frontend project shape, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, static asset route/deep-link plan, SPA routing choice, and tests.
 
 ### If the plan includes WorkOS user authentication or basic administration
 

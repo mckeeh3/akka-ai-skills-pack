@@ -15,6 +15,11 @@ Read first:
 - `06-module-prompt-governance-prd.md`
 - `07-module-skill-governance-prd.md`
 
+
+## Workstream architecture alignment
+
+This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../agent-workstream-application-architecture.md`. Any legacy references to pages, screens, navigation, or route inventory mean structured workstream surfaces, surface actions, and route/deep-link implementation details inside the agent workstream shell. They must not be used to generate a page-first admin console or chatbot-bolt-on app.
+
 ## 1. Module purpose
 
 Module 6 turns security audit events and agent-governance activity into a unified, tenant-scoped audit and work trace experience.
@@ -58,7 +63,7 @@ At completion, an authorized auditor, admin, or reviewer can:
 - Full SIEM integration, long-term archive, legal hold, or enterprise compliance exports.
 - Cross-tenant SaaS Owner investigation console unless explicitly accepted.
 - Advanced anomaly detection or risk scoring.
-- Production-scale observability dashboards beyond trace/audit UX.
+- Production-scale observability surfaces beyond trace/audit UX.
 
 ## 4. Actors
 
@@ -271,7 +276,7 @@ Rules:
 - secret fields are never displayed;
 - sensitive fields are masked unless user has `trace.sensitive.read`;
 - exports default to redacted;
-- full prompt/skill content should normally be linked to governed version pages rather than duplicated in traces;
+- full prompt/skill content should normally be linked to governed version surfaces rather than duplicated in traces;
 - denied/cross-tenant access should not reveal resource existence.
 
 ### 7.6 Optional realtime trace stream
@@ -287,7 +292,7 @@ Rules:
 
 ## 8. UI requirements
 
-### 8.1 Page and route inventory
+### 8.1 Workstream surfaces and route/deep-link inventory
 
 Minimum routes:
 
@@ -301,7 +306,7 @@ Minimum routes:
 
 ### 8.2 Audit landing
 
-Landing page should summarize:
+Landing surface should summarize:
 
 - recent denied authorization events;
 - recent admin changes;
@@ -392,7 +397,7 @@ Required backend authorization checks:
 - require `trace.export` for export/copy actions;
 - require `trace.stream` for realtime stream;
 - verify target trace/event belongs to selected tenant;
-- apply artifact-specific access checks for linked prompt/skill content pages;
+- apply artifact-specific access checks for linked prompt/skill content surfaces;
 - audit denied trace access attempts.
 
 ## 11. Correlation and trace rules
@@ -444,7 +449,7 @@ Given an auditor has `audit.read` and `trace.read`, when they open `/app/audit`,
 
 ### Scenario 2: Member is forbidden
 
-Given a normal member lacks trace capabilities, when they open audit pages or call trace APIs, then access is forbidden and a denial event is emitted.
+Given a normal member lacks trace capabilities, when they open audit surfaces or call trace APIs, then access is forbidden and a denial event is emitted.
 
 ### Scenario 3: Auth denial appears in audit
 
@@ -539,7 +544,7 @@ A successful Module 6 demo should run as follows:
 4. Filter for prompt governance events and open a prompt activation trace.
 5. Filter for skill-load events and open a trace showing manifest and skill version basis.
 6. Open an invitation work trace timeline and inspect lifecycle events.
-7. Sign in as a normal member and confirm audit pages are forbidden.
+7. Sign in as a normal member and confirm audit surfaces are forbidden.
 8. Attempt cross-tenant trace access and confirm denial/no leakage.
 9. Inspect redaction behavior with and without sensitive-read capability.
 10. Run tests proving trace ingestion, correlation, tenant isolation, redaction, capability denial, and frontend secret boundary.
@@ -564,7 +569,7 @@ Deferred to later hardening/modules:
 - support-access investigation console;
 - SaaS Owner cross-tenant audit console;
 - anomaly detection and risk scoring;
-- full observability metrics dashboard.
+- full observability metrics surface.
 
 ## 18. Readiness checklist
 
@@ -575,7 +580,7 @@ Module 6 is ready for decomposition when the following are true:
 - [ ] Event categories, event types, and trace completeness rules are accepted.
 - [ ] Redaction policy basics and sensitive-read capability are accepted.
 - [ ] Trace access capabilities and role mapping are accepted.
-- [ ] UI route inventory and search/timeline/detail states are accepted.
+- [ ] Workstream surface, route/deep-link, search/timeline/detail states are accepted.
 - [ ] Optional stream/export scope is accepted or deferred.
 - [ ] Tenant isolation, capability denial, redaction, correlation, trace ingestion, and frontend secret-boundary tests are accepted.
 - [ ] Evaluator, replay, proposal, outcome, SIEM, and enterprise retention features are confirmed as not part of Module 6.

@@ -12,6 +12,11 @@ Read first:
 - `03-module-auth-app-access-prd.md`
 - `04-module-user-admin-prd.md`
 
+
+## Workstream architecture alignment
+
+This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../agent-workstream-application-architecture.md`. Any legacy references to pages, screens, navigation, or route inventory mean structured workstream surfaces, surface actions, and route/deep-link implementation details inside the agent workstream shell. They must not be used to generate a page-first admin console or chatbot-bolt-on app.
+
 ## 1. Module purpose
 
 Module 3 introduces the first durable AI-first administration surface: governed agent definitions.
@@ -37,7 +42,7 @@ At completion, an authorized admin can:
 
 ### In scope
 
-- Tenant-scoped Agent navigation and UI.
+- Tenant-scoped Agent Admin functional-agent rail entry and structured surfaces.
 - `AgentDefinition` durable object.
 - Agent lifecycle basics: draft, active, disabled, archived.
 - Agent purpose and responsibility statement.
@@ -68,7 +73,7 @@ At completion, an authorized admin can:
 |---|---|---|
 | Tenant Admin | Active tenant admin from Module 2. | Can view and manage agent definitions if granted agent admin capabilities. |
 | Agent Owner / Steward | Business owner responsible for an agent's purpose and behavior. | Can be assigned as owner; may edit or review definitions if permitted. |
-| Tenant Member | Active user without agent admin capabilities. | Cannot access agent admin pages or APIs unless given read-only capability. |
+| Tenant Member | Active user without agent admin capabilities. | Cannot access Agent Admin functional-agent surfaces or APIs unless given read-only capability. |
 | Auditor/Admin Reviewer | User with read-only audit or agent review capability. | Can inspect agent definitions and audit events without mutation if role exists. |
 | Seed Operator | Initial admin used for demo/test. | Can create the first sample agent definition. |
 | Future Agent Runtime | Later module/runtime that will consume active AgentDefinitions. | Not implemented here, but definition shape must be stable enough for later use. |
@@ -196,7 +201,7 @@ State owner expectation: reuse Module 2 audit storage/query pattern and keep it 
 
 ### 7.1 Agent navigation and access gate
 
-The app shell must show an Agents navigation entry to users with `agents.read` or higher. Direct URL access must still be checked by backend APIs and show a forbidden state when denied.
+The app shell must show an Agent Admin functional-agent rail entry to users with `agents.read` or higher. Direct URL access must still be checked by backend APIs and show a forbidden state when denied.
 
 ### 7.2 Agent definition list
 
@@ -250,7 +255,7 @@ Validation:
 
 ### 7.4 Inspect agent definition detail
 
-Detail page shows:
+Agent detail surface shows:
 
 - all core definition fields;
 - lifecycle status;
@@ -325,13 +330,13 @@ This is not a production chat or real agent execution feature.
 
 ## 8. UI requirements
 
-### 8.1 Page and route inventory
+### 8.1 Agent Admin surfaces and route/deep-link inventory
 
 Minimum routes:
 
 - `/app/agents` agent definition list;
 - `/app/agents/new` create form;
-- `/app/agents/:agentDefinitionId` detail page;
+- `/app/agents/:agentDefinitionId` detail surface;
 - `/app/agents/:agentDefinitionId/edit` edit form or modal;
 - optional `/app/agents/:agentDefinitionId/test` placeholder test console;
 - agent-related audit may link to `/app/admin/audit` from Module 2.
@@ -362,7 +367,7 @@ Required form behavior:
 
 ### 8.4 Detail UI
 
-Detail page should include:
+Agent detail surface should include:
 
 - summary header with name/status/authority;
 - purpose and responsibility panel;
@@ -566,7 +571,7 @@ A successful Module 3 demo should run as follows:
 1. Sign in as seed Tenant Admin.
 2. Open Agents and see empty state.
 3. Create a draft agent definition named, for example, "Admin Audit Summary Agent" with advisory authority and no external tools.
-4. Open detail page and inspect purpose, owner, model placeholder, prompt/skill placeholders, and tool boundary.
+4. Open detail surface and inspect purpose, owner, model placeholder, prompt/skill placeholders, and tool boundary.
 5. Activate the ready definition.
 6. Attempt to broaden authority with a limited user and see forbidden state.
 7. Disable the agent definition and confirm optional test/runtime selection is unavailable.
@@ -621,7 +626,7 @@ Module 3 is ready for decomposition when the following are true:
 - [ ] Authority levels and tool boundary placeholders are accepted.
 - [ ] Model configuration reference/secret-boundary rule is accepted.
 - [ ] Prompt and skill references are confirmed as placeholders for later modules.
-- [ ] Agent UI route inventory and form/detail states are accepted.
+- [ ] Agent Workstream surface, route/deep-link, form/detail states are accepted.
 - [ ] Audit event coverage is accepted.
 - [ ] Tenant isolation, capability denial, lifecycle validation, audit, and frontend secret-boundary tests are accepted.
 - [ ] Deferred runtime execution, prompt governance, skill governance, work trace, and evaluation features are confirmed as not part of Module 3.

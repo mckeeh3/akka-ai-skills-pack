@@ -15,7 +15,7 @@ This is a focused foundation skill. Pair it with:
 - `akka-consumers` for email delivery/outbox side effects
 - `akka-timed-actions` and `akka-timers-scheduling` for expiry/reminders
 - `akka-views` and `akka-view-query-patterns` for `InvitationView`
-- HTTP and web UI skills for admin endpoints and screens
+- HTTP and web UI skills for admin endpoints plus User Admin functional-agent invitation surfaces
 
 ## Required reading
 

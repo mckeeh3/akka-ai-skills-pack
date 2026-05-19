@@ -14,46 +14,46 @@ Design reference:
 
 ## Cross-surface rules
 
-- Backend authorization is authoritative for every protected screen, query, stream, and action; frontend navigation is never authorization.
+- Backend authorization is authoritative for every protected surface, query, stream, and action; frontend navigation is never authorization.
 - Every protected browser action or query links to a governed capability in `../10-capabilities/` and must preserve the same `AuthContext`, tenant/customer scope, validation, idempotency, approval, and audit semantics.
 - Consequential agent work must resolve into durable goals, plans, decision cards, approvals, policy proposals, traces, outcomes, or audited side effects.
 - Decision surfaces must expose recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, allowed actions, stale-state status, and trace links before action submission.
 - Routine activity may be compressed in briefings, but every summary item must drill down to trace facts.
-- UI tests must cover loading, empty, error, success, authorization denial, stale/realtime, idempotent duplicate submit, frontend secret-boundary, and trace-link behavior for realized screens.
+- UI tests must cover loading, empty, error, success, authorization denial, stale/realtime, idempotent duplicate submit, frontend secret-boundary, and trace-link behavior for realized surfaces.
 
-## Navigation model
+## Functional-agent rail model
 
-Primary navigation should expose the way humans operate the dealer business:
+The primary authenticated shell is a role-authorized functional-agent rail. Each rail entry opens a durable workstream with default briefing/attention surfaces and follow-up actions:
 
-1. `Owner Brief` — catch up on material work, pending decisions, outcome deltas, and admin/security attention items (`CAP-09`, `CAP-10`, `CAP-00`).
-2. `Mission Control` — supervise active customer, device, DCA, supply, service, billing, onboarding, and offboarding objectives (`CAP-01` through `CAP-10`).
-3. `Approvals & Exceptions` — decide policy-bound recommendations and blocked workflow gates (`CAP-03`, `CAP-04`, `CAP-05`, `CAP-06`, `CAP-07`, `CAP-08`).
-4. `Supplies Autopilot` — review the first-slice supply automation queue, recommendations, shipments, suppressions, and outcomes (`CAP-03`).
-5. `Lifecycle Workbench` — inspect or launch onboarding, service, billing, offboarding, and retention plans (`CAP-01`, `CAP-04`, `CAP-05`, `CAP-06`, `CAP-07`).
-6. `Policy Center` — edit, simulate, and commit governed policies, thresholds, examples, and proposals (`CAP-08`).
-7. `Audit & Outcomes` — investigate work traces, decision traces, policy invocations, data access, admin audit, and outcome links (`CAP-10`, `CAP-00`).
-8. `Administration` — manage sign-in context, users, invitations, roles/memberships, access review, support access, tenant/customer settings, and admin audit (`CAP-00`).
+1. `Owner Brief Agent` — catch up on material work, pending decisions, outcome deltas, and admin/security attention items (`CAP-09`, `CAP-10`, `CAP-00`).
+2. `Operations Control Agent` — supervise active customer, device, DCA, supply, service, billing, onboarding, and offboarding objectives (`CAP-01` through `CAP-10`).
+3. `Approvals & Exceptions Agent` — decide policy-bound recommendations and blocked workflow gates (`CAP-03`, `CAP-04`, `CAP-05`, `CAP-06`, `CAP-07`, `CAP-08`).
+4. `Supplies Autopilot Agent` — review the first-slice supply automation queue, recommendations, shipments, suppressions, and outcomes (`CAP-03`).
+5. `Lifecycle Workbench Agent` — inspect or launch onboarding, service, billing, offboarding, and retention plans (`CAP-01`, `CAP-04`, `CAP-05`, `CAP-06`, `CAP-07`).
+6. `Policy/Governance Agent` — edit, simulate, and commit governed policies, thresholds, examples, and proposals (`CAP-08`).
+7. `Audit & Outcomes Agent` — investigate work traces, decision traces, policy invocations, data access, admin audit, and outcome links (`CAP-10`, `CAP-00`).
+8. `User Admin Agent` — manage sign-in context, users, invitations, roles/memberships, access review, support access, tenant/customer settings, and admin audit (`CAP-00`).
 
-Record detail pages may exist, but they should be reached from objectives, traces, decisions, queues, or admin searches rather than becoming the main product frame.
+Record detail routes may exist, but they deep-link into structured surfaces reached from objectives, traces, decisions, queues, or admin searches rather than becoming the main product frame.
 
 ## Surface catalog
 
-| Surface | Primary roles | Capability links | Required backing views/APIs | Test links |
-|---|---|---|---|---|
-| Owner Brief | Dealer owner, Outcome owner, Supervisor | `CAP-09`, `CAP-10`, `CAP-00` | digest summary view, pending decisions by stakes, material events, admin/security attention items, outcome deltas, `/api/realtime/stream` topics | acceptance owner-brief checks, operational outcome/trace checks, authorization denial |
-| Mission Control | Supervisor, Exception handler | `CAP-01` through `CAP-10` | active objectives, agent activity stream, lifecycle gates, risk clusters, trace links, SSE/WebSocket updates | realtime/stale, scoped dashboard, trace-link, tenant-isolation |
-| Approvals & Exceptions | Reviewer, Approver, Exception handler | `CAP-03` through `CAP-08` | risk-ranked decision queue, decision detail, approve/reject/modify/defer/escalate/request-evidence APIs | approval bypass, stale version conflict, idempotent action, audit trace |
-| Supplies Autopilot | Supplies owner, Inventory owner, Supervisor | `CAP-03`, consumes `CAP-02`, links `CAP-10` | supply risk queue, recommendation/evidence views, auto-ship history, suppressed shipments, decision cards, shipment trace drawer | supplies acceptance, policy-gated automation, suppression, integration failure, outcome follow-up |
-| Lifecycle Workbench | Intent author, Supervisor | `CAP-01`, `CAP-04`, `CAP-05`, `CAP-06`, `CAP-07` | plan creation/review, gate status, launch/pause/resume APIs, lifecycle views, policy version binding | lifecycle gate, invalid transition, approval, exception, trace, tenant-scope |
-| Policy Center | Policy owner, Dealer owner, Auditor | `CAP-08` | versioned policy editor, proposals, simulation/replay results, commit/discard/rollback APIs | proposal-not-activation, simulation/replay, rollback, policy-version citation |
-| Audit & Outcomes | Auditor, Policy owner, Outcome owner | `CAP-10`, `CAP-00` | trace search, decision provenance, policy invocation timeline, outcome reports, redacted export where permitted | audit search, redaction, support-access, outcome-link, restricted-audit |
-| Administration | Tenant Admin, Customer Admin, SaaS Owner support, Auditor | `CAP-00` | `/api/me`, UserDirectoryView, InvitationView, MembershipView, AccessReviewQueueView, AdminAuditView, support-access and tenant/customer settings APIs | tenant isolation, disabled user, role/scope denial, invite lifecycle, support access, billing boundary, frontend secret-boundary |
+| Structured surface | Primary functional agent(s) | Primary roles | Capability links | Required backing views/APIs | Test links |
+|---|---|---|---|---|---|
+| Owner Brief | Owner Brief Agent | Dealer owner, Outcome owner, Supervisor | `CAP-09`, `CAP-10`, `CAP-00` | digest summary view, pending decisions by stakes, material events, admin/security attention items, outcome deltas, `/api/realtime/stream` topics | acceptance owner-brief checks, operational outcome/trace checks, authorization denial |
+| Mission Control | Operations Control Agent | Supervisor, Exception handler | `CAP-01` through `CAP-10` | active objectives, agent activity stream, lifecycle gates, risk clusters, trace links, SSE/WebSocket updates | realtime/stale, scoped dashboard, trace-link, tenant-isolation |
+| Approvals & Exceptions | Approvals & Exceptions Agent | Reviewer, Approver, Exception handler | `CAP-03` through `CAP-08` | risk-ranked decision queue, decision detail, approve/reject/modify/defer/escalate/request-evidence APIs | approval bypass, stale version conflict, idempotent action, audit trace |
+| Supplies Autopilot | Supplies Autopilot Agent | Supplies owner, Inventory owner, Supervisor | `CAP-03`, consumes `CAP-02`, links `CAP-10` | supply risk queue, recommendation/evidence views, auto-ship history, suppressed shipments, decision cards, shipment trace drawer | supplies acceptance, policy-gated automation, suppression, integration failure, outcome follow-up |
+| Lifecycle Workbench | Lifecycle Workbench Agent | Intent author, Supervisor | `CAP-01`, `CAP-04`, `CAP-05`, `CAP-06`, `CAP-07` | plan creation/review, gate status, launch/pause/resume APIs, lifecycle views, policy version binding | lifecycle gate, invalid transition, approval, exception, trace, tenant-scope |
+| Policy Center | Policy/Governance Agent | Policy owner, Dealer owner, Auditor | `CAP-08` | versioned policy editor, proposals, simulation/replay results, commit/discard/rollback APIs | proposal-not-activation, simulation/replay, rollback, policy-version citation |
+| Audit & Outcomes | Audit & Outcomes Agent | Auditor, Policy owner, Outcome owner | `CAP-10`, `CAP-00` | trace search, decision provenance, policy invocation timeline, outcome reports, redacted export where permitted | audit search, redaction, support-access, outcome-link, restricted-audit |
+| Administration | User Admin Agent | Tenant Admin, Customer Admin, SaaS Owner support, Auditor | `CAP-00` | `/api/me`, UserDirectoryView, InvitationView, MembershipView, AccessReviewQueueView, AdminAuditView, support-access and tenant/customer settings APIs | tenant isolation, disabled user, role/scope denial, invite lifecycle, support access, billing boundary, frontend secret-boundary |
 
-## Mandatory foundation administration screens
+## Mandatory foundation administration surfaces
 
-These surfaces remain present alongside DCA operational surfaces because the DCA vertical reference extends the secure SaaS seed rather than replacing it.
+These structured surfaces remain present in the Access/Profile and User Admin functional-agent workstreams because the DCA vertical reference extends the secure SaaS seed rather than replacing it.
 
-| Screen | Purpose | Capability/API needs | Required checks |
+| Surface | Purpose | Capability/API needs | Required checks |
 |---|---|---|---|
 | Sign-in and invitation acceptance | authenticate through WorkOS/AuthKit and complete invite-based first login | WorkOS browser auth, `POST /api/invitations/accept`, no privileged self-registration | invite token/context validation, expired/revoked invite denial, no frontend secrets |
 | Context selector | select active tenant/customer context | `GET /api/me`, selected `AuthContext` persistence | disabled membership denial, tenant/customer isolation |
@@ -66,9 +66,9 @@ These surfaces remain present alongside DCA operational surfaces because the DCA
 | Admin Audit | search security/admin events | AdminAuditView, admin summary agent where permitted | redaction, support-access visibility, audit-summary trace links |
 | Tenant/Customer Settings | inspect tenant/customer boundaries and safe settings | tenant/customer settings query/update APIs | billing-boundary separation, scope denial, audit |
 
-## First-slice DCA screen set: Supplies Autopilot
+## First-slice DCA surface set: Supplies Autopilot Agent
 
-The initial DCA implementation slice should make these screens concrete before expanding to service, billing, onboarding, and offboarding.
+The initial DCA implementation slice should make these structured surfaces concrete in the Supplies Autopilot Agent workstream before expanding to service, billing, onboarding, and offboarding.
 
 ### Supplies Command Center
 
@@ -146,7 +146,7 @@ Required timeline events:
 - Evidence, policy clause, risk, confidence, impact, trace links, and authority boundary fields must remain visible on narrow screens before action controls.
 - Color is not the only risk indicator; include text labels, icons, and ordering.
 - Long timelines and evidence lists should preserve semantic headings and progressive disclosure.
-- Administration screens must keep destructive or privilege-changing controls behind explicit labels, confirmations, focus management, and post-action audit feedback.
+- Administration surfaces must keep destructive or privilege-changing controls behind explicit labels, confirmations, focus management, and post-action audit feedback.
 
 ## Akka and web UI routing
 

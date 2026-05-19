@@ -5,7 +5,7 @@ description: Model frontend state and rendering for Akka-hosted full web apps, i
 
 # Akka Web UI State and Rendering
 
-Use this skill when implementing browser state, screen rendering, DOM updates, or navigation-aware display logic.
+Use this skill when implementing browser state, structured surface rendering, DOM updates, or workstream/deep-link-aware display logic.
 
 ## AI-first state role
 
@@ -45,20 +45,20 @@ Do not hide these states in booleans such as `isLoading` plus nullable data unle
 6. Avoid unsafe HTML injection; keep `innerHTML`/dangerous HTML APIs only for static trusted templates or avoid them entirely.
 7. Disable controls while submitting and make progress visible.
 
-## Navigation
+## Workstream and deep-link state
 
-If the UI has more than one screen:
-- define screen IDs or route names in the project's router/navigation structure
-- expose active navigation state visibly
-- support meaningful URLs with hash or history routes when useful
-- render not-found states for unknown routes
+For generated full-stack AI-first SaaS apps:
+- define functional-agent ids, workstream item ids, surface ids, and route/deep-link names in the project's router/state structure
+- expose selected functional agent, AuthContext, and active surface state visibly
+- support meaningful URLs with hash or history routes when useful, but keep them as deep links into workstreams/surfaces
+- render not-found, forbidden, and unavailable-agent states for unknown or unauthorized deep links
 
 ## Done criteria
 
 A state/rendering implementation is done when:
-- all planned screens render from explicit state
+- all planned workstream shell regions and structured surfaces render from explicit state
 - every data dependency has loading/empty/error behavior
-- AI-first supervision screens distinguish working, waiting-for-human, exception, policy-blocked, stale, trace-ready, and outcome-review states when applicable
+- AI-first supervision surfaces distinguish working, waiting-for-human, exception, policy-blocked, stale, trace-ready, and outcome-review states when applicable
 - action results update state without requiring a full page reload unless intentional
 - failures are visible to users, not just logged
 - approval, rejection, escalation, policy-commit, and feedback actions show concrete success/failure states when those actions are in scope

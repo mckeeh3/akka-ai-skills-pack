@@ -4,7 +4,7 @@ Use this document whenever an app includes a browser UI. The visual style is par
 
 ## Policy
 
-Generated full-stack SaaS apps must use an AI-first supervision-oriented UI system by default. Do not select older dashboard/CRM/project-management visual styles for new generated AI-first SaaS apps; those patterns overfit conventional CRUD/analytics screens and do not make delegated work, authority, policy, evidence, decisions, traces, and outcomes prominent enough.
+Generated full-stack SaaS apps must use an AI-first supervision-oriented UI system by default. Do not select older dashboard/CRM/project-management visual styles for new generated AI-first SaaS apps; those patterns overfit conventional CRUD/analytics pages and do not make delegated work, authority, policy, evidence, decisions, traces, and outcomes prominent enough.
 
 Style selection is intentionally narrow:
 
@@ -150,7 +150,7 @@ Lightweight style customization may change only:
 
 It must not change:
 
-- screen inventory
+- surface inventory
 - navigation structure
 - grid behavior
 - card anatomy
@@ -306,7 +306,7 @@ It must not change:
 ### Main content
 
 - responsive content grid with maximum width token
-- page title and subtitle above the AI command strip
+- surface title and subtitle above the AI command strip
 - dashboard regions use a 12-column grid on wide screens
 - cards stack by priority on narrow screens
 - decision/exception queues remain above lower-priority reports on narrow screens
@@ -386,11 +386,11 @@ Required elements:
 - status meaning must be represented with label text and/or icons, not color alone
 - critical metrics use tabular numerals
 
-## Required screen patterns
+## Required surface patterns
 
 Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashboards:
 
-- **Mission Control / Briefing:** page framing, AI command strip, operational KPI band, agent execution timeline, needs-your-attention queue, agent teams/trust summary, trust controls, upcoming autonomous actions.
+- **Mission Control / Briefing:** surface framing, AI command strip, operational KPI band, agent execution timeline, needs-your-attention queue, agent teams/trust summary, trust controls, upcoming autonomous actions.
 - **Goal Workbench:** objective form, success criteria, constraints, proposed execution plan, agent/team assignment, tool/data permissions, approval gates, launch simulation/review action.
 - **Decision Queue and Decision Detail:** filters by priority/policy/agent/due time, recommendation summary, evidence/risk, alternatives, approve/reject/counter/defer/escalate actions, trace and outcome links.
 - **Governance Center:** policy list and versions, thresholds, authority boundaries, proposed changes, simulations/replays, human-authorized commit flow, rollback and audit links.

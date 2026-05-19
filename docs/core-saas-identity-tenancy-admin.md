@@ -204,7 +204,7 @@ Required baseline operations:
 
 ## Administration UI surfaces
 
-For generated full-stack AI-first SaaS apps, the foundation includes mandatory first-slice web screens for: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
+For generated full-stack AI-first SaaS apps, the foundation includes mandatory first-slice User Admin functional-agent surfaces for: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
 
 ## Administration flows
 
@@ -275,7 +275,7 @@ Frontend rules:
 - `/api/me` returns available memberships, selected context, base profile, and base settings needed to render the shell;
 - UI routes and navigation are filtered by selected context;
 - switching context must update API request scope;
-- profile and settings screens must call backend APIs and respect scoped visibility/editability rules;
+- profile and settings surfaces must call backend APIs and respect scoped visibility/editability rules;
 - hidden navigation is not a security boundary.
 
 ## WorkOS integration expectations
@@ -394,7 +394,7 @@ Record audit events for:
 | `InvitationWorkflow` | Invite creation, email delivery/outbox, WorkOS sign-in/link, activation, expiry, resend, revoke/cancel, acceptance idempotency, delivery status, delivery attempts, and audit. |
 | `AccessReviewTimedAction` | Periodic stale-access/support-access checks. |
 | `UserDirectoryView` | Scoped user list/search and user detail entry points without requiring known user ids. |
-| `MembershipView` | Scoped membership lifecycle, role/status filters, support-access expiry, and last-admin risk rows for SaaS Owner, Tenant Admin, and Customer Admin screens. |
+| `MembershipView` | Scoped membership lifecycle, role/status filters, support-access expiry, and last-admin risk rows for SaaS Owner, Tenant Admin, and Customer Admin surfaces. |
 | `InvitationView` | Scoped invitation status, delivery status, resend/revoke visibility, expiry, and delivery failure rows. |
 | `AdminAuditView` | Queryable admin audit trail with actor, target user, action type, scope, role, membership status, invitation status, risk/policy metadata, and time-range filters. |
 | `AccessReviewQueueView` | Stale invite, dormant access, risky role combination, support-access, last-admin review queue, due/expiry time, and agent-generated recommendation index. |
@@ -428,7 +428,7 @@ Record audit events for:
 - [ ] Admins can list/search users, view user detail, and manage users without already knowing internal user IDs.
 - [ ] Admins can assign/replace/remove roles and add/suspend/reactivate/remove memberships inside their authority boundary.
 - [ ] Last-admin protection prevents removing the final active Tenant Admin or Customer Admin.
-- [ ] Tenant-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review screens.
+- [ ] Tenant-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review surfaces.
 - [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView are first-slice read models with required query filters, scoped query authorization, redaction, pagination, stale invite/access-review correctness, and audit trace completeness tests.
 - [ ] Risky admin actions can produce decision cards.
 - [ ] Governed runtime agent foundation is present for foundation agents: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.

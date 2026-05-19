@@ -13,6 +13,11 @@ Read first:
 - `04-module-user-admin-prd.md`
 - `05-module-agent-definition-prd.md`
 
+
+## Workstream architecture alignment
+
+This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../agent-workstream-application-architecture.md`. Any legacy references to pages, screens, navigation, or route inventory mean structured workstream surfaces, surface actions, and route/deep-link implementation details inside the agent workstream shell. They must not be used to generate a page-first admin console or chatbot-bolt-on app.
+
 ## 1. Module purpose
 
 Module 4 introduces governed, runtime-managed agent prompts.
@@ -40,7 +45,7 @@ At completion, an authorized admin or agent steward can:
 
 ### In scope
 
-- Tenant-scoped prompt governance UI integrated with Module 3 AgentDefinition detail pages.
+- Tenant-scoped prompt governance UI integrated with Module 3 AgentDefinition detail surfaces.
 - Governed prompt document model with draft/review/approved/active/deprecated lifecycle.
 - Event-sourced current prompt document state.
 - Immutable version snapshots for prompt history and diff UI.
@@ -70,7 +75,7 @@ At completion, an authorized admin or agent steward can:
 | Tenant Admin | Active tenant admin with prompt governance capabilities. | Can manage prompt documents, approve/activate versions, and inspect audit. |
 | Agent Steward | Owner/steward assigned to an AgentDefinition. | Can draft and possibly submit prompt changes for owned agents. |
 | Prompt Reviewer / Approver | User with review/activation capability. | Can review diffs, approve, reject, and activate prompt versions. |
-| Tenant Member | Active user without prompt capabilities. | Cannot access prompt governance pages or APIs. |
+| Tenant Member | Active user without prompt capabilities. | Cannot access Prompt Governance surfaces or APIs. |
 | Auditor/Admin Reviewer | User with read-only prompt/audit capability. | Can inspect prompt versions and audit without mutation. |
 | Future Agent Runtime | Runtime path that resolves the active prompt version for an agent. | Consumes active version reference and prompt assembly metadata. |
 
@@ -198,7 +203,7 @@ Required event types:
 
 ### 7.1 Prompt navigation and access gate
 
-Agent detail pages from Module 3 must show prompt governance entry points to users with `prompts.read`. Direct route/API access must still be backend-enforced.
+Agent detail surfaces from Module 3 must show prompt governance entry points to users with `prompts.read`. Direct route/API access must still be backend-enforced.
 
 ### 7.2 Prompt document creation
 
@@ -241,7 +246,7 @@ Unknown variables must be rejected or flagged.
 
 Prompt reviewers can inspect submitted versions and approve or reject them.
 
-Review screen must include:
+Review surface must include:
 
 - submitted prompt content;
 - diff from active version or previous version;
@@ -314,7 +319,7 @@ This console is for prompt validation, not general production chat.
 
 ## 8. UI requirements
 
-### 8.1 Page and route inventory
+### 8.1 Workstream surfaces and route/deep-link inventory
 
 Minimum routes:
 
@@ -322,7 +327,7 @@ Minimum routes:
 - `/app/agents/:agentDefinitionId/prompts/new` create prompt document;
 - `/app/prompts/:promptDocumentId` prompt detail;
 - `/app/prompts/:promptDocumentId/edit` draft editor;
-- `/app/prompts/:promptDocumentId/review` review/approval screen;
+- `/app/prompts/:promptDocumentId/review` review/approval surface;
 - `/app/prompts/:promptDocumentId/versions` version history;
 - `/app/prompts/:promptDocumentId/versions/:version` version detail;
 - `/app/prompts/:promptDocumentId/diff` version diff view;
@@ -602,7 +607,7 @@ A successful Module 4 demo should run as follows:
 3. Open Prompts and create a system prompt document.
 4. Edit and save a draft prompt.
 5. Submit the prompt for review.
-6. Open review screen, inspect diff, and approve the version.
+6. Open review surface, inspect diff, and approve the version.
 7. Activate the approved version.
 8. Run the prompt test console and inspect assembly metadata.
 9. Create a second draft, compare diff against active version, and reject or leave in draft.
@@ -653,7 +658,7 @@ Module 4 is ready for decomposition when the following are true:
 - [ ] Secret-boundary rule for prompt text and model references is accepted.
 - [ ] Minimal prompt assembly layers and trace metadata are accepted.
 - [ ] Test console scope is accepted as safe validation, not production chat.
-- [ ] UI route inventory and editor/review/diff/test states are accepted.
+- [ ] Workstream surface, route/deep-link, editor/review/diff/test states are accepted.
 - [ ] Audit event coverage is accepted.
 - [ ] Tenant isolation, capability denial, versioning, activation, diff, audit, and frontend secret-boundary tests are accepted.
 - [ ] Deferred skill governance, work trace, evaluation, and production runtime features are confirmed as not part of Module 4.

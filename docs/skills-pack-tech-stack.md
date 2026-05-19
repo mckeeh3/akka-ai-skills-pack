@@ -53,7 +53,7 @@ For harness agents creating higher-level app-design skills, this means the targe
 4. workflows and long-running processes,
 5. AI-agent responsibilities and tool boundaries,
 6. HTTP/gRPC/MCP/API surfaces,
-7. React/Vite/TypeScript UI screens and client contracts,
+7. React/Vite/TypeScript agent workstream shell, structured surfaces, and client contracts,
 8. tests and acceptance criteria across backend, frontend, and agent behavior.
 
 In short: this skills pack supports designing and generating **modern full-stack Akka applications**: event-driven, CQRS-friendly, workflow-capable, AI-agent-native, and integrated with TypeScript React frontends.

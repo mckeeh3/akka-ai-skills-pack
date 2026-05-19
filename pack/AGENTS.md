@@ -9,15 +9,15 @@ It is distinct from the repository-internal maintainer guidance used to develop 
 
 This pack creates **full-stack secure AI-first SaaS on Akka**. Treat that as the generated-application target from the start of every project unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
 
-Security and the web UI are mandatory. Every generated SaaS application must begin with a secure foundation: identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, security review, and browser UI surfaces for sign-in, context selection, administration, supervision, decisions, governance, audit, and outcomes. Do not defer these to later hardening/polish or wait for the user to ask for them.
+Security and the web UI are mandatory. Every generated SaaS application must begin with a secure foundation plus the agent workstream shell: identity, local authorization, Tenant/Customer boundaries, memberships, roles/scopes, `/api/me`, backend authorization checks, audit events, tenant-isolation tests, security review, role-authorized functional agents, continuous workstreams, persistent composer, context/authority indicators, and structured surfaces for sign-in, context selection, administration, supervision, decisions, governance, audit, and outcomes. Do not defer these to later hardening/polish or wait for the user to ask for them.
 
 AI-first SaaS means agents do bounded work while humans supervise, decide, approve, audit, teach, and own outcomes. First decide which durable goals/plans, bounded agents or agent teams, policy and approval controls, supervision surfaces, audit traces, and outcome loops the product needs; then model backend behavior as governed capabilities before applying only the justified Akka substrate components and exposure surfaces on top of the mandatory secure SaaS foundation.
 
 This pack supports a secure AI-first interpretation layer plus two complementary ways of working in a real development project:
 
 0. **secure AI-first SaaS interpretation**
-   - inspect high-level product intent before decomposing into CRUD or isolated components
-   - model the mandatory secure SaaS foundation and browser UI surfaces before app-specific features
+   - inspect high-level product intent before decomposing into CRUD, page trees, or isolated components
+   - model the mandatory secure SaaS foundation and agent workstream shell before app-specific features
    - model delegated work, retained human authority, policies, decisions, traces, supervision, and outcomes when applicable
    - route through `skills/ai-first-saas/SKILL.md` and focused AI-first companion skills only as needed
 1. **capability-first backend modeling**

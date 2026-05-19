@@ -29,7 +29,7 @@ The frontend build owns generated files under `static-resources/`. Edit `fronten
 Use a standard React/Vite/TypeScript frontend project when the browser app has product surface area, especially when it:
 
 - has a functional-agent rail, continuous stream, composer, structured surfaces, or complex state
-- has multiple screens, direct surface URLs, or deep links that support the workstream shell
+- has multiple structured surfaces, direct surface URLs, or deep links that support the workstream shell
 - needs React or another UI framework
 - needs Vite or another bundler for production assets
 - has componentized UI code, design-system styling, or frontend test tooling

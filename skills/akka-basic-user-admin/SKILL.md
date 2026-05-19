@@ -155,7 +155,7 @@ Generated SaaS apps are not generation-ready if admin management only supports i
 Generated SaaS foundations must expose backend-authorized admin query endpoints over the first-slice read models:
 
 - `UserDirectoryView`: search by authorized tenant/customer scope, email/name, account status, role, membership status, identity link state, and last activity; return browser-safe user summaries and user-detail entry links only inside caller scope.
-- `MembershipView`: filter by tenant, customer, account, role, membership status, support-access expiry, and last-admin risk; support access-review and role/membership lifecycle screens.
+- `MembershipView`: filter by tenant, customer, account, role, membership status, support-access expiry, and last-admin risk; support access-review and role/membership lifecycle surfaces.
 - `InvitationView`: filter by target email, tenant/customer scope, invitation status, delivery status, expiry/due time, inviter, delivery attempts, and resend/revoke eligibility.
 - `AdminAuditView`: filter by actor, target user, tenant, customer, role, membership status, invitation status, action type, policy/decision-card link, risk when present, and time range.
 - `AccessReviewQueueView`: filter by tenant/customer scope, risk, due/expiry time, review status, item type, target user, role, membership status, invitation status, delivery status, and agent recommendation source.
@@ -167,7 +167,7 @@ Backend authorization and redaction rules:
 - do not use frontend filters as the security boundary;
 - include pagination and stable supported Akka View query shapes for large admin/audit result sets.
 
-Required admin UI surfaces: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. Each surface must be capability-gated in the UI and mechanically authorized on the backend.
+Required User Admin functional-agent surfaces: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. Each surface must be capability-gated in the UI, rendered inside or deep-linked into the workstream shell, and mechanically authorized on the backend.
 
 ## Invite and first-login flow
 

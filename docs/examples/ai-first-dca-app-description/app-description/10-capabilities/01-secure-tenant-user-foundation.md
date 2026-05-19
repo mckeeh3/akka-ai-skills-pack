@@ -87,7 +87,7 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
   - schedule invitation expiry, support-access expiry, reminders, access-review checks, and billing/grace-period checks where modeled.
   - create decision cards for risky role, support-access, billing, account, policy, or admin-agent recommendations.
 - exposure surfaces:
-  - browser UI shell, context selector, profile/settings, foundation admin screens, support-access screen, access-review queue, admin audit, and decision cards.
+  - browser UI shell, context selector, profile/settings, foundation admin surfaces, support-access surface, access-review queue, admin audit, and decision cards.
   - JWT-protected HTTP APIs including `/api/me`, profile/settings APIs, admin user/membership/invitation APIs, support-access APIs, audit APIs, and billing-boundary APIs.
   - workflow surface for invitation, support-access approval, billing decision, and risky admin decision flows.
   - timer surface for expiry/reminders/access review.

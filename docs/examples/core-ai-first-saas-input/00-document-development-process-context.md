@@ -86,7 +86,7 @@ Each module PRD should include:
 - actors and authorization expectations;
 - core capabilities;
 - durable objects and state ownership;
-- UI surfaces and navigation expectations;
+- functional-agent workstream and structured surface expectations;
 - API surfaces and integration expectations;
 - audit/security requirements;
 - acceptance scenarios;
@@ -101,8 +101,8 @@ The generated app is full-stack from the start. Each module document should desc
 
 Include where relevant:
 
-- page inventory;
-- navigation placement;
+- surface inventory;
+- functional-agent rail/deep-link placement;
 - list/detail/form behavior;
 - empty, loading, error, forbidden, and disabled states;
 - decision card layout;

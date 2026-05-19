@@ -233,7 +233,7 @@ Before approval or activation:
 Provide protected UI for:
 - skill catalog by status/tag/steward/assigned-agent count;
 - skill editor with validation and secret-like content warnings;
-- review/approve/reject screen with rationale;
+- review/approve/reject surface with rationale;
 - version history and side-by-side diff;
 - agent skill manifest management from agent detail;
 - compact manifest preview;

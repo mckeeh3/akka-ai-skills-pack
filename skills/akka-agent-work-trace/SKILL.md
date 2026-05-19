@@ -134,7 +134,7 @@ Route to:
 - `akka-key-value-entities` for explicit `WorkTrace` current summaries when timelines need status, title, or outcome state.
 - `akka-workflows` when traces are produced by durable multi-step agent execution or approval flows.
 - `akka-http-endpoints` for trace search/detail/export/stream APIs.
-- `akka-web-ui-apps` for Audit/Work Trace UI, timelines, filters, redaction states, and trace links from agent/prompt/skill pages.
+- `akka-web-ui-apps` for Audit/Work Trace UI, timelines, filters, redaction states, and trace links from agent/prompt/skill surfaces.
 - `akka-agent-evaluation` and future closed-loop skills when trace records feed evaluations and improvement proposals.
 
 ## Correlation rules

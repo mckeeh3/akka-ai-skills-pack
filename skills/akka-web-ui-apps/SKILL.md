@@ -54,7 +54,7 @@ Canonical frontend project integration reference:
 ## Use this skill when
 
 - the user asks for a web app, dashboard, admin UI, console, portal, or browser workflow
-- the UI needs multiple states, screens, forms, actions, or data dependencies
+- the UI needs multiple states, structured surfaces, forms, actions, or data dependencies
 - a UI brief must become implementation-ready frontend work
 - the frontend should provide excellent UX, with generated build assets hosted by Akka
 - the frontend should be excellent and use a standard frontend framework/build tool
@@ -93,7 +93,7 @@ For generated SaaS apps, auth/session/security behavior is expected input. If pr
 
 Load only the focused companions needed:
 
-- `akka-web-ui-ux-design` — screen intent, hierarchy, UX copy, feedback, recovery, responsive behavior, and keyboard/focus path
+- `akka-web-ui-ux-design` — workstream shell and structured surface intent, hierarchy, UX copy, feedback, recovery, responsive behavior, and keyboard/focus path
 - `akka-web-ui-frontend-project` — standard frontend project integration, such as React/Vite build output hosted by Akka
 - `akka-web-ui-api-client` — typed fetch clients and API error mapping
 - `akka-web-ui-state-rendering` — state model and rendering/component update boundaries
@@ -120,7 +120,7 @@ Always pair with Akka hosting/API skills as needed:
 4. Implement or adjust backend JSON/SSE/WebSocket endpoints.
 5. Implement the frontend in its source root (`frontend/src/**`).
 6. Build React/Vite/TypeScript frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
-7. Add/extend endpoint integration tests for page, assets, explicit SPA entry routes, and API route separation.
+7. Add/extend endpoint integration tests for shell entry, assets, explicit SPA entry routes, and API route separation.
 8. Run frontend checks/build and backend tests.
 9. Review with `docs/structured-surface-contracts.md`, `docs/web-ui-quality-checklist.md`, and `docs/web-ui-ux-patterns.md`.
 

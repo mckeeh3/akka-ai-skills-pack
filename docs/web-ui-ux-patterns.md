@@ -20,7 +20,7 @@ Pair with:
 
 ## Workstream region and surface pattern
 
-For each agent workstream shell region, structured surface, or conventional screen, define:
+For each agent workstream shell region, structured surface, or conventional route-backed region, define:
 
 ```text
 Region/surface: <name>
@@ -67,7 +67,7 @@ Avoid:
 ### Primary action
 
 - Use a specific verb phrase: `Create request`, `Approve`, `Save changes`.
-- Place consistently near the screen title or task region.
+- Place consistently near the surface title or task region.
 - Disable only with an explanation or visible unmet requirement.
 
 ### Secondary action
@@ -92,7 +92,7 @@ Good loading states tell users what is happening:
 - use progress text for actions that take time
 - keep layout stable to avoid jumps
 
-Avoid blank pages and indefinite spinners without context.
+Avoid blank surfaces and indefinite spinners without context.
 
 ### Empty
 
@@ -131,7 +131,7 @@ Good success states confirm the concrete outcome and next step:
 
 ```text
 Request submitted for approval.
-Track status from the request detail page.
+Track status from the request detail surface.
 [View request]
 ```
 

@@ -129,7 +129,7 @@ Route to:
 
 ## UI design rules
 
-- Center screens on objectives, decisions, policies, traces, or outcomes; not only raw records.
+- Center structured surfaces on objectives, decisions, policies, traces, or outcomes; not only raw records.
 - Make autonomy boundaries visible where actions occur.
 - Separate automated work, human-needed work, exceptions, and FYI activity.
 - Rank attention queues by stakes/risk/SLA, not only recency.

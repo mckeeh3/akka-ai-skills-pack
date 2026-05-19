@@ -10,6 +10,11 @@ Read first:
 - `01-core-seed-progression-plan.md`
 - `02-persistent-discussion-capture.md`
 
+
+## Workstream architecture alignment
+
+This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../agent-workstream-application-architecture.md`. Any legacy references to pages, screens, navigation, or route inventory mean structured workstream surfaces, surface actions, and route/deep-link implementation details inside the agent workstream shell. They must not be used to generate a page-first admin console or chatbot-bolt-on app.
+
 ## 1. Module purpose
 
 Module 1 establishes the smallest demonstrable full-stack secure SaaS foundation that every later module can extend safely.
@@ -23,12 +28,12 @@ This is not a complete user administration module. It intentionally creates only
 At completion, a demo operator can:
 
 1. open the browser app;
-2. see a signed-out landing/sign-in screen when unauthenticated;
+2. see a signed-out landing/sign-in surface when unauthenticated;
 3. authenticate through the configured auth seam;
 4. land inside the authenticated app shell;
 5. see their profile, account status, active tenant, and membership context;
 6. switch between available tenant contexts if their account has more than one active membership;
-7. see protected navigation items enabled or hidden according to capabilities;
+7. see protected functional-agent rail entries enabled or hidden according to capabilities;
 8. receive clear unauthenticated, forbidden, disabled-account, and no-access states;
 9. confirm through tests that provider secrets are not shipped to the frontend and backend authorization is enforced.
 
@@ -45,7 +50,7 @@ At completion, a demo operator can:
 - Authenticated React/Vite/TypeScript app shell.
 - Sign-in/sign-out browser flows.
 - Context display and minimal context selection.
-- Protected sample page used to prove authorization behavior.
+- Protected sample surface used to prove authorization behavior.
 - Audit events for authentication-context access, selected context changes, authorization denials, and disabled/no-access attempts.
 - Security and UI tests for core access paths.
 
@@ -64,8 +69,8 @@ At completion, a demo operator can:
 
 | Actor | Description | Module 1 expectations |
 |---|---|---|
-| Unauthenticated visitor | Browser user without an authenticated session. | Can view public shell/sign-in entry only. Protected API and pages return unauthenticated state. |
-| Authenticated member | Signed-in account with at least one active tenant membership. | Can enter the app, call `/api/me`, view profile/context, and access pages allowed by capabilities. |
+| Unauthenticated visitor | Browser user without an authenticated session. | Can view public shell/sign-in entry only. Protected APIs and workstream deep links return unauthenticated state. |
+| Authenticated member | Signed-in account with at least one active tenant membership. | Can enter the app, call `/api/me`, view profile/context, and access functional agents and surfaces allowed by capabilities. |
 | Multi-tenant member | Signed-in account with active memberships in more than one tenant. | Can select an active tenant context and see UI/API data scoped to that context. |
 | Disabled account | Signed-in identity mapped to a local disabled account. | Cannot enter protected app areas; receives disabled-account state; denial is audited. |
 | No-access authenticated user | Signed-in identity with no accepted active membership. | Cannot enter protected app areas; receives no-access state; denial is audited. |
@@ -127,7 +132,7 @@ Required fields:
 - avatar URL
 - locale/time zone placeholders if easy to include
 
-State owner expectation: Key Value Entity or embedded Account state is acceptable for Module 1. Keep it separable enough for later settings/profile pages.
+State owner expectation: Key Value Entity or embedded Account state is acceptable for Module 1. Keep it separable enough for later settings/profile surfaces.
 
 ### UserSettings
 
@@ -178,7 +183,7 @@ Required initial capabilities:
 - `app.access` — may enter authenticated app shell.
 - `profile.read` — may read own profile through `/api/me`.
 - `tenant.context.select` — may select among own active memberships.
-- `admin.bootstrap.access` or similar placeholder — reserved for initial operator and later Module 2 navigation.
+- `admin.bootstrap.access` or similar placeholder — reserved for initial operator and later Module 2 functional-agent access.
 
 State owner expectation: static configuration or seed KV state is acceptable in Module 1, but the shape must allow Module 2 to replace/extend it with editable roles.
 
@@ -255,7 +260,7 @@ For active users, response includes:
 - memberships visible to the account;
 - selected tenant/membership context;
 - effective browser-safe capabilities;
-- flags for app shell navigation and module availability;
+- flags for functional-agent rail and module availability;
 - no provider secrets, raw tokens, internal role secrets, or backend-only policy details.
 
 ### 7.4 Context selection
@@ -271,11 +276,11 @@ Required behavior:
 - all protected API responses use the selected authorized context;
 - attempts to select another user's tenant or a disabled membership are denied and audited.
 
-### 7.5 Protected sample page
+### 7.5 Protected sample surface
 
-Module 1 includes at least one simple protected page to prove app access.
+Module 1 includes at least one simple protected workstream surface to prove app access.
 
-The page may be named Dashboard, Home, or App Access.
+The surface may be named Dashboard, Home, or App Access and must render inside the Access/Profile functional agent workstream or as a deep link into it.
 
 It displays:
 
@@ -283,7 +288,7 @@ It displays:
 - selected tenant name/id;
 - membership role/capability summary;
 - a test-only or diagnostic card showing which access checks passed;
-- links or disabled navigation placeholders for future modules.
+- links or disabled functional-agent placeholders for future modules.
 
 ### 7.6 Forbidden and no-access states
 
@@ -299,18 +304,18 @@ These states must not leak tenant data, internal role configuration, raw tokens,
 
 ## 8. UI requirements
 
-### 8.1 Page and route inventory
+### 8.1 Workstream surfaces and route/deep-link inventory
 
 Minimum routes:
 
 - `/` public landing or redirect decision route;
 - `/sign-in` or provider-hosted sign-in entry integration;
 - `/sign-out` or app-shell sign-out action;
-- `/app` authenticated landing/dashboard;
-- `/app/profile` minimal profile/context page or panel;
-- `/app/forbidden` forbidden state page;
-- `/app/no-access` no active access state page;
-- optional `/app/dev/security-check` diagnostic page guarded to seed operator/test environment only.
+- `/app` authenticated workstream shell landing/dashboard surface;
+- `/app/profile` minimal profile/context surface or panel;
+- `/app/forbidden` forbidden state surface/deep link;
+- `/app/no-access` no active access state surface/deep link;
+- optional `/app/dev/security-check` diagnostic surface guarded to seed operator/test environment only.
 
 ### 8.2 App shell
 
@@ -322,7 +327,7 @@ The authenticated app shell must include:
 - current tenant/context display;
 - context selector when applicable;
 - sign-out action;
-- navigation area with current Module 1 pages and disabled/hidden future module placeholders;
+- functional-agent rail with the Access/Profile agent and disabled/hidden future functional-agent placeholders;
 - loading skeleton while `/api/me` is resolving;
 - stable error boundary for failed `/api/me` or API errors.
 
@@ -346,7 +351,7 @@ Do not infer authorization only from route metadata or local storage.
 ### 8.4 Accessibility and responsive behavior
 
 - Sign-in, sign-out, context selection, and forbidden/no-access messages must be keyboard accessible.
-- Main shell landmarks should support screen readers.
+- Main shell landmarks should support assistive technologies.
 - Context selector and account menu must expose accessible labels.
 - The app should remain usable on narrow desktop/tablet widths; mobile polish can be basic in Module 1.
 
@@ -455,7 +460,7 @@ Given no authenticated browser session exists, when the visitor opens the app, t
 
 ### Scenario 2: Seed member signs in and enters app
 
-Given a seeded active account, tenant, membership, and app access capability exist, when the user signs in, then `/api/me` returns active account and selected context, and the user lands on the authenticated app page with profile and tenant context visible.
+Given a seeded active account, tenant, membership, and app access capability exist, when the user signs in, then `/api/me` returns active account and selected context, and the user lands on the authenticated workstream shell with profile and tenant context visible.
 
 ### Scenario 3: `/api/me` is browser-safe
 
@@ -521,7 +526,7 @@ Likely Akka components:
 - Event Sourced Entity or append-oriented audit component for `AdminAuditEvent` records.
 - Views for lookup by provider subject, memberships by account, memberships by tenant, and audit diagnostics.
 - HTTP endpoints for auth session integration, `/api/me`, context selection, protected sample summary, and optional audit diagnostics.
-- React/Vite/TypeScript UI for sign-in, app shell, profile/context, forbidden/no-access states, and protected sample page.
+- React/Vite/TypeScript UI for sign-in, app shell, profile/context, forbidden/no-access states, and protected sample surface.
 
 Implementation guidance:
 
@@ -539,7 +544,7 @@ A successful Module 1 demo should run as follows:
 2. Open the app as unauthenticated visitor and see sign-in prompt.
 3. Sign in as seed operator.
 4. Land on `/app` with account and tenant context visible.
-5. Open profile/context page and inspect `/api/me`-derived data.
+5. Open profile/context surface and inspect `/api/me`-derived data.
 6. If demo data includes two tenants, switch context and observe updated selected tenant.
 7. Attempt a forbidden protected route with a limited test user and see forbidden state.
 8. Attempt a no-access/disabled test user and see correct state.
@@ -575,6 +580,6 @@ Module 1 is ready for decomposition when the following are true:
 - [ ] Account, Tenant, Membership, minimal Role/Capability, UserSettings, AuthContext, and AdminAuditEvent semantics are accepted.
 - [ ] `/api/me` response states and redaction expectations are accepted.
 - [ ] Context selection behavior is accepted.
-- [ ] UI route inventory and app-shell states are accepted.
+- [ ] Workstream shell, surface, and route/deep-link states are accepted.
 - [ ] Security/audit/test requirements are accepted.
 - [ ] Deferred features are confirmed as not part of Module 1.

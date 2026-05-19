@@ -84,7 +84,7 @@ Load the companion skill that matches the current task:
 - `app-description-observability`
   - update logs, metrics, traces, audit events, health signals, alerts, and diagnosability expectations
 - `app-description-ui`
-  - update browser UI screens, navigation, frontend API contracts, realtime states, accessibility, responsive behavior, and style guide; for AI-first apps, prioritize supervision, decision, governance, digest, and audit surfaces
+  - update functional-agent workstream UI, structured surfaces, surface actions, route/deep-link details, frontend API contracts, realtime states, accessibility, responsive behavior, and style guide; for AI-first apps, prioritize supervision, decision, governance, digest, and audit surfaces
 - `app-description-readiness-assessment`
   - decide whether the current description is `not-ready`, `ready-with-assumptions`, or `ready`
 - `app-generate-app`

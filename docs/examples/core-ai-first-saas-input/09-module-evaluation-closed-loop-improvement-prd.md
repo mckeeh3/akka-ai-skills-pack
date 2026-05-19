@@ -16,6 +16,11 @@ Read first:
 - `07-module-skill-governance-prd.md`
 - `08-module-audit-work-trace-prd.md`
 
+
+## Workstream architecture alignment
+
+This module PRD is interpreted under `10-canonical-core-app-prd.md` and `../../agent-workstream-application-architecture.md`. Any legacy references to pages, screens, navigation, or route inventory mean structured workstream surfaces, surface actions, and route/deep-link implementation details inside the agent workstream shell. They must not be used to generate a page-first admin console or chatbot-bolt-on app.
+
 ## 1. Module purpose
 
 Module 7 completes the core AI-first SaaS seed loop by turning agent activity and trace evidence into governed evaluation and improvement.
@@ -350,7 +355,7 @@ If replay is not available for a target, proposal must state why and require man
 
 Reviewers can approve, reject, or request changes.
 
-Review screen must show:
+Review surface must show:
 
 - source findings;
 - proposed diff;
@@ -419,7 +424,7 @@ MVP monitoring:
 
 ## 8. UI requirements
 
-### 8.1 Page and route inventory
+### 8.1 Workstream surfaces and route/deep-link inventory
 
 Minimum routes:
 
@@ -434,7 +439,7 @@ Minimum routes:
 - `/app/improvements/:proposalId/simulation` replay/simulation evidence;
 - `/app/improvements/:proposalId/activate` activation confirmation;
 - `/app/improvements/:proposalId/rollback` rollback confirmation;
-- `/app/outcomes` basic outcome monitoring list/dashboard.
+- `/app/outcomes` basic outcome monitoring list/dashboard surface.
 
 ### 8.2 Evaluation landing
 
@@ -630,7 +635,7 @@ Given a user has evaluation read capabilities, when they open Evaluations, then 
 
 ### Scenario 2: Normal member is forbidden
 
-Given a member lacks evaluation capabilities, when they open evaluation or improvement pages, then access is forbidden and audited.
+Given a member lacks evaluation capabilities, when they open evaluation or improvement surfaces, then access is forbidden and audited.
 
 ### Scenario 3: Run evaluation on work trace
 
@@ -760,7 +765,7 @@ Module 7 is ready for decomposition when the following are true:
 - [ ] Replay/simulation MVP scope is accepted.
 - [ ] Rollback behavior and stale-baseline protection are accepted.
 - [ ] Outcome monitoring MVP scope is accepted.
-- [ ] UI route inventory and evaluation/proposal/outcome states are accepted.
+- [ ] Workstream surface, route/deep-link, evaluation/proposal/outcome states are accepted.
 - [ ] Audit/work trace event coverage is accepted.
 - [ ] Tenant isolation, capability denial, redaction, proposal lifecycle, activation, rollback, outcome, and frontend secret-boundary tests are accepted.
 - [ ] Fully autonomous self-improvement, advanced experiments, cross-tenant learning, and enterprise risk features are confirmed as not part of Module 7.

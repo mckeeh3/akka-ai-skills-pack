@@ -23,7 +23,7 @@ Privileged self-registration from WorkOS claims alone is forbidden. Unknown iden
 
 ## Administration operations and audit
 
-Administration is capability-driven and auditable; routes and screens are exposure surfaces only.
+Administration is capability-driven and auditable; routes and structured surfaces are exposure details only.
 
 Required admin operations:
 

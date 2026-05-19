@@ -67,7 +67,7 @@ Each `specs/modules/NN-<module>.md` should contain:
 - actors and authorization boundaries
 - domain objects and state ownership
 - backend components likely owned by the module
-- frontend screens or navigation areas owned by the module
+- functional agents, structured surfaces, surface actions, and route/deep-link details owned by the module
 - integrations and events entering/leaving the module
 - cross-cutting specs referenced by the module
 - AI-first scope for generated SaaS: delegated work, retained human authority, durable goals/plans, agents, policies, decisions, traces, UI surfaces, and outcomes owned or used by the module
@@ -84,7 +84,7 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - parent module or modules
 - dependencies and prerequisite decisions
 - backend scope: entities, workflows, views, consumers, timers, endpoints
-- frontend scope: screens, forms, navigation, API client calls, realtime behavior
+- frontend scope: functional-agent workstream shell changes, structured surfaces, forms/surface actions, route/deep-link details, API client calls, realtime behavior
 - AI-first increment for generated SaaS: goals/plans, agent/team responsibilities, authority limits, approval gates, policy clauses, evidence/risk/confidence/impact surfaces, trace records, evaluations, and outcome metrics
 - acceptance behavior: happy paths, validation, no-op/idempotent cases, error cases
 - pending questions that block or affect the sprint
@@ -114,7 +114,7 @@ The backlog should break the sprint into harness-sized tasks. Prefer this order 
 6. consumers or timed actions
 7. HTTP/gRPC/MCP endpoints
 8. frontend API client, context-selection shell, and state
-9. frontend screens/forms/realtime behavior
+9. functional-agent workstream surfaces/forms/realtime behavior
 10. component tests
 11. endpoint, frontend, forbidden-access, and tenant-isolation tests
 12. full-stack module smoke or integration test
@@ -129,7 +129,7 @@ Rules:
 - block only affected tasks, not the whole project
 - allow unblocked foundation or module work to continue
 - let unknown security-provider details block provider-specific WorkOS/JWT integration tasks, but not the foundation slice's local authorization contracts, Tenant/Customer boundaries, `/api/me` contract, audit model, or tenant-isolation test design
-- if no style guide is selected for generated AI-first SaaS, create a UI style-selection question and block web UI implementation tasks, including agent catalog/detail, prompt governance, skill governance, manifest management, tool-boundary, behavior editing proposal, and trace screens, until answered
+- if no style guide is selected for generated AI-first SaaS, create a UI style-selection question and block web UI implementation tasks, including agent catalog/detail surfaces, prompt governance surfaces, skill governance surfaces, manifest management, tool-boundary, behavior editing proposal, and trace surfaces, until answered
 - for AI-first scope, create scoped questions when implementation would otherwise guess delegated authority, approval gates, policy/risk thresholds, evidence requirements, trace visibility, evaluation strategy, or outcome metrics
 
 ## Pending tasks

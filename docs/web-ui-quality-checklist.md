@@ -4,12 +4,12 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
 ## UX completeness
 
-- [ ] Primary user goals are represented by screens and actions.
-- [ ] Each screen communicates where the user is, what matters, and what they can do within the first five seconds.
-- [ ] Each screen has one clear purpose or an explicitly read-only purpose.
+- [ ] For generated AI-first SaaS, primary user goals are represented by role-authorized functional agents, workstream shell regions, structured surfaces, and capability-backed actions.
+- [ ] Each workstream shell region or structured surface communicates selected functional agent, tenant/customer context, what matters, and what the user can do within the first five seconds.
+- [ ] Each structured surface has one clear purpose or an explicitly read-only purpose.
 - [ ] The primary action is visually obvious and uses specific action text.
 - [ ] Secondary actions are useful but visually subordinate.
-- [ ] Navigation paths are clear and show current location where relevant.
+- [ ] Routes/navigation are treated as implementation and deep-link details into workstreams/surfaces, with current location/context visible where relevant.
 - [ ] Empty states explain what happened and what to do next.
 - [ ] Loading states are visible and context-specific for async regions.
 - [ ] Success states confirm what changed and the next available action.
@@ -63,11 +63,11 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
 ## Accessibility
 
-- [ ] Page has a clear title/heading and main landmark.
-- [ ] Heading order is logical.
+- [ ] The workstream shell has a clear title/heading and main landmark.
+- [ ] Structured surfaces use logical heading order.
 - [ ] Interactive elements are keyboard-operable.
 - [ ] Focus states are visible.
-- [ ] Focus moves intentionally after validation failure, navigation, modal open/close, or major screen changes.
+- [ ] Focus moves intentionally after validation failure, functional-agent change, route/deep-link change, modal open/close, or major surface changes.
 - [ ] Errors are associated with fields or announced near the form.
 - [ ] Style-guide contrast requirements are met for text, controls, charts, badges, and status indicators.
 - [ ] Status is not conveyed by color alone.
@@ -75,7 +75,7 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
 ## Responsive layout
 
-- [ ] Layout works on narrow screens.
+- [ ] Workstream shell and structured surface layout works on narrow screens.
 - [ ] The primary task remains possible and obvious on narrow screens.
 - [ ] Controls are comfortably clickable/tappable.
 - [ ] Tables or dense lists have a narrow-screen strategy such as cards, reduced columns, or intentional horizontal scroll.

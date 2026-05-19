@@ -42,7 +42,7 @@ Read these first if present:
 
 - the service should serve generated React/Vite/TypeScript browser UI assets through Akka HTTP endpoints
 - the generated SaaS UI shell needs routes for left-rail functional agents, a main workstream, bottom composer, structured surfaces, and direct deep links
-- `akka-web-ui-apps` has identified screens, frontend state, and browser API contracts
+- `akka-web-ui-apps` has identified functional agents, structured surfaces, frontend state, and browser API contracts
 - the UI calls JSON endpoints in the same service
 - the UI should consume SSE updates
 - the UI should consume a WebSocket endpoint

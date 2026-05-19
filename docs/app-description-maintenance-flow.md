@@ -133,7 +133,7 @@ They are part of the app definition. Missing secure SaaS foundation semantics mu
 ### Step 9. Update mandatory UI
 
 For generated full-stack AI-first SaaS, update `55-ui/` after the operating model and behavior are clear enough to describe the user's work surfaces.
-Prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over record-management navigation. Conventional list/form screens can exist, but they must remain subordinate to the secure AI-first operating model.
+Prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over record-management navigation. Conventional list/form routes can exist as implementation details, but structured workstream surfaces remain primary for generated AI-first SaaS.
 Keep the style-selection rule below in force.
 
 ### Step 10. Update readiness
@@ -305,7 +305,7 @@ Avoid:
 - using generated code as the primary explanation of what changed
 - leaving readiness stale after major description changes
 - silently burying semantic uncertainty inside generation results
-- converting delegated operational work into CRUD screens before modeling goals, authority, policies, decisions, traces, and outcomes
+- converting delegated operational work into CRUD/page surfaces before modeling goals, authority, policies, decisions, traces, and outcomes
 - treating a chatbot or prompt as a substitute for durable goals, plans, approvals, and auditability
 
 ## Recommended next-doc usage

@@ -26,7 +26,7 @@ It shows how a larger PRD output can be organized so each sprint completes a tes
 - actors: manager approver, finance approver
 - owns: approval workflow, approval queues, reminder/expiry behavior
 - backend: `PurchaseRequestApprovalWorkflow`, operational views, timed actions
-- frontend: approver queue, approval decision screen, stale/expired indicators
+- frontend: approver queue, approval decision surface, stale/expired indicators
 - related sprints: `specs/sprints/03-approval-flow-sprint.md`
 
 ## Sprint outline
@@ -40,7 +40,7 @@ It shows how a larger PRD output can be organized so each sprint completes a tes
 - frontend scope:
   - authenticated app shell
   - current-user load state
-  - role-aware navigation shell
+  - role-aware functional-agent rail/shell
 - full-stack done check:
   - signed-in user can load the app shell and `/api/me`
   - unauthorized calls are rejected
@@ -55,7 +55,7 @@ It shows how a larger PRD output can be organized so each sprint completes a tes
 - frontend scope:
   - request creation form
   - requester request list
-  - request detail page
+  - request detail surface/deep link
 - full-stack done check:
   - requester creates a request in the UI
   - backend persists it

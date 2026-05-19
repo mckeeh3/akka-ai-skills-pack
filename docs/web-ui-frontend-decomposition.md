@@ -2,7 +2,7 @@
 
 Use this doc when requirements include a user-facing browser app hosted by Akka HTTP endpoints.
 
-The goal is to make the frontend as intentionally designed as the backend. For generated full-stack AI-first SaaS, decompose the browser app as an agent workstream shell first: left-rail functional agents, main workstream panel, bottom composer, context/authority indicators, and structured surfaces. Conventional screens/routes support implementation and deep links; they are not the primary model for authenticated consequential work.
+The goal is to make the frontend as intentionally designed as the backend. For generated full-stack AI-first SaaS, decompose the browser app as an agent workstream shell first: left-rail functional agents, main workstream panel, bottom composer, context/authority indicators, and structured surfaces. Conventional routes support implementation and deep links; they are not the primary model for authenticated consequential work.
 
 For product UIs, use a standard frontend project such as React/Vite and route implementation through the full web app skill path.
 
@@ -22,7 +22,7 @@ List:
 
 ### 2. Workstream shell regions, surfaces, and deep links
 
-For generated SaaS apps, define shell regions before screens:
+For generated SaaS apps, define shell regions before route/deep-link details:
 - left rail functional agents: visible agents, hidden/denied agents, default selected agent, attention indicators, and role/capability basis
 - main workstream panel: stream item types, grouping, timeline/history behavior, status/progress items, trace links, and stale/reconnect states
 - persistent bottom composer: accepted request types, command shortcuts, uploads where allowed, disabled/forbidden states, and selected-agent context
@@ -30,7 +30,7 @@ For generated SaaS apps, define shell regions before screens:
 - structured surfaces: dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status, evidence bundles, version cards, and outcome panels
 - deep links: selected functional agent, important stream item, and direct surface URLs when required
 
-For each shell region, surface, or conventional screen/route, define:
+For each shell region, surface, or conventional route/deep-link, define:
 - route or UI path, where routes are implementation/deep-link details
 - user goal
 - purpose
@@ -55,7 +55,7 @@ Prefer explicit route families:
 
 ### 3. Data dependencies
 
-For each shell region, surface, screen, or route, list:
+For each shell region, surface, or route/deep-link, list:
 - data needed on first render
 - query/filter/sort inputs
 - command/action endpoints
@@ -65,7 +65,7 @@ For each shell region, surface, screen, or route, list:
 
 ### 4. UX handoff and frontend state model
 
-For each screen, define the UX handoff:
+For each structured surface or route-backed region, define the UX handoff:
 - first-five-seconds comprehension: what should the user understand immediately?
 - primary decision/action
 - information hierarchy
@@ -145,7 +145,7 @@ If the app has a browser UI and style is `unselected`, add a pending `category: 
 
 Define:
 - first-five-seconds comprehension target
-- semantic page landmarks
+- semantic shell/surface landmarks
 - heading structure
 - keyboard path for primary flows
 - focus movement after major actions
@@ -156,7 +156,7 @@ Define:
 ### 10. UX copy
 
 Define user-facing copy for:
-- page titles and subtitles
+- shell/surface titles and subtitles
 - primary and secondary action labels
 - field labels and helper text
 - empty states
@@ -203,7 +203,7 @@ A web UI decomposition is ready for implementation when a coding agent can answe
 - which conventional routes or pages exist only as implementation/deep-link details?
 - what should the user understand in the first five seconds of each shell region or surface?
 - what is the primary action and why?
-- what data does each screen need?
+- what data does each surface need?
 - what user actions are possible?
 - what happens while loading, empty, failed, unauthorized, or submitting?
 - what UX copy appears for buttons, empty states, validation, errors, and success?

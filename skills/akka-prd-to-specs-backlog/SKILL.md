@@ -239,7 +239,7 @@ A good sprint spec contains:
 - one module or tightly related module increment
 - AI-first scope when applicable: goals/plans, agents, policies, decisions, approvals/exceptions, traces, governance surfaces, and outcome loop delivered by the sprint
 - backend scope: capability contracts first, then entities, workflows, views, consumers, timers, endpoints, agents, and selected exposure surfaces
-- frontend scope: screens, forms, navigation, API client calls, realtime behavior, and supervision/decision/governance/audit/outcome surfaces when applicable
+- frontend scope: functional-agent workstream shell changes, structured surfaces, forms/surface actions, route/deep-link details, API client calls, realtime behavior, and supervision/decision/governance/audit/outcome surfaces when applicable
 - acceptance behavior and module-level tests
 - pending questions and explicit defer list
 - done criteria that include full-stack smoke/integration validation when applicable
@@ -435,7 +435,7 @@ Each `specs/modules/*.md` file should contain:
 - Delegated work, retained human authority, and outcome responsibility when AI-first concerns exist
 - Domain objects, AI-first substrate objects, and state ownership
 - Backend components likely owned by the module
-- Frontend screens/navigation areas owned by the module, including supervision/decision/governance/audit surfaces when applicable
+- Functional-agent workstream surfaces, surface actions, and route/deep-link details owned by the module, including supervision/decision/governance/audit surfaces when applicable
 - Integrations and events in/out
 - Cross-cutting specs referenced
 - Out of scope
@@ -568,7 +568,7 @@ Before finishing, verify:
 - pending tasks include required reads, skills, expected outputs, checks, and done criteria
 - AI-first pending tasks include relevant AI-first reads/skills plus concrete Akka substrate skills
 - cross-cutting concerns are not duplicated excessively across modules, sprints, or slices
-- browser UI work, including agent catalog/detail, prompt governance, skill governance, manifest management, tool-boundary, behavior editing proposal, and trace screens, has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created
+- browser UI work, including agent catalog/detail, prompt governance, skill governance, manifest management, tool-boundary, behavior editing proposal, and trace surfaces, has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created
 - each backlog supports bounded implementation work
 - optional task briefs exist when backlog items are still too broad
 - execution-order docs point to the correct files
