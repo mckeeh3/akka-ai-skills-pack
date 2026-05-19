@@ -80,37 +80,42 @@ For global installs, dry runs, archive installs, and detailed usage, see the [Sk
 
 ## Getting started prompt
 
-After installing the pack into a new target project, first create the initial app intent file that the harness will ingest:
+After installing the pack into a new target project, start from the packaged canonical core PRD and record the intended scope before generation:
 
 ```bash
 mkdir -p docs/input/initial
-cat > docs/input/initial/core-foundation.md <<'EOF'
-# Core foundation app intent
+cp .agents/docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md \
+  docs/input/initial/core-app-prd.md
+cat > docs/input/initial/scope-choice.md <<'EOF'
+# Core app scope choice
 
-Create a new AI-first SaaS app with only the core foundation functionality:
-secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding,
-admin user management, memberships/roles/capabilities, admin audit/search,
-governed runtime agent behavior management (AgentDefinition, governed prompts/skills,
-skill manifests, tool permission boundaries, prompt/skill/work traces),
-and AI-assisted admin offload.
+Selected scope: undecided
 
-Do not add any domain-specific CRM/product features yet.
+Choose one before generation:
+- Full core — includes the agent workstream shell plus Access/Profile, User Admin,
+  Agent Admin, Audit/Trace, and Governance/Policy functional agents.
+- Module 1-only / not full core — minimal auth, /api/me, selected AuthContext,
+  profile/context display, authenticated shell, and explicit deferral of User Admin,
+  Agent Admin, invitation lifecycle, governed prompt/skill/manifest/tool-boundary
+  management, unified audit/work trace UI, and governance/policy/evaluation loops.
 EOF
 ```
 
-Then ask your harness to bootstrap only the secure AI-first SaaS foundation planning artifacts:
+Then ask your harness to bootstrap planning artifacts from those inputs:
 
 ```text
 First read .agents/AGENTS.md and .agents/skills/README.md.
-Then read docs/input/initial/core-foundation.md.
+Then read docs/input/initial/core-app-prd.md and docs/input/initial/scope-choice.md.
 
-Bootstrap only the app-description, solution plan, pending questions, and pending task queue
-for a secure AI-first SaaS core foundation. Do not generate application source code yet.
-Queue questions instead of guessing. Mark generation not-ready if required secure AI-first
-SaaS foundation decisions are missing.
+Ask me to choose Full core or Module 1-only / not full core before generation if the
+scope is still undecided, and record the selected scope in app-description/specs.
+Bootstrap the app-description, solution plan, pending questions, and pending task queue
+for the selected secure AI-first SaaS core scope. Do not generate application source code yet.
+Queue questions instead of guessing. Do not treat a full core app as complete unless User
+Admin and Agent Admin functional agents are included.
 ```
 
-The input file can describe requirements such as secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding, admin user management, memberships/roles/capabilities, admin audit/search, governed runtime agent behavior management, AI-assisted admin offload, and whether domain-specific features are intentionally out of scope. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough and explicitly approved.
+Use Full core as the canonical target when you want the complete generated core foundation. Use `Module 1-only / not full core` only as an explicitly recorded first slice. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough and explicitly approved.
 
 ## Repository status
 

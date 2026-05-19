@@ -64,6 +64,8 @@ Installed layout:
     timer-pattern-selection.md
     workflow-endpoint-pattern.md
     examples/
+      core-ai-first-saas-input/
+        10-canonical-core-app-prd.md
       ai-first-dca-app-description/
         app-description/55-ui/style-guide.md
       purchase-request-app-description/

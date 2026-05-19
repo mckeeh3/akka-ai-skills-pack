@@ -283,6 +283,7 @@ PACK_DOC_FILES=(
   docs/examples/core-ai-first-saas-input/07-module-skill-governance-prd.md
   docs/examples/core-ai-first-saas-input/08-module-audit-work-trace-prd.md
   docs/examples/core-ai-first-saas-input/09-module-evaluation-closed-loop-improvement-prd.md
+  docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
   docs/examples/core-ai-first-saas-input/README.md
   docs/examples/purchase-request-app-description/README.md
   docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md

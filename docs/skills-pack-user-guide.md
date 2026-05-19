@@ -76,13 +76,42 @@ A project install creates `.agents/` under the target project. A global install 
 
 ## Getting started
 
-After installing the pack into a new target project, put the initial app intent in `docs/input/initial/core-foundation.md`, then ask your harness to bootstrap only the secure AI-first SaaS foundation:
+After installing the pack into a new target project, start from the installed canonical core PRD and make the scope explicit before generation:
 
-```text
-Read docs/input/initial/core-foundation.md and bootstrap the app from that input. Queue questions instead of guessing, and do not add functionality beyond the input file.
+```bash
+mkdir -p docs/input/initial
+cp .agents/docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md \
+  docs/input/initial/core-app-prd.md
+cat > docs/input/initial/scope-choice.md <<'EOF'
+# Core app scope choice
+
+Selected scope: undecided
+
+Choose one before generation:
+- Full core — includes the agent workstream shell plus Access/Profile, User Admin,
+  Agent Admin, Audit/Trace, and Governance/Policy functional agents.
+- Module 1-only / not full core — minimal auth, /api/me, selected AuthContext,
+  profile/context display, authenticated shell, and explicit deferral of User Admin,
+  Agent Admin, invitation lifecycle, governed prompt/skill/manifest/tool-boundary
+  management, unified audit/work trace UI, and governance/policy/evaluation loops.
+EOF
 ```
 
-The input file can describe requirements such as secure tenant/customer/account model, WorkOS/JWT auth seam, email-invite onboarding, admin user management, memberships/roles/capabilities, admin audit/search, AI-assisted admin offload, and whether domain-specific features are intentionally out of scope. The harness should also ask for the Java base package before it generates Java code: "What Java base package should I use for generated code? Press Enter to use `ai.first`." If you accept or defer, `ai.first` is used. `com.example` appears only in reference examples and is not the generated-code default. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
+Then ask your harness to bootstrap planning artifacts from those inputs:
+
+```text
+First read .agents/AGENTS.md and .agents/skills/README.md.
+Then read docs/input/initial/core-app-prd.md and docs/input/initial/scope-choice.md.
+
+Ask me to choose Full core or Module 1-only / not full core before generation if the
+scope is still undecided, and record the selected scope in app-description/specs.
+Bootstrap the app-description, solution plan, pending questions, and pending task queue
+for the selected secure AI-first SaaS core scope. Do not generate application source code yet.
+Queue questions instead of guessing. Do not treat a full core app as complete unless User
+Admin and Agent Admin functional agents are included.
+```
+
+Full core is the canonical PRD-backed target. If User Admin or Agent Admin is deferred, the selected scope must be recorded as `Module 1-only / not full core` rather than full core. The harness should also ask for the Java base package before it generates Java code: "What Java base package should I use for generated code? Press Enter to use `ai.first`." If you accept or defer, `ai.first` is used. `com.example` appears only in reference examples and is not the generated-code default. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
 
 ## Installed layout
 
@@ -307,6 +336,14 @@ Read docs/input/revisions/small-ui-copy-tweak.md. Apply the documented copy twea
 ## Prompt patterns by situation
 
 ### Start a new app
+
+For the packaged core foundation, use the canonical core PRD plus an explicit scope choice:
+
+```text
+Use the Akka skills pack to ingest docs/input/initial/core-app-prd.md and docs/input/initial/scope-choice.md. Ask for and record Full core or Module 1-only / not full core before generation, create or update app-description/specs, queue questions instead of guessing, and do not start coding yet. Do not mark full core complete without User Admin and Agent Admin functional agents.
+```
+
+For a domain-specific app PRD:
 
 ```text
 Use the Akka skills pack to ingest docs/input/product-prd.md. Create or update app-description/specs, queue questions instead of guessing, and do not start coding yet.

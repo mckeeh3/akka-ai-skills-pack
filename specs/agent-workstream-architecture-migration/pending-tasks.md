@@ -429,7 +429,7 @@
 
 ### TASK-AW-04-002: Update getting-started prompt/docs
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/04-core-app-prd-and-seed-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/04-core-app-prd/02-update-getting-started.md
 - depends on: [TASK-AW-04-001]
@@ -449,7 +449,11 @@
 - done criteria:
   - getting-started path is PRD-backed and scoped
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update getting-started core PRD prompt`
+  - completed: revised README and user-guide getting-started prompts to copy the canonical core PRD, create an explicit scope-choice input, require Full core versus `Module 1-only / not full core` before generation, and reject treating full core as complete without User Admin and Agent Admin functional agents.
+  - packaging: added `10-canonical-core-app-prd.md` to pack manifest references, install layout docs, and build-pack doc copy list so the prompt's installed path is available.
+  - checks: ran `bash -n tools/build-pack.sh`, `git diff --check`, and `rg -n "10-canonical-core-app-prd|core-app-prd|scope-choice|Full core|Module 1-only / not full core|User Admin and Agent Admin" README.md docs/skills-pack-user-guide.md pack/README.md pack/manifest.yaml tools/build-pack.sh`.
 
 ### TASK-AW-05-001: Inventory legacy architecture drift
 
