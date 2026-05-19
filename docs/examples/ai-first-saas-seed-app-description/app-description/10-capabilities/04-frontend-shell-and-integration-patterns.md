@@ -2,21 +2,28 @@
 
 - capability-id: frontend-shell-integration-patterns
 - purpose:
-  - provide a functional SaaS UI shell and reference frontend/backend integration patterns
+  - provide the authenticated agent workstream shell and reference frontend/backend integration patterns for generated full-stack AI-first SaaS apps
 - in scope:
-  - authenticated app layout
-  - tenant switcher
-  - navigation and user menu
-  - dashboard/mission control
-  - goal workbench
-  - decision queue and decision card detail
-  - governance center
-  - audit trace explorer
-  - admin user/role screens
-  - typed API client, validation errors, loading/empty/error states, and realtime updates
+  - role-authorized functional-agent rail populated from `/api/me` and backend capability grants
+  - selected tenant/customer context and authority indicators
+  - continuous workstream panel and persistent composer
+  - typed structured surfaces for dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, prompt/skill cards, and outcome panels
+  - route and deep-link support for opening functional agents, surfaces, and records without making pages the primary decomposition
+  - typed API client, validation errors, loading/empty/error/forbidden/submitting/success/stale/reconnect states, and realtime updates
+  - frontend secret-boundary and backend-denial recovery behavior
 - out of scope:
+  - page-first or CRUD-first navigation as the primary application architecture
   - a bespoke design system beyond seed-app primitives
-- UI links:
-  - `../55-ui/ui-index.md`
-  - `../55-ui/screens-and-navigation.md`
+- surface/workstream links:
+  - `../12-workstreams/functional-agents.md`
+  - `../12-workstreams/surfaces-index.md`
+  - `../55-ui/workstream-shell.md`
+  - `../55-ui/functional-agent-rail.md`
+  - `../55-ui/workstream-panel-and-composer.md`
+  - `../55-ui/structured-surface-rendering.md`
+  - `../55-ui/routes-and-deep-links.md`
   - `../55-ui/frontend-api-contracts.md`
+- authority rules:
+  - frontend controls only indicate likely availability; every protected action, stream, query, and agent invocation rechecks backend authorization
+  - route guards are UX aids only and must not be treated as security boundaries
+  - every surface action includes a capability id and correlation/idempotency context where needed

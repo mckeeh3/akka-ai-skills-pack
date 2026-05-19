@@ -3,7 +3,7 @@
 ## Accessibility requirements
 
 - keyboard navigation required for:
-  - app navigation
+  - functional-agent rail and route/deep-link controls
   - AI command strip and suggested prompt chips
   - forms
   - modals/drawers
@@ -40,7 +40,7 @@ On mission-control and decision surfaces, a user should immediately understand:
   - review queues and decision cards remain fully usable
   - KPI cards collapse to two columns
 - mobile:
-  - navigation becomes a drawer/menu
+  - functional-agent rail becomes a drawer/menu
   - approvals, alerts, and basic admin review are usable
   - decision/action regions appear before charts and lower-priority reports
   - KPI cards stack
@@ -48,8 +48,8 @@ On mission-control and decision surfaces, a user should immediately understand:
 
 ## Keyboard/focus behavior
 
-- page load focus starts at the main heading or skip link target
-- skip link allows bypassing navigation to main content
+- workstream load focus starts at the selected functional-agent heading, first actionable surface, or skip link target
+- skip link allows bypassing the functional-agent rail to main workstream content
 - after validation failure, focus moves to the first invalid field or form-level error summary
 - after opening a modal/drawer, focus moves into it and is trapped until closed
 - after closing a modal/drawer, focus returns to the invoking control

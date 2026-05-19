@@ -12,7 +12,10 @@
   - `../20-behavior/flows/03-decision-and-approval-flow.md`
   - `../20-behavior/rules/02-agent-authority-rules.md`
 - frontend-shell-integration-patterns:
-  - `../55-ui/screens-and-navigation.md`
+  - `../12-workstreams/functional-agents.md`
+  - `../12-workstreams/surfaces-index.md`
+  - `../55-ui/workstream-shell.md`
+  - `../55-ui/structured-surface-rendering.md`
   - `../55-ui/frontend-api-contracts.md`
   - `../55-ui/states-and-realtime.md`
 - managed-agent-foundation:

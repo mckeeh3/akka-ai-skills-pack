@@ -37,14 +37,14 @@
 
 ## Component style rules
 
-- shell/navigation:
-  - persistent left sidebar on desktop with grouped navigation and user/notification region near the bottom
-  - active section uses soft primary surface plus primary icon/text
-  - mobile collapses navigation into a drawer or menu
-- AI command strip:
-  - placed near top of operational screens
-  - includes AI icon, command input/prompt, suggested prompt chips, and send/action button
-  - AI-commanded consequential work must resolve into durable goals, decisions, approvals, policy proposals, or traceable actions
+- workstream shell / functional-agent rail:
+  - persistent left rail on desktop with role-authorized functional agents and user/notification region near the bottom
+  - active functional agent and current structured surface use soft primary surface plus primary icon/text
+  - mobile collapses the functional-agent rail into a drawer or menu
+- persistent composer:
+  - placed at the bottom of the active workstream with visible tenant/customer and authority context
+  - includes agent icon, command input/prompt, suggested prompt chips, and send/action button
+  - composer-triggered consequential work must resolve into durable goals, decisions, approvals, policy proposals, or traceable actions
 - cards/panels:
   - use clear headings, metadata subtitles, 1px borders, and consistent padding
   - decision and exception cards use left semantic accent plus status badge and action column
@@ -72,7 +72,7 @@
 
 - contrast: WCAG AA for text and meaningful controls in both modes
 - focus: visible focus ring using `--color-focus` across all surfaces
-- keyboard: nav, command strip, queues, decision actions, forms, drawers, and modals must be keyboard-reachable in logical order
+- keyboard: functional-agent rail, persistent composer, queues, decision actions, forms, drawers, and modals must be keyboard-reachable in logical order
 - status semantics: status uses text plus color/icon treatment
 - narrow-screen layout: preserve primary decision/action first; stack KPI cards and queues by priority
 - reduced motion: disable or simplify decorative animation when `prefers-reduced-motion` is active
@@ -80,5 +80,5 @@
 ## Implementation notes
 
 - CSS variable prefix: use semantic CSS variables matching the design spec
-- files expected to apply this guide: generated React/Vite frontend CSS, shell components, dashboard screens, decision-card components, governance screens, audit trace screens
-- tests/manual checks: render core shell and primary command-center screen in light and dark mode; verify keyboard focus and status labels
+- files expected to apply this guide: generated React/Vite frontend CSS, workstream shell components, structured surface components, decision-card components, governance surfaces, audit trace surfaces
+- tests/manual checks: render core shell and primary Mission Control surface in light and dark mode; verify keyboard focus and status labels

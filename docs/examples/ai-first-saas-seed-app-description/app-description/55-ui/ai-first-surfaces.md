@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file defines the seed app's AI-first browser surfaces independently from route mechanics. These surfaces are the UI contract for delegated work, retained human authority, evidence-backed decisions, policy governance, audit traces, and outcome loops.
+This file defines the seed app's AI-first browser surfaces as typed workstream artifacts, independently from route mechanics. These surfaces are the UI contract for delegated work, retained human authority, evidence-backed decisions, policy governance, audit traces, and outcome loops.
 
 Design reference:
 
@@ -19,8 +19,8 @@ Design reference:
 
 ## Goal-to-Execution Workbench
 
-- primary screen: Goal Workbench
-- route family: `/ui/goals/new`, `/ui/goals/:goalId`
+- primary workstream placement: Goal Workbench
+- route/deep-link support: `/ui/goals/new`, `/ui/goals/:goalId`
 - users: supervisor, tenant admin where permitted
 - human authority shown:
   - objective owner
@@ -51,8 +51,8 @@ Design reference:
 
 ## Mission Control / Briefing
 
-- primary screen: Briefing / Mission Control
-- route family: `/ui/briefing`
+- primary workstream placement: Briefing / Mission Control
+- route/deep-link support: `/ui/briefing`
 - users: supervisor, reviewer, tenant admin, auditor read-only where permitted
 - human authority shown:
   - pending approvals and exceptions
@@ -82,8 +82,8 @@ Design reference:
 
 ## Decision Card / Deviation Review
 
-- primary screens: Decision Queue, Decision Card Detail
-- route family: `/ui/decisions`, `/ui/decisions/:decisionId`
+- primary workstream placements: Decision Queue, Decision Card Detail
+- route/deep-link support: `/ui/decisions`, `/ui/decisions/:decisionId`
 - users: reviewer, supervisor, policy owner for policy-change decisions
 - human authority shown:
   - allowed actions based on user permission and policy gate
@@ -118,8 +118,8 @@ Design reference:
 
 ## Policy / Governance / Learning Center
 
-- primary screen: Governance Center / Policies
-- route family: `/ui/governance/policies`
+- primary workstream placement: Governance Center / Policies
+- route/deep-link support: `/ui/governance/policies`
 - users: policy owner, tenant admin, auditor read-only where permitted
 - human authority shown:
   - policy owner approval requirement
@@ -150,8 +150,8 @@ Design reference:
 
 ## Async Digest / Executive Briefing
 
-- primary screen: Briefing / Mission Control digest regions
-- route family: `/ui/briefing`
+- primary workstream placement: Briefing / Mission Control digest regions
+- route/deep-link support: `/ui/briefing`
 - users: supervisor, tenant admin, outcome owner, auditor read-only where permitted
 - human authority shown:
   - pending decisions
@@ -177,8 +177,8 @@ Design reference:
 
 ## Audit / Work Trace
 
-- primary screen: Audit Trace Explorer
-- route family: `/ui/audit/traces`
+- primary workstream placement: Audit Trace Explorer
+- route/deep-link support: `/ui/audit/traces`
 - users: auditor, tenant admin, supervisor for scoped traces
 - human authority shown:
   - actor, approver, authorization basis, policy version, permission source

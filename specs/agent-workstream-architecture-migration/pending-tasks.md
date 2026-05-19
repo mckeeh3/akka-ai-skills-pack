@@ -291,7 +291,7 @@
 
 ### TASK-AW-02-005: Refresh app-description examples for workstream model
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/02-description-model-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/02-app-description/05-refresh-description-examples.md
 - depends on: [TASK-AW-02-004]
@@ -311,7 +311,10 @@
 - done criteria:
   - examples demonstrate functional agents, surfaces, capabilities, and horizontals
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Refresh app-description examples for workstreams`
+  - completed: refreshed the AI-first SaaS seed app-description example with `12-workstreams/`, functional-agent/internal-agent guidance, structured surface contracts, workstream shell UI files, route/deep-link subordinate guidance, traceability maps, and a horizontal implementation map; marked the purchase-request example as mechanics-only.
+  - checks: verified examples demonstrate functional agents, surfaces, capabilities, and horizontal maps; ran `rg -n "page-first|CRUD-first|chatbot|primary screen|primary screens|screens-and-navigation|functional agent|structured surface|horizontal" docs/examples/ai-first-saas-seed-app-description docs/examples/purchase-request-app-description` and confirmed page/screen references are compatibility or anti-primary notes rather than primary structure guidance.
 
 ### TASK-AW-03-001: Revise web UI skills for workstream shell
 

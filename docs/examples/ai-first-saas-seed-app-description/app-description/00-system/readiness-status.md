@@ -12,8 +12,8 @@
   - complete code generation of all phases at once
   - production WorkOS authentication setup values and Resend invite-email setup values
 - decisive reasons:
-  - app class, SaaS foundation, complete invitation onboarding, full admin user management, AI-assisted admin offload, UI surfaces, security posture, and Akka component mapping are defined
-  - selected UI design, light/dark/system mode, lightweight style constraints, AI-first surface semantics, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
+  - app class, SaaS foundation, complete invitation onboarding, full admin user management, AI-assisted admin offload, agent workstream model, functional agents, structured surfaces, security posture, and horizontal Akka component mapping are defined
+  - selected UI design, light/dark/system mode, lightweight style constraints, workstream shell semantics, surface contracts, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
   - enough structure exists to plan implementation phases and generate initial scaffolding
 - blocking gaps before full code generation:
   - choose concrete WorkOS/JWT mode for runnable local development and cloud deployment
@@ -21,7 +21,7 @@
   - choose first implementation slice boundary
   - confirm persistence model expectations for local test execution
   - confirm whether MCP and gRPC are in v1 or deferred examples
-  - decide whether the first generated frontend slice should include only phase-1 admin/auth/admin-agent shell or also phase-2 AI-first mission-control surfaces
+  - decide whether the first generated frontend slice should include only phase-1 Access/Profile, User Admin, and Agent Admin workstreams or also phase-2 Mission Control, Governance/Policy, and Audit/Trace surfaces
 - accepted assumptions:
   - v1 may use a developer-friendly auth adapter while preserving production auth seams
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules

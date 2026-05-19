@@ -28,16 +28,16 @@
 - policy-triggered high-risk work creates a decision card before execution proceeds
 - reviewer can approve or reject a decision card and workflow responds accordingly
 - auditor can find trace entries for goal, plan, agent, tool, policy, and decision activity
-- frontend shell shows authenticated layout, tenant switcher, navigation, loading/empty/error states, and validation feedback
-- admin UI exposes Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings with capability-gated actions
-- managed-agent UI exposes agent catalog, agent detail, prompt governance, skill governance, skill manifest management, tool permission management, edit-agent proposal review, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace exploration
+- frontend shell shows authenticated agent workstream layout, selected tenant/customer context, functional-agent rail, persistent composer, loading/empty/error/forbidden states, and validation feedback
+- User Admin workstream exposes Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings surfaces with capability-gated actions
+- Agent Admin workstream exposes agent catalog, agent detail, prompt governance, skill governance, skill manifest management, tool permission management, edit-agent proposal review, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace exploration
 
 ## UI design acceptance checks
 
 - frontend applies the selected `atlas-ops-supervisory-console` style guide without copying mockup product names, people, account names, logos, or metrics
-- app shell renders persistent desktop navigation, active route state, notification/user region, and collapsed/mobile navigation behavior
+- app shell renders persistent functional-agent rail, active workstream/surface state, notification/user region, and collapsed/mobile rail behavior
 - light, dark, and system mode are available through token-driven styling; core shell and mission-control surfaces preserve readable contrast and visible focus in both modes
-- Mission Control / Briefing shows page title/subtitle, AI command strip, KPI summary band, agent execution timeline, needs-your-attention queue, trust controls, and upcoming autonomous actions
+- Mission Control / Briefing shows workstream context, composer, KPI summary band, agent execution timeline, needs-your-attention queue, trust controls, and upcoming autonomous actions
 - AI command strip exposes suggested operational prompts and does not directly execute high-impact work without creating or routing to durable goals, decisions, approvals, or policy proposals
 - decision cards show recommendation, evidence summary, risk, confidence or impact where available, policy trigger, allowed actions, and trace/detail links
 - Goal Workbench supports objective, success criteria, constraints, tool/data permissions, approval gates, draft-plan request, and launch approval states

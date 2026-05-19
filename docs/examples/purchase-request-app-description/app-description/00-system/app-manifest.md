@@ -1,11 +1,15 @@
 # App Manifest
 
 - app-id: purchase-request
-- status: description-maintenance-example
+- status: description-maintenance-example-mechanics-only
 - generation-targets:
   - generated application code
   - generated tests
   - runnable evaluation build
+- architecture note:
+  - mechanics-only conventional workflow example; not generated AI-first SaaS target doctrine
+  - does not model the mandatory agent workstream shell, functional agents, structured surfaces, secure SaaS foundation, or horizontal Akka maps
+  - use `../ai-first-saas-seed-app-description/` as the generated SaaS reference
 - top-level goals:
   - allow employees to submit purchase requests
   - require approval before high-value requests are fulfilled

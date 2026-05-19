@@ -16,8 +16,9 @@
   - provide a functional AI-first operating-model shell for delegated goals, plans, decisions, approvals, audit traces, and outcomes
   - provide governed runtime agent behavior management with AgentDefinition, governed prompts, governed skills, skill manifests, tool permission boundaries, editing-agent proposals, and prompt/skill/work traces
   - demonstrate common Akka Java component patterns in a coherent application
+  - demonstrate the agent workstream application model: role-authorized functional agents, durable workstreams, structured surfaces, governed capabilities, and horizontal Akka maps
   - demonstrate common browser UI and frontend/backend integration patterns
-  - support modular expansion by adding app modules and required features
+  - support modular expansion by adding functional-agent verticals, structured surfaces, capabilities, and required features
 - non-goals:
   - implement a vertical business product beyond generic AI-first SaaS substrate
   - provide production identity-provider provisioning for every vendor
@@ -32,6 +33,8 @@
   - the frontend is a first-class generated output, not a static demo shell
 - primary linked artifacts:
   - `../10-capabilities/capabilities-index.md`
+  - `../12-workstreams/functional-agents.md`
+  - `../12-workstreams/surfaces-index.md`
   - `../15-operating-model/goals-and-objectives.md`
   - `../20-behavior/behavior-index.md`
   - `../30-tests/test-index.md`

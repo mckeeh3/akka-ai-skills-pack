@@ -6,12 +6,13 @@ This directory is a concrete example of the internal app-description architectur
 
 It shows a small but cross-linked **harness-maintained application description** for a purchase-request workflow.
 
-AI-first SaaS reset note: this remains a low-agentic/conventional approval-workflow reference for app-description mechanics only. It is **not** target architecture doctrine and must not be used as the first reference for generated SaaS planning. Start new SaaS work from `../ai-first-saas-seed-app-description/README.md` and the core foundation docs instead. Do not force-fit this example into a full AI-first SaaS operating model without explicit product intent.
+AI-first SaaS / agent workstream reset note: this remains a low-agentic/conventional approval-workflow reference for app-description mechanics only. It is **not** target architecture doctrine and must not be used as the first reference for generated SaaS planning. It intentionally does not teach the mandatory generated-app structure of functional agents, workstreams, structured surfaces, secure SaaS foundation, and horizontal Akka maps. Start new SaaS work from `../ai-first-saas-seed-app-description/README.md` and the core foundation docs instead. Do not force-fit this example into a full AI-first SaaS operating model without explicit product intent.
 
 Purpose of this example:
 - validate the layer structure in practice
 - give app-description skills a concrete reference target
-- demonstrate how capabilities, behavior, tests, security, observability, readiness, and traceability connect
+- demonstrate how capabilities, behavior, tests, security, observability, readiness, and traceability connect in a compact mechanics-only example
+- avoid presenting page/screen hierarchy as the primary generated SaaS architecture
 
 Example root:
 

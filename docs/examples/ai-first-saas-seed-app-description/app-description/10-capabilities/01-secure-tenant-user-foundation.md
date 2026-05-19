@@ -156,8 +156,10 @@ This is a reference capability contract for the skills pack's seed app, not this
   - `../50-observability/logs-and-audit.md`
   - `../50-observability/traces-and-correlation.md`
   - `../50-observability/metrics.md`
-- UI:
-  - `../55-ui/screens-and-navigation.md`
+- workstreams/UI:
+  - `../12-workstreams/functional-agents.md`
+  - `../12-workstreams/surfaces-index.md`
+  - `../55-ui/workstream-shell.md`
   - `../55-ui/frontend-api-contracts.md`
   - `../55-ui/ai-first-surfaces.md`
 - traceability:

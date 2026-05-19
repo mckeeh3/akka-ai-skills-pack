@@ -2,12 +2,20 @@
 
 - tenant/user foundation changes affect:
   - backend auth/authorization modules
-  - admin frontend screens
+  - Access/Profile and User Admin workstream surfaces
   - tenant isolation tests
+- functional-agent changes affect:
+  - `12-workstreams/functional-agents.md`
+  - functional-agent rail, `/api/me` capability exposure, workstream defaults, authorization tests
+- structured-surface changes affect:
+  - `12-workstreams/surfaces-index.md` and affected surface contract
+  - structured surface renderers, typed API clients, surface action tests, capability mappings
 - AI-first operating-model changes affect:
   - goal/plan/decision/policy components
-  - workflows, agents, traces, mission-control UI
+  - workflows, agents, traces, Mission Control and Governance/Policy workstream surfaces
 - UI shell changes affect:
-  - frontend layout, routing, typed API client, interaction tests
+  - workstream shell, rail, composer, route/deep-link support, typed API client, interaction tests
+- horizontal implementation map changes affect:
+  - Akka component selection, implementation tasks, test scope, and skills-pack reference mapping
 - observability changes affect:
-  - audit events, trace enrichment consumers, metrics/logging tests
+  - audit events, trace enrichment consumers, metrics/logging tests, Audit/Trace surfaces

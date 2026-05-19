@@ -6,6 +6,7 @@ Purpose:
 - define the canonical seed app before implementation
 - provide a reusable source asset for the skills pack
 - describe secure multi-tenant SaaS foundations shared by generated apps
+- describe the agent workstream application model: role-authorized functional agents, durable workstreams, structured surfaces, governed capabilities, and horizontal Akka implementation maps
 - describe a functional AI-first operating-model baseline: goals, plans, governed runtime agents, managed prompts/skills/manifests/tool boundaries, decisions, policy gates, traces, and outcomes
 - map the seed app to Akka Java components and frontend/backend integration patterns
 
@@ -22,4 +23,4 @@ Repository/use distinction:
 Primary implementation target:
 - backend: Akka Java SDK
 - frontend: React + Vite + TypeScript
-- app class: secure multi-tenant AI-first SaaS shell with modular extension points
+- app class: secure multi-tenant AI-first SaaS agent workstream shell with modular functional-agent extension points

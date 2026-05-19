@@ -5,19 +5,21 @@
   - implementation planning
   - backlog/sprint decomposition
   - phase-1 scaffold design
-  - UI design validation against the mockup-derived design spec
-  - localized frontend implementation planning for shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
+  - UI design validation against the selected `atlas-ops-supervisory-console` style guide
+  - localized frontend implementation planning for the workstream shell, functional-agent rail, persistent composer, Mission Control, Goal Workbench, decision review, governance, audit, and admin surfaces
   - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
 - not yet fully ready for:
   - complete code generation of all phases at once
   - production WorkOS authentication setup values and Resend invite-email setup values
-- UI readiness notes:
+- workstream/UI readiness notes:
+  - functional agents, internal agents, workstream retention, surface index, and representative surface contracts are defined
   - selected `atlas-ops-supervisory-console` style guide is recorded
   - light/dark/system mode and lightweight style constraints are defined
-  - AI-first UI surfaces, form/action behavior, frontend API DTO sketches, realtime behavior, and design-specific acceptance checks are defined
+  - structured surface contracts, form/action behavior, frontend API DTO sketches, realtime behavior, and design-specific acceptance checks are defined
+  - route/deep-link support is subordinate to functional-agent workstreams and structured surfaces
 - main remaining decisions:
   - local/prod auth mode
   - first implementation slice boundary
   - v1 component coverage boundary
-  - whether phase-1 frontend includes only admin/auth shell or also phase-2 AI-first mission-control surfaces
+  - whether phase-1 frontend includes only Access/Profile, User Admin, and Agent Admin workstreams or also Mission Control, Governance/Policy, and Audit/Trace surfaces
   - whether MCP/gRPC are included in seed v1 or deferred modules
