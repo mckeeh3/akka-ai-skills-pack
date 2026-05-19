@@ -104,7 +104,7 @@
 
 ### TASK-CORE-01-003: Create golden-path generation walkthrough
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/01-scope-and-generation-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/01-scope-and-generation/03-create-golden-path-generation-walkthrough.md
 - depends on: [TASK-CORE-01-002]
@@ -125,6 +125,8 @@
 - done criteria:
   - a fresh harness can follow the documented generation path
   - task changes and queue update are committed
+- notes:
+  - commit message: `Add golden-path generation walkthrough`
 
 ### TASK-CORE-02-001: Inventory auth and user admin reference gaps
 
