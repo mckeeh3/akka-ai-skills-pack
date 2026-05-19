@@ -419,7 +419,7 @@
 
 ### TASK-CORE-06-001: Create full-core acceptance and security test matrix
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/06-e2e-generation-review-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/06-e2e-generation-review/01-create-full-core-acceptance-test-matrix.md
 - depends on: [TASK-CORE-04-002, TASK-CORE-05-002]
@@ -440,6 +440,8 @@
 - done criteria:
   - full-core readiness has one authoritative test checklist
   - task changes and queue update are committed
+- notes:
+  - commit message: `Add full-core acceptance test matrix`
 
 ### TASK-CORE-06-002: Final consistency review
 
