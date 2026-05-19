@@ -159,7 +159,7 @@
 
 ### TASK-CORE-02-002: Specify invitation onboarding reference slice
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/02-auth-user-admin-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/02-auth-user-admin/02-spec-invitation-onboarding-reference-slice.md
 - depends on: [TASK-CORE-02-001]
@@ -184,6 +184,8 @@
 - done criteria:
   - future code task can implement the reference slice without architecture decisions
   - task changes and queue update are committed
+- notes:
+  - commit message: `Specify invitation onboarding reference slice`
 
 ### TASK-CORE-02-003: Specify full user administration reference slice
 
