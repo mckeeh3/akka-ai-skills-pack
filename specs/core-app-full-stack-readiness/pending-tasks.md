@@ -470,7 +470,7 @@
 
 ### TASK-CORE-06-003: Write migration completion summary
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/06-e2e-generation-review-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/06-e2e-generation-review/03-write-migration-completion-summary.md
 - depends on: [TASK-CORE-06-002]
@@ -487,3 +487,5 @@
 - done criteria:
   - migration has a durable completion summary
   - task changes and queue update are committed
+- notes:
+  - commit message: `Add migration completion summary`
