@@ -281,7 +281,7 @@
 
 ### TASK-CORE-03-003: Harden hybrid Akka agent runtime contract
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/03-agent-admin-runtime-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/03-agent-admin-runtime/03-harden-hybrid-akka-agent-runtime-contract.md
 - depends on: [TASK-CORE-03-002]
@@ -307,6 +307,8 @@
 - done criteria:
   - static Java Agent code and governed behavior records have a clear implementation handoff
   - task changes and queue update are committed
+- notes:
+  - commit message: `Harden hybrid agent runtime contract`
 
 ### TASK-CORE-04-001: Align core workstream API contracts
 
