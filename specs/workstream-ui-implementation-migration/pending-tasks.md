@@ -265,7 +265,7 @@
 
 ### TASK-WUI-04-001: Implement User Admin dashboard and list surfaces
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/04-reference-vertical-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/04-reference-vertical/01-implement-user-admin-dashboard-and-list-surfaces.md
 - depends on: [TASK-WUI-03-002]
@@ -289,7 +289,9 @@
 - done criteria:
   - first half of User Admin reference vertical works through surfaces
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement User Admin dashboard and list surfaces`
+  - completed: added User Admin dashboard and list/search structured surface fixtures, governed capability actions, dashboard-to-list action feedback, composer `show users` navigation, fixture client result handling, focused contract tests, and rebuilt static assets.
 
 ### TASK-WUI-04-002: Implement User Detail/Edit surface
 

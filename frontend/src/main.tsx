@@ -172,6 +172,49 @@ function App() {
         : current.surfaces;
       return { ...current, surfaces: nextSurfaces, items: [...current.items, feedbackItem] };
     });
+    if (result.ok && result.value.resultSurface) {
+      updateSelection({
+        selectedFunctionalAgentId: result.value.resultSurface.ownerFunctionalAgentId,
+        selectedSurfaceId: result.value.resultSurface.surfaceId,
+        surfacePlacement: 'inline'
+      });
+    }
+  }
+
+  function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
+    const prompt = request.prompt.toLowerCase();
+    const showUsers = /\b(show|display|open|list|search)\b.*\b(users|invitations|memberships)\b/.test(prompt) || /\busers\b/.test(prompt);
+    const userRequestItem: WorkstreamItem = {
+      itemId: `composer-${Date.now()}`,
+      functionalAgentId: request.functionalAgentId,
+      kind: 'user-request',
+      createdAt: new Date().toISOString(),
+      correlationId: request.idempotencyKey,
+      traceIds: [],
+      title: 'Composer request captured',
+      body: request.prompt,
+      status: 'ready'
+    };
+    const navigationFeedbackItem: WorkstreamItem | undefined = showUsers
+      ? {
+          itemId: `composer-display-users-${Date.now()}`,
+          functionalAgentId: 'agent-user-admin',
+          kind: 'action-feedback',
+          createdAt: new Date().toISOString(),
+          correlationId: 'corr-composer-display-users',
+          traceIds: ['trace-composer-display-users'],
+          surfaceId: 'surface-user-admin-list',
+          title: 'Display the user list view',
+          body: 'Composer intent “show users” opened the tenant-scoped User Admin list/search structured surface.',
+          status: 'ready'
+        }
+      : undefined;
+    setBootstrap((current) => current.status === 'ready'
+      ? { ...current, items: [...current.items, userRequestItem, ...(navigationFeedbackItem ? [navigationFeedbackItem] : [])] }
+      : current);
+    if (showUsers) {
+      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-list', surfacePlacement: 'inline' });
+    }
   }
 
   if (bootstrap.status === 'loading') {
@@ -189,27 +232,7 @@ function App() {
       initialFunctionalAgentId={selectedFunctionalAgentId}
       items={selectedItems}
       onSelectAgent={selectAgent}
-      onComposerSubmit={(request) => {
-        setBootstrap((current) => current.status === 'ready'
-          ? {
-              ...current,
-              items: [
-                ...current.items,
-                {
-                  itemId: `composer-${Date.now()}`,
-                  functionalAgentId: request.functionalAgentId,
-                  kind: 'user-request',
-                  createdAt: new Date().toISOString(),
-                  correlationId: request.idempotencyKey,
-                  traceIds: [],
-                  title: 'Composer request captured',
-                  body: request.prompt,
-                  status: 'ready'
-                }
-              ]
-            }
-          : current)
-      }}
+      onComposerSubmit={handleComposerSubmit}
     >
       <WorkstreamStream items={selectedItems} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} />
       <SurfaceRenderer envelopes={ready.surfaces} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />

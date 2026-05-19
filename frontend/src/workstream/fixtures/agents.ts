@@ -15,8 +15,8 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     label: 'User Admin',
     purpose: 'Manage invitations, memberships, roles, and access review.',
     icon: 'users',
-    defaultSurfaceType: 'list-search',
-    requiredCapabilityIds: ['admin.users.read'],
+    defaultSurfaceType: 'dashboard',
+    requiredCapabilityIds: ['secure-tenant-user-foundation'],
     attention: { count: 2, severity: 'warning' },
     availability: 'visible'
   },

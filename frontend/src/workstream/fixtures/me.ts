@@ -11,7 +11,7 @@ export const tenantAdminAuthContext: AuthContext = {
   customerName: 'Northwind Customer',
   membershipId: 'membership-admin',
   roleIds: ['tenant-admin', 'policy-owner'],
-  capabilityIds: ['profile.read', 'profile.update', 'admin.users.read', 'admin.users.invite', 'admin.roles.update', 'audit.trace.read', 'governance.policy.read', 'governance.policy.propose', 'decision.approve', 'workflow.read']
+  capabilityIds: ['profile.read', 'profile.update', 'secure-tenant-user-foundation', 'admin.users.read', 'admin.users.invite', 'admin.roles.update', 'audit.trace.read', 'governance.policy.read', 'governance.policy.propose', 'governance-decisions-audit', 'decision.approve', 'workflow.read']
 };
 
 export const memberAuthContext: AuthContext = {

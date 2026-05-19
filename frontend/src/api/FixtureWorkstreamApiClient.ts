@@ -3,10 +3,11 @@ import type { ApiError, ApiResult } from './types';
 import type { CapabilityActionRequest, CapabilityActionResult, SurfaceEnvelope, WorkstreamItem } from '../workstream/types';
 import {
   actionResultsByStatus,
+  allSurfaceActions,
   canonicalSurfaceEnvelopes,
+  displayUserListActionResult,
   initialWorkstreamItems,
-  meTenantAdmin,
-  surfaceActionsByIntent
+  meTenantAdmin
 } from '../workstream/fixtures';
 
 export class FixtureWorkstreamApiClient implements WorkstreamClient {
@@ -41,12 +42,14 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
   }
 
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>> {
-    const action = Object.values(surfaceActionsByIntent).find((candidate) => candidate.actionId === request.actionId || candidate.capabilityId === request.capabilityId);
+    const action = allSurfaceActions.find((candidate) => candidate.actionId === request.actionId || candidate.capabilityId === request.capabilityId);
     if (!action) return delayedError('not_found', 'The requested capability action is not exposed by this surface.');
     if (action.disabled) return delayedOk({ ...actionResultsByStatus.denied, message: action.disabled.message, correlationId: request.correlationId });
-    const result = request.capabilityId === 'decision.approve'
-      ? actionResultsByStatus['approval-required']
-      : actionResultsByStatus.accepted;
+    const result = request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
+      ? displayUserListActionResult
+      : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
+        ? actionResultsByStatus['approval-required']
+        : actionResultsByStatus.accepted;
     const response = { ...result, correlationId: request.correlationId };
     this.items = [
       ...this.items,
