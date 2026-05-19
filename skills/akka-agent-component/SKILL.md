@@ -7,9 +7,13 @@ description: Implement Akka Java SDK Agent classes with one command handler, cle
 
 Use this skill when the task is mainly about the agent class itself.
 
+Before writing the class for a generated SaaS app, confirm whether it implements a user-facing functional/context-area agent or a bounded internal agent. Functional agents must align with a workstream, structured surfaces, capabilities, authority indicators, and UI tests; internal agents are invoked behind workflows, tools, timers, consumers, endpoints, or services and should not become primary navigation units by accident.
+
 ## Required reading
 
 Read these first if present:
+- `../../docs/agent-workstream-application-architecture.md`
+- `../../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents.html.md`
 - `akka-context/sdk/agents/prompt.html.md`
 - `akka-context/sdk/agents/failures.html.md`
@@ -28,6 +32,7 @@ Read these first if present:
 5. Add `.memory(...)` only when the memory behavior is intentional.
 6. Add `.onFailure(...)` when a fallback value or graceful error is needed.
 7. Keep the agent class stateless.
+8. Keep tool calls aligned to named capability contracts; tool availability does not define the agent's responsibility or authorization boundary.
 
 ## Repository example
 
@@ -46,6 +51,7 @@ Read these first if present:
 ## Review checklist
 
 Before finishing, verify:
+- functional/context-area versus internal-agent placement is explicit
 - there is only one public command handler
 - the handler returns `Effect<T>` or `StreamEffect`
 - prompt text matches the task exactly

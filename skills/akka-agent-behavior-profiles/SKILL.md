@@ -5,14 +5,15 @@ description: Design and implement tenant-scoped durable AgentDefinition and beha
 
 # Akka Agent Behavior Profiles
 
-Use this skill when the task is mainly about durable agent identity, lifecycle, authority, and runtime profile composition for an AI-first SaaS app.
+Use this skill when the task is mainly about durable agent identity, lifecycle, authority, workstream placement, and runtime profile composition for an AI-first SaaS app.
 
-This is not the skill for writing the Java `Agent` class itself. Use it before `akka-agent-component` when agents are managed runtime actors rather than only static code classes.
+This is not the skill for writing the Java `Agent` class itself. Use it before `akka-agent-component` when agents are managed runtime actors rather than only static code classes. For generated full-stack SaaS apps, classify each managed agent as either a user-facing functional/context-area agent or a bounded internal agent before designing profile fields and UI.
 
 ## Required reading
 
 Read these first if present:
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/agent-workstream-application-architecture.md`
 - `../../docs/agent-coverage-matrix.md`
 - `../../docs/agent-runtime-invocation-pattern.md`
 - `../akka-agent-model-governance/SKILL.md` when model config policy, provider aliases, fallbacks, or provider secret boundaries are in scope
@@ -27,6 +28,7 @@ Read these first if present:
 ## Use when the request mentions
 
 - `AgentDefinition`, agent profile, behavior profile, or runtime profile
+- functional agent, context-area agent, internal agent, workstream placement, or left-rail agent catalog
 - agent admin UI, catalog, list/detail, enable/disable, or archive
 - agent owner, steward, maintainer, reviewer, or responsible team
 - lifecycle states: draft, active, disabled, archived
@@ -44,6 +46,8 @@ AgentDefinition
 - tenantId
 - agentDefinitionId
 - displayName / description
+- agentPlacement: functional_context_area | internal_worker
+- functionalAreaId optional for user-facing workstream agents
 - lifecycleStatus: draft | active | disabled | archived
 - ownerAccountId / stewardRole
 - authorityLevel
@@ -116,23 +120,27 @@ Typical events:
 ## Rules
 
 1. Agent definitions are tenant-scoped. Include `tenantId` in commands, state, events, views, and endpoints.
-2. Backend authorization is authoritative. Do not trust frontend-visible role labels or prompt instructions.
-3. Tool permissions are denied by default. Add explicit allow rules by tool id/category/scope.
-4. Model config references must not contain provider secrets or frontend-exposed credentials; use `akka-agent-model-governance` when defining `ModelConfigRef`, model policy, fallback model policy, provider-secret boundaries, model-use traces, or tenant/agent/task model selection.
-5. Disabled or archived agents cannot be used by runtime flows, workflows, tools, scheduled jobs, or test consoles except for authorized inspection/replay.
-6. Draft agents cannot perform consequential production actions.
-7. Authority changes that expand autonomy or tool access require an explicit approval rule unless the product has a documented single-admin simplification.
-8. Lifecycle, authority, prompt reference, skill manifest, model, and tool-boundary changes emit audit events.
-9. Prompts and skills are not security boundaries. Mechanical authorization checks still gate data and tool access.
-10. Runtime flows must resolve the active behavior profile before invoking the Java `Agent` class.
-11. Use `../../docs/agent-runtime-invocation-pattern.md` for the concrete `AgentRuntimeResolver` handoff: AuthContext validation, active AgentDefinition lookup, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission must happen before or around model invocation.
+2. Classify each agent definition as `functional_context_area` or `internal_worker`. Functional/context-area agents may appear as role-authorized workstream verticals with structured surfaces; internal agents are invoked behind workflows, tools, consumers, timers, or services and should not be exposed as primary navigation unless product intent promotes them.
+3. Backend authorization is authoritative. Do not trust frontend-visible role labels or prompt instructions.
+4. Tool permissions are denied by default. Add explicit allow rules by tool id/category/scope.
+5. Model config references must not contain provider secrets or frontend-exposed credentials; use `akka-agent-model-governance` when defining `ModelConfigRef`, model policy, fallback model policy, provider-secret boundaries, model-use traces, or tenant/agent/task model selection.
+6. Disabled or archived agents cannot be used by runtime flows, workflows, tools, scheduled jobs, or test consoles except for authorized inspection/replay.
+7. Draft agents cannot perform consequential production actions.
+8. Authority changes that expand autonomy or tool access require an explicit approval rule unless the product has a documented single-admin simplification.
+9. Lifecycle, placement, authority, prompt reference, skill manifest, model, and tool-boundary changes emit audit events.
+10. Prompts and skills are not security boundaries. Mechanical authorization checks still gate data and tool access.
+11. Tools are exposure surfaces for named capabilities. Do not grant a tool because a prompt/skill asks for it; require the capability contract and active `ToolPermissionBoundary` to allow it.
+12. Runtime flows must resolve the active behavior profile before invoking the Java `Agent` class.
+13. Use `../../docs/agent-runtime-invocation-pattern.md` for the concrete `AgentRuntimeResolver` handoff: AuthContext validation, active AgentDefinition lookup, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission must happen before or around model invocation.
 
 ## Admin API and UI surfaces
 
 Provide protected admin surfaces for:
-- list/filter agents by lifecycle status and steward
+- list/filter agents by lifecycle status, steward, and functional/internal placement
 - create/edit draft definitions
 - inspect active runtime profile references
+- for functional/context-area agents, inspect linked workstream shell placement, default surfaces, callable capabilities, and trace links
+- for internal agents, inspect invoking workflows/tools/timers/consumers/services, service authority basis, and trace links
 - activate, disable, and archive with reason capture
 - review authority/tool/model changes before activation
 - show audit/work-trace links for profile changes and executions
@@ -142,18 +150,20 @@ Pair these with tenant-isolation, forbidden-access, disabled-agent, archived-age
 ## Implementation order
 
 1. Confirm tenant/customer scope and required admin capabilities with `core-saas-foundation`.
-2. Model `AgentDefinition` state, lifecycle commands, validation, and events.
-3. Add views for admin list/detail and runtime lookup.
-4. Add protected endpoints and UI surfaces.
-5. Add audit/work-trace emission for lifecycle and authority changes.
-6. Integrate runtime lookup so workflows/endpoints refuse disabled, archived, unauthorized, or out-of-scope agents.
-7. Add an `AgentRuntimeResolver`-style application helper or service boundary that coordinates AuthContext, AgentDefinition, prompt versions, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and trace ids according to `../../docs/agent-runtime-invocation-pattern.md`.
-8. Only then route to prompt, skill, tools, memory, orchestration, or component implementation skills.
+2. Classify each agent as functional/context-area or internal and record the workstream placement or backend invocation basis.
+3. Model `AgentDefinition` state, lifecycle commands, validation, and events.
+4. Add views for admin list/detail and runtime lookup.
+5. Add protected endpoints and UI surfaces.
+6. Add audit/work-trace emission for lifecycle, placement, and authority changes.
+7. Integrate runtime lookup so workflows/endpoints refuse disabled, archived, unauthorized, or out-of-scope agents.
+8. Add an `AgentRuntimeResolver`-style application helper or service boundary that coordinates AuthContext, AgentDefinition, prompt versions, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and trace ids according to `../../docs/agent-runtime-invocation-pattern.md`.
+9. Only then route to prompt, skill, tools, memory, orchestration, or component implementation skills.
 
 ## Review checklist
 
 Before finishing, verify:
 - every command/query is tenant-scoped and authorization-protected
+- functional/context-area agents are distinguishable from internal agents in state, views, UI, and tests
 - lifecycle transitions are explicit and tested
 - disabled/archived agents cannot run
 - tool permissions default to deny

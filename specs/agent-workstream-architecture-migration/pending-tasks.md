@@ -373,7 +373,7 @@
 
 ### TASK-AW-03-003: Revise agent skills for functional and internal agents
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/03-ui-and-agent-skill-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/03-ui-skills/03-revise-agent-skills.md
 - depends on: [TASK-AW-03-002]
@@ -393,7 +393,10 @@
 - done criteria:
   - agent guidance supports the new UX/application model
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Revise agent skills for workstream agents`
+  - completed: revised top-level agent guidance, agent team design, behavior profiles, agent component guidance, and agent coverage routing to distinguish functional/context-area agents from internal backend agents.
+  - checks: verified functional/context-area and internal-agent guidance appears in revised agent skills; verified agent tools are described as capability exposure surfaces rather than root design objects.
 
 ### TASK-AW-04-001: Create canonical core app PRD for workstream foundation
 

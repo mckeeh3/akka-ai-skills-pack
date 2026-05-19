@@ -5,15 +5,17 @@ description: Design bounded AI-first SaaS agent teams with explicit coordinator/
 
 # AI-First SaaS Agent Team Design
 
-Use this companion after `ai-first-saas` when a product or feature needs one or more agents to perform delegated operational work under human and policy control.
+Use this companion after `ai-first-saas` and `agent-workstream-apps` when a product or feature needs one or more agents to perform delegated operational work under human and policy control.
 
-This is an operating-model and routing skill. It does not replace `akka-agents`, `akka-agent-orchestration`, or `akka-workflows` implementation guidance.
+This is an operating-model and routing skill. It distinguishes user-facing functional/context-area agents from internal agents before selecting one-agent, team, workflow, tool, or Akka implementation patterns. It does not replace `akka-agents`, `akka-agent-orchestration`, or `akka-workflows` implementation guidance.
 
 ## Required reading
 
 Read first:
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/agent-workstream-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
+- `../agent-workstream-apps/SKILL.md`
 
 For implementation, route to:
 - `akka-agents`
@@ -41,6 +43,16 @@ Do not design an agent team when:
 - authority, tools, policy, or escalation boundaries are too vague to implement safely
 - the request is only to add a chatbot interface without durable delegated work
 
+## Functional agent vs internal agent placement
+
+Before naming agent classes or tools, decide where the agent belongs in the agent workstream application model.
+
+Use a **functional/context-area agent** when the responsibility is a user-facing work area with role-authorized entry in the application shell, a durable workstream, composer interactions, structured surfaces, callable capabilities, authority indicators, and UI rendering tests. Examples include User Admin, Agent Admin, Governance, Audit/Trace, Procurement, Finance, Sales Pipeline, Support, and Outcome Metrics.
+
+Use an **internal agent** when the responsibility is bounded backend work invoked by a functional agent, workflow, timer, consumer, tool, endpoint, or service. Examples include classifier, summarizer, evaluator, router, extraction worker, replay analyst, proposal drafter, or governance reviewer. Internal agents are not primary navigation/workstream units, but still need governed behavior profiles, prompt/skill references, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests.
+
+Promote an internal agent to a functional/context-area agent only when users need to directly enter that work area, see ongoing workstream history, invoke actions, inspect surfaces, and administer authority for that context.
+
 ## One-agent vs agent-team decision guide
 
 Before naming agent classes, decide whether the work is safest as one governed skilled agent, multiple specialized agents, a workflow-supervised team, or a separate evaluator.
@@ -52,12 +64,13 @@ Use a **single governed skilled agent** when:
 - one admin/review surface can safely manage the agent definition, prompt, skills, model, tool boundary, and traces.
 
 Use **multiple specialized agents** when any responsibility needs:
-- different authority, tenant/customer scope, tool boundary, model config, memory, lifecycle, owner/steward, scaling profile, prompt governance cadence, or approval policy;
+- different functional/internal placement, authority, tenant/customer scope, tool boundary, model config, memory, lifecycle, owner/steward, scaling profile, prompt governance cadence, or approval policy;
 - a materially different risk class, trace retention, redaction rule, or audit review path;
 - independent enable/disable, rollout, evaluation, replay, or rollback;
 - separation of duties, such as drafter vs approver, operator vs auditor, or worker vs reviewer.
 
 Use a **workflow-supervised agent team** when:
+- one or more functional agents need durable coordination with internal specialist/evaluator agents;
 - the objective spans durable multi-step execution, retries, pauses, deadlines, compensation, or human approval gates;
 - separate agents produce handoff artifacts that must survive restarts or be inspected by supervisors;
 - policy, confidence, risk, or side-effect checks must occur between model calls;
@@ -175,6 +188,7 @@ Implementation routing:
 
 - Agents may recommend, draft, classify, summarize, evaluate, or execute only within explicit product authority.
 - Tool permissions must be mechanically enforced; do not rely only on prompt instructions.
+- Agent tools are capability exposure surfaces, not root design objects; define the governed capability contract before granting tool access.
 - Policy-changing, permission-expanding, high-impact, or uncertain actions need human governance unless the product explicitly defines a safe autonomous boundary.
 - Record when an agent used data, invoked a tool, cited a policy, made a recommendation, or triggered escalation.
 
@@ -196,11 +210,13 @@ Implementation routing:
 ## Output expectations
 
 Produce a concise team design with:
+- selected functional/context-area agents and internal agents, with placement rationale
 - selected team shape and why it is needed
 - agent contracts for each agent
 - coordinator/workflow responsibilities versus specialist responsibilities
 - human approval and exception points
-- tools, data access, memory, guardrail, and evaluation needs
+- tools as capability exposure surfaces, plus data access, memory, guardrail, and evaluation needs
+- structured surfaces for functional agents when user-facing work is in scope
 - trace and audit requirements
 - downstream Akka skills to load next
 - unresolved authority questions, if any
@@ -208,9 +224,10 @@ Produce a concise team design with:
 ## Review checklist
 
 Before implementation, verify:
-- each agent has one responsibility and explicit non-responsibilities
+- each agent has one responsibility, explicit non-responsibilities, and clear functional/internal placement
+- functional/context-area agents have workstream and structured-surface responsibilities; internal agents do not masquerade as navigation units
 - every autonomous action has a bounded authority rule
-- tools and data permissions are explicit and enforceable
+- tools and data permissions are explicit, capability-backed, and enforceable
 - workflow orchestration is used for durable multi-agent progress instead of fragile agent-to-agent chaining
 - human approvals and exceptions are represented as durable states when consequential
 - tests can replace real model calls with deterministic model providers

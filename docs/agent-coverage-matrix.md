@@ -76,7 +76,8 @@ Small, high-value follow-ups for the next sprint:
 
 ## Fast routing guide
 
-- Need durable AgentDefinition, lifecycle, authority, or behavior profiles: read `skills/akka-agent-behavior-profiles/SKILL.md`
+- Need to distinguish user-facing functional/context-area agents from internal backend agents in a generated SaaS workstream app: read `docs/agent-workstream-application-architecture.md`, `skills/agent-workstream-apps/SKILL.md`, then `skills/akka-agents/SKILL.md`
+- Need durable AgentDefinition, lifecycle, authority, workstream placement, or behavior profiles: read `skills/akka-agent-behavior-profiles/SKILL.md`
 - Need governed prompt/skill/rubric/policy/example documents: read `skills/akka-agent-governed-documents/SKILL.md`
 - Need default prompt/skill/manifest/tool-boundary/AgentDefinition records loaded at install or tenant bootstrap: read `skills/akka-agent-seed-documents/SKILL.md`
 - Need governed runtime prompts, prompt versions, diff/review/activation, or prompt assembly traces: read `skills/akka-agent-prompt-governance/SKILL.md`
