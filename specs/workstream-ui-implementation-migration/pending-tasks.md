@@ -103,7 +103,7 @@
 
 ### TASK-WUI-02-001: Add workstream UI types and fixtures
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/02-component-library-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/02-component-library/01-add-workstream-ui-types-and-fixtures.md
 - depends on: [TASK-WUI-01-002]
@@ -123,7 +123,9 @@
 - done criteria:
   - reusable workstream UI data contracts exist
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add workstream UI types and fixtures`
+  - completed: added reusable workstream TypeScript contracts for auth, functional agents, workstream items, surfaces, actions, and events; added fixture variants for `/api/me`, agents, stream items, surface envelopes/action results, and realtime edge cases with focused contract coverage.
 
 ### TASK-WUI-02-002: Add shell, rail, context, and composer components
 
