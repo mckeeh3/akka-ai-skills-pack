@@ -71,7 +71,7 @@
 
 ### TASK-AW-01-002: Integrate workstream architecture into AI-first SaaS doctrine
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/01-agent-workstream-doctrine-and-routing-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/01-doctrine-routing/02-integrate-ai-first-doctrine.md
 - depends on: [TASK-AW-01-001]
@@ -92,7 +92,9 @@
 - done criteria:
   - AI-first doctrine points to agent workstreams as the default generated UI/application architecture
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Integrate workstream architecture into AI-first doctrine`
+  - completed: revised the AI-first SaaS doctrine to name the agent workstream shell as the default generated UI/application model while preserving mandatory secure SaaS foundation and capability-first backend sequencing.
 
 ### TASK-AW-01-003: Update skill routing map for agent workstream architecture
 
