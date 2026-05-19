@@ -44,7 +44,7 @@
 
 ### TASK-WUI-01-001: Inventory stale frontend and seed code
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/01-inventory-and-target-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/01-inventory-and-target/01-inventory-stale-frontend-and-seed-code.md
 - depends on: [TASK-WUI-00-001]
@@ -69,7 +69,9 @@
 - done criteria:
   - inventory records retire/revise/quarantine recommendations
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Inventory stale frontend and seed code`
+  - completed: created frontend/static-resource inventory with canonical, stale, generated, legacy/quarantine, revise, and retire recommendations; no production frontend code rewritten.
 
 ### TASK-WUI-01-002: Define workstream UI target architecture
 
