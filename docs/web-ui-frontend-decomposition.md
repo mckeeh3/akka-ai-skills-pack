@@ -2,7 +2,9 @@
 
 Use this doc when requirements include a user-facing browser app hosted by Akka HTTP endpoints.
 
-The goal is to make the frontend as intentionally designed as the backend. For product UIs, use a standard frontend project such as React/Vite and route implementation through the full web app skill path.
+The goal is to make the frontend as intentionally designed as the backend. For generated full-stack AI-first SaaS, decompose the browser app as an agent workstream shell first: left-rail functional agents, main workstream panel, bottom composer, context/authority indicators, and structured surfaces. Conventional screens/routes support implementation and deep links; they are not the primary model for authenticated consequential work.
+
+For product UIs, use a standard frontend project such as React/Vite and route implementation through the full web app skill path.
 
 Read `docs/web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
 
@@ -18,10 +20,18 @@ List:
 - permissions or role differences
 - success criteria for each user journey
 
-### 2. Screens and navigation
+### 2. Workstream shell regions, surfaces, and deep links
 
-For each screen, define:
-- route or UI path
+For generated SaaS apps, define shell regions before screens:
+- left rail functional agents: visible agents, hidden/denied agents, default selected agent, attention indicators, and role/capability basis
+- main workstream panel: stream item types, grouping, timeline/history behavior, status/progress items, trace links, and stale/reconnect states
+- persistent bottom composer: accepted request types, command shortcuts, uploads where allowed, disabled/forbidden states, and selected-agent context
+- context/authority indicators: selected account/tenant/customer, role/capability basis, support-access state, pending approvals, and recovery links
+- structured surfaces: dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status, evidence bundles, version cards, and outcome panels
+- deep links: selected functional agent, important stream item, and direct surface URLs when required
+
+For each shell region, surface, or conventional screen/route, define:
+- route or UI path, where routes are implementation/deep-link details
 - user goal
 - purpose
 - primary action and why it is primary
@@ -30,6 +40,7 @@ For each screen, define:
 - entry points and exits
 - loading behavior
 - empty/not-found behavior
+- forbidden/unauthorized behavior
 - error recovery behavior
 - success feedback
 - UX copy for key labels, buttons, empty/error/success messages
@@ -44,10 +55,11 @@ Prefer explicit route families:
 
 ### 3. Data dependencies
 
-For each screen or region, list:
+For each shell region, surface, screen, or route, list:
 - data needed on first render
 - query/filter/sort inputs
 - command/action endpoints
+- backend capability id for each consequential action or query
 - polling, SSE, or WebSocket needs
 - cache/stale behavior if relevant
 
@@ -71,6 +83,7 @@ Name states explicitly:
 - unauthorized/forbidden
 - submitting
 - success
+- denied/hidden functional agent
 - stale/reconnecting when realtime is used
 
 Do not implement only the happy path.
@@ -94,14 +107,17 @@ For each form/action, define:
 
 For each browser API, define:
 - route and method
+- capability id and allowed exposure surface
 - request DTO
 - success response DTO
 - error response DTOs
+- authorization/forbidden behavior
+- audit/work-trace expectations for consequential actions
 - endpoint integration tests
 
 Security/auth requirements may be noted as placeholders, but detailed authentication and authorization implementation belongs in security-specific guidance.
 
-Use browser-facing DTOs, not accidental internal domain objects.
+Use browser-facing DTOs, not accidental internal domain objects. Surface actions, hidden buttons, and route names are not authorization; backend capabilities remain authoritative.
 
 ### 7. Realtime behavior
 
@@ -157,9 +173,11 @@ Use a standard frontend project: source under `frontend/**`, built assets under 
 
 Also define:
 - framework/build tool, such as React/Vite
+- source organization for shell, surfaces, API clients, and state modules
 - package manager and build command
 - generated asset ownership rule
-- SPA routing choice: hash routing, explicit server entry routes, or in-app-only navigation
+- SPA/workstream routing choice: hash routing, explicit server entry routes, or in-app-only navigation
+- explicit deep-link entries for selected functional agents, stream items, or surfaces when required
 
 ### 12. Implementation handoff
 
@@ -180,8 +198,10 @@ List files to create or update:
 ## Done criteria
 
 A web UI decomposition is ready for implementation when a coding agent can answer:
-- what screens exist?
-- what should the user understand in the first five seconds of each screen?
+- which functional agents appear in the left rail and why?
+- how do the main workstream, composer, context indicators, and structured surfaces behave?
+- which conventional routes or pages exist only as implementation/deep-link details?
+- what should the user understand in the first five seconds of each shell region or surface?
 - what is the primary action and why?
 - what data does each screen need?
 - what user actions are possible?

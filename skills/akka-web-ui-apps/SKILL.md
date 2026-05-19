@@ -1,22 +1,24 @@
 ---
 name: akka-web-ui-apps
-description: Plan and implement fully capable browser apps hosted by Akka HTTP endpoints, using standard frontend projects such as React/Vite/TypeScript. Use when the task is a user-facing web app.
+description: Plan and implement agent workstream browser apps hosted by Akka HTTP endpoints, using standard frontend projects such as React/Vite/TypeScript. Use when generated full-stack AI-first SaaS needs a role-authorized functional-agent shell, continuous workstream, composer, and structured surfaces.
 ---
 
 # Akka Web UI Apps
 
 Use this as the top-level skill for complete browser app work in Akka services when the UI is already selected as a human-facing exposure and supervision surface for backend capabilities.
 
-For broad product, PRD, feature, dashboard, admin, or portal requests, route through `ai-first-saas`, `capability-first-backend`, and `akka-solution-decomposition` before implementing screens. Do not start from CRUD navigation when the capability inventory, AuthContext, allowed actions, decision/supervision surfaces, audit needs, and backend authorization semantics are still unclear.
+For generated full-stack AI-first SaaS apps, the default browser architecture is the **agent workstream shell**: role-authorized functional agents in the left rail, a continuous main workstream panel, a persistent bottom composer, context/authority indicators, and typed structured surfaces embedded in the stream. Conventional routes and pages may support implementation, refreshable deep links, public/static content, or direct surface URLs; they are not the primary decomposition for authenticated consequential work.
+
+For broad product, PRD, feature, dashboard, admin, or portal requests, route through `ai-first-saas`, `agent-workstream-apps`, `capability-first-backend`, and `akka-solution-decomposition` before implementing frontend regions. Do not start from CRUD navigation when functional agents, structured surfaces, capability inventory, AuthContext, allowed actions, decision/supervision surfaces, audit needs, and backend authorization semantics are still unclear.
 
 This skill complements `akka-http-endpoint-web-ui`:
 - `akka-web-ui-apps` designs the frontend application experience and implementation plan.
 - `akka-web-ui-frontend-project` integrates a standard frontend project such as React/Vite with Akka static hosting.
 - `akka-http-endpoint-web-ui` hosts generated frontend build assets and connects UI routes to Akka HTTP endpoints.
 
-## AI-first substrate role
+## Agent workstream shell role
 
-In AI-first SaaS implementations, web UI apps are mandatory human supervision and governance surfaces, not optional CRUD dashboards with a chat panel. Prioritize command center, goal-to-execution workbench, decision card, policy/governance, async digest, audit/work-trace, and outcome review screens.
+In AI-first SaaS implementations, web UI apps are mandatory agent workstream shells, not optional CRUD dashboards with a chat panel. Prioritize the left-rail functional-agent launcher, main workstream timeline, bottom composer, context/authority indicators, and structured surfaces such as command centers, goal-to-execution workbenches, decision cards, policy/governance panels, async digests, audit/work-trace timelines, and outcome reviews.
 
 Before implementation, make the UI contract explicit for:
 - selected account, membership, AuthContext, tenant/customer scope, roles/capabilities, disabled/forbidden states, and `/api/me` bootstrap behavior;
@@ -24,9 +26,11 @@ Before implementation, make the UI contract explicit for:
 - recommendation/decision evidence, risk, confidence, impact, alternatives, and action controls;
 - policy proposals, simulations, governed commits, learning feedback, and permission boundaries;
 - traceability from action or decision back to goal, policy, tool/data access, approver, and outcome;
-- realtime or stale-state behavior for live supervision surfaces.
+- realtime or stale-state behavior for live supervision surfaces;
+- selected functional agent, available functional agents, and denied/hidden agents based on `/api/me` and backend capabilities;
+- structured surface type/version, payload, allowed actions, stale/reconnect behavior, and trace links.
 
-Pair AI-first web UI work with `ai-first-saas-ui-surfaces` when selecting surfaces, then route to endpoint, view, workflow, agent, realtime, state-rendering, accessibility, and testing skills without duplicating their implementation guidance.
+Pair AI-first web UI work with `agent-workstream-apps` and `ai-first-saas-ui-surfaces` when selecting functional agents and surfaces, then route to endpoint, view, workflow, agent, realtime, state-rendering, accessibility, and testing skills without duplicating their implementation guidance.
 
 ## Required reading
 
@@ -63,20 +67,24 @@ Before implementing generated AI-first SaaS UI, verify that a selected style exi
 
 Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and produce a frontend plan with:
 1. User goals and personas
-2. UX handoff for each screen: primary action, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path
-3. Screens and navigation
-4. Data dependencies and API contracts
-5. Actions, forms, and validation rules
-6. Frontend state model, including loading/empty/error/success states
-7. Real-time behavior, if any
-8. Frontend implementation shape: standard frontend project (for example React/Vite)
-9. Selected web UI style guide, mode policy, CSS tokens, layout density, component styling, and brand adaptations
-10. Accessibility and responsive requirements
-11. Akka HTTP endpoint route plan, including generated frontend asset and API route separation
-12. Auth/session/security UI contract: WorkOS/AuthKit entry, `/api/me` bootstrap, context selection, capability-gated navigation/actions, disabled-user state, forbidden recovery, and tenant/customer isolation expectations
-13. SPA routing choice: hash routing, explicit server entry routes, or in-app navigation only
-14. Implementation skills to load
-15. Required tests and quality checks
+2. Functional-agent left rail: visible agents, hidden/denied agents, default selected agent, unread/attention indicators, and role/capability basis
+3. Main workstream panel: stream item types, grouping, history/retention behavior, status/progress items, trace links, and stale/reconnect states
+4. Persistent composer: accepted natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden states, and selected-agent context
+5. Structured surfaces: type/version, payload schema, information hierarchy, states, actions, and rendering tests for dashboards, forms, tables, charts, decisions, diffs, approvals, audit timelines, details, workflow status, and outcome panels
+6. UX handoff for each shell region and surface: primary action, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path
+7. Deep-link and route plan for shell entry, selected functional agent, stream item, and direct surface URLs; route/page navigation is an implementation detail, not the primary model
+8. Data dependencies and API contracts
+9. Actions, forms, and validation rules, with each consequential action mapped to a governed capability
+10. Frontend state model, including loading/empty/error/success/forbidden/stale states
+11. Real-time behavior, if any
+12. Frontend implementation shape: standard frontend project (for example React/Vite)
+13. Selected web UI style guide, mode policy, CSS tokens, layout density, component styling, and brand adaptations
+14. Accessibility and responsive requirements for left rail, workstream, composer, and surfaces
+15. Akka HTTP endpoint route plan, including generated frontend asset and API route separation
+16. Auth/session/security UI contract: WorkOS/AuthKit entry, `/api/me` bootstrap, context selection, capability-gated functional agents/actions, disabled-user state, forbidden recovery, and tenant/customer isolation expectations
+17. SPA routing choice: hash routing, explicit server entry routes, or in-app navigation only
+18. Implementation skills to load
+19. Required tests and quality checks
 
 For generated SaaS apps, auth/session/security behavior is expected input. If provider-specific values are unknown, preserve the local `/api/me`, AuthContext, capability, and forbidden-state contract while blocking only provider-specific integration details that cannot be safely implemented.
 
@@ -105,8 +113,8 @@ Always pair with Akka hosting/API skills as needed:
 
 ## Default implementation order
 
-1. Define UX handoff: user goals, screen purpose, primary actions, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path.
-2. Define UI screens, states, and API contracts.
+1. Define UX handoff for the agent workstream shell: user goals, functional-agent rail, main stream, composer, context/authority indicators, structured surfaces, primary actions, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path.
+2. Define structured surface states, capability-backed actions, deep links, and API contracts. Treat conventional pages/routes as implementation and deep-link details.
 3. Confirm frontend project framework/build tool and project conventions.
 4. Implement or adjust backend JSON/SSE/WebSocket endpoints.
 5. Implement the frontend in its source root (`frontend/src/**`).
@@ -122,7 +130,7 @@ A complete web UI must apply the selected style guide without copying demo conte
 For AI-first surfaces, a complete UI must make human authority obvious: what the system is doing, why it recommends or waits, what evidence and policy triggered the state, what the human can approve/reject/defer/escalate, and where the trace/outcome can be reviewed.
 
 A complete web UI must handle:
-- first-five-seconds comprehension: where am I, which account/tenant/customer context is active, what matters, what can I do?
+- first-five-seconds comprehension: which functional agent am I using, which account/tenant/customer context is active, what matters in this workstream, what can I do, and what authority do I have?
 - clear primary action and subordinate secondary actions
 - initial loading
 - useful empty data state
@@ -131,14 +139,16 @@ A complete web UI must handle:
 - backend/API errors with recovery copy
 - unauthenticated, disabled-user, unauthorized/forbidden, and cross-tenant/customer denial states based on `/api/me` and backend responses
 - disabled/submitting states for actions
-- responsive layout at common viewport widths
-- keyboard navigation and visible focus
+- responsive layout at common viewport widths, including collapsed left rail and usable composer behavior on narrow screens
+- keyboard navigation and visible focus across functional-agent rail, stream items, composer, and surface actions
 - live-update reconnect/stale behavior when realtime is used
+- direct deep links to selected functional agents, important stream items, and structured surfaces when required without making route/page hierarchy the primary UX model
 
 ## Anti-patterns
 
 Avoid:
 - treating a serious app UI as anything other than a real frontend project
+- designing authenticated consequential work as a page-first CRUD console, dashboard-with-chat, or chatbot-bolt-on instead of an agent workstream shell
 - exposing internal domain objects directly to the browser
 - implementing only the happy path
 - producing generic UX copy such as `Error occurred`, `Invalid input`, or `Success`
@@ -147,5 +157,6 @@ Avoid:
 - hand-editing generated frontend build output under `static-resources/`
 - mixing static asset wildcards and backend API routes under ambiguous catch-all paths
 - treating auth/session/security as deferrable for generated SaaS UI; only public static assets are outside authenticated API authorization
+- treating left-rail visibility, hidden buttons, prompt text, route names, or frontend state as authorization controls; backend capabilities remain authoritative
 - silently choosing colors or visual styling when app-description/specs have not selected a style guide
 - skipping accessible labels, focus behavior, or responsive layout

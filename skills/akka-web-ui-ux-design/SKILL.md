@@ -5,7 +5,9 @@ description: Design excellent user experience for Akka-hosted browser apps befor
 
 # Akka Web UI UX Design
 
-Use this skill before implementing any non-trivial browser app, dashboard, admin UI, console, portal, or workflow UI hosted by Akka.
+Use this skill before implementing any non-trivial browser app, dashboard, admin UI, console, portal, workstream shell, or workflow UI hosted by Akka.
+
+For generated full-stack AI-first SaaS, apply this to the agent workstream shell before conventional screens: left-rail functional agents, main workstream panel, bottom composer, context/authority indicators, and typed structured surfaces.
 
 Use this skill before implementing details with `akka-web-ui-frontend-project` so the full web app has an explicit UX contract.
 
@@ -13,14 +15,17 @@ Use this skill before implementing details with `akka-web-ui-frontend-project` s
 
 For AI-first SaaS surfaces, design around supervision, judgment, teaching, and accountability before conventional record management. The first five seconds should answer: which objective or plan is active, what the agent/system is doing, what needs human attention, what authority the human retains, and how to inspect evidence or trace history.
 
-Include these AI-first screen patterns for generated full-stack AI-first SaaS:
-- **Command center:** active goals, plan progress, agent activity, exceptions, approval queues, material events, and stale/reconnect status.
-- **Decision card / deviation review:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
-- **Policy/governance center:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.
-- **Async digest:** compressed routine activity with material events, pending decisions, outcome deltas, and trace links.
-- **Audit/work trace:** who/what/when/why/how-authorized, tool/data access, policy invocations, approvals, overrides, and outcomes.
+Include these AI-first workstream/surface patterns for generated full-stack AI-first SaaS:
+- **Functional-agent rail:** role-authorized work areas, attention indicators, hidden/denied agent recovery, and selected-agent context.
+- **Main workstream:** user intent, agent responses, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline.
+- **Persistent composer:** contextual natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden explanations, and submit progress.
+- **Command center surface:** active goals, plan progress, agent activity, exceptions, approval queues, material events, and stale/reconnect status.
+- **Decision card / deviation review surface:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
+- **Policy/governance center surface:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.
+- **Async digest surface:** compressed routine activity with material events, pending decisions, outcome deltas, and trace links.
+- **Audit/work trace surface:** who/what/when/why/how-authorized, tool/data access, policy invocations, approvals, overrides, and outcomes.
 
-Do not hide consequential AI behavior behind generic dashboards or chat transcripts. Conversation may help intake or explanation, but the UX handoff should resolve consequential work into durable goals, plans, decisions, approvals, traces, policies, and outcomes.
+Do not hide consequential AI behavior behind generic dashboards, page-first CRUD screens, or chat transcripts. Conversation may help intake or explanation, but the UX handoff should resolve consequential work into durable goals, plans, decisions, approvals, traces, policies, outcomes, and structured surfaces backed by governed capabilities.
 
 ## Required reading
 
@@ -42,7 +47,7 @@ Do not use this for static file serving or a single documentation page unless th
 
 ## UX plan required before implementation
 
-For each screen or major region, define:
+For each workstream shell region, structured surface, screen, or major region, define:
 
 1. **User goal** — what the user is trying to accomplish.
 2. **Primary decision/action** — the one thing that must be obvious.
@@ -59,6 +64,7 @@ For each screen or major region, define:
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
 14. **UX copy** — labels, button text, helper text, empty/error/success messages.
 15. **Style guide application** — how selected tokens support hierarchy and feedback.
+16. **Capability/action mapping** — which backend capability owns each consequential action and how forbidden/denied states are shown.
 
 ## UX copy rules
 
@@ -95,11 +101,14 @@ Avoid generic copy:
 Produce a concise UX handoff that downstream implementation can follow:
 
 ```text
-## UX handoff: <app/screen>
+## UX handoff: <app/shell region/surface>
 
+Functional agent context:
+Surface type/version:
 User goal:
 Primary action:
 Secondary actions:
+Capability/action mapping:
 Information hierarchy:
 States:
 - loading:
@@ -107,10 +116,13 @@ States:
 - ready:
 - validation failure:
 - API failure:
+- forbidden/denied:
 - success:
+- stale/reconnecting:
 UX copy:
 Responsive behavior:
 Keyboard/focus behavior:
+Deep-link behavior:
 Implementation notes:
 ```
 
@@ -130,12 +142,14 @@ Realtime/stale behavior:
 
 Before coding or accepting UI work, verify:
 
-- the first five seconds communicate where the user is and what they can do
-- every screen has a clear primary action or clear read-only purpose
+- the first five seconds communicate selected functional agent, active tenant/customer context, what matters in the workstream, and what the user can do
+- every shell region and surface has a clear primary action or clear read-only purpose
 - empty/error/success states are useful, not placeholders
 - forms preserve user input and focus the first problem after validation failure
 - destructive actions are hard to trigger accidentally
 - mobile layout preserves the main task
 - keyboard-only flow reaches and completes primary actions
 - selected style guide tokens are used to reinforce hierarchy, focus, and status
+- left rail, workstream panel, composer, and surface actions remain usable by keyboard and at narrow widths
 - AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope
+- consequential surface actions map to backend capabilities; UI gating is not treated as authorization

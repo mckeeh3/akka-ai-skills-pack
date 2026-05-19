@@ -1,6 +1,6 @@
 # Web UI UX patterns
 
-Use this doc when an Akka-hosted browser UI must be more than technically correct. It defines UX patterns that future agents should apply before writing frontend code.
+Use this doc when an Akka-hosted browser UI must be more than technically correct. It defines UX patterns that future agents should apply before writing frontend code. For generated full-stack AI-first SaaS, apply these patterns to the agent workstream shell before conventional route/page details.
 
 Pair with:
 - `docs/web-ui-frontend-decomposition.md`
@@ -10,7 +10,7 @@ Pair with:
 
 ## UX principles
 
-1. **One clear purpose per screen.** A user should understand the screen's job in the first five seconds.
+1. **One clear purpose per shell region or surface.** A user should understand the selected functional agent, active context, workstream state, and available authority in the first five seconds.
 2. **Primary action dominance.** The main action should be visible, specific, and visually stronger than secondary actions.
 3. **Progressive disclosure.** Show summary and decision-driving data first; defer diagnostics and rare actions.
 4. **Recoverability.** Users should know how to fix validation errors, retry failed loads, undo/cancel where possible, and return to their task.
@@ -18,13 +18,15 @@ Pair with:
 6. **Accessible by default.** Semantics, labels, keyboard flow, focus, contrast, and non-color status are required UX quality, not polish.
 7. **Responsive task preservation.** Narrow screens may change layout, but must not hide or break the primary task.
 
-## Screen pattern
+## Workstream region and surface pattern
 
-For each screen, define:
+For each agent workstream shell region, structured surface, or conventional screen, define:
 
 ```text
-Screen: <name>
-Route/UI path:
+Region/surface: <name>
+Functional agent context:
+Surface type/version:
+Route/UI path or deep link:
 User goal:
 Primary action:
 Secondary actions:
@@ -35,7 +37,9 @@ Exit paths:
 Loading state:
 Empty state:
 Error state and recovery:
+Forbidden/denied state:
 Success feedback:
+Capability/action mapping:
 Responsive strategy:
 Keyboard/focus path:
 ```
@@ -44,13 +48,13 @@ Keyboard/focus path:
 
 Use this order unless the product context says otherwise:
 
-1. page title and concise purpose
-2. current status or summary metric, when relevant
-3. primary action
-4. decision-driving content
+1. selected functional agent, context, and concise purpose
+2. current workstream status, attention item, or summary metric, when relevant
+3. primary action or next decision
+4. decision-driving structured surface content
 5. filters/search/sort for dense data
 6. secondary actions
-7. details, diagnostics, metadata, audit/history
+7. details, diagnostics, metadata, audit/history, and trace links
 
 Avoid:
 - putting rare admin actions beside primary user actions
@@ -158,19 +162,23 @@ For tables, lists, queues, and dashboards, define:
 
 Use tables for comparison across columns. Use cards/lists when each item has a primary action or status summary.
 
-## Navigation
+## Navigation and deep links
+
+For generated SaaS apps, the primary navigation model is the role-authorized functional-agent rail plus the continuous workstream. Routes and pages support implementation, refresh, and deep links.
 
 Navigation should answer:
-- where am I?
+- which functional agent am I using?
+- which tenant/customer context and authority apply?
 - what can I do here?
-- how do I return to the previous task?
+- how do I return to the previous task or stream item?
 - what changed after my action?
 
-For multi-screen apps:
-- show active navigation state
+For multi-surface apps:
+- show active functional-agent state
 - use stable labels matching user language
 - avoid exposing backend component names as navigation labels
-- define not-found behavior for unknown routes
+- define not-found behavior for unknown routes, unknown stream items, and unavailable surfaces
+- make selected-agent, stream item, or surface deep links load protected data through authorized APIs instead of embedding it in static routes
 
 ## UX copy patterns
 
@@ -197,7 +205,10 @@ For narrow screens:
 ## UX implementation handoff
 
 Before coding, the agent should be able to state:
-- what the user sees first
+- which functional agents appear in the left rail and which are hidden/denied
+- what the user sees first in the selected workstream
+- how the composer behaves and when it is disabled
+- which structured surfaces can appear and which capabilities back their actions
 - what action is primary
 - what happens when there is no data
 - what happens when loading is slow or fails

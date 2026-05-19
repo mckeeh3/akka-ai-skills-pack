@@ -318,7 +318,7 @@
 
 ### TASK-AW-03-001: Revise web UI skills for workstream shell
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/03-ui-and-agent-skill-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/03-ui-skills/01-revise-web-ui-skills.md
 - depends on: [TASK-AW-02-005]
@@ -340,7 +340,10 @@
 - done criteria:
   - web UI skill path targets the workstream shell
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Revise web UI skills for workstream shell`
+  - completed: revised the top-level web UI app skill, frontend project integration skill, Akka HTTP web UI hosting skill, and companion web UI docs/UX guidance to make the left-rail functional-agent shell, main workstream, bottom composer, context indicators, structured surfaces, capability-backed actions, and deep links the default generated SaaS UI model.
+  - checks: verified left rail functional agents, stream/workstream panel, bottom composer/persistent composer, and structured surfaces are described as the default; verified conventional route/page navigation is framed as implementation and deep-link detail only.
 
 ### TASK-AW-03-002: Define structured surface contracts
 

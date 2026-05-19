@@ -1,13 +1,15 @@
 ---
 name: akka-web-ui-frontend-project
-description: Integrate a standard frontend project, such as React/Vite/TypeScript, with an Akka Java SDK backend that hosts the production frontend build from static resources. Use for full web apps under frontend/.
+description: Integrate a standard frontend project, such as React/Vite/TypeScript, with an Akka Java SDK backend that hosts the production frontend build from static resources. Use for full agent workstream web apps under frontend/.
 ---
 
 # Akka Web UI Frontend Project
 
 Use this skill when the Akka service includes a React/Vite/TypeScript frontend application project and Akka should host its production build output.
 
-This skill is about web UI integration only. Defer authentication, authorization, JWT, identity-provider, and secret-handling details to security-specific skills/docs.
+For generated full-stack AI-first SaaS apps, the frontend project should implement the agent workstream shell: left-rail functional agents, main workstream panel, persistent bottom composer, context/authority indicators, and typed structured surfaces. Route/page files are implementation modules and deep-link entry points, not the primary application model.
+
+This skill is about web UI project integration only. Defer authentication, authorization, JWT, identity-provider, and secret-handling details to security-specific skills/docs while preserving the shell's `/api/me`, AuthContext, capability-gated agent/action, and forbidden-state contracts.
 
 ## Required reading
 
@@ -27,13 +29,21 @@ Reference example document:
 
 ## Use this skill when
 
-- the user asks for a full web app, frontend project, React app, Vite app, dashboard, admin console, or portal hosted by Akka
+- the user asks for a full web app, frontend project, React app, Vite app, dashboard, admin console, portal, or agent workstream shell hosted by Akka
 - `frontend/` exists or should be created as a separate frontend development project
 - frontend source should build into `src/main/resources/static-resources/`
 - Akka should serve `index.html` and built `/assets/**` files
 - backend APIs should be called through same-origin `/api/...` routes
 
 For interactive web app work, use this full frontend project path. Keep Akka static-resource guidance focused on generated React/Vite/TypeScript frontend build output.
+
+For workstream apps, organize frontend source around shell regions and reusable surface renderers, for example:
+- `frontend/src/shell/` for the authenticated app shell, rail, workstream panel, composer, and context indicators;
+- `frontend/src/surfaces/` for typed dashboard, form, table, chart, decision, diff, approval, audit timeline, detail, workflow status, and outcome components;
+- `frontend/src/api/` for browser-safe DTO clients and error mapping;
+- `frontend/src/state/` for selected functional agent, stream state, surface state, realtime connection state, and `/api/me` session bootstrap.
+
+Do not organize the primary frontend solely as a conventional route/page tree unless the task is public/static, non-SaaS, or explicitly outside the generated workstream default.
 
 ## Integration contract
 
@@ -44,16 +54,17 @@ Before implementation, identify:
 3. Production build output directory, usually `src/main/resources/static-resources/`
 4. Akka static route plan for `/`, `/assets/**`, `favicon.ico`, and explicit SPA entry routes
 5. Backend API route families, usually `/api/...`
-6. SPA routing choice: hash routing, explicit server entry routes, or in-app-only navigation
-7. Generated asset ownership rule: edit frontend source, rebuild, do not hand-edit generated assets
-8. Endpoint integration tests for page and asset delivery
+6. Workstream deep-link strategy for selected functional agent, stream item, and structured surface URLs
+7. SPA routing choice: hash routing, explicit server entry routes, or in-app-only navigation
+8. Generated asset ownership rule: edit frontend source, rebuild, do not hand-edit generated assets
+9. Endpoint integration tests for shell, explicit deep-link entries, and asset delivery
 
 ## Default implementation order
 
 1. Create or inspect `frontend/package.json` and build config.
 2. Set the frontend production build output to `../src/main/resources/static-resources` or equivalent.
-3. Implement the frontend source in `frontend/src/**`.
-4. Add or update Akka static frontend endpoint routes.
+3. Implement the frontend source in `frontend/src/**`, keeping workstream shell regions and structured surface components in source-owned modules.
+4. Add or update Akka static frontend endpoint routes and any explicit workstream deep-link entries.
 5. Keep JSON/SSE/WebSocket APIs under separate route families such as `/api/...`, `/streams/...`, or `/websockets/...`.
 6. Build the frontend.
 7. Add/update endpoint integration tests for `index.html`, built assets, and route references.
@@ -70,7 +81,7 @@ Prefer explicit routes:
 /api/...        -> backend APIs, not static frontend files
 ```
 
-Avoid broad `/**` fallback routes when `/assets/**` or other wildcard routes exist. If browser deep links must refresh correctly, add explicit non-wildcard frontend entry routes that return `index.html`.
+Avoid broad `/**` fallback routes when `/assets/**` or other wildcard routes exist. If browser deep links for selected functional agents, stream items, or structured surfaces must refresh correctly, add explicit non-wildcard frontend entry routes that return `index.html`.
 
 ## Testing rules
 
@@ -78,13 +89,15 @@ Test through Akka HTTP endpoints, not only the frontend dev server:
 - `GET /` returns the built `index.html`
 - the HTML references built JS/CSS assets
 - at least one referenced asset route returns expected JS/CSS content
-- explicit SPA entry routes return `index.html` when configured
+- explicit SPA/workstream deep-link entry routes return `index.html` when configured
 - `/api/...` routes remain separate from frontend asset routes
+- generated app shell references the workstream shell bundle without leaking protected data into static assets
 
 ## Anti-patterns
 
 Avoid:
 - treating a React/Vite/TypeScript app as unmanaged resource files instead of editing frontend source and rebuilding
+- reducing the generated SaaS frontend to a page-first route tree when the required model is an agent workstream shell
 - hand-editing generated files under `src/main/resources/static-resources/`
 - copying local frontend env files into served resources
 - mixing frontend assets and backend APIs under ambiguous route wildcards
