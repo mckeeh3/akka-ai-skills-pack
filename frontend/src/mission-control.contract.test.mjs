@@ -2,48 +2,66 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import test from 'node:test';
 
-const briefing = readFileSync(new URL('./screens/briefing/BriefingPage.tsx', import.meta.url), 'utf8');
-const main = readFileSync(new URL('./main.tsx', import.meta.url), 'utf8');
-const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
-const workstreamShell = readFileSync(new URL('./workstream/shell/WorkstreamShell.tsx', import.meta.url), 'utf8');
-const workstreamFixtures = readFileSync(new URL('./workstream/fixtures/workstream.ts', import.meta.url), 'utf8');
-const workstreamEvents = readFileSync(new URL('./workstream/fixtures/events.ts', import.meta.url), 'utf8');
+const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('Mission Control remains a legacy screen while the app entry uses workstream shell fixtures', () => {
+const main = read('./main.tsx');
+const components = read('./styles/components.css');
+const workstreamShell = read('./workstream/shell/WorkstreamShell.tsx');
+const panel = read('./workstream/shell/WorkstreamPanel.tsx');
+const contextBar = read('./workstream/shell/ContextAuthorityBar.tsx');
+const stream = read('./workstream/stream/WorkstreamStream.tsx');
+const workstreamFixtures = read('./workstream/fixtures/workstream.ts');
+const workstreamEvents = read('./workstream/fixtures/events.ts');
+const realtime = read('./workstream/realtime/workstreamEvents.ts');
+
+test('Mission Control legacy screen is quarantined while the app entry uses the workstream shell', () => {
   assert.ok(existsSync(new URL('./screens/briefing/BriefingPage.tsx', import.meta.url)));
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /initialWorkstreamItems/);
   assert.match(main, /canonicalSurfaceEnvelopes/);
   assert.match(workstreamShell, /FunctionalAgentRail/);
   assert.match(workstreamShell, /WorkstreamComposer/);
+  assert.match(panel, /Continuous workstream/);
   assert.doesNotMatch(main, /new FixtureApiClient/);
-  assert.doesNotMatch(main, /<BriefingPage/);
+  assert.doesNotMatch(main, /<BriefingPage|route === 'briefing'/);
 });
 
-test('Mission Control renders required validation panels', () => {
-  assert.match(briefing, /MissionKpiBand/);
-  assert.match(briefing, /AgentActivityTimeline/);
-  assert.match(briefing, /NeedsAttentionPanel/);
-  assert.match(briefing, /AgentTeamsPanel/);
-  assert.match(briefing, /TrustControlsPanel/);
-  assert.match(briefing, /UpcomingActionsPanel/);
+test('workstream shell provides mission-control responsibilities through shell regions', () => {
+  assert.match(workstreamShell, /Skip to main workstream/);
+  assert.match(workstreamShell, /data-selected-functional-agent/);
+  assert.match(contextBar, /Selected AuthContext/);
+  assert.match(contextBar, /Roles:/);
+  assert.match(contextBar, /Browser-safe capabilities/);
+  assert.match(stream, /aria-label="Workstream items"/);
+  assert.match(stream, /Empty workstream/);
+  assert.match(main, /Reference fixture status/);
+  assert.match(main, /Realtime status:/);
 });
 
-test('Mission Control command strip is safe and does not execute high-impact commands', () => {
-  assert.match(briefing, /never executes high-impact commands/);
-  assert.match(briefing, /Safe preview prepared from fixture data/);
-  assert.match(briefing, /open the relevant decision card or goal gate/);
+test('workstream fixtures cover attention, decisions, workflow progress, audit trace, and action feedback', () => {
+  for (const kind of ['system-status', 'decision', 'workflow-status', 'audit-trace', 'action-feedback']) {
+    assert.match(workstreamFixtures, new RegExp(`kind: '${kind}'`));
+  }
+  assert.match(workstreamFixtures, /traceLinks/);
+  assert.match(workstreamFixtures, /waiting-for-human/);
+  assert.match(workstreamFixtures, /surface-user-admin-dashboard/);
 });
 
-test('Workstream fixtures carry forward stale and duplicate/replay realtime behavior', () => {
-  assert.match(workstreamFixtures, /system-status/);
-  assert.match(workstreamEvents, /stale/i);
-  assert.match(workstreamEvents, /duplicate|replay|reconnect/i);
-  assert.match(main, /Routes are deep links into functional agents/);
+test('stale, duplicate, reconnecting, and cross-context realtime behavior is encoded in workstream contracts', () => {
+  assert.match(workstreamEvents, /duplicateReplayEvent/);
+  assert.match(workstreamEvents, /outOfOrderEvent/);
+  assert.match(workstreamEvents, /crossContextDeniedEvent/);
+  assert.match(workstreamEvents, /surface\.stale/);
+  assert.match(realtime, /Ignored cross-context event/);
+  assert.match(realtime, /Ignored out-of-order event/);
+  assert.match(realtime, /reconnecting/);
+  assert.match(realtime, /Stale:/);
 });
 
-test('Mission Control responsive CSS keeps attention before secondary panels', () => {
-  assert.match(components, /grid-template-areas:[\s\S]*"attention activity"/);
-  assert.match(components, /@media \(max-width: 1120px\)[\s\S]*"attention"[\s\S]*"activity"[\s\S]*"teams"/);
-  assert.match(components, /\.needs-attention-panel \{ grid-area: attention; \}/);
+test('workstream shell responsive CSS keeps primary workstream regions usable on narrow screens', () => {
+  assert.match(stream, /workstream-stream/);
+  assert.match(panel, /workstream-item/);
+  assert.match(read('./workstream/surfaces/SurfaceStateFrame.tsx'), /surface-frame/);
+  assert.match(read('./workstream/surfaces/SurfaceActionBar.tsx'), /surface-action-bar/);
+  assert.match(components, /@media \(max-width: 640px\)/);
 });

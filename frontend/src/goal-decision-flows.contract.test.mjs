@@ -2,54 +2,69 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import test from 'node:test';
 
-const main = readFileSync(new URL('./main.tsx', import.meta.url), 'utf8');
-const goals = readFileSync(new URL('./screens/goals/GoalWorkbenchPage.tsx', import.meta.url), 'utf8');
-const decisions = readFileSync(new URL('./screens/decisions/DecisionQueuePage.tsx', import.meta.url), 'utf8');
-const fixture = readFileSync(new URL('./api/FixtureApiClient.ts', import.meta.url), 'utf8');
-const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
+const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('Slice 6 legacy goal and decision screens remain quarantined while app entry uses workstream surfaces', () => {
-  const surfaces = readFileSync(new URL('./workstream/fixtures/surfaces.ts', import.meta.url), 'utf8');
+const main = read('./main.tsx');
+const surfaces = read('./workstream/fixtures/surfaces.ts');
+const workstream = read('./workstream/fixtures/workstream.ts');
+const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
+const decisionSurface = read('./workstream/surfaces/DecisionSurface.tsx');
+const governanceDiffSurface = read('./workstream/surfaces/GovernanceDiffSurface.tsx');
+const outcomeSurface = read('./workstream/surfaces/OutcomeSurface.tsx');
+const workflowSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
+const actions = read('./workstream/actions/capabilityActionState.ts');
 
-  assert.ok(existsSync(new URL('./screens/goals/GoalWorkbenchPage.tsx', import.meta.url)));
-  assert.ok(existsSync(new URL('./screens/decisions/DecisionQueuePage.tsx', import.meta.url)));
+const quarantinedLegacyScreens = [
+  './screens/goals/GoalWorkbenchPage.tsx',
+  './screens/decisions/DecisionQueuePage.tsx'
+];
+
+test('goal and decision legacy screens are quarantined behind the workstream shell', () => {
+  for (const path of quarantinedLegacyScreens) {
+    assert.ok(existsSync(new URL(path, import.meta.url)), `${path} remains only as a quarantined mechanics reference`);
+  }
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /<SurfaceRenderer/);
-  assert.match(surfaces, /surface-decision-card/);
-  assert.match(surfaces, /surface-governance-diff|surface-outcome/);
-  assert.doesNotMatch(main, /import \{ GoalWorkbenchPage \}/);
-  assert.doesNotMatch(main, /route === 'goals'/);
+  assert.match(main, /selectedFunctionalAgentId/);
+  assert.match(main, /selectedSurfaceId/);
+  assert.doesNotMatch(main, /import \{ GoalWorkbenchPage \}|import \{ DecisionQueuePage \}/);
+  assert.doesNotMatch(main, /route === 'goals'|route === 'decisions'|<GoalWorkbenchPage|<DecisionQueuePage/);
 });
 
-test('Goal Workbench implements create, draft plan, launch, and approval acknowledgement states', () => {
-  assert.match(goals, /Create a durable goal/);
-  assert.match(goals, /validateGoalForm/);
-  assert.match(goals, /Request draft plan/);
-  assert.match(goals, /Approve launch/);
-  assert.match(goals, /Acknowledge the approval gates before launching/);
-  assert.match(goals, /focusFirstMappedError/);
-  assert.match(fixture, /goals = \{/);
-  assert.match(fixture, /createGoal/);
-  assert.match(fixture, /draftPlan/);
-  assert.match(fixture, /launchGoal/);
+test('decision, governance, workflow, and outcome work are modeled as structured surfaces', () => {
+  assert.match(surfaces, /decisionSurface = envelope\('surface-decision-card', 'decision'/);
+  assert.match(surfaces, /governanceDiffSurface = envelope\('surface-governance-diff', 'governance-diff'/);
+  assert.match(surfaces, /workflowStatusSurface = envelope\('surface-workflow-status', 'workflow-status'/);
+  assert.match(surfaces, /outcomeSurface = envelope\('surface-outcome-review', 'outcome'/);
+  assert.match(renderer, /case 'decision'/);
+  assert.match(renderer, /case 'governance-diff'/);
+  assert.match(renderer, /case 'workflow-status'/);
+  assert.match(renderer, /case 'outcome'/);
+  assert.match(decisionSurface, /Evidence|riskScore|confidenceScore/);
+  assert.match(governanceDiffSurface, /beforeSummary|afterSummary|impact/);
+  assert.match(workflowSurface, /workflow-steps|waiting-for-human/);
+  assert.match(outcomeSurface, /outcome-metrics|target/);
 });
 
-test('Decision Queue implements evidence-backed actions and stale conflict flow', () => {
-  assert.match(decisions, /Decision Queue/);
-  assert.match(decisions, /Evidence/);
-  assert.match(decisions, /Alternatives considered/);
-  assert.match(decisions, /DecisionActionForm/);
-  assert.match(decisions, /I reviewed the evidence, risk, confidence, impact, policy trigger, and trace context/);
-  assert.match(decisions, /Simulate stale version conflict/);
-  assert.match(decisions, /Stale conflict/);
-  assert.match(fixture, /actOnDecision/);
-  assert.match(fixture, /This decision changed while you were reviewing it/);
+test('decision and governance actions preserve approval, proposal, trace, and idempotency contracts', () => {
+  assert.match(surfaces, /action-approve-decision/);
+  assert.match(surfaces, /requiresApproval: true/);
+  assert.match(surfaces, /DecisionApproved/);
+  assert.match(surfaces, /action-propose-policy/);
+  assert.match(surfaces, /PolicyProposalCreated/);
+  assert.match(surfaces, /action-simulate-policy/);
+  assert.match(surfaces, /PolicySimulationRequested/);
+  assert.match(surfaces, /action-open-trace/);
+  assert.match(surfaces, /traceRequired: true/);
+  assert.match(actions, /buildCapabilityActionRequest/);
+  assert.match(actions, /resolveIdempotencyKey/);
 });
 
-test('Slice 6 styles preserve two-column desktop and single-column narrow task flow', () => {
-  assert.match(components, /\.two-column-flow/);
-  assert.match(components, /\.selectable-row/);
-  assert.match(components, /\.decision-facts/);
-  assert.match(components, /\.checkbox-row/);
-  assert.match(components, /@media \(max-width: 1120px\)[\s\S]*\.two-column-flow \{ grid-template-columns: 1fr; \}/);
+test('workstream items carry goal and decision-like work through the stream rather than routes', () => {
+  assert.match(workstream, /kind: 'decision'/);
+  assert.match(workstream, /kind: 'workflow-status'/);
+  assert.match(workstream, /surface-decision-card/);
+  assert.match(workstream, /surface-workflow-status/);
+  assert.match(workstream, /waiting-for-human/);
+  assert.match(main, /Routes are deep links into functional agents, stream items, and structured surfaces/);
 });

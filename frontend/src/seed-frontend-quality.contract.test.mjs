@@ -4,30 +4,33 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 const root = new URL('.', import.meta.url);
-const main = readFileSync(new URL('./main.tsx', import.meta.url), 'utf8');
+const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+
+const main = read('./main.tsx');
 const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-const tokens = readFileSync(new URL('./styles/tokens.css', import.meta.url), 'utf8');
-const base = readFileSync(new URL('./styles/base.css', import.meta.url), 'utf8');
-const layout = readFileSync(new URL('./styles/layout.css', import.meta.url), 'utf8');
-const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
-
-const screenFiles = {
-  briefing: './screens/briefing/BriefingPage.tsx',
-  goals: './screens/goals/GoalWorkbenchPage.tsx',
-  decisions: './screens/decisions/DecisionQueuePage.tsx',
-  governance: './screens/governance/GovernancePoliciesPage.tsx',
-  audit: './screens/audit/AuditTraceExplorerPage.tsx',
-  admin: './screens/admin/AdminUsersPage.tsx',
-  profile: './screens/profile/ProfilePreferencesPage.tsx'
-};
-
-const screens = Object.fromEntries(
-  Object.entries(screenFiles).map(([id, path]) => [id, readFileSync(new URL(path, root), 'utf8')])
-);
+const tokens = read('./styles/tokens.css');
+const base = read('./styles/base.css');
+const layout = read('./styles/layout.css');
+const components = read('./styles/components.css');
+const shell = read('./workstream/shell/WorkstreamShell.tsx');
+const panel = read('./workstream/shell/WorkstreamPanel.tsx');
+const composer = read('./workstream/composer/WorkstreamComposer.tsx');
+const surfaceFrame = read('./workstream/surfaces/SurfaceStateFrame.tsx');
+const actionButton = read('./workstream/actions/CapabilityActionButton.tsx');
+const realtime = read('./workstream/realtime/workstreamEvents.ts');
 
 const sourceFiles = collectSourceFiles(new URL('.', import.meta.url).pathname);
+const legacyScreenFiles = [
+  './screens/briefing/BriefingPage.tsx',
+  './screens/goals/GoalWorkbenchPage.tsx',
+  './screens/decisions/DecisionQueuePage.tsx',
+  './screens/governance/GovernancePoliciesPage.tsx',
+  './screens/audit/AuditTraceExplorerPage.tsx',
+  './screens/admin/AdminUsersPage.tsx',
+  './screens/profile/ProfilePreferencesPage.tsx'
+];
 
-test('Slice 8 route shell has been replaced by workstream deep-link smoke coverage', () => {
+test('route shell tests have been replaced by workstream deep-link contract coverage', () => {
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /parseWorkstreamDeepLink/);
   assert.match(main, /serializeWorkstreamDeepLink/);
@@ -35,58 +38,59 @@ test('Slice 8 route shell has been replaced by workstream deep-link smoke covera
   assert.match(main, /selectedItemId/);
   assert.match(main, /selectedSurfaceId/);
   assert.match(main, /surfacePlacement: 'inline'/);
-  assert.doesNotMatch(main, /route === 'briefing'/);
-  assert.doesNotMatch(main, /path: '\/ui\/briefing'/);
-  assert.doesNotMatch(main, /<BriefingPage/);
+  assert.doesNotMatch(main, /function RouteShell|SidebarNav|route === 'briefing'|path: '\/ui\/briefing'/);
 });
 
-test('Slice 8 design-specific acceptance markers remain covered by source contracts', () => {
-  assert.match(screens.briefing, /CommandStrip/);
-  assert.match(screens.briefing, /Mission Control KPI band/);
-  assert.match(screens.briefing, /Needs attention/);
-  assert.match(screens.briefing, /Trust controls/);
-  assert.match(screens.goals, /Create a durable goal/);
-  assert.match(screens.goals, /Acknowledge the approval gates before launching/);
-  assert.match(screens.decisions, /Evidence/);
-  assert.match(screens.decisions, /Risk/);
-  assert.match(screens.decisions, /Policy/);
-  assert.match(screens.decisions, /Trace links/);
-  assert.match(screens.governance, /Authority-change warning/);
-  assert.match(screens.audit, /trace-goal/);
-  assert.match(screens.audit, /authorization basis/i);
-  assert.match(screens.admin, /Invite user/);
-  assert.match(screens.admin, /Elevated-role reason/);
-  assert.match(screens.profile, /Display mode/);
-  assert.match(screens.profile, /updatePreferences/);
+test('legacy screen source remains quarantined and is not imported by canonical entry', () => {
+  for (const path of legacyScreenFiles) {
+    assert.ok(existsSync(new URL(path, root)), `${path} remains available only for quarantine/drift comparison`);
+  }
+  assert.doesNotMatch(main, /from '\.\/screens\//);
+  assert.doesNotMatch(main, /<BriefingPage|<GoalWorkbenchPage|<DecisionQueuePage|<GovernancePoliciesPage|<AuditTraceExplorerPage|<AdminUsersPage|<ProfilePreferencesPage/);
 });
 
-test('Slice 8 light dark system accessibility and responsive checklist has source evidence', () => {
-  const workstreamPanel = readFileSync(new URL('./workstream/shell/WorkstreamPanel.tsx', import.meta.url), 'utf8');
-  const workstreamShell = readFileSync(new URL('./workstream/shell/WorkstreamShell.tsx', import.meta.url), 'utf8');
+test('workstream accessibility and quality checklist markers have source evidence', () => {
+  assert.match(shell, /Skip to main workstream/);
+  assert.match(panel, /<main id="main-content" className="content workstream-panel"/);
+  assert.match(panel, /aria-labelledby="workstream-panel-title"/);
+  assert.match(composer, /aria-label="Persistent workstream composer"/);
+  assert.match(surfaceFrame, /role="alert"/);
+  assert.match(surfaceFrame, /role="status"/);
+  assert.match(actionButton, /aria-describedby/);
+  assert.match(actionButton, /disabled=\{disabled\}/);
+  assert.match(base, /:focus-visible/);
+  assert.match(base, /prefers-reduced-motion/);
+  assert.match(layout + components, /@media \(max-width: 640px\)/);
+});
 
+test('light dark system style guide and tokenized semantic states remain available', () => {
   assert.match(tokens, /\[data-mode="light"\]/);
   assert.match(tokens, /\[data-mode="dark"\]/);
   assert.match(main, /mode === 'system'/);
-  assert.match(base, /:focus-visible/);
-  assert.match(base, /prefers-reduced-motion/);
-  assert.match(workstreamPanel, /<main id="main-content" className="content workstream-panel"/);
-  assert.match(workstreamPanel, /aria-labelledby="workstream-panel-title"/);
-  assert.match(workstreamShell, /Skip to main workstream/);
-  assert.match(workstreamShell, /FunctionalAgentRail/);
-  assert.match(components, /Status is always textual, not color-only|status-pill/);
-  assert.match(layout + components, /@media \(max-width: 640px\)/);
-  assert.match(components, /\.mission-grid/);
-  assert.match(components, /\.two-column-flow/);
+  assert.match(components, /\.status-pill\.success/);
+  assert.match(components, /\.status-pill\.warning/);
+  assert.match(components, /\.status-pill\.danger/);
+  assert.match(surfaceFrame, /surface-frame forbidden/);
+  assert.match(components, /\.realtime-banner\.stale/);
 });
 
-test('Slice 8 source avoids unsafe dynamic HTML insertion', () => {
+test('realtime and stale behavior is explicit and safe', () => {
+  assert.match(realtime, /selectedTenantId/);
+  assert.match(realtime, /Ignored cross-context event/);
+  assert.match(realtime, /Ignored out-of-order event/);
+  assert.match(realtime, /lastEventId/);
+  assert.match(realtime, /realtimeStatusLabel/);
+  assert.match(realtime, /Disconnected|Reconnecting|Stale/);
+});
+
+test('frontend source avoids unsafe dynamic HTML insertion', () => {
   for (const file of sourceFiles) {
     const text = readFileSync(file, 'utf8');
     assert.doesNotMatch(text, /dangerouslySetInnerHTML|\.innerHTML\s*=/, file);
   }
 });
 
-test('Slice 8 frontend scripts document the quality and Akka static handoff commands', () => {
+test('frontend scripts document the quality and Akka static handoff commands', () => {
   assert.equal(packageJson.scripts.typecheck, 'tsc --noEmit');
   assert.equal(packageJson.scripts.test, 'node --test src/*.test.mjs');
   assert.match(packageJson.scripts.build, /vite build --outDir \.\.\/src\/main\/resources\/static-resources/);
@@ -101,4 +105,3 @@ function collectSourceFiles(dir) {
     return /\.(tsx?|css)$/.test(path) ? [path] : [];
   });
 }
-

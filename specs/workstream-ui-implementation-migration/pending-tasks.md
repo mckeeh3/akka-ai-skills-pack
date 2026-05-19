@@ -323,7 +323,7 @@
 
 ### TASK-WUI-05-001: Update frontend contract tests
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/05-tests-and-docs-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/05-tests-and-docs/01-update-frontend-contract-tests.md
 - depends on: [TASK-WUI-04-002]
@@ -341,7 +341,9 @@
 - done criteria:
   - tests encode the canonical workstream UI reference
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update workstream UI contract tests`
+  - completed: rewrote stale page-first slice tests around the canonical workstream shell, structured surfaces, capability actions, deep links, forbidden/disabled states, and stale/realtime contracts while keeping legacy screens only as quarantined drift references.
 
 ### TASK-WUI-05-002: Update docs and skills for reference components
 

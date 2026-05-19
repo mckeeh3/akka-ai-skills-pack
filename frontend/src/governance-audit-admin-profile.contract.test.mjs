@@ -2,86 +2,68 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import test from 'node:test';
 
-const main = readFileSync(new URL('./main.tsx', import.meta.url), 'utf8');
-const governance = readFileSync(new URL('./screens/governance/GovernancePoliciesPage.tsx', import.meta.url), 'utf8');
-const audit = readFileSync(new URL('./screens/audit/AuditTraceExplorerPage.tsx', import.meta.url), 'utf8');
-const admin = readFileSync(new URL('./screens/admin/AdminUsersPage.tsx', import.meta.url), 'utf8');
-const profile = readFileSync(new URL('./screens/profile/ProfilePreferencesPage.tsx', import.meta.url), 'utf8');
-const fixture = readFileSync(new URL('./api/FixtureApiClient.ts', import.meta.url), 'utf8');
-const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
+const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('Slice 7 legacy governance, audit, admin, and profile screens remain quarantined while app entry uses workstream shell', () => {
-  const agents = readFileSync(new URL('./workstream/fixtures/agents.ts', import.meta.url), 'utf8');
-  const surfaces = readFileSync(new URL('./workstream/fixtures/surfaces.ts', import.meta.url), 'utf8');
+const main = read('./main.tsx');
+const agents = read('./workstream/fixtures/agents.ts');
+const me = read('./workstream/fixtures/me.ts');
+const surfaces = read('./workstream/fixtures/surfaces.ts');
+const contextBar = read('./workstream/shell/ContextAuthorityBar.tsx');
+const shellState = read('./workstream/shell/shellState.ts');
+const railState = read('./workstream/rail/railState.ts');
+const surfaceFrame = read('./workstream/surfaces/SurfaceStateFrame.tsx');
 
-  assert.ok(existsSync(new URL('./screens/governance/GovernancePoliciesPage.tsx', import.meta.url)));
-  assert.ok(existsSync(new URL('./screens/audit/AuditTraceExplorerPage.tsx', import.meta.url)));
-  assert.ok(existsSync(new URL('./screens/admin/AdminUsersPage.tsx', import.meta.url)));
-  assert.ok(existsSync(new URL('./screens/profile/ProfilePreferencesPage.tsx', import.meta.url)));
+const quarantinedLegacyScreens = [
+  './screens/governance/GovernancePoliciesPage.tsx',
+  './screens/audit/AuditTraceExplorerPage.tsx',
+  './screens/admin/AdminUsersPage.tsx',
+  './screens/profile/ProfilePreferencesPage.tsx'
+];
+
+test('governance, audit, admin, and profile legacy screens are not primary app routes', () => {
+  for (const path of quarantinedLegacyScreens) {
+    assert.ok(existsSync(new URL(path, import.meta.url)), `${path} remains only as a quarantined mechanics reference`);
+  }
   assert.match(main, /<WorkstreamShell/);
-  assert.match(agents, /agent-user-admin/);
-  assert.match(agents, /agent-audit-trace/);
-  assert.match(agents, /agent-governance-policy/);
-  assert.match(surfaces, /surface-user-list/);
-  assert.match(surfaces, /surface-audit-timeline/);
-  assert.match(surfaces, /surface-governance-diff/);
-  assert.doesNotMatch(main, /import \{ GovernancePoliciesPage \}/);
-  assert.doesNotMatch(main, /route === 'governance'/);
+  assert.match(main, /<SurfaceRenderer/);
+  assert.doesNotMatch(main, /import \{ GovernancePoliciesPage \}|import \{ AuditTraceExplorerPage \}|import \{ AdminUsersPage \}|import \{ ProfilePreferencesPage \}/);
+  assert.doesNotMatch(main, /route === 'governance'|route === 'audit'|route === 'admin'|route === 'profile'/);
 });
 
-test('Governance Center implements proposal, simulation, commit warning, and audit links', () => {
-  assert.match(governance, /Governance Center/);
-  assert.match(governance, /Policy proposal panel/);
-  assert.match(governance, /Simulation and commit state/);
-  assert.match(governance, /Authority-change warning/);
-  assert.match(governance, /Confirm authorized policy commit/);
-  assert.match(governance, /Open policy invocation traces/);
-  assert.match(fixture, /governance = \{/);
-  assert.match(fixture, /createPolicyProposal/);
-  assert.match(fixture, /simulatePolicyProposal/);
+test('functional agents represent admin, audit, governance, profile, billing, and support work areas', () => {
+  for (const agentId of ['agent-access-profile', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy', 'agent-billing', 'agent-support-access']) {
+    assert.match(agents, new RegExp(agentId));
+  }
+  assert.match(agents, /availability: 'denied'/);
+  assert.match(agents, /availability: 'hidden'/);
+  assert.match(agents, /availability: 'disabled'/);
+  assert.match(railState, /visibleRailEntries/);
+  assert.match(railState, /isAgentSelectable/);
+  assert.match(railState, /agentDisabledReason/);
 });
 
-test('Audit Trace Explorer covers required filters, details, no-results, and forbidden export state', () => {
-  assert.match(audit, /Trace filters/);
-  assert.match(audit, /id="trace-goal"/);
-  assert.match(audit, /id="trace-agent"/);
-  assert.match(audit, /id="trace-decision"/);
-  assert.match(audit, /id="trace-policy"/);
-  assert.match(audit, /id="trace-tool"/);
-  assert.match(audit, /id="trace-actor"/);
-  assert.match(audit, /id="trace-time"/);
-  assert.match(audit, /No trace results/);
-  assert.match(audit, /Forbidden export/);
-  assert.match(audit, /authorization basis/i);
-  assert.match(audit, /correlation/i);
+test('/api/me fixtures and context bar cover selected AuthContext, support access, disabled, and forbidden states', () => {
+  for (const fixture of ['meTenantAdmin', 'meRegularMember', 'meAuditorSupport', 'meDisabledUser', 'meForbiddenNoMembership']) {
+    assert.match(me, new RegExp(`export const ${fixture}`));
+  }
+  assert.match(contextBar, /Selected AuthContext/);
+  assert.match(contextBar, /supportAccess\?\.active/);
+  assert.match(contextBar, /pendingApprovalCount/);
+  assert.match(contextBar, /traceLinks\.map/);
+  assert.match(shellState, /The signed-in account is disabled/);
+  assert.match(shellState, /No active tenant membership is available/);
+  assert.match(surfaceFrame, /className="ds-card surface-frame forbidden"/);
 });
 
-test('Admin Users implements invite, duplicate handling, role validation, and UX-only auth copy', () => {
-  assert.match(admin, /Admin Users and Invitations/);
-  assert.match(admin, /Invite user/);
-  assert.match(admin, /Duplicate invitation handled/);
-  assert.match(admin, /Elevated-role reason/);
-  assert.match(admin, /Confirm the elevated authority change/);
-  assert.match(admin, /UX-only visibility/);
-  assert.match(fixture, /inviteUser/);
-  assert.match(fixture, /status: 'resent'/);
-  assert.match(fixture, /updateRoles/);
-  assert.match(fixture, /Reason is required for elevated role grants/);
-});
-
-test('Profile Preferences persists mode through session client seam and includes failure state', () => {
-  assert.match(profile, /Profile Preferences/);
-  assert.match(profile, /Display mode/);
-  assert.match(profile, /updatePreferences/);
-  assert.match(profile, /Simulate API failure on save/);
-  assert.match(profile, /Preferences saved/);
-  assert.match(profile, /Notification preferences placeholder/);
-  assert.match(fixture, /updatePreferences/);
-});
-
-test('Slice 7 styles support trace rows, authority warnings, and responsive layouts', () => {
-  assert.match(components, /\.trace-row/);
-  assert.match(components, /\.commit-warning/);
-  assert.match(components, /\.preference-mode-group/);
-  assert.match(components, /@media \(max-width: 640px\)[\s\S]*\.trace-row,[\s\S]*\.decision-facts \{ grid-template-columns: 1fr; \}/);
+test('admin, audit, governance, and profile work are structured surfaces with capability-backed actions', () => {
+  assert.match(surfaces, /userAdminDashboardSurface/);
+  assert.match(surfaces, /userAdminListSearchSurface/);
+  assert.match(surfaces, /userAdminDetailEditSurface/);
+  assert.match(surfaces, /auditTimelineSurface/);
+  assert.match(surfaces, /governanceDiffSurface/);
+  assert.match(surfaces, /dashboardSurface/);
+  assert.match(surfaces, /secure-tenant-user-foundation/);
+  assert.match(surfaces, /audit\.trace\.read/);
+  assert.match(surfaces, /governance\.policy\.simulate/);
+  assert.match(surfaces, /Backend authorization denied/);
 });
