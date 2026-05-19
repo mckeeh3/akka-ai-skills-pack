@@ -249,7 +249,7 @@
 
 ### TASK-CORE-03-002: Specify Agent Admin component and API slice
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/03-agent-admin-runtime-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/03-agent-admin-runtime/02-spec-agent-admin-component-api-slice.md
 - depends on: [TASK-CORE-03-001]
@@ -276,6 +276,8 @@
 - done criteria:
   - Agent Admin components/APIs are specified enough for code generation
   - task changes and queue update are committed
+- notes:
+  - commit message: `Specify agent admin component API slice`
 
 ### TASK-CORE-03-003: Harden hybrid Akka agent runtime contract
 
