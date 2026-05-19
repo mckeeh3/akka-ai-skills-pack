@@ -183,7 +183,7 @@
 
 ### TASK-AW-02-001: Revise app-description architecture for workstream verticals
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/02-description-model-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/02-app-description/01-revise-app-description-architecture.md
 - depends on: [TASK-AW-01-005]
@@ -205,7 +205,10 @@
 - done criteria:
   - description architecture supports the new vertical/horizontal model
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Revise app-description architecture for workstreams`
+  - completed: revised internal app-description architecture to add `12-workstreams/`, functional-agent/internal-agent/surface contracts, surface-to-capability and capability-to-horizontal maps, workstream-first UI artifacts, and cross-layer invariants that keep page/screen hierarchy subordinate.
+  - checks: verified the app-description model names functional agents, internal agents, structured surfaces, governed capabilities, and horizontal Akka implementation maps; verified legacy page/screen language is only retained as subordinate route/deep-link guidance or anti-primary warnings.
 
 ### TASK-AW-02-002: Add functional-agent app-description modeling guidance
 

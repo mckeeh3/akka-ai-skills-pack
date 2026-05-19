@@ -17,8 +17,18 @@ The application description is the source of truth.
 Everything in this architecture exists to maintain that truth in a layered, interconnected, regenerable form.
 Generated code, tests, and runnable assets are downstream projections.
 
-For AI-first SaaS applications, the description must preserve the secure SaaS foundation and agentic operating model before implementation planning: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, durable goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, traces, and outcomes.
-Do not reduce agentic product intent to CRUD objects or chatbot screens, and do not let generation invent missing security semantics.
+For AI-first SaaS applications, the description must preserve the secure SaaS foundation and agent workstream model before implementation planning: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, durable goals, delegated work, retained human authority, role-authorized functional agents, governed internal agents, workstreams, structured surfaces, capability contracts, policies, approval gates, decisions, exceptions, traces, and outcomes.
+
+The primary generated-app model is:
+
+```text
+functional agents and internal agents
+→ workstreams and structured surfaces
+→ governed backend capabilities
+→ horizontal Akka implementation maps
+```
+
+Do not reduce agentic product intent to CRUD objects, page trees, screen hierarchies, or chatbot panels, and do not let generation invent missing security semantics.
 
 ## Default root
 
@@ -60,6 +70,14 @@ app-description/
     capabilities-index.md
     01-secure-tenant-user-foundation.md
     02-<capability>.md
+
+  12-workstreams/          # required for generated full-stack AI-first SaaS apps
+    functional-agents.md
+    internal-agents.md
+    workstreams-and-retention.md
+    surfaces-index.md
+    surface-contracts/
+      01-<surface>.md
 
   15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
@@ -104,14 +122,15 @@ app-description/
 
   55-ui/                  # required for generated full-stack AI-first SaaS apps
     ui-index.md
+    workstream-shell.md
+    functional-agent-rail.md
+    workstream-panel-and-composer.md
+    structured-surface-rendering.md
     personas-and-journeys.md
-    ai-first-surfaces.md
-    agent-catalog-and-detail.md
     prompt-and-skill-governance.md
     skill-manifests-and-tool-permissions.md
     edit-agent-proposals-and-traces.md
-    screens-and-navigation.md
-    interactions-and-forms.md
+    routes-and-deep-links.md
     frontend-api-contracts.md
     states-and-realtime.md
     accessibility-and-responsive.md
@@ -120,10 +139,14 @@ app-description/
   60-generation/
     realization-scope.md
     regeneration-map.md
+    horizontal-implementation-map.md
     output-surfaces.md
 
   70-traceability/
+    functional-agent-to-capability-map.md
+    surface-to-capability-map.md
     capability-to-behavior-map.md
+    capability-to-horizontal-map.md
     operating-model-to-behavior-map.md  # when 15-operating-model exists
     behavior-to-tests-map.md
     change-impact-map.md
@@ -194,6 +217,28 @@ Each capability file should be narrowly focused and should include or link to:
 - linked operating-model, behavior, tests, auth/security, observability, UI, and traceability artifacts.
 
 Do not treat endpoints, agent tools, workflows, or entities as the capability inventory root. They are downstream realization or exposure choices for these capability contracts.
+
+## `12-workstreams/`
+Agent workstream vertical model.
+
+Include this layer for every generated full-stack AI-first SaaS app. It captures the user-facing application structure before browser routes or Akka components are selected.
+
+This layer answers:
+- which role-authorized functional agents appear in the authenticated shell?
+- which internal agents support workflows, tools, timers, consumers, evaluation, summarization, extraction, routing, or governance without becoming left-rail work areas?
+- what durable workstreams exist for each functional agent, and what retention, replay, trace, and follow-up semantics apply?
+- which structured surfaces are rendered in workstreams, and which agents may reuse them?
+- which surface actions map to governed backend capabilities?
+- which denial, approval, escalation, empty, loading, stale, error, and trace-link states are visible?
+
+Default files:
+- `functional-agents.md` for user-facing context-area agents, role/capability authorization, tenant/customer scope, default briefing/dashboard surfaces, prompt intent where applicable, available surfaces, callable capabilities, approval/escalation behavior, trace obligations, and tests
+- `internal-agents.md` for non-navigation agents with governed definitions, prompt/skill references, tool boundaries, service or AuthContext authority basis, model policy, traces, and tests
+- `workstreams-and-retention.md` for timeline semantics, persistence, replay, summarization, correlation ids, attachments, follow-up handling, and retention/redaction rules
+- `surfaces-index.md` for stable surface ids, surface type/version, owning or reusable functional agents, payload schema location, allowed actions, linked capabilities, and rendering tests
+- `surface-contracts/` for individual structured surface contracts such as dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status cards, evidence bundles, prompt/skill version cards, and outcome panels
+
+A page, route, or screen may deep-link to a surface, but it must not replace the functional-agent/workstream/surface model as the primary description root.
 
 ## `15-operating-model/`
 AI-first operating model and agentic substrate.
@@ -281,11 +326,12 @@ Authoritative frontend and browser interaction layer.
 This layer is required for generated full-stack AI-first SaaS apps. It may be omitted only for explicitly non-SaaS reference material or repository-maintenance-only work. Do not treat the browser UI as optional polish or defer it behind backend-only generation.
 
 This layer answers:
-- who uses the UI and for which journeys
-- what screens and navigation paths exist
-- what forms, commands, and frontend validations exist
-- what browser API contracts are needed
-- what loading, empty, error, submitting, success, stale, and realtime states exist
+- how the agent workstream shell is rendered: functional-agent rail, main workstream panel, persistent composer, context/authority indicators, trace links, and denial/recovery states
+- how structured surfaces are rendered and updated in the stream
+- which routes or deep links address the shell or individual surfaces as implementation details
+- what forms, commands, and frontend validations exist inside surfaces
+- what browser API contracts are needed for workstreams, surface payloads, surface actions, and realtime updates
+- what loading, empty, error, forbidden, submitting, success, stale, reconnect, and realtime states exist
 - what accessibility and responsive behavior is required
 - which visual style guide is selected, including light/dark policy, CSS tokens, layout density, component styling, and brand adaptations for generated HTML/CSS/TypeScript
 
@@ -309,6 +355,9 @@ Examples:
 ### `regeneration-map.md`
 Maps description areas to generated output areas for localized regeneration decisions.
 
+### `horizontal-implementation-map.md`
+Maps governed capabilities to candidate horizontal implementation substrates such as Akka entities, workflows, views, consumers, timed actions, agents, endpoints, MCP, web UI code, auth/security, audit, and tests. This map is derived from capability semantics and is not the primary app model.
+
 ### `output-surfaces.md`
 Names the output families that can be realized from the description.
 
@@ -317,10 +366,13 @@ Relationship mapping.
 
 This layer exists to support change impact analysis and localized regeneration.
 It should answer:
+- which functional agents use which capabilities, surfaces, workstreams, and UI shell regions?
+- which structured surfaces expose which actions and therefore which capabilities?
 - which capabilities depend on which behavior artifacts?
+- which capabilities map to which horizontal Akka implementation candidates?
 - which AI-first goals, agents, policies, decisions, traces, and outcomes depend on which capabilities or behavior artifacts?
 - which behavior artifacts require which tests?
-- which security and observability rules attach to which capabilities, operating-model concerns, or flows?
+- which security and observability rules attach to which capabilities, operating-model concerns, workstreams, surfaces, or flows?
 - what outputs are likely affected by a given description change?
 
 ## `80-review/`
@@ -341,7 +393,7 @@ Do not treat this layer as the source of app meaning.
 Default ownership should be:
 
 - `app-description-bootstrap`
-  - creates the initial `00-system/`, secure foundation `10-capabilities/`, foundation `15-operating-model/`, foundation `20-behavior/`, foundation `30-tests/`, `40-auth-security/`, `50-observability/`, and required `55-ui/` seed artifacts for generated full-stack AI-first SaaS apps
+  - creates the initial `00-system/`, secure foundation `10-capabilities/`, foundation `12-workstreams/`, foundation `15-operating-model/`, foundation `20-behavior/`, foundation `30-tests/`, `40-auth-security/`, `50-observability/`, and required `55-ui/` seed artifacts for generated full-stack AI-first SaaS apps
   - establishes the first stable app-description root
 
 - `app-description-input-normalization`
@@ -355,6 +407,7 @@ Default ownership should be:
 - `app-description-capability-modeling`
   - primarily owns `10-capabilities/`
   - maintains capability boundaries and links to downstream layers
+  - links capabilities to `12-workstreams/` when functional agents, surface actions, agent tools, workstream actions, or internal-agent calls expose them
   - links AI-first capabilities to `15-operating-model/` when they depend on delegated work, goals, policies, decisions, or outcomes
 
 - `app-description-behavior-specification`
@@ -378,8 +431,9 @@ Default ownership should be:
 
 - `app-description-ui`
   - primarily owns `55-ui/`
-  - links UI screens, interactions, frontend API contracts, accessibility, responsive behavior, and the selected `style-guide.md` back to capabilities, behavior, tests, security, and observability
-  - prioritizes supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces over CRUD navigation by default for generated AI-first SaaS UI
+  - may update `12-workstreams/` when UI changes add or alter functional agents, internal-agent visibility, workstreams, structured surfaces, or surface actions
+  - links shell regions, surface rendering, routes/deep links, interactions, frontend API contracts, accessibility, responsive behavior, and the selected `style-guide.md` back to capabilities, behavior, tests, security, and observability
+  - prioritizes the agent workstream shell and structured surfaces over CRUD/page navigation by default for generated AI-first SaaS UI
 
 - `app-description-readiness-assessment`
   - primarily owns `00-system/readiness-status.md`
@@ -401,17 +455,20 @@ Default ownership should be:
 
 The harness should maintain these invariants:
 
-1. Every generated SaaS app must include the secure tenant/user foundation capability, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
-2. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
-3. Every in-scope capability must link to at least one behavior artifact.
-4. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
-5. Every important behavior change must link to one or more test artifacts.
-6. Security-sensitive behavior must link to relevant auth/security artifacts.
-7. Operationally important behavior must link to relevant observability artifacts.
-8. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
-9. Readiness must be based on the actual state of operating model, capability contracts, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
-10. Generation policy must never override description correctness.
-11. Review summaries must be derivable from authoritative layers.
+1. Every generated SaaS app must include the secure tenant/user foundation capability, agent workstream model, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
+2. Every generated full-stack AI-first SaaS app must model authenticated consequential work as role-authorized functional agents, governed internal agents where needed, durable workstreams, and structured surfaces rather than as a primary page/screen hierarchy.
+3. Every surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call must map to a governed capability.
+4. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
+5. Every in-scope capability must link to at least one behavior artifact.
+6. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
+7. Every important behavior change must link to one or more test artifacts.
+8. Security-sensitive behavior must link to relevant auth/security artifacts.
+9. Operationally important behavior must link to relevant observability artifacts.
+10. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
+11. Horizontal Akka components must be selected from capability semantics and recorded as downstream implementation maps, not used as the app-description root.
+12. Readiness must be based on the actual state of workstream model, operating model, capability contracts, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
+13. Generation policy must never override description correctness.
+14. Review summaries must be derivable from authoritative layers.
 
 ## File sizing rules
 
@@ -422,6 +479,7 @@ Prefer files that are:
 
 Good file boundaries:
 - one capability
+- one functional agent, internal-agent family, workstream, or structured surface contract
 - one operating-model concern such as goals, agent authority, policies, decisions, traces, or outcomes
 - one flow
 - one stateful area
@@ -451,21 +509,23 @@ Examples:
 
 When a change request arrives, the harness should:
 1. identify impacted capabilities
-2. update AI-first operating-model semantics when delegated work, agents, policies, decisions, traces, or outcomes are affected
-3. update behavior semantics
-4. update linked test semantics
-5. update linked auth/security semantics if needed
-6. update linked observability semantics if needed
-7. update linked UI semantics, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS apps
-8. update traceability links
-9. reassess readiness
-10. generate outputs only if requested or accepted
+2. update `12-workstreams/` when functional agents, internal agents, workstreams, surfaces, or surface actions are affected
+3. update AI-first operating-model semantics when delegated work, agents, policies, decisions, traces, or outcomes are affected
+4. update behavior semantics
+5. update linked test semantics
+6. update linked auth/security semantics if needed
+7. update linked observability semantics if needed
+8. update linked UI semantics, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS apps
+9. update traceability links, including functional-agent/surface/capability/horizontal maps
+10. reassess readiness
+11. generate outputs only if requested or accepted
 
 ## What is authoritative vs derived
 
 ### Authoritative
 These layers define the app:
 - `10-capabilities/`
+- `12-workstreams/` for generated full-stack AI-first SaaS apps
 - `15-operating-model/` for generated AI-first SaaS apps
 - `20-behavior/`
 - `30-tests/`
@@ -494,6 +554,9 @@ app-description/
   10-capabilities/
     capabilities-index.md
     01-secure-tenant-user-foundation.md
+  12-workstreams/          # required for generated full-stack AI-first SaaS apps
+    functional-agents.md
+    surfaces-index.md
   15-operating-model/      # required for generated AI-first SaaS apps
     goals-and-objectives.md
   20-behavior/
@@ -511,8 +574,9 @@ app-description/
     logs-and-audit.md
   55-ui/
     ui-index.md
-    secure-shell-and-context-selection.md
-    agent-catalog-and-detail.md
+    workstream-shell.md
+    functional-agent-rail.md
+    structured-surface-rendering.md
     prompt-and-skill-governance.md
     style-guide.md
 ```
