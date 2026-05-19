@@ -445,7 +445,7 @@
 
 ### TASK-CORE-06-002: Final consistency review
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/06-e2e-generation-review-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/06-e2e-generation-review/02-final-consistency-review.md
 - depends on: [TASK-CORE-06-001]
@@ -465,6 +465,8 @@
 - done criteria:
   - final review records pass/fail and follow-up tasks
   - task changes and queue update are committed
+- notes:
+  - commit message: `Add final consistency review`
 
 ### TASK-CORE-06-003: Write migration completion summary
 
