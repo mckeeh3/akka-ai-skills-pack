@@ -45,7 +45,7 @@
 
 ### TASK-CORE-01-001: Create full-core realization map
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/01-scope-and-generation-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/01-scope-and-generation/01-create-full-core-realization-map.md
 - depends on: [TASK-CORE-00-001]
@@ -71,6 +71,8 @@
 - done criteria:
   - future tasks can use the map as implementation contract
   - task changes and queue update are committed
+- notes:
+  - commit message: `Add full-core realization map`
 
 ### TASK-CORE-01-002: Harden readiness and generation gates
 
