@@ -11,7 +11,7 @@ Read or create the browser API contract in:
 
 ## Principle
 
-Browser APIs are edge contracts. Design them for UI needs rather than leaking internal domain/component types by default.
+Browser APIs are edge contracts. Design them for UI needs rather than leaking internal domain/component types by default. For agent workstream structured surfaces, pair this document with `structured-surface-contracts.md`: browser APIs transport surface payloads/actions/events, while linked backend capabilities remain authoritative for authorization, idempotency, approval, side effects, audit, and denial behavior.
 
 ## Route conventions
 
@@ -22,6 +22,8 @@ Browser APIs are edge contracts. Design them for UI needs rather than leaking in
 - WebSockets: `/websockets/...`
 
 ## DTO conventions
+
+For structured surface APIs, use explicit surface envelopes with stable surface type/version, scoped/redacted payload data, allowed action descriptors, trace/correlation fields, and stale/reconnect metadata as needed.
 
 Use endpoint-facing records/classes for:
 - list rows
@@ -79,7 +81,7 @@ For each API call:
 ## Contract test expectations
 
 Endpoint integration tests should verify:
-- success response shape
+- success response shape, including structured surface payloads/actions/events when applicable
 - validation failure response shape
 - not-found behavior where relevant
 - unauthorized/forbidden behavior for protected routes, including tenant/customer mismatch and role/scope denial

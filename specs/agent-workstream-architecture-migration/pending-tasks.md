@@ -347,7 +347,7 @@
 
 ### TASK-AW-03-002: Define structured surface contracts
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/03-ui-and-agent-skill-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/03-ui-skills/02-structured-surface-contracts.md
 - depends on: [TASK-AW-03-001]
@@ -366,7 +366,10 @@
 - done criteria:
   - structured response surfaces have implementable contracts
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add structured surface contract guidance`
+  - completed: added canonical structured surface contract guidance covering surface envelopes, action envelopes, realtime events, capability mapping, backend-authoritative auth, audit/trace fields, UI states, and rendering/action/realtime/security tests.
+  - checks: verified surface action payloads map to governed capabilities and backend authorization remains authoritative in the new doc and linked skill/checklist guidance.
 
 ### TASK-AW-03-003: Revise agent skills for functional and internal agents
 

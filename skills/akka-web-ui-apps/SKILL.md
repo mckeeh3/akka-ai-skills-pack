@@ -39,6 +39,7 @@ Read these first if present:
 - `../../../docs/web-ui-style-guide.md`
 - `../../../docs/web-ui-ux-patterns.md`
 - `../../../docs/web-ui-frontend-project-integration.md`
+- `../../../docs/structured-surface-contracts.md`
 - `../../../docs/web-ui-api-contract-patterns.md`
 - `../../../docs/web-ui-quality-checklist.md`
 - `../../../docs/web-ui-pattern-selection.md`
@@ -114,14 +115,14 @@ Always pair with Akka hosting/API skills as needed:
 ## Default implementation order
 
 1. Define UX handoff for the agent workstream shell: user goals, functional-agent rail, main stream, composer, context/authority indicators, structured surfaces, primary actions, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path.
-2. Define structured surface states, capability-backed actions, deep links, and API contracts. Treat conventional pages/routes as implementation and deep-link details.
+2. Define structured surface contracts: payload schemas, capability-backed actions, realtime/update events, backend-authoritative auth, trace/audit fields, rendering states, deep links, and API contracts. Treat conventional pages/routes as implementation and deep-link details.
 3. Confirm frontend project framework/build tool and project conventions.
 4. Implement or adjust backend JSON/SSE/WebSocket endpoints.
 5. Implement the frontend in its source root (`frontend/src/**`).
 6. Build React/Vite/TypeScript frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
 7. Add/extend endpoint integration tests for page, assets, explicit SPA entry routes, and API route separation.
 8. Run frontend checks/build and backend tests.
-9. Review with `docs/web-ui-quality-checklist.md` and `docs/web-ui-ux-patterns.md`.
+9. Review with `docs/structured-surface-contracts.md`, `docs/web-ui-quality-checklist.md`, and `docs/web-ui-ux-patterns.md`.
 
 ## Quality bar
 

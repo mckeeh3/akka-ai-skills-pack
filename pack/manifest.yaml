@@ -477,6 +477,7 @@ content:
   references:
     - skills/README.md
     - docs/agent-workstream-application-architecture.md
+    - docs/structured-surface-contracts.md
     - docs/capability-first-backend-architecture.md
     - docs/core-ai-first-saas-foundation.md
     - docs/core-saas-identity-tenancy-admin.md

@@ -34,6 +34,7 @@ Mandatory secure SaaS, agent workstream, and web UI foundation before app-specif
 Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/core-ai-first-saas-foundation.md`
 - `../docs/core-saas-identity-tenancy-admin.md`
@@ -126,6 +127,7 @@ Reference docs:
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
 - `../docs/app-description-end-to-end-workflow-example.md`
+- `../docs/structured-surface-contracts.md`
 - `../docs/examples/purchase-request-app-description/README.md` — description mechanics reference only; not target architecture doctrine
 - `../docs/examples/purchase-request-app-description/normalized-input-example.md`
 
@@ -685,6 +687,7 @@ Reference docs:
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-frontend-project-integration.md`
 - `../docs/web-ui-style-guide.md`
+- `../docs/structured-surface-contracts.md`
 - `../docs/web-ui-api-contract-patterns.md`
 - `../docs/web-ui-quality-checklist.md`
 

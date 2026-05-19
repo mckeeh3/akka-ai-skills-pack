@@ -26,6 +26,8 @@ Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
 ## API contracts
 
+- [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `structured-surface-contracts.md`.
+- [ ] Every consequential surface action maps to a governed backend capability; frontend visibility, disabled controls, prompt text, and route names are not treated as authorization.
 - [ ] Browser-facing DTOs are intentional and not accidental domain leaks.
 - [ ] API routes use clear `/api/...` paths.
 - [ ] Validation errors have a documented shape.

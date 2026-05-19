@@ -15,6 +15,7 @@ Read these first when using this skill:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/agent-workstream-application-architecture.md`
+- `../../docs/structured-surface-contracts.md`
 - `../../docs/capability-first-backend-architecture.md`
 
 For high-level product input, also read `../../docs/ai-first-saas-application-architecture.md` and load `../ai-first-saas/SKILL.md` plus `../core-saas-foundation/SKILL.md`.
@@ -80,7 +81,7 @@ Internal agents are not left-rail navigation units. Use them for bounded backend
 
 ### 4. Define structured surfaces
 
-Model surfaces as typed renderable artifacts, not text-only messages. Each surface should define:
+Model surfaces as typed renderable artifacts, not text-only messages. Use `../../docs/structured-surface-contracts.md` when a surface needs implementation-ready payload, action, event, auth, trace, or rendering-test detail. Each surface should define:
 - stable type and version;
 - payload schema and redaction rules;
 - allowed actions mapped to backend capabilities;

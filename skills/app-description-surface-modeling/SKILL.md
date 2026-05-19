@@ -15,6 +15,7 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/agent-workstream-application-architecture.md`
+- `../../docs/structured-surface-contracts.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/capability-first-backend-architecture.md`
@@ -82,7 +83,7 @@ Use these types unless the product intent requires a more specific typed surface
 
 ## Surface contract
 
-For each surface, capture:
+For each surface, capture the fields below. Use `../../docs/structured-surface-contracts.md` as the canonical implementation contract when the surface must specify payload envelopes, action envelopes, realtime events, auth, trace/audit fields, and rendering tests.
 
 - stable surface id, display name, type, and version;
 - purpose and user outcome;
