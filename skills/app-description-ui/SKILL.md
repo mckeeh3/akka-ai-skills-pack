@@ -20,6 +20,7 @@ Read these first if present:
 - `../../docs/web-ui-style-guide.md`
 - `../../docs/web-ui-quality-checklist.md`
 - `../app-descriptions/SKILL.md`
+- `../app-description-functional-agent-modeling/SKILL.md` for role-authorized functional-agent rail, workstream, surface, capability, prompt/skill/tool, trace, and test semantics
 - `../ai-first-saas-ui-surfaces/SKILL.md` for generated AI-first SaaS supervision, decision, governance, digest, audit, and goal-to-execution UI surfaces
 - existing `app-description/55-ui/**`
 
@@ -133,13 +134,14 @@ If no UI style is selected for a generated AI-first SaaS app, do **not** choose 
 ## Change handling
 
 For any UI change, update:
-1. affected UI description files, including `ai-first-surfaces.md` when delegated work surfaces change and `style-guide.md` when style system, branding, density, tokens, or component styling change
-2. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, or idempotency semantics
-3. behavior flows if user-visible behavior changes
-4. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
-5. auth/security if route visibility, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes
-6. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, or outcome evidence
-7. readiness status if generation completeness changes
+1. affected UI description files, including `workstream-shell.md`, `functional-agent-rail.md`, `structured-surface-rendering.md`, `ai-first-surfaces.md` when delegated work surfaces change, and `style-guide.md` when style system, branding, density, tokens, or component styling change
+2. `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling` when a UI change adds, removes, or changes a user-facing functional agent, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
+3. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, or idempotency semantics
+4. behavior flows if user-visible behavior changes
+5. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
+6. auth/security if route visibility, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes
+7. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, or outcome evidence
+8. readiness status if generation completeness changes
 
 ## Realization routing
 

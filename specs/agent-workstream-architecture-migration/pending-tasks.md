@@ -212,7 +212,7 @@
 
 ### TASK-AW-02-002: Add functional-agent app-description modeling guidance
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/02-description-model-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/02-app-description/02-functional-agent-modeling.md
 - depends on: [TASK-AW-02-001]
@@ -232,7 +232,10 @@
 - done criteria:
   - app-description path can model user-facing context-area agents
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add functional agent app-description skill`
+  - completed: created `app-description-functional-agent-modeling`, exposed it in routing and manifest metadata, and linked capability/UI/app-description orchestration to the new functional-agent modeling path.
+  - checks: verified the skill frontmatter and guidance covers role authorization, prompt intent, skills, tools, surfaces, capabilities, traces, and tests.
 
 ### TASK-AW-02-003: Add surface modeling guidance
 

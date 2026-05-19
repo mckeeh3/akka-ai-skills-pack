@@ -51,6 +51,9 @@ content:
     - id: app-description-intake-router
       path: skills/app-description-intake-router
       category: focused
+    - id: app-description-functional-agent-modeling
+      path: skills/app-description-functional-agent-modeling
+      category: focused
     - id: app-description-observability
       path: skills/app-description-observability
       category: focused

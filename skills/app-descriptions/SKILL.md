@@ -67,6 +67,8 @@ Load the companion skill that matches the current task:
   - convert flexible user input into a structured app-description delta envelope before routing or maintenance
 - `app-description-intake-router`
   - classify flexible input into description-change, generation, mixed, or review intent
+- `app-description-functional-agent-modeling`
+  - define or revise role-authorized user-facing functional/context-area agents, including prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, and tests
 - `app-description-capability-modeling`
   - define or revise business capabilities, scope boundaries, actors, outcomes, and links to downstream layers
 - `app-description-behavior-specification`
@@ -96,26 +98,29 @@ Prefer this sequence unless the task is already narrowly scoped:
 
 1. apply `ai-first-saas` interpretation when broad input involves delegated work, agents, policy-bound decisions, approvals, supervision, audit, learning, or outcomes
 2. apply `core-saas-foundation` for every new SaaS app description so Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin, and tenant isolation are seeded before app-specific features
-3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `15-operating-model/` and `55-ui/` for generated full-stack AI-first SaaS apps
+3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `12-workstreams/`, `15-operating-model/`, and `55-ui/` for generated full-stack AI-first SaaS apps
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`
-6. model governed capability contracts with `app-description-capability-modeling` when scope, business outcomes, protected operations, queries, actors, authority, side effects, approval, audit, or exposure surfaces changed
-7. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
-8. update behavior with `app-description-behavior-specification`
-9. update tests with `app-description-test-specification`
-10. run `app-description-change-impact` to identify cross-layer and realization implications
-11. update security with `app-description-auth-security` when security semantics change; preserve the mandatory foundation in every app description
-12. update observability with `app-description-observability` when observability semantics change; preserve audit requirements in every app description
-13. update UI with `app-description-ui`; for generated full-stack AI-first SaaS apps the browser UI layer is mandatory, not optional polish
-14. assess readiness with `app-description-readiness-assessment`
-15. realize outputs with `app-generate-app` only when generation is requested or accepted
-16. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+6. model role-authorized user-facing functional agents with `app-description-functional-agent-modeling` when work areas, left-rail agents, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests changed
+7. model governed capability contracts with `app-description-capability-modeling` when scope, business outcomes, protected operations, queries, actors, authority, side effects, approval, audit, or exposure surfaces changed
+8. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
+9. update behavior with `app-description-behavior-specification`
+10. update tests with `app-description-test-specification`
+11. run `app-description-change-impact` to identify cross-layer and realization implications
+12. update security with `app-description-auth-security` when security semantics change; preserve the mandatory foundation in every app description
+13. update observability with `app-description-observability` when observability semantics change; preserve audit requirements in every app description
+14. update UI with `app-description-ui`; for generated full-stack AI-first SaaS apps the browser UI layer is mandatory, not optional polish
+15. assess readiness with `app-description-readiness-assessment`
+16. realize outputs with `app-generate-app` only when generation is requested or accepted
+17. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+
 
 ## Layer model
 
 The default internal app-description structure is:
 - `00-system/`
 - `10-capabilities/`
+- `12-workstreams/` for generated full-stack AI-first SaaS apps, including functional agents, internal agents, workstreams, and structured surfaces
 - `15-operating-model/` for generated AI-first SaaS apps
 - `20-behavior/`
 - `30-tests/`
@@ -131,17 +136,18 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 ## Core rules
 
 1. The app description is the source of truth.
-2. Capability inventory in `10-capabilities/` is the backend contract layer: record actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, and tests before choosing Akka components or tools.
-3. Generated code is a projection, not the definition of the app.
-4. Humans do not directly edit generated code or internal app-description artifacts.
-5. Tests are part of the app description, not only post-hoc verification.
-6. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
-7. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
-8. Auth/security and observability are first-class description concerns.
-9. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
-10. Readiness must be assessed before generation.
-11. Localized regeneration is an optimization, not a conceptual requirement.
-12. Review should focus on semantic change, not only file churn.
+2. Functional agents and structured surfaces in `12-workstreams/` are the primary generated-app verticals for authenticated consequential work; page/screen hierarchy is subordinate route/deep-link detail.
+3. Capability inventory in `10-capabilities/` is the backend contract layer: record actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, and tests before choosing Akka components or tools.
+4. Generated code is a projection, not the definition of the app.
+5. Humans do not directly edit generated code or internal app-description artifacts.
+6. Tests are part of the app description, not only post-hoc verification.
+7. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
+8. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
+9. Auth/security and observability are first-class description concerns.
+10. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
+11. Readiness must be assessed before generation.
+12. Localized regeneration is an optimization, not a conceptual requirement.
+13. Review should focus on semantic change, not only file churn.
 
 ## Decision guide
 

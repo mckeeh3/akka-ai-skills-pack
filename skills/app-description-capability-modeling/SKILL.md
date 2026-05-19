@@ -35,6 +35,7 @@ Read these first if present:
 - `../app-descriptions/SKILL.md`
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-bootstrap/SKILL.md`
+- `../app-description-functional-agent-modeling/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 
 Prefer these example references when present:
@@ -181,6 +182,7 @@ When the user names a business concept clearly, preserve that concept in the cap
 
 Route onward as needed:
 - to `ai-first-saas-object-model`, `ai-first-saas-agent-team-design`, `ai-first-saas-policy-governance`, `ai-first-saas-decision-cards`, `ai-first-saas-audit-trace`, or `ai-first-saas-outcomes-metrics` when the capability needs focused operating-model semantics
+- to `app-description-functional-agent-modeling` when the capability changes which user-facing functional agents can call it, which surfaces expose it, or which prompt/skill/tool boundaries apply
 - to `app-description-behavior-specification` when the capability needs concrete flows, rules, states, or invariants
 - to `app-description-test-specification` when acceptance, evaluation, or scope-verification scenarios need to be defined
 - to `app-description-auth-security` when the capability introduces differentiated actors, ownership, protected actions, or enforceable agent/human permissions
