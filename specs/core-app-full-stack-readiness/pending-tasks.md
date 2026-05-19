@@ -392,7 +392,7 @@
 
 ### TASK-CORE-05-002: Specify Governance/Policy core module
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/05-audit-governance-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/05-audit-governance/02-spec-governance-policy-core-module.md
 - depends on: [TASK-CORE-05-001]
@@ -414,6 +414,8 @@
 - done criteria:
   - Governance/Policy is generation-ready as a core module
   - task changes and queue update are committed
+- notes:
+  - commit message: `Specify governance policy core module`
 
 ### TASK-CORE-06-001: Create full-core acceptance and security test matrix
 
