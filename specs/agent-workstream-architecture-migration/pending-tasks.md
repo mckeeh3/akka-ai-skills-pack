@@ -42,7 +42,7 @@
 
 ### TASK-AW-01-001: Create canonical agent workstream doctrine
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/01-agent-workstream-doctrine-and-routing-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/01-doctrine-routing/01-create-agent-workstream-doctrine.md
 - depends on: [TASK-AW-00-001]
@@ -65,7 +65,9 @@
 - done criteria:
   - canonical doctrine exists and can guide routing and downstream skill updates
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add agent workstream application doctrine`
+  - completed: created canonical doctrine defining the mandatory agent workstream default, functional and internal agents, surfaces, capability mapping, and horizontal Akka implementation rules.
 
 ### TASK-AW-01-002: Integrate workstream architecture into AI-first SaaS doctrine
 
