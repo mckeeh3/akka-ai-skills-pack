@@ -183,7 +183,8 @@ function App() {
 
   function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
     const prompt = request.prompt.toLowerCase();
-    const showUsers = /\b(show|display|open|list|search)\b.*\b(users|invitations|memberships)\b/.test(prompt) || /\busers\b/.test(prompt);
+    const showUserDetail = /\b(show|display|open|view)\b.*\b(user|account|member)\b.*\b(detail|profile|admin@example\.test|tenant admin)\b/.test(prompt) || /\badmin@example\.test\b/.test(prompt);
+    const showUsers = !showUserDetail && (/\b(show|display|open|list|search)\b.*\b(users|invitations|memberships)\b/.test(prompt) || /\busers\b/.test(prompt));
     const userRequestItem: WorkstreamItem = {
       itemId: `composer-${Date.now()}`,
       functionalAgentId: request.functionalAgentId,
@@ -195,24 +196,39 @@ function App() {
       body: request.prompt,
       status: 'ready'
     };
-    const navigationFeedbackItem: WorkstreamItem | undefined = showUsers
+    const navigationFeedbackItem: WorkstreamItem | undefined = showUserDetail
       ? {
-          itemId: `composer-display-users-${Date.now()}`,
+          itemId: `composer-display-user-detail-${Date.now()}`,
           functionalAgentId: 'agent-user-admin',
           kind: 'action-feedback',
           createdAt: new Date().toISOString(),
-          correlationId: 'corr-composer-display-users',
-          traceIds: ['trace-composer-display-users'],
-          surfaceId: 'surface-user-admin-list',
-          title: 'Display the user list view',
-          body: 'Composer intent “show users” opened the tenant-scoped User Admin list/search structured surface.',
+          correlationId: 'corr-composer-display-user-detail',
+          traceIds: ['trace-composer-display-user-detail', 'trace-user-admin-detail'],
+          surfaceId: 'surface-user-admin-detail-admin',
+          title: 'Display user account detail',
+          body: 'Composer intent “show admin@example.test detail” opened the tenant-scoped User Admin detail/edit structured surface with backend-authoritative denial language.',
           status: 'ready'
         }
-      : undefined;
+      : showUsers
+        ? {
+            itemId: `composer-display-users-${Date.now()}`,
+            functionalAgentId: 'agent-user-admin',
+            kind: 'action-feedback',
+            createdAt: new Date().toISOString(),
+            correlationId: 'corr-composer-display-users',
+            traceIds: ['trace-composer-display-users'],
+            surfaceId: 'surface-user-admin-list',
+            title: 'Display the user list view',
+            body: 'Composer intent “show users” opened the tenant-scoped User Admin list/search structured surface.',
+            status: 'ready'
+          }
+        : undefined;
     setBootstrap((current) => current.status === 'ready'
       ? { ...current, items: [...current.items, userRequestItem, ...(navigationFeedbackItem ? [navigationFeedbackItem] : [])] }
       : current);
-    if (showUsers) {
+    if (showUserDetail) {
+      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-detail-admin', surfacePlacement: 'inline' });
+    } else if (showUsers) {
       updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-list', surfacePlacement: 'inline' });
     }
   }

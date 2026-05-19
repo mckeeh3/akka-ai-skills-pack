@@ -123,6 +123,27 @@ export const userAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
     audit: { eventType: 'InvitationRevoked', traceRequired: true }
   },
+  displayUserDetail: {
+    actionId: 'action-display-user-detail',
+    label: 'Display user account detail',
+    intent: 'read',
+    capabilityId: secureTenantUserFoundation,
+    inputSchemaRef: 'schema.user-admin.detail.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminDetailDisplayed', traceRequired: true }
+  },
+  updateUserProfile: {
+    actionId: 'action-update-user-profile',
+    label: 'Save profile changes',
+    intent: 'command',
+    capabilityId: secureTenantUserFoundation,
+    inputSchemaRef: 'schema.user-admin.profile.update.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
+    audit: { eventType: 'UserProfileUpdateRequested', traceRequired: true }
+  },
   replaceRole: {
     actionId: 'action-replace-membership-role',
     label: 'Replace membership role',
@@ -130,9 +151,9 @@ export const userAdminSurfaceActions = {
     capabilityId: secureTenantUserFoundation,
     inputSchemaRef: 'schema.membership.role.replace.v1',
     requiresConfirmation: true,
-    disabled: { reasonCode: 'last-admin-risk', message: 'Cannot remove the last tenant admin without an approved replacement.' },
+    disabled: { reasonCode: 'last-admin-risk', message: 'Backend authorization denied this fixture action: cannot remove the last tenant admin without an approved replacement.' },
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'MembershipRoleReplacementDenied', traceRequired: true }
   },
   approveRiskyAccess: {
@@ -209,6 +230,7 @@ export const userAdminListSearchSurface = envelope(
   },
   [
     userAdminSurfaceActions.searchUsers,
+    userAdminSurfaceActions.displayUserDetail,
     surfaceActionsByIntent.command,
     userAdminSurfaceActions.resendInvitation,
     userAdminSurfaceActions.revokeInvitation,
@@ -217,9 +239,44 @@ export const userAdminListSearchSurface = envelope(
   ]
 );
 
+export const userAdminDetailEditSurface = envelope(
+  'surface-user-admin-detail-admin',
+  'detail-edit',
+  'Tenant Admin account detail',
+  'agent-user-admin',
+  {
+    recordId: 'user-acct-admin',
+    recordLabel: 'Tenant Admin · admin@example.test',
+    recordKind: 'account',
+    summary: 'Scoped detail/edit surface for a tenant user account. Field editability is advisory; the secure tenant user foundation capability remains authoritative.',
+    fields: [
+      { fieldId: 'displayName', label: 'Display name', value: 'Tenant Admin', editable: true, inputType: 'text' },
+      { fieldId: 'email', label: 'Email', value: 'admin@example.test', editable: false, inputType: 'email', disabledReason: 'Email changes require an identity-provider reconciliation workflow.' },
+      { fieldId: 'role', label: 'Membership role', value: 'Tenant Admin', editable: false, inputType: 'select', options: [{ value: 'tenant-admin', label: 'Tenant Admin' }, { value: 'member', label: 'Member' }], disabledReason: 'Backend authorization denied role replacement for the last tenant admin in this fixture.' },
+      { fieldId: 'status', label: 'Account status', value: 'active', editable: false, inputType: 'text', disabledReason: 'Account suspension requires a governed support-access decision.' }
+    ],
+    version: 3,
+    permissionState: {
+      canEdit: true,
+      reason: 'Profile fields are editable; role and status remain denied by backend policy for this fixture account.',
+      authoritativeCapabilityId: secureTenantUserFoundation
+    },
+    audit: {
+      lastEventType: 'UserAdminDetailDisplayed',
+      lastActor: 'Tenant Admin',
+      traceIds: ['trace-user-admin-detail', 'trace-user-admin-row']
+    }
+  },
+  [
+    userAdminSurfaceActions.updateUserProfile,
+    userAdminSurfaceActions.replaceRole,
+    surfaceActionsByIntent.trace
+  ]
+);
+
 export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-access-profile', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }] }, [surfaceActionsByIntent.read]);
 export const listSearchSurface = userAdminListSearchSurface;
-export const detailEditSurface = envelope('surface-profile-detail', 'detail-edit', 'Profile and context', 'agent-access-profile', { recordId: 'acct-admin', fields: [{ fieldId: 'displayName', label: 'Display name', value: 'Tenant Admin', editable: true }], version: 1 }, [surfaceActionsByIntent.command]);
+export const detailEditSurface = userAdminDetailEditSurface;
 export const decisionSurface = envelope('surface-decision-card', 'decision', 'Approve bounded outreach plan', 'agent-governance-policy', { decisionId: 'decision-1', recommendation: 'Approve after evidence review.', riskScore: 72, confidenceScore: 84, evidence: [{ evidenceId: 'evidence-1', label: 'Trace summary', summary: 'Agent stayed within tool boundary.' }] }, [surfaceActionsByIntent.approval, surfaceActionsByIntent.trace]);
 export const auditTimelineSurface = envelope('surface-audit-timeline', 'audit-timeline', 'Admin audit timeline', 'agent-audit-trace', { events: [{ eventId: 'audit-1', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'invited user', traceId: 'trace-invite' }] }, [surfaceActionsByIntent.trace]);
 export const workflowStatusSurface = envelope('surface-workflow-status', 'workflow-status', 'Invitation workflow status', 'agent-user-admin', { workflowId: 'workflow-invite-1', status: 'waiting-for-human', steps: [{ stepId: 'send-email', label: 'Send invitation email', status: 'waiting-for-human' }] }, [surfaceActionsByIntent.workflow]);
@@ -246,4 +303,12 @@ export const displayUserListActionResult: CapabilityActionResult = {
   correlationId: 'corr-display-user-list',
   traceIds: ['trace-display-user-list'],
   resultSurface: userAdminListSearchSurface
+};
+
+export const displayUserDetailActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display user account detail for admin@example.test. Backend authority, scoped read, audit, and trace checks remain capability-backed.',
+  correlationId: 'corr-display-user-detail',
+  traceIds: ['trace-display-user-detail', 'trace-user-admin-detail'],
+  resultSurface: userAdminDetailEditSurface
 };

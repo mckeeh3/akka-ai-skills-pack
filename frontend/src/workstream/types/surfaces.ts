@@ -52,8 +52,29 @@ export type ListSearchSurfaceData = {
 
 export type DetailEditSurfaceData = {
   recordId: string;
-  fields: Array<{ fieldId: string; label: string; value: string; editable: boolean }>;
+  recordLabel?: string;
+  recordKind?: 'account' | 'membership' | 'invitation' | 'support-access' | string;
+  summary?: string;
+  fields: Array<{
+    fieldId: string;
+    label: string;
+    value: string;
+    editable: boolean;
+    inputType?: 'text' | 'email' | 'select' | 'textarea';
+    options?: Array<{ value: string; label: string }>;
+    disabledReason?: string;
+  }>;
   version: number;
+  permissionState?: {
+    canEdit: boolean;
+    reason?: string;
+    authoritativeCapabilityId: string;
+  };
+  audit?: {
+    lastEventType: string;
+    lastActor: string;
+    traceIds: string[];
+  };
 };
 
 export type DecisionSurfaceData = {

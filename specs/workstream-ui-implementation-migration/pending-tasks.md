@@ -295,7 +295,7 @@
 
 ### TASK-WUI-04-002: Implement User Detail/Edit surface
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/04-reference-vertical-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/04-reference-vertical/02-implement-user-detail-edit-surface.md
 - depends on: [TASK-WUI-04-001]
@@ -317,7 +317,9 @@
 - done criteria:
   - User Admin vertical demonstrates dashboard → list/search → detail/edit workstream flow
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement User Admin detail edit surface`
+  - completed: added User Admin detail/edit surface fixture, permission-aware edit and backend-denial states, list/composer/detail navigation feedback, audit/trace affordances, focused contract tests, and rebuilt static assets.
 
 ### TASK-WUI-05-001: Update frontend contract tests
 

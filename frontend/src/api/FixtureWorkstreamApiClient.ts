@@ -5,6 +5,7 @@ import {
   actionResultsByStatus,
   allSurfaceActions,
   canonicalSurfaceEnvelopes,
+  displayUserDetailActionResult,
   displayUserListActionResult,
   initialWorkstreamItems,
   meTenantAdmin
@@ -45,9 +46,11 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     const action = allSurfaceActions.find((candidate) => candidate.actionId === request.actionId || candidate.capabilityId === request.capabilityId);
     if (!action) return delayedError('not_found', 'The requested capability action is not exposed by this surface.');
     if (action.disabled) return delayedOk({ ...actionResultsByStatus.denied, message: action.disabled.message, correlationId: request.correlationId });
-    const result = request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
-      ? displayUserListActionResult
-      : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
+    const result = request.actionId === 'action-display-user-detail'
+      ? displayUserDetailActionResult
+      : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
+        ? displayUserListActionResult
+        : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
         ? actionResultsByStatus['approval-required']
         : actionResultsByStatus.accepted;
     const response = { ...result, correlationId: request.correlationId };

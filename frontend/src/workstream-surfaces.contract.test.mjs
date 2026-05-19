@@ -67,7 +67,9 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
     assert.match(allSurfaceComponents, new RegExp(`function ${componentName}`));
   }
   assert.match(allSurfaceComponents, /role="search"/);
-  assert.match(allSurfaceComponents, /<form className="surface-detail-edit-form">/);
+  assert.match(allSurfaceComponents, /className="surface-detail-edit-form"/);
+  assert.match(allSurfaceComponents, /permissionState/);
+  assert.match(allSurfaceComponents, /Detail audit trace affordances/);
   assert.match(allSurfaceComponents, /decision-card/);
   assert.match(allSurfaceComponents, /audit-timeline/);
   assert.match(allSurfaceComponents, /workflow-steps/);
