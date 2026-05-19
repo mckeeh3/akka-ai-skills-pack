@@ -1,8 +1,35 @@
 # WorkOS authentication, JWT-secured APIs, and basic user administration
 
-Use this doc when an Akka service hosts a browser frontend and uses WorkOS for end-user authentication.
+Use this doc when an Akka service hosts a browser frontend. WorkOS/AuthKit is the supported user authentication service for generated browser apps in this skills pack.
 
-This is an agent-oriented security integration guide. It keeps identity-provider authentication separate from application authorization.
+This is an agent-oriented security integration guide. It keeps WorkOS authentication separate from Akka-owned application authorization. Do not substitute a different user auth service unless the skills pack has been explicitly extended with matching skills, docs, examples, and tests.
+
+## Required runtime configuration
+
+Keep backend secrets in backend runtime environment variables or deployment secrets. Keep frontend settings in Vite `VITE_` variables only.
+
+Backend runtime variables:
+
+```bash
+export ADMIN_USERS="jane@example.com:SAAS_OWNER_ADMIN:OWNER,joe@example.com:TENANT_ADMIN:tenant-123"
+export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
+export WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
+export WORKOS_JWT_ISSUER="configured-workos-issuer" # when env-backed JWT config is used
+export WORKOS_JWT_AUDIENCE="configured-workos-audience" # when env-backed JWT config is used
+export APP_PUBLIC_BASE_URL="http://localhost:9000"
+export RESEND_API_KEY="re_xxxxxxxxx"
+export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+export INVITE_EMAIL_SUBJECT="Account access information"
+```
+
+Frontend build-time variables:
+
+```env
+VITE_WORKOS_CLIENT_ID=client_your_workos_client_id
+VITE_WORKOS_REDIRECT_URI=http://localhost:9000
+```
+
+When issuer/audience checking is part of the endpoint contract, record the WorkOS JWT issuer and audience in backend-only deployment configuration, commonly `WORKOS_JWT_ISSUER` and `WORKOS_JWT_AUDIENCE`, and use those values in Akka JWT configuration/annotations. Never put `WORKOS_API_KEY`, Resend keys, invite sender secrets, bootstrap admin configuration, JWT key material, or service credentials in `frontend/.env*`.
 
 ## Recommended full-stack shape
 
@@ -101,16 +128,16 @@ public class MeEndpoint extends AbstractHttpEndpoint {
 }
 ```
 
-Use `bearerTokenIssuers` and `staticClaims` when the issuer/audience/claim contract is known:
+Use `bearerTokenIssuers` and `staticClaims` when the WorkOS issuer/audience/claim contract is known:
 
 ```java
 @JWT(
     validate = JWT.JwtMethodMode.BEARER_TOKEN,
     bearerTokenIssuers = "configured-workos-issuer",
-    staticClaims = @JWT.StaticClaim(claim = "aud", values = "${WORKOS_AUDIENCE}"))
+    staticClaims = @JWT.StaticClaim(claim = "aud", values = "configured-workos-audience"))
 ```
 
-Production services must configure trusted JWT keys/issuer behavior according to Akka JWT configuration and the identity provider's token contract. Integration tests and local dev may use unsigned `alg: none` tokens, but production must not rely on that behavior.
+Production services must configure trusted JWT keys/issuer behavior according to Akka JWT configuration and the WorkOS token contract. Integration tests and local dev may use unsigned `alg: none` tokens, but production must not rely on that behavior.
 
 ## `/api/me` contract
 
@@ -220,7 +247,10 @@ Use backend-only environment variables for initial admin bootstrap, for example:
 ```bash
 export ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER,joe@outlook.com:TENANT_ADMIN:tenant-123"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
-export APP_BASE_URL="http://localhost:9000"
+export WORKOS_API_BASE_URL="https://api.workos.com"
+export WORKOS_JWT_ISSUER="configured-workos-issuer"
+export WORKOS_JWT_AUDIENCE="configured-workos-audience"
+export APP_PUBLIC_BASE_URL="http://localhost:9000"
 ```
 
 Invite-email settings are backend-only and mandatory for production readiness. Use Resend (resend.com) by default unless the project has recorded an accepted provider override decision that supplies equivalent delivery:

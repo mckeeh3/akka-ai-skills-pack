@@ -324,7 +324,7 @@ Rules:
 
 ### 7.7 Invitation acceptance
 
-An invited user can accept a valid invitation through the auth seam.
+An invited user can accept a valid invitation through WorkOS/AuthKit sign-in.
 
 Required behavior:
 
@@ -627,7 +627,7 @@ Observability requirements:
 - Duplicate invitation and acceptance flows must be idempotent to prevent accidental double membership creation.
 - Revoked/expired invitations must be impossible to accept.
 - Disabled/revoked memberships must immediately lose access to protected tenant data.
-- Admin actions must be protected against CSRF/session misuse according to the selected auth seam.
+- Admin actions must be protected against CSRF/session misuse according to the WorkOS/AuthKit bearer-token flow.
 - Error messages must not allow tenant/user enumeration beyond what an authorized admin can already see.
 
 ## 14. Acceptance scenarios

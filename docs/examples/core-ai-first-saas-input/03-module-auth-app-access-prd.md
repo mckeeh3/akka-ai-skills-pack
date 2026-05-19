@@ -29,7 +29,7 @@ At completion, a demo operator can:
 
 1. open the browser app;
 2. see a signed-out landing/sign-in surface when unauthenticated;
-3. authenticate through the configured auth seam;
+3. authenticate through WorkOS/AuthKit;
 4. land inside the authenticated app shell;
 5. see their profile, account status, active tenant, and membership context;
 6. switch between available tenant contexts if their account has more than one active membership;
@@ -41,7 +41,7 @@ At completion, a demo operator can:
 
 ### In scope
 
-- Authentication seam for browser users, preferably WorkOS/AuthKit in production-like configuration.
+- Browser user authentication through WorkOS/AuthKit in production-like configuration.
 - Local Akka-owned account and authorization state.
 - Minimal SaaS organization model required for app access: Tenant and Membership.
 - Minimal role/capability model sufficient to protect Module 1 routes and prepare for Module 2.
@@ -78,14 +78,14 @@ At completion, a demo operator can:
 
 ## 5. Authentication and first access assumptions
 
-Module 1 must define an explicit authentication seam rather than hard-coding assumptions into UI state.
+Module 1 must define explicit WorkOS/AuthKit authentication behavior rather than hard-coding assumptions into UI state.
 
 ### Production-like behavior
 
-- Browser authentication is delegated to WorkOS/AuthKit or an equivalent provider seam.
-- Provider secrets remain backend-only.
+- Browser authentication is delegated to WorkOS/AuthKit; no alternate user auth service is currently supported by this skills pack.
+- WorkOS secrets remain backend-only.
 - The frontend receives only browser-safe session status and user/account data from app APIs.
-- Backend APIs validate the authenticated session/JWT/cookie according to the selected provider seam before resolving local authorization.
+- Backend APIs validate WorkOS JWT/session state before resolving local authorization.
 
 ### Local development and tests
 
@@ -226,7 +226,7 @@ The web app must provide a public entry state with:
 
 - product/app name placeholder;
 - short explanation that sign-in is required;
-- sign-in action wired to the auth seam;
+- sign-in action wired to WorkOS/AuthKit;
 - loading/error state for auth configuration problems;
 - no provider secrets embedded in rendered assets.
 
@@ -236,7 +236,7 @@ Authenticated users can sign out from the app shell.
 
 Expected behavior:
 
-- sign-out clears browser session through the provider seam;
+- sign-out clears the browser session through WorkOS/AuthKit;
 - local selected context cache is cleared or invalidated as appropriate;
 - user returns to the signed-out state;
 - protected API calls after sign-out fail as unauthenticated.
@@ -575,7 +575,7 @@ Deferred to later modules:
 
 Module 1 is ready for decomposition when the following are true:
 
-- [ ] Authentication provider seam and local/test behavior are named.
+- [ ] WorkOS/AuthKit production behavior and local/test token behavior are named.
 - [ ] First-access bootstrap rule is explicit and does not allow privileged self-registration.
 - [ ] Account, Tenant, Membership, minimal Role/Capability, UserSettings, AuthContext, and AdminAuditEvent semantics are accepted.
 - [ ] `/api/me` response states and redaction expectations are accepted.

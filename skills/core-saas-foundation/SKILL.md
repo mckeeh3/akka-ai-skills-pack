@@ -58,7 +58,7 @@ Every generated SaaS application must model these foundation concepts before app
 
 All broad planning and generation paths must include:
 
-- WorkOS authentication seam for browser human sign-in and JWT-bearing API calls unless the target explicitly selects another provider.
+- WorkOS/AuthKit authentication for browser human sign-in and JWT-bearing API calls. WorkOS is the supported user auth service for generated browser apps; do not select another provider unless the skills pack is explicitly extended with provider-specific guidance and examples.
 - Akka-owned local authorization state for Accounts, Memberships, Roles, Permissions/Capabilities, Tenant, Customer, support access, and billing-safe platform records.
 - `/api/me` returning browser-safe account, profile, settings, active memberships, selected AuthContext, roles/capabilities, and context-switch data; first-login linking must require a valid invitation or accepted membership policy and must not silently self-register privileged users.
 - Backend authorization service used by every protected HTTP/gRPC/MCP route, component command, view query, stream, workflow action, agent tool, consumer side effect, and timer action.
@@ -77,7 +77,7 @@ All broad planning and generation paths must include:
 For every new SaaS app, implement or specify the secure foundation before app-specific CRM/domain features:
 
 1. Common identity/tenancy types: IDs, scope enums, canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), app-specific role-to-capability mappings, permissions/capabilities, AuthContext, audit metadata.
-2. WorkOS/JWT authentication seam and request-context extraction.
+2. WorkOS/AuthKit sign-in, WorkOS JWT validation, and request-context extraction.
 3. Account, UserProfile, and UserSettings state plus base profile/settings APIs.
 4. Tenant and Customer organization state with Tenant/Customer boundaries.
 5. Membership, Role, Permission/Capability, complete Invitation lifecycle, support-access, and context-selection flows.
@@ -92,7 +92,7 @@ For every new SaaS app, implement or specify the secure foundation before app-sp
 14. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, invite delivery/resend/revoke/expiry/acceptance, user and membership list/search, membership lifecycle, last-admin protection, audit, support-access expiry/revocation, admin-agent approval boundaries, governed runtime agent prompt/skill/manifest/trace boundaries, billing-boundary, and frontend secret-boundary tests.
 15. Security review before implementing app-specific CRM/domain slices.
 
-Do not let uncertainty about provider-specific details block modeling the mandatory local authorization, tenancy, AuthContext, and audit contracts. WorkOS is the default browser authentication provider and Resend (resend.com) is the default production invite-email provider, so do not ask provider-selection questions for those defaults; queue provider-specific questions only for missing setup values or explicit non-default provider choices while preserving the local boundary model.
+Do not let uncertainty about WorkOS setup details block modeling the mandatory local authorization, tenancy, AuthContext, and audit contracts. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the default production invite-email provider, so do not ask provider-selection questions for user auth; queue only missing WorkOS runtime setting questions while preserving the local boundary model.
 
 ## Route-specific requirements
 

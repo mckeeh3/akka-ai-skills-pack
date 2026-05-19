@@ -126,7 +126,9 @@ public class AdminUserBootstrap implements ServiceSetup {
       return;
     }
 
-    var appBaseUrl = getenv("APP_BASE_URL");
+    var appBaseUrl = getenv("APP_PUBLIC_BASE_URL");
+    if (appBaseUrl.isBlank())
+      appBaseUrl = getenv("APP_BASE_URL"); // legacy PoC fallback
     if (appBaseUrl.isBlank())
       appBaseUrl = "http://localhost:9000";
 

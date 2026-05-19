@@ -1,6 +1,6 @@
 # Security pattern selection
 
-Use this doc when an Akka service needs authentication, authorization, route exposure boundaries, or basic administration.
+Use this doc when an Akka service needs authentication, authorization, route exposure boundaries, or basic administration. For browser user authentication, this skills pack currently supports WorkOS/AuthKit as the provider-specific path.
 
 ## Choose the smallest matching skill
 
@@ -46,8 +46,8 @@ Flow:
 ## Authentication vs authorization
 
 Authentication answers: who is this caller?
-- WorkOS/AuthKit
-- JWT issuer/audience/subject/email claims
+- WorkOS/AuthKit for generated browser user sign-in
+- WorkOS JWT issuer/audience/subject/email claims
 - Akka `@JWT` validation
 
 Authorization answers: what may this caller do?
@@ -75,16 +75,20 @@ Use these defaults unless product requirements say otherwise:
 ## Secret boundary
 
 Frontend-public:
-- WorkOS client id
-- redirect URI
+- `VITE_WORKOS_CLIENT_ID`
+- `VITE_WORKOS_REDIRECT_URI`
 - other `VITE_` variables intentionally embedded in the bundle
 
-Backend-only:
+Backend-only runtime/deployment variables:
 - `WORKOS_API_KEY`
-- email provider API keys
-- invite sender credentials
+- `WORKOS_API_BASE_URL` optional override for tests/proxies
+- `WORKOS_JWT_ISSUER` and `WORKOS_JWT_AUDIENCE` when env-backed endpoint validation requires them
+- `ADMIN_USERS`
+- `APP_PUBLIC_BASE_URL`
+- `RESEND_API_KEY`
+- `INVITE_EMAIL_FROM`
+- `INVITE_EMAIL_SUBJECT`
 - JWT key material or deployment secrets
-- bootstrap admin configuration when it contains sensitive operational data
 
 ## Testing minimum
 

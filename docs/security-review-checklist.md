@@ -19,8 +19,9 @@ Use before completing security-sensitive Akka changes.
 
 ## WorkOS/frontend secrets
 
-- [ ] WorkOS client id and redirect URI are treated as public.
-- [ ] `WORKOS_API_KEY` and email/API secrets are backend-only.
+- [ ] WorkOS/AuthKit is the browser user auth service for generated apps.
+- [ ] `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI` are treated as public frontend build variables.
+- [ ] `WORKOS_API_KEY`, optional `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, Resend keys, invite sender config, and bootstrap admin config are backend-only runtime/deployment variables.
 - [ ] No backend secrets appear in `frontend/.env*` or built assets.
 - [ ] WorkOS dashboard redirect/origin settings match local/deployed modes.
 

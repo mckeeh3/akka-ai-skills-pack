@@ -61,7 +61,7 @@ The generated output and planning artifacts must label this as `Module 1-only / 
 
 At full core completion, an authorized tenant operator can:
 
-1. sign in through the browser authentication seam;
+1. sign in through WorkOS/AuthKit;
 2. enter an authenticated agent workstream shell;
 3. see only left-rail functional agents authorized for the selected tenant/customer AuthContext;
 4. use Access/Profile to inspect identity, selected context, profile, settings, and safe self-service;
@@ -300,7 +300,7 @@ Likely horizontal Akka substrates:
 
 ## 10. Security and trust boundaries
 
-- WorkOS/AuthKit is the default production browser authentication seam unless an override is explicitly accepted.
+- WorkOS/AuthKit is the supported production browser authentication service; no alternate user auth service is currently supported by this skills pack.
 - Resend (resend.com) is the default production invitation email provider unless an override is explicitly accepted.
 - Local/dev/test uses explicit fakes and captured outbox behavior; automated tests must not send real email.
 - Provider secrets, model API keys, email provider keys, raw tokens, invitation secret tokens, and backend-only policy details must never reach frontend bundles or browser-safe APIs.

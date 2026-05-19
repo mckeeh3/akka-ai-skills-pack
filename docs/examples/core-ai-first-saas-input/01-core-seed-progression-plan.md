@@ -37,7 +37,7 @@ A user can authenticate, land in the app, see their profile/context, and encount
 
 ### Core scope
 
-- WorkOS/AuthKit or explicit authentication seam.
+- WorkOS/AuthKit as the supported browser authentication service.
 - Minimal `Account`.
 - Minimal `UserProfile`.
 - Minimal `Tenant`.

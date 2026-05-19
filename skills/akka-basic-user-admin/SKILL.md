@@ -5,7 +5,7 @@ description: Implement complete foundation user and tenant administration for Wo
 
 # Akka Basic User Administration
 
-Use this skill when an Akka web app needs local user/account administration after authentication is handled by WorkOS or another identity provider.
+Use this skill when an Akka web app needs local user/account administration after browser authentication is handled by WorkOS/AuthKit, the supported user auth service for this skills pack.
 
 ## Required reading
 
@@ -35,7 +35,7 @@ Read these first if present:
 Authentication proves who the caller is. Local Akka admin state decides what they may do.
 
 Required SaaS foundation concepts:
-- Account id linked to the external identity provider subject, e.g. WorkOS subject
+- Account id linked to the WorkOS subject
 - UserProfile for email/display attributes and UserSettings for preferences
 - status: `INVITED`, `ACTIVE`, `DISABLED`
 - Tenant and Customer scoped Membership records
@@ -111,8 +111,11 @@ Read backend-only environment variables such as:
 
 ```bash
 ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER,joe@outlook.com:TENANT_ADMIN:tenant-123"
-APP_BASE_URL="http://localhost:9000"
 WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
+WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
+WORKOS_JWT_ISSUER="configured-workos-issuer" # when env-backed JWT config is used
+WORKOS_JWT_AUDIENCE="configured-workos-audience" # when env-backed JWT config is used
+APP_PUBLIC_BASE_URL="http://localhost:9000"
 ```
 
 Invite-email delivery settings are backend-only and mandatory for production readiness. Use Resend (resend.com) by default unless an accepted provider override decision supplies equivalent delivery:

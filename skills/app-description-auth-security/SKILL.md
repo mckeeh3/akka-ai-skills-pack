@@ -56,7 +56,7 @@ The input sounds like:
 - "policy changes must be simulated and human-approved before activation"
 
 Use it for:
-- authentication model changes, including WorkOS or another identity provider
+- authentication model changes for WorkOS/AuthKit
 - frontend-to-backend JWT bearer-token requirements
 - authorization rule changes
 - trust-boundary clarification
@@ -72,7 +72,7 @@ Use it for:
 
 Treat security as part of the app's authoritative meaning, not as a later implementation hardening step.
 
-For every generated SaaS app, start from the `core-saas-foundation` baseline: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, tenant/customer scoping, and tenant isolation. WorkOS is the default browser authentication provider and Resend (resend.com) is the default production invite-email provider. Provider setup values or explicit non-default provider choices may remain questions, but local authorization, tenancy, audit, and denial semantics are mandatory.
+For every generated SaaS app, start from the `core-saas-foundation` baseline: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, tenant/customer scoping, and tenant isolation. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the default production invite-email provider. WorkOS runtime settings may remain open questions during description maintenance, but generated SaaS apps must not choose a different user auth service unless the skills pack is extended to support it. Local authorization, tenancy, audit, and denial semantics are mandatory.
 
 This skill should define:
 - who the actors are
@@ -87,7 +87,7 @@ This skill should define:
 For each requested change, identify and describe as applicable:
 - secure SaaS foundation impact: Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, billing boundary, `/api/me`, backend authorization, and tenant/customer scoping
 - caller identities or principal categories
-- authentication mechanism or trust source, including identity provider when known
+- authentication mechanism or trust source, using WorkOS/AuthKit for generated browser users
 - frontend-to-backend token propagation expectations
 - local user/account linking rules
 - authorization rules by capability id/operation/query and selected exposure surface

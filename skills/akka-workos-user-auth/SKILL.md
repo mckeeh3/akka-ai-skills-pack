@@ -5,7 +5,7 @@ description: Implement WorkOS-backed user authentication for Akka-hosted web app
 
 # Akka WorkOS User Authentication
 
-Use this skill when a browser frontend authenticates users through WorkOS and calls Akka backend APIs with bearer JWTs.
+Use this skill when a browser frontend authenticates users through WorkOS and calls Akka backend APIs with bearer JWTs. WorkOS/AuthKit is the supported user auth service for generated browser apps in this skills pack; do not introduce another user auth provider unless the pack has first been extended with provider-specific skills, docs, examples, and tests.
 
 ## Required reading
 
@@ -29,6 +29,31 @@ Read these first if present:
 - Akka endpoints should validate JWTs with `@JWT`
 - `/api/me` should return the signed-in user's local Akka account/profile/roles
 - first login should link a WorkOS identity to a local invited account
+
+## Runtime configuration
+
+Backend-only runtime variables or deployment secrets:
+
+```bash
+ADMIN_USERS="jane@example.com:SAAS_OWNER_ADMIN:OWNER,joe@example.com:TENANT_ADMIN:tenant-123"
+WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
+WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
+WORKOS_JWT_ISSUER="configured-workos-issuer" # when env-backed JWT config is used
+WORKOS_JWT_AUDIENCE="configured-workos-audience" # when env-backed JWT config is used
+APP_PUBLIC_BASE_URL="http://localhost:9000"
+RESEND_API_KEY="re_xxxxxxxxx"
+INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+INVITE_EMAIL_SUBJECT="Account access information"
+```
+
+Frontend build-time public variables:
+
+```env
+VITE_WORKOS_CLIENT_ID=client_your_workos_client_id
+VITE_WORKOS_REDIRECT_URI=http://localhost:9000
+```
+
+If issuer/audience validation is required, store WorkOS issuer/audience values in backend-only deployment configuration, commonly `WORKOS_JWT_ISSUER` and `WORKOS_JWT_AUDIENCE`, and apply them in Akka JWT configuration/annotations. Never put `WORKOS_API_KEY`, Resend keys, bootstrap admin data, JWT key material, or service credentials in `frontend/.env*`.
 
 ## Security model
 
@@ -90,13 +115,13 @@ var subject = claims.subject().orElseThrow();
 var email = claims.getString("email").orElse(null);
 ```
 
-Prefer issuer/audience claim validation when the token contract is known:
+Prefer issuer/audience claim validation when the WorkOS token contract is known:
 
 ```java
 @JWT(
     validate = JWT.JwtMethodMode.BEARER_TOKEN,
     bearerTokenIssuers = "configured-workos-issuer",
-    staticClaims = @JWT.StaticClaim(claim = "aud", values = "${WORKOS_AUDIENCE}"))
+    staticClaims = @JWT.StaticClaim(claim = "aud", values = "configured-workos-audience"))
 ```
 
 ## `/api/me` rules

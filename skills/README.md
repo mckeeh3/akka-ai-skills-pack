@@ -20,7 +20,7 @@ This file serves both:
 For high-level product input, treat the target as a secure AI-first SaaS **agent workstream application** unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. Interpret mandatory foundation security, role-authorized functional agents, continuous workstreams, structured surfaces, delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, and outcome accountability before modeling capabilities or decomposing into Akka components.
 
 Mandatory secure SaaS, agent workstream, and web UI foundation before app-specific features:
-- identity and authentication seam, typically WorkOS for browser user authentication
+- WorkOS/AuthKit browser user authentication (the supported user auth service)
 - local Akka-owned authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, and selected AuthContext
 - governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, deterministic prompt assembly, authorized readSkill(skillId), and first-install/tenant-bootstrap seeding of implementation-developed default prompt/skill/manifest/tool-boundary documents into governed storage
 - SaaS Owner, Tenant, and Customer organization model with tenant/customer-scoped commands and queries

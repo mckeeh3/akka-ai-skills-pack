@@ -34,7 +34,7 @@ For generated AI-first SaaS applications, use this pattern for protected browser
 
 - the endpoint should require a bearer token
 - a browser frontend should call `/api/...` with `Authorization: Bearer <token>`
-- WorkOS or another identity provider issues access tokens for frontend users
+- WorkOS/AuthKit issues access tokens for frontend users
 - issuer or claim validation is part of the contract
 - endpoint behavior depends on JWT claims like `sub`, `iss`, `aud`, `email`, or `role`
 - you need an integration-test pattern for injecting bearer tokens locally
@@ -57,7 +57,7 @@ For generated AI-first SaaS applications, use this pattern for protected browser
 For an Akka-hosted web app:
 - frontend static assets may be public
 - protected backend routes live under `/api/...`
-- frontend obtains an access token from WorkOS/AuthKit or another provider
+- frontend obtains an access token from WorkOS/AuthKit
 - frontend sends `Authorization: Bearer <token>`
 - Akka validates the token with `@JWT`
 - endpoint reads `sub`, `email`, `iss`, or other needed claims
@@ -80,7 +80,7 @@ When testing locally or in integration tests:
 - claim presence and values are still enforced
 - create a simple unsigned token and pass it in `Authorization: Bearer ...`
 
-For production, configure trusted JWT keys/issuers according to the Akka JWT docs and the identity provider token contract. Do not treat local unsigned-token behavior as production security.
+For production browser APIs, configure trusted JWT keys/issuers according to the Akka JWT docs and the WorkOS token contract. Do not treat local unsigned-token behavior as production security.
 
 ## Anti-patterns
 

@@ -145,7 +145,7 @@ When adding or revising a full frontend app:
 ## Non-goals
 
 This doc does not define:
-- authentication provider setup
+- WorkOS/AuthKit setup
 - JWT validation
 - role/permission UX
 - backend secret handling

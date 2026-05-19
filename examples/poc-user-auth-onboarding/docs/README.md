@@ -1,4 +1,4 @@
-# Template of empty project
+# WorkOS/AuthKit user-auth onboarding proof of concept
 
 To understand the Akka concepts that are the basis for this example, see [Development Process](https://doc.akka.io/concepts/development-process.html) in the documentation.
 
@@ -14,7 +14,7 @@ mvn compile
 
 ## Bootstrap admin users
 
-On startup, the service can create initial invited admin users from the `ADMIN_USERS` environment variable and send invite emails with Resend.
+This proof of concept demonstrates the supported user-auth shape for this skills pack: WorkOS/AuthKit authenticates browser users, Akka owns local authorization, and Resend sends invitation emails. Runtime settings come from environment variables.
 
 Format:
 
@@ -43,8 +43,9 @@ Required for email delivery and first-login account activation:
 export RESEND_API_KEY="re_xxxxxxxxx"
 export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
-export APP_BASE_URL="http://localhost:9000"
+export APP_PUBLIC_BASE_URL="http://localhost:9000"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
+export WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
 ```
 
 Behavior:
@@ -64,8 +65,9 @@ export ADMIN_USERS="you@example.com:ADMIN:ALL"
 export RESEND_API_KEY="re_xxxxxxxxx"
 export INVITE_EMAIL_FROM="Akka Secure App <onboarding@resend.dev>"
 export INVITE_EMAIL_SUBJECT="Account access information"
-export APP_BASE_URL="http://localhost:9000"
+export APP_PUBLIC_BASE_URL="http://localhost:9000"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
+export WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
 mvn compile exec:java
 ```
 
@@ -88,7 +90,7 @@ Build the frontend with the same redirect URI embedded:
 ```shell
 cd frontend
 cp .env.example .env.local
-# set VITE_WORKOS_CLIENT_ID in .env.local
+# set VITE_WORKOS_CLIENT_ID and VITE_WORKOS_REDIRECT_URI in .env.local
 npm install
 npm run build
 ```

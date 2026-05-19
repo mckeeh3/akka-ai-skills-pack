@@ -1,9 +1,9 @@
 # Identity and Trust
 
 - authentication model:
-  - all browser users authenticate before accessing app APIs
-  - implementation must preserve a seam for production identity providers
-  - local development may use a controlled dev-auth adapter if clearly isolated
+  - all browser users authenticate with WorkOS/AuthKit before accessing app APIs
+  - WorkOS is the supported production user auth service for this seed
+  - local development may use controlled WorkOS-compatible test tokens only when clearly isolated from production
 - trust boundaries:
   - browser is untrusted
   - backend endpoints enforce identity, tenant scope, permissions, and policy gates

@@ -1,6 +1,6 @@
 # Change Impact Map
 
-- auth provider or identity claims change:
+- WorkOS/AuthKit configuration or identity claims change:
   - update `40-auth-security/`, frontend API contract, endpoint tests, and readiness assumptions
 - tenant model change:
   - update capabilities, tenant state model, authorization rules, UI tenant switcher, tenant isolation tests

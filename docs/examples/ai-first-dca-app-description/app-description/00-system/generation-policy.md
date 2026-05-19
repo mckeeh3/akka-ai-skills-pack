@@ -13,7 +13,7 @@ Generation is allowed only when all of the following are true:
 - a user explicitly requests or accepts realization of a bounded DCA slice;
 - the target is a downstream generated-app workspace or a clearly scoped executable reference slice, not an accidental mutation of this source repository's pack assets;
 - the requested slice has current capability-first contracts with actors/callers, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests;
-- the secure SaaS foundation is defined for the slice, including WorkOS/auth seam, Akka-owned authorization state, Tenant/Customer boundaries, memberships, roles/scopes, invitations, `/api/me`, support access, admin audit, billing boundary, backend authorization, and tenant/customer isolation;
+- the secure SaaS foundation is defined for the slice, including WorkOS/AuthKit authentication, Akka-owned authorization state, Tenant/Customer boundaries, memberships, roles/scopes, invitations, `/api/me`, support access, admin audit, billing boundary, backend authorization, and tenant/customer isolation;
 - tests are concrete enough for the slice, including success, validation, forbidden access, tenant isolation, disabled-user, role/scope denial, approval bypass, idempotency, audit/trace, frontend secret-boundary, and outcome checks as applicable;
 - external integration contracts and fixtures required by the slice are defined or explicitly stubbed with accepted local/test adapters;
 - UI surfaces, frontend API contracts, loading/empty/error/stale states, accessibility/responsive expectations, and style-guide constraints are defined for any generated browser scope.
@@ -22,7 +22,7 @@ Generation is allowed only when all of the following are true:
 
 Generation remains blocked when it would require the harness to invent:
 
-- identity/authentication provider mode, secret handling, or JWT validation behavior;
+- WorkOS/AuthKit runtime settings, secret handling, or JWT validation behavior;
 - local authorization records, tenant/customer boundaries, roles/scopes, invitations, support-access, billing-boundary, or `/api/me` semantics;
 - protected capability authority, schemas, side effects, idempotency, approval gates, trace events, or exposure surfaces;
 - numeric thresholds, risk/confidence policies, retention rules, redaction classes, external API contracts, or evaluation fixtures;

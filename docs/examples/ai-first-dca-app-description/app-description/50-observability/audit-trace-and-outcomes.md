@@ -25,7 +25,7 @@ These are business audit facts, not just logs.
 | Event type | Producer | Required fields | Source of truth | Example consumers/views |
 |---|---|---|---|---|
 | `AdminAuditEventRecorded` | foundation routes/components/workflows | actor, AuthContext, tenant/customer, permission, action, target, reason, result, correlation id, redaction marker | event-sourced or append-only admin audit history | admin audit, access review, support-access timeline |
-| `AuthenticationLinked` | auth seam / `/api/me` | WorkOS subject link summary, account id, invitation/membership basis, tenant/customer context, result, denial reason where relevant | account/membership event history + audit fact | `/api/me` diagnostics, security review |
+| `AuthenticationLinked` | WorkOS/AuthKit + `/api/me` | WorkOS subject link summary, account id, invitation/membership basis, tenant/customer context, result, denial reason where relevant | account/membership event history + audit fact | `/api/me` diagnostics, security review |
 | `InvitationLifecycleRecorded` | InvitationWorkflow / email consumer / expiry timer | invitation id, target scope, delivery status, action, actor, expiry, idempotency key, result | invitation history + audit fact | invitation admin, delivery failure queue |
 | `SupportAccessRecorded` | support-access workflow/routes | grant id, tenant, support actor, reason, expiry, use/revoke/expire action, approval link | support-access history + audit fact | support-access review, audit search |
 | `LifecycleGateEvaluated` | lifecycle workflow | goal, workflow, customer/device/collector, gate, result, policy version, evidence links | event-sourced lifecycle history | blocked gate queue, lifecycle timeline |

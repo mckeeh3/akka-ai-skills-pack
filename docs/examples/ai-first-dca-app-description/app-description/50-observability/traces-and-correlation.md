@@ -24,7 +24,7 @@ UI errors and support dialogs should expose only safe request/correlation ids, n
 
 ```text
 Browser request / provider callback
--> WorkOS authentication seam
+-> WorkOS/AuthKit authentication
 -> local account + membership resolution
 -> selected AuthContext
 -> backend authorization check

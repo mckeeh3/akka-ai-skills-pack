@@ -23,7 +23,7 @@
   - confirm whether MCP and gRPC are in v1 or deferred examples
   - decide whether the first generated frontend slice should include only phase-1 Access/Profile, User Admin, and Agent Admin workstreams or also phase-2 Mission Control, Governance/Policy, and Audit/Trace surfaces
 - accepted assumptions:
-  - v1 may use a developer-friendly auth adapter while preserving production auth seams
+  - v1 may use WorkOS-compatible local test tokens for developer execution while preserving production WorkOS/AuthKit semantics
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules
   - tenant isolation is mandatory even in local/demo mode
   - UI design validation uses the `atlas-ops-supervisory-console` style system with no copied mockup content

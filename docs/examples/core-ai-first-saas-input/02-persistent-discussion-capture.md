@@ -86,7 +86,7 @@ Agents may draft proposals. Human governance or explicitly bounded safe automati
 
 ## Persistent questions to resolve in detailed docs
 
-- Which auth provider behavior is required for local/dev/test versus production?
+- Which WorkOS/AuthKit runtime settings and local/dev/test token behavior are required versus production?
 - What is the exact minimal first-login/account-linking flow for Module 1?
 - Which user-admin features belong in Module 2 versus later hardening?
 - What is the smallest useful agent test console for Module 4?

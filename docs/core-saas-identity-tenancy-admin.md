@@ -48,7 +48,7 @@ A local account represents a human identity known to the application.
 
 Recommended fields:
 - `accountId`
-- `workosUserId` or external identity subject, nullable until linked
+- `workosUserId`, nullable until linked
 - `email`
 - `displayName`
 - `status`: `INVITED`, `ACTIVE`, `DISABLED`, `REMOVED`
@@ -280,7 +280,7 @@ Frontend rules:
 
 ## WorkOS integration expectations
 
-Use WorkOS for authentication and identity linking:
+Use WorkOS/AuthKit as the supported user authentication service for authentication and identity linking:
 - sign-in, callback, session/token acquisition in the React frontend;
 - JWT bearer token validation in Akka HTTP endpoints;
 - local account lookup/linking using WorkOS identity claims;

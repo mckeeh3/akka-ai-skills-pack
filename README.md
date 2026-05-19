@@ -19,7 +19,7 @@ Use this pack when you are building or evolving an Akka application and want you
 - PRD/spec ingestion and implementation planning
 - secure AI-first SaaS foundation design
 - capability-first backend design: governed operations/queries with explicit authority, scope, schemas, side effects, audit, approval, exposure surfaces, and tests
-- WorkOS/JWT authentication seams and tenant/customer/user administration
+- WorkOS/AuthKit user authentication, WorkOS JWT validation, and tenant/customer/user administration
 - app-description, specs, question queues, and pending task queues
 - Akka components such as entities, workflows, views, consumers, timed actions, endpoints, and agents
 - mandatory Akka-hosted web UI delivery for full-stack AI-first SaaS

@@ -76,7 +76,7 @@ Assess the current description across these dimensions:
 ### 1. Core secure SaaS foundation completeness
 For every generated SaaS app, this is blocking readiness. Check that the description explicitly defines:
 - SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, and subscription/billing boundary
-- WorkOS/JWT or selected authentication seam plus local Akka authorization state
+- WorkOS/AuthKit browser authentication, WorkOS JWT validation, and local Akka authorization state
 - `/api/me`, selected context, context switching, and browser-safe capability payloads
 - backend authorization for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, timer action, and generated UI action
 - tenant/customer-scoped commands and queries with forbidden access, disabled-user, inactive-membership, role/scope denial, and tenant-isolation behavior

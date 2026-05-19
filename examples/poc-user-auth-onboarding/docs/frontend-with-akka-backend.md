@@ -361,8 +361,9 @@ export ADMIN_USERS="jane@gmail.com:ADMIN:ALL,joe@outlook.com:TENANT_ADMIN:tenant
 export RESEND_API_KEY="re_xxxxxxxxx"
 export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
-export APP_BASE_URL="http://localhost:9000"
+export APP_PUBLIC_BASE_URL="http://localhost:9000"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
+export WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
 ```
 
 When the service starts, it creates invited local Akka users and sends standard invite emails.

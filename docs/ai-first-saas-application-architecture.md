@@ -60,7 +60,7 @@ Required baseline:
 
 | Foundation area | Mandatory expectation |
 |---|---|
-| Identity | Authenticate humans through a defined identity seam, typically WorkOS/AuthKit for browser apps. Keep provider secrets out of frontend assets. |
+| Identity | Authenticate browser humans through WorkOS/AuthKit as the supported identity service. Keep provider secrets out of frontend assets. |
 | Local authorization | Maintain Akka-owned authorization state separate from authentication: `Account`, `UserProfile`, `UserSettings`, `Membership`, `Role`, `Permission`/`Capability`, and selected `AuthContext`. |
 | Organization model | Model `SaaS Owner`, `Tenant`, and `Customer` boundaries. Tenants own application data; Customers are organizations served within a Tenant boundary. |
 | Memberships and roles/scopes | Authorize by active membership, status, role/scope, tenant/customer ids, and capabilities. Do not authorize by email alone or frontend navigation state. |
