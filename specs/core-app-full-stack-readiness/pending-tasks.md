@@ -312,7 +312,7 @@
 
 ### TASK-CORE-04-001: Align core workstream API contracts
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/04-workstream-ui-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/04-workstream-ui/01-align-core-workstream-api-contracts.md
 - depends on: [TASK-CORE-02-003, TASK-CORE-03-002]
@@ -334,6 +334,8 @@
 - done criteria:
   - workstream UI has realistic full-core contracts
   - task changes and queue update are committed
+- notes:
+  - commit message: `Align core workstream API contracts`
 
 ### TASK-CORE-04-002: Add Agent Admin workstream reference
 
