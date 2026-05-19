@@ -169,6 +169,96 @@ export const userAdminSurfaceActions = {
   }
 } satisfies Record<string, SurfaceAction>;
 
+const agentDefinitionsCapability = 'agent.definitions.manage';
+const agentPromptsCapability = 'agent.prompts.govern';
+const agentSkillsCapability = 'agent.skills.govern';
+const agentToolBoundariesCapability = 'agent.tool_boundaries.manage';
+const agentModelsReadCapability = 'agent.models.read';
+const agentModelsManageCapability = 'agent.models.manage';
+const agentRuntimeTestCapability = 'agent.runtime.test';
+
+export const agentAdminSurfaceActions = {
+  displayCatalog: {
+    actionId: 'action-display-agent-catalog',
+    label: 'Display agent catalog',
+    intent: 'read',
+    capabilityId: agentDefinitionsCapability,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-catalog', openPlacement: 'inline' },
+    audit: { eventType: 'AgentCatalogDisplayed', traceRequired: true }
+  },
+  openAgentDetail: {
+    actionId: 'action-open-agent-detail',
+    label: 'Open agent readiness detail',
+    intent: 'read',
+    capabilityId: agentDefinitionsCapability,
+    inputSchemaRef: 'schema.agent-definition.detail.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
+  },
+  proposePromptDiff: {
+    actionId: 'action-propose-prompt-diff',
+    label: 'Propose prompt diff',
+    intent: 'proposal',
+    capabilityId: agentPromptsCapability,
+    inputSchemaRef: 'schema.prompt-version.proposal.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-prompt-governance', openPlacement: 'side-panel' },
+    audit: { eventType: 'PromptVersionDraftProposed', traceRequired: true }
+  },
+  testPrompt: {
+    actionId: 'action-test-agent-prompt',
+    label: 'Run no-side-effect prompt test',
+    intent: 'workflow',
+    capabilityId: agentRuntimeTestCapability,
+    inputSchemaRef: 'schema.agent-runtime.test.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { appendSurfaceType: 'workflow-status', openPlacement: 'inline' },
+    audit: { eventType: 'AgentRuntimeTestRequested', traceRequired: true }
+  },
+  approveSkillManifest: {
+    actionId: 'action-approve-skill-manifest',
+    label: 'Approve manifest review',
+    intent: 'approval',
+    capabilityId: agentSkillsCapability,
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-agent-skill-manifest-diff', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestApproved', traceRequired: true }
+  },
+  simulateToolBoundary: {
+    actionId: 'action-simulate-tool-boundary',
+    label: 'Simulate tool boundary change',
+    intent: 'governance',
+    capabilityId: agentToolBoundariesCapability,
+    inputSchemaRef: 'schema.tool-boundary.simulation.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-tool-boundary-diff', openPlacement: 'inline' },
+    audit: { eventType: 'ToolBoundarySimulationRequested', traceRequired: true }
+  },
+  manageModelRef: {
+    actionId: 'action-manage-model-ref',
+    label: 'Request model ref change',
+    intent: 'proposal',
+    capabilityId: agentModelsManageCapability,
+    disabled: { reasonCode: 'MODEL_POLICY_DENIED', message: 'This fixture denies switching to a disabled provider alias; provider secrets remain redacted.' },
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefChangeDenied', traceRequired: true }
+  },
+  openAgentTrace: {
+    actionId: 'action-open-agent-trace',
+    label: 'Open agent work trace',
+    intent: 'trace',
+    capabilityId: 'audit.trace.read',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-trace', openPlacement: 'deep-link' },
+    audit: { eventType: 'AgentWorkTraceOpened', traceRequired: true }
+  }
+} satisfies Record<string, SurfaceAction>;
+
 function envelope<TData>(surfaceId: string, surfaceType: string, title: string, ownerFunctionalAgentId: string, data: TData, actions: SurfaceAction[]): SurfaceEnvelope<TData> {
   return {
     surfaceId,
@@ -274,6 +364,185 @@ export const userAdminDetailEditSurface = envelope(
   ]
 );
 
+export const agentAdminCatalogSurface = envelope(
+  'surface-agent-admin-catalog',
+  'dashboard',
+  'Agent Admin command center',
+  'agent-agent-admin',
+  {
+    cards: [
+      { cardId: 'agent-definitions', label: 'Agent definitions ready', value: 5, severity: 'info' },
+      { cardId: 'prompt-review', label: 'Prompt drafts needing review', value: 2, severity: 'warning' },
+      { cardId: 'skill-manifest-review', label: 'Skill manifest approvals', value: 1, severity: 'critical' },
+      { cardId: 'tool-boundary-denials', label: 'Recent tool boundary denials', value: 3, severity: 'critical' }
+    ],
+    sections: [
+      { sectionId: 'loading-state', label: 'Loading', summary: 'Agent catalog shows Loading surface… while /api/agent-admin definitions load.' },
+      { sectionId: 'empty-state', label: 'Empty', summary: 'No AgentDefinition records yet; create a draft definition before assigning prompts or skills.' },
+      { sectionId: 'forbidden-state', label: 'Forbidden', summary: 'Cross-tenant AgentDefinition ids return TARGET_NOT_FOUND_OR_FORBIDDEN and keep draft content hidden.' },
+      { sectionId: 'trace-linked-state', label: 'Trace linked', summary: 'PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace links are surfaced without provider secrets.' }
+    ]
+  },
+  [agentAdminSurfaceActions.displayCatalog, agentAdminSurfaceActions.openAgentDetail, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentAdminDetailSurface = envelope(
+  'surface-agent-admin-detail',
+  'detail-edit',
+  'Procurement Assistant readiness',
+  'agent-agent-admin',
+  {
+    recordId: 'agent-definition-procurement-assistant',
+    recordLabel: 'Procurement Assistant · active runtime binding',
+    recordKind: 'agent-definition',
+    summary: 'Effective behavior detail with active prompt, skill manifest, tool boundary, model ref, approval state, and trace links. Activation is blocked when any governed artifact is unapproved, stale, or missing.',
+    fields: [
+      { fieldId: 'status', label: 'Lifecycle status', value: 'active', editable: false, inputType: 'text', disabledReason: 'Disabled AgentDefinitions cannot be invoked or load skills.' },
+      { fieldId: 'authorityLevel', label: 'Authority level', value: 'recommend-and-draft', editable: false, inputType: 'text', disabledReason: 'Authority expansion requires decision-card approval.' },
+      { fieldId: 'activePromptRef', label: 'Active prompt/version', value: 'prompt-procurement-assistant@v7', editable: false, inputType: 'text' },
+      { fieldId: 'manifestRef', label: 'Skill manifest', value: 'manifest-procurement-assistant@v4', editable: false, inputType: 'text' },
+      { fieldId: 'toolBoundaryRef', label: 'Tool boundary', value: 'tool-boundary-procurement-assistant@v3', editable: false, inputType: 'text' },
+      { fieldId: 'modelRef', label: 'Model ref', value: 'model-safe-default', editable: false, inputType: 'text', disabledReason: 'Provider secret values are never browser-visible.' }
+    ],
+    version: 9,
+    permissionState: {
+      canEdit: false,
+      reason: 'Metadata is readable; changing prompts, skills, manifests, tool boundaries, models, or authority uses governed proposal surfaces.',
+      authoritativeCapabilityId: agentDefinitionsCapability
+    },
+    audit: {
+      lastEventType: 'AgentDefinitionReadinessDisplayed',
+      lastActor: 'Tenant Admin',
+      traceIds: ['trace-prompt-assembly-42', 'trace-skill-load-17', 'trace-agent-work-88']
+    }
+  },
+  [agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.manageModelRef, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentPromptGovernanceSurface = envelope(
+  'surface-agent-prompt-governance',
+  'governance-diff',
+  'Prompt governance review',
+  'agent-agent-admin',
+  {
+    proposalId: 'prompt-proposal-42',
+    beforeSummary: 'Active prompt instructs the agent to draft recommendations and request approval before side effects.',
+    afterSummary: 'Draft prompt adds clearer evidence citation rules but validation flags secret-like content and authority expansion language.',
+    changes: [
+      { path: 'prompt.body.evidenceRules', before: 'Summarize evidence.', after: 'Cite trace ids, source freshness, and confidence.', impact: 'Improves review quality.' },
+      { path: 'validation.secretBoundary', before: 'pass', after: 'validation-error: secret-like token placeholder detected', impact: 'Blocks activation until removed.' },
+      { path: 'review.status', before: 'draft', after: 'approval-required', impact: 'Human prompt steward must review before activation.' }
+    ]
+  },
+  [agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.testPrompt, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentSkillManifestSurface = envelope(
+  'surface-agent-skill-manifest-diff',
+  'governance-diff',
+  'Skill manifest and readSkill review',
+  'agent-agent-admin',
+  {
+    proposalId: 'manifest-proposal-7',
+    beforeSummary: 'Manifest exposes three compact skill hints and denies unassigned readSkill requests.',
+    afterSummary: 'Proposal adds supplier-risk-review skill; approval is required because it broadens data interpretation guidance.',
+    changes: [
+      { path: 'assignedSkills[+]', before: undefined, after: 'skill-supplier-risk-review@v2', impact: 'New compact hint appears during prompt assembly.' },
+      { path: 'denialHistory', before: 'unassigned skill denied', after: 'unassigned skill denied with SkillLoadTrace link', impact: 'Denial remains traceable.' },
+      { path: 'review.state', before: 'draft', after: 'approval-required', impact: 'Reviewer approval required before activation.' }
+    ]
+  },
+  [agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.testPrompt, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentToolBoundarySurface = envelope(
+  'surface-agent-tool-boundary-diff',
+  'governance-diff',
+  'Tool boundary simulation review',
+  'agent-agent-admin',
+  {
+    proposalId: 'tool-boundary-proposal-5',
+    beforeSummary: 'Agent can read approved supplier records and draft recommendations only.',
+    afterSummary: 'Proposal requests external email side effect; approval-required and policy simulation must pass before activation.',
+    changes: [
+      { path: 'toolGrants.email.send', before: 'not assigned', after: 'requested', impact: 'External side effect requires decision-card approval.' },
+      { path: 'simulation.result', before: 'not run', after: 'policy-blocked: TOOL_BOUNDARY_DENIED for unknown recipient domain', impact: 'Activation denied until policy issue is resolved.' },
+      { path: 'dataScope.customer', before: 'customer-northwind', after: 'customer-northwind', impact: 'No cross-customer expansion.' }
+    ]
+  },
+  [agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentModelRefsSurface = envelope(
+  'surface-agent-model-refs',
+  'list-search',
+  'Model refs and policy aliases',
+  'agent-agent-admin',
+  {
+    query: 'providerAlias:safe status:active OR disabled',
+    rows: [
+      { id: 'model-safe-default', rowType: 'model-ref', providerAlias: 'approved-primary', mode: 'reasoning', status: 'active', secretVisibility: 'redacted', traceId: 'trace-model-read' },
+      { id: 'model-disabled-experimental', rowType: 'model-ref', providerAlias: 'experimental-disabled', mode: 'tool-use', status: 'disabled', deniedReason: 'MODEL_POLICY_DENIED', secretVisibility: 'redacted', traceId: 'trace-model-denied' }
+    ],
+    pageInfo: { totalKnownCount: 2 },
+    emptyMessage: 'No model refs match the scoped query; create provider aliases server-side before exposing browser-safe refs.',
+    mobileFallback: 'table-to-card'
+  },
+  [agentAdminSurfaceActions.manageModelRef, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentTestConsoleSurface = envelope(
+  'surface-agent-test-console',
+  'workflow-status',
+  'No-side-effect agent test console',
+  'agent-agent-admin',
+  {
+    workflowId: 'agent-runtime-test-procurement-assistant',
+    status: 'waiting-for-human',
+    steps: [
+      { stepId: 'resolve-agent-definition', label: 'Resolve active AgentDefinition and AuthContext', status: 'completed' },
+      { stepId: 'assemble-prompt', label: 'Assemble prompt with compact manifest and redactions', status: 'completed' },
+      { stepId: 'read-skill-denial', label: 'Unassigned readSkill(skillId) denied and linked to SkillLoadTrace', status: 'blocked' },
+      { stepId: 'tool-boundary-check', label: 'Side-effecting tools disabled in test mode', status: 'waiting-for-human' }
+    ]
+  },
+  [agentAdminSurfaceActions.testPrompt, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentBehaviorProposalSurface = envelope(
+  'surface-agent-behavior-proposal',
+  'decision',
+  'Review agent behavior proposal',
+  'agent-agent-admin',
+  {
+    decisionId: 'decision-agent-behavior-12',
+    recommendation: 'Approve prompt evidence rules, reject email tool expansion until simulation passes.',
+    riskScore: 81,
+    confidenceScore: 77,
+    evidence: [
+      { evidenceId: 'evidence-prompt-diff', label: 'Prompt diff', summary: 'Diff improves citations but initially failed validation for secret-like content.' },
+      { evidenceId: 'evidence-tool-simulation', label: 'Tool simulation', summary: 'External email side effect remains approval-required and currently policy-blocked.' },
+      { evidenceId: 'evidence-traces', label: 'Trace links', summary: 'PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace are linked for review.' }
+    ]
+  },
+  [agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentAdminTraceSurface = envelope(
+  'surface-agent-admin-trace',
+  'audit-timeline',
+  'Agent admin traces',
+  'agent-agent-admin',
+  {
+    events: [
+      { eventId: 'prompt-assembly-42', occurredAt: generatedAt, actor: 'AgentRuntimeResolver', action: 'PromptAssemblyTrace emitted with compact manifest and redactions', traceId: 'trace-prompt-assembly-42' },
+      { eventId: 'skill-load-17', occurredAt: generatedAt, actor: 'readSkill(skillId)', action: 'Unassigned skill denied safely', traceId: 'trace-skill-load-17' },
+      { eventId: 'agent-work-88', occurredAt: generatedAt, actor: 'Procurement Assistant', action: 'AgentWorkTrace recorded no-side-effect test run', traceId: 'trace-agent-work-88' }
+    ]
+  },
+  [agentAdminSurfaceActions.openAgentTrace]
+);
+
 export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-access-profile', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }] }, [surfaceActionsByIntent.read]);
 export const listSearchSurface = userAdminListSearchSurface;
 export const detailEditSurface = userAdminDetailEditSurface;
@@ -283,8 +552,27 @@ export const workflowStatusSurface = envelope('surface-workflow-status', 'workfl
 export const governanceDiffSurface = envelope('surface-governance-diff', 'governance-diff', 'Policy proposal diff', 'agent-governance-policy', { proposalId: 'proposal-1', beforeSummary: 'Manual approval over 75 risk.', afterSummary: 'Manual approval over 65 risk.', changes: [{ path: 'risk.approvalThreshold', before: '75', after: '65', impact: 'More decisions require human review.' }] }, [surfaceActionsByIntent.proposal, surfaceActionsByIntent.governance]);
 export const outcomeSurface = envelope('surface-outcome-review', 'outcome', 'Outcome review', 'agent-governance-policy', { outcomeId: 'outcome-1', metrics: [{ metricId: 'decision-cycle-time', label: 'Decision cycle time', current: 4, target: 2, unit: 'hours' }] }, [surfaceActionsByIntent.read]);
 
-export const canonicalSurfaceEnvelopes = [userAdminDashboardSurface, userAdminListSearchSurface, dashboardSurface, detailEditSurface, decisionSurface, auditTimelineSurface, workflowStatusSurface, governanceDiffSurface, outcomeSurface];
-export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(userAdminSurfaceActions)];
+export const canonicalSurfaceEnvelopes = [
+  userAdminDashboardSurface,
+  userAdminListSearchSurface,
+  agentAdminCatalogSurface,
+  agentAdminDetailSurface,
+  agentPromptGovernanceSurface,
+  agentSkillManifestSurface,
+  agentToolBoundarySurface,
+  agentModelRefsSurface,
+  agentTestConsoleSurface,
+  agentBehaviorProposalSurface,
+  agentAdminTraceSurface,
+  dashboardSurface,
+  detailEditSurface,
+  decisionSurface,
+  auditTimelineSurface,
+  workflowStatusSurface,
+  governanceDiffSurface,
+  outcomeSurface
+];
+export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions)];
 
 const resultBase = { correlationId: 'corr-action-result', traceIds: ['trace-action-result'] };
 export const actionResultsByStatus: Record<CapabilityActionResult['status'], CapabilityActionResult> = {
@@ -311,4 +599,20 @@ export const displayUserDetailActionResult: CapabilityActionResult = {
   correlationId: 'corr-display-user-detail',
   traceIds: ['trace-display-user-detail', 'trace-user-admin-detail'],
   resultSurface: userAdminDetailEditSurface
+};
+
+export const displayAgentCatalogActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display the Agent Admin catalog with loading, empty, forbidden, approval-required, validation, and trace-linked reference states.',
+  correlationId: 'corr-display-agent-catalog',
+  traceIds: ['trace-display-agent-catalog'],
+  resultSurface: agentAdminCatalogSurface
+};
+
+export const displayAgentDetailActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display AgentDefinition readiness, governed refs, approval gates, redacted model refs, and trace links.',
+  correlationId: 'corr-display-agent-detail',
+  traceIds: ['trace-display-agent-detail', 'trace-agent-work-88'],
+  resultSurface: agentAdminDetailSurface
 };

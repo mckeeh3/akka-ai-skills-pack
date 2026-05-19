@@ -5,6 +5,8 @@ import {
   actionResultsByStatus,
   allSurfaceActions,
   canonicalSurfaceEnvelopes,
+  displayAgentCatalogActionResult,
+  displayAgentDetailActionResult,
   displayUserDetailActionResult,
   displayUserListActionResult,
   initialWorkstreamItems,
@@ -48,11 +50,15 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     if (action.disabled) return delayedOk({ ...actionResultsByStatus.denied, message: action.disabled.message, correlationId: request.correlationId });
     const result = request.actionId === 'action-display-user-detail'
       ? displayUserDetailActionResult
-      : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
-        ? displayUserListActionResult
-        : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
-        ? actionResultsByStatus['approval-required']
-        : actionResultsByStatus.accepted;
+      : request.actionId === 'action-display-agent-detail' || request.actionId === 'action-open-agent-detail'
+        ? displayAgentDetailActionResult
+        : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent.definitions.manage'
+          ? displayAgentCatalogActionResult
+          : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
+            ? displayUserListActionResult
+            : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
+            ? actionResultsByStatus['approval-required']
+            : actionResultsByStatus.accepted;
     const response = { ...result, correlationId: request.correlationId };
     this.items = [
       ...this.items,

@@ -25,10 +25,20 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     label: 'Agent Admin',
     purpose: 'Govern agent definitions, prompts, skill manifests, and tool boundaries.',
     icon: 'bot',
+    defaultSurfaceType: 'dashboard',
+    requiredCapabilityIds: ['agent.definitions.manage', 'agent.prompts.govern', 'agent.skills.govern', 'agent.tool_boundaries.manage', 'agent.models.read', 'agent.runtime.test'],
+    attention: { count: 4, severity: 'critical' },
+    availability: 'visible'
+  },
+  {
+    functionalAgentId: 'agent-agent-admin-denied-example',
+    label: 'Agent Admin denied example',
+    purpose: 'Demonstrate safe denied rail state for agent governance when capability scope is absent.',
+    icon: 'bot-off',
     defaultSurfaceType: 'governance-diff',
-    requiredCapabilityIds: ['agents.admin.read'],
+    requiredCapabilityIds: ['agent.definitions.manage'],
     availability: 'denied',
-    deniedReason: 'Agent governance requires agents.admin.read capability.'
+    deniedReason: 'Agent governance requires tenant-scoped agent.definitions.manage capability.'
   },
   {
     functionalAgentId: 'agent-audit-trace',

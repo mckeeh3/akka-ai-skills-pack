@@ -339,7 +339,7 @@
 
 ### TASK-CORE-04-002: Add Agent Admin workstream reference
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/04-workstream-ui-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/04-workstream-ui/02-add-agent-admin-workstream-reference.md
 - depends on: [TASK-CORE-04-001]
@@ -362,6 +362,8 @@
 - done criteria:
   - Agent Admin UI is concrete enough for future generated apps
   - task changes and queue update are committed
+- notes:
+  - commit message: `Add agent admin workstream reference`
 
 ### TASK-CORE-05-001: Specify Audit/Trace core module
 
