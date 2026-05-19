@@ -78,26 +78,43 @@ curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.1
 
 For global installs, dry runs, archive installs, and detailed usage, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md).
 
-## Getting started prompt
+## Getting started: core app readiness test
 
-After installing the pack into a new target project, start from the packaged canonical core PRD and record the intended scope before generation:
+A good way to test a skills-pack release is to create a fresh independent Akka project, install the released pack, copy the packaged core PRD input set into `docs/input/`, and ask the harness to work from those PRDs to manually testable live-app sprints.
+
+Recommended release-test loop:
+
+1. update or add PRDs in this skills-pack repository under `docs/examples/core-ai-first-saas-input/`;
+2. create a versioned skills-pack release;
+3. create a fresh target project outside this repository;
+4. install the released pack into that project as `.agents/`;
+5. copy the installed core PRD inputs into the target project's `docs/input/initial/`;
+6. ask the harness to create app-description/specs/pending questions and tasks;
+7. execute one implementation task per fresh harness session;
+8. after each sprint, run Akka locally and manually test the visible app feature(s).
+
+Start a fresh target project from the packaged core input documents:
 
 ```bash
 mkdir -p docs/input/initial
-cp .agents/docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md \
-  docs/input/initial/core-app-prd.md
+cp .agents/docs/examples/core-ai-first-saas-input/*.md docs/input/initial/
 cat > docs/input/initial/scope-choice.md <<'EOF'
 # Core app scope choice
 
-Selected scope: undecided
+Selected scope: full core
 
-Choose one before generation:
-- Full core — includes the agent workstream shell plus Access/Profile, User Admin,
-  Agent Admin, Audit/Trace, and Governance/Policy functional agents.
-- Module 1-only / not full core — minimal auth, /api/me, selected AuthContext,
-  profile/context display, authenticated shell, and explicit deferral of User Admin,
-  Agent Admin, invitation lifecycle, governed prompt/skill/manifest/tool-boundary
-  management, unified audit/work trace UI, and governance/policy/evaluation loops.
+Use the full core PRD sequence. Full core includes:
+- Module 1: Minimal Auth and App Access MVP
+- Module 2: Agent Workstream Runtime Bootstrap
+- Module 3: User Administration
+- Module 4: Agent Definition Foundation
+- Module 5: Prompt Governance
+- Module 6: Skill Governance
+- Module 7: Audit and Work Trace
+- Module 8: Evaluation and Closed-Loop Improvement
+
+The agent runtime bootstrap must happen before full User Administration because
+User Admin is a functional-agent workstream, not a page-first CRUD console.
 EOF
 ```
 
@@ -105,17 +122,23 @@ Then ask your harness to bootstrap planning artifacts from those inputs:
 
 ```text
 First read .agents/AGENTS.md and .agents/skills/README.md.
-Then read docs/input/initial/core-app-prd.md and docs/input/initial/scope-choice.md.
+Then read all files under docs/input/initial/.
 
-Ask me to choose Full core or Module 1-only / not full core before generation if the
-scope is still undecided, and record the selected scope in app-description/specs.
-Bootstrap the app-description, solution plan, pending questions, and pending task queue
-for the selected secure AI-first SaaS core scope. Do not generate application source code yet.
-Queue questions instead of guessing. Do not treat a full core app as complete unless User
-Admin and Agent Admin functional agents are included.
+Use the installed core PRDs as the source input for a full-core secure AI-first SaaS app.
+Record the selected scope as full core in app-description/specs. Preserve the module order:
+1 Minimal Auth and App Access, 2 Agent Workstream Runtime Bootstrap, 3 User Administration,
+4 Agent Definition Foundation, 5 Prompt Governance, 6 Skill Governance, 7 Audit and Work Trace,
+8 Evaluation and Closed-Loop Improvement.
+
+Bootstrap or update the app-description, solution plan, module specs, sprint specs,
+pending questions, and pending task queue. Do not generate application source code yet.
+Queue questions instead of guessing. Each sprint must produce live-app behavior that can
+be manually tested with Akka running locally. Do not treat a full core app as complete
+unless User Admin and Agent Admin functional agents are included and backed by the
+agent workstream/runtime, authorization, audit, and tests described in the PRDs.
 ```
 
-Use Full core as the canonical target when you want the complete generated core foundation. Use `Module 1-only / not full core` only as an explicitly recorded first slice. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough and explicitly approved.
+When planning is complete and questions are resolved, use fresh harness sessions to execute the next pending task. The harness should ask for the Java base package before generating Java code; press Enter to use `ai.first` unless you want another package. Use `Module 1-only / not full core` only when you intentionally want a narrow first-slice test rather than the complete core app.
 
 ## Repository status
 

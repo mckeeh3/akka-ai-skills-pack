@@ -74,26 +74,45 @@ bash install.sh --location project --project /path/to/project --dry-run
 
 A project install creates `.agents/` under the target project. A global install creates `~/.agents`.
 
-## Getting started
+## Getting started: build the core app from PRD inputs
 
-After installing the pack into a new target project, start from the installed canonical core PRD and make the scope explicit before generation:
+For skills-pack release testing, use the core app as an end-to-end sample: PRD inputs should drive app-description/specs, module/sprint backlogs, implementation tasks, generated Akka + React code, tests, and manually testable live-app increments.
+
+Recommended release-test loop:
+
+1. In this skills-pack source repository, update the core input PRDs under `docs/examples/core-ai-first-saas-input/`.
+2. Create a versioned skills-pack release.
+3. Create a fresh target project outside the skills-pack repository.
+4. Install the released pack into the target project as `.agents/`.
+5. Copy the installed PRD inputs into the target project's `docs/input/initial/`.
+6. Ask the harness to create planning artifacts first, not code.
+7. Resolve pending questions.
+8. Execute one pending implementation task per fresh harness session.
+9. At the end of each sprint, run Akka locally and manually test the visible app feature(s).
+10. Record manual test findings under `docs/input/testing/` and ask the harness to reconcile them.
+
+Copy the installed core PRD input set into a fresh target project:
 
 ```bash
 mkdir -p docs/input/initial
-cp .agents/docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md \
-  docs/input/initial/core-app-prd.md
+cp .agents/docs/examples/core-ai-first-saas-input/*.md docs/input/initial/
 cat > docs/input/initial/scope-choice.md <<'EOF'
 # Core app scope choice
 
-Selected scope: undecided
+Selected scope: full core
 
-Choose one before generation:
-- Full core — includes the agent workstream shell plus Access/Profile, User Admin,
-  Agent Admin, Audit/Trace, and Governance/Policy functional agents.
-- Module 1-only / not full core — minimal auth, /api/me, selected AuthContext,
-  profile/context display, authenticated shell, and explicit deferral of User Admin,
-  Agent Admin, invitation lifecycle, governed prompt/skill/manifest/tool-boundary
-  management, unified audit/work trace UI, and governance/policy/evaluation loops.
+Use the full core PRD sequence. Full core includes:
+- Module 1: Minimal Auth and App Access MVP
+- Module 2: Agent Workstream Runtime Bootstrap
+- Module 3: User Administration
+- Module 4: Agent Definition Foundation
+- Module 5: Prompt Governance
+- Module 6: Skill Governance
+- Module 7: Audit and Work Trace
+- Module 8: Evaluation and Closed-Loop Improvement
+
+The agent runtime bootstrap must happen before full User Administration because
+User Admin is a functional-agent workstream, not a page-first CRUD console.
 EOF
 ```
 
@@ -101,17 +120,38 @@ Then ask your harness to bootstrap planning artifacts from those inputs:
 
 ```text
 First read .agents/AGENTS.md and .agents/skills/README.md.
-Then read docs/input/initial/core-app-prd.md and docs/input/initial/scope-choice.md.
+Then read all files under docs/input/initial/.
 
-Ask me to choose Full core or Module 1-only / not full core before generation if the
-scope is still undecided, and record the selected scope in app-description/specs.
-Bootstrap the app-description, solution plan, pending questions, and pending task queue
-for the selected secure AI-first SaaS core scope. Do not generate application source code yet.
-Queue questions instead of guessing. Do not treat a full core app as complete unless User
-Admin and Agent Admin functional agents are included.
+Use the installed core PRDs as the source input for a full-core secure AI-first SaaS app.
+Record the selected scope as full core in app-description/specs. Preserve the module order:
+1 Minimal Auth and App Access, 2 Agent Workstream Runtime Bootstrap, 3 User Administration,
+4 Agent Definition Foundation, 5 Prompt Governance, 6 Skill Governance, 7 Audit and Work Trace,
+8 Evaluation and Closed-Loop Improvement.
+
+Bootstrap or update the app-description, solution plan, module specs, sprint specs,
+pending questions, and pending task queue. Do not generate application source code yet.
+Queue questions instead of guessing. Each sprint must produce live-app behavior that can
+be manually tested with Akka running locally. Do not treat a full core app as complete
+unless User Admin and Agent Admin functional agents are included and backed by the
+agent workstream/runtime, authorization, audit, and tests described in the PRDs.
 ```
 
-Full core is the canonical PRD-backed target. If User Admin or Agent Admin is deferred, the selected scope must be recorded as `Module 1-only / not full core` rather than full core. The harness should also ask for the Java base package before it generates Java code: "What Java base package should I use for generated code? Press Enter to use `ai.first`." If you accept or defer, `ai.first` is used. `com.example` appears only in reference examples and is not the generated-code default. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
+Full core is the canonical PRD-backed target. If User Admin or Agent Admin is deferred, the selected scope must be recorded as `Module 1-only / not full core` or another explicitly named narrower scope rather than full core. The harness should also ask for the Java base package before it generates Java code: "What Java base package should I use for generated code? Press Enter to use `ai.first`." If you accept or defer, `ai.first` is used. `com.example` appears only in reference examples and is not the generated-code default. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
+
+### Core app module order
+
+The full-core PRD input set is intentionally multi-module. The important ordering constraint is that the agent runtime bootstrap comes before full User Administration:
+
+| Module | Purpose | Manual-test target |
+|---|---|---|
+| 1. Minimal Auth and App Access MVP | WorkOS/AuthKit seam, `/api/me`, selected AuthContext, shell, Access/Profile. | Sign in, enter shell, inspect context, see safe no-access/forbidden/disabled states. |
+| 2. Agent Workstream Runtime Bootstrap | Seeded AgentDefinitions, prompts, skills, manifests, tool boundaries, runtime resolver, composer invocation, traces. | Select Access/Profile or User Admin bootstrap agent and get deterministic backend-agent-runtime-backed workstream responses. |
+| 3. User Administration | Invitations, captured outbox/Resend boundary, memberships, roles, disable/reactivate, access review, admin audit. | Invite/resend/revoke/accept users and manage memberships through User Admin workstream surfaces. |
+| 4. Agent Definition Foundation | Durable AgentDefinition lifecycle and Agent Admin catalog/detail. | Create/view/update/activate/disable/archive agent definitions. |
+| 5. Prompt Governance | Prompt documents, versions, diff/review/activation, prompt assembly/test console. | Draft/review/activate a prompt and run a safe prompt-backed test. |
+| 6. Skill Governance | Skill documents, versions, manifests, authorized `readSkill(skillId)`. | Assign a skill and observe allowed/denied skill loading. |
+| 7. Audit and Work Trace | Tenant-scoped audit/trace search, timelines, redaction, correlation. | Investigate correlated admin, prompt, skill, tool, and denial activity. |
+| 8. Evaluation and Closed-Loop Improvement | Evaluations, findings, proposals, approvals, activation/rollback. | Turn a finding into a reviewed proposal and governed behavior change. |
 
 ## Installed layout
 

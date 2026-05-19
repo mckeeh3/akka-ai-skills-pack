@@ -67,6 +67,18 @@ Installed layout:
     workflow-endpoint-pattern.md
     examples/
       core-ai-first-saas-input/
+        README.md
+        00-document-development-process-context.md
+        01-core-seed-progression-plan.md
+        02-persistent-discussion-capture.md
+        03-module-auth-app-access-prd.md
+        03a-module-agent-workstream-runtime-bootstrap-prd.md
+        04-module-user-admin-prd.md
+        05-module-agent-definition-prd.md
+        06-module-prompt-governance-prd.md
+        07-module-skill-governance-prd.md
+        08-module-audit-work-trace-prd.md
+        09-module-evaluation-closed-loop-improvement-prd.md
         10-canonical-core-app-prd.md
       ai-first-dca-app-description/
         app-description/55-ui/style-guide.md
