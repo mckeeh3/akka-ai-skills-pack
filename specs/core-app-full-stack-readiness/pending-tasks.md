@@ -130,7 +130,7 @@
 
 ### TASK-CORE-02-001: Inventory auth and user admin reference gaps
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/02-auth-user-admin-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/02-auth-user-admin/01-inventory-auth-user-admin-reference-gaps.md
 - depends on: [TASK-CORE-01-001]
@@ -154,6 +154,8 @@
 - done criteria:
   - gaps are concrete and ordered for follow-up tasks
   - task changes and queue update are committed
+- notes:
+  - commit message: `Inventory auth user admin gaps`
 
 ### TASK-CORE-02-002: Specify invitation onboarding reference slice
 
