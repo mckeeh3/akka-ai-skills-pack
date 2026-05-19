@@ -54,6 +54,9 @@ content:
     - id: app-description-functional-agent-modeling
       path: skills/app-description-functional-agent-modeling
       category: focused
+    - id: app-description-surface-modeling
+      path: skills/app-description-surface-modeling
+      category: focused
     - id: app-description-observability
       path: skills/app-description-observability
       category: focused
@@ -506,6 +509,8 @@ bundles:
       - app-description-change-summary
       - app-description-input-normalization
       - app-description-intake-router
+      - app-description-functional-agent-modeling
+      - app-description-surface-modeling
       - app-description-observability
       - app-description-readiness-assessment
       - app-description-readiness-summary

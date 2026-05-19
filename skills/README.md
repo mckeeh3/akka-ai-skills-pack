@@ -89,6 +89,7 @@ Initial app-description skills:
 - `app-description-input-normalization` — convert flexible user input into a structured app-description delta envelope
 - `app-description-intake-router` — classify flexible user input and choose the next description-maintenance or realization path
 - `app-description-functional-agent-modeling` — update the authoritative `12-workstreams/functional-agents.md` layer for role-authorized user-facing context-area agents, prompt intent, skills, tools, surfaces, capabilities, traces, and tests
+- `app-description-surface-modeling` — update the authoritative `12-workstreams/surfaces-index.md` and `surface-contracts/**` layer for structured workstream surfaces, typed payloads, reusable functional-agent placement, capability-backed actions, states, traces, and tests
 - `app-description-capability-modeling` — update the authoritative capability layer of the app description
 - `app-description-behavior-specification` — update the authoritative behavior layer of the app description
 - `app-description-test-specification` — update the authoritative test layer of the app description
@@ -106,16 +107,17 @@ Default description-first flow:
 2. normalize the input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 3. route the user input with `app-description-intake-router`
 4. update functional agents with `app-description-functional-agent-modeling` when the request changes user-facing work areas, left-rail agents, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
-5. update capabilities with `app-description-capability-modeling` when the request changes scope, actors, business outcomes, backend operation/query contracts, or capability exposure surfaces
-6. update behavior with `app-description-behavior-specification` when the request changes what the app should do
-7. update tests with `app-description-test-specification` when the request needs acceptance, regression, edge-case, or verification definition
-8. run `app-description-change-impact` to identify cross-layer and realization implications
-9. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, frontend/backend JWT security, WorkOS authentication, basic administration, or data protection
-10. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
-11. update UI with `app-description-ui` when the request changes agent workstream shell regions, functional-agent rail behavior, workstream interactions, structured surfaces, deep-link routes, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
-12. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
-13. realize outputs with `app-generate-app` only when generation is requested or accepted
-14. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+5. update structured surfaces with `app-description-surface-modeling` when the request changes dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, surface payloads, reusable surface placement, allowed actions, states, traces, or rendering tests
+6. update capabilities with `app-description-capability-modeling` when the request changes scope, actors, business outcomes, backend operation/query contracts, or capability exposure surfaces
+7. update behavior with `app-description-behavior-specification` when the request changes what the app should do
+8. update tests with `app-description-test-specification` when the request needs acceptance, regression, edge-case, or verification definition
+9. run `app-description-change-impact` to identify cross-layer and realization implications
+10. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, frontend/backend JWT security, WorkOS authentication, basic administration, or data protection
+11. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
+12. update UI with `app-description-ui` when the request changes agent workstream shell regions, functional-agent rail behavior, workstream interactions, structured surfaces, deep-link routes, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
+13. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
+14. realize outputs with `app-generate-app` only when generation is requested or accepted
+15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 Reference docs:
 - `../docs/examples/ai-first-saas-seed-app-description/README.md` — preferred secure AI-first SaaS seed app-description reference

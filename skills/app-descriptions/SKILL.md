@@ -69,6 +69,8 @@ Load the companion skill that matches the current task:
   - classify flexible input into description-change, generation, mixed, or review intent
 - `app-description-functional-agent-modeling`
   - define or revise role-authorized user-facing functional/context-area agents, including prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, and tests
+- `app-description-surface-modeling`
+  - define or revise structured workstream surfaces, typed payloads, reusable functional-agent placement, capability-backed actions, states, traces, and rendering tests
 - `app-description-capability-modeling`
   - define or revise business capabilities, scope boundaries, actors, outcomes, and links to downstream layers
 - `app-description-behavior-specification`
@@ -102,17 +104,18 @@ Prefer this sequence unless the task is already narrowly scoped:
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`
 6. model role-authorized user-facing functional agents with `app-description-functional-agent-modeling` when work areas, left-rail agents, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests changed
-7. model governed capability contracts with `app-description-capability-modeling` when scope, business outcomes, protected operations, queries, actors, authority, side effects, approval, audit, or exposure surfaces changed
-8. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
-9. update behavior with `app-description-behavior-specification`
-10. update tests with `app-description-test-specification`
-11. run `app-description-change-impact` to identify cross-layer and realization implications
-12. update security with `app-description-auth-security` when security semantics change; preserve the mandatory foundation in every app description
-13. update observability with `app-description-observability` when observability semantics change; preserve audit requirements in every app description
-14. update UI with `app-description-ui`; for generated full-stack AI-first SaaS apps the browser UI layer is mandatory, not optional polish
-15. assess readiness with `app-description-readiness-assessment`
-16. realize outputs with `app-generate-app` only when generation is requested or accepted
-17. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
+7. model structured workstream surfaces with `app-description-surface-modeling` when dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, payloads, reusable placement, allowed actions, states, traces, or rendering tests changed
+8. model governed capability contracts with `app-description-capability-modeling` when scope, business outcomes, protected operations, queries, actors, authority, side effects, approval, audit, or exposure surfaces changed
+9. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
+10. update behavior with `app-description-behavior-specification`
+11. update tests with `app-description-test-specification`
+12. run `app-description-change-impact` to identify cross-layer and realization implications
+13. update security with `app-description-auth-security` when security semantics change; preserve the mandatory foundation in every app description
+14. update observability with `app-description-observability` when observability semantics change; preserve audit requirements in every app description
+15. update UI with `app-description-ui`; for generated full-stack AI-first SaaS apps the browser UI layer is mandatory, not optional polish
+16. assess readiness with `app-description-readiness-assessment`
+17. realize outputs with `app-generate-app` only when generation is requested or accepted
+18. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 
 ## Layer model

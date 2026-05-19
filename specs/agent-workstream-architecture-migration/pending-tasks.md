@@ -239,7 +239,7 @@
 
 ### TASK-AW-02-003: Add surface modeling guidance
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/02-description-model-realignment-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/02-app-description/03-surface-modeling.md
 - depends on: [TASK-AW-02-002]
@@ -259,7 +259,10 @@
 - done criteria:
   - app-description path can specify structured workstream surfaces
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add app-description surface modeling skill`
+  - completed: created `app-description-surface-modeling`, exposed it in routing and manifest metadata, and linked app-description orchestration, functional-agent modeling, and UI guidance to the new structured-surface contract path.
+  - checks: verified the new guidance includes dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, capability mappings, and reusable functional-agent placement.
 
 ### TASK-AW-02-004: Update app-description readiness gates
 

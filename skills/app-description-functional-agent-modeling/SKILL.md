@@ -22,6 +22,7 @@ Read these first if present:
 - `../app-descriptions/SKILL.md`
 - `../agent-workstream-apps/SKILL.md`
 - `../app-description-capability-modeling/SKILL.md`
+- `../app-description-surface-modeling/SKILL.md`
 - `../app-description-ui/SKILL.md`
 - existing `app-description/12-workstreams/**`
 - existing `app-description/70-traceability/functional-agent-to-capability-map.md`
@@ -157,7 +158,7 @@ Use this shape when adding or revising a functional agent:
 When a functional-agent change adds or changes:
 
 - a callable operation/query, update `10-capabilities/` via `app-description-capability-modeling`;
-- surfaces or browser actions, update `12-workstreams/surfaces-index.md`, `55-ui/**`, and surface-to-capability traceability;
+- surfaces or browser actions, update `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling`, plus `55-ui/**` and surface-to-capability traceability;
 - prompt intent, skills, tools, or behavior documents, update `15-operating-model/governed-runtime-agents.md` and relevant agent governance artifacts;
 - approval, policy, escalation, or autonomy, update operating-model, behavior, auth/security, tests, and observability layers;
 - roles, permissions, or scope, update auth/security and `/api/me`/capability exposure expectations;
