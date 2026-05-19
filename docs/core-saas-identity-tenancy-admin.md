@@ -135,7 +135,7 @@ Recommended fields:
 
 Lifecycle rules:
 - invite creation must create local authorization intent before first sign-in;
-- production readiness defaults to Resend (resend.com) for configured email delivery; use another provider only when the project explicitly records an accepted override decision;
+- production email delivery uses Resend (resend.com), the supported production email service in this pack;
 - local/dev/test may use an explicit safe email adapter that captures messages in an outbox without external delivery;
 - failed delivery remains visible to authorized admins and creates an audit event;
 - resend must reuse or rotate acceptance context according to policy and remain idempotent;
@@ -415,7 +415,7 @@ Record audit events for:
 
 ## Acceptance checklist
 
-- [ ] SaaS Owner Admin can create Tenant and invite Tenant Admin with mandatory email delivery or captured outbox behavior.
+- [ ] SaaS Owner Admin can create Tenant and invite Tenant Admin with mandatory Resend email delivery or captured outbox behavior.
 - [ ] SaaS Owner Admin cannot read Tenant application data.
 - [ ] Tenant Admin can manage Tenant employees through invite, resend, revoke/cancel, expiry, acceptance, and delivery-failure visibility.
 - [ ] Tenant Admin can create Customer organizations and invite Customer Admins.

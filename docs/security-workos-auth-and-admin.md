@@ -87,7 +87,7 @@ Only `VITE_` variables are embedded into the frontend bundle. Treat them as publ
 
 Never put backend secrets in frontend env files:
 - WorkOS API key
-- email provider API keys
+- Resend API keys and email service secrets
 - invite sender credentials
 - database or service credentials
 
@@ -253,7 +253,7 @@ export WORKOS_JWT_AUDIENCE="configured-workos-audience"
 export APP_PUBLIC_BASE_URL="http://localhost:9000"
 ```
 
-Invite-email settings are backend-only and mandatory for production readiness. Use Resend (resend.com) by default unless the project has recorded an accepted provider override decision that supplies equivalent delivery:
+Invite-email settings are backend-only and mandatory for production readiness. Use Resend (resend.com), the supported production email service for this pack:
 
 ```bash
 export RESEND_API_KEY="re_xxxxxxxxx"
@@ -261,7 +261,7 @@ export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
 ```
 
-Local/dev/test environments may replace external delivery with an explicit safe adapter that captures emails in an outbox for inspection without sending externally. Production startup/readiness must fail or report not-ready when required Resend configuration is missing, unless an explicitly selected alternate provider has equivalent configuration.
+Local/dev/test environments may replace external delivery with an explicit safe adapter that captures emails in an outbox for inspection without sending externally. Production startup/readiness must fail or report not-ready when required Resend configuration is missing.
 
 Bootstrap behavior:
 - parse configured initial admins at startup using canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`) plus explicitly mapped app-specific roles when needed
@@ -285,7 +285,7 @@ Bootstrap behavior:
 - [ ] frontend navigation is treated as UX only, not authorization
 - [ ] backend secrets are not present in `frontend/.env*` or built assets
 - [ ] startup bootstrap is idempotent
-- [ ] production readiness fails when Resend invite email delivery configuration is missing, unless an explicitly selected alternate provider has equivalent configuration
+- [ ] production readiness fails when required Resend invite email delivery configuration is missing
 - [ ] local/dev/test invite email adapter captures messages in an outbox without external delivery
 - [ ] invite/link/activate flow has send, resend, revoke/cancel, expiry, delivery failure, acceptance, idempotency, and audit tests
 - [ ] admin actions emit required AdminAuditEvent records for identity, membership, role, support-access, data-access, access-review, and forbidden attempts

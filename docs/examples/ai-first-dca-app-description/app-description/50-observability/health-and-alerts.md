@@ -14,7 +14,7 @@ Define health signals, alert-worthy conditions, and operational diagnosis expect
 - Consumer health for telemetry, inventory, fulfillment, email/outbox, trace enrichment, and outcome measurement events.
 - Timer health for invitation expiry, support-access expiry, access review, supplies rechecks, decision deadlines, offboarding retention, scheduled digests, and outcome windows.
 - Agent/tool health for recommendation, summary, evidence, policy, evaluator, and admin-assistant tools.
-- Integration health for WorkOS seam, email provider/outbox, telemetry source, inventory/fulfillment systems, service/ticketing systems, billing systems, and export sinks when configured.
+- Integration health for WorkOS seam, Resend email service/outbox, telemetry source, inventory/fulfillment systems, service/ticketing systems, billing systems, and export sinks when configured.
 
 ## Alert-worthy conditions
 

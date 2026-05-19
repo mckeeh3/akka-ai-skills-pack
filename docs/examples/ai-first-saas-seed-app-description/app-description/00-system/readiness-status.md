@@ -17,7 +17,7 @@
   - enough structure exists to plan implementation phases and generate initial scaffolding
 - blocking gaps before full code generation:
   - choose concrete WorkOS/JWT mode for runnable local development and cloud deployment
-  - provide Resend production invite-email settings or record an explicit alternate-provider override
+  - provide required Resend production invite-email settings
   - choose first implementation slice boundary
   - confirm persistence model expectations for local test execution
   - confirm whether MCP and gRPC are in v1 or deferred examples

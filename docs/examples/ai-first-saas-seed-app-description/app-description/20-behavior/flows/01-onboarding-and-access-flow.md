@@ -5,7 +5,7 @@
 1. Tenant admin, Customer Admin, or SaaS Owner Admin invites a user within their authority boundary with one or more roles.
 2. System validates scope, role-grant authority, tenant/customer status, last-admin risk, duplicate email state, and idempotency key.
 3. System creates or reuses a pending invitation, records target email, roles, expiry, inviter, delivery status, delivery attempts, and emits an AdminAuditEvent.
-4. Email delivery/outbox sends the invite through Resend (resend.com) by default; local/dev/test uses an explicit captured outbox adapter; alternate production providers require an accepted override decision.
+4. Resend email delivery/outbox sends the invite through Resend (resend.com) in production; local/dev/test uses an explicit captured outbox adapter.
 5. Admin can view invitation status in InvitationView, resend invite after delivery failure or stale delivery, and revoke invite before acceptance.
 6. Delivery failure remains visible to admins with delivery status and delivery attempts; it is never silently treated as a successful invite.
 7. Expired invitations cannot be accepted and are marked by timed action; revoked invitations cannot be accepted and retain audit history.
@@ -29,7 +29,7 @@
 1. Runtime resolves an active `AgentDefinition` for the admin assistant or `UserAdminAgent`, assembles active governed `PromptDocument`/`PromptVersion` content, includes compact `AgentSkillManifest` entries, enforces `ToolPermissionBoundary`, and creates `PromptAssemblyTrace` before work begins.
 2. Access-review responsibility scans scoped UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for stale invites, dormant access, failed delivery, support-access expiry, and last-admin risk.
 3. Admin-risk-scoring responsibility scores proposed high-risk access changes and creates decision cards when policy requires human review.
-4. Invitation-drafting responsibility drafts invite copy and role rationale without exposing raw tokens.
+4. Invitation-drafting responsibility drafts invite copy and role rationale without exposing raw tokens; if granted email tools, it may preview approved Resend templates and may queue email only through governed `@FunctionTool` capability checks, approval policy, idempotency, and traces.
 5. Role-recommendation responsibility recommends least-privilege roles with evidence and confidence.
 6. Support-access-review responsibility recommends support-access expiry or revocation candidates.
 7. Admin-audit-summary responsibility summarizes selected admin audit/search results with links to audit traces and decision cards.

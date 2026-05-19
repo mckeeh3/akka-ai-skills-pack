@@ -52,7 +52,7 @@ This is a reference capability contract for the skills pack's seed app, not this
 - AI admin assistant supervisor.
 - Scoped admin-assistant agents or skilled `UserAdminAgent` responsibilities for access review, invitation drafting, role recommendations, support-access review, and audit summarization.
 - AgentBehaviorEditorAgent for governed prompt, skill, manifest, and tool-boundary change proposals.
-- InvitationWorkflow, expiry/reminder TimedAction, email/outbox Consumer, and admin views as internal callers.
+- InvitationWorkflow, expiry/reminder TimedAction, Resend email/outbox Consumer, and admin views as internal callers.
 
 ## Authority and contract
 
@@ -77,7 +77,7 @@ This is a reference capability contract for the skills pack's seed app, not this
   - all reads and writes are filtered by tenant/customer scope unless explicitly SaaS-owner scoped
 - side effects:
   - state changes for invitations, memberships, roles, support-access grants, selected context, profile/settings, and account status
-  - email/outbox records for invitations and reminders
+  - Resend email/outbox records for invitations, reminders, and future app feature emails
   - timers for invitation expiry, reminder, support-access expiry, and access-review cadence
   - AdminAuditEvent and work-trace records for protected reads, writes, denials, approvals, support access, and consequential AI/tool activity
   - PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace records for runtime agent prompt assembly, authorized or denied readSkill requests, and consequential agent work
@@ -86,7 +86,7 @@ This is a reference capability contract for the skills pack's seed app, not this
   - HTTP APIs including `/api/me` and protected admin routes
   - workflow surface for invitation acceptance and delivery lifecycle
   - timer surface for expiry/reminders
-  - consumer surface for email delivery/outbox
+  - consumer surface for Resend email delivery/outbox
   - view/query surfaces for user directory, memberships, invitations, access reviews, and audit
   - scoped agent tools for read/evidence, draft, summarize, and recommend operations only; committing risky admin actions remains human-approved unless a policy grants a narrow autonomous path
   - managed-agent UI and API surfaces for agent catalog/detail, prompt/skill governance, manifest management, tool permission boundaries, editing-agent proposal review, and trace review

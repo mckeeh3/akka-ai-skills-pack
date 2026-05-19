@@ -10,7 +10,7 @@ Define the authenticated trust model for the AI-first DCA vertical reference. Th
 - The React/Vite frontend receives a browser access token from AuthKit and calls Akka APIs with `Authorization: Bearer <token>`.
 - Akka API endpoints under `/api/...` validate bearer JWTs with `@JWT` before reading request-context claims.
 - Public frontend build assets may be served without JWT; protected `/api/...`, stream, admin, decision, trace, agent-tool, and domain APIs require authenticated request context unless explicitly documented otherwise.
-- WorkOS secrets, email provider secrets, bootstrap configuration, signing keys, and service credentials are backend-only and must never appear in frontend `VITE_` variables or built assets.
+- WorkOS secrets, Resend email service secrets, bootstrap configuration, signing keys, and service credentials are backend-only and must never appear in frontend `VITE_` variables or built assets.
 
 ## Akka-owned local authorization state
 

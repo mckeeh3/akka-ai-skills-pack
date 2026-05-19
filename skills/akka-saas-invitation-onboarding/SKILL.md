@@ -12,6 +12,7 @@ This is a focused foundation skill. Pair it with:
 - `akka-basic-user-admin` for account, membership, role, capability, and admin APIs
 - `akka-workos-user-auth` for WorkOS/AuthKit, JWT validation, `/api/me`, and first-login linking
 - `akka-workflows` and `akka-workflow-component` for `InvitationWorkflow`
+- `akka-resend-email-service` for the single supported Resend production email service, reusable email outbox, and governed email `@FunctionTool` exposure
 - `akka-consumers` for email delivery/outbox side effects
 - `akka-timed-actions` and `akka-timers-scheduling` for expiry/reminders
 - `akka-views` and `akka-view-query-patterns` for `InvitationView`
@@ -25,6 +26,7 @@ Read these first when implementing invitation onboarding:
 - `../akka-workos-user-auth/SKILL.md`
 - `../akka-workflows/SKILL.md`
 - `../akka-workflow-component/SKILL.md`
+- `../akka-resend-email-service/SKILL.md`
 - `../akka-consumers/SKILL.md`
 - `../akka-timed-actions/SKILL.md`
 - `../akka-timers-scheduling/SKILL.md`
@@ -35,13 +37,13 @@ Read these first when implementing invitation onboarding:
 ## Mandatory outcome
 
 Complete email-invite onboarding is mandatory for generated SaaS foundations:
-- production readiness defaults to Resend (resend.com) for configured email delivery; use another provider only when the project explicitly records an accepted override decision;
+- production email delivery uses Resend (resend.com), the only supported production email service in this pack;
 - local/dev/test must use an explicit safe captured-outbox adapter when external delivery is unavailable;
-- missing Resend configuration blocks production readiness rather than silently omitting onboarding, unless an explicitly selected alternate provider is configured;
+- missing Resend configuration blocks production readiness rather than silently omitting onboarding;
 - failed delivery is visible to authorized admins and auditable;
 - first-login linking and `/api/me` activation require a valid invitation, invite token, acceptance context, or explicit membership policy.
 
-Default production configuration uses backend-only Resend settings such as `RESEND_API_KEY`, `INVITE_EMAIL_FROM`, and `INVITE_EMAIL_SUBJECT`. Never require a provider-selection question just to proceed with the default; ask only when the user wants a non-Resend provider or the app has provider-specific constraints.
+Production configuration uses backend-only Resend settings such as `RESEND_API_KEY`, `RESEND_FROM_EMAIL` or `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, and allowed reply-to/domain settings when used. Never require or ask a provider-selection question; missing Resend values are runtime/deployment questions, not architecture questions.
 
 ## Core components
 
@@ -51,7 +53,7 @@ Recommended Akka substrate:
 |---|---|
 | `Invitation` entity or audit-grade record | Authoritative invite intent, target email/scope/roles, status, token hash or acceptance context, expiry, delivery status, delivery attempts, idempotency key, and audit metadata. Use Event Sourced Entity when lifecycle history is first-class; use a Key Value Entity only when AdminAuditEvent captures immutable lifecycle facts. |
 | `InvitationWorkflow` | Durable invite orchestration: create local account/membership intent, enqueue delivery, wait for delivery/acceptance, handle resend/revoke/expire, link WorkOS subject on acceptance, activate membership, and emit audit facts. |
-| Email delivery/outbox `Consumer` | Consumes invitation delivery commands/events, sends through Resend (resend.com) in production by default, captures into local/dev/test outbox, records provider ids, delivery status, delivery attempts, and failure details. |
+| Resend email delivery/outbox `Consumer` | Consumes invitation delivery commands/events, sends through Resend (resend.com) in production, captures into local/dev/test outbox, records Resend message ids, delivery status, delivery attempts, and failure details. Reuse the same email foundation for later app feature emails. |
 | Expiry/reminder `TimedAction` | Schedules invite expiry and optional reminder checks with stable names like `invitation-expire-<invitationId>` and `invitation-reminder-<invitationId>`. Obsolete timers must return done/no-op. |
 | `InvitationView` | Scoped admin read model for invitation list/search by tenant/customer, target email, status, delivery status, expiry, created time, inviter, and scope. Never expose raw tokens. |
 | Admin endpoints/UI | Invite, resend, revoke/cancel, view status, delivery failure detail, acceptance help, and audit links; enforce tenant/customer/admin scope server-side. |
@@ -70,7 +72,7 @@ Recommended Akka substrate:
 
 ### Delivery
 
-- Production sends through Resend (resend.com) by default and records provider/message ids; alternate providers require an explicit accepted override decision.
+- Production sends through Resend (resend.com) and records Resend/provider message ids.
 - Local/dev/test writes to a captured outbox that tests and developers can inspect.
 - Delivery attempts are idempotent by invitation id plus attempt/retry key.
 - Failed delivery sets visible `DELIVERY_FAILED` state, records last error, and emits AdminAuditEvent.
@@ -162,7 +164,7 @@ Include tenant/customer scope columns in every scoped row and endpoint query. En
 
 Add unit and integration tests for:
 - invite creation success with local account/membership intent;
-- production readiness failure when Resend (or explicitly selected alternate provider) configuration is missing;
+- production readiness failure when required Resend configuration is missing;
 - local/dev/test captured outbox behavior;
 - email delivery success, provider id recording, delivery status, delivery attempts, and audit facts;
 - delivery failure visibility to admins and audit events;
@@ -189,7 +191,7 @@ Avoid:
 - creating privileged users from WorkOS claims without a valid invitation or membership policy;
 - exposing raw invite tokens outside the delivery/acceptance boundary;
 - hiding delivery failures only in logs;
-- putting email provider keys in frontend env files;
+- putting Resend or email service keys in frontend env files;
 - implementing resend/revoke as frontend-only state;
 - relying on timer deletion instead of making expiry commands idempotent;
 - building unscoped invitation list queries and filtering only in the browser.

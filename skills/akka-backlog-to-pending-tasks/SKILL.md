@@ -101,7 +101,7 @@ If `specs/pending-questions.md` exists, inspect unresolved `blocking` questions 
 
 Rules:
 - do not create runnable tasks for work blocked by unresolved `blocking` questions
-- treat unknown security-provider setup details as blockers only for provider-specific integration tasks; WorkOS and Resend (resend.com) are the default auth and production invite-email providers, so provider-selection is not a blocker unless the backlog explicitly chooses a non-default provider; keep local authorization contracts, tenancy models, AuthContext, `/api/me`, audit, and tenant-isolation tasks runnable when their semantics are otherwise defined
+- treat unknown security-provider setup details as blockers only for provider-specific integration tasks; WorkOS is the supported browser auth service and Resend (resend.com) is the supported production email service, so provider-selection is not a blocker; keep local authorization contracts, tenancy models, AuthContext, `/api/me`, audit, and tenant-isolation tasks runnable when their semantics are otherwise defined
 - if a backlog item is entirely blocked, create a `blocked` task only when useful for visibility and note the blocking question IDs
 - if only part of a backlog is blocked, create tasks for unblocked work and leave blocked work out or blocked with explicit question references
 - if a question is `answered` but not `resolved`, reconcile it or leave affected tasks blocked

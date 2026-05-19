@@ -115,7 +115,7 @@ Example AI-first core scenarios:
 
 1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
 2. Mandatory invitation lifecycle: `Invitation` record, invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotent duplicate handling.
-3. Mandatory email delivery foundation: Resend (resend.com) production email provider configuration by default, plus a safe local/dev/test adapter that captures messages in an outbox without external delivery; alternate production providers require an explicit accepted override decision.
+3. Mandatory email delivery foundation: Resend (resend.com) production email service configuration, plus a safe local/dev/test adapter that captures messages in an outbox without external delivery. This reusable foundation sends invitation/account emails first and must support future app-specific email features and governed agent `@FunctionTool` email tools.
 4. SaaS Owner Admin tenant creation and initial Tenant Admin invitation.
 5. Tenant Admin employee invitation and role management.
 6. Tenant Admin customer organization creation and Customer Admin invitation.

@@ -41,13 +41,13 @@ Use before completing security-sensitive Akka changes.
 - [ ] Capability contract includes selected `AuthContext`, tenant/customer scope, required roles/permissions/capabilities, input/output DTOs, side effects, idempotency, policy/approval rule, audit/work-trace facts, exposure surfaces, and tests.
 - [ ] Browser/API/tool/workflow/timer/consumer/MCP surfaces preserve the same authority, validation, approval, idempotency, tenant isolation, and audit semantics for the shared capability.
 - [ ] Side-effecting agent or MCP tools require explicit permission and default to proposal/approval flows unless a documented bounded autonomy policy allows direct action.
-- [ ] High-impact security, billing, policy, governance, support-access, data-export, cross-tenant, or external-side-effect capabilities require human approval or a documented autonomous policy boundary.
+- [ ] High-impact security, billing, policy, governance, support-access, data-export, cross-tenant, email-send, or external-side-effect capabilities require human approval or a documented autonomous policy boundary.
 - [ ] Agent/tool tests use deterministic invocation patterns and verify backend enforcement rather than prompt-only compliance.
 
 ## Administration
 
 - [ ] `/api/me` returns a browser-facing DTO, not internal entity state.
-- [ ] Complete Invitation lifecycle exists: create, delivery/captured outbox, resend, revoke/cancel, expiry, acceptance, delivery failure visibility, idempotency, and no raw-token leakage.
+- [ ] Complete Invitation lifecycle exists: create, Resend delivery/captured outbox, resend, revoke/cancel, expiry, acceptance, delivery failure visibility, idempotency, and no raw-token leakage.
 - [ ] Invite and first-login linking are idempotent and require a valid invitation, acceptance context, or explicit membership policy.
 - [ ] Startup admin bootstrap is idempotent, validates malformed config, uses canonical foundation roles, and does not create a permanent bypass.
 - [ ] Support-access is Tenant-created, time-limited, auditable, revocable, visible to Tenant admins, and does not create a SaaS Owner super-admin path.

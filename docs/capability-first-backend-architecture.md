@@ -143,7 +143,7 @@ Use conservative defaults unless accepted product specs say otherwise:
 - Read-only scoped evidence may be agent-accessible when it is redacted and audited appropriately.
 - Side-effecting agent tools require explicit permission and should prefer proposal/approval flows.
 - `readSkill(skillId)` is a governed guidance-loading capability, not an authorization grant; it must check tenant, active AgentDefinition, AgentSkillManifest assignment, skill version/status, mode, AuthContext, and trace allowed or denied loads.
-- High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, or external-side-effect capabilities require human approval or a documented autonomous policy boundary.
+- High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, email-send, or external-side-effect capabilities require human approval or a documented autonomous policy boundary. Generated app email capabilities use Resend through the shared email service; agent access must be a governed `@FunctionTool` or equivalent capability surface with tool-boundary enforcement and traces.
 - Agents may recommend governance changes; humans approve activation unless a narrow safe boundary is explicitly defined.
 - Support access and SaaS owner operations require separate authority, audit, and tenant/customer context rules.
 

@@ -251,7 +251,7 @@ Create:
 - `50-observability/security-and-admin-audit-events.md`
 - `50-observability/governed-agent-traces.md` for `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, prompt/skill activation audit, and denied skill/tool attempts
 
-These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the default production invite-email provider. WorkOS setup values may remain explicit open questions, but user auth provider selection should not. Authorization, tenancy, audit, and tenant isolation are not optional. The bootstrap must state that no route, agent tool, data access, workflow action, view query, stream, or generated UI action is public or authorized by default except deliberately public static assets.
+These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service for invitation/account emails and future app email features. WorkOS/Resend setup values may remain explicit open questions, but auth or email provider selection should not. Authorization, tenancy, audit, and tenant isolation are not optional. The bootstrap must state that no route, agent tool, data access, workflow action, view query, stream, or generated UI action is public or authorized by default except deliberately public static assets.
 
 ### 9. Create initial cross-links
 Cross-link the first capability, operating-model artifacts when present, behavior, and test artifacts so later maintenance and change-impact work have a stable base.

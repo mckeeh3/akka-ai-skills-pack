@@ -22,6 +22,7 @@ If the main task is not local or external tool classes, load the focused compani
 - `akka-agent-mcp-tools`
 - `akka-agent-harness-skills` for model-loadable internal guidance backed by packaged resources
 - `akka-agent-skill-governance` for tenant-managed, versioned, audited `readSkill(skillId)` guidance tools
+- `akka-resend-email-service` when a managed agent needs a governed Resend-backed email preview/send tool via `@FunctionTool`
 
 ## Use this pattern when
 
@@ -52,10 +53,11 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 13. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`.
 14. Do not try to use one agent as a tool for another agent.
 15. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
-16. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
-17. Skill-loading tools must check AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
-18. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
-19. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
+16. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.
+17. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
+18. Skill-loading tools must check AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
+19. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
+20. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
 
 ## Capability-first tool design
 

@@ -301,9 +301,9 @@ Likely horizontal Akka substrates:
 ## 10. Security and trust boundaries
 
 - WorkOS/AuthKit is the supported production browser authentication service; no alternate user auth service is currently supported by this skills pack.
-- Resend (resend.com) is the default production invitation email provider unless an override is explicitly accepted.
+- Resend (resend.com) is the supported production email service for invitation/account emails and future app email features.
 - Local/dev/test uses explicit fakes and captured outbox behavior; automated tests must not send real email.
-- Provider secrets, model API keys, email provider keys, raw tokens, invitation secret tokens, and backend-only policy details must never reach frontend bundles or browser-safe APIs.
+- Provider secrets, model API keys, Resend email service keys, raw tokens, invitation secret tokens, and backend-only policy details must never reach frontend bundles or browser-safe APIs.
 - Backend authorization is required for every protected endpoint, component command, view query, stream, workflow action, consumer side effect, timer, agent tool, and internal-agent operation.
 - Functional-agent rail visibility is derived from backend-resolved browser-safe capabilities and selected AuthContext.
 - Tenant/customer ids supplied by clients are never trusted over the resolved AuthContext.

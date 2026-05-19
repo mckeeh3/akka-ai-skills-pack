@@ -423,7 +423,7 @@ Required trace completeness for MVP:
 
 Redaction requirements:
 
-- never store or display raw provider tokens, session cookies, model API keys, email provider keys, invitation secret tokens, or passwords;
+- never store or display raw provider tokens, session cookies, model API keys, Resend email service keys, invitation secret tokens, or passwords;
 - redact sensitive prompt/test input and output by default unless user has explicit permission;
 - store checksums and version references instead of duplicating full prompt/skill content in trace records;
 - redact email addresses in exports if export policy requires it;

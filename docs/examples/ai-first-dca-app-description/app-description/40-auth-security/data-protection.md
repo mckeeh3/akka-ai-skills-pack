@@ -15,7 +15,7 @@ Treat these categories as sensitive:
 - contract, billing, supplier, shipping, service, and meter data;
 - policy decisions, approval rationale, exception notes, risk/confidence/impact assessments, and decision-card evidence;
 - agent tool inputs/outputs when they include customer, device, contract, billing, service, policy, or trace data;
-- backend secrets such as `WORKOS_API_KEY`, email provider keys, bootstrap admin configuration, service credentials, signing keys, and integration credentials;
+- backend secrets such as `WORKOS_API_KEY`, Resend email service keys, bootstrap admin configuration, service credentials, signing keys, and integration credentials;
 - raw invitation tokens, support-access tokens, reset/relink artifacts, or other bearer secrets.
 
 ## Frontend/backend secret rules

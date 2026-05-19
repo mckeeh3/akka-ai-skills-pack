@@ -25,7 +25,7 @@ Mandatory secure SaaS, agent workstream, and web UI foundation before app-specif
 - governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, deterministic prompt assembly, authorized readSkill(skillId), and first-install/tenant-bootstrap seeding of implementation-developed default prompt/skill/manifest/tool-boundary documents into governed storage
 - SaaS Owner, Tenant, and Customer organization model with tenant/customer-scoped commands and queries
 - `/api/me` for the signed-in account, memberships, selected context, profile, settings, and browser-safe capabilities
-- complete email-invite onboarding with Resend (resend.com) as the default production email provider, explicit local/dev/test captured outbox behavior, and alternate production providers only by accepted override decision
+- complete email-invite onboarding with Resend (resend.com) as the supported production email service, explicit local/dev/test captured outbox behavior, and the same Resend email service reusable for other app email features and governed agent `@FunctionTool` email tools
 - backend authorization checks for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action
 - AdminAuditEvent and audit/work traces for identity, authorization, policy, approval, data access, and consequential AI/tool activity
 - mandatory agent workstream shell with role-authorized functional agents, continuous main workstream, persistent composer, context/authority indicators, and structured surfaces for sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, supervision, decisions, governance, audit/traces, and outcome review
@@ -50,7 +50,8 @@ Mandatory foundation skill:
 - `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, authorized `readSkill(skillId)`), support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
 
 Mandatory foundation companion skill:
-- `akka-saas-invitation-onboarding` — implement complete email-invite onboarding with Invitation entity/audit record, InvitationWorkflow, Resend (resend.com) production email delivery by default, local/dev/test captured outbox, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, resend, revoke, expiry, acceptance, delivery failure visibility, idempotency, and lifecycle tests
+- `akka-saas-invitation-onboarding` — implement complete email-invite onboarding with Invitation entity/audit record, InvitationWorkflow, Resend (resend.com) production email delivery, local/dev/test captured outbox, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, resend, revoke, expiry, acceptance, delivery failure visibility, idempotency, and lifecycle tests
+- `akka-resend-email-service` — implement the single supported production email service for generated apps: reusable Resend delivery/outbox for invitation/account emails and future app feature emails, local/dev/test captured outbox, delivery status/failure audit, and governed `@FunctionTool` exposure for agents
 
 AI-first companion skills:
 - `ai-first-saas-object-model` — select durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects before choosing Akka components
@@ -744,8 +745,12 @@ Use when the app needs local user/account roles, `/api/me`, invites, startup adm
 - `akka-basic-user-admin`
 
 ### SaaS invitation onboarding
-Use when the app needs complete mandatory email-invite onboarding: InvitationWorkflow, resend, revoke/cancel, expiry, acceptance, delivery status, delivery attempts, email delivery/outbox, InvitationView, and admin invite UI/APIs.
+Use when the app needs complete mandatory email-invite onboarding: InvitationWorkflow, invite email send/resend through Resend/outbox, revoke/cancel, expiry, acceptance, delivery status, delivery attempts, InvitationView, and admin invite UI/APIs. Add `akka-resend-email-service` whenever implementing the reusable Resend email service, other app email features, or agent email tools.
 - `akka-saas-invitation-onboarding`
+
+### Resend email service
+Use when the app sends any email: invitation/account onboarding emails, reminders, decision notifications, digests, operational alerts, future app-specific feature emails, or agent-accessible email preview/send tools. Resend is the supported production email service; local/dev/test uses captured outbox behavior; agent email tools use governed `@FunctionTool` capability surfaces.
+- `akka-resend-email-service`
 
 ### Internal-only ACL endpoints
 Use when the endpoint should only be callable by services or needs method-level ACL overrides.
@@ -1164,7 +1169,7 @@ Load:
 - `akka-http-endpoint-request-context`
 - `akka-http-endpoint-testing`
 
-Add `akka-web-ui-frontend-project` when implementing the frontend AuthKit shell. Add `akka-basic-user-admin` when `/api/me`, roles, invites, or admin APIs are in scope. Add `akka-saas-invitation-onboarding` when full invite lifecycle, email delivery/outbox, resend, revoke, expiry, acceptance, and InvitationView work is in scope.
+Add `akka-web-ui-frontend-project` when implementing the frontend AuthKit shell. Add `akka-basic-user-admin` when `/api/me`, roles, invites, or admin APIs are in scope. Add `akka-saas-invitation-onboarding` when full invite lifecycle, Resend email delivery/outbox, resend, revoke, expiry, acceptance, and InvitationView work is in scope. Add `akka-resend-email-service` when implementing the shared Resend service, future feature emails, or agent `@FunctionTool` email surfaces.
 
 ### New basic user administration surface
 Load:
@@ -1176,7 +1181,7 @@ Load:
 - `akka-http-endpoint-component-client`
 - `akka-http-endpoint-testing`
 
-Add an entity skill (`akka-key-value-entities` or `akka-event-sourced-entities`) based on whether user/account state is current-state only or needs audit-grade event history. For invitation onboarding, also load `akka-workflows`, `akka-workflow-component`, `akka-consumers`, `akka-timed-actions`, `akka-timers-scheduling`, and `akka-views` as needed for InvitationWorkflow, email delivery/outbox, expiry/reminders, and InvitationView.
+Add an entity skill (`akka-key-value-entities` or `akka-event-sourced-entities`) based on whether user/account state is current-state only or needs audit-grade event history. For invitation onboarding, also load `akka-resend-email-service`, `akka-workflows`, `akka-workflow-component`, `akka-consumers`, `akka-timed-actions`, `akka-timers-scheduling`, and `akka-views` as needed for InvitationWorkflow, Resend email delivery/outbox, expiry/reminders, and InvitationView.
 
 ### New internal-only HTTP endpoint
 Load:

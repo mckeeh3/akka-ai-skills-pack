@@ -83,7 +83,7 @@ This capability is the mandatory secure AI-first SaaS foundation for the DCA ver
   - every DCA domain read/write must include tenant/customer filters and apply redaction before browser or agent exposure.
 - side effects:
   - create/update local accounts, profiles, settings, tenants, customers, memberships, roles, invitations, support-access grants, billing-safe subscription/entitlement records, selected context, and admin audit events.
-  - send invite/reminder email through Resend (resend.com) by default in production, or capture it through an explicit safe local/dev/test outbox adapter; delivery failures remain admin-visible and auditable; alternate production providers require an accepted override decision.
+  - send invite/reminder email through Resend (resend.com) in production, or capture it through an explicit safe local/dev/test outbox adapter; delivery failures remain admin-visible and auditable; future app email features reuse the same Resend/outbox foundation.
   - schedule invitation expiry, support-access expiry, reminders, access-review checks, and billing/grace-period checks where modeled.
   - create decision cards for risky role, support-access, billing, account, policy, or admin-agent recommendations.
 - exposure surfaces:

@@ -14,7 +14,8 @@ Read these first if present:
 - `../../docs/security-workos-auth-and-admin.md`
 - `../../docs/security-review-checklist.md`
 - `../akka-workos-user-auth/SKILL.md`
-- `../akka-saas-invitation-onboarding/SKILL.md` for complete InvitationWorkflow, email delivery/outbox, expiry/reminder, InvitationView, and invite lifecycle tests
+- `../akka-saas-invitation-onboarding/SKILL.md` for complete InvitationWorkflow, Resend email delivery/outbox, expiry/reminder, InvitationView, and invite lifecycle tests
+- `../akka-resend-email-service/SKILL.md` for the shared Resend email service, local captured outbox, future feature emails, and agent email `@FunctionTool` exposure
 - `../akka-http-endpoint-jwt/SKILL.md`
 - `../akka-key-value-entities/SKILL.md` or `../akka-event-sourced-entities/SKILL.md` when implementing user/account state
 - existing user/account/tenant entities, views, endpoints, and tests
@@ -118,7 +119,7 @@ WORKOS_JWT_AUDIENCE="configured-workos-audience" # when env-backed JWT config is
 APP_PUBLIC_BASE_URL="http://localhost:9000"
 ```
 
-Invite-email delivery settings are backend-only and mandatory for production readiness. Use Resend (resend.com) by default unless an accepted provider override decision supplies equivalent delivery:
+Invite-email delivery settings are backend-only and mandatory for production readiness. Use Resend (resend.com), the supported production email service for this pack:
 
 ```bash
 RESEND_API_KEY="re_xxxxxxxxx"
@@ -134,10 +135,10 @@ Bootstrap rules:
 - create missing invited/admin users idempotently
 - create Invitation records with expiry, delivery status, delivery attempts, and audit metadata
 - send invite emails in production or capture them in the local/dev/test outbox adapter
-- block production readiness when Resend configuration is missing unless an explicitly selected alternate provider is configured
+- block production readiness when required Resend configuration is missing
 - update only allowed bootstrap-managed fields on repeated startup
 - never expose bootstrap secrets to frontend assets
-- surface invalid bootstrap or email provider config clearly at startup or in operational status
+- surface invalid bootstrap or Resend email service config clearly at startup or in operational status
 
 ## Complete admin management baseline
 
@@ -174,7 +175,7 @@ Required User Admin functional-agent surfaces: Users, Invitations, Roles/Members
 
 ## Invite and first-login flow
 
-For generated SaaS apps, load `akka-saas-invitation-onboarding` for the full implementation contract: Invitation entity or audit-grade record, `InvitationWorkflow`, email delivery/outbox Consumer, expiry/reminder TimedAction, `InvitationView`, admin endpoints/UI, resend/revoke/expiry/acceptance semantics, duplicate handling, and lifecycle tests.
+For generated SaaS apps, load `akka-saas-invitation-onboarding` for the full implementation contract: Invitation entity or audit-grade record, `InvitationWorkflow`, Resend email delivery/outbox Consumer, expiry/reminder TimedAction, `InvitationView`, admin endpoints/UI, resend/revoke/expiry/acceptance semantics, duplicate handling, and lifecycle tests. Load `akka-resend-email-service` for the shared Resend service, other app email features, or agent `@FunctionTool` email tools.
 
 
 1. Admin invites a user with email, roles, and scopes.
@@ -213,7 +214,7 @@ Add tests for:
 - customer admin cannot manage tenant-wide users
 - tenant/customer-scoped list queries cannot leak cross-scope rows and preserve cross-scope filtering guarantees
 - tenant admin cannot grant `SAAS_OWNER_ADMIN` or other out-of-scope capabilities
-- production readiness blocks missing Resend configuration unless an explicitly selected alternate provider has equivalent configuration
+- production readiness blocks missing required Resend configuration
 - local/dev/test invite adapter captures outbound messages in an outbox without external delivery
 - invite send, resend, revoke/cancel, expiry, acceptance, replayed acceptance, duplicate email handling, delivery failure, and delivery-attempt audit behavior
 - user directory list/search filters by authorized scope and does not require caller-supplied user IDs

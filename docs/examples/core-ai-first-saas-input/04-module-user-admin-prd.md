@@ -573,8 +573,8 @@ Module 2 must define an explicit email delivery boundary.
 
 Production-like behavior:
 
-- invitation emails are sent through Resend (resend.com) by default;
-- alternate production email providers require an explicit accepted override decision;
+- invitation emails are sent through Resend (resend.com), the supported production email service;
+- future app email features reuse the same Resend email service/outbox foundation;
 - provider secrets remain backend-only;
 - delivery failures are captured and visible to admins;
 - delivery attempts are auditable.
@@ -623,7 +623,7 @@ Observability requirements:
 
 - Tenant admins can see only users, invitations, audit events, and access review rows for their selected tenant.
 - Invitation tokens/secrets must be stored and displayed safely; admin UI must not expose production secret token values.
-- Raw provider tokens, session cookies, email provider secrets, and internal secrets must not appear in API responses or frontend bundles.
+- Raw provider tokens, session cookies, Resend email service secrets, and internal secrets must not appear in API responses or frontend bundles.
 - Duplicate invitation and acceptance flows must be idempotent to prevent accidental double membership creation.
 - Revoked/expired invitations must be impossible to accept.
 - Disabled/revoked memberships must immediately lose access to protected tenant data.

@@ -41,7 +41,7 @@ Generation remains blocked when it would require the harness to invent:
 - Assumptions must be recorded in `00-system/readiness-status.md`, relevant capability files, and readiness/review summaries.
 - Security assumptions must never weaken tenant isolation, backend authorization, invitation/onboarding controls, support-access rules, auditability, or frontend secret boundaries.
 - Agent/autonomy assumptions must never grant side-effecting authority without explicit policy, permission, approval, trace, and test semantics.
-- External integration assumptions must identify whether the generated slice uses default Resend production delivery, an accepted alternate production provider, local captured adapter, deterministic fixture, or explicit stub.
+- External integration assumptions must identify whether the generated slice uses Resend production delivery, local captured adapter, deterministic fixture, or explicit stub.
 
 ## Required validation after any future generation
 

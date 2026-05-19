@@ -121,7 +121,7 @@ For every tool call:
 
 - Read-only evidence tools are preferred for agent autonomy when outputs are scoped, redacted, and traced.
 - `readSkill(skillId)` is a `read_skill` tool grant that loads guidance only; it cannot expand other tool or data permissions.
-- Data-export, billing, security, role/membership, cross-tenant, external-message, delete, irreversible, or high-impact tools default to `approval_required`.
+- Data-export, billing, security, role/membership, cross-tenant, external-message, email-send, delete, irreversible, or high-impact tools default to `approval_required`. Email-send tools must route through `akka-resend-email-service`; Resend is the supported production email service and local/dev/test must use captured outbox behavior.
 - Side-effecting tools must define idempotency, duplicate handling, denial shape, trace fields, rollback or compensation expectations, and approval/autonomy policy.
 - Autonomous side effects require an explicit accepted policy boundary and should be narrow, reversible, and observable.
 

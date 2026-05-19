@@ -369,6 +369,9 @@ content:
     - id: akka-saas-invitation-onboarding
       path: skills/akka-saas-invitation-onboarding
       category: focused
+    - id: akka-resend-email-service
+      path: skills/akka-resend-email-service
+      category: focused
     - id: akka-change-request-to-spec-update
       path: skills/akka-change-request-to-spec-update
       category: planning
@@ -617,6 +620,7 @@ bundles:
       - akka-backlog-to-pending-tasks
       - akka-basic-user-admin
       - akka-saas-invitation-onboarding
+      - akka-resend-email-service
       - akka-change-request-to-spec-update
       - akka-revised-prd-reconciliation
       - akka-pending-question-generation

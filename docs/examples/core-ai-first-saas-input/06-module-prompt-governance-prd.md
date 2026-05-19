@@ -484,7 +484,7 @@ Observability requirements:
 - Prompt documents are tenant-scoped through AgentDefinitions and must not leak across tenants.
 - Prompt content may contain sensitive business instructions; read access must be permission-controlled.
 - Prompt content and diffs must not expose to unauthorized members.
-- Raw provider tokens, model API keys, WorkOS secrets, email provider secrets, and other credentials must never appear in prompt APIs or frontend bundles.
+- Raw provider tokens, model API keys, WorkOS secrets, Resend email service secrets, and other credentials must never appear in prompt APIs or frontend bundles.
 - Prompt assembly must not include backend-only secrets.
 - Error messages must avoid leaking existence of cross-tenant prompt ids.
 - Test console inputs/outputs must be treated as potentially sensitive and audited/safely logged.

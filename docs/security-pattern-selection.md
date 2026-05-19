@@ -86,7 +86,7 @@ Backend-only runtime/deployment variables:
 - `ADMIN_USERS`
 - `APP_PUBLIC_BASE_URL`
 - `RESEND_API_KEY`
-- `INVITE_EMAIL_FROM`
+- `RESEND_FROM_EMAIL` or feature-specific senders such as `INVITE_EMAIL_FROM`
 - `INVITE_EMAIL_SUBJECT`
 - JWT key material or deployment secrets
 
