@@ -187,7 +187,7 @@
 
 ### TASK-WUI-02-004: Add capability action components
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/02-component-library-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/02-component-library/04-add-capability-action-components.md
 - depends on: [TASK-WUI-02-003]
@@ -206,7 +206,9 @@
 - done criteria:
   - reusable capability action controls exist
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add capability action components`
+  - completed: added reusable capability action button/panel components, idempotency/request helpers, audit/trace affordances, result-surface mapping, action-feedback conversion, and focused frontend contract coverage. Frontend typecheck, tests, and build passed; generated static asset change from build was reverted per component-library migration boundary.
 
 ### TASK-WUI-03-001: Migrate app shell to workstream shell
 
