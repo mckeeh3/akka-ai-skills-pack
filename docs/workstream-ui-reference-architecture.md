@@ -12,6 +12,15 @@ Canonical doctrine:
 - `docs/web-ui-frontend-decomposition.md`
 - `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
 
+Current implementation reference:
+- reusable React/Vite/TypeScript modules: `frontend/src/workstream/**`
+- fixture API and realtime seams: `frontend/src/api/workstreamClient.ts`, `frontend/src/api/workstreamRealtime.ts`
+- integrated shell example: `frontend/src/main.tsx`
+- canonical User Admin vertical: fixtures in `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
+
+Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Older `frontend/src/screens/**` files and static examples under `src/main/resources/static-resources/frontend-reference/**`, `supplies/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` are mechanics or legacy references only; do not promote them as canonical generated-app structure.
+
 ## Core rule
 
 Authenticated consequential UI is decomposed as:

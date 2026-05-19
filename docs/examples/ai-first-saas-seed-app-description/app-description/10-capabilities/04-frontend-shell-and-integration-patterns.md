@@ -14,6 +14,12 @@
 - out of scope:
   - page-first or CRUD-first navigation as the primary application architecture
   - a bespoke design system beyond seed-app primitives
+- implementation reference:
+  - `../../../../../docs/workstream-ui-reference-architecture.md`
+  - `../../../../../frontend/src/workstream/**`
+  - `../../../../../frontend/src/api/workstreamClient.ts`
+  - `../../../../../frontend/src/api/workstreamRealtime.ts`
+  - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 - surface/workstream links:
   - `../12-workstreams/functional-agents.md`
   - `../12-workstreams/surfaces-index.md`

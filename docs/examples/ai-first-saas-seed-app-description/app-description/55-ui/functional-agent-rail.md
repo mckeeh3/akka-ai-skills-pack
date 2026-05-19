@@ -19,6 +19,7 @@
 
 ## Rendering expectations
 
+- Use the reference implementation under `../../../../../frontend/src/workstream/rail/**` and `../../../../../frontend/src/workstream/shell/**` for generated rail behavior.
 - Active functional agent is visually primary.
 - Pending decision/exception badges are scoped to the selected tenant/customer.
 - Narrow screens collapse the rail into a drawer while preserving current functional-agent context and composer access.

@@ -16,6 +16,7 @@ Read these first if present:
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/capability-first-backend-architecture.md` for selected capability exposure surfaces, browser action authority, frontend API contracts, audit, and denial semantics
+- `../../docs/workstream-ui-reference-architecture.md` for the canonical generated-app workstream UI implementation reference under `frontend/src/workstream/**`
 - `../../docs/web-ui-frontend-decomposition.md`
 - `../../docs/web-ui-style-guide.md`
 - `../../docs/web-ui-quality-checklist.md`
@@ -150,6 +151,14 @@ For any UI change, update:
 9. readiness status if generation completeness changes
 
 ## Realization routing
+
+When realization is requested, preserve the description-level functional-agent and structured-surface contracts, then use the source-repository reference implementation as a concrete realization target:
+- reusable workstream components and types: `frontend/src/workstream/**`
+- fixture API/realtime seams: `frontend/src/api/workstreamClient.ts` and `frontend/src/api/workstreamRealtime.ts`
+- integrated shell/deep-link example: `frontend/src/main.tsx`
+- User Admin dashboard → list/search → detail/edit vertical: `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+
+Do not realize new generated SaaS UI as a primary `screens/**` or page-route tree. If older app descriptions contain `screens-and-navigation.md`, treat it as legacy compatibility and migrate meaning into `workstream-shell.md`, `functional-agent-rail.md`, `structured-surface-rendering.md`, and `routes-and-deep-links.md`.
 
 When realization is requested, route UI work to:
 - `ai-first-saas-ui-surfaces` first when the UI is for delegation, supervision, decisions, governance, digests, audit, or outcomes

@@ -24,3 +24,11 @@ Primary implementation target:
 - backend: Akka Java SDK
 - frontend: React + Vite + TypeScript
 - app class: secure multi-tenant AI-first SaaS agent workstream shell with modular functional-agent extension points
+
+Frontend implementation reference:
+- canonical architecture: `../../workstream-ui-reference-architecture.md`
+- reusable source modules in this repository: `../../../frontend/src/workstream/**`
+- fixture API/realtime seams: `../../../frontend/src/api/workstreamClient.ts` and `../../../frontend/src/api/workstreamRealtime.ts`
+- User Admin reference vertical: `../../../frontend/src/workstream/fixtures/**` and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+
+The seed app UI docs below describe functional agents, workstreams, structured surfaces, and deep links. They are not a page-first route/screen template. Older page/screen examples in the repository are legacy or mechanics references only.

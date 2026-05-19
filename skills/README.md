@@ -1101,7 +1101,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. If no style guide is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository, use `../docs/workstream-ui-reference-architecture.md`, reusable modules under `../frontend/src/workstream/**`, and the User Admin vertical test `../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference. If no style guide is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`
@@ -1446,6 +1446,9 @@ Testing examples:
 
 ### HTTP endpoints
 Core endpoint examples:
+
+For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `../docs/workstream-ui-reference-architecture.md` and `../frontend/src/workstream/**` as the canonical frontend structure; do not treat `WebUi*PageEndpoint` examples as page-first UI architecture.
+
 - `../src/main/java/com/example/api/GreetingEndpoint.java`
 - `../src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../src/main/java/com/example/api/WebUiDataEndpoint.java`

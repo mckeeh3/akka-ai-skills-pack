@@ -2,6 +2,8 @@
 
 The seed app UI is an agent workstream shell, not a page-first admin console.
 
+Implementation reference: `../../../../../frontend/src/workstream/**` provides the reusable React/Vite shell, rail, composer, stream, surface, action, realtime, type, and fixture modules. `../../../../../frontend/src/main.tsx` shows shell integration and deep-link handling. Treat legacy screen/page files as drift or mechanics references only.
+
 ## Regions
 
 - left rail functional agents:

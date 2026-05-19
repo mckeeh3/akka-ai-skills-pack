@@ -8,6 +8,8 @@ For product UIs, use a standard frontend project such as React/Vite and route im
 
 Read `docs/web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
 
+For this skills-pack source repository, use `docs/workstream-ui-reference-architecture.md` and the reusable implementation under `frontend/src/workstream/**` as the canonical frontend reference. The User Admin vertical fixtures and `frontend/src/workstream-user-admin-vertical.contract.test.mjs` demonstrate the foundation-admin dashboard → list/search → detail/edit flow through structured surfaces. Do not use legacy `frontend/src/screens/**` or page-route tests as the primary generated SaaS UI model.
+
 ## Required output
 
 Before implementation, produce a frontend plan with these sections.
@@ -173,7 +175,7 @@ Use a standard frontend project: source under `frontend/**`, built assets under 
 
 Also define:
 - framework/build tool, such as React/Vite
-- source organization for shell, surfaces, API clients, and state modules
+- source organization for shell, surfaces, API clients, and state modules; for generated AI-first SaaS, prefer the reusable `frontend/src/workstream/**` taxonomy: `types`, `fixtures`, `shell`, `rail`, `composer`, `stream`, `surfaces`, `actions`, and `realtime`
 - package manager and build command
 - generated asset ownership rule
 - SPA/workstream routing choice: hash routing, explicit server entry routes, or in-app-only navigation
@@ -210,5 +212,5 @@ A web UI decomposition is ready for implementation when a coding agent can answe
 - what backend endpoints are required?
 - which style guide and CSS tokens drive the frontend styling?
 - which standard frontend project/framework conventions apply?
-- what frontend modules/components should be created?
-- what tests prove the browser app was delivered correctly?
+- what frontend modules/components should be created or reused from the `frontend/src/workstream/**` reference?
+- what tests prove the browser app was delivered correctly, including shell/rail/composer/surface/action/deep-link/realtime and User Admin vertical contract coverage?

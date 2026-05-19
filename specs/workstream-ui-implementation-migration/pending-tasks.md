@@ -347,7 +347,7 @@
 
 ### TASK-WUI-05-002: Update docs and skills for reference components
 
-- status: pending
+- status: done
 - source: specs/workstream-ui-implementation-migration/backlog/05-tests-and-docs-build-backlog.md
 - task brief: specs/workstream-ui-implementation-migration/tasks/05-tests-and-docs/02-update-docs-and-skills-for-reference-components.md
 - depends on: [TASK-WUI-05-001]
@@ -369,7 +369,9 @@
 - done criteria:
   - docs/skills are aligned with implementation reference
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Align docs and skills with workstream UI reference`
+  - completed: updated web UI docs, routing skills, seed app UI guidance, and endpoint mechanics notes to point future agents at `docs/workstream-ui-reference-architecture.md`, reusable `frontend/src/workstream/**` modules, fixture clients, and the User Admin vertical contract reference while marking legacy screen/page/static examples as non-canonical.
 
 ### TASK-WUI-06-001: Final workstream UI implementation review
 

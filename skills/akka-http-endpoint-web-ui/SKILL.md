@@ -22,6 +22,7 @@ When the same capability is also exposed through workstream surface actions, age
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
+- `../../../docs/workstream-ui-reference-architecture.md` for the canonical generated SaaS frontend reference and reusable `frontend/src/workstream/**` modules
 - `../../../docs/web-ui-pattern-selection.md`
 - `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-style-guide.md`
@@ -37,6 +38,8 @@ Read these first if present:
 - `../../../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
 - `../../../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
+
+The `WebUi*PageEndpoint` examples are endpoint delivery mechanics references. They do not replace the canonical generated SaaS app structure under `frontend/src/workstream/**` or the User Admin workstream vertical reference.
 
 ## Use this skill when
 
@@ -76,21 +79,21 @@ Read first:
 - `../../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../../../src/main/java/com/example/api/WebUiDataEndpoint.java`
 
-Use this when a page should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**`.
+Use this when a browser surface should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**` and keep generated SaaS structure workstream-first.
 
 ### UI + SSE
 Read first:
 - `../../../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
 - `../../../src/main/java/com/example/api/CounterStreamEndpoint.java`
 
-Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**`.
+Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**` and model updates as workstream/surface events where generated SaaS semantics apply.
 
 ### UI + WebSocket
 Read first:
 - `../../../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
 - `../../../src/main/java/com/example/api/PingWebSocketEndpoint.java`
 
-Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**`.
+Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid treating socket demo pages as generated SaaS UI structure.
 
 ### Public vs protected/internal routes
 Read next as needed:

@@ -2,6 +2,8 @@
 
 Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
+For generated AI-first SaaS work in this source repository, compare against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under `frontend/src/workstream/**`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin example. Legacy `frontend/src/screens/**` and standalone static examples are not canonical generated-app structure.
+
 ## UX completeness
 
 - [ ] For generated AI-first SaaS, primary user goals are represented by role-authorized functional agents, workstream shell regions, structured surfaces, and capability-backed actions.
@@ -105,6 +107,7 @@ For generated SaaS applications, the browser UI inherits the mandatory secure fo
 - [ ] Served CSS corresponds to the selected web UI style guide.
 - [ ] Served JS/CSS assets correspond to the frontend source build output.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.
-- [ ] Tests assert route references for API/SSE/WebSocket dependencies.
+- [ ] Tests assert route references for API/SSE/WebSocket dependencies without promoting page routes as the primary app model.
+- [ ] Workstream contract tests cover shell, rail, composer, structured surfaces, capability actions, deep links, forbidden/disabled states, stale/realtime behavior, and the User Admin reference vertical where foundation admin UI is in scope.
 - [ ] UX review notes or tests cover key loading, empty, error, validation, and success states.
 - [ ] Backend tests pass for changed endpoint/component behavior.

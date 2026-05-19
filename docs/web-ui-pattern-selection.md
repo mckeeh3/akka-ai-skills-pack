@@ -8,6 +8,8 @@ Use this doc when an Akka service needs a browser-facing React/Vite/TypeScript a
 
 Use this for real web apps. Generated SaaS apps should implement the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream panel, persistent bottom composer, context/authority indicators, and structured surfaces.
 
+Source-repository canonical reference: `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. Endpoint-only examples below are delivery mechanics references; they are not canonical generated SaaS app structure.
+
 - frontend source and tooling: `frontend/**`
 - production build output: `src/main/resources/static-resources/**`
 - build command: the frontend project's script, commonly `cd frontend && npm run build`
@@ -18,7 +20,7 @@ The frontend build owns generated files under `static-resources/`. Edit `fronten
 
 | Need | Use | First example |
 | --- | --- | --- |
-| Full React/Vite/TypeScript agent workstream app with functional-agent rail, stream panel, composer, structured surfaces, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `skills/akka-web-ui-apps/SKILL.md` plus `skills/akka-web-ui-frontend-project/SKILL.md` |
+| Full React/Vite/TypeScript agent workstream app with functional-agent rail, stream panel, composer, structured surfaces, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/workstream-user-admin-vertical.contract.test.mjs`, `skills/akka-web-ui-apps/SKILL.md`, and `skills/akka-web-ui-frontend-project/SKILL.md` |
 | Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `src/main/java/com/example/api/WebUiHomeEndpoint.java` and `src/main/java/com/example/api/WebUiDataEndpoint.java` |
 | Frontend app consuming live one-way updates | UI + SSE pattern | `src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `src/main/java/com/example/api/CounterStreamEndpoint.java` |
 | Frontend app needing two-way communication | UI + WebSocket pattern | `src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `src/main/java/com/example/api/PingWebSocketEndpoint.java` |
@@ -38,6 +40,7 @@ Use a standard React/Vite/TypeScript frontend project when the browser app has p
 Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets. Conventional route/page navigation is an implementation/deep-link detail for generated SaaS apps, not the primary decomposition.
 
 Read next:
+- `docs/workstream-ui-reference-architecture.md`
 - `docs/web-ui-frontend-decomposition.md`
 - `docs/web-ui-frontend-project-integration.md`
 - `docs/web-ui-style-guide.md`

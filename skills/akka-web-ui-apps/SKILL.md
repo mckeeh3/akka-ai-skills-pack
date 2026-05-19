@@ -35,6 +35,7 @@ Pair AI-first web UI work with `agent-workstream-apps` and `ai-first-saas-ui-sur
 ## Required reading
 
 Read these first if present:
+- `../../../docs/workstream-ui-reference-architecture.md` for the canonical reusable `frontend/src/workstream/**` implementation shape and User Admin vertical reference
 - `../../../docs/web-ui-frontend-decomposition.md`
 - `../../../docs/web-ui-style-guide.md`
 - `../../../docs/web-ui-ux-patterns.md`
@@ -50,6 +51,14 @@ Read these first if present:
 
 Canonical frontend project integration reference:
 - `../../../frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
+
+Canonical source-repository workstream UI reference:
+- reusable implementation modules: `../../../frontend/src/workstream/**`
+- fixture client seams: `../../../frontend/src/api/workstreamClient.ts` and `../../../frontend/src/api/workstreamRealtime.ts`
+- integrated shell example: `../../../frontend/src/main.tsx`
+- User Admin dashboard/list/detail-edit vertical: `../../../frontend/src/workstream/fixtures/**` and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+
+Use these files as implementation examples for generated SaaS workstream shells. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
 
 ## Use this skill when
 
@@ -116,13 +125,14 @@ Always pair with Akka hosting/API skills as needed:
 
 1. Define UX handoff for the agent workstream shell: user goals, functional-agent rail, main stream, composer, context/authority indicators, structured surfaces, primary actions, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path.
 2. Define structured surface contracts: payload schemas, capability-backed actions, realtime/update events, backend-authoritative auth, trace/audit fields, rendering states, deep links, and API contracts. Treat conventional pages/routes as implementation and deep-link details.
-3. Confirm frontend project framework/build tool and project conventions.
-4. Implement or adjust backend JSON/SSE/WebSocket endpoints.
-5. Implement the frontend in its source root (`frontend/src/**`).
-6. Build React/Vite/TypeScript frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
-7. Add/extend endpoint integration tests for shell entry, assets, explicit SPA entry routes, and API route separation.
-8. Run frontend checks/build and backend tests.
-9. Review with `docs/structured-surface-contracts.md`, `docs/web-ui-quality-checklist.md`, and `docs/web-ui-ux-patterns.md`.
+3. Reuse or adapt the canonical workstream reference modules under `frontend/src/workstream/**`; use the User Admin dashboard → list/search → detail/edit vertical as the first generated foundation-admin example.
+4. Confirm frontend project framework/build tool and project conventions.
+5. Implement or adjust backend JSON/SSE/WebSocket endpoints.
+6. Implement the frontend in its source root (`frontend/src/**`).
+7. Build React/Vite/TypeScript frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
+8. Add/extend endpoint integration tests for shell entry, assets, explicit SPA entry routes, and API route separation.
+9. Run frontend checks/build and backend tests.
+10. Review with `docs/structured-surface-contracts.md`, `docs/web-ui-quality-checklist.md`, and `docs/web-ui-ux-patterns.md`.
 
 ## Quality bar
 

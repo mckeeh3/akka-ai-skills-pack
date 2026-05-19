@@ -2,6 +2,8 @@
 
 Authoritative surface definitions live in `../12-workstreams/surfaces-index.md` and `../12-workstreams/surface-contracts/`.
 
+Implementation reference: render these contracts with `../../../../../frontend/src/workstream/surfaces/**` and action controls in `../../../../../frontend/src/workstream/actions/**`. The User Admin vertical in `../../../../../frontend/src/workstream/fixtures/**` plus `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` is the canonical foundation-admin example.
+
 ## Rendering rules
 
 - Render by `surfaceType` and `surfaceVersion`, not by route name.
@@ -28,7 +30,8 @@ Authoritative surface definitions live in `../12-workstreams/surfaces-index.md` 
 
 ## Tests
 
-- fixture-driven rendering for each canonical surface type.
+- fixture-driven rendering for each canonical surface type using the workstream fixtures.
+- User Admin dashboard → list/search → detail/edit flow through structured surfaces, not standalone pages.
 - forbidden action and server-denial recovery states.
 - stale/reconnect banners and preserved prior payload.
 - responsive collapse for data-dense surfaces.

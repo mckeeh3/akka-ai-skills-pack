@@ -28,3 +28,8 @@
   - `style-guide.md`
 - route/deep-link realization detail:
   - `routes-and-deep-links.md` opens functional-agent workstreams and structured surfaces; routes/pages are subordinate implementation details
+- implementation reference:
+  - `../../../../../docs/workstream-ui-reference-architecture.md`
+  - `../../../../../frontend/src/workstream/**` reusable shell, rail, composer, stream, surface, action, realtime, type, and fixture modules
+  - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` for the User Admin dashboard → list/search → detail/edit vertical
+  - legacy `frontend/src/screens/**` and standalone static UI examples are not canonical seed-app structure
