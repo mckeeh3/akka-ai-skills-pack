@@ -367,7 +367,7 @@
 
 ### TASK-CORE-05-001: Specify Audit/Trace core module
 
-- status: pending
+- status: done
 - source: specs/core-app-full-stack-readiness/backlog/05-audit-governance-build-backlog.md
 - task brief: specs/core-app-full-stack-readiness/tasks/05-audit-governance/01-spec-audit-trace-core-module.md
 - depends on: [TASK-CORE-03-003]
@@ -387,6 +387,8 @@
 - done criteria:
   - Audit/Trace is generation-ready as a core module
   - task changes and queue update are committed
+- notes:
+  - commit message: `Specify audit trace core module`
 
 ### TASK-CORE-05-002: Specify Governance/Policy core module
 
