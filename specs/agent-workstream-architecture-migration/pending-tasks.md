@@ -98,7 +98,7 @@
 
 ### TASK-AW-01-003: Update skill routing map for agent workstream architecture
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/01-agent-workstream-doctrine-and-routing-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/01-doctrine-routing/03-update-routing-map.md
 - depends on: [TASK-AW-01-002]
@@ -119,7 +119,10 @@
 - done criteria:
   - top-level routing reflects the new architecture
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update routing map for workstream architecture`
+  - completed: updated top-level routing, description-first routing, intent flow, PRD planning, solution decomposition, and web UI routing to interpret generated full-stack AI-first SaaS apps as agent workstream applications before capability modeling and Akka implementation.
+  - checks: verified agent workstream/capability-first references in `skills/README.md`; verified no references to uncreated `agent-workstream-apps` skill were introduced.
 
 ### TASK-AW-01-004: Create top-level agent workstream apps skill
 

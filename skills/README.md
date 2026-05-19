@@ -1,6 +1,6 @@
 # Akka Skill Routing Map
 
-This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security and web UI foundation, model governed backend capabilities, derive the right Akka Java SDK solution, then turn that solution plan into concrete backend, frontend, test, and delivery assets.
+This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security foundation and agent workstream application model, model governed backend capabilities, derive the right Akka Java SDK solution, then turn that solution plan into concrete backend, frontend, test, and delivery assets.
 
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
@@ -17,9 +17,9 @@ This file serves both:
 
 ## AI-first SaaS entry routing
 
-For high-level product input, treat the target as secure AI-first SaaS unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. Interpret delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, and outcome accountability before decomposing into Akka components.
+For high-level product input, treat the target as a secure AI-first SaaS **agent workstream application** unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. Interpret mandatory foundation security, role-authorized functional agents, continuous workstreams, structured surfaces, delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, and outcome accountability before modeling capabilities or decomposing into Akka components.
 
-Mandatory secure SaaS and web UI foundation before app-specific features:
+Mandatory secure SaaS, agent workstream, and web UI foundation before app-specific features:
 - identity and authentication seam, typically WorkOS for browser user authentication
 - local Akka-owned authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, and selected AuthContext
 - governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, deterministic prompt assembly, authorized readSkill(skillId), and first-install/tenant-bootstrap seeding of implementation-developed default prompt/skill/manifest/tool-boundary documents into governed storage
@@ -28,11 +28,12 @@ Mandatory secure SaaS and web UI foundation before app-specific features:
 - complete email-invite onboarding with Resend (resend.com) as the default production email provider, explicit local/dev/test captured outbox behavior, and alternate production providers only by accepted override decision
 - backend authorization checks for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action
 - AdminAuditEvent and audit/work traces for identity, authorization, policy, approval, data access, and consequential AI/tool activity
-- mandatory browser UI surfaces for sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, supervision, decisions, governance, audit/traces, and outcome review
+- mandatory agent workstream shell with role-authorized functional agents, continuous main workstream, persistent composer, context/authority indicators, and structured surfaces for sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, supervision, decisions, governance, audit/traces, and outcome review
 - tenant-isolation, forbidden-access, disabled-user, role/scope denial, audit, frontend secret-boundary, UI, and security-review tests
 
 Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-workstream-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/core-ai-first-saas-foundation.md`
 - `../docs/core-saas-identity-tenancy-admin.md`
@@ -58,24 +59,24 @@ AI-first companion skills:
 - `ai-first-saas-ui-surfaces` — select supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces and route to web UI/API skills
 - `ai-first-saas-outcomes-metrics` — define outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces
 
-After secure AI-first SaaS interpretation, route through `core-saas-foundation`, model the capability-first backend substrate, then choose the normal operating path:
-1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization; capability inventory belongs in the description layer alongside behavior, auth/security, UI, observability, readiness, and tests
-2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known; derive governed capabilities before selecting Akka components
-3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts; preserve capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks
-4. use focused Stage 3 component skills only after the secure foundation, operating model, capability contracts, and solution shape are clear enough for implementation
+After secure AI-first SaaS interpretation, route through `core-saas-foundation`, interpret the application as an agent workstream with functional agents, internal agents, workstreams, and structured surfaces, model the capability-first backend substrate, then choose the normal operating path:
+1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization; functional agents, surfaces, capability inventory, behavior, auth/security, UI, observability, readiness, and tests belong in the description layer
+2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known; derive governed capabilities from workstream actions, surfaces, agents, workflows, APIs, timers, and consumers before selecting Akka components
+3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts; preserve functional-agent/surface context plus capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks
+4. use focused Stage 3 component skills only after the secure foundation, agent workstream model, capability contracts, and solution shape are clear enough for implementation
 
-Capability-first backend design is the next substrate step below secure AI-first SaaS and above component implementation. A capability is a named operation or query with explicit actors/callers, AuthContext, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, selected exposure surfaces, and tests. Browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, internal component methods, and agent tools are exposure or realization choices for capabilities; they are not the root abstraction. Use the top-level `capability-first-backend` skill with `../docs/capability-first-backend-architecture.md` for capability modeling and routing.
+Capability-first backend design is the substrate step below secure AI-first SaaS and the agent workstream application model, and above component implementation. A capability is a named operation or query with explicit actors/callers, AuthContext, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, selected exposure surfaces, and tests. Workstream actions, structured surface actions, browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, internal component methods, and agent tools are exposure or realization choices for capabilities; they are not the root abstraction. Use the top-level `capability-first-backend` skill with `../docs/capability-first-backend-architecture.md` for capability modeling and routing.
 
 Capability-first backend entry skill:
 - `capability-first-backend` — model backend behavior as governed capabilities before choosing Akka components or exposure surfaces, then route to app-description, decomposition, PRD/backlog, or focused implementation skills
 
-Use companion skills only for the AI-first concerns that are actually in scope, except `ai-first-saas-admin-agents` which is mandatory whenever generating the core SaaS user-administration foundation. Existing Stage 3 skills remain implementation substrate skills for the AI-first and capability-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with narrative guidance; route to them after goals, plans, authority, capabilities, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
+Use companion skills only for the AI-first concerns that are actually in scope, except `ai-first-saas-admin-agents` which is mandatory whenever generating the core SaaS user-administration foundation. Existing Stage 3 skills remain horizontal implementation substrate skills for the AI-first, agent-workstream, and capability-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with narrative guidance; route to them after functional agents, surfaces, goals, plans, authority, capabilities, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
 
 ## Description-first intake skills
 
 This repository now also includes an initial description-first skill path for maintaining **application descriptions as the source of truth** before app realization.
 
-Start here when the user is primarily describing or revising the app rather than explicitly asking for code generation.
+Start here when the user is primarily describing or revising the app rather than explicitly asking for code generation. For generated full-stack AI-first SaaS apps, the description-first path should capture the agent workstream model as the primary application structure: functional agents and reusable structured surfaces first, then governed capabilities and horizontal Akka implementation choices. Do not make a conventional page/screen tree the primary decomposition unless the task is explicitly non-SaaS, static/public, or repository-maintenance-only.
 
 Top-level app-description entry skill:
 - `app-descriptions` — orchestrate description-first work across intake, behavior, tests, security, observability, readiness, generation, and review
@@ -106,7 +107,7 @@ Default description-first flow:
 7. run `app-description-change-impact` to identify cross-layer and realization implications
 8. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, frontend/backend JWT security, WorkOS authentication, basic administration, or data protection
 9. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
-10. update UI with `app-description-ui` when the request changes screens, navigation, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
+10. update UI with `app-description-ui` when the request changes agent workstream shell regions, functional-agent rail behavior, workstream interactions, structured surfaces, deep-link routes, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
 11. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
 12. realize outputs with `app-generate-app` only when generation is requested or accepted
 13. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
@@ -131,9 +132,9 @@ Important routing rule:
 Use the skills in this order:
 
 1. read the requirements, PRD, spec, prompt, API sketch, UI brief, feature request, or change request
-2. apply AI-first SaaS interpretation first when the input involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
-3. model the capability-first backend substrate: named operations/queries, actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
-4. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear; Stage 1 should turn capabilities into an Akka component plan rather than skipping directly to entities, endpoints, or agent tools
+2. apply secure AI-first SaaS interpretation first, then interpret the generated app as an agent workstream application: role-authorized functional agents, internal agents, continuous workstreams, structured surfaces, retained human authority, supervision, decisions, governance, audit, and outcomes
+3. model the capability-first backend substrate for every workstream action, surface action, tool, workflow step, API, timer, consumer, and internal operation: named operations/queries, actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
+4. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear; Stage 1 should turn capabilities into an Akka component plan rather than skipping directly to entities, endpoints, pages, or agent tools
 5. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
 6. move to Stage 3 to load only the focused implementation skills for the chosen components and capability exposure surfaces
 7. use the accepted solution plan as the implementation contract for the downstream coding phase
@@ -149,7 +150,7 @@ Short reusable version:
 Use the skill library as a visible 3-stage hierarchy:
 
 ### Stage 1: Intent and architecture
-Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape. For high-level product inputs, apply the AI-first SaaS interpretation rule above, then identify governed backend capabilities before mapping the work to Akka components.
+Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape. For high-level product inputs, apply the AI-first SaaS interpretation rule above, interpret generated full-stack apps as agent workstream applications, then identify governed backend capabilities before mapping the work to Akka components.
 
 Primary Stage 1 entry skills:
 - `akka-solution-decomposition`
@@ -184,8 +185,8 @@ Move to Stage 3 when the architecture is settled enough to write code and tests.
 
 Primary flow:
 1. start from a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input
-2. identify capability contracts before choosing implementation surfaces
-3. use Stage 1 to decompose those capabilities into the right Akka component set
+2. identify functional agents, internal agents, initial workstreams, structured surfaces, and capability contracts before choosing implementation surfaces
+3. use Stage 1 to decompose those capabilities into the right horizontal Akka component set
 4. use Stage 2 when a focused architecture decision is still unresolved
 5. use Stage 3 to load only the implementation skills needed for the chosen components and exposure surfaces
 
@@ -201,7 +202,7 @@ Current local Stage 3 suites:
 - Event Sourced Entities
 - Key Value Entities
 
-If you have high-level requirements, a prompt, or a specification file and do not yet know the Akka component set, start with Stage 1:
+If you have high-level requirements, a prompt, or a specification file and do not yet know the Akka component set, first apply secure AI-first SaaS and agent workstream interpretation, then start with Stage 1:
 - `akka-solution-decomposition`
 
 If the task is already narrowed to a stateful component and you have not yet chosen the entity type, start with Stage 2:
@@ -230,7 +231,7 @@ Use when the goal is to derive the Akka component set and implementation handoff
 Start with:
 - `akka-prd-to-specs-backlog`
 
-Use when the task starts from a PRD or high-level requirements and the user wants the result written as a repository planning structure under `specs/`, including:
+Use when the task starts from a PRD or high-level requirements and the user wants the result written as a repository planning structure under `specs/`. Generated full-stack AI-first SaaS PRD planning should preserve the agent workstream application shape before capability and component planning: functional agents, internal agents, workstreams, structured surfaces, retained human authority, backend capabilities, exposure surfaces, and tests. Outputs include:
 - `specs/akka-solution-plan.md`
 - cross-cutting specs
 - for large inputs, module specs under `specs/modules/` and vertical full-stack sprint specs under `specs/sprints/`
@@ -240,7 +241,7 @@ Use when the task starts from a PRD or high-level requirements and the user want
 - execution-order readmes
 - optional leaf task briefs when one backlog item is still too large for a single focused harness run
 
-This skill builds on `akka-solution-decomposition` and continues into harness-friendly file generation for downstream implementation. For larger PRDs, it should prefer module-oriented vertical sprints so a team can finish, test, and review one module's backend and frontend stack before moving on.
+This skill builds on `akka-solution-decomposition` and continues into harness-friendly file generation for downstream implementation. For larger PRDs, it should prefer module-oriented vertical sprints around functional agents and their surfaces so a team can finish, test, and review one workstream slice's backend and frontend stack before moving on.
 
 ### Slice spec to backlog skill
 
@@ -343,13 +344,14 @@ Use this routing for ongoing development after the first PRD planning run:
 Start with:
 - `akka-solution-decomposition`
 
-Use when the task begins from a product requirement, user story, process description, API sketch, UI brief, or a filename containing specifications and you need to decide the Akka component set before coding.
+Use when the task begins from a product requirement, user story, process description, API sketch, UI brief, or a filename containing specifications and you need to decide the Akka component set before coding. For generated full-stack AI-first SaaS apps, identify the agent workstream verticals before decomposing into horizontal Akka components.
 
 The output of this skill is not the final answer by itself.
 It is the implementation contract for downstream work:
 - it identifies the chosen components
 - it defines implementation order
 - it maps each component to the exact code-generation and test-generation skills to load next
+- it preserves functional-agent and structured-surface context while decomposing backend behavior through governed capabilities
 - it can also route endpoint generation, web UI generation, and documentation/snippet generation when those are part of the task
 
 This skill routes to:
@@ -657,7 +659,7 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just asset-route wiring. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: screen intent, information hierarchy, UX copy, feedback/recovery states, navigation, selected style guide, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just asset-route wiring. For generated full-stack AI-first SaaS apps, the default UI architecture is the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream, persistent composer, context/authority indicators, and structured surfaces. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: surface intent, information hierarchy, UX copy, feedback/recovery states, deep-link navigation, selected style guide, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
@@ -1089,7 +1091,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-For generated AI-first SaaS, this UI work is mandatory. If no style guide is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. If no style guide is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`
