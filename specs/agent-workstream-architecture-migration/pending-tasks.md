@@ -126,7 +126,7 @@
 
 ### TASK-AW-01-004: Create top-level agent workstream apps skill
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-architecture-migration/backlog/01-agent-workstream-doctrine-and-routing-build-backlog.md
 - task brief: specs/agent-workstream-architecture-migration/tasks/01-doctrine-routing/04-create-agent-workstream-skill.md
 - depends on: [TASK-AW-01-003]
@@ -147,7 +147,10 @@
 - done criteria:
   - top-level workstream routing skill exists and is exposed as appropriate
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add agent workstream apps skill`
+  - completed: created the top-level `agent-workstream-apps` routing skill, exposed it in `skills/README.md`, and added it plus the canonical workstream doctrine reference to `pack/manifest.yaml`.
+  - checks: verified skill frontmatter, routing to app-description/capability-first/web UI/agent/decomposition paths, and vertical functional-agent/surface versus horizontal Akka implementation language.
 
 ### TASK-AW-01-005: Sprint 1 consistency review
 

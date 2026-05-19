@@ -42,6 +42,9 @@ Canonical doctrine:
 Top-level AI-first entry skill:
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model, identify mandatory foundation/security requirements, delegated work, and retained human authority, then route to app-description, decomposition, PRD planning, or focused implementation skills
 
+Top-level agent workstream entry skill:
+- `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications, identify functional agents, internal agents, workstreams, and structured surfaces, then route to app-description, capability-first backend, web UI, agent, decomposition, PRD/backlog, or focused implementation skills
+
 Mandatory foundation skill:
 - `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, authorized `readSkill(skillId)`), support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
 
