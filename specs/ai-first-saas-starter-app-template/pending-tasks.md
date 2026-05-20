@@ -71,7 +71,7 @@
 
 ### TASK-STARTER-01-002: Inventory legacy and reusable assets
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/01-template-scope-inventory-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/01-template-scope-inventory/02-inventory-legacy-and-reusable-assets.md
 - depends on: [TASK-STARTER-01-001]
@@ -93,7 +93,8 @@
 - done criteria:
   - each major existing code/example asset is classified as reuse, migrate, mechanics-only, quarantine, archive, or delete-later
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Inventory starter reusable assets`
 
 ### TASK-STARTER-01-003: Choose template source layout and extension workflow
 
