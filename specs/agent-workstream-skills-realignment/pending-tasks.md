@@ -429,3 +429,212 @@
   - commit message: Review agent workstream skills realignment
   - check passed: `git diff --check`
   - final review closes realignment; PRD-driven starter implementation can begin from `TASK-STARTER-08-001`.
+
+### TASK-AWSR-05-001: Refresh installed pack and validate source parity
+
+- status: pending
+- source: follow-up review after broad realignment found stale `.agents/` dogfood output
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/01-refresh-installed-pack-parity.md
+- depends on: [TASK-AWSR-04-003]
+- required reads:
+  - install.sh
+  - .gitignore
+  - skills/README.md
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-web-ui-api-client/SKILL.md
+  - skills/capability-first-backend/SKILL.md
+  - specs/agent-workstream-skills-realignment/final-realignment-review.md
+  - specs/agent-workstream-skills-realignment/sprints/05-focused-cleanup-sprint.md
+- skills:
+  - none; install/parity validation task
+- expected outputs:
+  - specs/agent-workstream-skills-realignment/installed-pack-parity-check.md
+- required checks:
+  - git diff --check
+  - git status --short must not show tracked .agents changes
+- done criteria:
+  - installed dogfood output is refreshed and spot-checked
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-AWSR-05-002: Align core SaaS foundation with workstream-first foundation verticals
+
+- status: pending
+- source: follow-up review found `core-saas-foundation` too object/foundation-first
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/02-align-core-foundation-workstreams.md
+- depends on: [TASK-AWSR-05-001]
+- required reads:
+  - skills/core-saas-foundation/SKILL.md
+  - skills/agent-workstream-apps/SKILL.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/agent-workstream-design-review-checklist.md
+- skills:
+  - core-saas-foundation
+  - agent-workstream-apps
+- expected outputs:
+  - updated core SaaS foundation routing and output checklist
+- required checks:
+  - git diff --check
+  - rg check for foundation functional-agent/surface terms
+- done criteria:
+  - core foundation routes through foundation workstream verticals before components
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-AWSR-05-003: Add input-contract gates to remaining focused skills
+
+- status: pending
+- source: follow-up review found high-use focused skills without standard generated SaaS input gates
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/03-add-input-contract-to-remaining-focused-skills.md
+- depends on: [TASK-AWSR-05-002]
+- required reads:
+  - specs/agent-workstream-skills-realignment/implementation-skill-gap-matrix.md
+  - specs/agent-workstream-skills-realignment/sprint-03-review.md
+  - skills/akka-web-ui-api-client/SKILL.md
+- skills:
+  - akka-web-ui-apps
+  - akka-agents
+  - akka-http-endpoints
+  - akka-workflows
+  - akka-views
+- expected outputs:
+  - generated SaaS input contract gates in remaining high-use focused skills
+- required checks:
+  - git diff --check
+  - rg check for Generated SaaS input contract over touched candidate skills
+- done criteria:
+  - remaining high-use focused skills no longer invite mechanics-first generated SaaS implementation
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-AWSR-05-004: Normalize structured-surface and exposure-channel terminology
+
+- status: pending
+- source: follow-up review found ambiguous use of `surface`
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/04-normalize-surface-terminology.md
+- depends on: [TASK-AWSR-05-003]
+- required reads:
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/capability-first-backend/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - docs/capability-first-backend-architecture.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+- skills:
+  - capability-first-backend
+  - akka-solution-decomposition
+  - akka-prd-to-specs-backlog
+- expected outputs:
+  - top-level terminology distinguishes structured surfaces from exposure channels/paths
+- required checks:
+  - git diff --check
+  - targeted rg review over touched files
+- done criteria:
+  - top-level planning language avoids structured-surface/exposure-channel ambiguity
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-AWSR-05-005: Align AI-first companion skills with surface/action handoffs
+
+- status: pending
+- source: follow-up review found AI-first companion skills not consistently workstream-aware
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/05-align-ai-first-companion-surface-handoffs.md
+- depends on: [TASK-AWSR-05-004]
+- required reads:
+  - skills/ai-first-saas-policy-governance/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - skills/ai-first-saas-audit-trace/SKILL.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - skills/ai-first-saas-outcomes-metrics/SKILL.md
+  - skills/agent-workstream-apps/SKILL.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+- skills:
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+  - ai-first-saas-audit-trace
+  - ai-first-saas-admin-agents
+  - ai-first-saas-outcomes-metrics
+  - agent-workstream-apps
+- expected outputs:
+  - AI-first companion outputs include functional-agent/surface/action/capability handoffs
+- required checks:
+  - git diff --check
+  - rg check for workstream/surface/action/capability terms over touched companion skills
+- done criteria:
+  - AI-first companion outputs are implementation-ready for workstream/surface/capability planning
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-AWSR-05-006: Validate and repair source skill path references
+
+- status: pending
+- source: follow-up review found fragile source skill relative paths
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/06-validate-source-skill-paths.md
+- depends on: [TASK-AWSR-05-005]
+- required reads:
+  - skills/README.md
+  - install.sh
+- skills:
+  - none; source hygiene/validation task
+- expected outputs:
+  - specs/agent-workstream-skills-realignment/source-skill-path-reference-audit.md
+  - highest-impact source path fixes or queued follow-up
+- required checks:
+  - git diff --check
+  - path audit command from the report, or documented limitations
+- done criteria:
+  - source skill path issues are documented and highest-impact breakages are fixed or queued
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-AWSR-05-007: Update starter acceptance consistency for Sprint 08 queue
+
+- status: pending
+- source: follow-up review found starter acceptance docs conflict with later Sprint 08 queue
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/07-update-starter-acceptance-consistency.md
+- depends on: [TASK-AWSR-05-006]
+- required reads:
+  - specs/ai-first-saas-starter-app-template/final-acceptance-review.md
+  - specs/ai-first-saas-starter-app-template/migration-completion-summary.md
+  - specs/ai-first-saas-starter-app-template/pending-tasks.md
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/agent-workstream-skills-realignment/final-realignment-review.md
+- skills:
+  - none; documentation consistency task
+- expected outputs:
+  - updated starter acceptance or migration summary language
+- required checks:
+  - git diff --check
+- done criteria:
+  - starter docs no longer conflict with pending Sprint 08 tasks
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-AWSR-05-008: Review focused cleanup sprint and close or create Sprint 06
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/backlog/05-focused-cleanup-build-backlog.md
+- task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/08-review-focused-cleanup-sprint.md
+- depends on: [TASK-AWSR-05-007]
+- required reads:
+  - specs/agent-workstream-skills-realignment/sprints/05-focused-cleanup-sprint.md
+  - specs/agent-workstream-skills-realignment/backlog/05-focused-cleanup-build-backlog.md
+  - specs/agent-workstream-skills-realignment/installed-pack-parity-check.md
+  - specs/agent-workstream-skills-realignment/source-skill-path-reference-audit.md
+  - docs/agent-workstream-design-review-checklist.md
+  - touched skills/docs from Sprint 05
+- skills:
+  - agent-workstream-apps
+- expected outputs:
+  - specs/agent-workstream-skills-realignment/sprint-05-review.md
+  - Sprint 06 tasks if gaps remain
+- required checks:
+  - git diff --check
+- done criteria:
+  - Sprint 05 review exists and either closes realignment or creates concrete next tasks
+  - task changes and queue update are committed
+- notes: []
