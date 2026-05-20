@@ -36,6 +36,8 @@ Read these first if present:
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-bootstrap/SKILL.md`
 - `../app-description-functional-agent-modeling/SKILL.md`
+- `../app-description-surface-modeling/SKILL.md`
+- `../app-description-ui/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 
 Prefer these example references when present:
@@ -70,6 +72,10 @@ A capability should be:
 - narrow enough to link clearly to behavior and verification
 - explicit about what it excludes
 
+## Generated SaaS exposure rule
+
+For generated full-stack SaaS, a user-facing capability change must record the source functional agent, workstream action, structured surface, and surface action that expose or consume the capability. If no human workstream or browser surface should expose it, state `internal-only` explicitly and name the internal caller class. This prevents capability modeling from bypassing `12-workstreams/`, `55-ui`, and surface-to-capability traceability.
+
 ## What this skill must capture
 
 For each capability, identify and describe as applicable:
@@ -85,7 +91,8 @@ For each capability, identify and describe as applicable:
 - delegated operational work, if any
 - retained human authority, approvals, exceptions, or supervision needs, if any
 - policy, permission, risk/confidence threshold, evidence, trace, learning, or outcome-accountability needs, if any
-- selected exposure surfaces: UI action, HTTP/gRPC API, agent tool, MCP tool/resource/prompt, workflow step, view/query, timer, consumer, or internal-only method
+- source functional agents, workstream actions, structured surfaces, surface actions, and action-to-capability map entries for user-facing exposure, or an explicit `internal-only` declaration
+- selected exposure surfaces: workstream surface action, browser UI/API action, HTTP/gRPC API, agent tool, MCP tool/resource/prompt, workflow step, view/query, timer, consumer, or internal-only method
 - in-scope outcomes
 - out-of-scope outcomes
 - major constraints or assumptions
@@ -119,7 +126,10 @@ Use this response shape when updating or summarizing capability work:
 - outputs / redaction / denial shape:
 - data access:
 - side effects:
+- source functional agents / workstream actions:
+- source surfaces / surface actions:
 - exposure surfaces:
+- internal-only declaration, if applicable:
 
 ## AI-first operating semantics
 - delegated work:
@@ -182,7 +192,8 @@ When the user names a business concept clearly, preserve that concept in the cap
 
 Route onward as needed:
 - to `ai-first-saas-object-model`, `ai-first-saas-agent-team-design`, `ai-first-saas-policy-governance`, `ai-first-saas-decision-cards`, `ai-first-saas-audit-trace`, or `ai-first-saas-outcomes-metrics` when the capability needs focused operating-model semantics
-- to `app-description-functional-agent-modeling` when the capability changes which user-facing functional agents can call it, which surfaces expose it, or which prompt/skill/tool boundaries apply
+- to `app-description-functional-agent-modeling` when the capability changes which user-facing functional agents can call it or which prompt/skill/tool boundaries apply
+- to `app-description-surface-modeling` when the capability changes a structured surface payload, action, allowed state, or surface-to-capability map
 - to `app-description-behavior-specification` when the capability needs concrete flows, rules, states, or invariants
 - to `app-description-test-specification` when acceptance, evaluation, or scope-verification scenarios need to be defined
 - to `app-description-auth-security` when the capability introduces differentiated actors, ownership, protected actions, or enforceable agent/human permissions

@@ -47,18 +47,20 @@ Prefer this default sequence:
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
-5. update `10-capabilities/` with governed capability contracts before implementation or surface choices: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
-6. update `15-operating-model/` for generated AI-first SaaS operating semantics
-7. update behavior-level meaning
-8. update verification expectations
-9. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
-10. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and consequential AI/tool activity
-11. update mandatory UI descriptions, including agent catalog/detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, trace surfaces, and `55-ui/style-guide.md`, for generated full-stack AI-first SaaS
-12. update traceability and impact understanding
-13. assess readiness
-14. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
-15. either stop at description maintenance or proceed to generation
-16. answer review questions through summaries
+5. for generated full-stack SaaS user-facing changes, update or verify `12-workstreams/` ownership first: functional agents, internal-agent support where relevant, durable workstreams, structured surfaces, surface actions, and action-to-capability candidates
+6. update `10-capabilities/` with governed capability contracts before implementation choices: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, tests, and links back to source functional agents/surfaces/actions for user-facing exposure
+7. update `12-workstreams/` again if capability modeling changes surface payloads, actions, authority, or traceability; capability and surface modeling may iterate, but neither layer is complete without the other for user-facing actions
+8. update `15-operating-model/` for generated AI-first SaaS operating semantics
+9. update behavior-level meaning
+10. update verification expectations
+11. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
+12. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and consequential AI/tool activity
+13. update mandatory UI descriptions in `55-ui/`, including agent catalog/detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, trace surfaces, and `style-guide.md`, as browser realization of `12-workstreams/` and `10-capabilities/` for generated full-stack AI-first SaaS
+14. update traceability and impact understanding
+15. assess readiness
+16. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
+17. either stop at description maintenance or proceed to generation
+18. answer review questions through summaries
 
 ## Change-only flow
 
@@ -76,7 +78,16 @@ Use `app-description-intake-router` to determine:
 - candidate affected layers
 - whether clarification is needed
 
-### Step 3. Update capabilities when scope changed
+### Step 3. Update workstream and surface ownership for generated SaaS user-facing changes
+Use `app-description-functional-agent-modeling` and `app-description-surface-modeling` when the request changes a dashboard, portal, work queue, admin console, command center, agent/chat area, browser action, approval, decision, audit timeline, workflow status, form, table, or other user-facing work area.
+
+Capture or verify:
+- source `12-workstreams/functional-agents.md` ownership;
+- structured surface ids, payload/action candidates, states, traces, and tests;
+- surface action-to-capability candidates;
+- which changes are browser realization details for `55-ui/` rather than application meaning.
+
+### Step 4. Update capabilities when scope changed
 Use `app-description-capability-modeling` when the request changes business scope, actors, intended outcomes, protected operations, queries, or exposure surfaces.
 For AI-first apps, connect capabilities to durable goals, delegated work, agent/team responsibilities, governance boundaries, decision surfaces, audit needs, and outcome loops.
 
@@ -89,7 +100,9 @@ Each affected capability should record enough backend contract detail to prevent
 - selected exposure surfaces such as UI action, HTTP/gRPC API, agent tool, MCP, workflow, view/query, timer, consumer, or internal-only method;
 - linked success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
 
-### Step 4. Update operating model when agentic semantics changed
+For user-facing generated SaaS capabilities, record the source functional agent, source surface/action, and surface-to-capability map entry, or explicitly mark the capability internal-only.
+
+### Step 5. Update operating model when agentic semantics changed
 
 Update `15-operating-model/` when the request changes:
 - objectives, success criteria, constraints, or definitions of done
@@ -101,7 +114,7 @@ Update `15-operating-model/` when the request changes:
 
 Route to focused AI-first companion skills only for the affected concerns; do not duplicate Akka implementation guidance in app-description artifacts.
 
-### Step 5. Update behavior
+### Step 6. Update behavior
 Use `app-description-behavior-specification` to update the app's meaning.
 
 Behavior follows the operating model and the secure SaaS foundation because:
@@ -110,19 +123,19 @@ Behavior follows the operating model and the secure SaaS foundation because:
 - observability needs something meaningful to expose
 - agentic work needs concrete transitions, pause/resume points, and exception semantics
 
-### Step 6. Update tests
+### Step 7. Update tests
 Use `app-description-test-specification` to make the behavior explicit and verifiable.
 
 For generated SaaS apps, the test layer must retain baseline tenant isolation, forbidden access, disabled-user, role/scope denial, `/api/me`, audit, support-access, billing-boundary, idempotency, and frontend secret-boundary tests even when the current change is app-specific.
 
-### Step 7. Analyze change impact
+### Step 8. Analyze change impact
 Use `app-description-change-impact` to determine:
 - which additional layers must move
 - which traceability artifacts must update
 - whether readiness should be reassessed
 - whether later regeneration can stay localized
 
-### Step 8. Update production-readiness layers
+### Step 9. Update production-readiness layers
 Update as needed:
 - `app-description-auth-security`
 - `app-description-observability`
@@ -130,16 +143,16 @@ Update as needed:
 These are not optional polish layers.
 They are part of the app definition. Missing secure SaaS foundation semantics must block readiness or generation rather than becoming assumptions.
 
-### Step 9. Update mandatory UI
+### Step 10. Update mandatory UI
 
-For generated full-stack AI-first SaaS, update `55-ui/` after the operating model and behavior are clear enough to describe the user's work surfaces.
+For generated full-stack AI-first SaaS, update `55-ui/` after `12-workstreams/` owns the relevant functional agents, surfaces, surface actions, and surface-to-capability traceability, and after capability contracts are clear enough to describe browser action authority.
 Prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over record-management navigation. Conventional list/form routes can exist as implementation details, but structured workstream surfaces remain primary for generated AI-first SaaS.
 Keep the style-selection rule below in force.
 
-### Step 10. Update readiness
+### Step 11. Update readiness
 Use `app-description-readiness-assessment` to reflect the new current state.
 
-### Step 11. Respond with review summaries when useful
+### Step 12. Respond with review summaries when useful
 Use:
 - `app-description-change-summary`
 - `app-description-readiness-summary`
@@ -174,25 +187,28 @@ Use generation and readiness summaries to explain what happened.
 
 When multiple layers are affected, prefer this order:
 
-1. `10-capabilities/`
-2. `15-operating-model/` for generated AI-first SaaS apps
-3. `20-behavior/`
-4. `30-tests/`
-5. `40-auth-security/`
-6. `50-observability/`
-7. `55-ui/` for generated full-stack AI-first SaaS, including `style-guide.md`
-8. `70-traceability/`
-9. `00-system/readiness-status.md`
-10. `60-generation/` derived generation notes
-11. `80-review/` optional summaries
+1. `12-workstreams/` first for generated full-stack SaaS user-facing changes: functional agents, structured surfaces, surface actions, and action-to-capability candidates
+2. `10-capabilities/` for governed backend contracts, including source functional agent/surface/action links or explicit internal-only declarations
+3. `12-workstreams/` again when capability contract details alter payloads, actions, authority, traces, or tests
+4. `15-operating-model/` for generated AI-first SaaS apps
+5. `20-behavior/`
+6. `30-tests/`
+7. `40-auth-security/`
+8. `50-observability/`
+9. `55-ui/` for generated full-stack AI-first SaaS browser realization, including `style-guide.md`
+10. `70-traceability/`
+11. `00-system/readiness-status.md`
+12. `60-generation/` derived generation notes
+13. `80-review/` optional summaries
 
-This keeps the semantic source layers ahead of the derived layers.
+This keeps workstream/surface ownership and governed capability contracts ahead of derived UI and implementation layers. Capability and surface modeling may iterate together, but `55-ui/` and generation are not ready until the `12-workstreams/`/`10-capabilities/` contract is coherent.
 
 ## Change-impact rule
 
 Every description change should trigger a mental or explicit change-impact pass.
 
 The harness should ask:
+- which `12-workstreams/` functional agents, internal agents, structured surfaces, surface actions, and surface-to-capability maps changed?
 - which capabilities changed?
 - did any capability contract fields change: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, or tests?
 - which behavior artifacts changed?

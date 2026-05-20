@@ -94,6 +94,10 @@ Load the companion skill that matches the current task. Users do not need to nam
 - `app-description-readiness-summary`
   - summarize why the description is or is not ready for generation
 
+## Generated SaaS workstream ownership invariant
+
+For generated full-stack SaaS, do not change `10-capabilities/`, `55-ui/`, readiness, generation scope, or implementation planning for a user-facing request without first checking whether `12-workstreams/functional-agents.md`, `12-workstreams/surfaces-index.md`, and relevant `12-workstreams/surface-contracts/**` must change. `12-workstreams/` owns functional agent placement, surface meaning, surface actions, and surface-to-capability traceability. `10-capabilities/` owns governed backend contracts. `55-ui/` owns browser realization only.
+
 ## Default flow
 
 Prefer this sequence unless the task is already narrowly scoped:
@@ -140,17 +144,18 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 
 1. The app description is the source of truth.
 2. Functional agents and structured surfaces in `12-workstreams/` are the primary generated-app verticals for authenticated consequential work; page/screen hierarchy is subordinate route/deep-link detail.
-3. Capability inventory in `10-capabilities/` is the backend contract layer: record actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, and tests before choosing Akka components or tools.
-4. Generated code is a projection, not the definition of the app.
-5. Humans do not directly edit generated code or internal app-description artifacts.
-6. Tests are part of the app description, not only post-hoc verification.
-7. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
-8. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
-9. Auth/security and observability are first-class description concerns.
-10. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
-11. Readiness must be assessed before generation.
-12. Localized regeneration is an optimization, not a conceptual requirement.
-13. Review should focus on semantic change, not only file churn.
+3. For user-facing generated SaaS changes, verify functional agent ownership, structured surface contracts, surface actions, and action-to-capability traceability before treating `10-capabilities/`, `55-ui/`, readiness, or generation scope as complete.
+4. Capability inventory in `10-capabilities/` is the backend contract layer: record actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, and tests before choosing Akka components or tools.
+5. Generated code is a projection, not the definition of the app.
+6. Humans do not directly edit generated code or internal app-description artifacts.
+7. Tests are part of the app description, not only post-hoc verification.
+8. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
+9. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
+10. Auth/security and observability are first-class description concerns.
+11. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
+12. Readiness must be assessed before generation.
+13. Localized regeneration is an optimization, not a conceptual requirement.
+14. Review should focus on semantic change, not only file churn.
 
 ## Decision guide
 

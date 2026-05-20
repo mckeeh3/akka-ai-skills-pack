@@ -9,6 +9,8 @@ Use this skill for the mandatory browser frontend of generated full-stack AI-fir
 
 This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, and structured surfaces. Preserve supervision, decision, governance, digest, audit, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
 
+High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, structured surfaces, surface actions, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, surfaces, or actions must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
+
 ## Required reading
 
 Read these first if present:

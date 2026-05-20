@@ -7,7 +7,7 @@ description: Model user-facing role-authorized functional/context-area agents in
 
 Use this skill when maintaining the app-description `12-workstreams/functional-agents.md` layer or equivalent artifacts for generated full-stack AI-first SaaS apps.
 
-Functional agents are the user-facing vertical application areas in the authenticated workstream shell. They are not Akka components, chat sessions, pages, or generic assistants. Each functional agent owns or reuses structured surfaces and invokes governed backend capabilities through explicit authority rules.
+Functional agents are the user-facing vertical application areas in the authenticated workstream shell. They are not Akka components, chat sessions, pages, or generic assistants. Each functional agent owns or reuses structured surfaces and invokes governed backend capabilities through explicit authority rules. Normalize UI nouns such as dashboard, portal, admin screen, command center, work queue, approval area, or agent/chat space into functional-agent ownership plus reusable surface contracts before route/page details.
 
 ## Required reading
 

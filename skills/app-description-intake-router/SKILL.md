@@ -45,6 +45,8 @@ If the user does **not** explicitly ask to generate code, run the app, execute t
 
 Before selecting a focused description skill for broad product input, check for AI-first signals: delegated operational work, agents, recommendations, policy-bound automation, approvals, exceptions, supervision, audit traces, learning, or outcome accountability. If present, route through AI-first interpretation and preserve `15-operating-model/` semantics instead of reducing the app to CRUD screens or a chatbot.
 
+For generated full-stack SaaS input, also run a workstream pre-check before capability or UI routing. If the user mentions dashboards, portals, work queues, admin consoles, command centers, agent/chat areas, browser actions, approvals, decisions, audit timelines, workflow status, forms, tables, or other work areas, identify candidate `12-workstreams/` functional agents, structured surfaces, surface actions, and surface-action capability candidates first. Then route to capability, UI, behavior, security, observability, or tests as linked follow-up work.
+
 Generation is opt-in unless the harness is only recommending it as a possible next step.
 
 ## Primary input modes
@@ -103,12 +105,15 @@ If the input contains both revision and generation requests:
 ## What this skill must extract
 
 From the user input or normalized input envelope, identify candidate deltas in these categories:
+- functional agents: user-facing work areas, role workspace, rail placement, prompt intent, authority, and callable capabilities
+- structured surfaces/actions: dashboards, forms, tables, decision cards, audit timelines, workflow status, reusable placement, payload/action candidates, and action-to-capability candidates
 - capability or scope, including actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, and exposure surfaces
 - AI-first operating-model concerns: goals, delegated work, retained human authority, agents, policies, approvals, decisions, exceptions, evidence, traces, learning, and outcomes
 - behavior and invariants
 - test and example expectations
 - auth/security
 - observability
+- UI realization under `55-ui/`
 - generation request
 - review or explanation request
 
@@ -135,6 +140,14 @@ Use focused AI-first companion skills only for the concerns in scope:
 - `ai-first-saas-audit-trace`
 - `ai-first-saas-ui-surfaces`
 - `ai-first-saas-outcomes-metrics`
+
+### If generated SaaS input changes user-facing work areas, surfaces, or actions
+Load next as applicable:
+- `app-description-functional-agent-modeling`
+- `app-description-surface-modeling`
+- then `app-description-capability-modeling` for governed operation/query contracts behind surface actions
+
+Use this route before direct UI or capability routing when ordinary user vocabulary names a dashboard, portal, work queue, admin console, command center, browser action, approval, decision, audit timeline, workflow status, form, table, or agent/chat area.
 
 ### If the input changes capability contracts
 Load next:
@@ -190,9 +203,12 @@ Produce a routing result with these sections:
 1. Input summary
 2. Primary intent
 3. Candidate description deltas
-4. Next skill or skill sequence
-5. Clarifications needed, if any
-6. Generation requested now: yes/no
+4. Candidate functional agents
+5. Candidate structured surfaces/actions
+6. Surface-action capability candidates
+7. Next skill or skill sequence
+8. Clarifications needed, if any
+9. Generation requested now: yes/no
 
 ## Standard output template
 
@@ -208,13 +224,16 @@ Use this response shape internally or in structured notes:
 - description-change | generate-app | mixed | review
 
 ## Candidate description deltas
+- functional agents:
+- structured surfaces/actions:
+- surface-action capability candidates:
 - capabilities:
 - operating-model:
 - behavior:
 - tests:
 - auth/security:
 - observability:
-- UI:
+- UI / 55-ui:
 
 ## Next skill or skill sequence
 1. ...

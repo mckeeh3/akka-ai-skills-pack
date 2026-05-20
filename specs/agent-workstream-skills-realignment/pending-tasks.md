@@ -158,7 +158,7 @@
 
 ### TASK-AWSR-02-002: Align app-description skills with workstream ownership
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/02-planning-description-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/02-planning-description/02-align-app-description-skills.md
 - depends on: [TASK-AWSR-02-001]
@@ -185,7 +185,8 @@
 - done criteria:
   - description-first guidance clearly preserves workstream/surface ownership
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align app description workstream ownership
 
 ### TASK-AWSR-02-003: Align PRD/spec/backlog generation with vertical workstreams
 
