@@ -696,7 +696,7 @@
 
 ### TASK-STARTER-07-006: Implement Resend adapter boundary and captured outbox checks
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/06-resend-adapter-outbox.md
 - depends on: [TASK-STARTER-07-005]
@@ -720,7 +720,11 @@
 - done criteria:
   - production email is no longer represented by a hardcoded success stub
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement starter Resend email adapter`
+  - fullstack validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh`.
+  - no-secret scan passed over template frontend/static-resource paths: `RESEND_API_KEY|re_test_secret|invite-token-|token=`.
+  - check passed: `git diff --check`.
 
 ### TASK-STARTER-07-007: Add durable Akka identity, invitation, and audit slices
 

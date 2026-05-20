@@ -20,7 +20,9 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.net.http.HttpRequest;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -155,19 +157,86 @@ class InvitationAndUserAdminServiceTest {
   @Test
   void resendProductionReadinessFailsWithoutResendConfigurationAndLocalCaptureIsSafe() {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("email-key", "email@example.com"));
-    var emailService = new ResendEmailService();
+    var emailService = new ResendEmailService(Map.of(), (message, config) -> ResendEmailService.DeliveryResult.sent("should-not-send"));
     var message = invitationRepository.queuedEmails().get(0);
 
     var localResult = emailService.deliver(message, ResendEmailService.DeliveryMode.LOCAL_OR_TEST);
     assertTrue(localResult.success());
     assertTrue(localResult.providerMessageId().startsWith("captured-"));
+    assertEquals(ResendEmailService.DeliveryKind.CAPTURED, localResult.kind());
+
+    var delivered = invitations.recordDeliveryResult(invite.invitationId(), message.deliveryAttemptId(), localResult.success(), localResult.providerMessageId(), localResult.safeErrorSummary(), "corr-captured-delivery");
+    assertEquals(EmailDeliveryStatus.CAPTURED, delivered.deliveryStatus());
 
     var prodResult = emailService.deliver(message, ResendEmailService.DeliveryMode.PRODUCTION);
-    if (System.getenv("RESEND_API_KEY") == null) {
-      assertFalse(prodResult.success());
-      assertEquals("resend-config-missing", prodResult.safeErrorSummary());
-    }
+    assertFalse(prodResult.success());
+    assertEquals("resend-config-missing", prodResult.safeErrorSummary());
     assertEquals(invite.invitationId(), message.invitationId());
+  }
+
+  @Test
+  void resendProductionAdapterBuildsAuthorizedRequestAndRecordsSentStatus() {
+    var invite = invitations.createInvitation(tenantAdmin, inviteRequest("resend-success", "resend@example.com"));
+    var message = invitationRepository.queuedEmails().get(0);
+    var transport = new CapturingTransport(202, "{\"id\":\"email-resend-123\"}");
+    var service = new ResendEmailService(
+        Map.of(
+            "RESEND_API_KEY", "re_test_secret",
+            "RESEND_FROM_EMAIL", "Starter <onboarding@example.com>",
+            "INVITE_EMAIL_SUBJECT", "Starter invitation",
+            "RESEND_API_BASE_URL", "https://api.resend.com"),
+        new ResendEmailService.ResendHttpEmailDeliveryAdapter(transport));
+
+    var result = service.deliver(message, ResendEmailService.DeliveryMode.PRODUCTION);
+
+    assertTrue(result.success());
+    assertEquals("email-resend-123", result.providerMessageId());
+    assertEquals(ResendEmailService.DeliveryKind.SENT, result.kind());
+    assertEquals("https://api.resend.com/emails", transport.request.uri().toString());
+    assertEquals("Bearer re_test_secret", transport.request.headers().firstValue("Authorization").orElseThrow());
+    assertEquals("application/json", transport.request.headers().firstValue("Content-Type").orElseThrow());
+
+    var delivered = invitations.recordDeliveryResult(invite.invitationId(), message.deliveryAttemptId(), result.success(), result.providerMessageId(), result.safeErrorSummary(), "corr-resend-delivery");
+    assertEquals(EmailDeliveryStatus.SENT, delivered.deliveryStatus());
+    assertTrue(delivered.providerMessageIds().contains("email-resend-123"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_DELIVERY_SENT")));
+  }
+
+  @Test
+  void resendProductionAdapterMapsFailuresToSafeDeliveryStatus() {
+    var invite = invitations.createInvitation(tenantAdmin, inviteRequest("resend-failure", "fail@example.com"));
+    var message = invitationRepository.queuedEmails().get(0);
+    var service = new ResendEmailService(
+        Map.of("RESEND_API_KEY", "re_test_secret", "INVITE_EMAIL_FROM", "Starter <onboarding@example.com>"),
+        new ResendEmailService.ResendHttpEmailDeliveryAdapter(new CapturingTransport(401, "{\"message\":\"bad key\"}")));
+
+    var result = service.deliver(message, ResendEmailService.DeliveryMode.PRODUCTION);
+
+    assertFalse(result.success());
+    assertEquals("resend-http-401", result.safeErrorSummary());
+    assertFalse(result.toString().contains("re_test_secret"));
+
+    var failed = invitations.recordDeliveryResult(invite.invitationId(), message.deliveryAttemptId(), result.success(), result.providerMessageId(), result.safeErrorSummary(), "corr-resend-failure");
+    assertEquals(EmailDeliveryStatus.FAILED, failed.deliveryStatus());
+    assertEquals("resend-http-401", failed.lastDeliveryErrorSummary());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_DELIVERY_FAILED")));
+  }
+
+  private static final class CapturingTransport implements ResendEmailService.HttpTransport {
+    private final int status;
+    private final String body;
+    private HttpRequest request;
+
+    private CapturingTransport(int status, String body) {
+      this.status = status;
+      this.body = body;
+    }
+
+    @Override
+    public ResendEmailService.HttpTransportResponse send(HttpRequest request) {
+      this.request = request;
+      return new ResendEmailService.HttpTransportResponse(status, body);
+    }
   }
 
   private String rawTokenFromOutbox(String outboxId) {

@@ -126,15 +126,16 @@ public final class InvitationService {
       return invite;
     }
     var ids = delivered && providerMessageId != null ? append(invite.providerMessageIds(), providerMessageId) : invite.providerMessageIds();
+    var deliveredStatus = providerMessageId != null && providerMessageId.startsWith("captured-") ? EmailDeliveryStatus.CAPTURED : EmailDeliveryStatus.SENT;
     var updated = new Invitation(
         invite.invitationId(), invite.normalizedEmail(), invite.scopeType(), invite.tenantId(), invite.customerId(), invite.requestedRoles(),
         invite.accountId(), invite.membershipId(), delivered ? InvitationStatus.SENT : InvitationStatus.DELIVERY_FAILED,
-        delivered ? EmailDeliveryStatus.CAPTURED : EmailDeliveryStatus.FAILED, invite.deliveryAttempts() + 1, ids,
+        delivered ? deliveredStatus : EmailDeliveryStatus.FAILED, invite.deliveryAttempts() + 1, ids,
         delivered ? null : safeError, invite.acceptanceContextId(), invite.tokenHash(), invite.expiresAt(), invite.acceptedAt(),
         invite.acceptedByWorkosSubject(), invite.revokedAt(), invite.revokedByAccountId(), invite.revokeReason(), invite.resendCount(),
         invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), correlationId);
     invitationRepository.saveInvitation(updated);
-    appendSystemAudit(updated, "INVITATION_DELIVERY_" + (delivered ? "CAPTURED" : "FAILED"), delivered ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.FAILED, delivered ? "captured" : safeError, correlationId);
+    appendSystemAudit(updated, "INVITATION_DELIVERY_" + (delivered ? deliveredStatus.name() : "FAILED"), delivered ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.FAILED, delivered ? deliveredStatus.name().toLowerCase(java.util.Locale.ROOT) : safeError, correlationId);
     return updated;
   }
 
