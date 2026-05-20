@@ -132,7 +132,23 @@ Use bounded task families such as:
 - `AgentWorkTrace` recording/search/detail UI and trace-retention/security tests
 - focused security/admin/agent-governance regression tests across tenant isolation, AuthContext/scope, approval, audit/trace, disabled agents, unassigned skills, and unauthorized prompt/skill/tool changes
 
-Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation scope it covers.
+Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation scope it covers. For generated full-stack AI-first SaaS, each runnable implementation task must also carry its vertical workstream contract: functional agent or internal-only/foundation scope, structured surface/action or workstream event/non-UI trigger, capability id/class, selected Akka substrate, frontend/API/realtime work, and required tests.
+
+## Implementation-ready vertical task rule
+
+A pending task for generated full-stack AI-first SaaS is runnable only when it is a bounded vertical increment or an explicitly cross-cutting/foundation/internal task. Do not mark a task runnable if it names only a module, page, dashboard, CRUD screen, component family, or generic UI feature.
+
+Each runnable task should state or inherit from its task brief/backlog:
+
+- functional agent(s), or explicit internal-only/foundation/cross-cutting scope;
+- structured surface/action or workstream event, or explicit non-UI trigger;
+- capability id(s)/class(es), or explicit foundation scope;
+- `AuthContext`, tenant/customer scope, and role/capability rules;
+- selected Akka substrate and exposure surface such as HTTP/API, agent tool, workflow, timer, consumer, view, MCP, or internal method;
+- frontend/API/realtime work when user-facing;
+- success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, and smoke checks as applicable.
+
+If this contract is missing, block the task for backlog/task-brief repair instead of guessing the missing workstream, surface, authority, or component scope.
 
 ## Selection algorithm
 

@@ -4,6 +4,8 @@ Use this pattern when a large PRD, revised PRD, app-description realization, or 
 
 Goal: decompose work into **vertical module sprints** that can be implemented and tested full stack, one module at a time.
 
+For generated full-stack AI-first SaaS, `vertical` means each sprint, backlog item, task brief, and pending task is anchored to functional agent ownership, a structured surface/action or workstream event, a governed capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests. Do not treat component family, page, dashboard, or generic module names as sufficient implementation boundaries.
+
 Before splitting modules, classify the generated product as full-stack secure AI-first SaaS by default: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision UI, audit traces, and outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
 For SaaS app planning, the first sprint or slice is always the full-stack core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, deterministic prompt assembly, authorized `readSkill(skillId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`), behavior editing agent proposal/review flow, agent catalog/detail, prompt/skill/manifest/tool-boundary UI, AI admin responsibilities, decision cards for risky admin actions, mandatory admin UI surfaces, audit, frontend shell/context selection, and security/admin/frontend/agent-governance tests before app-specific CRM/domain features.
@@ -83,7 +85,8 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - sprint goal
 - parent module or modules
 - dependencies and prerequisite decisions
-- backend scope: entities, workflows, views, consumers, timers, endpoints
+- vertical workstream increment: functional agent(s), workstream event or structured surface/action, mapped capability id(s)/class(es), AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
+- backend scope: entities, workflows, views, consumers, timers, endpoints as implementation of those capabilities
 - frontend scope: functional-agent workstream shell changes, structured surfaces, forms/surface actions, route/deep-link details, API client calls, realtime behavior
 - AI-first increment for generated SaaS: goals/plans, agent/team responsibilities, authority limits, approval gates, policy clauses, evidence/risk/confidence/impact surfaces, trace records, evaluations, and outcome metrics
 - acceptance behavior: happy paths, validation, no-op/idempotent cases, error cases
@@ -104,7 +107,18 @@ specs/sprints/02-purchase-request-core-sprint.md
 specs/backlog/02-purchase-request-core-build-backlog.md
 ```
 
-The backlog should break the sprint into harness-sized tasks. Prefer this order when applicable:
+The backlog should break the sprint into harness-sized vertical tasks. Each implementation task should carry:
+
+- functional agent(s), or explicit internal-only/foundation scope;
+- structured surface/action or workstream event, or explicit non-UI trigger;
+- capability id(s)/class(es);
+- AuthContext, tenant/customer scope, and role/capability rules;
+- side effects, idempotency, approval, audit, and trace obligations;
+- selected Akka substrate and endpoint/tool/workflow/timer/consumer exposure;
+- frontend/API/realtime work where user-facing;
+- required success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, and smoke tests.
+
+Prefer this order when applicable:
 
 1. secure foundation records and contracts: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, AuthContext, central authorization, audit metadata, and tenant/customer scope types
 2. WorkOS/JWT seam, `/api/me`, complete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, managed-agent foundation tasks for `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals, agent catalog/detail and governance UI, AI admin responsibilities such as AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, admin UI surfaces, and security/admin/agent-governance tests
@@ -134,7 +148,7 @@ Rules:
 
 ## Pending tasks
 
-`specs/pending-tasks.md` should group or annotate tasks by sprint/module while preserving stable task IDs.
+`specs/pending-tasks.md` should group or annotate tasks by sprint/module while preserving stable task IDs. A pending task is not implementation-ready if it names only a component, page, dashboard, module, or generic UI feature without the vertical workstream/surface/capability contract above; block it or create a task brief before queueing it as runnable.
 
 Acceptable ID patterns:
 
@@ -178,6 +192,7 @@ A module sprint is done only when:
 Avoid:
 
 - layer-only sprints such as “all entities” or “all UI” for large PRDs
+- pending tasks such as “build dashboard”, “add admin module”, “create CRUD pages”, or “implement workflow” without functional-agent ownership, surface/action or workstream event, capability id/class, AuthContext/rules, selected Akka substrate, frontend/API/realtime scope, and tests
 - module specs that become giant PRD copies
 - sprint specs that omit frontend work when the user-facing capability requires it
 - pending tasks that jump across unrelated modules in one harness run

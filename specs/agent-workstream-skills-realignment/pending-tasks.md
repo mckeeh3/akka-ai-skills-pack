@@ -190,7 +190,7 @@
 
 ### TASK-AWSR-02-003: Align PRD/spec/backlog generation with vertical workstreams
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/02-planning-description-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/02-planning-description/03-align-prd-backlog-generation.md
 - depends on: [TASK-AWSR-02-002]
@@ -210,7 +210,8 @@
 - done criteria:
   - PRD-generated queues are constrained to implementation-ready vertical work
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align PRD backlog workstream tasks
 
 ### TASK-AWSR-02-004: Review planning sprint and create next tasks
 
