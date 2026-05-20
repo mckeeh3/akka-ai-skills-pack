@@ -12,6 +12,7 @@ const contextBar = read('./workstream/shell/ContextAuthorityBar.tsx');
 const shellState = read('./workstream/shell/shellState.ts');
 const railState = read('./workstream/rail/railState.ts');
 const surfaceFrame = read('./workstream/surfaces/SurfaceStateFrame.tsx');
+const httpRealtime = read('./api/HttpWorkstreamRealtimeClient.ts');
 
 const quarantinedLegacyScreens = [
   './screens/governance/GovernancePoliciesPage.tsx',
@@ -66,4 +67,14 @@ test('admin, audit, governance, and profile work are structured surfaces with ca
   assert.match(surfaces, /audit\.trace\.read/);
   assert.match(surfaces, /governance\.policy\.simulate/);
   assert.match(surfaces, /Backend authorization denied/);
+});
+
+test('production realtime client uses workstream SSE with stale, reconnect, malformed, and selected-context behavior', () => {
+  assert.match(httpRealtime, /\/api\/workstream\/events/);
+  assert.match(httpRealtime, /selectedContextId/);
+  assert.match(httpRealtime, /lastEventId/);
+  assert.match(httpRealtime, /surface\.stale/);
+  assert.match(httpRealtime, /surface\.reconnected/);
+  assert.match(httpRealtime, /Malformed realtime event was ignored/);
+  assert.match(httpRealtime, /Realtime stream disconnected or could not authenticate/);
 });

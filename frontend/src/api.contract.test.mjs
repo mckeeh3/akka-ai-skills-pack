@@ -12,6 +12,7 @@ const workstreamApi = readFileSync(new URL('./api/WorkstreamApiClient.ts', impor
 const fixtureWorkstreamApi = readFileSync(new URL('./api/FixtureWorkstreamApiClient.ts', import.meta.url), 'utf8');
 const workstreamRealtime = readFileSync(new URL('./api/WorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 const fixtureWorkstreamRealtime = readFileSync(new URL('./api/FixtureWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
+const httpWorkstreamRealtime = readFileSync(new URL('./api/HttpWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 
 test('DTOs include seed frontend API contract families', () => {
   assert.match(types, /export type MeResponse/);
@@ -86,4 +87,9 @@ test('workstream fixture realtime client emits workstream events and visible sta
   assert.match(fixtureWorkstreamRealtime, /duplicateReplayEvent/);
   assert.match(fixtureWorkstreamRealtime, /outOfOrderEvent/);
   assert.match(fixtureWorkstreamRealtime, /status: 'stale'/);
+  assert.match(httpWorkstreamRealtime, /new EventSource\(`\/api\/workstream\/events/);
+  assert.match(httpWorkstreamRealtime, /selectedContextId/);
+  assert.match(httpWorkstreamRealtime, /lastEventId/);
+  assert.match(httpWorkstreamRealtime, /Malformed realtime payload was ignored safely/);
+  assert.match(httpWorkstreamRealtime, /surface\.stale/);
 });

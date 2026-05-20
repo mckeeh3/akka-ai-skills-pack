@@ -4,7 +4,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient } from './api';
+import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient } from './api';
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
@@ -25,7 +25,7 @@ import {
 
 const useFixtureWorkstream = new URLSearchParams(window.location.search).get('fixtureWorkstream') === '1';
 const workstreamClient = useFixtureWorkstream ? new FixtureWorkstreamApiClient() : new HttpWorkstreamApiClient();
-const realtimeClient = new FixtureWorkstreamRealtimeClient();
+const realtimeClient = useFixtureWorkstream ? new FixtureWorkstreamRealtimeClient() : new HttpWorkstreamRealtimeClient();
 
 type ModePreference = 'light' | 'dark' | 'system';
 type BootstrapState =

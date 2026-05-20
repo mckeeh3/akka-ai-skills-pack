@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.api.workstream;
 
+import akka.NotUsed;
 import akka.http.javadsl.model.HttpResponse;
 import akka.javasdk.annotations.Acl;
 import akka.javasdk.annotations.JWT;
@@ -8,6 +9,7 @@ import akka.javasdk.annotations.http.HttpEndpoint;
 import akka.javasdk.annotations.http.Post;
 import akka.javasdk.http.AbstractHttpEndpoint;
 import akka.javasdk.http.HttpResponses;
+import akka.stream.javadsl.Source;
 import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.notFound;
 import static akka.javasdk.http.HttpException.unauthorized;
@@ -48,6 +50,19 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(StarterSecurityComponents.workstreamService().runAction(identity, selectedContextId, request)));
   }
 
+  @Get("/events")
+  public HttpResponse events() {
+    var functionalAgentId = requestContext().queryParams().getString("functionalAgentId").orElse(null);
+    var lastEventId = requestContext().lastSeenSseEventId()
+        .or(() -> requestContext().queryParams().getString("lastEventId"))
+        .orElse(null);
+    return authorized((identity, selectedContextId, correlationId) -> {
+      Source<{{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.WorkstreamEvent, NotUsed> source =
+          Source.from(StarterSecurityComponents.workstreamService().events(identity, selectedContextId, functionalAgentId, lastEventId, correlationId));
+      return HttpResponses.serverSentEvents(source, event -> event.eventId(), event -> event.eventType());
+    });
+  }
+
   private HttpResponse authorized(AuthorizedCall call) {
     try {
       var claims = requestContext().getJwtClaims();
@@ -55,6 +70,7 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
       var selectedContextId = requestContext().requestHeader("X-Selected-Context-Id")
           .or(() -> requestContext().requestHeader("X-Selected-Membership-Id"))
           .map(header -> header.value())
+          .or(() -> requestContext().queryParams().getString("selectedContextId"))
           .orElse(null);
       var correlationId = requestContext().requestHeader("X-Correlation-Id").map(header -> header.value()).orElse("api-workstream");
       return call.invoke(identity, selectedContextId, correlationId);

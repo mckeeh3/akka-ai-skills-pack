@@ -285,7 +285,7 @@
 
 ### TASK-STARTER-03-003: Wire remaining core workstream surfaces and realtime/stale behavior
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/03-workstream-api-frontend-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/03-workstream-api-frontend/03-wire-core-surfaces-realtime.md
 - depends on: [TASK-STARTER-03-002]
@@ -310,7 +310,10 @@
 - done criteria:
   - core workstream shell operates against backend APIs with visible stale/reconnect/forbidden behavior
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Wire starter core workstream surfaces realtime`
+  - frontend checks passed: `cd frontend && npm test -- --run && npm run typecheck && npm run build`
+  - rendered-template Maven test command passed with `{{JAVA_BASE_PACKAGE}}=ai.first` and `{{JAVA_PACKAGE_PATH}}=ai/first`.
 
 ### TASK-STARTER-04-001: Implement governed agent records and seed import
 

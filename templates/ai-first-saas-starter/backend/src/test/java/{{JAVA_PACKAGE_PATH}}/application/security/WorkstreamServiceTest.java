@@ -51,7 +51,11 @@ class WorkstreamServiceTest {
     assertEquals("membership-admin", bootstrap.me().selectedAuthContext().selectedContextId());
     assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
     assertTrue(bootstrap.items().stream().anyMatch(item -> item.surfaceId().equals("surface-user-admin-dashboard")));
+    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-access-profile") && surface.ownerFunctionalAgentId().equals("agent-access-profile")));
     assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-user-admin-list")));
+    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-audit-timeline") && surface.surfaceType().equals("audit-timeline")));
+    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-governance-policy") && surface.surfaceType().equals("governance-diff")));
+    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-agent-admin-placeholder") && surface.stale() != null));
     assertTrue(bootstrap.surfaces().stream().flatMap(surface -> surface.actions().stream()).anyMatch(action -> action.actionId().equals("action-invite-user") && action.idempotency().required()));
     assertFalse(bootstrap.toString().contains("invite-token"));
     assertFalse(bootstrap.toString().contains("tokenHash"));
@@ -67,6 +71,21 @@ class WorkstreamServiceTest {
     var mismatch = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-display-user-list", "secure-tenant-user-foundation", null, null, "membership-other", "surface-user-admin-dashboard", "corr-forbidden")));
     assertEquals("CONTEXT_FORBIDDEN", mismatch.reasonCode());
+  }
+
+  @Test
+  void realtimeEventsAreScopedAndResumeWithStaleFallback() {
+    var events = service.events(identity(), "membership-admin", null, null, "corr-events");
+
+    assertTrue(events.stream().anyMatch(event -> event.eventType().equals("surface.stale") && event.surfaceId().equals("surface-user-admin-dashboard")));
+    assertTrue(events.stream().allMatch(event -> event.tenantId().equals("tenant-1")));
+
+    var resumed = service.events(identity(), "membership-admin", null, "evt-audit-appended-002", "corr-events");
+    assertTrue(resumed.stream().noneMatch(event -> event.eventId().equals("evt-audit-appended-002")));
+    assertTrue(resumed.stream().anyMatch(event -> event.eventId().equals("evt-user-admin-stale-003")));
+
+    var staleFallback = service.events(identity(), "membership-admin", null, "evt-missing", "corr-events");
+    assertEquals("surface.stale", staleFallback.get(0).eventType());
   }
 
   @Test

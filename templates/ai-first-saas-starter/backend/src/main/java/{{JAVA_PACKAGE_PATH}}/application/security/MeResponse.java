@@ -131,7 +131,19 @@ public record MeResponse(
       String deniedReason) {
     static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
       var userAdminVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
+      var profileVisible = capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
+      var auditVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read"));
+      var governanceVisible = capabilities.stream().anyMatch(capability -> capability.startsWith("governance.") || capability.contains("policy"));
       return List.of(
+          new FunctionalAgentSummary(
+              "agent-access-profile",
+              "Access/Profile",
+              "Review the signed-in account, selected AuthContext, profile preferences, support-access state, and browser-safe capability basis.",
+              "profile",
+              "detail-edit",
+              List.of("profile.read"),
+              profileVisible ? "visible" : "denied",
+              profileVisible ? null : "No active profile context is available."),
           new FunctionalAgentSummary(
               "agent-user-admin",
               "User Admin",
@@ -148,8 +160,17 @@ public record MeResponse(
               "audit",
               "audit-timeline",
               List.of("audit.trace.read"),
-              capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read")) ? "visible" : "hidden",
+              auditVisible ? "visible" : "hidden",
               null),
+          new FunctionalAgentSummary(
+              "agent-governance-policy",
+              "Governance/Policy",
+              "Inspect starter policy guardrails, approval requirements, and read-only governance proposals until the full governance backend is installed.",
+              "shield",
+              "governance-diff",
+              List.of("governance.policy.read"),
+              governanceVisible ? "visible" : "denied",
+              governanceVisible ? null : "Governance policy capabilities are not assigned in this context."),
           new FunctionalAgentSummary(
               "agent-agent-admin",
               "Agent Admin",

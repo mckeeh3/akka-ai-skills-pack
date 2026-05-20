@@ -11,3 +11,4 @@ export { FixtureWorkstreamApiClient } from './FixtureWorkstreamApiClient';
 export { HttpWorkstreamApiClient } from './HttpWorkstreamApiClient';
 export type * from './WorkstreamRealtimeClient';
 export { FixtureWorkstreamRealtimeClient } from './FixtureWorkstreamRealtimeClient';
+export { HttpWorkstreamRealtimeClient } from './HttpWorkstreamRealtimeClient';
