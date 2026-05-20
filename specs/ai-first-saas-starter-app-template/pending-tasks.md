@@ -351,7 +351,7 @@
 
 ### TASK-STARTER-04-002: Implement prompt assembly, readSkill, and behavior-editing flow
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/04-agent-governance-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/04-agent-governance/02-implement-prompt-assembly-readskill-behavior-editing.md
 - depends on: [TASK-STARTER-04-001]
@@ -376,7 +376,9 @@
 - done criteria:
   - runtime behavior guidance is governed by backend records and traces, not prompt text alone
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement starter agent runtime governance`
+  - rendered-template Maven test command passed with `{{JAVA_BASE_PACKAGE}}=ai.first` and `{{JAVA_PACKAGE_PATH}}=ai/first`.
 
 ### TASK-STARTER-04-003: Wire Agent Admin and Governance/Policy UI to real capabilities
 

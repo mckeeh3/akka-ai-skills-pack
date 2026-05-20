@@ -1,6 +1,7 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
@@ -22,6 +23,7 @@ public final class StarterSecurityComponents {
   private static final AuthContextResolver AUTH_CONTEXT_RESOLVER = new AuthContextResolver(IDENTITY_REPOSITORY);
   private static final InMemoryAgentBehaviorRepository AGENT_BEHAVIOR_REPOSITORY = new InMemoryAgentBehaviorRepository();
   private static final AgentBehaviorSeedLoader AGENT_BEHAVIOR_SEED_LOADER = new AgentBehaviorSeedLoader(AGENT_BEHAVIOR_REPOSITORY, CLOCK);
+  private static final AgentRuntimeService AGENT_RUNTIME_SERVICE = new AgentRuntimeService(AGENT_BEHAVIOR_REPOSITORY, AUTH_CONTEXT_RESOLVER, CLOCK);
   private static final MeService ME_SERVICE = new MeService(AUTH_CONTEXT_RESOLVER);
   private static final UserAdminService USER_ADMIN_SERVICE = new UserAdminService(IDENTITY_REPOSITORY, CLOCK);
   private static final InvitationService INVITATION_SERVICE = new InvitationService(IDENTITY_REPOSITORY, INVITATION_REPOSITORY, CLOCK);
@@ -58,6 +60,10 @@ public final class StarterSecurityComponents {
 
   public static AgentBehaviorSeedLoader agentBehaviorSeedLoader() {
     return AGENT_BEHAVIOR_SEED_LOADER;
+  }
+
+  public static AgentRuntimeService agentRuntimeService() {
+    return AGENT_RUNTIME_SERVICE;
   }
 
   private static void seedDemoTenantAdmin() {

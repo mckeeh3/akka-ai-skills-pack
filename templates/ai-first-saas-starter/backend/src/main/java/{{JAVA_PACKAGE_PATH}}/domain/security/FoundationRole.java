@@ -23,7 +23,8 @@ public enum FoundationRole {
           "tenant.support_access.manage",
           "tenant.audit.read",
           "tenant.access_review.manage",
-          "agent.user_admin.use")),
+          "agent.user_admin.use",
+          "agent.behavior.manage")),
   TENANT_EMPLOYEE(ScopeType.TENANT, List.of("tenant.app.use", "agent.workstream.use")),
   CUSTOMER_ADMIN(
       ScopeType.CUSTOMER,
@@ -34,7 +35,8 @@ public enum FoundationRole {
           "customer.invitation.manage",
           "customer.audit.read",
           "customer.access_review.manage",
-          "agent.user_admin.use")),
+          "agent.user_admin.use",
+          "agent.behavior.manage")),
   CUSTOMER_USER(ScopeType.CUSTOMER, List.of("customer.app.use", "agent.workstream.use")),
   AUDITOR(
       ScopeType.TENANT,
