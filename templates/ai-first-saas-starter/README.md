@@ -45,9 +45,16 @@ The scaffolded backend foundation includes:
 - JWT-protected `GET /api/me` returning browser-safe account, profile, settings, selected context, memberships, capabilities, functional-agent availability, and audit correlation;
 - backend denial paths for disabled accounts, missing memberships, forbidden selected contexts, and tenant/customer mismatch;
 - invitation onboarding and user administration services with captured-outbox/Resend boundary, idempotency, and audit behavior;
+- a first durable Akka invitation repository seam: `DurableInvitationRepositoryEntity` stores current invitation/outbox state behind the existing `InvitationRepository` contract through `AkkaInvitationRepository` while preserving the in-memory adapter as the default local/demo fallback;
 - governed runtime agent records, seed import, deterministic prompt assembly, authorized `readSkill(skillId)`, behavior-change proposal semantics, and trace records;
 - workstream API services for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface payloads;
 - service tests that can run after scaffold placeholder rendering.
+
+Current durability coverage:
+
+- durable/component seam present: invitation current state and captured email outbox through `DurableInvitationRepositoryEntity` plus entity tests for lookup, tenant-scoped duplicate detection, and idempotent outbox enqueue;
+- local/demo fallback retained: `StarterSecurityComponents` still wires `InMemoryIdentityRepository` and `InMemoryInvitationRepository` so a clean scaffold runs without dependency injection setup;
+- remaining slices: Account/Profile/Settings/Membership, Tenant/Customer, AdminAuditEvent history, event-sourced invitation lifecycle history, InvitationView/UserDirectoryView/AdminAuditView projections, and endpoint-level binding to Akka-backed repositories.
 
 The scaffold includes the validated React/Vite workstream frontend under `frontend/`. Its production build writes Akka static resources to `src/main/resources/static-resources/`, and `StarterFrontendEndpoint` serves `/`, `/ui`, `/workstream`, `/favicon.ico`, and `/assets/**` while protected APIs remain under `/api/...`.
 

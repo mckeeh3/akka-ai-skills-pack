@@ -728,7 +728,7 @@
 
 ### TASK-STARTER-07-007: Add durable Akka identity, invitation, and audit slices
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/07-durable-identity-invitation-audit-slices.md
 - depends on: [TASK-STARTER-07-006]
@@ -757,7 +757,10 @@
 - done criteria:
   - at least one foundation repository path is durable or has an explicit component seam
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add durable starter identity invitation slice`
+  - fullstack validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (includes rendered-template `mvn test`, frontend tests/typecheck/build, static-resource handoff, and secret scan).
+  - check passed: `git diff --check`.
 
 ### TASK-STARTER-07-008: Add durable Akka governed-agent behavior slices
 
