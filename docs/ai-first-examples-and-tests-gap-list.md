@@ -30,12 +30,15 @@ The starter scaffold is the canonical end-to-end implementation baseline. The DC
 
 ### Full-core secure AI-first SaaS starter scaffold
 
-Status: **canonical starter implementation baseline**.
+Status: **canonical starter implementation baseline, with frontend embedding qualification**.
 
 Reference:
 - source repository: `templates/ai-first-saas-starter/**`
 - installed pack: `resources/templates/ai-first-saas-starter/**`
 - scaffold command: `.agents/bin/scaffold-ai-first-saas-starter.sh`
+- final acceptance: `specs/ai-first-saas-starter-app-template/final-acceptance-review.md`
+
+Qualification: the scaffold currently renders the backend starter foundation plus `app-description/` and `specs/` seeds. The validated React/Vite workstream UI remains under `frontend/**` as the repository/installed-pack frontend reference and must be copied/adapted during extension until a rendered `templates/ai-first-saas-starter/frontend/**` template is added.
 
 Covered starter scope:
 
@@ -43,9 +46,10 @@ Covered starter scope:
 - secure SaaS foundation records and `/api/me` AuthContext bootstrap;
 - invitation/user-admin backend services, views/seams, captured outbox/Resend boundary, and tests;
 - governed agent records, seed import, prompt assembly, authorized `readSkill`, behavior-editing flow, and tests;
-- workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces.
+- workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces;
+- validated frontend workstream reference tests/typecheck/build under `frontend/**`, not yet embedded directly in scaffold output.
 
-Canonical routing rule: for new full-core generated apps, scaffold and extend this starter. Use DCA/supplies, purchase-request, shopping-cart, and standalone static UI examples only for domain-specific or substrate mechanics after the starter/foundation architecture is clear.
+Canonical routing rule: for new full-core generated apps, scaffold and extend this starter, then materialize/adapt the validated workstream frontend as part of the first frontend extension step. Use DCA/supplies, purchase-request, shopping-cart, and standalone static UI examples only for domain-specific or substrate mechanics after the starter/foundation architecture is clear.
 
 ## Completed app-description coverage
 

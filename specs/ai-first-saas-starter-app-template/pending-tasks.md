@@ -500,7 +500,7 @@
 
 ### TASK-STARTER-06-002: Run final starter acceptance and publish completion summary
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/06-legacy-cleanup-review-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/06-legacy-cleanup-review/02-final-acceptance-completion-summary.md
 - depends on: [TASK-STARTER-06-001]
@@ -523,4 +523,12 @@
 - done criteria:
   - final review proves starter scaffold can be installed, built, tested, and used as extension base
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Publish starter final acceptance summary`
+  - direct template scaffold and rendered-template `mvn test` passed with `{{JAVA_BASE_PACKAGE}}=ai.first`, `{{JAVA_PACKAGE_PATH}}=ai/first`, `{{MAVEN_GROUP_ID}}=ai.first`, `{{APP_SLUG}}=ai-first-saas-starter`, and `{{APP_NAME}}=AI First SaaS Starter`.
+  - frontend checks passed: `cd frontend && npm test -- --run && npm run typecheck && npm run build`.
+  - installed-pack scaffold validation passed: `./install.sh --location project --project "$TMP" --force`, `.agents/bin/scaffold-ai-first-saas-starter.sh --target "$TMP/app" --base-package ai.first --app-name "Install Validation" --app-slug install-validation`, and rendered app `mvn test`.
+  - repository Maven tests passed: `mvn test`.
+  - packaging validation passed: `bash tools/build-pack.sh --output-dir "$TMP" --clean --no-archive --github-repo example/akka-ai-skills-pack`.
+  - check passed: `git diff --check`.
+  - final acceptance is qualified: scaffold renders backend starter foundation and planning seeds; validated React/Vite workstream UI remains a frontend reference until embedded directly in the scaffold template.
