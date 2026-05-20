@@ -11,6 +11,17 @@ Use this skill when validating a timed action component or a full timer-backed f
 
 Timed action tests should verify scheduled capability behavior, not only timer mechanics. Cover scheduler authority, system/service principal, tenant/customer scope, approval/policy reference, idempotent duplicate execution, stale/forbidden no-op semantics, retry behavior, and audit/work-trace effects for protected or consequential scheduled work.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Read first
 
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
@@ -71,6 +82,17 @@ Repository examples:
 - stable terminal state assertions after the timer window passes
 - HTTP-level assertions through `httpClient` when the timer is scheduled by an endpoint
 - audit/work-trace assertions for scheduled execution, denials/no-ops, approvals/timeouts, and consequential side effects when those records are part of the capability contract
+
+## Generated SaaS timer contract
+
+For generated SaaS scheduled capabilities, require:
+- scheduled capability id, scheduler authority basis, tenant/customer target scope, and system principal;
+- small timer payloads containing stable ids/references only;
+- idempotency/no-op strategy for duplicate, stale, obsolete, denied, or cross-tenant invocations;
+- policy/approval reference, retry budget, and escalation behavior for consequential work;
+- audit/work-trace records for scheduling, execution, denial/no-op, retry exhaustion, and side effects;
+- tests for authorized execution, stale/no-op, forbidden/cross-tenant, retry/idempotency, audit/trace, and surface/realtime updates where exposed.
+
 
 ## Common mistakes
 

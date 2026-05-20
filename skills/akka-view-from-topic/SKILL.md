@@ -9,6 +9,17 @@ Use this skill when the source of the view is a topic.
 
 Capability-first framing: use topic-backed Views for read/evidence capabilities built from event streams, external signals, trace enrichment, integration reports, or cross-service summaries. The View should curate and scope evidence for callers; side effects from topic messages belong in Consumers, not Views.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Required reading
 
 Read these first if present:
@@ -42,6 +53,16 @@ For topic-backed view tests:
 - publish messages with metadata containing `ce-subject`
 - query the view through `componentClient.forView()`
 - assert eventual consistency with `Awaitility`
+
+## Generated SaaS view contract
+
+For generated SaaS read/evidence capabilities, require:
+- tenant/customer scoped row keys and query filters aligned with the selected `AuthContext`;
+- redacted DTO rows for the chosen UI/API/MCP/agent-tool consumers, not raw state dumps;
+- stable surface payload or evidence-bundle mapping when used by structured surfaces;
+- data-access audit/work-trace requirements at the query or endpoint boundary;
+- tests for authorized query, forbidden/cross-tenant query, redaction, projection update/delete behavior, and surface/API/tool consumers where exposed.
+
 
 ## Review checklist
 

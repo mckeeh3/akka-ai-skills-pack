@@ -16,6 +16,17 @@ For protected MCP surfaces, preserve the capability contract at the edge: enforc
 
 Expose read-only scoped evidence capabilities more readily than side-effecting capabilities. Consequential MCP tools should default to proposal or approval-request capabilities unless an accepted policy grants bounded autonomous authority, and they must share the same authority, idempotency, approval, and audit semantics as any UI/API/workflow surface for the same capability.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Required reading
 
 Read these first if present:
@@ -61,6 +72,17 @@ Prefer these categories:
 
 If the transport layer itself matters, use the Akka HTTP test client with handcrafted MCP JSON-RPC payloads.
 Do this only when you need to verify protocol-level behavior rather than endpoint business logic.
+
+## Generated SaaS test set
+
+When an endpoint exposes a generated SaaS capability, include or delegate tests for:
+- authorized success with selected `AuthContext` and tenant/customer scope;
+- validation and safe denial/status DTOs;
+- forbidden, disabled-user, missing role/scope, and cross-tenant access;
+- idempotency keys, retry/no-op behavior, and duplicate event safety where applicable;
+- audit/work-trace creation for data access, denial, approval, side effects, and tool/resource use;
+- structured-surface action invocation, rendering payload contract, realtime reconnect/stale behavior, or agent/MCP tool parity when that endpoint is an exposure surface.
+
 
 ## Anti-patterns
 

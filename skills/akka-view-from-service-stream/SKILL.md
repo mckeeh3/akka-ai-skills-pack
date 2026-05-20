@@ -9,6 +9,17 @@ Use this skill when a View subscribes to a public stream published by another Ak
 
 Capability-first framing: use service-stream Views for subscriber-owned read/evidence capabilities based on another service's public event contract. Treat the public stream as an integration boundary and expose only scoped, redacted query rows appropriate for the subscriber's UI/API/MCP/agent callers.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Required reading
 
 Read these first if present:
@@ -70,6 +81,16 @@ For real local testing:
 - use different local ports
 - verify producer `@Acl` allows the subscriber service
 - publish producer events and query the subscriber view until it reflects the public stream
+
+## Generated SaaS view contract
+
+For generated SaaS read/evidence capabilities, require:
+- tenant/customer scoped row keys and query filters aligned with the selected `AuthContext`;
+- redacted DTO rows for the chosen UI/API/MCP/agent-tool consumers, not raw state dumps;
+- stable surface payload or evidence-bundle mapping when used by structured surfaces;
+- data-access audit/work-trace requirements at the query or endpoint boundary;
+- tests for authorized query, forbidden/cross-tenant query, redaction, projection update/delete behavior, and surface/API/tool consumers where exposed.
+
 
 ## Review checklist
 

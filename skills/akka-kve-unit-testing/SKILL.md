@@ -7,6 +7,17 @@ description: Write unit tests for Akka Java SDK KeyValueEntity components using 
 
 Use this skill for unit tests of key value entities.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Required reading
 
 Read these first if present:
@@ -68,6 +79,17 @@ Use these `KeyValueEntityTestKit` capabilities:
 ### TTL test
 - `ExpiringDraftCartSessionEntityTest`
   - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
+
+## Generated SaaS test set
+
+For generated SaaS entity work, derive tests from the capability contract, not only from entity mechanics:
+- authorized success with tenant/customer scoped identifiers or state;
+- validation failure and safe reply shape;
+- no-op/idempotent duplicate command behavior;
+- forbidden or cross-tenant attempts when the entity method is directly exposed or called by endpoints/tools/workflows;
+- audit/work-trace expectations for consequential commands, denials, and data access;
+- exposure parity for HTTP/gRPC/MCP/tool/surface flows when the entity backs those surfaces.
+
 
 ## Anti-patterns
 

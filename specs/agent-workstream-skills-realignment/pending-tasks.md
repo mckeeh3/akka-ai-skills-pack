@@ -294,7 +294,7 @@
 
 ### TASK-AWSR-03-003: Align endpoint, component, and test skills
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/03-implementation-skills-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/03-implementation-skills/03-align-endpoint-component-test-skills.md
 - depends on: [TASK-AWSR-03-002]
@@ -319,7 +319,8 @@
 - done criteria:
   - focused implementation skills no longer invite component-first implementation for generated SaaS work
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align endpoint component test skills
 
 ### TASK-AWSR-03-004: Review implementation sprint and create next tasks
 

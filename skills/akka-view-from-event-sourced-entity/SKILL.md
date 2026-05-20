@@ -9,6 +9,17 @@ Use this skill when the source of the view is an `EventSourcedEntity`.
 
 Capability-first framing: use ESE-backed Views for read/evidence capabilities that need audit-grade event history projected into scoped, redacted query rows such as decision evidence, policy history, approval queues, trace search, or lifecycle reports. Keep the entity as the authority; the View is the query/evidence surface.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Required reading
 
 Read these first if present:
@@ -67,6 +78,16 @@ Never:
 - put `@Consume` on the `View` class instead of the `TableUpdater`
 - ignore delete events when the entity emits an explicit delete event that should remove the row
 - duplicate business decision logic that belongs in the entity command path
+
+## Generated SaaS view contract
+
+For generated SaaS read/evidence capabilities, require:
+- tenant/customer scoped row keys and query filters aligned with the selected `AuthContext`;
+- redacted DTO rows for the chosen UI/API/MCP/agent-tool consumers, not raw state dumps;
+- stable surface payload or evidence-bundle mapping when used by structured surfaces;
+- data-access audit/work-trace requirements at the query or endpoint boundary;
+- tests for authorized query, forbidden/cross-tenant query, redaction, projection update/delete behavior, and surface/API/tool consumers where exposed.
+
 
 ## Review checklist
 

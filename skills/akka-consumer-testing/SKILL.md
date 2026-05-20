@@ -11,6 +11,17 @@ Use this skill when testing Consumer behavior.
 
 Consumer tests should verify reactive capability behavior, not only that a handler runs. Cover authority/provenance, tenant/customer scope, idempotent duplicate delivery, retry versus terminal denial/no-op semantics, scoped publication, and audit/work-trace effects for protected or consequential reactions.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Required reading
 
 Read these first if present:
@@ -68,6 +79,18 @@ Pattern:
 7. Test duplicate delivery by publishing the same event/message twice and asserting idempotent downstream state, no duplicate unsafe side effects, or stable dedupe behavior.
 8. Test invalid, unauthorized, stale, and cross-tenant messages as terminal audited denials/no-ops when that is the intended semantics.
 9. Test transient dependency failures only when retry semantics are part of the capability contract.
+
+## Generated SaaS consumer contract
+
+For generated SaaS reactive capabilities, require:
+- reactive capability id, event provenance, correlation id, and tenant/customer scope;
+- system-principal or service-authority basis for downstream calls;
+- idempotency key/dedupe strategy for at-least-once delivery;
+- retry, poison, obsolete, forbidden, and no-op behavior;
+- scoped/redacted publication when producing topics or service streams;
+- audit/work-trace records for side effects, denials, retries, and emitted public events;
+- tests for duplicate delivery, cross-tenant/forbidden input, idempotent downstream effects, audit/trace, and surface/realtime/API outcomes where exposed.
+
 
 ## Review checklist
 

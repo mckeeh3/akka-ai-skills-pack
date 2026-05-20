@@ -7,6 +7,17 @@ description: Add live notification streams to Akka Java SDK Workflows using Noti
 
 Use this skill when a workflow should push progress updates to subscribers.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
 ## Required reading
 
 Read these first if present:
@@ -49,6 +60,16 @@ Use notifications as a selected exposure surface for workflow capability progres
 ## Design note
 
 Notifications are for user experience, supervision, and observability, not business correctness or authorization. They do not replace the authoritative workflow state from `get()`, audit/work-trace records, or backend checks on the subscriber route.
+
+## Generated SaaS checks
+
+For generated SaaS workflows, preserve the accepted capability contract:
+- compensation, notification, approval, and escalation steps carry `AuthContext` or system-principal authority basis;
+- downstream side effects are idempotent and retry safe;
+- structured-surface/workstream events include surface id/version, event id, correlation id, trace ids, and stale/progress semantics;
+- audit/work traces cover approval, denial, compensation, retry exhaustion, and side effects;
+- tests cover authorized success, forbidden/cross-tenant, idempotency/no-op, surface/realtime updates, and audit/trace emission where exposed.
+
 
 ## Review checklist
 
