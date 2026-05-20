@@ -551,7 +551,7 @@
 
 ### TASK-AWSR-05-005: Align AI-first companion skills with surface/action handoffs
 
-- status: pending
+- status: done
 - source: follow-up review found AI-first companion skills not consistently workstream-aware
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/05-align-ai-first-companion-surface-handoffs.md
 - depends on: [TASK-AWSR-05-004]
@@ -579,7 +579,10 @@
 - done criteria:
   - AI-first companion outputs are implementation-ready for workstream/surface/capability planning
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align AI-first companion surface handoffs
+  - check passed: `git diff --check`
+  - check passed: `rg -n "workstream|structured surface|surface action|capability"` over touched AI-first companion skills
 
 ### TASK-AWSR-05-006: Validate and repair source skill path references
 

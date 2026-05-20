@@ -62,6 +62,15 @@ Select only objects needed for enforceable behavior and audit:
 - Browser governance APIs and UI → `akka-http-endpoints`, `akka-web-ui-apps`, and focused web UI skills.
 - Authentication, roles, JWT, or admin permissions → `akka-workos-user-auth`, `akka-basic-user-admin`, and HTTP/JWT skills for the mandatory secure SaaS foundation.
 
+## Workstream handoff requirements
+
+For generated full-stack SaaS work, every policy-governance output must hand off an implementation-ready workstream contract before component selection:
+- owning or reusable functional agent, such as Governance/Policy, Agent Admin, User Admin, Audit/Trace, or a domain agent;
+- structured surface id/type where user-facing, such as policy catalog, proposal queue, approval card, diff review, simulation result, or governance dashboard;
+- surface action list mapped to capability ids/classes, including propose policy, simulate change, request approval, approve/deny commit, rollback, or view audit evidence;
+- `AuthContext`, tenant/customer scope, role/capability rules, approval gates, audit/work-trace fields, and denial behavior;
+- downstream Akka, frontend, and test skills needed for the selected exposure channels.
+
 ## Output expectations
 
 Produce a compact governance design with:

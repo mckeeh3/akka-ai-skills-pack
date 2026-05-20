@@ -67,6 +67,15 @@ Retention and access classification:
 - Audit APIs, streaming activity feeds, and investigation tools → HTTP, SSE, gRPC, or MCP endpoint skills as appropriate.
 - Trace and investigation UI → `akka-web-ui-apps` plus focused web UI skills.
 
+## Workstream handoff requirements
+
+For generated full-stack SaaS work, every audit/trace output must hand off an implementation-ready workstream contract before component selection:
+- owning or reusable functional agent, such as Audit/Trace, Agent Admin, User Admin, Governance/Policy, Outcome Metrics, or a domain supervisor agent;
+- structured surface id/type where user-facing, such as audit timeline, trace detail, investigation dashboard, digest, evidence bundle, or compliance export panel;
+- surface action list mapped to capability ids/classes, including search traces, open trace detail, request redacted export, link evidence, acknowledge finding, or start investigation;
+- `AuthContext`, tenant/customer scope, auditor/support/admin role rules, redaction, retention, audit/work-trace fields, trace links, and denial behavior;
+- downstream Akka, endpoint/realtime, frontend, and test skills needed for trace producers, append stores, projections, protected access, and surface rendering.
+
 ## Output expectations
 
 Produce a compact trace design with:

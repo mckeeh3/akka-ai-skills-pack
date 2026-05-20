@@ -103,6 +103,15 @@ Required tool rules:
 - fail closed for missing AuthContext, disabled users, forbidden scopes, cross-tenant/customer access, or insufficient capabilities;
 - never expose raw invitation tokens, provider secrets, private WorkOS configuration, or unredacted tenant/customer data to an unauthorized agent call.
 
+## Workstream handoff requirements
+
+For generated full-stack SaaS work, admin-agent planning must hand off implementation-ready workstream contracts before component selection:
+- owning functional agent or reusable placement, normally User Admin, Access/Profile, Agent Admin, Support Access, Audit/Trace, and Governance/Policy for admin-risk or policy-proposal flows;
+- structured surface id/type for each user-facing result, such as access-review queue, invitation draft, role recommendation card, support-access review, admin audit summary, decision card, or admin digest;
+- surface action list mapped to capability ids/classes, including draft invite, recommend role, create decision card, approve/deny risky change, request evidence, revoke support access, or open audit trace;
+- `AuthContext`, tenant/customer scope, role/capability rules, approval gates for risky side effects, audit/work-trace fields, redaction rules, and denial behavior;
+- downstream Akka, frontend, realtime, agent, and test skills needed for agent tools, workflows, views, protected endpoints, structured surface rendering, and tenant-isolation/security checks.
+
 ## Akka substrate routing
 
 Use:

@@ -66,6 +66,15 @@ Outcome follow-up:
 - Decision deadlines, reminders, stale-card escalation, and digest inclusion → `akka-timed-actions`.
 - Notifications and trace enrichment after decisions → `akka-consumers`.
 
+## Workstream handoff requirements
+
+For generated full-stack SaaS work, every decision-card output must hand off an implementation-ready workstream contract before component selection:
+- owning or reusable functional agent, such as Approval Queue, Governance/Policy, User Admin, Audit/Trace, or a domain supervisor agent;
+- structured surface id/type for each recommendation, approval, exception, or deviation card;
+- surface action list mapped to capability ids/classes, including approve, reject, modify, defer, escalate, request evidence, and acknowledge outcome;
+- `AuthContext`, tenant/customer scope, reviewer role/capability rules, approval authority, audit/work-trace fields, trace links, and denial behavior;
+- downstream Akka, frontend, realtime, and test skills needed for workflow, view, endpoint, agent, and surface rendering implementation.
+
 ## Output expectations
 
 Produce a compact decision-card design with:

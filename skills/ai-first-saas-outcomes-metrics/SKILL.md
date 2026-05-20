@@ -116,6 +116,15 @@ Use when human teaching should improve future behavior through governed change.
 - Outcome APIs, exports, streams, and review actions → HTTP/gRPC endpoint skills as appropriate.
 - Outcome dashboards, digest, policy impact, and post-decision review UI → `ai-first-saas-ui-surfaces` plus `akka-web-ui-apps` and focused web UI skills.
 
+## Workstream handoff requirements
+
+For generated full-stack SaaS work, every outcomes/metrics output must hand off an implementation-ready workstream contract before component selection:
+- owning or reusable functional agent, such as Outcome Metrics, Governance/Policy, Audit/Trace, Executive Briefing, or a domain performance agent;
+- structured surface id/type where user-facing, such as outcome dashboard, metric panel, post-decision review, policy-impact report, replay result, or executive digest;
+- surface action list mapped to capability ids/classes, including review outcome, link decision, record feedback, request replay, create policy proposal, acknowledge negative outcome, or export report;
+- `AuthContext`, tenant/customer scope, reviewer role/capability rules, attribution confidence, privacy/redaction, approval gates, audit/work-trace fields, and denial behavior;
+- downstream Akka, frontend, scheduled/realtime, agent, and test skills needed for measurement, aggregation, review, feedback, and rendering.
+
 ## Output expectations
 
 Produce a compact outcome-loop design with:
