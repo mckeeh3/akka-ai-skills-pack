@@ -636,7 +636,7 @@
 
 ### TASK-AWSR-05-008: Review focused cleanup sprint and close or create Sprint 06
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/05-focused-cleanup-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/08-review-focused-cleanup-sprint.md
 - depends on: [TASK-AWSR-05-007]
@@ -657,4 +657,8 @@
 - done criteria:
   - Sprint 05 review exists and either closes realignment or creates concrete next tasks
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Review focused realignment cleanup
+  - check passed: `git diff --check`
+  - Sprint 05 closes the agent-workstream skills realignment; no Sprint 06 created.
+  - Starter implementation can proceed through `TASK-STARTER-08-001`.
