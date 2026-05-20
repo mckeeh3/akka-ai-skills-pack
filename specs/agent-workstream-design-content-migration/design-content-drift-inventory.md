@@ -6,6 +6,10 @@ Inventory task: `TASK-AWDD-01-001`.
 
 This file records design-content drift to guide later migration tasks. It is intentionally an inventory only: no doctrine, skill, example, readiness, generation, or web UI routing content is rewritten in this task.
 
+Follow-on target rules for applying this inventory are now captured in:
+- `specs/agent-workstream-design-content-migration/canonical-content-targets.md`
+- `docs/agent-workstream-design-review-checklist.md`
+
 Canonical target model used for classification:
 
 ```text

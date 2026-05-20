@@ -75,7 +75,7 @@
 
 ### TASK-AWDD-01-002: Define canonical content targets and design review checklist
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/01-inventory-and-target-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/01-inventory-and-target/02-define-canonical-content-targets-and-checklist.md
 - depends on: [TASK-AWDD-01-001]
@@ -95,7 +95,9 @@
 - done criteria:
   - future migration tasks have compact target rules to apply
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add agent workstream design review targets`
+  - completed: created reusable design review checklist and migration target summary; linked target rules from the drift inventory.
 
 ### TASK-AWDD-02-001: Align core doctrine terminology and ownership boundaries
 
