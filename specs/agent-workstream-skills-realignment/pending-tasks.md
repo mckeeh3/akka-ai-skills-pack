@@ -125,7 +125,7 @@
 
 ### TASK-AWSR-02-001: Audit app-description and PRD planning alignment
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/02-planning-description-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/02-planning-description/01-audit-app-description-planning.md
 - depends on: [TASK-AWSR-01-004]
@@ -153,7 +153,8 @@
 - done criteria:
   - planning/description gap matrix exists
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Audit workstream description planning alignment
 
 ### TASK-AWSR-02-002: Align app-description skills with workstream ownership
 
