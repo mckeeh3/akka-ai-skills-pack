@@ -5,7 +5,7 @@ description: Interpret generated full-stack AI-first SaaS apps as role-authorize
 
 # Agent Workstream Apps
 
-Use this routing skill after secure AI-first SaaS foundation framing and before app-description updates, UI design, agent design, capability modeling, PRD/backlog planning, or Akka implementation for generated full-stack SaaS apps.
+Use this routing skill after secure AI-first SaaS foundation framing and before app-description updates, UI design, agent design, capability modeling, PRD/backlog planning, or Akka implementation for generated full-stack SaaS apps. It is the default handoff from `ai-first-saas` for generated SaaS intent, so downstream work cannot skip from product goals directly to capabilities or Akka components.
 
 This skill defines the application/UX shape. It does not replace `core-saas-foundation`, `capability-first-backend`, `app-descriptions`, `akka-solution-decomposition`, `akka-web-ui-apps`, `akka-agents`, or focused Akka component skills.
 
@@ -99,6 +99,17 @@ Frontend gating, prompt text, and tool descriptions are never authorization cont
 
 ## Downstream routing
 
+Before choosing a downstream path, produce the handoff contract in this order:
+
+```text
+functional agents
+→ internal agents where applicable
+→ initial workstreams
+→ structured surfaces
+→ surface action-to-capability mappings
+→ candidate horizontal Akka components and skills
+```
+
 Choose the smallest next path:
 
 - `app-descriptions` when maintaining or reviewing the authoritative app description. Capture functional agents, internal agents, workstreams, surfaces, capabilities, auth/security, observability, UI, tests, readiness, and horizontal implementation notes.
@@ -123,8 +134,10 @@ When revising existing docs, specs, examples, or skills:
 ## Minimal output
 
 When this skill is used for planning, hand downstream work a concise model containing:
-- selected functional agents and internal agents;
+- selected functional agents and their roles/capabilities;
+- internal agents when applicable, clearly separated from left-rail functional agents;
 - initial workstreams and default surfaces;
+- structured surface contracts or required follow-up to create them;
 - surface action-to-capability mappings;
 - retained human authority, approval, escalation, and denial behavior;
 - required audit/work traces;

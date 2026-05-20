@@ -7,7 +7,7 @@ description: Interpret high-level product intent as an AI-first SaaS operating m
 
 Use this as the top-level interpretation skill when a product, PRD, feature request, or architecture prompt involves delegated operational work, autonomous or semi-autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
 
-This is a routing and framing skill. It does not replace `core-saas-foundation`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. For every generated SaaS app, route through `core-saas-foundation` and mandatory web UI foundation work before app-specific domain work.
+This is a routing and framing skill. It does not replace `core-saas-foundation`, `agent-workstream-apps`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. For every generated SaaS app, route through `core-saas-foundation`, then `agent-workstream-apps`, and mandatory web UI foundation work before app-specific domain work.
 
 ## Goal
 
@@ -15,14 +15,19 @@ Before decomposing into CRUD screens or isolated Akka components, identify wheth
 
 ```text
 human objective
-→ durable goal and plan
+→ secure SaaS foundation
+→ functional/context-area agents
+→ continuous workstreams
+→ structured surfaces and surface actions
+→ governed backend capabilities
+→ horizontal Akka components
 → bounded agent or agent-team execution
 → policy, permission, evidence, and approval controls
 → human supervision and exception handling
 → traceable outcomes and learning loops
 ```
 
-Then choose the smallest downstream path that can implement or maintain that model.
+Then choose the smallest downstream path that can implement or maintain that model. For generated full-stack SaaS, the default handoff is `agent-workstream-apps` before capability inventory, Akka decomposition, or component implementation.
 
 ## Required reading
 
@@ -30,10 +35,13 @@ Read these first when using this skill:
 - `../../AGENTS.md`
 - `../README.md`
 - `../core-saas-foundation/SKILL.md`
+- `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS app routing
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
+- `../../docs/structured-surface-contracts.md` when surfaces or surface actions need implementation-ready contracts
 
 For description-first work, also read the app-description docs named by `skills/README.md`.
-For generated SaaS foundations, also load `../ai-first-saas-admin-agents/SKILL.md` for mandatory AI-assisted admin offload. For direct Akka implementation, load only the focused Stage 3 skills for the selected substrate components.
+For generated SaaS foundations, also load `../ai-first-saas-admin-agents/SKILL.md` for mandatory AI-assisted admin offload. For direct Akka implementation, load only the focused Stage 3 skills after the functional-agent/workstream/surface model and capability contracts have selected the substrate components.
 
 ## Use when
 
@@ -113,16 +121,17 @@ Prefer mechanically enforced permissions and versioned policy records over promp
 
 ### 5. Choose the downstream operating path
 
-First load `core-saas-foundation` for the mandatory Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
+First load `core-saas-foundation` for the mandatory Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline. For generated full-stack SaaS apps, next load `agent-workstream-apps` and hand downstream work an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
 
-- Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative application description before generation.
-- Use `akka-solution-decomposition` when the user wants a direct Akka solution shape and the component set is not yet known.
-- Use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlogs, and pending-task artifacts.
-- Use focused Stage 3 component skills only when the secure foundation, AI-first operating model, and component scope are already clear enough to implement.
+- Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative application description before generation, preserving functional agents, surfaces, capabilities, and horizontal Akka implementation notes.
+- Use `capability-first-backend` when surface actions, agent tools, workflow steps, APIs, timers, consumers, or internal operations need governed backend contracts.
+- Use `akka-solution-decomposition` when the user wants a direct Akka solution shape from the accepted workstream/capability model and the component set is not yet known.
+- Use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlogs, and pending-task artifacts that preserve the functional-agent/workstream/surface/capability structure.
+- Use focused Stage 3 component skills only when the secure foundation, AI-first operating model, workstream model, capability contracts, and component scope are already clear enough to implement.
 
 ## Akka substrate routing
 
-Map AI-first concepts to Akka implementation families after the operating model is clear:
+Map AI-first concepts to Akka implementation families only after the secure foundation, functional agents, structured surfaces, and governed capabilities are clear:
 
 - durable audit-grade goals, policies, decisions, traces, and consequential facts → `akka-event-sourced-entities`
 - simple current-state records, preferences, and ephemeral operational state → `akka-key-value-entities`
@@ -139,10 +148,11 @@ Map AI-first concepts to Akka implementation families after the operating model 
 When this skill is the entry point, produce or feed downstream work with:
 - AI-first interpretation: objective, delegated work, retained human authority, and outcome loop
 - selected durable objects and why each is needed
+- generated SaaS handoff: functional agents, internal agents when applicable, initial workstreams, structured surfaces, and surface action-to-capability mappings
 - agent/team responsibilities and authority boundaries, including mandatory foundation admin agents and any app-specific agents
 - policy, approval, exception, audit, and outcome implications
-- recommended downstream path and exact skills to load next, always including `core-saas-foundation` for generated SaaS apps
-- open questions only where implementation would otherwise guess authority, risk, policy, or outcome semantics
+- recommended downstream path and exact skills to load next, always including `core-saas-foundation` and normally `agent-workstream-apps` before capability or Akka component routing for generated SaaS apps
+- open questions only where implementation would otherwise guess authority, risk, policy, surface/action contract, or outcome semantics
 
 ## Minimal readiness checklist
 

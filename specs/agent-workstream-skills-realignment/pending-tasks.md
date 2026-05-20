@@ -45,7 +45,7 @@
 
 ### TASK-AWSR-01-002: Align AI-first and agent-workstream routing
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/01-routing-intake-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/01-routing-intake/02-align-ai-first-workstream-routing.md
 - depends on: [TASK-AWSR-01-001]
@@ -68,7 +68,8 @@
 - done criteria:
   - top-level routing makes the workstream model the normal handoff for generated SaaS apps
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align AI-first workstream routing
 
 ### TASK-AWSR-01-003: Align capability-first and Akka decomposition routing
 

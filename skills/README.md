@@ -151,7 +151,7 @@ Use the skills in this order:
 1. read the requirements, PRD, spec, prompt, API sketch, UI brief, feature request, or change request
 2. apply secure AI-first SaaS interpretation first, then interpret the generated app as an agent workstream application: role-authorized functional agents, internal agents, continuous workstreams, structured surfaces, retained human authority, supervision, decisions, governance, audit, and outcomes
 3. model the capability-first backend substrate for every workstream action, surface action, tool, workflow step, API, timer, consumer, and internal operation: named operations/queries, actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests
-4. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear; Stage 1 should turn capabilities into an Akka component plan rather than skipping directly to entities, endpoints, pages, or agent tools
+4. use Stage 1 decomposition via `akka-solution-decomposition` when the solution shape is still unclear; Stage 1 for generated SaaS must preserve functional agents, structured surfaces, and governed capabilities before producing an Akka component plan rather than skipping directly to entities, endpoints, pages, or agent tools
 5. use Stage 2 only if one structural decision is still unresolved, such as `akka-entity-type-selection`
 6. move to Stage 3 to load only the focused implementation skills for the chosen components and capability exposure surfaces
 7. use the accepted solution plan as the implementation contract for the downstream coding phase
@@ -172,6 +172,8 @@ Start here when you have a PRD, requirements doc, user story, process descriptio
 Primary Stage 1 entry skills:
 - `akka-solution-decomposition`
 - `akka-prd-to-specs-backlog` — use when the user wants repo-ready planning artifacts under `specs/`, not just a solution plan
+
+Do not bypass the generated SaaS routing sequence: functional agents → structured surfaces → governed capabilities → Akka components. If a Stage 1 prompt lacks that model, load `agent-workstream-apps` before component selection or backlog/task generation.
 
 ### Stage 2: Structural decisions
 Use this stage when you already know part of the architecture, but still need to resolve a focused design choice before coding.
