@@ -4,6 +4,8 @@
 
 This file defines the DCA vertical reference UI contract for delegated copier operations. It extends the canonical secure AI-first SaaS seed surfaces with DCA-specific supervision for supplies, lifecycle, service, billing, onboarding, offboarding, policy governance, and audit/outcome review.
 
+This is a compact DCA-specific consolidated contract. It intentionally combines content that the current canonical app-description structure would split across `12-workstreams/functional-agents.md`, `12-workstreams/surfaces-index.md`, `12-workstreams/surface-contracts/**`, and multiple `55-ui/*.md` browser-realization files. Use `../../../ai-first-saas-seed-app-description/` as the preferred canonical structure reference; use this file as vertical domain content to migrate into that structure, not as the file-set template for new generated SaaS apps.
+
 The browser UI is not optional for a generated DCA app. It is organized around objectives, active delegated work, policy boundaries, human decisions, audit traces, and outcomes rather than CRUD tables as the primary frame.
 
 Design reference:
@@ -15,6 +17,9 @@ Design reference:
 ## Cross-surface rules
 
 - Backend authorization is authoritative for every protected surface, query, stream, and action; frontend navigation is never authorization.
+- Functional-agent purpose, authority, callable capabilities, owned/reused surfaces, prompt/tool boundaries, traces, and tests are application-model meaning. In a canonical split tree they belong under `12-workstreams/`; in this compact DCA reference they are summarized below in the rail model and surface catalog.
+- Structured-surface payloads, allowed actions, state contracts, action-to-capability mappings, trace semantics, and surface tests are application-model meaning. In a canonical split tree they belong under `12-workstreams/surface-contracts/**`; in this compact DCA reference they are summarized below.
+- Browser realization details such as shell/rail rendering, route/deep-link targets, interactions, frontend API DTO exposure, realtime UX, accessibility/responsive behavior, and selected style remain `55-ui/` concerns.
 - Every protected browser action or query links to a governed capability in `../10-capabilities/` and must preserve the same `AuthContext`, tenant/customer scope, validation, idempotency, approval, and audit semantics.
 - Consequential agent work must resolve into durable goals, plans, decision cards, approvals, policy proposals, traces, outcomes, or audited side effects.
 - Decision surfaces must expose recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, allowed actions, stale-state status, and trace links before action submission.
@@ -23,7 +28,9 @@ Design reference:
 
 ## Functional-agent rail model
 
-The primary authenticated shell is a role-authorized functional-agent rail. Each rail entry opens a durable workstream with default briefing/attention surfaces and follow-up actions:
+Placement note: in the canonical seed-style structure, this section would be modeled in `12-workstreams/functional-agents.md` and referenced by `55-ui/functional-agent-rail.md`. It remains here only because this DCA vertical reference is intentionally consolidated.
+
+The primary authenticated shell is a role-authorized functional/context-area agent rail. Each rail entry opens a durable workstream with default briefing/attention surfaces and follow-up actions:
 
 1. `Owner Brief Agent` — catch up on material work, pending decisions, outcome deltas, and admin/security attention items (`CAP-09`, `CAP-10`, `CAP-00`).
 2. `Operations Control Agent` — supervise active customer, device, DCA, supply, service, billing, onboarding, and offboarding objectives (`CAP-01` through `CAP-10`).
@@ -37,6 +44,8 @@ The primary authenticated shell is a role-authorized functional-agent rail. Each
 Record detail routes may exist, but they deep-link into structured surfaces reached from objectives, traces, decisions, queues, or admin searches rather than becoming the main product frame.
 
 ## Surface catalog
+
+Placement note: in the canonical seed-style structure, this catalog would be split into `12-workstreams/surfaces-index.md` plus `12-workstreams/surface-contracts/**`, with browser rendering details linked from `55-ui/structured-surface-rendering.md`, `55-ui/frontend-api-contracts.md`, and `55-ui/routes-and-deep-links.md`. It remains here only as a compact DCA reference.
 
 | Structured surface | Primary functional agent(s) | Primary roles | Capability links | Required backing views/APIs | Test links |
 |---|---|---|---|---|---|
@@ -148,7 +157,9 @@ Required timeline events:
 - Long timelines and evidence lists should preserve semantic headings and progressive disclosure.
 - Administration surfaces must keep destructive or privilege-changing controls behind explicit labels, confirmations, focus management, and post-action audit feedback.
 
-## Akka and web UI routing
+## Routes, deep links, and Akka/web UI routing
+
+Routes and deep links are realization details that open a selected functional agent, workstream item, or structured surface. They must not become the primary decomposition for a DCA app. Record detail routes may deep-link to decision cards, shipment trace drawers, lifecycle plans, policy versions, audit timelines, or administration records, but the authoritative meaning remains the functional-agent/workstream/surface/capability contract above.
 
 - Read models for queues, mission control, admin lists, trace search, and outcomes -> `akka-views`.
 - Decision, workflow, admin, invitation, support-access, policy, and supplies actions -> `akka-http-endpoints` with component clients and JWT/request-context authorization.

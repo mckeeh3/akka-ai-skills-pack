@@ -5,7 +5,7 @@
 This directory is a worked AI-first app-description reference example for the `akka-ai-skills-pack`.
 It describes an AI-first DCA and office-device lifecycle platform for small office-device dealers as a **domain-rich vertical extension** of the canonical secure AI-first SaaS seed example.
 
-Use `../ai-first-saas-seed-app-description/` as the canonical baseline for secure SaaS foundation shape, app-description structure, and reusable generated-app starting points. Use this DCA example when an agent needs a richer vertical reference for lifecycle automation, telemetry-driven delegated work, policies, approvals, decision cards, traces, and outcome loops.
+Use `../ai-first-saas-seed-app-description/` as the canonical baseline for secure SaaS foundation shape, app-description structure, functional-agent/workstream split, `55-ui/` file set, and reusable generated-app starting points. Use this DCA example when an agent needs a richer vertical reference for lifecycle automation, telemetry-driven delegated work, policies, approvals, decision cards, traces, and outcome loops.
 
 This is a **reference asset for the skills pack**, not the business app of this repository.
 In a downstream project, an installed skills pack would maintain that project's real `app-description/` tree in the target project workspace.
@@ -41,7 +41,9 @@ Non-goals for this reference example:
 
 ## Current structure
 
-The current DCA reference includes product vision, operating model, agent-team, governance, decision-card, workflow, UI, audit/trace/outcome, traceability, and implementation-slice reference files. It remains a non-runnable reference app-description asset, not the canonical seed template and not application code.
+The current DCA reference includes product vision, operating model, agent-team, governance, decision-card, workflow, compact consolidated UI, audit/trace/outcome, traceability, and implementation-slice reference files. It remains a non-runnable vertical reference app-description asset, not the canonical seed template, not the canonical generated-SaaS file structure, and not application code.
+
+Important UI structure note: this DCA example intentionally keeps functional-agent rail, structured-surface catalog, capability/API links, route/deep-link notes, state/realtime behavior, accessibility, and style routing together in `app-description/55-ui/ui-surfaces.md` as a compact DCA-specific contract. That consolidated file is not the preferred structure for new generated SaaS app descriptions. New or regenerated app-description trees should start from the seed example's `12-workstreams/` application-model layer plus split `55-ui/` browser-realization files; use the DCA file only as domain-rich content to migrate into that structure.
 
 ```text
 app-description/

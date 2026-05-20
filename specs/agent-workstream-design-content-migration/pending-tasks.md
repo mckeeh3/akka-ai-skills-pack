@@ -238,7 +238,7 @@
 
 ### TASK-AWDD-04-001: Refresh or label the DCA app-description UI example
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/04-examples-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/04-examples/01-refresh-or-label-dca-ui-example.md
 - depends on: [TASK-AWDD-03-003]
@@ -260,7 +260,9 @@
 - done criteria:
   - DCA example reinforces, or explicitly defers migration to, current canonical structure
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Label DCA UI example as consolidated reference`
+  - completed: labeled the DCA UI example as a compact DCA-specific consolidated contract, reaffirmed the seed example as the canonical structure, and clarified placement of functional agents, structured surfaces, capabilities, routes/deep links, state/realtime, accessibility, and style guidance.
 
 ### TASK-AWDD-04-002: Verify example cross-links and legacy labels
 
