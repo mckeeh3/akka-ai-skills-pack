@@ -126,11 +126,14 @@ app-description/
     functional-agent-rail.md
     workstream-panel-and-composer.md
     structured-surface-rendering.md
+    routes-and-deep-links.md
     personas-and-journeys.md
+    ai-first-surfaces.md
+    agent-catalog-and-detail.md
     prompt-and-skill-governance.md
     skill-manifests-and-tool-permissions.md
     edit-agent-proposals-and-traces.md
-    routes-and-deep-links.md
+    interactions-and-forms.md
     frontend-api-contracts.md
     states-and-realtime.md
     accessibility-and-responsive.md
@@ -334,6 +337,8 @@ This layer answers:
 - what loading, empty, error, forbidden, submitting, success, stale, reconnect, and realtime states exist
 - what accessibility and responsive behavior is required
 - which visual style guide is selected, including light/dark policy, CSS tokens, layout density, component styling, and brand adaptations for generated HTML/CSS/TypeScript
+
+Canonical generated SaaS `55-ui/` files are the file set shown in the default directory layout above. They mirror the current seed reference and the `app-description-ui` skill. `12-workstreams/` remains authoritative for functional agents, internal agents, durable workstreams, surface contracts, placement, capability mappings, traces, and tests; `55-ui/` must link to those artifacts rather than redefining them. Managed-agent browser files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`) are mandatory for `full core` generated SaaS scope. They may be omitted or marked deferred only when `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` explicitly label a narrower scope such as `Module 1-only / not full core`.
 
 ## `60-generation/`
 Realization policy and output mapping.
@@ -576,8 +581,13 @@ app-description/
     ui-index.md
     workstream-shell.md
     functional-agent-rail.md
+    workstream-panel-and-composer.md
     structured-surface-rendering.md
-    prompt-and-skill-governance.md
+    routes-and-deep-links.md
+    agent-catalog-and-detail.md          # required for full core; explicit deferral allowed only for narrower scope
+    prompt-and-skill-governance.md       # required for full core; explicit deferral allowed only for narrower scope
+    skill-manifests-and-tool-permissions.md # required for full core; explicit deferral allowed only for narrower scope
+    edit-agent-proposals-and-traces.md   # required for full core; explicit deferral allowed only for narrower scope
     style-guide.md
 ```
 

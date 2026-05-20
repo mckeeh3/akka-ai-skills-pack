@@ -127,7 +127,7 @@
 
 ### TASK-AWDD-02-002: Standardize app-description architecture and bootstrap UI file sets
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/02-doctrine-and-description-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/02-doctrine-and-description/02-standardize-app-description-ui-file-sets.md
 - depends on: [TASK-AWDD-02-001]
@@ -149,7 +149,9 @@
 - done criteria:
   - app-description bootstraps and UI updates will produce consistent workstream-first structures
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Standardize app-description UI file sets`
+  - completed: aligned internal architecture, bootstrap, and UI skill guidance on the canonical seed `55-ui/` file set; clarified `12-workstreams/` versus `55-ui/` ownership; marked managed-agent UI files mandatory for full core and deferrable only under explicit narrower scope.
 
 ### TASK-AWDD-03-001: Revise AI-first UI surface routing for workstream placement
 

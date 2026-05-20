@@ -151,24 +151,29 @@ app-description/
     ui-index.md
     workstream-shell.md
     functional-agent-rail.md
+    workstream-panel-and-composer.md
     structured-surface-rendering.md
     routes-and-deep-links.md
-    secure-shell-and-context-selection.md
-    admin-and-audit-surfaces.md
+    personas-and-journeys.md
+    ai-first-surfaces.md
     agent-catalog-and-detail.md
     prompt-and-skill-governance.md
     skill-manifests-and-tool-permissions.md
     edit-agent-proposals-and-traces.md
+    interactions-and-forms.md
+    frontend-api-contracts.md
+    states-and-realtime.md
+    accessibility-and-responsive.md
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
-Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
+This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS seed reference. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
 ## Full-core scope gate
 
 At bootstrap time, classify the requested generation scope before writing readiness or generation policy:
-- `full core` means the app-description must include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, manifests, tool boundaries, traces, and `readSkill`); workstream UI; and full security/test coverage.
-- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, Access/Profile, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, audit/work trace UI, and governance loops.
+- `full core` means the app-description must include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, manifests, tool boundaries, traces, and `readSkill`); workstream UI; managed-agent UI files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`); and full security/test coverage.
+- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, Access/Profile, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops.
 - any other narrower scope must be named in `00-system/app-manifest.md`, repeated in `00-system/readiness-status.md`, and enforced by `00-system/generation-policy.md`.
 
 Do not allow a bootstrap to imply full-core readiness while omitting User Admin, Agent Admin, Invitation onboarding, governed runtime agents, the workstream UI, or required tests. Missing full-core elements are acceptable only when the generated app is explicitly labeled as Module 1-only or another accepted narrower scope.
