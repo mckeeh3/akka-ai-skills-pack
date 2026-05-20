@@ -611,7 +611,7 @@
 
 ### TASK-AWSR-05-007: Update starter acceptance consistency for Sprint 08 queue
 
-- status: pending
+- status: done
 - source: follow-up review found starter acceptance docs conflict with later Sprint 08 queue
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/07-update-starter-acceptance-consistency.md
 - depends on: [TASK-AWSR-05-006]
@@ -630,7 +630,9 @@
 - done criteria:
   - starter docs no longer conflict with pending Sprint 08 tasks
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Update starter acceptance follow-up queue
+  - check passed: `git diff --check`
 
 ### TASK-AWSR-05-008: Review focused cleanup sprint and close or create Sprint 06
 

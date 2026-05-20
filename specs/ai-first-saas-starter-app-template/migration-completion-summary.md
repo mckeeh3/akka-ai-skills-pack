@@ -6,6 +6,8 @@ The starter app template migration is **complete as the canonical scaffoldable f
 
 The repository now has a canonical starter scaffold source, install/scaffold tooling, package routing, backend foundation implementation, governed agent foundation, workstream API contracts, embedded production-first React/Vite frontend template, fullstack smoke validation, legacy routing cleanup, durable component seams/slices, strengthened admin/governance APIs, and final acceptance evidence.
 
+This completion summary records the Sprint 07 accepted baseline. A later agent-workstream skills realignment added Sprint 08 follow-up tasks in `specs/ai-first-saas-starter-app-template/pending-tasks.md` to express future starter work as functional-agent + structured-surface/action + governed-capability verticals. Those Sprint 08 tasks are follow-up hardening/dogfood work on top of the accepted scaffold, not evidence that the Sprint 07 baseline was incomplete or unscaffoldable.
+
 ## Delivered assets
 
 - `templates/ai-first-saas-starter/**` — canonical scaffold source for the starter foundation.
@@ -87,6 +89,8 @@ Remaining qualifications are expected extension/deployment boundaries rather tha
 1. WorkOS, Resend, and model-provider production credentials remain project/tenant-specific deployment configuration and must stay out of frontend DTOs, traces, fixtures, and built assets.
 2. Downstream product hardening can continue expanding durable Akka coverage behind the starter's existing repository/service ports as app-specific durability and audit requirements grow.
 3. App-specific domains should extend the starter through app-description/spec updates, capability-first modeling, focused Akka components, workstream surfaces, and security tests rather than modifying the scaffold as a hidden template fork.
+
+Later Sprint 08 queue entries (`TASK-STARTER-08-001` and following) are the current preferred route for that continued hardening inside this repository: they supersede broad future task shapes from earlier sprints without invalidating the delivered Sprint 07 scaffold acceptance.
 
 ## Closure note
 
