@@ -348,7 +348,7 @@
 
 ### TASK-AWSR-04-001: Audit starter queue against realigned workstream model
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/04-starter-dogfood-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/04-starter-dogfood/01-audit-starter-queue.md
 - depends on: [TASK-AWSR-03-004]
@@ -369,7 +369,8 @@
 - done criteria:
   - starter queue gap matrix identifies supersession targets
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Audit starter queue workstream alignment
 
 ### TASK-AWSR-04-002: Rewrite starter queue as workstream/surface/capability tasks
 
