@@ -9,10 +9,10 @@ Use this doctrine below `ai-first-saas-application-architecture.md` and above de
 
 ## Default generated-app architecture
 
-Generated AI-first SaaS apps are **agent workstream applications by default**:
+Generated AI-first SaaS apps are **agent workstream applications by default**. First use: **functional/context-area agent** means a user-facing, role-authorized agent for one durable work area; this document shortens the term to **functional agent** after defining the alias.
 
 ```text
-role-authorized functional agents
+role-authorized functional/context-area agents
 → continuous workstreams
 → structured renderable surfaces
 → governed backend capabilities
@@ -26,7 +26,7 @@ The primary application model is not a conventional page tree, CRUD console, or 
 | Term | Meaning |
 |---|---|
 | Agent workstream shell | Primary authenticated browser shell: role-authorized functional agents in the left rail, continuous workstream in the main panel, persistent composer at the bottom, and structured surfaces embedded in the stream. |
-| Functional agent / context-area agent | User-facing, role-authorized agent representing a functional area such as User Admin, Agent Admin, Procurement, Finance, Sales Pipeline, Support, Audit, Governance, or Outcome Metrics. |
+| Functional/context-area agent | User-facing, role-authorized agent representing a functional area such as User Admin, Agent Admin, Procurement, Finance, Sales Pipeline, Support, Audit, Governance, or Outcome Metrics. Shortened to functional agent after first use. |
 | Internal agent | Non-left-rail agent invoked by workflows, tools, consumers, timers, functional agents, or backend services for bounded work such as classification, summarization, evaluation, routing, replay, proposal drafting, or governance review. |
 | Workstream | Durable conversational and operational timeline for a functional agent. It contains user requests, agent responses, tool/capability results, structured surfaces, decisions, workflow progress, traces, and follow-up actions. |
 | Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, or outcome metric panel. |
@@ -201,6 +201,15 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Akka components are selected as horizontal implementation details from capability semantics.
 - [ ] The UI shell includes left rail functional agents, main workstream, persistent composer, context/authority indicators, denial/recovery states, and trace links.
 - [ ] Page-first, CRUD-first, and chatbot-bolt-on alternatives are not presented as equal generated-app defaults.
+
+## App-description layer ownership
+
+When this model is maintained in an app-description tree, keep ownership split by layer:
+
+- `12-workstreams/` owns application meaning: functional agents, internal agents, durable workstreams, surface index and contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests.
+- `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, forms/interactions, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
+- `55-ui/` must link back to `12-workstreams/`, capability, security, observability, and test layers instead of redefining functional agents, surface contracts, or capability semantics.
+- `60-generation/` and generated frontend source are downstream projections, not authoritative product meaning.
 
 ## Routing implications
 

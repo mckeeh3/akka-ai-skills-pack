@@ -9,7 +9,7 @@ Default generated-application interpretation:
 ```text
 product intent
 → mandatory secure SaaS foundation
-→ agent workstream application model: role-authorized functional agents, workstreams, and structured surfaces
+→ agent workstream application model: role-authorized functional/context-area agents, workstreams, and structured surfaces
 → capability inventory
 → authority, scope, schemas, side effects, audit, approval, and supervision rules
 → selected exposure surfaces
@@ -112,7 +112,7 @@ Choose Akka components from the capability shape, not from CRUD intuition.
 For broad product input or implementation planning:
 
 1. Preserve the mandatory secure SaaS foundation.
-2. Interpret the agent workstream application model: functional agents, internal agents, workstreams, structured surfaces, and retained human authority.
+2. Interpret the agent workstream application model: functional/context-area agents (shortened to functional agents), internal agents, workstreams, structured surfaces, and retained human authority.
 3. Interpret AI-first operating-model needs: delegated work, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
 4. Build a capability inventory before selecting Akka components.
 5. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
@@ -165,7 +165,7 @@ Capability tests should verify behavior, not just component mechanics:
 
 Future skills and planning artifacts should use this doctrine as the backend substrate after secure AI-first SaaS and agent workstream interpretation:
 
-- Description-first paths should maintain capability inventories alongside functional agents, internal agents, workstreams, surfaces, behavior, auth/security, UI, observability, readiness, and tests.
+- Description-first paths should maintain capability inventories alongside functional agents, internal agents, workstreams, surfaces, behavior, auth/security, UI, observability, readiness, and tests. In app-description trees, `12-workstreams/` owns functional agents, workstreams, surface contracts, action-to-capability mappings, trace semantics, and surface/action tests; `55-ui/` owns browser realization such as shell rendering, routes/deep links, interactions, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
 - Direct Akka decomposition should derive capabilities before component selection.
 - PRD/spec/backlog planning should preserve capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks.
 - Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or exposure surfaces.

@@ -2,14 +2,14 @@
 
 Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `agent-workstream-application-architecture.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
-A surface is a structured renderable artifact in a functional agent workstream. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear.
+A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear.
 
 ## Contract rule
 
 Every surface contract must preserve this chain:
 
 ```text
-functional agent / workstream placement
+functional/context-area agent workstream placement
 → surface type and payload schema
 → allowed actions and events
 → governed backend capabilities
@@ -18,6 +18,8 @@ functional agent / workstream placement
 ```
 
 Frontend action visibility is advisory only. The linked backend capability remains authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior.
+
+In app-description trees, surface ownership belongs in `12-workstreams/`: surface index and contracts, reusable functional-agent placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization of those contracts: shell placement, route/deep-link mappings, components, forms/interactions, frontend API contracts, state/realtime behavior, accessibility/responsive behavior, and style guide. Do not redefine surface purpose, authority, or capability semantics in `55-ui/`; link back to `12-workstreams/` and capability/security/test layers.
 
 ## Minimum contract fields
 

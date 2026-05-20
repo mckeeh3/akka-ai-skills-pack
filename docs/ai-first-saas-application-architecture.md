@@ -17,7 +17,7 @@ AI-first SaaS means the harness models products as:
 ```text
 human objective
 → mandatory secure SaaS foundation
-→ agent workstream application model: role-authorized functional agents, continuous workstreams, and structured surfaces
+→ agent workstream application model: role-authorized functional/context-area agents, continuous workstreams, and structured surfaces
 → AI-first operating model: durable goal and plan
 → capability-first backend substrate: governed operations, queries, side effects, authority, audit, and exposure choices
 → bounded functional agents, internal agents, or agent team execution
@@ -32,7 +32,7 @@ Choose agent shape by responsibility boundaries, not by a desire for either one 
 
 AI-first does not mean every app must use every AI-first pattern. It means every generated app begins with secure SaaS foundations, then applies only the agentic substrate objects, governance surfaces, and Akka components justified by product intent.
 
-The primary generated UI/application architecture is the agent workstream model defined in `agent-workstream-application-architecture.md`: role-authorized functional agents in the authenticated shell, continuous workstreams in the main panel, a persistent composer, and typed structured surfaces such as dashboards, forms, tables, decision cards, diffs, audit timelines, workflow status cards, and outcome panels. Conventional routes, pages, and direct links may support implementation and deep linking, but they are not the primary decomposition model for consequential authenticated work.
+The primary generated UI/application architecture is the agent workstream model defined in `agent-workstream-application-architecture.md`: role-authorized **functional/context-area agents** (shortened below to functional agents) in the authenticated shell, continuous workstreams in the main panel, a persistent composer, and typed structured surfaces such as dashboards, forms, tables, decision cards, diffs, audit timelines, workflow status cards, and outcome panels. Conventional routes, pages, and direct links may support implementation and deep linking, but they are not the primary decomposition model for consequential authenticated work.
 
 Backend behavior should be modeled as governed capabilities before selecting Akka components or exposure surfaces. A capability is a named operation or query with explicit actors, auth context, inputs, outputs, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, tests, and selected exposure surfaces. Workstream actions, agent tools, browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, and internal component methods are possible surfaces for capabilities; they are not the root abstraction.
 
@@ -129,6 +129,8 @@ Required structured surface families:
 | Audit / Work Trace | Explain who/what/when/why/how-authorized for actions, decisions, tool calls, data access, approvals, and outcomes. |
 
 Foundation generated SaaS apps must include secure-operation functional agents, especially Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy when behavior-governing artifacts or approval policy are in scope. Surface actions must map to governed backend capabilities; frontend affordances are never authorization controls.
+
+When these concepts are maintained in an app-description tree, `12-workstreams/` owns functional agents, internal agents, durable workstreams, structured surface contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide. `55-ui/` links back to `12-workstreams/` and capability/security/test layers instead of redefining application meaning.
 
 For secure foundation shape, start with `../docs/examples/ai-first-saas-seed-app-description/README.md`. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../skills/ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills together with AI-first reference app-description examples such as `../docs/examples/ai-first-dca-app-description/`.
 

@@ -101,7 +101,7 @@
 
 ### TASK-AWDD-02-001: Align core doctrine terminology and ownership boundaries
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/02-doctrine-and-description-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/02-doctrine-and-description/01-align-core-doctrine-terminology-and-boundaries.md
 - depends on: [TASK-AWDD-01-002]
@@ -121,7 +121,9 @@
 - done criteria:
   - doctrine docs have no conflicting terminology or ownership guidance
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Align agent workstream doctrine terminology`
+  - completed: aligned core doctrine first-use terminology around functional/context-area agents and added app-description layer ownership rules for `12-workstreams/` application meaning and `55-ui/` browser realization.
 
 ### TASK-AWDD-02-002: Standardize app-description architecture and bootstrap UI file sets
 
