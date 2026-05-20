@@ -266,7 +266,7 @@
 
 ### TASK-AWDD-04-002: Verify example cross-links and legacy labels
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/04-examples-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/04-examples/02-verify-example-cross-links-and-legacy-labels.md
 - depends on: [TASK-AWDD-04-001]
@@ -286,7 +286,9 @@
 - done criteria:
   - example set has no ambiguous generated SaaS target architecture cues
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Clarify example reference labels`
+  - completed: added an examples index, labeled the seed app-description as the preferred current generated-SaaS reference, clarified core PRD inputs versus app-description structure, reinforced purchase-request as mechanics-only, and marked DCA as a domain-rich non-canonical structural reference.
 
 ### TASK-AWDD-05-001: Run final design-content consistency review
 

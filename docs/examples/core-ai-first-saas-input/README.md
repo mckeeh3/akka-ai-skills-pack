@@ -1,8 +1,8 @@
 # Core AI-First SaaS Input Documents
 
-This directory contains canonical example input documents for planning and generating a progressive secure AI-first SaaS core app with the Akka skills pack.
+This directory contains canonical example **input documents** for planning and generating a progressive secure AI-first SaaS core app with the Akka skills pack.
 
-These files are source assets for the skills pack. They are intended to be used as realistic PRD/spec inputs that can be fed into the pack to produce solution plans, module specs, sprint specs, backlogs, and implementation tasks.
+These files are source assets for the skills pack. They are intended to be used as realistic PRD/spec inputs that can be fed into the pack to produce solution plans, module specs, sprint specs, backlogs, and implementation tasks. They are not a replacement for the maintained app-description seed structure; use `../ai-first-saas-seed-app-description/README.md` as the preferred current generated-SaaS app-description reference.
 
 Start with:
 
@@ -26,3 +26,5 @@ The seed app is delivered progressively. Because the core UI is workstream-agent
 8. evaluation and closed-loop improvement.
 
 Each module should be implemented through visible, demonstrable full-stack sprints, not as a large backend-only foundation phase.
+
+Review generated plans against `../../agent-workstream-design-review-checklist.md` so PRD-derived work preserves functional/context-area agents, structured surfaces, governed capabilities, mandatory authorization, traces, and workstream-first UI realization rather than drifting into page-first or CRUD-first decomposition.

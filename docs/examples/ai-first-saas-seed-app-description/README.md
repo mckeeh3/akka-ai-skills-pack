@@ -1,6 +1,6 @@
 # AI-First SaaS Seed App Description Example
 
-This directory is the reference app-description tree for a runnable **Akka Java + React/Vite/TypeScript AI-first SaaS seed app**.
+This directory is the **preferred current generated-SaaS app-description reference** for a runnable **Akka Java + React/Vite/TypeScript AI-first SaaS seed app**.
 
 Purpose:
 - define the canonical seed app before implementation
@@ -32,3 +32,5 @@ Frontend implementation reference:
 - User Admin reference vertical: `../../../frontend/src/workstream/fixtures/**` and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
 The seed app UI docs below describe functional agents, workstreams, structured surfaces, and deep links. They are not a page-first route/screen template. Older page/screen examples in the repository are legacy or mechanics references only.
+
+Use `../../agent-workstream-design-review-checklist.md` when checking whether another example, spec, or generated output still matches this canonical seed direction.

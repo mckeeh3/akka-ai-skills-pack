@@ -18,9 +18,9 @@ Do **not** force-fit this example into a full AI-first SaaS operating model. It 
 
 ### `ai-first-saas-seed-app-description/`
 
-Status: **new runnable-seed app-description reference**.
+Status: **preferred current generated-SaaS app-description reference**.
 
-This example defines the generic AI-first SaaS seed/reference app before implementation. It is intended to become the canonical runnable Akka Java + React/Vite/TypeScript base app for secure multi-tenant SaaS foundations, frontend/backend integration patterns, and coherent Akka component coverage.
+This example defines the generic AI-first SaaS seed/reference app before implementation. It is the canonical app-description starting point for secure multi-tenant SaaS foundations, functional/context-area agents, `12-workstreams/` application model, split `55-ui/` browser realization, frontend/backend integration patterns, and coherent Akka component coverage.
 
 Use it when the task is about:
 - bootstrapping a generated AI-first SaaS app;
@@ -30,7 +30,7 @@ Use it when the task is about:
 
 ### `ai-first-dca-app-description/`
 
-Status: **completed non-runnable AI-first app-description reference**.
+Status: **completed non-runnable AI-first app-description reference / domain-rich vertical extension**.
 
 Sprint 6 populated this worked example with product, operating-model, agent-team, policy, decision, workflow, UI, audit, outcome, traceability, and implementation-slice examples.
 
@@ -41,7 +41,7 @@ Source-repository provenance inputs:
 
 Installed-pack users do not need the source-only archive files; use the completed DCA reference tree and canonical docs as operative guidance.
 
-Current tree shape:
+Current tree shape, intentionally compact and not the preferred generated-SaaS seed structure:
 
 ```text
 app-description/
@@ -67,7 +67,7 @@ app-description/
   80-review/
 ```
 
-Placement rule: `15-operating-model/` owns delegated work, retained authority, policies, decision semantics, trace obligations, and outcome-loop intent. `50-observability/audit-trace-and-outcomes.md` owns concrete audit/work/decision trace events, outcome metrics, privacy/access rules, and tests implied by observability.
+Placement rule: `15-operating-model/` owns delegated work, retained authority, policies, decision semantics, trace obligations, and outcome-loop intent. `50-observability/audit-trace-and-outcomes.md` owns concrete audit/work/decision trace events, outcome metrics, privacy/access rules, and tests implied by observability. For new generated SaaS app descriptions, use the seed example's `12-workstreams/` plus split `55-ui/` structure; DCA's consolidated `55-ui/ui-surfaces.md` remains domain-rich content to migrate, not a structural template.
 
 ## Completed AI-first app-description coverage
 
