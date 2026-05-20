@@ -300,7 +300,8 @@ report_text = "\n".join([
     "## Follow-up checks",
     "",
     "- `mvn test` from the project root once backend dependencies are available.",
-    "- frontend checks once the frontend template slice is present.",
+    "- `cd frontend && npm install && npm test -- --run && npm run typecheck && npm run build` to validate and package the workstream UI into Akka static resources.",
+    "- `mvn compile exec:java` from the project root after frontend build output exists to run the Akka-hosted app for manual testing.",
     "- review `app-description/` and `specs/` before extending the starter.",
     "",
 ]) + "\n"

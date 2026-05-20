@@ -19,12 +19,11 @@
 
 ## Starter-owned roots
 
-- `backend/` — Akka Java SDK backend template source for the secure SaaS foundation, user administration, governed agent records, and workstream API services.
-- `.env.example` — local environment template for WorkOS/AuthKit, JWT, Resend, bootstrap admin, and optional model-provider values.
+- `backend/` — Akka Java SDK backend template source for the secure SaaS foundation, user administration, governed agent records, workstream API services, and static frontend hosting endpoint.
+- `frontend/` — React/Vite/TypeScript workstream frontend source, built into `src/main/resources/static-resources/`.
+- `.env.example` — local environment template for WorkOS/AuthKit, JWT, Resend, bootstrap admin, frontend public AuthKit values, and optional model-provider values.
 - `app-description/` — maintained app description seed for scaffold extension.
 - `specs/` — starter planning/checklist seed and scaffold provenance destination.
-
-The validated React/Vite/TypeScript workstream frontend is currently shipped as an installed reference under `.agents/resources/examples/frontend/`, not scaffolded into this template. Treat frontend materialization as an explicit extension step until a `frontend/` template root is added.
 
 ## Isolation rule
 

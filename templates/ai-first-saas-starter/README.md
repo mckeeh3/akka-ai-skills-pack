@@ -49,7 +49,24 @@ The scaffolded backend foundation includes:
 - workstream API services for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface payloads;
 - service tests that can run after scaffold placeholder rendering.
 
-The current scaffold is backend-first. The validated React/Vite workstream frontend is installed as a reference under `.agents/resources/examples/frontend/`; materializing it into the scaffolded app remains an explicit extension step until `frontend/` is added to this template.
+The scaffold includes the validated React/Vite workstream frontend under `frontend/`. Its production build writes Akka static resources to `src/main/resources/static-resources/`, and `StarterFrontendEndpoint` serves `/`, `/ui`, `/workstream`, `/favicon.ico`, and `/assets/**` while protected APIs remain under `/api/...`.
+
+## Local build and manual-test commands
+
+From a scaffolded project:
+
+```bash
+mvn test
+cd frontend
+npm install
+npm test -- --run
+npm run typecheck
+npm run build
+cd ..
+mvn compile exec:java
+```
+
+Then open the Akka-hosted frontend at `http://localhost:9000/` or `http://localhost:9000/ui` depending on the local Akka port. Use `?fixtureWorkstream=1` only to inspect the frontend fixture mode; normal starter testing should exercise `/api/workstream/...` backend APIs.
 
 ## Local environment
 

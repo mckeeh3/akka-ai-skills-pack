@@ -73,7 +73,7 @@ Default installs are skills/resource-only. To start a new app from the packaged 
   --base-package ai.first
 ```
 
-The scaffold writes `specs/scaffold-report.md` and a project `.env.example` documenting local WorkOS/AuthKit, JWT, Resend, admin-bootstrap, and optional model-provider variables. Backend secrets such as `WORKOS_API_KEY`, `RESEND_API_KEY`, JWT configuration, and `OPENAI_API_KEY` belong only in backend environment/deployment configuration; only `VITE_` variables are browser-public.
+The scaffold writes `specs/scaffold-report.md`, backend source, `frontend/` React/Vite workstream UI source, and a project `.env.example` documenting local WorkOS/AuthKit, JWT, Resend, admin-bootstrap, frontend public AuthKit values, and optional model-provider variables. Backend secrets such as `WORKOS_API_KEY`, `RESEND_API_KEY`, JWT configuration, and `OPENAI_API_KEY` belong only in backend environment/deployment configuration; only `VITE_` variables are browser-public.
 
 ## Quick install
 
