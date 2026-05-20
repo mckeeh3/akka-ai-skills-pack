@@ -73,7 +73,7 @@
 
 ### TASK-AWSR-01-003: Align capability-first and Akka decomposition routing
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/01-routing-intake-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/01-routing-intake/03-align-capability-decomposition-routing.md
 - depends on: [TASK-AWSR-01-002]
@@ -95,7 +95,8 @@
 - done criteria:
   - decomposition cannot plausibly skip from product intent directly to Akka components for generated SaaS apps
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align capability and decomposition routing
 
 ### TASK-AWSR-01-004: Review routing sprint and create next tasks
 

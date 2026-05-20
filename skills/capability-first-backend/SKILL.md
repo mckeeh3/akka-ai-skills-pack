@@ -15,7 +15,10 @@ Read these first when using this skill:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design
+- `../../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, or browser UI actions are in scope
 - `../../docs/capability-first-backend-architecture.md`
+- `../agent-workstream-apps/SKILL.md` when generated SaaS intent has not already produced functional-agent, workstream, and structured-surface context
 
 Then load only the smallest downstream skill set needed for the selected path.
 
@@ -41,7 +44,21 @@ Do not use this skill as a substitute for:
 
 ## Core rule
 
-A backend capability is the root design object:
+For generated full-stack SaaS apps, capabilities sit **below** the agent workstream application model and **above** Akka implementation:
+
+```text
+secure SaaS foundation
+→ functional/context-area agents
+→ durable workstreams
+→ typed structured surfaces and actions
+→ governed backend capabilities
+→ selected exposure surfaces
+→ Akka components
+```
+
+Functional agents, workstreams, and structured surfaces define the user-facing application model. Capabilities define the backend authority and behavior contract behind every surface action, tool, workflow step, API, timer, consumer, or internal call. Do not use capability-first modeling to bypass functional-agent and surface modeling for generated SaaS apps.
+
+A backend capability is the root backend design object:
 
 ```text
 capability = named operation or query
@@ -67,9 +84,20 @@ For generated SaaS apps, load `core-saas-foundation` first. Every protected capa
 
 Prompt text, tool descriptions, frontend navigation, and hidden fields are never authorization controls.
 
-### 2. Inventory capabilities
+### 2. Preserve workstream and surface context
 
-For each product operation or query, define:
+For generated SaaS apps, first identify or load the upstream workstream model before inventing backend operations:
+- role-authorized functional/context-area agents and their tenant/customer scope;
+- durable workstreams and retained human authority for each functional agent;
+- structured surfaces, payload-producing queries, allowed actions, events, and trace links;
+- surface/action placement, reusable functional-agent placement, and denial/recovery states;
+- candidate action-to-capability mappings from each surface action, agent tool, workflow step, API call, timer, consumer reaction, or internal operation.
+
+If this context is missing for a generated full-stack SaaS request, route through `agent-workstream-apps` or record the gap before selecting capabilities or Akka components.
+
+### 3. Inventory capabilities
+
+For each workstream operation, structured surface action, payload-producing query, tool, workflow step, API, timer, consumer reaction, or internal operation, define:
 - stable capability id/name in product language;
 - purpose and business outcome;
 - allowed actors/callers: humans, agents, workflows, services, timers, consumers, support roles;
@@ -83,7 +111,7 @@ For each product operation or query, define:
 - selected exposure surfaces or explicit non-exposure;
 - success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
 
-### 3. Classify capability shape
+### 4. Classify capability shape
 
 Use the shape to choose the Akka substrate later:
 - read/evidence capability → curated `View`, direct safe query, endpoint/tool/resource exposure as needed;
@@ -96,7 +124,7 @@ Use the shape to choose the Akka substrate later:
 - scheduled capability → timer-backed expiry, reminder, digest, replay, recheck, retention;
 - reactive capability → consumer-backed event reaction, enrichment, publication, or integration.
 
-### 4. Select exposure surfaces after semantics
+### 5. Select exposure surfaces after semantics
 
 Choose only the surfaces the capability needs:
 - browser UI action;
@@ -118,7 +146,7 @@ Default stance: expose scoped read/evidence capabilities to agents more readily 
 After capability semantics are clear, route to exactly one primary operating path:
 
 - `app-descriptions` when maintaining or reviewing the app-description source of truth. Preserve capability inventory in description layers alongside behavior, auth/security, UI, observability, readiness, and tests.
-- `akka-solution-decomposition` when deriving a direct Akka component plan. The decomposition must map capabilities to entities, workflows, views, agents, consumers, timers, endpoints, and web UI surfaces.
+- `akka-solution-decomposition` when deriving a direct Akka component plan. The decomposition must preserve the functional-agent/workstream/surface inventory, map surface actions and payload-producing queries to capabilities, then map capabilities to entities, workflows, views, agents, consumers, timers, endpoints, and web UI surfaces.
 - `akka-prd-to-specs-backlog` when creating repo-ready specs, backlogs, and pending tasks. Generated tasks must preserve capability ids, auth/scope, schemas, side effects, idempotency, approval, audit, exposure surfaces, and tests.
 - Focused Stage 3 skills only when the secure foundation, capability contract, exposure surface, and Akka component choice are already settled.
 
@@ -139,15 +167,17 @@ Load focused component skills only after the capability contract says why the co
 ## Output expectations
 
 When this skill is used directly, produce or hand off:
+- upstream functional-agent/workstream/surface context, or an explicit statement that the task is non-SaaS/repository-maintenance-only;
+- surface/action-to-capability mapping for generated SaaS apps;
 - capability inventory with ids and classes;
 - actors/callers and AuthContext rules;
 - input/output schemas and validation notes;
 - side effects, idempotency, policy/approval, audit/trace obligations;
 - selected exposure surfaces and explicit non-exposures;
-- Akka substrate/component mapping;
+- capability-to-Akka substrate/component mapping;
 - downstream skill routing;
 - tests required per capability and surface;
-- open questions only where implementation would otherwise guess authority, risk, approval, audit, or scope.
+- open questions only where implementation would otherwise guess workstream ownership, authority, risk, approval, audit, or scope.
 
 ## Anti-patterns
 
