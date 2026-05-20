@@ -241,7 +241,7 @@
 
 ### TASK-AWSR-03-001: Audit implementation skills for input-contract drift
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/03-implementation-skills-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/03-implementation-skills/01-audit-implementation-skills.md
 - depends on: [TASK-AWSR-02-004]
@@ -261,7 +261,8 @@
 - done criteria:
   - implementation skill gap matrix exists and prioritizes follow-up updates
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Audit workstream implementation skills
 
 ### TASK-AWSR-03-002: Align web UI and agent implementation skills
 
