@@ -155,7 +155,7 @@
 
 ### TASK-AWDD-03-001: Revise AI-first UI surface routing for workstream placement
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/03-skill-routing-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/03-skill-routing/01-revise-ai-first-ui-surfaces-for-workstream-placement.md
 - depends on: [TASK-AWDD-02-002]
@@ -175,7 +175,9 @@
 - done criteria:
   - UI surface planning cannot bypass functional-agent workstream modeling
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Revise AI-first UI surface workstream routing`
+  - completed: updated AI-first UI surface selection so every surface family requires owning/reusable functional agents, workstream placement, payload/query sources, capability-backed actions, audit/work-trace links, and routes/deep links only as implementation details.
 
 ### TASK-AWDD-03-002: Strengthen web UI and generation routing around canonical workstream reference
 
