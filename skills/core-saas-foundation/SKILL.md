@@ -18,9 +18,12 @@ Read these first when using this skill:
 - `../../docs/core-saas-identity-tenancy-admin.md`
 - `../../docs/core-saas-owner-tenant-billing.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/agent-workstream-application-architecture.md`
+- `../../docs/structured-surface-contracts.md`
 
 Then load only the focused downstream skills needed for the selected path:
 - `ai-first-saas` for operating-model interpretation
+- `agent-workstream-apps` before app-description, PRD/backlog, decomposition, or implementation work so foundation user-facing work is modeled as functional agents, structured surfaces, surface actions, and governed capabilities before Akka components
 - `app-description-auth-security` for description-first security semantics
 - `akka-workos-user-auth` for WorkOS/JWT browser authentication
 - `akka-basic-user-admin` for local account, membership, role, invite, and admin flows
@@ -28,6 +31,24 @@ Then load only the focused downstream skills needed for the selected path:
 - `akka-resend-email-service` for the single supported production email service, reusable Resend email/outbox delivery for onboarding and future app features, and governed `@FunctionTool` email tools for agents
 - `ai-first-saas-admin-agents` for mandatory AI-assisted admin offload responsibilities: access review, admin risk scoring, invitation drafting, role recommendations, support-access review, admin audit summaries, decision cards, and approval boundaries; these may be implemented by one governed `UserAdminAgent` with skills or by specialized agents such as AccessReviewAgent and AdminRiskAgent
 - `akka-agent-behavior-profiles`, `akka-agent-governed-documents`, `akka-agent-seed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, and `akka-agent-work-trace` for the mandatory governed runtime agent foundation and first-install default behavior seed loading
+
+## Foundation workstream verticals
+
+Model the secure foundation as user-facing foundation verticals before selecting entities, workflows, views, endpoints, or frontend components. Each vertical is a role-authorized functional agent with default structured surfaces, surface actions mapped to governed capabilities, backend-enforced AuthContext/tenant/customer scope, audit/work traces, and tests.
+
+Minimum full-core foundation functional agents and structured surfaces:
+
+| Foundation functional agent | Required structured surfaces and actions | Capability mapping focus |
+|---|---|---|
+| Access/Profile | current account/context surface, profile/settings form, membership/context switcher, safe denial/recovery states | `/api/me`, select AuthContext, update profile, update settings, list own memberships; no authorization changes through profile/settings |
+| User Admin | Users table/detail, Invitations table/form, Roles/Memberships management, Access Review queue, Support Access queue, admin-agent recommendation cards, risky-action decision cards | invite/resend/revoke/accept, list/search users, assign/replace/remove roles, lifecycle memberships/accounts, support-access grant/revoke/expire, last-admin protection, admin risk/recommendation actions |
+| Agent Admin | agent catalog/detail, prompt/skill/version cards, manifest and tool-boundary editors, behavior-test console, proposal/diff review cards, trace links | manage `AgentDefinition`, governed prompt/skill documents, manifests, tool boundaries, seed import/upgrade, behavior proposals, prompt assembly, authorized `readSkill(skillId)` |
+| Audit/Trace | admin audit search, agent work trace timeline, prompt/skill load trace detail, authorization/data-access investigation surfaces | search AdminAuditEvent, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, correlate decisions/actions/tool use, enforce auditor/support redaction |
+| Governance/Policy | policy/permission/threshold cards, approval queues, simulation/evidence surfaces, policy proposal review | policy proposal drafting, approval/denial, permission/threshold review, decision-card routing, simulation evidence, human-governed commits |
+| Support Access | support request/reason form, support membership list, expiry/revocation queue, support-use trace surface | tenant-created time-limited support membership, expiry reminders, revocation, support-user data-boundary enforcement, audit |
+| Billing | subscription/plan/status surface, billing-safe tenant metadata, entitlement or payment issue cards where relevant | SaaS Owner to Tenant subscription lifecycle, billing-safe APIs, platform metadata only, no Tenant application data access |
+
+Do not treat these as optional pages or CRUD modules for full generated core SaaS scope. Routes, tables, forms, and Akka components are implementation details after the functional agent, structured surface, action-to-capability, auth, audit, and test contracts are explicit.
 
 ## Mandatory baseline objects
 
@@ -75,23 +96,24 @@ All broad planning and generation paths must include:
 
 ## First-slice implementation order
 
-For every new SaaS app, implement or specify the secure foundation before app-specific CRM/domain features:
+For every new SaaS app, implement or specify the secure foundation before app-specific CRM/domain features. User-facing foundation work must be modeled as functional agents, structured surfaces, and surface actions mapped to governed capabilities before component selection. Do not start from object lists, CRUD screens, or Akka component families alone.
 
-1. Common identity/tenancy types: IDs, scope enums, canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), app-specific role-to-capability mappings, permissions/capabilities, AuthContext, audit metadata.
-2. WorkOS/AuthKit sign-in, WorkOS JWT validation, and request-context extraction.
-3. Account, UserProfile, and UserSettings state plus base profile/settings APIs.
-4. Tenant and Customer organization state with Tenant/Customer boundaries.
-5. Membership, Role, Permission/Capability, complete Invitation lifecycle, support-access, and context-selection flows.
-6. Resend email delivery/outbox foundation for invitation send/resend and future app feature emails, including delivery status, delivery attempts, failed-delivery visibility for admins, captured local/dev/test outbox behavior, and auditable delivery failures.
-7. `/api/me` endpoint and browser-safe capability model that links invited accounts only through a valid invitation/acceptance context or explicit membership policy.
-8. Central backend authorization service and mandatory checks for routes, commands, queries, streams, tools, workflow actions, consumers, and timers.
-9. SaaS Owner to Tenant subscription/billing boundary, plan/subscription/entitlement records, and billing-safe admin APIs where needed.
-10. AdminAuditEvent write path plus first-slice UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for scoped list/search, audit search, and access-review queues; expose backend-authorized query paths for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range without relying on frontend filtering.
-11. Governed runtime agent foundation: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap seed import for implementation-developed default behavior documents, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
-12. AI-assisted admin offload responsibilities: a governed `UserAdminAgent` with an `AgentSkillManifest` of focused admin skills or separate specialized agents such as AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent; include decision cards for risky admin recommendations, scoped tools, redaction, and audit/work-trace records.
-13. Mandatory foundation web UI shell for generated full-stack AI-first SaaS: sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, admin-agent recommendation queues, decision cards, and capability-gated actions.
-14. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, invite delivery/resend/revoke/expiry/acceptance, user and membership list/search, membership lifecycle, last-admin protection, audit, support-access expiry/revocation, admin-agent approval boundaries, governed runtime agent prompt/skill/manifest/trace boundaries, billing-boundary, and frontend secret-boundary tests.
-15. Security review before implementing app-specific CRM/domain slices.
+1. Foundation workstream contract: Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing functional agents where relevant; default structured surfaces; action-to-capability mappings; AuthContext, tenant/customer scope, approval, audit/trace, and tests for each surface action.
+2. Common identity/tenancy types: IDs, scope enums, canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), app-specific role-to-capability mappings, permissions/capabilities, AuthContext, audit metadata.
+3. WorkOS/AuthKit sign-in, WorkOS JWT validation, and request-context extraction.
+4. Account, UserProfile, and UserSettings state plus Access/Profile surfaces and base profile/settings APIs.
+5. Tenant and Customer organization state with Tenant/Customer boundaries.
+6. Membership, Role, Permission/Capability, complete Invitation lifecycle, support-access, and context-selection flows exposed through User Admin and Support Access surface actions.
+7. Resend email delivery/outbox foundation for invitation send/resend and future app feature emails, including delivery status, delivery attempts, failed-delivery visibility for admins, captured local/dev/test outbox behavior, and auditable delivery failures.
+8. `/api/me` endpoint and browser-safe capability model that links invited accounts only through a valid invitation/acceptance context or explicit membership policy.
+9. Central backend authorization service and mandatory checks for routes, commands, queries, streams, tools, workflow actions, consumers, and timers.
+10. SaaS Owner to Tenant subscription/billing boundary, plan/subscription/entitlement records, billing-safe surfaces, and billing-safe admin APIs where needed.
+11. AdminAuditEvent write path plus first-slice UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for scoped list/search, audit search, and access-review queues; expose backend-authorized query paths for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range without relying on frontend filtering.
+12. Governed runtime agent foundation: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap seed import for implementation-developed default behavior documents, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`, exposed through Agent Admin and Audit/Trace surfaces.
+13. AI-assisted admin offload responsibilities: a governed `UserAdminAgent` with an `AgentSkillManifest` of focused admin skills or separate specialized agents such as AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent; include decision cards for risky admin recommendations, scoped tools, redaction, and audit/work-trace records.
+14. Mandatory foundation web UI shell for generated full-stack AI-first SaaS: role-authorized foundation functional-agent rail, sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, Agent Admin, Governance/Policy, admin-agent recommendation queues, decision cards, and capability-gated actions.
+15. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, invite delivery/resend/revoke/expiry/acceptance, user and membership list/search, membership lifecycle, last-admin protection, audit, support-access expiry/revocation, admin-agent approval boundaries, governed runtime agent prompt/skill/manifest/trace boundaries, billing-boundary, surface rendering/action authorization, and frontend secret-boundary tests.
+16. Security review before implementing app-specific CRM/domain slices.
 
 Do not let uncertainty about WorkOS or Resend setup details block modeling the mandatory local authorization, tenancy, AuthContext, and audit contracts. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service, so do not ask provider-selection questions for user auth or email; queue only missing WorkOS/Resend runtime setting questions while preserving the local boundary model.
 
@@ -99,15 +121,15 @@ Do not let uncertainty about WorkOS or Resend setup details block modeling the m
 
 ### App-description paths
 
-Bootstrap and maintain secure SaaS foundation files in capabilities, behavior, tests, auth/security, observability, and UI layers. Missing Account/Profile/Settings/Membership/Tenant/Customer/admin/audit or governed runtime agent semantics (`AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and authorized `readSkill`) must make readiness `not-ready` or block generation. Admin semantics are incomplete unless first-slice work includes list/search without caller-supplied user ids, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership lifecycle operations, role replacement/removal, support-access lifecycle, last-admin protection, backend authorization/redaction for admin queries, and admin UI surfaces beyond invite/disable/activate.
+Bootstrap and maintain secure SaaS foundation files in workstreams, surface contracts, capabilities, behavior, tests, auth/security, observability, and UI layers. Missing foundation functional-agent semantics for Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, or Billing where relevant; missing structured surface/action contracts; missing Account/Profile/Settings/Membership/Tenant/Customer/admin/audit; or missing governed runtime agent semantics (`AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and authorized `readSkill`) must make readiness `not-ready` or block generation. Admin semantics are incomplete unless first-slice work includes list/search without caller-supplied user ids, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership lifecycle operations, role replacement/removal, support-access lifecycle, last-admin protection, backend authorization/redaction for admin queries, and User Admin/Agent Admin/Audit/Trace structured surfaces beyond invite/disable/activate.
 
 ### Akka solution decomposition
 
-Every solution plan must include a `Core secure SaaS foundation` section before app-specific capabilities. Skill routing must include `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, `akka-saas-invitation-onboarding`, `akka-resend-email-service`, `ai-first-saas-admin-agents`, `akka-agent-behavior-profiles`, `akka-agent-governed-documents`, `akka-agent-seed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-work-trace`, endpoint JWT/request-context skills, agent/decision-card skills, and the entity/workflow/view/timer/consumer/test skills needed to realize the foundation.
+Every solution plan must include a `Core secure SaaS foundation` section before app-specific capabilities. That section must route through `agent-workstream-apps` and show foundation functional agents, structured surfaces, action-to-capability mappings, then candidate horizontal Akka components. Skill routing must include `core-saas-foundation`, `agent-workstream-apps`, `akka-workos-user-auth`, `akka-basic-user-admin`, `akka-saas-invitation-onboarding`, `akka-resend-email-service`, `ai-first-saas-admin-agents`, `akka-agent-behavior-profiles`, `akka-agent-governed-documents`, `akka-agent-seed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-work-trace`, endpoint JWT/request-context skills, agent/decision-card skills, and the entity/workflow/view/timer/consumer/test skills needed to realize the foundation.
 
 ### PRD/spec/backlog planning
 
-Every app PRD must create `specs/cross-cutting/01-auth-tenancy-audit.md` and a first foundation sprint or slice unless the task is explicitly non-SaaS reference material. Pending tasks must start with foundation work before app-specific CRM/domain tasks.
+Every app PRD must create `specs/cross-cutting/01-auth-tenancy-audit.md` and a first foundation sprint or slice unless the task is explicitly non-SaaS reference material. Pending tasks must start with foundation work before app-specific CRM/domain tasks, and first-slice tasks must be vertical foundation workstream increments or explicit foundation internals: functional agent, structured surface/action, governed capability, selected Akka substrate, browser/API/realtime work, auth/audit, and tests.
 
 ### Generation
 
@@ -116,6 +138,7 @@ Generation must stop or mark the description not-ready when the foundation is mi
 ## Output checklist
 
 Before handing off to downstream implementation, verify:
+- Foundation functional-agent and structured-surface semantics are present before component selection: Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing where relevant; each has surface actions mapped to governed capabilities, AuthContext/tenant/customer scope, audit/work-trace obligations, and tests. Missing foundation functional-agent/surface semantics blocks full-core readiness.
 - SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, complete Invitation lifecycle, AuthContext, first-slice UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AdminAuditEvent, support-access, subscription/billing boundary, and foundation web UI surfaces are present or explicitly deferred only for non-SaaS reference work.
 - Invitation and other application email delivery use Resend (resend.com) configuration for production readiness, or local/dev/test uses an explicit captured outbox adapter; delivery failures are visible to admins and auditable; focused implementation routes through `akka-saas-invitation-onboarding` for InvitationWorkflow and invite lifecycle work, and through `akka-resend-email-service` for reusable Resend delivery/outbox, future app feature emails, and governed `@FunctionTool` email tools.
 - Admin users can discover and manage users within their authority boundary using list/search, view user detail, role assignment/replacement/removal, membership add/suspend/reactivate/remove, account disable/reactivate, reset/relink identity subject under policy, support-access grant/revoke/expiry, and last-admin protection.

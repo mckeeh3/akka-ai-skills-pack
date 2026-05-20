@@ -462,7 +462,7 @@
 
 ### TASK-AWSR-05-002: Align core SaaS foundation with workstream-first foundation verticals
 
-- status: pending
+- status: done
 - source: follow-up review found `core-saas-foundation` too object/foundation-first
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/02-align-core-foundation-workstreams.md
 - depends on: [TASK-AWSR-05-001]
@@ -485,7 +485,10 @@
 - done criteria:
   - core foundation routes through foundation workstream verticals before components
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align core foundation workstream verticals
+  - check passed: `git diff --check`
+  - check passed: `rg -n "agent-workstream-apps|functional agent|structured surface|Access/Profile|User Admin|Agent Admin|Audit/Trace|Governance/Policy" skills/core-saas-foundation/SKILL.md`
 
 ### TASK-AWSR-05-003: Add input-contract gates to remaining focused skills
 
