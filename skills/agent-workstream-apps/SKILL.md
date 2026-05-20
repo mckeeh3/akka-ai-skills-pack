@@ -111,6 +111,8 @@ Choose the smallest next path:
 
 ## Cleanup warnings
 
+For design-content review, use `../../docs/agent-workstream-design-review-checklist.md` as the compact pass/fail checklist.
+
 When revising existing docs, specs, examples, or skills:
 - replace page-first, CRUD-first, dashboard-with-chat, or chatbot-bolt-on defaults with the workstream model;
 - keep conventional routes/pages as implementation/deep-link details, not the primary decomposition;

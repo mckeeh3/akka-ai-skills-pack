@@ -292,7 +292,7 @@
 
 ### TASK-AWDD-05-001: Run final design-content consistency review
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/05-final-review-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/05-review/01-final-design-content-consistency-review.md
 - depends on: [TASK-AWDD-04-002]
@@ -313,4 +313,6 @@
 - done criteria:
   - completion summary records final state and remaining follow-ups
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Complete agent workstream design migration review`
+  - completed: ran final design-content drift searches, verified queue state, linked the design review checklist from the agent-workstream routing skill, recorded completion summary, and found no required follow-up migration tasks.
