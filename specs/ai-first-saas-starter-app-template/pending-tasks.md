@@ -222,7 +222,7 @@
 
 ### TASK-STARTER-03-001: Define real workstream browser API contracts
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/03-workstream-api-frontend-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/03-workstream-api-frontend/01-define-real-workstream-api-contracts.md
 - depends on: [TASK-STARTER-02-003]
@@ -245,7 +245,8 @@
 - done criteria:
   - real endpoint/DTO contracts are implementation-ready for workstream bootstrap, surfaces, actions, and events
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Define starter workstream API contracts`
 
 ### TASK-STARTER-03-002: Wire User Admin workstream UI to real endpoints
 
