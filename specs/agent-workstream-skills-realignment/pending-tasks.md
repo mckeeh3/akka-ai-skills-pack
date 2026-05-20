@@ -14,7 +14,7 @@
 
 ### TASK-AWSR-01-001: Audit top-level routing alignment
 
-- status: pending
+- status: done
 - source: user request to review skills-pack alignment with agent workstreams and structured surfaces
 - task brief: specs/agent-workstream-skills-realignment/tasks/01-routing-intake/01-audit-top-level-routing.md
 - depends on: []
@@ -40,7 +40,8 @@
 - done criteria:
   - gap matrix identifies first routing changes needed
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Audit agent workstream routing alignment
 
 ### TASK-AWSR-01-002: Align AI-first and agent-workstream routing
 
