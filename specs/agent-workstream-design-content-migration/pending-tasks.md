@@ -181,7 +181,7 @@
 
 ### TASK-AWDD-03-002: Strengthen web UI and generation routing around canonical workstream reference
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/03-skill-routing-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/03-skill-routing/02-strengthen-web-ui-and-generation-routing.md
 - depends on: [TASK-AWDD-03-001]
@@ -205,7 +205,9 @@
 - done criteria:
   - web UI and generation routing consistently reject page-first generated SaaS realization
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Strengthen web UI generation routing`
+  - completed: strengthened web UI pattern selection, generation, and readiness guidance so generated SaaS UI starts from `frontend/src/workstream/**` and the User Admin reference vertical; legacy screens/static examples are mechanics-only and route/page tests alone are insufficient.
 
 ### TASK-AWDD-03-003: Review top-level skill routing for design cleanup consistency
 

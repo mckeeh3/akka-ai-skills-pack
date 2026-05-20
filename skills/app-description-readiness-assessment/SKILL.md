@@ -75,7 +75,7 @@ Assess the current description across these dimensions:
 
 ### 0. Scope-label and full-core gate
 Before scoring readiness, identify the app's declared generation scope from `00-system/app-manifest.md`, `00-system/readiness-status.md`, `00-system/generation-policy.md`, specs, or user instruction:
-- `full core`: readiness is blocked unless the description includes Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`); workstream UI; and acceptance/security/agent-governance/frontend tests.
+- `full core`: readiness is blocked unless the description includes Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`); workstream UI realized from the canonical `frontend/src/workstream/**` shell/reference and User Admin vertical rather than legacy screens/static examples; and acceptance/security/agent-governance/frontend tests.
 - `Module 1-only / not full core`: readiness may be assessed for minimal authentication, `/api/me`, selected AuthContext, Access/Profile, and authenticated shell only, but the result must state that User Admin, Agent Admin, Invitation lifecycle, governed prompts/skills/manifests/tool boundaries, unified audit/work trace UI, and governance loops are deferred.
 - other narrower scope: readiness may be assessed only when the scope is named and every omitted full-core area is listed as out of scope.
 
@@ -110,6 +110,7 @@ Check this for generated full-stack AI-first SaaS apps and for any existing `12-
 - surface types cover the in-scope work, including dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit/work-trace timelines, workflow status cards, evidence bundles, prompt/skill/version cards, and outcome panels as needed
 - every surface action, workstream action, agent tool, workflow step, API, timer, consumer, or internal call maps to a governed backend capability; surface affordances are never treated as authorization controls
 - the UI shell includes left rail functional agents, main workstream panel, persistent composer, context/authority indicators, denial/recovery states, trace links, and route/deep-link rules as implementation detail
+- frontend realization guidance points generated SaaS work to `frontend/src/workstream/**` and the User Admin dashboard → list/search → detail/edit contract; `frontend/src/screens/**`, route/page-first examples, and static-resource examples are labeled legacy/mechanics only
 
 Missing functional agents or structured surfaces for consequential authenticated work is a blocking readiness gap. Missing User Admin or Agent Admin is a blocking gap for full core SaaS scope unless a narrower scope is explicit and accepted.
 
@@ -176,6 +177,7 @@ Check this for generated full-stack AI-first SaaS apps:
 - forms/actions and validation behavior inside surfaces
 - frontend API contracts for workstreams, surface payloads, surface actions, and realtime updates
 - loading, empty, error, forbidden, submitting, success, stale, and reconnect states
+- test expectations for shell, rail, composer, structured surfaces, capability actions, deep links, realtime/stale behavior, and User Admin vertical coverage; route/page tests alone are not sufficient
 - accessibility and responsive expectations
 - selected web UI style guide, mode policy, core CSS tokens, component styling, and brand adaptation rules
 - for AI-first apps, supervision, decision-card, governance, digest, goal-to-execution, audit/trace, and outcome surfaces instead of only CRUD navigation
@@ -277,7 +279,7 @@ Missing secure SaaS foundation, agent workstream model, capability contracts, au
 
 For browser UI generation, a missing style guide is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
 
-For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functional-agent and structured-surface semantics are blocking when generation would otherwise invent consequential work areas, left-rail authorization, workstream behavior, surface payloads/actions/states, or User Admin / Agent Admin boundaries.
+For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functional-agent and structured-surface semantics are blocking when generation would otherwise invent consequential work areas, left-rail authorization, workstream behavior, surface payloads/actions/states, or User Admin / Agent Admin boundaries. Readiness is also blocked when the frontend plan uses legacy `frontend/src/screens/**`, page-first route tests, or static-resource mechanics as the generated SaaS UI model instead of the canonical `frontend/src/workstream/**` reference and User Admin vertical.
 
 For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 

@@ -8,7 +8,7 @@ Use this doc when an Akka service needs a browser-facing React/Vite/TypeScript a
 
 Use this for real web apps. Generated SaaS apps should implement the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream panel, persistent bottom composer, context/authority indicators, and structured surfaces.
 
-Source-repository canonical reference: `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. Endpoint-only examples below are delivery mechanics references; they are not canonical generated SaaS app structure.
+Source-repository canonical reference: `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. The User Admin vertical is the canonical foundation-admin example for dashboard → list/search → detail/edit behavior through structured surfaces. Endpoint-only and static-resource examples below are delivery mechanics references; they are not canonical generated SaaS app structure.
 
 - frontend source and tooling: `frontend/**`
 - production build output: `src/main/resources/static-resources/**`
@@ -37,7 +37,7 @@ Use a standard React/Vite/TypeScript frontend project when the browser app has p
 - has componentized UI code, design-system styling, or frontend test tooling
 - should be developed independently from the Akka Java source tree
 
-Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets. Conventional route/page navigation is an implementation/deep-link detail for generated SaaS apps, not the primary decomposition.
+Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets. Conventional route/page navigation is an implementation/deep-link detail for generated SaaS apps, not the primary decomposition. Route/page existence tests are not enough for generated SaaS UI; include shell, functional-agent rail, composer, structured-surface, action, deep-link, realtime/stale, and User Admin vertical contract coverage.
 
 Read next:
 - `docs/workstream-ui-reference-architecture.md`
