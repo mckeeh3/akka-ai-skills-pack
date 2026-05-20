@@ -4,7 +4,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient } from './api';
+import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient } from './api';
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
@@ -23,7 +23,8 @@ import {
   type WorkstreamSelection
 } from './workstream';
 
-const workstreamClient = new FixtureWorkstreamApiClient();
+const useFixtureWorkstream = new URLSearchParams(window.location.search).get('fixtureWorkstream') === '1';
+const workstreamClient = useFixtureWorkstream ? new FixtureWorkstreamApiClient() : new HttpWorkstreamApiClient();
 const realtimeClient = new FixtureWorkstreamRealtimeClient();
 
 type ModePreference = 'light' | 'dark' | 'system';
@@ -33,7 +34,7 @@ type BootstrapState =
   | { status: 'error'; message: string };
 
 const modeStorageKey = 'seed-ui-mode';
-// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · fixture client; Guarded · backend authority.
+// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · fixture client; Guarded · backend authority; production path uses HttpWorkstreamApiClient.
 
 function App() {
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
@@ -234,11 +235,11 @@ function App() {
   }
 
   if (bootstrap.status === 'loading') {
-    return <main className="content workstream-panel"><p className="eyebrow">Fixture client</p><h1>Loading workstream shell</h1></main>;
+    return <main className="content workstream-panel"><p className="eyebrow">Real API client</p><h1>Loading workstream shell</h1></main>;
   }
 
   if (bootstrap.status === 'error') {
-    return <main className="content workstream-panel"><p className="eyebrow">Fixture client error</p><h1>Could not load workstream shell</h1><p>{bootstrap.message}</p></main>;
+    return <main className="content workstream-panel"><p className="eyebrow">Real API client error</p><h1>Could not load workstream shell</h1><p>{bootstrap.message}</p></main>;
   }
 
   return (
@@ -252,10 +253,10 @@ function App() {
     >
       <WorkstreamStream items={selectedItems} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} />
       <SurfaceRenderer envelopes={ready.surfaces} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
-      <section className="ds-card" aria-label="Reference fixture status">
-        <p className="eyebrow">Fixture client</p>
+      <section className="ds-card" aria-label="Workstream API status Reference fixture status">
+        <p className="eyebrow">{useFixtureWorkstream ? 'Fixture client' : 'Real API client'}</p>
         <h3>Workstream-first shell reference</h3>
-        <p>Routes are deep links into functional agents, stream items, and structured surfaces; they are not the primary app decomposition.</p>
+        <p>Routes are deep links into functional agents, stream items, and structured surfaces; production data loads through /api/workstream endpoints.</p>
         <p className="text-muted">Realtime status: {realtimeStatusLabel(realtimeConnection)}</p>
         <ThemeModeToggle mode={mode} onModeChange={setMode} />
       </section>

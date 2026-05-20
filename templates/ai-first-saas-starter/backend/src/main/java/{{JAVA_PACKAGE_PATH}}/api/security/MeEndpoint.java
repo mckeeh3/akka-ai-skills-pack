@@ -9,10 +9,8 @@ import akka.javasdk.http.AbstractHttpEndpoint;
 import akka.javasdk.http.HttpResponses;
 import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.unauthorized;
-import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
-import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
-import {{JAVA_BASE_PACKAGE}}.application.security.MeService;
+import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 
 /** JWT-protected browser bootstrap endpoint for the selected local AuthContext. */
@@ -20,8 +18,6 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 @JWT(validate = JWT.JwtMethodMode.BEARER_TOKEN)
 @HttpEndpoint("/api/me")
 public class MeEndpoint extends AbstractHttpEndpoint {
-  private static final InMemoryIdentityRepository REPOSITORY = new InMemoryIdentityRepository();
-  private final MeService meService = new MeService(new AuthContextResolver(REPOSITORY));
 
   @Get
   public HttpResponse me() {
@@ -32,9 +28,12 @@ public class MeEndpoint extends AbstractHttpEndpoint {
               claims.subject().orElse(null),
               claims.getString("email").orElse(null),
               claims.getString("name").orElse(null));
-      var selectedMembershipId = requestContext().requestHeader("X-Selected-Membership-Id").map(header -> header.value()).orElse(null);
+      var selectedMembershipId = requestContext().requestHeader("X-Selected-Context-Id")
+          .or(() -> requestContext().requestHeader("X-Selected-Membership-Id"))
+          .map(header -> header.value())
+          .orElse(null);
       var correlationId = requestContext().requestHeader("X-Correlation-Id").map(header -> header.value()).orElse("api-me");
-      return HttpResponses.ok(meService.me(identity, selectedMembershipId, correlationId));
+      return HttpResponses.ok(StarterSecurityComponents.meService().me(identity, selectedMembershipId, correlationId));
     } catch (AuthorizationException error) {
       if (error.httpStatus() == 401) {
         throw unauthorized(error.reasonCode());

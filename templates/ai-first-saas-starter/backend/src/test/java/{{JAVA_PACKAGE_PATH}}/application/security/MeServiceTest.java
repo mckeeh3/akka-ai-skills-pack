@@ -39,12 +39,12 @@ class MeServiceTest {
     var response = meService.me(identity("workos-admin", "admin@example.com"), null, "corr-1");
 
     assertEquals("admin@example.com", response.account().accountId());
-    assertEquals("ACTIVE", response.account().status());
-    assertEquals("tenant-1", response.selectedContext().tenantId());
-    assertEquals(List.of("TENANT_ADMIN"), response.selectedContext().roles());
-    assertTrue(response.navigationCapabilities().contains("tenant.user.manage"));
-    assertTrue(response.functionalAgents().stream().anyMatch(agent -> agent.agentId().equals("user-admin") && agent.available()));
-    assertFalse(response.navigationCapabilities().contains("WORKOS_API_KEY"));
+    assertEquals("active", response.account().status());
+    assertEquals("tenant-1", response.selectedAuthContext().tenantId());
+    assertEquals(List.of("tenant-admin"), response.selectedAuthContext().roleIds());
+    assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
+    assertTrue(response.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
+    assertFalse(response.visibleCapabilityIds().contains("WORKOS_API_KEY"));
     assertEquals("corr-1", response.auditCorrelationId());
   }
 
@@ -91,7 +91,7 @@ class MeServiceTest {
     var response = meService.me(identity("workos-admin", "admin@example.com"), null, "corr-tenant");
     var authContext =
         resolver
-            .resolveMe(identity("workos-admin", "admin@example.com"), response.selectedContext().membershipId(), "corr-tenant-2")
+            .resolveMe(identity("workos-admin", "admin@example.com"), response.selectedAuthContext().membershipId(), "corr-tenant-2")
             .selectedContext();
 
     resolver.requireTenant(authContext, "tenant-1");

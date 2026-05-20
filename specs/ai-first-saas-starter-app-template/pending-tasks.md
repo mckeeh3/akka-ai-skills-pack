@@ -250,7 +250,7 @@
 
 ### TASK-STARTER-03-002: Wire User Admin workstream UI to real endpoints
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/03-workstream-api-frontend-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/03-workstream-api-frontend/02-wire-user-admin-workstream-ui-real-endpoints.md
 - depends on: [TASK-STARTER-03-001]
@@ -278,7 +278,10 @@
 - done criteria:
   - User Admin dashboard/list/detail/edit uses real starter backend APIs in production path
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Wire starter user admin workstream APIs`
+  - frontend checks passed: `cd frontend && npm test -- --run && npm run typecheck && npm run build`
+  - rendered-template Maven test command passed with `{{JAVA_BASE_PACKAGE}}=ai.first` and `{{JAVA_PACKAGE_PATH}}=ai/first`.
 
 ### TASK-STARTER-03-003: Wire remaining core workstream surfaces and realtime/stale behavior
 
