@@ -374,7 +374,7 @@
 
 ### TASK-AWSR-04-002: Rewrite starter queue as workstream/surface/capability tasks
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/04-starter-dogfood-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/04-starter-dogfood/02-rewrite-starter-queue.md
 - depends on: [TASK-AWSR-04-001]
@@ -397,7 +397,9 @@
 - done criteria:
   - starter queue is workstream-first and implementation-ready
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Rewrite starter queue workstream first
+  - check passed: `git diff --check`
 
 ### TASK-AWSR-04-003: Final realignment review and next-sprint decision
 

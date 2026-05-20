@@ -875,3 +875,378 @@
   - installed-pack scaffold validation passed: `./install.sh --location project --project "$TMP" --force`, `.agents/bin/scaffold-ai-first-saas-starter.sh --target "$TMP/app" --base-package ai.first --maven-group-id ai.first --app-name "Install Validation" --app-slug install-validation`, and rendered app `mvn test`.
   - packaging validation passed: `bash tools/build-pack.sh --output-dir "$TMP" --clean --no-archive --github-repo example/akka-ai-skills-pack`.
   - check passed: `git diff --check`.
+
+
+### TASK-STARTER-08-001: Access/Profile context and authority surface vertical
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-07-004 and part of TASK-STARTER-07-007
+- task brief: none
+- depends on: [TASK-STARTER-07-010]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
+  - templates/ai-first-saas-starter/README.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/agent-workstream-apps/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-key-value-entities/SKILL.md
+  - skills/akka-http-endpoint-testing/SKILL.md
+  - skills/akka-web-ui-testing/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - akka-web-ui-apps
+  - akka-http-endpoints
+  - akka-key-value-entities
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+- expected outputs:
+  - Access/Profile functional-agent default context/authority surface and workstream entry
+  - `/api/me`, context selection, profile/settings, no-access/disabled/forbidden recovery API/UI parity updates
+  - KVE-backed current profile/settings/auth-context seam or explicit durable seam extension
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+- done criteria:
+  - context/authority surface is workstream-first, backend-authorized, rendered by default, and covered by API/UI/security tests
+  - task changes and queue update are committed
+- notes:
+  - functional agent: Access/Profile
+  - surface/action: `surface.access.profile.context.v1` context card, capability summary, profile/settings form, select-context action, recovery states
+  - capability ids/classes: `core.access.me` read/evidence; `core.profile.update` command; `core.access.context.select` command
+  - AuthContext/scope: signed-in account, selected tenant/customer membership, disabled/no-membership/cross-tenant denials with browser-safe error shape
+  - Akka substrate/exposure: KVE current state or durable seam; HTTP `/api/me` and profile/context endpoints; workstream bootstrap payload; frontend structured surface
+  - audit/trace/tests: denial audit, profile update audit, tenant isolation, forbidden disabled/no-membership paths, rendering states, frontend secret-boundary scan
+  - supersedes future task shape for: TASK-STARTER-07-004, TASK-STARTER-07-007
+
+### TASK-STARTER-08-002: User Admin invitation lifecycle surfaces and actions
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-02-003, TASK-STARTER-07-005, TASK-STARTER-07-006, and part of TASK-STARTER-07-007
+- task brief: none
+- depends on: [TASK-STARTER-08-001]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
+  - specs/core-app-full-stack-readiness/invitation-onboarding-reference-slice.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+  - skills/akka-resend-email-service/SKILL.md
+  - skills/akka-workflows/SKILL.md
+  - skills/akka-timed-actions/SKILL.md
+  - skills/akka-consumers/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - akka-saas-invitation-onboarding
+  - akka-resend-email-service
+  - akka-workflows
+  - akka-timed-actions
+  - akka-consumers
+  - akka-views
+  - akka-web-ui-apps
+- expected outputs:
+  - User Admin invitation dashboard/table/detail and invitation acceptance result/recovery surfaces
+  - create, resend, revoke, accept, expire, reminder, delivery-status, and captured-outbox actions/APIs
+  - invitation lifecycle tests including email boundary and realtime/stale UI behavior where present
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+- done criteria:
+  - invitation onboarding is represented as User Admin surfaces/actions backed by governed capabilities, not a backend-only slice
+  - task changes and queue update are committed
+- notes:
+  - functional agent: User Admin; reusable entry path: Access/Profile invited-user acceptance
+  - surface/action: `surface.user_admin.invitations.v1`, `surface.user_admin.invitation_detail.v1`, `surface.access.invitation_acceptance.v1`; actions create/resend/revoke/accept/expire/retry-delivery
+  - capability ids/classes: `core.invitations.manage` command/workflow; `core.invitations.read` read/evidence; `core.email.outbox.deliver` reactive/internal; `core.invitations.expire` scheduled
+  - AuthContext/scope: tenant admin or invitation recipient for acceptance; tenant-scoped invitation lookup; wrong-account/expired/revoked/duplicate denials are safe and auditable
+  - Akka substrate/exposure: ESE invitation lifecycle or durable seam; InvitationWorkflow; TimedAction expiry/reminder; Consumer email/outbox; InvitationView; HTTP/workstream APIs; frontend structured surfaces
+  - audit/trace/tests: idempotency, delivery failure status, tenant isolation, raw token redaction, outbox/no-secret checks, rendering states, API/realtime parity
+  - supersedes future task shape for: TASK-STARTER-02-003, TASK-STARTER-07-005, TASK-STARTER-07-006, TASK-STARTER-07-007
+
+### TASK-STARTER-08-003: User Admin membership, role, support access, and access-review vertical
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-02-003, TASK-STARTER-03-002, TASK-STARTER-07-007, and TASK-STARTER-07-009
+- task brief: none
+- depends on: [TASK-STARTER-08-002]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
+  - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-web-ui-forms-validation/SKILL.md
+  - skills/akka-web-ui-testing/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - akka-basic-user-admin
+  - akka-http-endpoints
+  - akka-views
+  - akka-web-ui-apps
+  - akka-web-ui-forms-validation
+  - akka-web-ui-testing
+- expected outputs:
+  - User Admin user directory, member detail, role/capability assignment, support-access, and access-review surfaces/actions
+  - protected APIs and views for directory/search, membership status, role updates, support access, access-review commit, and last-admin protection
+  - frontend/backend tests for validation, forbidden, idempotency, audit, and tenant isolation
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+- done criteria:
+  - user administration work is a vertical User Admin workstream with explicit surface-action-to-capability mapping
+  - task changes and queue update are committed
+- notes:
+  - functional agent: User Admin
+  - surface/action: `surface.user_admin.directory.v1`, `surface.user_admin.member_detail.v1`, `surface.user_admin.access_review.v1`, `surface.user_admin.support_access.v1`; actions update-role, disable/reactivate, grant/revoke support access, commit access review
+  - capability ids/classes: `core.memberships.manage` command; `core.access_review.commit` governance/command; `core.user_directory.search` read/evidence; `core.support_access.manage` command
+  - AuthContext/scope: Tenant Admin or scoped support authority; selected tenant/customer only; last-admin protection and disabled-user fail-closed behavior
+  - Akka substrate/exposure: KVE/ESE as appropriate for membership/profile state; UserDirectoryView/MembershipView/AccessReviewQueueView; HTTP/workstream action APIs; frontend forms/tables
+  - audit/trace/tests: AdminAuditEvent for every mutation/denial/no-op, tenant isolation, support boundary, idempotent updates, rendering/forms/accessibility checks
+  - supersedes future task shape for: TASK-STARTER-02-003, TASK-STARTER-03-002, TASK-STARTER-07-007, TASK-STARTER-07-009
+
+### TASK-STARTER-08-004: Agent Admin catalog, definition lifecycle, and seed governance vertical
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-04-001 and part of TASK-STARTER-07-008
+- task brief: none
+- depends on: [TASK-STARTER-08-003]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/core-app-full-stack-readiness/agent-admin-component-api-slice.md
+  - specs/governed-runtime-agent-foundation/minimal-governed-runtime-agent-reference-slice.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
+  - skills/akka-event-sourced-entities/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - akka-agent-behavior-profiles
+  - akka-agent-seed-documents
+  - akka-event-sourced-entities
+  - akka-views
+  - akka-web-ui-apps
+  - akka-agent-testing
+- expected outputs:
+  - Agent Admin catalog/detail/lifecycle surfaces for AgentDefinition and default seed provenance
+  - durable AgentDefinition and seed-import components/views behind existing repository ports
+  - tests for idempotent seed import, disabled-agent denial, tenant isolation, catalog/detail rendering, and admin audit
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+- done criteria:
+  - AgentDefinition lifecycle and seed governance are implemented through Agent Admin surfaces and capability contracts
+  - task changes and queue update are committed
+- notes:
+  - functional agent: Agent Admin
+  - surface/action: `surface.agent_admin.catalog.v1`, `surface.agent_admin.definition_detail.v1`, `surface.agent_admin.seed_import.v1`; actions activate/deactivate agent, import defaults, view provenance/checksum, inspect lifecycle
+  - capability ids/classes: `agent.definitions.manage` governance/command; `agent.seed.import` workflow/internal; `agent.definitions.read` read/evidence
+  - AuthContext/scope: Tenant Admin or Agent Admin capability in selected tenant; seed import is tenant/bootstrap scoped and customization-preserving
+  - Akka substrate/exposure: ESE/KVE durable agent definition state as accepted; seed import workflow/service; AgentCatalogView; HTTP/workstream APIs; frontend catalog/detail surfaces
+  - audit/trace/tests: provenance/checksum audit, disabled-agent denial, tenant isolation, no provider secret exposure, rendering states
+  - supersedes future task shape for: TASK-STARTER-04-001, TASK-STARTER-07-008
+
+### TASK-STARTER-08-005: Agent Admin prompt, skill, manifest, readSkill, and tool-boundary governance vertical
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-04-002, TASK-STARTER-04-003, and part of TASK-STARTER-07-008
+- task brief: none
+- depends on: [TASK-STARTER-08-004]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/core-app-full-stack-readiness/hybrid-akka-agent-runtime-contract.md
+  - docs/agent-runtime-invocation-pattern.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-runtime-state/SKILL.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-runtime-state
+  - akka-agent-behavior-editing
+  - akka-web-ui-apps
+  - akka-agent-testing
+- expected outputs:
+  - Agent Admin prompt/skill/version/manifest/tool-boundary surfaces with proposed-diff and test-console actions
+  - governed prompt assembly, authorized `readSkill(skillId)`, PromptAssemblyTrace, SkillLoadTrace, and tool-boundary enforcement wiring
+  - tests for unassigned skills, disabled agents, prompt/skill/tool-boundary authority expansion, trace creation, and UI/API parity
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+- done criteria:
+  - governed behavior changes are surface/action/capability-driven and cannot grant authority through prompt or skill text alone
+  - task changes and queue update are committed
+- notes:
+  - functional agent: Agent Admin
+  - surface/action: `surface.agent_admin.prompt_versions.v1`, `surface.agent_admin.skill_versions.v1`, `surface.agent_admin.manifest_detail.v1`, `surface.agent_admin.tool_boundary.v1`, `surface.agent_admin.behavior_diff.v1`, `surface.agent_admin.test_console.v1`
+  - capability ids/classes: `agent.prompts.govern` governance; `agent.skills.govern` governance; `agent.manifests.manage` governance; `agent.tool_boundaries.manage` governance; `agent.runtime.test` command/test; `agent.read_skill` internal/tool read
+  - AuthContext/scope: Tenant Admin or Agent Admin capability; behavior edits that expand authority require retained human approval; runtime reads are same-tenant, active-agent, assigned-skill, permitted-mode only
+  - Akka substrate/exposure: ESE prompt/skill/tool-boundary lifecycle records; manifest current state; prompt assembly service; readSkill function tool; behavior proposal workflow; HTTP/workstream APIs; frontend governance surfaces
+  - audit/trace/tests: PromptAssemblyTrace, SkillLoadTrace allow/deny, AgentWorkTrace test-console, audit for proposed/approved/denied/activated changes, redaction and secret-boundary checks
+  - supersedes future task shape for: TASK-STARTER-04-002, TASK-STARTER-04-003, TASK-STARTER-07-008, TASK-STARTER-07-009
+
+### TASK-STARTER-08-006: Governance/Policy proposal review and retained-authority vertical
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-04-003 and TASK-STARTER-07-009
+- task brief: none
+- depends on: [TASK-STARTER-08-005]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/core-app-full-stack-readiness/governance-policy-core-module-slice.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/ai-first-saas-policy-governance/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - skills/akka-workflows/SKILL.md
+  - skills/akka-event-sourced-entities/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+  - akka-workflows
+  - akka-event-sourced-entities
+  - akka-views
+  - akka-web-ui-apps
+  - akka-agent-testing
+- expected outputs:
+  - Governance/Policy proposal queue, decision card, approval/rejection, activation/rollback, and outcome-note surfaces/actions
+  - backend workflow/entity/view/API support for proposal review with retained human authority
+  - tests for approval-required authority expansion, evidence/risk fields, activation/rollback audit, and rendering/API parity
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+- done criteria:
+  - policy/governance changes are implemented as explicit proposal and decision surfaces with backend-enforced approval gates
+  - task changes and queue update are committed
+- notes:
+  - functional agent: Governance/Policy; reusable by: Agent Admin for behavior-change proposals
+  - surface/action: `surface.governance.proposal_queue.v1`, `surface.governance.decision_card.v1`, `surface.governance.activation_status.v1`; actions approve/reject/request-changes/activate/rollback/add-outcome-note
+  - capability ids/classes: `governance.proposals.review` approval/governance; `governance.proposals.activate` workflow; `governance.outcomes.record` command
+  - AuthContext/scope: selected tenant; approver must have governance approval capability and cannot approve own high-risk authority expansion where policy forbids it
+  - Akka substrate/exposure: ESE proposal/decision records; approval workflow; GovernanceProposalView; HTTP/workstream APIs; optional bounded internal proposal-drafting/evaluation agents
+  - audit/trace/tests: evidence/risk/confidence/alternatives captured, decision history, approval/denial/activation audit, rollback path, retained-human-authority tests
+  - supersedes future task shape for: TASK-STARTER-04-003, TASK-STARTER-07-009
+
+### TASK-STARTER-08-007: Audit/Trace investigation workstream vertical
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-07-007 and TASK-STARTER-07-009
+- task brief: none
+- depends on: [TASK-STARTER-08-006]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/ai-first-saas-audit-trace/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-view-testing/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - ai-first-saas-audit-trace
+  - akka-agent-work-trace
+  - akka-views
+  - akka-http-endpoints
+  - akka-web-ui-apps
+  - akka-view-testing
+- expected outputs:
+  - Audit/Trace landing, search/list/detail, correlated timeline, redaction, and optional export/stream surfaces/actions
+  - tenant-scoped AdminAuditEvent, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, and governance trace search/detail APIs/views
+  - tests for redaction, support/auditor boundary, sensitive read audit, forbidden/cross-tenant denial, ordering, and rendering states
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+- done criteria:
+  - audit and work traces are discoverable through Audit/Trace workstream surfaces with scoped/redacted capability contracts
+  - task changes and queue update are committed
+- notes:
+  - functional agent: Audit/Trace
+  - surface/action: `surface.audit_trace.search.v1`, `surface.audit_trace.timeline.v1`, `surface.audit_trace.detail.v1`; actions search/filter/open-detail/export-if-enabled/append-investigation-note
+  - capability ids/classes: `audit.trace.search` trace/audit read; `audit.trace.detail` trace/audit read; `audit.trace.export` approval/trace when enabled
+  - AuthContext/scope: Tenant Admin, Auditor, or scoped support access; selected tenant/customer only; redacted-by-default details
+  - Akka substrate/exposure: ESE audit/trace appenders as needed; AdminAuditView/TraceSearchView; HTTP/workstream APIs; optional SSE for trace stream; frontend timelines/tables
+  - audit/trace/tests: search access itself audited for sensitive reads, redaction profiles, ordering/pagination, tenant isolation, stale/reconnect if streamed, frontend secret-boundary scan
+  - supersedes future task shape for: TASK-STARTER-07-007, TASK-STARTER-07-009
+
+### TASK-STARTER-08-008: Shell, realtime, static hosting, and named-surface fullstack validation
+
+- status: pending
+- source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future validation shape for TASK-STARTER-03-003, TASK-STARTER-07-002, TASK-STARTER-07-003, and TASK-STARTER-07-010
+- task brief: none
+- depends on: [TASK-STARTER-08-007]
+- required reads:
+  - specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - templates/ai-first-saas-starter/README.md
+  - templates/ai-first-saas-starter/TEMPLATE-MANIFEST.md
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-web-ui-realtime/SKILL.md
+  - skills/akka-http-endpoint-web-ui/SKILL.md
+  - skills/akka-http-endpoint-sse/SKILL.md
+  - skills/akka-web-ui-testing/SKILL.md
+  - skills/akka-http-endpoint-testing/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - akka-web-ui-apps
+  - akka-web-ui-realtime
+  - akka-http-endpoint-web-ui
+  - akka-http-endpoint-sse
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - workstream shell validation for role-authorized functional-agent rail, persistent composer, context/authority indicators, and named starter surfaces
+  - realtime/stale/reconnect and static asset hosting checks tied to surface ids and capability ids
+  - scaffold/install/build-pack validation updates if needed
+- required checks:
+  - git diff --check
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+  - installed-pack scaffold validation if pack/template files changed
+  - packaging validation if install or pack files changed
+- done criteria:
+  - final validation proves the named Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces/capabilities instead of only generic scaffold success
+  - task changes and queue update are committed
+- notes:
+  - functional agent: cross-cutting shell/realtime/static-hosting validation; validates Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy surfaces
+  - surface/action: shell role-authorized functional-agent rail, workstream events, surface stale/reconnect markers, static frontend asset routes, protected API separation
+  - capability ids/classes: `frontend.workstream.shell` frontend/shell; validates `core.access.me`, `core.invitations.manage`, `core.memberships.manage`, `agent.definitions.manage`, `agent.prompts.govern`, `agent.skills.govern`, `agent.tool_boundaries.manage`, `audit.trace.search`, `governance.proposals.review`
+  - AuthContext/scope: selected tenant/customer context, role/capability-derived visibility, backend denial remains authoritative
+  - Akka substrate/exposure: HTTP static hosting, protected workstream APIs, SSE/realtime where present, React/Vite build/static-resource handoff
+  - audit/trace/tests: smoke plus named-surface contract tests, no frontend secrets, forbidden/disabled/no-access rendering, stale/reconnect no-crash, route/static asset assertions
+  - supersedes future task shape for: TASK-STARTER-03-003, TASK-STARTER-07-002, TASK-STARTER-07-003, TASK-STARTER-07-010
