@@ -521,7 +521,7 @@
 
 ### TASK-AWSR-05-004: Normalize structured-surface and exposure-channel terminology
 
-- status: pending
+- status: done
 - source: follow-up review found ambiguous use of `surface`
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/04-normalize-surface-terminology.md
 - depends on: [TASK-AWSR-05-003]
@@ -544,7 +544,10 @@
 - done criteria:
   - top-level planning language avoids structured-surface/exposure-channel ambiguity
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Normalize workstream surface terminology
+  - check passed: `git diff --check`
+  - check passed: targeted `rg` review over touched files for structured-surface and exposure-channel terminology
 
 ### TASK-AWSR-05-005: Align AI-first companion skills with surface/action handoffs
 

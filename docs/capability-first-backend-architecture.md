@@ -12,7 +12,7 @@ product intent
 → agent workstream application model: role-authorized functional/context-area agents, workstreams, and structured surfaces
 → capability inventory
 → authority, scope, schemas, side effects, audit, approval, and supervision rules
-→ selected exposure surfaces
+→ selected capability exposure channels
 → Akka component realization
 ```
 
@@ -53,12 +53,12 @@ A capability definition should include:
 | Idempotency | Duplicate command behavior, retry safety, dedupe keys, and no-op semantics. |
 | Policy/approval | Autonomy level, approval gates, exception/escalation rules, risk/confidence thresholds, and human authority. |
 | Audit/trace | Audit event type, work-trace fields, policy citations, tool/data references, and retention/redaction expectations. |
-| Exposure surfaces | Selected UI/API/tool/workflow/MCP/timer/consumer/internal surfaces, or explicit non-exposure. |
-| Tests | Success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-surface tests. |
+| Exposure channels | Selected workstream action, UI/API/tool/workflow/MCP/timer/consumer/internal channels, or explicit non-exposure. |
+| Tests | Success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-channel tests. |
 
 ## Capability is not agent tool
 
-An agent tool is one possible exposure surface for a capability. It is not the root abstraction.
+An agent tool is one possible exposure channel for a capability. It is not the root abstraction.
 
 Official Akka agent tooling supports local `@FunctionTool` methods, external tool classes, Akka components as function tools, and remote MCP tools. See `../akka-context/sdk/agents/extending.html.md`, `../skills/akka-agent-tools/SKILL.md`, and `../skills/akka-agent-component-tools/SKILL.md`.
 
@@ -72,11 +72,11 @@ Capability-first interpretation of those tools:
 
 Default stance: expose read-only evidence capabilities to agents more readily than side-effecting capabilities. Consequential side effects should default to recommendation, proposal, or approval-request capabilities unless an accepted policy grants bounded autonomous authority.
 
-## Exposure surfaces
+## Capability exposure channels
 
-Select exposure after capability semantics are clear.
+Select capability exposure after capability semantics are clear. Use `structured surface` for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths.
 
-| Surface | Use when | Capability rules |
+| Channel | Use when | Capability rules |
 |---|---|---|
 | Browser UI action | Humans directly initiate or supervise work. | Backend still enforces auth; UI shows allowed actions from `/api/me`/capabilities but never decides authorization alone. |
 | HTTP/gRPC API | External clients, browser APIs, or services need a stable contract. | Validate tokens/context, scope every command/query, return safe denial/errors, audit protected access. |
@@ -88,7 +88,7 @@ Select exposure after capability semantics are clear.
 | Consumer | Capability reacts to events/topics/service streams. | Preserve provenance/correlation, enforce allowed side effects, handle duplicate/retry semantics. |
 | Internal component method | Operation is not directly exposed outside the backend. | Still validate invariants; apply auth at the caller boundary and audit where consequential. |
 
-A capability may have multiple surfaces, but the same authority, validation, idempotency, audit, and approval semantics must hold across all of them.
+A capability may have multiple exposure channels, but the same authority, validation, idempotency, audit, and approval semantics must hold across all of them.
 
 ## Akka realization rules
 
@@ -116,7 +116,7 @@ For broad product input or implementation planning:
 3. Interpret AI-first operating-model needs: delegated work, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
 4. Build a capability inventory before selecting Akka components.
 5. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
-6. Decide which surfaces expose the capability, if any.
+6. Decide which exposure channels expose the capability, if any.
 7. Select Akka components that realize the capability semantics.
 8. Generate code/tests component by component while preserving the capability contract.
 
@@ -143,7 +143,7 @@ Use conservative defaults unless accepted product specs say otherwise:
 - Read-only scoped evidence may be agent-accessible when it is redacted and audited appropriately.
 - Side-effecting agent tools require explicit permission and should prefer proposal/approval flows.
 - `readSkill(skillId)` is a governed guidance-loading capability, not an authorization grant; it must check tenant, active AgentDefinition, AgentSkillManifest assignment, skill version/status, mode, AuthContext, and trace allowed or denied loads.
-- High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, email-send, or external-side-effect capabilities require human approval or a documented autonomous policy boundary. Generated app email capabilities use Resend through the shared email service; agent access must be a governed `@FunctionTool` or equivalent capability surface with tool-boundary enforcement and traces.
+- High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, email-send, or external-side-effect capabilities require human approval or a documented autonomous policy boundary. Generated app email capabilities use Resend through the shared email service; agent access must be a governed `@FunctionTool` or equivalent capability exposure channel with tool-boundary enforcement and traces.
 - Agents may recommend governance changes; humans approve activation unless a narrow safe boundary is explicitly defined.
 - Support access and SaaS owner operations require separate authority, audit, and tenant/customer context rules.
 
@@ -167,7 +167,7 @@ Future skills and planning artifacts should use this doctrine as the backend sub
 
 - Description-first paths should maintain capability inventories alongside functional agents, internal agents, workstreams, surfaces, behavior, auth/security, UI, observability, readiness, and tests. In app-description trees, `12-workstreams/` owns functional agents, workstreams, surface contracts, action-to-capability mappings, trace semantics, and surface/action tests; `55-ui/` owns browser realization such as shell rendering, routes/deep links, interactions, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
 - Direct Akka decomposition should derive capabilities before component selection.
-- PRD/spec/backlog planning should preserve capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks.
-- Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or exposure surfaces.
+- PRD/spec/backlog planning should preserve capability ids, auth/scope, side effects, approval, audit, exposure channels, and tests in generated tasks.
+- Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or capability exposure channels.
 
-The top-level routing skill for this doctrine is `../skills/capability-first-backend/SKILL.md`. Use it with `../skills/README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure surfaces.
+The top-level routing skill for this doctrine is `../skills/capability-first-backend/SKILL.md`. Use it with `../skills/README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure channels.

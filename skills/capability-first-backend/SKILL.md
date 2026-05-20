@@ -1,6 +1,6 @@
 ---
 name: capability-first-backend
-description: Model backend behavior as governed capabilities before choosing Akka components or exposure surfaces, then route to app-description, decomposition, PRD/backlog, or focused implementation skills.
+description: Model backend behavior as governed capabilities before choosing Akka components or exposure channels, then route to app-description, decomposition, PRD/backlog, or focused implementation skills.
 ---
 
 # Capability-First Backend
@@ -52,7 +52,7 @@ secure SaaS foundation
 → durable workstreams
 → typed structured surfaces and actions
 → governed backend capabilities
-→ selected exposure surfaces
+→ selected capability exposure channels
 → Akka components
 ```
 
@@ -70,7 +70,7 @@ capability = named operation or query
   + idempotency
   + policy/approval rules
   + audit/trace obligations
-  + selected exposure surfaces
+  + selected capability exposure channels
   + tests
 ```
 
@@ -108,7 +108,7 @@ For each workstream operation, structured surface action, payload-producing quer
 - side effects: state changes, external calls, topics, timers, emails, notifications, workflow starts;
 - policy, approval, escalation, risk/confidence/impact thresholds, and autonomy level;
 - audit/work-trace fields and retention/redaction expectations;
-- selected exposure surfaces or explicit non-exposure;
+- selected capability exposure channels or explicit non-exposure;
 - success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
 
 ### 4. Classify capability shape
@@ -124,9 +124,9 @@ Use the shape to choose the Akka substrate later:
 - scheduled capability → timer-backed expiry, reminder, digest, replay, recheck, retention;
 - reactive capability → consumer-backed event reaction, enrichment, publication, or integration.
 
-### 5. Select exposure surfaces after semantics
+### 5. Select capability exposure channels after semantics
 
-Choose only the surfaces the capability needs:
+Choose only the capability exposure channels the capability needs. Use `structured surface` only for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths:
 - browser UI action;
 - HTTP or gRPC API;
 - agent tool or component tool;
@@ -137,7 +137,7 @@ Choose only the surfaces the capability needs:
 - consumer reaction;
 - internal component method only.
 
-A capability may have multiple surfaces, but all surfaces must preserve the same authority, validation, idempotency, audit, approval, and tenant/customer scope semantics.
+A capability may have multiple exposure channels, but all channels must preserve the same authority, validation, idempotency, audit, approval, and tenant/customer scope semantics.
 
 Default stance: expose scoped read/evidence capabilities to agents more readily than side-effecting capabilities. Consequential side effects should default to proposal or approval-request capabilities unless accepted policy grants bounded autonomous authority.
 
@@ -146,9 +146,9 @@ Default stance: expose scoped read/evidence capabilities to agents more readily 
 After capability semantics are clear, route to exactly one primary operating path:
 
 - `app-descriptions` when maintaining or reviewing the app-description source of truth. Preserve capability inventory in description layers alongside behavior, auth/security, UI, observability, readiness, and tests.
-- `akka-solution-decomposition` when deriving a direct Akka component plan. The decomposition must preserve the functional-agent/workstream/surface inventory, map surface actions and payload-producing queries to capabilities, then map capabilities to entities, workflows, views, agents, consumers, timers, endpoints, and web UI surfaces.
-- `akka-prd-to-specs-backlog` when creating repo-ready specs, backlogs, and pending tasks. Generated tasks must preserve capability ids, auth/scope, schemas, side effects, idempotency, approval, audit, exposure surfaces, and tests.
-- Focused Stage 3 skills only when the secure foundation, capability contract, exposure surface, and Akka component choice are already settled.
+- `akka-solution-decomposition` when deriving a direct Akka component plan. The decomposition must preserve the functional-agent/workstream/structured-surface inventory, map surface actions and payload-producing queries to capabilities, then map capabilities to entities, workflows, views, agents, consumers, timers, endpoints, and web UI realization.
+- `akka-prd-to-specs-backlog` when creating repo-ready specs, backlogs, and pending tasks. Generated tasks must preserve capability ids, auth/scope, schemas, side effects, idempotency, approval, audit, exposure channels, and tests.
+- Focused Stage 3 skills only when the secure foundation, capability contract, exposure channel, and Akka component choice are already settled.
 
 ## Stage 3 mapping
 
@@ -173,10 +173,10 @@ When this skill is used directly, produce or hand off:
 - actors/callers and AuthContext rules;
 - input/output schemas and validation notes;
 - side effects, idempotency, policy/approval, audit/trace obligations;
-- selected exposure surfaces and explicit non-exposures;
+- selected capability exposure channels and explicit non-exposures;
 - capability-to-Akka substrate/component mapping;
 - downstream skill routing;
-- tests required per capability and surface;
+- tests required per capability, structured surface, and exposure channel;
 - open questions only where implementation would otherwise guess workstream ownership, authority, risk, approval, audit, or scope.
 
 ## Anti-patterns
@@ -187,4 +187,4 @@ Avoid:
 - exposing all component methods as tools because Akka supports component tools;
 - relying on prompt-only security, frontend-only filtering, or UI-hidden actions;
 - returning raw state dumps when a scoped/redacted evidence capability is needed;
-- letting one exposure surface drift from the capability's shared auth, idempotency, approval, or audit contract.
+- letting one capability exposure channel drift from the capability's shared auth, idempotency, approval, or audit contract.

@@ -11,7 +11,7 @@ Use this as the top-level starting skill when the task begins from high-level in
 
 Generate or review an Akka solution plan that:
 - interprets high-level product intent through the full-stack secure AI-first SaaS operating model, including mandatory foundation and UI surfaces
-- derives governed backend capabilities before choosing Akka components or exposure surfaces
+- derives governed backend capabilities before choosing Akka components or exposure channels
 - maps capability contracts to concrete Akka components
 - chooses the simplest component set that preserves required business semantics
 - makes write model, read model, orchestration, timing, integration, and edge concerns explicit
@@ -177,7 +177,7 @@ Build a capability inventory from the functional-agent workstreams, structured s
 - side effects: state changes, workflow starts, external calls, topics, timers, emails, notifications, or integrations
 - policy, approval, escalation, risk/confidence/impact thresholds, supervision, and governance requirements
 - audit/work-trace obligations for access, denials, approvals, side effects, tool activity, and data references
-- selected exposure surfaces: browser UI, HTTP/gRPC, MCP, agent tool/component tool, workflow step, timer action, consumer reaction, view/query, or internal-only
+- selected capability exposure channels: browser UI, HTTP/gRPC, MCP, agent tool/component tool, workflow step, timer action, consumer reaction, view/query, or internal-only
 - browser UI needs, including functional agents, workstream shell regions, structured surfaces, surface actions/forms, route/deep-link details, frontend state, realtime behavior, accessibility, and responsive requirements
 - AI and LLM needs, if genuinely prompt-driven
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and surface-specific tests
@@ -196,7 +196,7 @@ Use capability shape as the input to component selection:
 - reactive capabilities usually use consumers with provenance, correlation, retry, duplicate, and audit behavior
 - policy/governance and trace/audit capabilities usually need event history, views, and admin/governance UI surfaces
 
-A component may realize several capabilities, and a capability may have several exposure surfaces. Preserve one shared authority, validation, idempotency, approval, and audit contract across all surfaces.
+A component may realize several capabilities, and a capability may have several exposure channels. Preserve one shared authority, validation, idempotency, approval, and audit contract across all channels.
 
 ### 6. Identify the write model
 
@@ -259,15 +259,15 @@ Choose an `Agent` when:
 
 Do not introduce an agent for deterministic business rules that should stay in code.
 
-### 12. Choose edge and API surfaces
+### 12. Choose edge and API exposure channels
 
-Choose surfaces after capability semantics are fixed:
+Choose capability exposure channels after capability semantics are fixed. Use `structured surface` for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths:
 - `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
 - `Akka-hosted web UI app` for full browser applications with an agent workstream shell, structured surfaces, typed API clients, surface actions/forms, state, selected frontend project shape, and frontend quality requirements; prioritize supervision, decision, governance, digest, audit, and outcome surfaces when AI-first concerns exist
 - `gRPC endpoint` for protobuf-first service APIs
 - `MCP endpoint` for selectively exposed LLM-oriented tools, resources, or prompts
 
-A single solution may expose more than one edge surface, but every surface must preserve the same capability auth/scope, validation, idempotency, approval, and audit rules. Do not expose all capabilities as agent tools or MCP tools by default.
+A single solution may expose a capability through more than one edge channel, but every exposure channel must preserve the same capability auth/scope, validation, idempotency, approval, and audit rules. Do not expose all capabilities as agent tools or MCP tools by default.
 
 ### 13. Add security and delivery concerns explicitly
 
@@ -292,7 +292,7 @@ functional agent
 + one workstream/default surface
 + one or two surface actions or payload-producing queries
 + governed capabilities
-+ Akka components and exposure surfaces for those capabilities
++ Akka components and exposure channels for those capabilities
 + authorization, audit/trace, tenant-isolation, rendering, and surface/action tests
 ```
 
@@ -343,7 +343,7 @@ Choose one or more of:
 - `TimedAction` — deadlines, reminders, retries, expiries
 - notifications, topic production, or service streams when clients or downstream services must observe progress
 
-### Edge surfaces
+### Edge exposure channels
 
 Choose one or more of:
 - `HTTP endpoint`
@@ -632,10 +632,10 @@ Use this exact response shape whenever the task starts from requirements:
 - <surface-id>/<action-id or query> → <capability-id>: <authority, input/output, result-surface, audit/trace summary>
 
 ## Capability summary
-- <capability-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; exposure surfaces; required tests
+- <capability-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; capability exposure channels; required tests
 
 ## Capability-to-component mapping
-- <capability-id> → <ComponentName/surface>: <realization responsibility and preserved capability semantics>
+- <capability-id> → <ComponentName / structured surface / exposure channel>: <realization responsibility and preserved capability semantics>
 
 ## Chosen components
 - <ComponentType>: <ComponentName> — <purpose>
@@ -688,7 +688,7 @@ Avoid:
 - adding a workflow for simple one-step entity operations
 - adding an agent for deterministic rules that belong in domain code
 - exposing query-heavy use cases directly from write models when a view is the better fit
-- treating agent tools, MCP tools, endpoint routes, or UI actions as the root backend abstraction instead of selected capability surfaces
+- treating agent tools, MCP tools, endpoint routes, or UI actions as the root backend abstraction instead of selected capability exposure channels
 - performing side effects inside entity command handlers instead of routing through consumers or other supported patterns
 - generating code before listing unresolved assumptions
 
@@ -701,16 +701,16 @@ Before moving from planning to coding, verify:
 - delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
 - generated SaaS plans include functional agents, internal agents where needed, durable workstreams, structured surfaces, surface actions/events, and retained human authority before capability mapping
 - governed capabilities were derived from workstream operations, structured surface payload queries/actions, tools, workflow steps, APIs, timers, consumers, and internal operations before Akka component selection
-- every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests, or an explicit open question
+- every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, capability exposure channels, and tests, or an explicit open question
 - the core foundation implementation order includes separate managed-agent work for behavior profiles, prompt governance, skill governance/manifests/readSkill, trace records, behavior editing agent proposals, agent governance UI, and tests before app-specific domain features
 - every structured surface action or payload-producing query maps to a capability or an explicit decision not to expose one
-- every user-facing capability maps to at least one concrete component/surface or an explicit decision not to add one
+- every user-facing capability maps to at least one concrete component, structured surface, or exposure channel, or an explicit decision not to add one
 - each chosen component has a clear capability responsibility and owning package
 - entity type decisions are justified
 - workflow usage is justified
 - view needs are explicit
 - timer and consumer needs are explicit
-- edge and API surfaces are explicit
+- edge and API exposure channels are explicit
 - required tests are listed for each component family
 - the next skills to load are listed in implementation order
 - the plan preserves capability semantics for downstream implementation tasks instead of stopping at component names

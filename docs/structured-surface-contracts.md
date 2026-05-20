@@ -170,7 +170,7 @@ For every surface action and payload-producing query, the capability inventory m
 - AuthContext, tenant/customer scope, permissions/capabilities, denial behavior, and disabled-user behavior;
 - input/output schemas, redaction, validation, idempotency, and safe error shape;
 - data access, side effects, policy/approval gates, audit/work-trace fields, and retention;
-- selected exposure surfaces: workstream surface action, browser API, agent tool, workflow step, timer, consumer, MCP, view, or internal method;
+- selected capability exposure channels: structured surface action, browser API, agent tool, workflow step, timer, consumer, MCP, view, or internal method;
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, rendering, and realtime tests.
 
 ## Test contract

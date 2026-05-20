@@ -30,7 +30,7 @@ The primary application model is not a conventional page tree, CRUD console, or 
 | Internal agent | Non-left-rail agent invoked by workflows, tools, consumers, timers, functional agents, or backend services for bounded work such as classification, summarization, evaluation, routing, replay, proposal drafting, or governance review. |
 | Workstream | Durable conversational and operational timeline for a functional agent. It contains user requests, agent responses, tool/capability results, structured surfaces, decisions, workflow progress, traces, and follow-up actions. |
 | Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, or outcome metric panel. |
-| Capability | Governed backend contract behind actions, queries, tools, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure surfaces, and tests. |
+| Capability | Governed backend contract behind actions, queries, tools, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure channels, and tests. |
 | Horizontal implementation | Akka entities, workflows, views, consumers, timed actions, agents, endpoints, web UI code, auth/security, audit, and tests that implement capabilities for vertical functional agents and surfaces. |
 
 ## Agent workstream shell
@@ -132,10 +132,10 @@ For each operation or query exposed in a workstream, define the capability first
 - data access and side effects;
 - policy, approval, escalation, and autonomy rules;
 - audit/work-trace fields;
-- exposure surfaces: workstream action, HTTP/gRPC/MCP endpoint, agent tool, workflow step, timer, consumer, view, or internal call;
+- exposure channels: workstream action, HTTP/gRPC/MCP endpoint, agent tool, workflow step, timer, consumer, view, or internal call;
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and rendering/tool/API tests.
 
-Agent tools are optional capability exposure surfaces. Side-effecting agent tools require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
+Agent tools are optional capability exposure channels. Side-effecting agent tools require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
 
 ## Horizontal Akka implementation
 
@@ -197,7 +197,7 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Internal agents are distinguished from functional agents and have governed behavior, tool boundaries, and traces.
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.
 - [ ] Surface actions, agent tools, APIs, workflows, timers, and consumers map to governed capabilities.
-- [ ] Capability-first backend design remains intact: auth, scope, validation, idempotency, side effects, approval, audit, exposure surfaces, and tests are defined before Akka component selection.
+- [ ] Capability-first backend design remains intact: auth, scope, validation, idempotency, side effects, approval, audit, exposure channels, and tests are defined before Akka component selection.
 - [ ] Akka components are selected as horizontal implementation details from capability semantics.
 - [ ] The UI shell includes left rail functional agents, main workstream, persistent composer, context/authority indicators, denial/recovery states, and trace links.
 - [ ] Page-first, CRUD-first, and chatbot-bolt-on alternatives are not presented as equal generated-app defaults.
