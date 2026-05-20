@@ -152,7 +152,7 @@ fi
 
 if [[ "$DRY_RUN" == true ]]; then
   run_cmd "${installer_cmd[@]}"
-elif [[ -r /dev/tty ]]; then
+elif [[ -t 0 && -r /dev/tty ]]; then
   "${installer_cmd[@]}" < /dev/tty
 else
   run_cmd "${installer_cmd[@]}"

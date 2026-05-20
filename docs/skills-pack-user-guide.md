@@ -85,6 +85,17 @@ After a project install, explicitly scaffold the starter into an empty or bootst
 
 Use `--dry-run` first to inspect rendered paths and conflicts. If `--base-package` is omitted, the command prompts for the Java base package; pressing Enter uses `ai.first`. The scaffold command refuses existing application files by default and writes `specs/scaffold-report.md` after a successful run.
 
+The scaffold also writes `.env.example`. Copy it to `.env` for local manual testing that needs real providers:
+
+```bash
+cp .env.example .env
+set -a
+source .env
+set +a
+```
+
+Backend-only variables include `WORKOS_API_KEY`, `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `ADMIN_USERS`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, `RESEND_API_BASE_URL`, and optional `OPENAI_API_KEY` for future model-backed agent calls. If/when the React/Vite frontend is materialized into the scaffolded app, only `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI` are browser-public build variables. Never put backend secrets in frontend env files or built assets.
+
 ### Choose skills-only vs starter scaffold
 
 Use **skills-only install** when you already have an application, want the harness to plan from PRDs before code exists, or only need pack guidance in a repository. In this mode `.agents/` is the support library and the harness creates or updates `app-description/`, `specs/`, source, and tests in your project workspace.

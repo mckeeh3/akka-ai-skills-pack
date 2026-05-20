@@ -53,11 +53,27 @@ Installed layout, at a high level:
 ```text
 .agents/
 ├── AGENTS.md
+├── bin/
+│   └── scaffold-ai-first-saas-starter.sh
 ├── docs/
 ├── manifests/
-├── resources/examples/java/
+├── resources/
+│   ├── examples/java/
+│   ├── examples/frontend/
+│   └── templates/ai-first-saas-starter/
 └── skills/
 ```
+
+Default installs are skills/resource-only. To start a new app from the packaged starter, explicitly run the scaffold command after installing into an empty or bootstrap-only project:
+
+```bash
+.agents/bin/scaffold-ai-first-saas-starter.sh \
+  --target /path/to/project \
+  --app-name "My App" \
+  --base-package ai.first
+```
+
+The scaffold writes `specs/scaffold-report.md` and a project `.env.example` documenting local WorkOS/AuthKit, JWT, Resend, admin-bootstrap, and optional model-provider variables. Backend secrets such as `WORKOS_API_KEY`, `RESEND_API_KEY`, JWT configuration, and `OPENAI_API_KEY` belong only in backend environment/deployment configuration; only `VITE_` variables are browser-public.
 
 ## Quick install
 
