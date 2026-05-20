@@ -764,7 +764,7 @@
 
 ### TASK-STARTER-07-008: Add durable Akka governed-agent behavior slices
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/08-durable-agent-governance-slices.md
 - depends on: [TASK-STARTER-07-007]
@@ -797,7 +797,10 @@
 - done criteria:
   - at least one governed-agent repository path is durable or has an explicit component seam
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add durable starter agent governance slice`
+  - fullstack validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (includes rendered-template `mvn test`, frontend tests/typecheck/build, static-resource handoff, and secret scan).
+  - check passed: `git diff --check`.
 
 ### TASK-STARTER-07-009: Expand admin, governance, and audit APIs with integration tests
 
