@@ -124,7 +124,7 @@
 
 ### TASK-STARTER-02-001: Create starter backend skeleton and package policy
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/02-foundation-backend-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/02-foundation-backend/01-create-starter-backend-skeleton.md
 - depends on: [TASK-STARTER-01-003]
@@ -149,7 +149,8 @@
 - done criteria:
   - skeleton is isolated from legacy examples and ready for foundation components
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Create starter backend skeleton`
 
 ### TASK-STARTER-02-002: Implement `/api/me`, AuthContext, membership, role, and audit foundation
 
