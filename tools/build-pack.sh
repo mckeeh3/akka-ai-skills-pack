@@ -167,202 +167,9 @@ PY
   chmod +x "$INSTALLER_PATH"
 }
 
-PACK_DOC_FILES=(
-  docs/agent-coverage-matrix.md
-  docs/agent-executable-examples-plan.md
-  docs/agent-runtime-state-reference.md
-  docs/agent-skill-expansion-plan.md
-  docs/ai-first-examples-and-tests-gap-list.md
-  docs/ai-first-saas-application-architecture.md
-  docs/agent-workstream-application-architecture.md
-  docs/agent-workstream-design-review-checklist.md
-  docs/structured-surface-contracts.md
-  docs/capability-first-backend-architecture.md
-  docs/app-description-end-to-end-workflow-example.md
-  docs/app-description-maintenance-flow.md
-  docs/app-description-skills-plan-backlog.md
-  docs/consumer-reference.md
-  docs/core-ai-first-saas-foundation.md
-  docs/core-saas-identity-tenancy-admin.md
-  docs/core-saas-owner-tenant-billing.md
-  docs/description-first-application-doctrine.md
-  docs/frontend-with-akka-backend.md
-  docs/examples/README.md
-  docs/examples/ai-first-app-description-gaps.md
-  docs/examples/ai-first-dca-app-description/README.md
-  docs/examples/ai-first-dca-app-description/app-description/00-system/README.md
-  docs/examples/ai-first-dca-app-description/app-description/00-system/app-manifest.md
-  docs/examples/ai-first-dca-app-description/app-description/10-capabilities/README.md
-  docs/examples/ai-first-dca-app-description/app-description/10-capabilities/capabilities-index.md
-  docs/examples/ai-first-dca-app-description/app-description/15-operating-model/README.md
-  docs/examples/ai-first-dca-app-description/app-description/15-operating-model/agent-roles-and-authority.md
-  docs/examples/ai-first-dca-app-description/app-description/15-operating-model/agent-team-design.md
-  docs/examples/ai-first-dca-app-description/app-description/15-operating-model/decisions-exceptions-and-evidence.md
-  docs/examples/ai-first-dca-app-description/app-description/15-operating-model/goals-and-objectives.md
-  docs/examples/ai-first-dca-app-description/app-description/15-operating-model/policies-and-approval-gates.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/README.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/flows/01-supplies-autopilot-flow.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/flows/02-lifecycle-and-exception-flows.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/flows/README.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/rules/01-approval-and-fail-safe-rules.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/rules/README.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/state-models/01-lifecycle-foundation.md
-  docs/examples/ai-first-dca-app-description/app-description/20-behavior/state-models/README.md
-  docs/examples/ai-first-dca-app-description/app-description/30-tests/README.md
-  docs/examples/ai-first-dca-app-description/app-description/30-tests/acceptance/README.md
-  docs/examples/ai-first-dca-app-description/app-description/30-tests/negative/README.md
-  docs/examples/ai-first-dca-app-description/app-description/30-tests/operational/README.md
-  docs/examples/ai-first-dca-app-description/app-description/30-tests/regression/README.md
-  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/README.md
-  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/agent-permissions.md
-  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/authorization-rules.md
-  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/boundary-and-surface-rules.md
-  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/data-protection.md
-  docs/examples/ai-first-dca-app-description/app-description/40-auth-security/identity-and-trust.md
-  docs/examples/ai-first-dca-app-description/app-description/50-observability/README.md
-  docs/examples/ai-first-dca-app-description/app-description/50-observability/audit-trace-and-outcomes.md
-  docs/examples/ai-first-dca-app-description/app-description/55-ui/README.md
-  docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md
-  docs/examples/ai-first-dca-app-description/app-description/55-ui/ui-surfaces.md
-  docs/examples/ai-first-dca-app-description/app-description/60-generation/README.md
-  docs/examples/ai-first-dca-app-description/app-description/60-generation/implementation-slices.md
-  docs/examples/ai-first-dca-app-description/app-description/70-traceability/README.md
-  docs/examples/ai-first-dca-app-description/app-description/70-traceability/ai-first-coverage-map.md
-  docs/examples/ai-first-dca-app-description/app-description/80-review/README.md
-  docs/examples/ai-first-dca-app-description/app-description/README.md
-  docs/examples/ai-first-saas-seed-app-description/README.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/00-system/generation-policy.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/00-system/readiness-status.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/02-ai-first-work-management.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/03-governance-decisions-and-audit.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/04-frontend-shell-and-integration-patterns.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/capabilities-index.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/agent-roles-and-authority.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/audit-trace-and-outcomes.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/decisions-exceptions-and-evidence.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/goals-and-objectives.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/policies-and-approval-gates.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/behavior-index.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/02-goal-execution-flow.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/03-decision-and-approval-flow.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/rules/01-tenant-authz-rules.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/rules/02-agent-authority-rules.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/rules/03-component-mapping-rules.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/02-goal-plan-decision-lifecycle.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/negative/01-forbidden-actions.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/operational/01-observability-and-audit.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/authorization-rules.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/boundary-and-surface-rules.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/data-protection.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/identity-and-trust.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/health-and-alerts.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/logs-and-audit.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/metrics.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/traces-and-correlation.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/accessibility-and-responsive.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/agent-catalog-and-detail.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ai-first-surfaces.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/edit-agent-proposals-and-traces.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/functional-agent-rail.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/interactions-and-forms.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/personas-and-journeys.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/prompt-and-skill-governance.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/routes-and-deep-links.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/states-and-realtime.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/structured-surface-rendering.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ui-index.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/workstream-panel-and-composer.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/workstream-shell.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/output-surfaces.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/realization-scope.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/regeneration-map.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/behavior-to-tests-map.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-behavior-map.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/change-impact-map.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/operating-model-to-behavior-map.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/80-review/latest-change-summary.md
-  docs/examples/ai-first-saas-seed-app-description/app-description/80-review/latest-readiness-summary.md
-  docs/examples/core-ai-first-saas-input/00-document-development-process-context.md
-  docs/examples/core-ai-first-saas-input/01-core-seed-progression-plan.md
-  docs/examples/core-ai-first-saas-input/02-persistent-discussion-capture.md
-  docs/examples/core-ai-first-saas-input/03-module-auth-app-access-prd.md
-  docs/examples/core-ai-first-saas-input/03a-module-agent-workstream-runtime-bootstrap-prd.md
-  docs/examples/core-ai-first-saas-input/04-module-user-admin-prd.md
-  docs/examples/core-ai-first-saas-input/05-module-agent-definition-prd.md
-  docs/examples/core-ai-first-saas-input/06-module-prompt-governance-prd.md
-  docs/examples/core-ai-first-saas-input/07-module-skill-governance-prd.md
-  docs/examples/core-ai-first-saas-input/08-module-audit-work-trace-prd.md
-  docs/examples/core-ai-first-saas-input/09-module-evaluation-closed-loop-improvement-prd.md
-  docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
-  docs/examples/core-ai-first-saas-input/README.md
-  docs/examples/purchase-request-app-description/README.md
-  docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md
-  docs/examples/purchase-request-app-description/app-description/00-system/generation-policy.md
-  docs/examples/purchase-request-app-description/app-description/00-system/readiness-status.md
-  docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md
-  docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md
-  docs/examples/purchase-request-app-description/app-description/20-behavior/behavior-index.md
-  docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md
-  docs/examples/purchase-request-app-description/app-description/20-behavior/rules/01-edit-and-approval-rules.md
-  docs/examples/purchase-request-app-description/app-description/20-behavior/state-models/01-purchase-request-lifecycle.md
-  docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md
-  docs/examples/purchase-request-app-description/app-description/30-tests/negative/01-forbidden-actions.md
-  docs/examples/purchase-request-app-description/app-description/30-tests/operational/01-audit-and-diagnosability.md
-  docs/examples/purchase-request-app-description/app-description/30-tests/regression/01-repeat-actions.md
-  docs/examples/purchase-request-app-description/app-description/30-tests/test-index.md
-  docs/examples/purchase-request-app-description/app-description/40-auth-security/data-protection.md
-  docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md
-  docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md
-  docs/examples/purchase-request-app-description/app-description/60-generation/output-surfaces.md
-  docs/examples/purchase-request-app-description/app-description/60-generation/realization-scope.md
-  docs/examples/purchase-request-app-description/app-description/60-generation/regeneration-map.md
-  docs/examples/purchase-request-app-description/app-description/70-traceability/behavior-to-tests-map.md
-  docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md
-  docs/examples/purchase-request-app-description/app-description/70-traceability/change-impact-map.md
-  docs/examples/purchase-request-app-description/app-description/80-review/latest-change-summary.md
-  docs/examples/purchase-request-app-description/app-description/80-review/latest-readiness-summary.md
-  docs/examples/purchase-request-app-description/normalized-input-example.md
-  docs/examples/purchase-request-module-sprint-plan.md
-  docs/examples/purchase-request-pending-tasks.md
-  docs/examples/purchase-request-prd.md
-  docs/examples/purchase-request-solution-plan.md
-  docs/intent-driven-usage-flow.md
-  docs/internal-app-description-architecture.md
-  docs/module-sprint-planning.md
-  docs/next-steps.md
-  docs/pending-question-queue.md
-  docs/pending-task-queue.md
-  docs/prd-to-akka-flow.md
-  docs/security-pattern-selection.md
-  docs/security-review-checklist.md
-  docs/security-workos-auth-and-admin.md
-  docs/service-to-service-consumers.md
-  docs/service-to-service-views.md
-  docs/skills-pack-developer-guide.md
-  docs/skills-pack-tech-stack.md
-  docs/skills-pack-user-guide.md
-  docs/solution-plan-to-implementation-queue.md
-  docs/timer-pattern-selection.md
-  docs/web-ui-api-contract-patterns.md
-  docs/web-ui-frontend-decomposition.md
-  docs/web-ui-frontend-project-integration.md
-  docs/web-ui-pattern-selection.md
-  docs/web-ui-quality-checklist.md
-  docs/web-ui-style-guide.md
-  docs/web-ui-ux-patterns.md
-  docs/workflow-endpoint-pattern.md
-  docs/workstream-ui-reference-architecture.md
-)
+# Docs are copied dynamically from the repository docs/ tree during bundle build.
+# Keep the source tree validation focused on top-level required paths so newly
+# added docs are included automatically instead of requiring a hardcoded list.
 validate_source_tree() {
   local required_paths=(
     "$REPO_ROOT/skills/README.md"
@@ -388,10 +195,6 @@ validate_source_tree() {
     [[ -n "$skill_dir" ]] || continue
     [[ -f "$skill_dir/SKILL.md" ]] || fail "Skill directory missing SKILL.md: $skill_dir"
   done < <(find "$REPO_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
-
-  for path in "${PACK_DOC_FILES[@]}"; do
-    [[ -f "$REPO_ROOT/$path" ]] || fail "Required pack doc not found: $REPO_ROOT/$path"
-  done
 }
 
 copy_tree() {
@@ -509,11 +312,7 @@ cp "$REPO_ROOT/pom.xml" "$STAGE_DIR/pom.xml"
 cp "$REPO_ROOT/README.md" "$STAGE_DIR/README.md"
 cp "$REPO_ROOT/LICENSE" "$STAGE_DIR/LICENSE"
 
-mkdir -p "$STAGE_DIR/docs"
-for path in "${PACK_DOC_FILES[@]}"; do
-  mkdir -p "$STAGE_DIR/$(dirname "$path")"
-  cp "$REPO_ROOT/$path" "$STAGE_DIR/$path"
-done
+copy_tree "$REPO_ROOT/docs" "$STAGE_DIR/docs"
 
 rm -rf "$STAGE_DIR/akka-context"
 
