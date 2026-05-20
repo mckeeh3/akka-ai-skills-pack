@@ -50,7 +50,7 @@ Read these first if present:
 - matching endpoint and endpoint tests under `src/main/java/**/api` and `src/test/java/**`
 
 Canonical frontend project integration reference:
-- `../../frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
+- `../../docs/frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
 
 Canonical source-repository workstream UI reference:
 - reusable implementation modules: `../../frontend/src/workstream/**`

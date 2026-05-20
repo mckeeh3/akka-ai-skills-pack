@@ -103,9 +103,11 @@ After installation, the main entry points are:
 - `skills/<skill-name>/SKILL.md` — focused implementation or routing guidance
 - `docs/` — selected pack-facing reference docs used by installed skills, including AI-first doctrine, capability-first backend doctrine, core secure SaaS foundation docs, the AI-first SaaS seed app-description reference when packaged, and description-first mechanics examples
 - `resources/examples/java/` — exported Akka Java SDK substrate examples and tests for concrete component implementation patterns; these examples are not product-architecture templates
+- `resources/examples/frontend/` — exported React/Vite/TypeScript agent workstream UI reference, including `src/workstream/**` and contract tests for the generated SaaS workstream shell and User Admin vertical
 
 Use the docs under `docs/` as routing/reference support.
-Use the examples under `resources/examples/java/` as canonical local implementation references when they match the task.
+Use the Java examples under `resources/examples/java/` as canonical local implementation references when they match the task.
+Use the frontend workstream reference under `resources/examples/frontend/` when implementing generated SaaS browser UI; do not use static-resource output as the source structure.
 
 ## Official Akka docs
 

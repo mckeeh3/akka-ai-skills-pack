@@ -26,7 +26,7 @@ Options:
   --help              Show this help text
 
 Notes:
-  - This installer always installs the full packaged skill library, repository docs, examples, and pack-facing AGENTS.md guidance
+  - This installer always installs the full packaged skill library, repository docs, Java examples, frontend workstream reference examples, and pack-facing AGENTS.md guidance
   - This installer uses cross-harness locations, not project-local .pi directories
   - project mode installs into <project-root>/.agents and offers to install pack guidance at <project-root>/AGENTS.md
   - if <project-root>/AGENTS.md exists, choose replace, append, or skip; --force replaces it
@@ -84,7 +84,8 @@ done
 [[ -f "$REPO_ROOT/pack/AGENTS.md" ]] || fail "Expected pack-facing AGENTS at $REPO_ROOT/pack/AGENTS.md"
 [[ -f "$REPO_ROOT/pack/EXAMPLES-README.md" ]] || fail "Expected examples README at $REPO_ROOT/pack/EXAMPLES-README.md"
 [[ -d "$REPO_ROOT/docs" ]] || fail "Expected docs at $REPO_ROOT/docs"
-[[ -d "$REPO_ROOT/src" ]] || fail "Expected examples under $REPO_ROOT/src"
+[[ -d "$REPO_ROOT/src" ]] || fail "Expected Java examples under $REPO_ROOT/src"
+[[ -d "$REPO_ROOT/frontend" ]] || fail "Expected frontend examples under $REPO_ROOT/frontend"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required"
 
 resolve_location() {
@@ -164,6 +165,24 @@ copy_dir_replace() {
   fi
   ensure_dir "$(dirname "$dest")"
   run_cmd cp -R "$src" "$dest"
+}
+
+copy_frontend_reference() {
+  local src="$1"
+  local dest="$2"
+  if [[ -e "$dest" ]]; then
+    run_cmd rm -rf "$dest"
+  fi
+  ensure_dir "$dest"
+  copy_file "$src/README.md" "$dest/README.md"
+  copy_file "$src/package.json" "$dest/package.json"
+  copy_file "$src/package-lock.json" "$dest/package-lock.json"
+  copy_file "$src/tsconfig.json" "$dest/tsconfig.json"
+  copy_file "$src/vite.config.ts" "$dest/vite.config.ts"
+  copy_file "$src/index.html" "$dest/index.html"
+  copy_file "$src/.env.example" "$dest/.env.example"
+  copy_dir_replace "$src/public" "$dest/public"
+  copy_dir_replace "$src/src" "$dest/src"
 }
 
 prompt_project_agents_action() {
@@ -273,6 +292,7 @@ for doc_file in docs_dir.rglob('*.md'):
     depth = len(rel_parent.parts)
     up = '/'.join(['..'] * (depth + 1))
     examples_prefix = f"{up}/resources/examples/java/"
+    frontend_prefix = f"{up}/resources/examples/frontend/"
     skills_prefix = f"{up}/skills/"
 
     def replace_doc_backtick(match: re.Match) -> str:
@@ -295,6 +315,8 @@ for doc_file in docs_dir.rglob('*.md'):
         line = re.sub(r'`(?:\.\./)?docs/([^`]+)`', replace_doc_backtick, line)
         line = line.replace('`src/', f'`{examples_prefix}src/')
         line = line.replace(' src/', f' {examples_prefix}src/')
+        line = re.sub(r'`(?:\.\./)+frontend/([^`]+)`', lambda m: f'`{frontend_prefix}{m.group(1)}`', line)
+        line = re.sub(r'`frontend/([^`]+)`', lambda m: f'`{frontend_prefix}{m.group(1)}`', line)
         line = line.replace('`skills/', f'`{skills_prefix}')
         line = line.replace(' skills/', f' {skills_prefix}')
 
@@ -318,6 +340,8 @@ skills_dir = Path(sys.argv[1])
 example_rewrites = [
     ("../../../src/", "../../resources/examples/java/src/"),
     ("../../src/", "../../resources/examples/java/src/"),
+    ("../../../frontend/", "../../resources/examples/frontend/"),
+    ("../../frontend/", "../../resources/examples/frontend/"),
     ("../../../docs/", "../../docs/"),
 ]
 
@@ -348,17 +372,26 @@ def normalize_repo_internal_reference(line: str):
         return f"{indent}- `../README.md` for routing across the installed skill library"
     return line
 
-for skill_file in skills_dir.glob("*/SKILL.md"):
-    text = skill_file.read_text()
+def rewrite_skill_text(path: Path, frontend_prefix: str) -> None:
+    text = path.read_text()
     for source, target in example_rewrites:
         text = text.replace(source, target)
+    text = text.replace('`../frontend/', f'`{frontend_prefix}')
+    text = text.replace('`frontend/', f'`{frontend_prefix}')
     normalized_lines = []
     for line in text.splitlines():
         line = normalize_akka_context_reference(line)
         line = normalize_repo_internal_reference(line)
         if line is not None:
             normalized_lines.append(line)
-    skill_file.write_text("\n".join(normalized_lines) + "\n")
+    path.write_text("\n".join(normalized_lines) + "\n")
+
+for skill_file in skills_dir.glob("*/SKILL.md"):
+    rewrite_skill_text(skill_file, '../../resources/examples/frontend/')
+
+readme = skills_dir / 'README.md'
+if readme.exists():
+    rewrite_skill_text(readme, '../resources/examples/frontend/')
 PY
 }
 
@@ -371,7 +404,8 @@ AGENTS_ROOT="$(resolve_location "$LOCATION")"
 SKILLS_DIR="$AGENTS_ROOT/skills"
 DOCS_DIR="$AGENTS_ROOT/docs"
 MANIFESTS_DIR="$AGENTS_ROOT/manifests"
-EXAMPLES_DIR="$AGENTS_ROOT/resources/examples/java"
+JAVA_EXAMPLES_DIR="$AGENTS_ROOT/resources/examples/java"
+FRONTEND_EXAMPLES_DIR="$AGENTS_ROOT/resources/examples/frontend"
 PACK_MANIFEST_TARGET="$MANIFESTS_DIR/akka-ai-skills-pack.yaml"
 
 # Install the complete docs tree dynamically so newly added docs are bundled
@@ -387,7 +421,8 @@ log "Pack source:       $REPO_ROOT"
 ensure_dir "$SKILLS_DIR"
 ensure_dir "$DOCS_DIR"
 ensure_dir "$MANIFESTS_DIR"
-ensure_dir "$EXAMPLES_DIR"
+ensure_dir "$JAVA_EXAMPLES_DIR"
+ensure_dir "$FRONTEND_EXAMPLES_DIR"
 
 copy_file "$REPO_ROOT/pack/manifest.yaml" "$PACK_MANIFEST_TARGET"
 copy_file "$REPO_ROOT/pack/AGENTS.md" "$AGENTS_ROOT/AGENTS.md"
@@ -403,10 +438,11 @@ done < <(find "$REPO_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name refere
 
 copy_dir_replace "$REPO_ROOT/docs" "$DOCS_DIR"
 
-copy_file "$REPO_ROOT/pom.xml" "$EXAMPLES_DIR/pom.xml"
-copy_file "$REPO_ROOT/pack/EXAMPLES-README.md" "$EXAMPLES_DIR/README.md"
-copy_dir_replace "$REPO_ROOT/src/main" "$EXAMPLES_DIR/src/main"
-copy_dir_replace "$REPO_ROOT/src/test" "$EXAMPLES_DIR/src/test"
+copy_file "$REPO_ROOT/pom.xml" "$JAVA_EXAMPLES_DIR/pom.xml"
+copy_file "$REPO_ROOT/pack/EXAMPLES-README.md" "$JAVA_EXAMPLES_DIR/README.md"
+copy_dir_replace "$REPO_ROOT/src/main" "$JAVA_EXAMPLES_DIR/src/main"
+copy_dir_replace "$REPO_ROOT/src/test" "$JAVA_EXAMPLES_DIR/src/test"
+copy_frontend_reference "$REPO_ROOT/frontend" "$FRONTEND_EXAMPLES_DIR"
 
 rewrite_installed_docs
 rewrite_installed_skills
@@ -422,5 +458,6 @@ else
   log "Installed docs:             $DOCS_DIR"
   log "Installed manifest: $PACK_MANIFEST_TARGET"
   log "Installed skills:   $SKILLS_DIR"
-  log "Installed examples: $EXAMPLES_DIR"
+  log "Installed Java examples:      $JAVA_EXAMPLES_DIR"
+  log "Installed frontend examples:  $FRONTEND_EXAMPLES_DIR"
 fi

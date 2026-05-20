@@ -44,6 +44,7 @@ Installed layout:
   docs/
     ai-first-saas-application-architecture.md
     agent-workstream-application-architecture.md
+    agent-workstream-design-review-checklist.md
     structured-surface-contracts.md
     capability-first-backend-architecture.md
     skills-pack-user-guide.md
@@ -60,12 +61,18 @@ Installed layout:
     security-pattern-selection.md
     security-review-checklist.md
     security-workos-auth-and-admin.md
+    frontend-with-akka-backend.md
+    web-ui-frontend-decomposition.md
     web-ui-frontend-project-integration.md
+    web-ui-pattern-selection.md
+    web-ui-quality-checklist.md
     web-ui-style-guide.md
     web-ui-ux-patterns.md
+    workstream-ui-reference-architecture.md
     timer-pattern-selection.md
     workflow-endpoint-pattern.md
     examples/
+      README.md
       core-ai-first-saas-input/
         README.md
         00-document-development-process-context.md
@@ -100,6 +107,14 @@ Installed layout:
             resources/...
           test/
             java/...
+      frontend/
+        README.md
+        package.json
+        src/
+          api/
+          workstream/
+          main.tsx
+          *contract.test.mjs
   skills/
     README.md
     references/

@@ -70,6 +70,10 @@ fields:
                 type: string
                 required: true
                 example: '{projectRoot}/.agents/resources/examples/java'
+              frontendExamplesDir:
+                type: string
+                required: false
+                example: '{projectRoot}/.agents/resources/examples/frontend'
           global:
             type: map
             required: true
@@ -90,6 +94,10 @@ fields:
                 type: string
                 required: true
                 example: ~/.agents/resources/examples/java
+              frontendExamplesDir:
+                type: string
+                required: false
+                example: ~/.agents/resources/examples/frontend
 
   content:
     type: map
@@ -138,6 +146,22 @@ fields:
           includeReadme:
             type: boolean
             required: true
+      frontendExamples:
+        type: map
+        required: false
+        fields:
+          exportFrom:
+            type: list
+            required: true
+            itemType: string
+          installAs:
+            type: string
+            required: true
+            example: '{agentsRoot}/resources/examples/frontend'
+          exclude:
+            type: list
+            required: false
+            itemType: string
 
   bundles:
     type: list

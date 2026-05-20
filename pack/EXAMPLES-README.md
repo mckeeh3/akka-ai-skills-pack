@@ -1,13 +1,18 @@
-# Akka AI Skills Pack Examples
+# Akka AI Skills Pack Java Examples
 
 This directory contains the Java example project exported with the installed Akka AI skills pack.
 
 ## What is here
 
-The examples are installed under:
+The Java examples are installed under:
 - `resources/examples/java/pom.xml`
 - `resources/examples/java/src/main/...`
 - `resources/examples/java/src/test/...`
+
+The frontend workstream UI reference is installed separately under:
+- `resources/examples/frontend/README.md`
+- `resources/examples/frontend/src/workstream/**`
+- `resources/examples/frontend/src/*contract.test.mjs`
 
 Use these files as:
 - local implementation references

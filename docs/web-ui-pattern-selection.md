@@ -8,7 +8,7 @@ Use this doc when an Akka service needs a browser-facing React/Vite/TypeScript a
 
 Use this for real web apps. Generated SaaS apps should implement the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream panel, persistent bottom composer, context/authority indicators, and structured surfaces.
 
-Source-repository canonical reference: `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. The User Admin vertical is the canonical foundation-admin example for dashboard → list/search → detail/edit behavior through structured surfaces. Endpoint-only and static-resource examples below are delivery mechanics references; they are not canonical generated SaaS app structure.
+Canonical reference in this source repository: `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. In an installed pack, use the same architecture doc under `docs/` and the exported frontend reference under `resources/examples/frontend/**`. The User Admin vertical is the canonical foundation-admin example for dashboard → list/search → detail/edit behavior through structured surfaces. Endpoint-only and static-resource examples below are delivery mechanics references; they are not canonical generated SaaS app structure.
 
 - frontend source and tooling: `frontend/**`
 - production build output: `src/main/resources/static-resources/**`

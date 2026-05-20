@@ -25,7 +25,7 @@ Read these first if present:
 - matching Akka frontend hosting endpoint and endpoint tests
 
 Reference example document:
-- `../../frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
+- `../../docs/frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
 
 ## Use this skill when
 

@@ -1,6 +1,6 @@
 # Workstream UI frontend quality and packaging handoff
 
-This localized React/Vite frontend is the source-repository implementation reference for the canonical AI-first SaaS agent workstream UI. Source of record lives under `frontend/src/**`, with reusable contracts and components under `frontend/src/workstream/**`.
+This localized React/Vite frontend is the implementation reference for the canonical AI-first SaaS agent workstream UI. In the source repository it lives under `frontend/**`; in an installed pack it is exported under `resources/examples/frontend/**`. The source of record is this directory's `src/**`, with reusable contracts and components under `src/workstream/**`.
 
 ## Checks
 
@@ -35,7 +35,7 @@ Frontend contract tests cover the workstream-first reference:
 - Deep links for selected functional agents, stream items, and surfaces without making pages/routes the primary UI model.
 - User Admin dashboard → list/search → detail/edit reference vertical through structured surfaces.
 
-Legacy `frontend/src/screens/**` files are retained only as quarantined drift/mechanics references. New generated SaaS frontend work should start from `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/main.tsx`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`.
+Legacy `frontend/src/screens/**` files are retained only as quarantined drift/mechanics references. In the source repository, new generated SaaS frontend work should start from `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/main.tsx`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. In an installed pack, the same frontend reference is under `resources/examples/frontend/**` and the architecture doc is under `docs/workstream-ui-reference-architecture.md`.
 
 ## Explicit defers
 

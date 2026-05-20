@@ -2,7 +2,7 @@
 
 Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
-For generated AI-first SaaS work in this source repository, compare against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under `frontend/src/workstream/**`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin example. Legacy `frontend/src/screens/**` and standalone static examples are not canonical generated-app structure.
+For generated AI-first SaaS work in this source repository, compare against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under `frontend/src/workstream/**`. In an installed pack, use the same architecture doc under `docs/` and the exported frontend reference under `resources/examples/frontend/**`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin example. Legacy `frontend/src/screens/**` and standalone static examples are not canonical generated-app structure.
 
 ## UX completeness
 

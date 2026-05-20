@@ -8,7 +8,7 @@ For product UIs, use a standard frontend project such as React/Vite and route im
 
 Read `docs/web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
 
-For this skills-pack source repository, use `docs/workstream-ui-reference-architecture.md` and the reusable implementation under `frontend/src/workstream/**` as the canonical frontend reference. The User Admin vertical fixtures and `frontend/src/workstream-user-admin-vertical.contract.test.mjs` demonstrate the foundation-admin dashboard → list/search → detail/edit flow through structured surfaces. Do not use legacy `frontend/src/screens/**` or page-route tests as the primary generated SaaS UI model.
+For this skills-pack source repository, use `docs/workstream-ui-reference-architecture.md` and the reusable implementation under `frontend/src/workstream/**` as the canonical frontend reference. In an installed pack, use the same architecture doc under `docs/` and the exported frontend reference under `resources/examples/frontend/**`. The User Admin vertical fixtures and `frontend/src/workstream-user-admin-vertical.contract.test.mjs` demonstrate the foundation-admin dashboard → list/search → detail/edit flow through structured surfaces. Do not use legacy `frontend/src/screens/**` or page-route tests as the primary generated SaaS UI model.
 
 ## Required output
 

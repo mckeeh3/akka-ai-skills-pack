@@ -19,11 +19,13 @@ install:
       skillsDir: '{projectRoot}/.agents/skills'
       manifestsDir: '{projectRoot}/.agents/manifests'
       examplesDir: '{projectRoot}/.agents/resources/examples/java'
+      frontendExamplesDir: '{projectRoot}/.agents/resources/examples/frontend'
     global:
       rootDir: ~/.agents
       skillsDir: ~/.agents/skills
       manifestsDir: ~/.agents/manifests
       examplesDir: ~/.agents/resources/examples/java
+      frontendExamplesDir: ~/.agents/resources/examples/frontend
 
 content:
   skills:
@@ -480,13 +482,17 @@ content:
   references:
     - skills/README.md
     - docs/agent-workstream-application-architecture.md
+    - docs/agent-workstream-design-review-checklist.md
     - docs/structured-surface-contracts.md
     - docs/capability-first-backend-architecture.md
     - docs/core-ai-first-saas-foundation.md
     - docs/core-saas-identity-tenancy-admin.md
     - docs/core-saas-owner-tenant-billing.md
+    - docs/frontend-with-akka-backend.md
+    - docs/examples/README.md
     - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
     - docs/examples/ai-first-saas-seed-app-description/README.md
+    - docs/workstream-ui-reference-architecture.md
     - docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
@@ -499,6 +505,21 @@ content:
     installAs: '{agentsRoot}/resources/examples/java'
     includePom: true
     includeReadme: true
+  frontendExamples:
+    exportFrom:
+      - frontend/README.md
+      - frontend/package.json
+      - frontend/package-lock.json
+      - frontend/tsconfig.json
+      - frontend/vite.config.ts
+      - frontend/index.html
+      - frontend/.env.example
+      - frontend/public
+      - frontend/src
+    installAs: '{agentsRoot}/resources/examples/frontend'
+    exclude:
+      - frontend/node_modules
+      - frontend/.env.local
 
 bundles:
   - id: all

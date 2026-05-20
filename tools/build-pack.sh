@@ -26,7 +26,7 @@ Options:
 
 Notes:
   - akka-context is intentionally excluded from the bundle
-  - the bundle contains install.sh, manifests, repository docs, skills, a pack-facing AGENTS source file, and reference examples
+  - the bundle contains install.sh, manifests, repository docs, skills, a pack-facing AGENTS source file, Java reference examples, and frontend workstream reference examples
   - installed skill rewriting still happens at install time via install.sh
   - a versioned GitHub release installer script is generated alongside the archive
 EOF
@@ -79,7 +79,9 @@ This is a build artifact for the Akka AI skills pack.
 - example-set README source under pack/EXAMPLES-README.md
 - repository skills under skills/
 - Akka SDK Java reference examples exported from src/
+- React/Vite workstream UI reference examples exported from frontend/
 - repository pom.xml and example-set README
+- frontend workstream UI reference source under frontend/
 
 ## Excluded
 - akka-context/
@@ -169,6 +171,7 @@ PACK_DOC_FILES=(
   docs/ai-first-examples-and-tests-gap-list.md
   docs/ai-first-saas-application-architecture.md
   docs/agent-workstream-application-architecture.md
+  docs/agent-workstream-design-review-checklist.md
   docs/structured-surface-contracts.md
   docs/capability-first-backend-architecture.md
   docs/app-description-end-to-end-workflow-example.md
@@ -179,6 +182,8 @@ PACK_DOC_FILES=(
   docs/core-saas-identity-tenancy-admin.md
   docs/core-saas-owner-tenant-billing.md
   docs/description-first-application-doctrine.md
+  docs/frontend-with-akka-backend.md
+  docs/examples/README.md
   docs/examples/ai-first-app-description-gaps.md
   docs/examples/ai-first-dca-app-description/README.md
   docs/examples/ai-first-dca-app-description/app-description/00-system/README.md
@@ -287,6 +292,7 @@ PACK_DOC_FILES=(
   docs/examples/core-ai-first-saas-input/01-core-seed-progression-plan.md
   docs/examples/core-ai-first-saas-input/02-persistent-discussion-capture.md
   docs/examples/core-ai-first-saas-input/03-module-auth-app-access-prd.md
+  docs/examples/core-ai-first-saas-input/03a-module-agent-workstream-runtime-bootstrap-prd.md
   docs/examples/core-ai-first-saas-input/04-module-user-admin-prd.md
   docs/examples/core-ai-first-saas-input/05-module-agent-definition-prd.md
   docs/examples/core-ai-first-saas-input/06-module-prompt-governance-prd.md
@@ -351,6 +357,7 @@ PACK_DOC_FILES=(
   docs/web-ui-style-guide.md
   docs/web-ui-ux-patterns.md
   docs/workflow-endpoint-pattern.md
+  docs/workstream-ui-reference-architecture.md
 )
 validate_source_tree() {
   local required_paths=(
@@ -363,6 +370,7 @@ validate_source_tree() {
     "$REPO_ROOT/pack/AGENTS.md"
     "$REPO_ROOT/pack/EXAMPLES-README.md"
     "$REPO_ROOT/pack/manifest.schema.yaml"
+    "$REPO_ROOT/frontend"
     "$INSTALLER_TEMPLATE"
   )
 
@@ -385,6 +393,21 @@ copy_tree() {
   local dest="$2"
   mkdir -p "$(dirname "$dest")"
   cp -R "$src" "$dest"
+}
+
+copy_frontend_reference() {
+  local src="$1"
+  local dest="$2"
+  mkdir -p "$dest"
+  cp "$src/README.md" "$dest/README.md"
+  cp "$src/package.json" "$dest/package.json"
+  cp "$src/package-lock.json" "$dest/package-lock.json"
+  cp "$src/tsconfig.json" "$dest/tsconfig.json"
+  cp "$src/vite.config.ts" "$dest/vite.config.ts"
+  cp "$src/index.html" "$dest/index.html"
+  cp "$src/.env.example" "$dest/.env.example"
+  cp -R "$src/public" "$dest/public"
+  cp -R "$src/src" "$dest/src"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -471,6 +494,7 @@ mkdir -p "$STAGE_DIR"
 copy_tree "$REPO_ROOT/skills" "$STAGE_DIR/skills"
 copy_tree "$REPO_ROOT/pack" "$STAGE_DIR/pack"
 copy_tree "$REPO_ROOT/src" "$STAGE_DIR/src"
+copy_frontend_reference "$REPO_ROOT/frontend" "$STAGE_DIR/frontend"
 cp "$REPO_ROOT/install.sh" "$STAGE_DIR/install.sh"
 cp "$REPO_ROOT/pom.xml" "$STAGE_DIR/pom.xml"
 cp "$REPO_ROOT/README.md" "$STAGE_DIR/README.md"
