@@ -403,7 +403,7 @@
 
 ### TASK-AWSR-04-003: Final realignment review and next-sprint decision
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/04-starter-dogfood-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/04-starter-dogfood/03-final-realignment-review.md
 - depends on: [TASK-AWSR-04-002]
@@ -425,4 +425,7 @@
 - done criteria:
   - final review either closes realignment or creates a concrete next sprint
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Review agent workstream skills realignment
+  - check passed: `git diff --check`
+  - final review closes realignment; PRD-driven starter implementation can begin from `TASK-STARTER-08-001`.
