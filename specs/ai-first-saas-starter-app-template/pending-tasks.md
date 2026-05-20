@@ -382,7 +382,7 @@
 
 ### TASK-STARTER-04-003: Wire Agent Admin and Governance/Policy UI to real capabilities
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/04-agent-governance-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/04-agent-governance/03-wire-agent-admin-governance-ui.md
 - depends on: [TASK-STARTER-04-002, TASK-STARTER-03-003]
@@ -407,7 +407,10 @@
 - done criteria:
   - governed agent and policy surfaces are real starter capabilities, not only fixtures
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Wire starter agent admin governance UI`
+  - frontend checks passed: `cd frontend && npm test -- --run && npm run typecheck && npm run build`
+  - rendered-template Maven test command passed with `{{JAVA_BASE_PACKAGE}}=ai.first`, `{{JAVA_PACKAGE_PATH}}=ai/first`, `{{MAVEN_GROUP_ID}}=ai.first`, `{{APP_SLUG}}=ai-first-saas-starter`, and `{{APP_NAME}}=AI First SaaS Starter`.
 
 ### TASK-STARTER-05-001: Add starter scaffold packaging mode
 

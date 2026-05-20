@@ -12,6 +12,7 @@ const workstreamApi = readFileSync(new URL('./api/WorkstreamApiClient.ts', impor
 const fixtureWorkstreamApi = readFileSync(new URL('./api/FixtureWorkstreamApiClient.ts', import.meta.url), 'utf8');
 const workstreamRealtime = readFileSync(new URL('./api/WorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 const fixtureWorkstreamRealtime = readFileSync(new URL('./api/FixtureWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
+const httpWorkstreamApi = readFileSync(new URL('./api/HttpWorkstreamApiClient.ts', import.meta.url), 'utf8');
 const httpWorkstreamRealtime = readFileSync(new URL('./api/HttpWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 
 test('DTOs include seed frontend API contract families', () => {
@@ -78,6 +79,10 @@ test('workstream fixture API client exposes bootstrap, surfaces, actions, and /a
   assert.match(fixtureWorkstreamApi, /canonicalSurfaceEnvelopes/);
   assert.match(fixtureWorkstreamApi, /initialWorkstreamItems/);
   assert.match(fixtureWorkstreamApi, /actionResultsByStatus/);
+  assert.match(httpWorkstreamApi, /\/api\/workstream\/bootstrap/);
+  assert.match(httpWorkstreamApi, /\/api\/workstream\/surfaces\/\$\{encodeURIComponent\(surfaceId\)\}/);
+  assert.match(httpWorkstreamApi, /\/api\/workstream\/actions/);
+  assert.match(httpWorkstreamApi, /X-Selected-Context-Id/);
 });
 
 test('workstream fixture realtime client emits workstream events and visible stale state', () => {

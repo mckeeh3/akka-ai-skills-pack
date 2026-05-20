@@ -29,7 +29,7 @@ public final class StarterSecurityComponents {
   private static final InvitationService INVITATION_SERVICE = new InvitationService(IDENTITY_REPOSITORY, INVITATION_REPOSITORY, CLOCK);
   private static final UserDirectoryView USER_DIRECTORY_VIEW = new UserDirectoryView(USER_ADMIN_SERVICE);
   private static final InvitationView INVITATION_VIEW = new InvitationView(INVITATION_SERVICE);
-  private static final WorkstreamService WORKSTREAM_SERVICE = new WorkstreamService(ME_SERVICE, AUTH_CONTEXT_RESOLVER, USER_DIRECTORY_VIEW, INVITATION_VIEW, USER_ADMIN_SERVICE, INVITATION_SERVICE);
+  private static final WorkstreamService WORKSTREAM_SERVICE = new WorkstreamService(ME_SERVICE, AUTH_CONTEXT_RESOLVER, USER_DIRECTORY_VIEW, INVITATION_VIEW, USER_ADMIN_SERVICE, INVITATION_SERVICE, AGENT_BEHAVIOR_REPOSITORY, AGENT_RUNTIME_SERVICE);
 
   static {
     seedDemoTenantAdmin();

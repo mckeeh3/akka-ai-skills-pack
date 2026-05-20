@@ -133,7 +133,13 @@ public record MeResponse(
       var userAdminVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var profileVisible = capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var auditVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read"));
-      var governanceVisible = capabilities.stream().anyMatch(capability -> capability.startsWith("governance.") || capability.contains("policy"));
+      var governanceVisible = capabilities.stream().anyMatch(capability -> capability.startsWith("governance.") || capability.startsWith("improvements.") || capability.contains("policy"));
+      var agentAdminVisible = capabilities.contains("agent.definitions.manage")
+          && capabilities.contains("agent.prompts.govern")
+          && capabilities.contains("agent.skills.govern")
+          && capabilities.contains("agent.tool_boundaries.manage")
+          && capabilities.contains("agent.models.read")
+          && capabilities.contains("agent.runtime.test");
       return List.of(
           new FunctionalAgentSummary(
               "agent-access-profile",
@@ -165,21 +171,21 @@ public record MeResponse(
           new FunctionalAgentSummary(
               "agent-governance-policy",
               "Governance/Policy",
-              "Inspect starter policy guardrails, approval requirements, and read-only governance proposals until the full governance backend is installed.",
+              "Review policy guardrails, improvement proposals, approval requirements, activation denials, traces, and outcome evidence.",
               "shield",
               "governance-diff",
-              List.of("governance.policy.read"),
+              List.of("governance.policy.read", "improvements.review"),
               governanceVisible ? "visible" : "denied",
               governanceVisible ? null : "Governance policy capabilities are not assigned in this context."),
           new FunctionalAgentSummary(
               "agent-agent-admin",
               "Agent Admin",
-              "Govern agent definitions, prompts, skills, tool boundaries, and runtime traces when the agent governance module is installed.",
+              "Govern agent definitions, prompts, skills, tool boundaries, model refs, test runs, approvals, denials, and runtime traces.",
               "bot",
-              "governance-diff",
-              List.of("agent.definitions.manage"),
-              "disabled",
-              "Agent governance backend is added in a later starter sprint."));
+              "dashboard",
+              List.of("agent.definitions.manage", "agent.prompts.govern", "agent.skills.govern", "agent.tool_boundaries.manage", "agent.models.read", "agent.runtime.test"),
+              agentAdminVisible ? "visible" : "denied",
+              agentAdminVisible ? null : "Missing governed Agent Admin capabilities."));
     }
   }
 
