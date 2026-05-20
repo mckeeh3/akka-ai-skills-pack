@@ -14,7 +14,7 @@ class DcaSeedFrontendEndpointIntegrationTest extends TestKitSupport {
     var page = httpClient.GET("/").responseBodyAs(String.class).invoke();
 
     assertTrue(page.status().isSuccess());
-    assertTrue(page.body().contains("AI-first DCA Seed Console"));
+    assertTrue(page.body().contains("AI-first SaaS Workstream Shell"));
     assertTrue(page.body().contains("/assets/"));
 
     var jsPath = firstMatch(page.body(), "src=\"([^\"]+\\.js)\"");
@@ -22,14 +22,12 @@ class DcaSeedFrontendEndpointIntegrationTest extends TestKitSupport {
 
     var js = httpClient.GET(jsPath).responseBodyAs(String.class).invoke();
     assertTrue(js.status().isSuccess());
-    assertTrue(js.body().contains("/ui/briefing"));
-    assertTrue(js.body().contains("/ui/goals/new"));
-    assertTrue(js.body().contains("/ui/decisions"));
-    assertTrue(js.body().contains("/ui/governance/policies"));
-    assertTrue(js.body().contains("/ui/audit/traces"));
-    assertTrue(js.body().contains("/ui/admin/users"));
-    assertTrue(js.body().contains("/ui/profile"));
-    assertTrue(js.body().contains("real authenticated backend integration"));
+    assertTrue(js.body().contains("/api/me"));
+    assertTrue(js.body().contains("Authorization"));
+    assertTrue(js.body().contains("fixtureWorkstream"));
+    assertTrue(js.body().contains("Tenant attention dashboard"));
+    assertTrue(js.body().contains("Prompt governance review"));
+    assertTrue(js.body().contains("Backend capabilities remain authorized"));
 
     var css = httpClient.GET(cssPath).responseBodyAs(String.class).invoke();
     assertTrue(css.status().isSuccess());

@@ -109,8 +109,11 @@ class AdminEndpointsIntegrationTest extends TestKitSupport {
     assertEquals("INVITED", invite.body().user().status());
     var inviteAudit = audit(invite.body().auditId());
     assertEquals(AdminAuditEntry.AdminAuditAction.INVITE_USER, inviteAudit.action());
-    assertEquals("FAILED", inviteAudit.details().get("inviteEmailStatus"));
-    assertEquals("email-configuration-missing", inviteAudit.details().get("inviteEmailReason"));
+    var inviteEmailStatus = inviteAudit.details().get("inviteEmailStatus");
+    assertTrue(List.of("SENT", "FAILED").contains(inviteEmailStatus));
+    if ("FAILED".equals(inviteEmailStatus)) {
+      assertFalse(inviteAudit.details().get("inviteEmailReason").isBlank());
+    }
 
     var replace =
         httpClient

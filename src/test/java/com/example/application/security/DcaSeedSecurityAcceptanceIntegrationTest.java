@@ -137,12 +137,12 @@ class DcaSeedSecurityAcceptanceIntegrationTest extends TestKitSupport {
 
     var page = httpClient.GET("/").responseBodyAs(String.class).invoke();
     assertTrue(page.status().isSuccess());
-    assertTrue(page.body().contains("AI-first DCA Seed Console"));
+    assertTrue(page.body().contains("AI-first SaaS Workstream Shell"));
     var jsPath = firstMatch(page.body(), "src=\"([^\"]+\\.js)\"");
     var js = httpClient.GET(jsPath).responseBodyAs(String.class).invoke();
     assertTrue(js.body().contains("/api/me"));
     assertTrue(js.body().contains("Authorization"));
-    assertTrue(js.body().contains("Frontend role-aware navigation is UX only"));
+    assertTrue(js.body().contains("Backend capabilities remain authorized"));
     assertNoBackendSecrets(page.body() + "\n" + js.body());
   }
 
