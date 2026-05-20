@@ -98,7 +98,7 @@
 
 ### TASK-STARTER-01-003: Choose template source layout and extension workflow
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/01-template-scope-inventory-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/01-template-scope-inventory/03-choose-template-layout-extension-workflow.md
 - depends on: [TASK-STARTER-01-002]
@@ -119,7 +119,8 @@
 - done criteria:
   - canonical template source path, installed-pack resource path, scaffold behavior, and extension workflow are documented
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Choose starter template layout workflow`
 
 ### TASK-STARTER-02-001: Create starter backend skeleton and package policy
 
