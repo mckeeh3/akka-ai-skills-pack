@@ -840,7 +840,7 @@
 
 ### TASK-STARTER-07-010: Rerun final fullstack acceptance and publish updated summary
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/10-final-fullstack-acceptance-rerun.md
 - depends on: [TASK-STARTER-07-009]
@@ -869,4 +869,9 @@
 - done criteria:
   - final acceptance reflects actual fullstack starter behavior and evidence
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Publish starter fullstack acceptance rerun`
+  - fullstack validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (direct scaffold, rendered `mvn test`, frontend `npm install`, tests/typecheck/build, static-resource verification, and secret-marker scan).
+  - installed-pack scaffold validation passed: `./install.sh --location project --project "$TMP" --force`, `.agents/bin/scaffold-ai-first-saas-starter.sh --target "$TMP/app" --base-package ai.first --maven-group-id ai.first --app-name "Install Validation" --app-slug install-validation`, and rendered app `mvn test`.
+  - packaging validation passed: `bash tools/build-pack.sh --output-dir "$TMP" --clean --no-archive --github-repo example/akka-ai-skills-pack`.
+  - check passed: `git diff --check`.
