@@ -9,6 +9,16 @@ Use this skill when agent activity must be explainable, searchable, tenant-scope
 
 This is the agent-specific companion to `ai-first-saas-audit-trace`. It does not replace general audit/security, observability, entity, view, endpoint, or web UI skills.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS agent trace work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- functional/internal agent, workstream, trace/audit surface ids, investigation actions, and source surface/action/tool/workflow events;
+- capability ids/classes for trace recording, search, detail, export, redaction, retention, and investigation operations;
+- `AuthContext`, tenant/customer scope, viewer roles/capabilities, support-access rules, sensitive-field redaction, and forbidden behavior;
+- correlation/work trace ids, prompt/skill/model/tool/data/policy refs, outcome/decision links, audit obligations, retention rules, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of logging arbitrary agent metadata.
+
 ## Required reading
 
 Read these first if present:

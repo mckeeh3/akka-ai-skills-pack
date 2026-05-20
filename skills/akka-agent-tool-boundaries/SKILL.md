@@ -9,6 +9,16 @@ Use this skill when an AI-first SaaS app must decide, store, enforce, review, or
 
 A `ToolPermissionBoundary` is backend-enforced authority for agent tool and data access. Prompt text, skill text, tool descriptions, and compact manifests may explain allowed behavior to the model, but they never grant tool/data permission, tenant/customer scope, approval authority, or autonomous side-effect authority.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS tool-boundary work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- owning functional/internal agent, workstream placement when user-facing, governance surface id/action, and affected tool/action surfaces;
+- capability ids/classes for each tool grant, data grant, side effect, approval request, and boundary-management action;
+- `AuthContext`, tenant/customer scope, caller roles/capabilities, agent authority, tool categories, data classifications, and denial behavior;
+- idempotency, policy/approval/escalation, audit/work trace fields, redaction, simulation/diff requirements, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of inventing tool authority.
+
 ## Required reading
 
 Read these first if present:

@@ -7,6 +7,16 @@ description: Write Akka Java SDK Workflow tests using TestKitSupport, componentC
 
 Use this skill for executable workflow tests.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS workflow test work, write tests only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- initiating functional agent, structured surface action/workstream event, or explicit internal trigger under test;
+- governed workflow capability id/class, start/advance exposure, workflow id/idempotency strategy, and downstream substrates;
+- `AuthContext`, tenant/customer scope, roles/capabilities, approval/supervision basis, forbidden behavior, and system-principal expectations;
+- command/state DTOs, side effects, compensation/no-op behavior, notification events, audit/work trace assertions, and rendering/API/realtime parity checks when exposed.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of testing only workflow step mechanics.
+
 ## Required reading
 
 Read these first if present:

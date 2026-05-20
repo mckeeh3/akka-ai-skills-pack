@@ -11,6 +11,16 @@ For generated full-stack AI-first SaaS, apply this to the agent workstream shell
 
 Use this skill before implementing details with `akka-web-ui-frontend-project` so the full web app has an explicit UX contract.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS UX work, produce an implementation-ready UX plan only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agents, workstream regions, structured surface ids/types/versions, surface actions/events, and deep-link intent;
+- governed capability ids/classes behind consequential actions/queries and selected frontend/API/realtime exposure;
+- `AuthContext`, tenant/customer scope, roles/capabilities, authority indicators, disabled/forbidden states, and retained-human-authority rules;
+- DTO/error states, redaction, idempotency/correlation, policy/approval/escalation states, audit/work trace links, style guide, accessibility, and required rendering/API/realtime tests.
+
+If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of designing page-first UX.
+
 ## AI-first UX role
 
 For AI-first SaaS surfaces, design around supervision, judgment, teaching, and accountability before conventional record management. The first five seconds should answer: which objective or plan is active, what the agent/system is doing, what needs human attention, what authority the human retains, and how to inspect evidence or trace history.

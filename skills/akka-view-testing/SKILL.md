@@ -9,6 +9,16 @@ Use this skill for view integration tests.
 
 For capability-first read/evidence capabilities, test the View projection and the protected exposure path that uses it. Direct View tests verify projection/query mechanics; endpoint, tool, MCP resource, or workflow tests verify AuthContext, tenant/customer scope, redaction, denial shape, and audit/data-access trace obligations.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS view test work, write tests only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- consuming functional agent, structured surface/query action, API/tool/resource exposure, or explicit internal read use;
+- governed read/evidence capability id/class, source component/event/topic, query contract, and selected exposure path;
+- `AuthContext`, tenant/customer scope, roles/capabilities, row-level filters, redaction, forbidden behavior, and data-access trace obligations;
+- source fixtures, query DTOs, pagination/sorting/streaming behavior, audit/work trace assertions, and rendering/API/tool parity tests when exposed.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of testing only projection mechanics.
+
 ## Required reading
 
 Read these first if present:

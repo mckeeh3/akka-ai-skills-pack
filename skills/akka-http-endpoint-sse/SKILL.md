@@ -7,6 +7,15 @@ description: Implement Akka Java SDK HTTP endpoints that stream server-sent even
 
 Use this skill when an HTTP endpoint returns server-sent events.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS SSE work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent, workstream, structured surface id/type/version, and surface/workstream event types being streamed;
+- governed read/evidence/notification capability id/class, selected Akka source, stream route, and frontend realtime consumer;
+- `AuthContext`, tenant/customer scope, roles/capabilities, reconnect/resume behavior, forbidden-stream behavior, and backend authorization boundary;
+- event DTOs, redaction, stale/reconnect states, trace/correlation ids, audit/data-access trace obligations, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of exposing component notifications directly.
 
 ## Capability-first exposure rule
 

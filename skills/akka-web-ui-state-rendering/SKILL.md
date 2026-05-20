@@ -7,6 +7,16 @@ description: Model frontend state and rendering for Akka-hosted full web apps, i
 
 Use this skill when implementing browser state, structured surface rendering, DOM updates, or workstream/deep-link-aware display logic.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS state/rendering work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- owning functional agent, workstream region, structured surface id/type/version, surface action/event, and deep-link behavior;
+- governed capability id/class behind each consequential action/query and selected frontend/API/realtime exposure;
+- `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden states, stale/reconnect behavior, and backend authorization boundary;
+- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation states, audit/work trace links, and rendering/API/realtime tests.
+
+If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of rendering generic UI state.
+
 ## AI-first state role
 
 For AI-first SaaS surfaces, model supervision and governance state explicitly. Do not collapse consequential work into a generic loading/error list. Represent active objective status, plan progress, agent activity, pending approval, exception, blocked-by-policy, evidence-ready, stale/reconnecting, committed policy change, trace-linked decision, and outcome-updated states when those concepts appear in the UI contract.

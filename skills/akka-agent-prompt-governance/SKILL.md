@@ -9,6 +9,16 @@ Use this skill when agent prompts are behavior-shaping SaaS artifacts that requi
 
 This is the focused prompt companion to `akka-agent-governed-documents`. It does not replace `akka-agent-component` for writing the Java `Agent` class or `akka-agent-runtime-state` for simple built-in `PromptTemplate` usage.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS prompt-governance work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- owning functional/internal agent, governance workstream, prompt editor/review/test surface ids, and affected surface actions;
+- capability ids/classes for draft, propose, review, activate, rollback, assemble, and test-run operations;
+- `AuthContext`, tenant/customer scope, steward/reviewer roles, agent authority boundaries, and forbidden/disabled behavior;
+- prompt version refs, redaction, policy/approval/escalation, prompt assembly trace fields, audit/work trace obligations, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of treating prompt editing as generic text CRUD.
+
 ## Required reading
 
 Read these first if present:

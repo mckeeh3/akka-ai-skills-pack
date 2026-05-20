@@ -11,6 +11,16 @@ For generated full-stack AI-first SaaS apps, the frontend project should impleme
 
 This skill is about web UI project integration only. Defer authentication, authorization, JWT, identity-provider, and secret-handling details to security-specific skills/docs while preserving the shell's `/api/me`, AuthContext, capability-gated agent/action, and forbidden-state contracts.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS frontend-project work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- functional-agent shell, workstream regions, structured surface ids/types/versions, surface actions/events, and deep-link strategy;
+- governed capability ids/classes behind browser API/realtime calls, selected Akka substrates, and frontend/API/realtime exposure;
+- `/api/me`, `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden states, frontend secret boundaries, and selected style guide;
+- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation states, audit/work trace links, rendering/API/realtime tests, and build checks.
+
+If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of creating a generic frontend project.
+
 ## Required reading
 
 Read these first if present:

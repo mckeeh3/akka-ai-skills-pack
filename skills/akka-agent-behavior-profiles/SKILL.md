@@ -9,6 +9,16 @@ Use this skill when the task is mainly about durable agent identity, lifecycle, 
 
 This is not the skill for writing the Java `Agent` class itself. Use it before `akka-agent-component` when agents are managed runtime actors rather than only static code classes. For generated full-stack SaaS apps, classify each managed agent as either a user-facing functional/context-area agent or a bounded internal agent before designing profile fields and UI.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS agent profile work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- functional-agent or internal-agent placement, workstream ownership, agent catalog/detail surface, and affected surface actions;
+- governed capability ids/classes for lifecycle, activation, assignment, test-run, and visibility operations;
+- `AuthContext`, tenant/customer scope, owner/steward roles, authority level, tool/data boundaries, and disabled-agent behavior;
+- prompt/skill/model/tool references, policy/approval/escalation rules, audit/work trace obligations, redaction, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing profile fields from agent mechanics.
+
 ## Required reading
 
 Read these first if present:

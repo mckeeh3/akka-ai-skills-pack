@@ -492,7 +492,7 @@
 
 ### TASK-AWSR-05-003: Add input-contract gates to remaining focused skills
 
-- status: pending
+- status: done
 - source: follow-up review found high-use focused skills without standard generated SaaS input gates
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/03-add-input-contract-to-remaining-focused-skills.md
 - depends on: [TASK-AWSR-05-002]
@@ -514,7 +514,10 @@
 - done criteria:
   - remaining high-use focused skills no longer invite mechanics-first generated SaaS implementation
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Add remaining generated SaaS input gates
+  - check passed: `git diff --check`
+  - check passed: `rg -n "Generated SaaS input contract"` over touched candidate skills
 
 ### TASK-AWSR-05-004: Normalize structured-surface and exposure-channel terminology
 

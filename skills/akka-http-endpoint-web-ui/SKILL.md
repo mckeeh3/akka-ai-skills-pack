@@ -9,6 +9,15 @@ Use this skill when an Akka service should host the production build output of a
 
 For generated full-stack AI-first SaaS, the hosted app is an agent workstream shell by default: left-rail functional agents, main workstream panel, persistent bottom composer, context/authority indicators, and structured surfaces. For a complete user-facing frontend app, start with `akka-web-ui-apps` first, then return here for Akka HTTP hosting, route shape, packaged build assets, protected API/stream/socket separation, deep-link entries, and endpoint tests.
 
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS web-UI endpoint work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- functional-agent shell, workstream deep-link routes, structured surface ids/actions/events, and browser API/realtime route families;
+- governed capability ids/classes behind protected JSON/SSE/WebSocket routes and selected Akka substrates;
+- `AuthContext`, tenant/customer scope, `/api/me` context selection, roles/capabilities, disabled/forbidden behavior, and static/protected route separation;
+- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation, audit/work trace fields, rendering/API/realtime tests, and selected style guide.
+
+If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of serving a page-first shell.
 
 ## Capability-first exposure rule
 
