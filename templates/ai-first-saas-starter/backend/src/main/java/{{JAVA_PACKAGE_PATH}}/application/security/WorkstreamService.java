@@ -219,13 +219,13 @@ public final class WorkstreamService {
     var surface = envelope("surface-agent-admin-placeholder", "governance-diff", "Agent Admin placeholder", actor, correlationId,
         mapOf(
             "proposalId", "agent-governance-not-installed",
-            "beforeSummary", "No tenant-governed AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, ToolPermissionBoundary, or AgentWorkTrace records are installed in this starter slice.",
-            "afterSummary", "The next starter sprint imports governed agent records and seed documents before enabling Agent Admin actions.",
+            "beforeSummary", "Tenant-governed starter AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, and ToolPermissionBoundary records are seeded by the backend; Agent Admin UI actions remain disabled until the next governance slices expose editing and runtime flows.",
+            "afterSummary", "The next starter sprint adds prompt assembly, readSkill authorization, behavior editing proposals, and then real Agent Admin UI/API wiring.",
             "changes", List.of(
-                mapOf("path", "AgentDefinition", "before", "not-installed", "after", "seeded-governed-records", "impact", "Agent Admin remains disabled until backend records exist."),
+                mapOf("path", "AgentDefinition", "before", "seeded-active-default", "after", "admin-editable-governed-records", "impact", "Agent Admin remains read-only/disabled until editing endpoints exist."),
                 mapOf("path", "readSkill(skillId)", "before", "unavailable", "after", "authorized capability", "impact", "Skill access must be backend-authorized and traced."))),
         List.of(disabledAgentAdminAction(), openAuditAction()));
-    return new SurfaceEnvelope(surface.surfaceId(), surface.surfaceType(), surface.surfaceVersion(), surface.title(), surface.ownerFunctionalAgentId(), surface.reusableByFunctionalAgentIds(), surface.authContext(), surface.correlationId(), surface.traceIds(), surface.generatedAt(), mapOf("isStale", true, "reason", "Agent governance backend is installed by a later task.", "lastKnownEventId", "evt-agent-admin-placeholder"), surface.redaction(), surface.data(), surface.actions(), surface.links());
+    return new SurfaceEnvelope(surface.surfaceId(), surface.surfaceType(), surface.surfaceVersion(), surface.title(), surface.ownerFunctionalAgentId(), surface.reusableByFunctionalAgentIds(), surface.authContext(), surface.correlationId(), surface.traceIds(), surface.generatedAt(), mapOf("isStale", true, "reason", "Seeded backend records exist; Agent Admin editing/runtime APIs are installed by later tasks.", "lastKnownEventId", "evt-agent-admin-placeholder"), surface.redaction(), surface.data(), surface.actions(), surface.links());
   }
 
   private List<WorkstreamEvent> initialEvents(AuthContextResolver.ResolvedMe actor, String correlationId) {

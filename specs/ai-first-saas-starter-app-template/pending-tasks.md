@@ -317,7 +317,7 @@
 
 ### TASK-STARTER-04-001: Implement governed agent records and seed import
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/04-agent-governance-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/04-agent-governance/01-implement-agent-records-seed-import.md
 - depends on: [TASK-STARTER-02-003]
@@ -345,7 +345,9 @@
 - done criteria:
   - default governed agent behavior imports idempotently and preserves tenant customization semantics
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement starter governed agent seed import`
+  - rendered-template Maven test command passed with `{{JAVA_BASE_PACKAGE}}=ai.first` and `{{JAVA_PACKAGE_PATH}}=ai/first`.
 
 ### TASK-STARTER-04-002: Implement prompt assembly, readSkill, and behavior-editing flow
 

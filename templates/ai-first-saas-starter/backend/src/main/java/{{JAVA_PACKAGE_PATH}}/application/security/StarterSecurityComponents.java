@@ -1,5 +1,7 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
@@ -18,6 +20,8 @@ public final class StarterSecurityComponents {
   private static final InMemoryIdentityRepository IDENTITY_REPOSITORY = new InMemoryIdentityRepository();
   private static final InMemoryInvitationRepository INVITATION_REPOSITORY = new InMemoryInvitationRepository();
   private static final AuthContextResolver AUTH_CONTEXT_RESOLVER = new AuthContextResolver(IDENTITY_REPOSITORY);
+  private static final InMemoryAgentBehaviorRepository AGENT_BEHAVIOR_REPOSITORY = new InMemoryAgentBehaviorRepository();
+  private static final AgentBehaviorSeedLoader AGENT_BEHAVIOR_SEED_LOADER = new AgentBehaviorSeedLoader(AGENT_BEHAVIOR_REPOSITORY, CLOCK);
   private static final MeService ME_SERVICE = new MeService(AUTH_CONTEXT_RESOLVER);
   private static final UserAdminService USER_ADMIN_SERVICE = new UserAdminService(IDENTITY_REPOSITORY, CLOCK);
   private static final InvitationService INVITATION_SERVICE = new InvitationService(IDENTITY_REPOSITORY, INVITATION_REPOSITORY, CLOCK);
@@ -27,6 +31,7 @@ public final class StarterSecurityComponents {
 
   static {
     seedDemoTenantAdmin();
+    AGENT_BEHAVIOR_SEED_LOADER.importStarterDefaults("tenant-starter", "starter-bootstrap", "corr-starter-agent-seed");
   }
 
   private StarterSecurityComponents() {}
@@ -45,6 +50,14 @@ public final class StarterSecurityComponents {
 
   public static InMemoryIdentityRepository identityRepository() {
     return IDENTITY_REPOSITORY;
+  }
+
+  public static InMemoryAgentBehaviorRepository agentBehaviorRepository() {
+    return AGENT_BEHAVIOR_REPOSITORY;
+  }
+
+  public static AgentBehaviorSeedLoader agentBehaviorSeedLoader() {
+    return AGENT_BEHAVIOR_SEED_LOADER;
   }
 
   private static void seedDemoTenantAdmin() {
