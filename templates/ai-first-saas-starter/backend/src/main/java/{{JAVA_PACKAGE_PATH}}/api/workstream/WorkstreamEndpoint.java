@@ -14,6 +14,7 @@ import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.notFound;
 import static akka.javasdk.http.HttpException.unauthorized;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
+import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService.AcceptInvitationRequest;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.CapabilityActionRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
@@ -48,6 +49,11 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
   @Post("/actions")
   public HttpResponse action(CapabilityActionRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(StarterSecurityComponents.workstreamService().runAction(identity, selectedContextId, request)));
+  }
+
+  @Post("/invitations/accept")
+  public HttpResponse acceptInvitation(AcceptInvitationRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(StarterSecurityComponents.invitationService().acceptForBrowser(identity, request, correlationId)));
   }
 
   @Get("/events")

@@ -40,6 +40,10 @@ public final class StarterSecurityComponents {
     return WORKSTREAM_SERVICE;
   }
 
+  public static InvitationService invitationService() {
+    return INVITATION_SERVICE;
+  }
+
   public static InMemoryIdentityRepository identityRepository() {
     return IDENTITY_REPOSITORY;
   }

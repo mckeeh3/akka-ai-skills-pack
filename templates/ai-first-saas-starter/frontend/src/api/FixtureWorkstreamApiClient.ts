@@ -1,4 +1,4 @@
-import type { WorkstreamClient, WorkstreamBootstrapResponse } from './WorkstreamApiClient';
+import type { AcceptInvitationRequest, InvitationAcceptanceResult, WorkstreamClient, WorkstreamBootstrapResponse } from './WorkstreamApiClient';
 import type { ApiError, ApiResult } from './types';
 import type { CapabilityActionRequest, CapabilityActionResult, SurfaceEnvelope, WorkstreamItem } from '../workstream/types';
 import {
@@ -42,6 +42,27 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
   getSurface(surfaceId: string) {
     const surface = this.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
     return surface ? delayedOk(surface) : delayedError('not_found', 'The requested workstream surface is not available in this context.');
+  }
+
+  acceptInvitation(request: AcceptInvitationRequest): Promise<ApiResult<InvitationAcceptanceResult>> {
+    const status: InvitationAcceptanceResult['status'] = request.token === 'expired'
+      ? 'expired'
+      : request.token === 'revoked'
+        ? 'revoked'
+        : request.token === 'wrong-account'
+          ? 'wrong-account'
+          : 'accepted';
+    return delayedOk({
+      status,
+      reasonCode: status,
+      recoveryHint: status === 'accepted' ? 'Fixture invitation accepted.' : 'Fixture recovery state; request a fresh invitation or sign in with the invited account.',
+      invitationId: status === 'accepted' ? 'fixture-invitation' : undefined,
+      scopeType: 'TENANT',
+      tenantId: meTenantAdmin.selectedAuthContext.tenantId,
+      membershipId: meTenantAdmin.selectedAuthContext.membershipId,
+      expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
+      correlationId: `corr-fixture-accept-${Date.now().toString(36)}`
+    });
   }
 
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>> {

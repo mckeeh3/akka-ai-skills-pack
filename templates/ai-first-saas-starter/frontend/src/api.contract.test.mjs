@@ -75,6 +75,7 @@ test('workstream fixture API client exposes bootstrap, surfaces, actions, and /a
   assert.match(workstreamApi, /listWorkstreamItems/);
   assert.match(workstreamApi, /getSurface/);
   assert.match(workstreamApi, /runCapabilityAction/);
+  assert.match(workstreamApi, /acceptInvitation/);
   assert.match(fixtureWorkstreamApi, /meTenantAdmin/);
   assert.match(fixtureWorkstreamApi, /canonicalSurfaceEnvelopes/);
   assert.match(fixtureWorkstreamApi, /initialWorkstreamItems/);
@@ -82,6 +83,7 @@ test('workstream fixture API client exposes bootstrap, surfaces, actions, and /a
   assert.match(httpWorkstreamApi, /\/api\/workstream\/bootstrap/);
   assert.match(httpWorkstreamApi, /\/api\/workstream\/surfaces\/\$\{encodeURIComponent\(surfaceId\)\}/);
   assert.match(httpWorkstreamApi, /\/api\/workstream\/actions/);
+  assert.match(httpWorkstreamApi, /\/api\/workstream\/invitations\/accept/);
   assert.match(httpWorkstreamApi, /X-Selected-Context-Id/);
 });
 

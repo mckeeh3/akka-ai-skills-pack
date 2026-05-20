@@ -233,6 +233,37 @@ public final class InvitationService {
     return updated;
   }
 
+  public InvitationAcceptanceResult acceptForBrowser(WorkosIdentity identity, AcceptInvitationRequest request, String correlationId) {
+    var resolved = resolveInvitationForAcceptance(request);
+    if (resolved.isEmpty()) {
+      return InvitationAcceptanceResult.invalid("invitation-not-found-or-forbidden", "Request a fresh invitation from an administrator.", correlationId);
+    }
+    var invite = resolved.get();
+    if (invite.status() == InvitationStatus.ACCEPTED) {
+      if (identity.subject().equals(invite.acceptedByWorkosSubject())) {
+        appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.NO_OP, "already-accepted-same-subject", correlationId);
+        return InvitationAcceptanceResult.from(invite, "already-accepted", "This invitation was already accepted for your signed-in account.", correlationId);
+      }
+      appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "already-accepted-by-other-subject", correlationId);
+      return InvitationAcceptanceResult.from(invite, "already-accepted-by-other-account", "This invitation was already accepted by another account. Sign in as the original user or request a new invitation.", correlationId);
+    }
+    if (invite.status() == InvitationStatus.REVOKED) {
+      appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "revoked", correlationId);
+      return InvitationAcceptanceResult.from(invite, "revoked", "This invitation was revoked. Ask an administrator to send a new invitation.", correlationId);
+    }
+    if (invite.status() == InvitationStatus.EXPIRED || invite.expiredAt(clock.instant())) {
+      var expired = invite.status() == InvitationStatus.EXPIRED ? invite : expire(invite.invitationId(), invite.tenantId(), invite.customerId(), correlationId);
+      appendSystemAudit(expired, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "expired", correlationId);
+      return InvitationAcceptanceResult.from(expired, "expired", "This invitation has expired. Ask an administrator to resend it.", correlationId);
+    }
+    if (!invite.normalizedEmail().equals(normalizeEmail(identity.email()))) {
+      appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "workos-email-mismatch", correlationId);
+      return InvitationAcceptanceResult.from(invite, "wrong-account", "Sign in with the email address that received this invitation, or ask an administrator to resend it.", correlationId);
+    }
+    var accepted = accept(identity, invite.acceptanceContextId(), correlationId);
+    return InvitationAcceptanceResult.from(accepted, "accepted", "Invitation accepted. Your membership is now active.", correlationId);
+  }
+
   public List<Invitation> listScoped(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireScope(actor.selectedContext(), scopeType, tenantId, customerId);
     var capability = scopeType == ScopeType.CUSTOMER ? "customer.user.read" : "tenant.user.read";
@@ -247,6 +278,17 @@ public final class InvitationService {
         .filter(invite -> java.util.Objects.equals(tenantId, invite.tenantId()))
         .filter(invite -> java.util.Objects.equals(customerId, invite.customerId()))
         .toList();
+  }
+
+  private java.util.Optional<Invitation> resolveInvitationForAcceptance(AcceptInvitationRequest request) {
+    if (request == null) return java.util.Optional.empty();
+    if (request.token() != null && !request.token().isBlank()) {
+      return invitationRepository.findByTokenHash(sha256(request.token().trim()));
+    }
+    if (request.acceptanceContextId() != null && !request.acceptanceContextId().isBlank()) {
+      return invitationRepository.findByAcceptanceContext(request.acceptanceContextId().trim());
+    }
+    return java.util.Optional.empty();
   }
 
   private EmailOutboxMessage outboxMessage(Invitation invitation, String rawToken, String attemptId, String correlationId) {
@@ -377,6 +419,28 @@ public final class InvitationService {
       String correlationId) {
     public CreateInvitationRequest {
       requestedRoles = List.copyOf(requestedRoles == null ? List.of() : requestedRoles);
+    }
+  }
+
+  public record AcceptInvitationRequest(String token, String acceptanceContextId) {}
+
+  public record InvitationAcceptanceResult(
+      String status,
+      String reasonCode,
+      String recoveryHint,
+      String invitationId,
+      ScopeType scopeType,
+      String tenantId,
+      String customerId,
+      String membershipId,
+      Instant expiresAt,
+      String correlationId) {
+    static InvitationAcceptanceResult from(Invitation invite, String status, String recoveryHint, String correlationId) {
+      return new InvitationAcceptanceResult(status, status, recoveryHint, invite.invitationId(), invite.scopeType(), invite.tenantId(), invite.customerId(), invite.membershipId(), invite.expiresAt(), correlationId);
+    }
+
+    static InvitationAcceptanceResult invalid(String reasonCode, String recoveryHint, String correlationId) {
+      return new InvitationAcceptanceResult("invalid", reasonCode, recoveryHint, null, null, null, null, null, null, correlationId);
     }
   }
 }

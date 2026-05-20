@@ -5,7 +5,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, type TokenProvider, type WorkstreamClient, type WorkstreamRealtimeClient } from './api';
+import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, type InvitationAcceptanceResult, type TokenProvider, type WorkstreamClient, type WorkstreamRealtimeClient } from './api';
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
@@ -31,6 +31,12 @@ type BootstrapState =
   | { status: 'ready'; me: MeResponse; items: WorkstreamItem[]; surfaces: SurfaceEnvelope<unknown>[] }
   | { status: 'error'; message: string };
 
+type InvitationAcceptanceState =
+  | { status: 'none' }
+  | { status: 'accepting' }
+  | { status: 'ready'; result: InvitationAcceptanceResult }
+  | { status: 'error'; message: string; correlationId?: string };
+
 const modeStorageKey = 'seed-ui-mode';
 // Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Explicit fixture mode; Guarded · backend authority; production path uses HttpWorkstreamApiClient and WorkOS AuthKit getAccessToken.
 
@@ -46,11 +52,28 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
+  const [invitationAcceptance, setInvitationAcceptance] = React.useState<InvitationAcceptanceState>(() => readInvitationAcceptanceRequest() ? { status: 'accepting' } : { status: 'none' });
   const [realtimeConnection, setRealtimeConnection] = React.useState<RealtimeConnectionState>({ status: 'connecting' });
   const seenEventIds = React.useRef(new Set<string>());
   const realtimeLastEventId = React.useRef<string | undefined>(undefined);
 
   React.useEffect(() => {
+    const acceptanceRequest = readInvitationAcceptanceRequest();
+    if (!acceptanceRequest) return;
+    let active = true;
+    setInvitationAcceptance({ status: 'accepting' });
+    workstreamClient.acceptInvitation(acceptanceRequest).then((result) => {
+      if (!active) return;
+      setInvitationAcceptance(result.ok ? { status: 'ready', result: result.value } : { status: 'error', message: result.error.message, correlationId: result.error.correlationId });
+    });
+    return () => {
+      active = false;
+    };
+  }, [workstreamClient]);
+
+  React.useEffect(() => {
+    const acceptanceRequest = readInvitationAcceptanceRequest();
+    if (acceptanceRequest && invitationAcceptance.status === 'accepting') return;
     let active = true;
     workstreamClient.bootstrap().then((result) => {
       if (!active) return;
@@ -63,7 +86,7 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
     return () => {
       active = false;
     };
-  }, []);
+  }, [workstreamClient, invitationAcceptance.status]);
 
   React.useEffect(() => {
     const root = document.documentElement;
@@ -262,6 +285,7 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
     >
+      <InvitationAcceptancePanel state={invitationAcceptance} />
       <WorkstreamStream items={selectedItems} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} />
       <SurfaceRenderer envelopes={bootstrap.surfaces} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
       <section className="ds-card" aria-label="Workstream API status">
@@ -273,6 +297,25 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
       </section>
     </WorkstreamShell>
     </>
+  );
+}
+
+function InvitationAcceptancePanel({ state }: { state: InvitationAcceptanceState }) {
+  if (state.status === 'none') return null;
+  if (state.status === 'accepting') {
+    return <section className="ds-card invitation-acceptance" aria-live="polite"><p className="eyebrow">Invitation acceptance</p><h3>Validating invitation</h3><p>Checking your signed-in identity against the invitation without exposing the raw token.</p></section>;
+  }
+  if (state.status === 'error') {
+    return <section className="ds-card invitation-acceptance blocked" aria-live="polite"><p className="eyebrow">Invitation acceptance</p><h3>Invitation could not be checked</h3><p>{state.message}</p><p className="text-muted">Correlation: {state.correlationId ?? 'unavailable'}</p></section>;
+  }
+  const accepted = state.result.status === 'accepted' || state.result.status === 'already-accepted';
+  return (
+    <section className={`ds-card invitation-acceptance ${accepted ? 'ready' : 'blocked'}`} aria-live="polite">
+      <p className="eyebrow">Invitation acceptance</p>
+      <h3>{accepted ? 'Membership ready' : 'Invitation needs attention'}</h3>
+      <p>{state.result.recoveryHint}</p>
+      <p className="text-muted">Status: {state.result.status} · Correlation: {state.result.correlationId}</p>
+    </section>
   );
 }
 
@@ -288,6 +331,16 @@ function ThemeModeToggle({ mode, onModeChange }: { mode: ModePreference; onModeC
       ))}
     </fieldset>
   );
+}
+
+function readInvitationAcceptanceRequest() {
+  const search = new URLSearchParams(window.location.search);
+  const hashQuery = window.location.hash.includes('?') ? window.location.hash.slice(window.location.hash.indexOf('?')) : '';
+  const hash = new URLSearchParams(hashQuery);
+  const token = search.get('token') ?? search.get('inviteToken') ?? hash.get('token') ?? hash.get('inviteToken') ?? undefined;
+  const acceptanceContextId = search.get('acceptanceContextId') ?? hash.get('acceptanceContextId') ?? undefined;
+  if (!token && !acceptanceContextId && !window.location.pathname.startsWith('/accept')) return undefined;
+  return { token, acceptanceContextId };
 }
 
 function readDeepLinkSelection(): Partial<WorkstreamSelection> {

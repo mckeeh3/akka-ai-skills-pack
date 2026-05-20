@@ -40,6 +40,11 @@ public final class InMemoryInvitationRepository implements InvitationRepository 
   }
 
   @Override
+  public Optional<Invitation> findByTokenHash(String tokenHash) {
+    return invitations.values().stream().filter(invite -> tokenHash.equals(invite.tokenHash())).findFirst();
+  }
+
+  @Override
   public Invitation saveInvitation(Invitation invitation) {
     invitations.put(invitation.invitationId(), invitation);
     return invitation;

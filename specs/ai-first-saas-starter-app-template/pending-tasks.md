@@ -664,7 +664,7 @@
 
 ### TASK-STARTER-07-005: Implement invitation acceptance end-to-end
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/05-invitation-acceptance-e2e.md
 - depends on: [TASK-STARTER-07-004]
@@ -688,7 +688,11 @@
 - done criteria:
   - invitation acceptance is exercisable from scaffolded API/browser paths
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement starter invitation acceptance flow`
+  - fullstack validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh`.
+  - direct template frontend checks passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck`.
+  - check passed: `git diff --check`.
 
 ### TASK-STARTER-07-006: Implement Resend adapter boundary and captured outbox checks
 

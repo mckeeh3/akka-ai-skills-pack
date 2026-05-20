@@ -68,6 +68,48 @@ class InvitationAndUserAdminServiceTest {
   }
 
   @Test
+  void browserAcceptanceReturnsSafeRecoveryStatesAndAcceptsRawToken() {
+    var invite = invitations.createInvitation(tenantAdmin, inviteRequest("accept-token", "token.user@example.com"));
+    var rawToken = rawTokenFromOutbox(invite.invitationId() + ":delivery-1");
+
+    var wrongAccount = invitations.acceptForBrowser(
+        new WorkosIdentity("workos-wrong", "wrong@example.com", "Wrong"),
+        new InvitationService.AcceptInvitationRequest(rawToken, null),
+        "corr-wrong-account");
+    assertEquals("wrong-account", wrongAccount.status());
+    assertFalse(wrongAccount.toString().contains(rawToken));
+
+    var accepted = invitations.acceptForBrowser(
+        new WorkosIdentity("workos-token", "token.user@example.com", "Token User"),
+        new InvitationService.AcceptInvitationRequest(rawToken, null),
+        "corr-token-accept");
+    assertEquals("accepted", accepted.status());
+    assertFalse(accepted.toString().contains(rawToken));
+
+    var duplicate = invitations.acceptForBrowser(
+        new WorkosIdentity("workos-token", "token.user@example.com", "Token User"),
+        new InvitationService.AcceptInvitationRequest(rawToken, null),
+        "corr-token-replay");
+    assertEquals("already-accepted", duplicate.status());
+
+    var expired = invitations.createInvitation(tenantAdmin, inviteRequest("accept-expired", "expired@example.com"));
+    invitations.expire(expired.invitationId(), "tenant-1", null, "corr-expire-before-accept");
+    assertEquals("expired", invitations.acceptForBrowser(
+        new WorkosIdentity("workos-expired", "expired@example.com", "Expired"),
+        new InvitationService.AcceptInvitationRequest(null, expired.acceptanceContextId()),
+        "corr-expired-accept").status());
+
+    var revoked = invitations.createInvitation(tenantAdmin, inviteRequest("accept-revoked", "revoked@example.com"));
+    invitations.revoke(tenantAdmin, revoked.invitationId(), "mistake", "corr-revoke-before-accept");
+    assertEquals("revoked", invitations.acceptForBrowser(
+        new WorkosIdentity("workos-revoked", "revoked@example.com", "Revoked"),
+        new InvitationService.AcceptInvitationRequest(null, revoked.acceptanceContextId()),
+        "corr-revoked-accept").status());
+
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_ACCEPT") && event.result() == {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent.Result.DENIED));
+  }
+
+  @Test
   void duplicateCreateResendRevokeAndExpiryAreIdempotentAndAudited() {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("dup-key", "dupe@example.com"));
     var replay = invitations.createInvitation(tenantAdmin, inviteRequest("dup-key", "dupe@example.com"));
@@ -126,6 +168,11 @@ class InvitationAndUserAdminServiceTest {
       assertEquals("resend-config-missing", prodResult.safeErrorSummary());
     }
     assertEquals(invite.invitationId(), message.invitationId());
+  }
+
+  private String rawTokenFromOutbox(String outboxId) {
+    var inviteUrl = invitationRepository.email(outboxId).orElseThrow().inviteUrl();
+    return inviteUrl.substring(inviteUrl.indexOf("token=") + "token=".length());
   }
 
   private InvitationService.CreateInvitationRequest inviteRequest(String key, String email) {

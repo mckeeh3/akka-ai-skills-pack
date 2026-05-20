@@ -16,6 +16,8 @@ public interface InvitationRepository {
 
   Optional<Invitation> findByAcceptanceContext(String acceptanceContextId);
 
+  Optional<Invitation> findByTokenHash(String tokenHash);
+
   Invitation saveInvitation(Invitation invitation);
 
   void enqueueEmail(EmailOutboxMessage message);

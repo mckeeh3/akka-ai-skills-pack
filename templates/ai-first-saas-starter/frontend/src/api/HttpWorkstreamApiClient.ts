@@ -1,4 +1,4 @@
-import type { WorkstreamBootstrapResponse, WorkstreamClient } from './WorkstreamApiClient';
+import type { AcceptInvitationRequest, InvitationAcceptanceResult, WorkstreamBootstrapResponse, WorkstreamClient } from './WorkstreamApiClient';
 import type { ApiError, ApiResult } from './types';
 import type {
   CapabilityActionRequest,
@@ -43,6 +43,10 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
   async runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>> {
     if (request.selectedContextId) this.selectedContextId = request.selectedContextId;
     return this.post('/api/workstream/actions', request);
+  }
+
+  acceptInvitation(request: AcceptInvitationRequest): Promise<ApiResult<InvitationAcceptanceResult>> {
+    return this.post('/api/workstream/invitations/accept', request);
   }
 
   private get<T>(path: string): Promise<ApiResult<T>> {
