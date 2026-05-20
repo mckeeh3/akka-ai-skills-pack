@@ -9,6 +9,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +33,28 @@ public final class UserAdminService {
             .map(m -> new UserDirectoryRow(m.accountId(), repository.profile(m.accountId()) == null ? m.accountId() : repository.profile(m.accountId()).displayName(), m.membershipId(), m.roles(), m.status(), m.scopeType(), m.tenantId(), m.customerId()))
             .toList()
         : List.of();
+  }
+
+  public List<UserDirectoryRow> searchUsers(AuthContextResolver.ResolvedMe actor, String query, String correlationId) {
+    var normalizedQuery = query == null ? "" : query.trim().toLowerCase();
+    var rows = listUsers(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId()).stream()
+        .filter(row -> normalizedQuery.isBlank()
+            || row.accountId().toLowerCase().contains(normalizedQuery)
+            || row.displayName().toLowerCase().contains(normalizedQuery))
+        .toList();
+    audit(actor, null, "USER_DIRECTORY_SEARCH", AdminAuditEvent.Result.ALLOWED, normalizedQuery.isBlank() ? "all" : "query", correlationId);
+    return rows;
+  }
+
+  public List<AdminAuditEvent> auditEvents(AuthContextResolver.ResolvedMe actor, int limit, String correlationId) {
+    requireAuditRead(actor);
+    audit(actor, null, "AUDIT_EVENTS_SEARCH", AdminAuditEvent.Result.ALLOWED, "browser-safe", correlationId);
+    return repository.auditEvents().stream()
+        .filter(event -> actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER || java.util.Objects.equals(actor.selectedContext().tenantId(), event.tenantId()))
+        .filter(event -> actor.selectedContext().scopeType() != ScopeType.CUSTOMER || java.util.Objects.equals(actor.selectedContext().customerId(), event.customerId()))
+        .sorted(Comparator.comparing(AdminAuditEvent::timestamp).reversed())
+        .limit(Math.max(1, Math.min(limit, 100)))
+        .toList();
   }
 
   public Membership replaceRoles(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String correlationId) {
@@ -89,6 +112,15 @@ public final class UserAdminService {
     requireScope(actor, scopeType, tenantId, customerId);
     var capability = scopeType == ScopeType.CUSTOMER ? "customer.user.manage" : scopeType == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : "tenant.user.manage";
     if (!actor.selectedContext().hasCapability(capability)) {
+      throw new AuthorizationException(403, "missing-capability:" + capability);
+    }
+  }
+
+  private void requireAuditRead(AuthContextResolver.ResolvedMe actor) {
+    var scopeType = actor.selectedContext().scopeType();
+    var capability = scopeType == ScopeType.CUSTOMER ? "customer.audit.read" : scopeType == ScopeType.SAAS_OWNER ? "saas_owner.audit.read" : "tenant.audit.read";
+    if (!actor.selectedContext().hasCapability(capability)) {
+      audit(actor, null, "AUDIT_EVENTS_SEARCH", AdminAuditEvent.Result.DENIED, "missing-capability:" + capability, actor.correlationId());
       throw new AuthorizationException(403, "missing-capability:" + capability);
     }
   }

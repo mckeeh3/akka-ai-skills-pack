@@ -44,6 +44,10 @@ public final class StarterSecurityComponents {
     return INVITATION_SERVICE;
   }
 
+  public static UserAdminService userAdminService() {
+    return USER_ADMIN_SERVICE;
+  }
+
   public static InMemoryIdentityRepository identityRepository() {
     return IDENTITY_REPOSITORY;
   }

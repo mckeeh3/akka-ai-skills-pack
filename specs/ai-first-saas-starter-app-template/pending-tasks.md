@@ -804,7 +804,7 @@
 
 ### TASK-STARTER-07-009: Expand admin, governance, and audit APIs with integration tests
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/09-admin-governance-api-integration-tests.md
 - depends on: [TASK-STARTER-07-008]
@@ -833,7 +833,10 @@
 - done criteria:
   - at least one major admin/governance/audit capability family has concrete protected API coverage beyond generic action dispatch
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add starter admin governance API tests`
+  - rendered-template Maven tests passed: scaffold to `/tmp/starter-test` with base package `ai.first`, then `mvn test -q`.
+  - check passed: `git diff --check`.
 
 ### TASK-STARTER-07-010: Rerun final fullstack acceptance and publish updated summary
 
