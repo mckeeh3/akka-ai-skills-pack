@@ -535,7 +535,7 @@
 
 ### TASK-STARTER-07-001: Refresh starter acceptance and gap baseline
 
-- status: pending
+- status: done
 - source: post-review gap analysis for making `ai-first-saas-starter` a fully functioning fullstack starter app
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/01-refresh-acceptance-gap-baseline.md
 - depends on: [TASK-STARTER-06-002]
@@ -560,7 +560,10 @@
   - stale frontend-not-embedded qualification is removed or superseded
   - remaining fullstack gaps are explicit
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Refresh starter acceptance gap baseline`
+  - direct scaffold verification passed: `tools/scaffold-ai-first-saas-starter.sh --target "$TMP/app" --template-dir templates/ai-first-saas-starter --app-name "AI First SaaS Starter" --app-slug ai-first-saas-starter --base-package ai.first --maven-group-id ai.first`; verified `frontend/package.json`, `frontend/src/main.tsx`, and backend `pom.xml`.
+  - check passed: `git diff --check`
 
 ### TASK-STARTER-07-002: Add scaffolded fullstack smoke validation
 

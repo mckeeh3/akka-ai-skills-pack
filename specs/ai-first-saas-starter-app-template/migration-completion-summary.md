@@ -2,9 +2,9 @@
 
 ## Status
 
-The starter app template migration is **complete with a documented frontend embedding qualification**.
+The starter app template migration is **complete with an embedded fullstack starter baseline and explicit remaining gap list**.
 
-The repository now has a canonical starter scaffold source, install/scaffold tooling, package routing, backend foundation implementation, governed agent foundation, workstream API contracts, frontend reference validation, legacy routing cleanup, and final acceptance evidence.
+The repository now has a canonical starter scaffold source, install/scaffold tooling, package routing, backend foundation implementation, governed agent foundation, workstream API contracts, embedded React/Vite frontend template, legacy routing cleanup, and final acceptance evidence.
 
 ## Delivered assets
 
@@ -12,7 +12,8 @@ The repository now has a canonical starter scaffold source, install/scaffold too
 - `tools/scaffold-ai-first-saas-starter.sh` — explicit scaffold command used by installed packs.
 - `install.sh` and `tools/build-pack.sh` — package/install paths that export starter resources and scaffold tooling.
 - `docs/skills-pack-user-guide.md`, `docs/skills-pack-developer-guide.md`, and `skills/README.md` — scaffold-then-extend guidance.
-- `frontend/**` — validated workstream UI reference modules and tests for the full-core UI surface model.
+- `templates/ai-first-saas-starter/frontend/**` — scaffolded React/Vite workstream UI source for the full-core UI surface model.
+- `frontend/**` — legacy/reference frontend modules retained only where still useful for comparison or migration history.
 - `specs/ai-first-saas-starter-app-template/final-acceptance-review.md` — final validation evidence.
 
 ## Completed migration outcomes
@@ -20,9 +21,9 @@ The repository now has a canonical starter scaffold source, install/scaffold too
 - Skills-only installs remain safe for global and existing-project use.
 - Starter scaffold is explicit and fail-closed for existing application files.
 - Java base package and Maven group id are rendered from user-selected placeholders.
-- Scaffolded starter backend builds and tests successfully after installation.
+- Scaffolded starter backend and frontend files render successfully after installation or direct template scaffolding.
 - Backend foundation includes `/api/me`, AuthContext, memberships, roles/capabilities, audit facts, invitations, user-admin services, governed agent records, seed import, prompt assembly, `readSkill`, behavior editing, workstream service contracts, and tests.
-- Repository frontend reference tests, typecheck, and production build pass for workstream shell/surfaces/realtime/Agent Admin/Governance/User Admin behavior.
+- Starter frontend tests, typecheck, and production build pass for workstream shell/surfaces/realtime/Agent Admin/Governance/User Admin behavior.
 - Legacy DCA/static assets are quarantined from canonical starter routing.
 
 ## Final validation commands
@@ -39,8 +40,8 @@ tools/scaffold-ai-first-saas-starter.sh --target "$TMP" \
   --maven-group-id ai.first
 (cd "$TMP" && mvn test)
 
-# Frontend reference validation
-cd frontend && npm test -- --run && npm run typecheck && npm run build
+# Starter frontend validation
+cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build
 
 # Installed-pack scaffold validation
 ./install.sh --location project --project "$TMP" --force
@@ -79,9 +80,18 @@ Observed results:
 6. Extend backend components, frontend workstream surfaces, tests, and security review together.
 7. Run backend, frontend, scaffold, and packaging checks appropriate to the changed slice.
 
-## Qualification to preserve
+## Current remaining gaps
 
-The scaffold currently renders the backend starter foundation and planning seeds. The validated React/Vite workstream UI lives as the installed frontend reference, not as files copied by the scaffold. Until `templates/ai-first-saas-starter/frontend/**` is populated, generated full-stack applications should treat frontend materialization as an explicit extension step that reuses the validated workstream reference.
+Already closed: the scaffold now renders the React/Vite frontend from `templates/ai-first-saas-starter/frontend/**` alongside backend, `app-description/`, and `specs/` assets.
+
+Still open for fullstack hardening:
+
+1. durable Akka identity, invitation, audit, and governed-agent component slices behind existing ports;
+2. turnkey local WorkOS/AuthKit and safe first-admin bootstrap;
+3. invitation acceptance end-to-end through API/browser paths;
+4. Resend production adapter behavior with captured local/test outbox checks;
+5. one-command scaffolded fullstack smoke validation for backend, frontend build, and static resources;
+6. stronger concrete admin, governance, and audit HTTP contracts plus integration tests.
 
 ## Closure note
 

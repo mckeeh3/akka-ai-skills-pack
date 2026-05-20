@@ -6,11 +6,11 @@
 
 ## Verdict
 
-Status: **accepted as a scaffoldable starter foundation with explicit frontend qualification**.
+Status: **accepted as a scaffoldable fullstack starter foundation with explicit remaining gap baseline**.
 
 The starter can be installed, scaffolded into an empty project, rendered with a selected Java base package, built, tested, and used as the extension base for secure AI-first SaaS backend/workstream capability development.
 
-Qualification: the scaffolded template currently materializes the Akka Java backend foundation plus `app-description/` and `specs/` seeds. The React/Vite workstream UI remains validated as the repository/installed-pack frontend reference under `frontend/**`, but it is not yet copied as a rendered `frontend/` project by `templates/ai-first-saas-starter/**`. This is acceptable for this migration closeout only when described as the current scaffold baseline; downstream full-stack app generation should explicitly add or copy the frontend workstream project during extension.
+Current baseline: the scaffolded template materializes the Akka Java backend foundation, the React/Vite workstream frontend under `frontend/`, `app-description/`, and `specs/` seeds. The previous qualification that scaffold output lacked a rendered frontend project is superseded by the embedded `templates/ai-first-saas-starter/frontend/**` template source.
 
 ## Required input review
 
@@ -26,11 +26,11 @@ Reviewed:
 | Gate | Evidence | Result |
 | --- | --- | --- |
 | Skills-pack install | `./install.sh --location project --project "$TMP" --force` installed `.agents/`, docs, skills, examples, starter template resources, and scaffold command into a temporary project. | Pass |
-| Scaffold from installed pack | `"$TMP/.agents/bin/scaffold-ai-first-saas-starter.sh" --target "$TMP/app" --base-package ai.first --app-name "Install Validation" --app-slug install-validation` rendered 67 files from the installed template. | Pass |
+| Scaffold from installed pack | `"$TMP/.agents/bin/scaffold-ai-first-saas-starter.sh" --target "$TMP/app" --base-package ai.first --app-name "Install Validation" --app-slug install-validation` rendered the installed backend, frontend, `app-description/`, and `specs/` template files. | Pass |
 | Scaffolded backend build/test | `(cd "$TMP/app" && mvn test)` compiled 51 source files and ran 24 scaffolded tests successfully. | Pass |
 | Direct template scaffold/test | `tools/scaffold-ai-first-saas-starter.sh --target "$TMP" --template-dir templates/ai-first-saas-starter --app-name "AI First SaaS Starter" --app-slug ai-first-saas-starter --base-package ai.first --maven-group-id ai.first && (cd "$TMP" && mvn test)` passed. | Pass |
 | Repository backend examples/tests | `mvn test` passed with 179 tests. | Pass |
-| Frontend reference tests/typecheck/build | `cd frontend && npm test -- --run && npm run typecheck && npm run build` passed with 74 frontend tests and production Vite build. | Pass |
+| Starter frontend tests/typecheck/build | `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build` passed with frontend tests and production Vite build. | Pass |
 | Pack bundle validation | `bash tools/build-pack.sh --output-dir "$TMP" --clean --no-archive --github-repo example/akka-ai-skills-pack` produced an expanded bundle and release installer. | Pass |
 | Diff hygiene | `git diff --check` run before completion. | Pass |
 
@@ -53,11 +53,11 @@ Accepted for starter scaffold baseline:
 
 ### Workstream API and UI
 
-Accepted with qualification:
+Accepted for current scaffold baseline:
 
 - Scaffolded backend exposes workstream bootstrap/surface/action API services for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface families.
-- Repository frontend reference tests prove workstream shell, structured surfaces, realtime/stale behavior, Agent Admin, Governance/Policy, User Admin, capability actions, accessibility markers, and production build behavior.
-- The frontend reference is not yet embedded into the scaffold output as a rendered `frontend/` project.
+- The scaffold renders the React/Vite workstream frontend as a `frontend/` project.
+- Frontend tests prove workstream shell, structured surfaces, realtime/stale behavior, Agent Admin, Governance/Policy, User Admin, capability actions, accessibility markers, and production build behavior.
 
 ### Packaging and extension
 
@@ -68,12 +68,22 @@ Accepted:
 - Scaffold report records app name, app slug, Java base package, Maven group id, rendered files, and follow-up checks.
 - Existing project overwrite behavior remains fail-closed unless explicitly forced.
 
-## Remaining qualified gaps
+## Current gap baseline
 
-1. **Embedded scaffold frontend:** the template manifest reserves `frontend/`, and the repository frontend reference passes validation, but scaffold output does not include a rendered frontend project. Treat frontend generation as an immediate extension step until a later task copies/adapts the React/Vite reference into `templates/ai-first-saas-starter/frontend/**`.
-2. **Durable Akka component substitution:** the scaffold uses compact in-memory repositories for starter foundation semantics. Downstream production generation should replace these with durable Akka entities/views/workflows/consumers/timed actions as app requirements demand.
-3. **Provider production configuration:** WorkOS, Resend, and model providers are represented by safe seams. Production readiness still requires tenant/project-specific provider configuration and secret management outside browser DTOs and traces.
+Already closed:
+
+1. **Embedded scaffold frontend:** `templates/ai-first-saas-starter/frontend/**` is present and direct scaffold verification renders `frontend/package.json`, `frontend/src/main.tsx`, and backend `pom.xml`.
+
+Still open:
+
+1. **Durable Akka component substitution:** the scaffold still uses compact in-memory repositories for several starter foundation semantics; planned follow-up work should introduce durable Akka identity, invitation, audit, and governed-agent slices behind existing ports.
+2. **Local auth bootstrap:** WorkOS/AuthKit and safe first-admin setup need a more turnkey clean-scaffold path.
+3. **Invitation E2E:** invitation acceptance needs an end-to-end browser/API path with accepted, expired, revoked, duplicate, and wrong-account coverage.
+4. **Resend adapter:** production Resend delivery remains a boundary/seam that needs adapter behavior plus captured outbox checks.
+5. **Integration smoke:** a single fullstack smoke command should validate scaffolded backend, frontend build, and static-resource behavior together.
+6. **Concrete admin/governance APIs:** admin, audit, and governance workstream capabilities need stronger concrete HTTP contracts and integration tests.
+7. **Provider production configuration:** WorkOS, Resend, and model providers require tenant/project-specific configuration and secret management outside browser DTOs and traces.
 
 ## Conclusion
 
-The migration has produced a safe, installable, scaffoldable starter foundation and validated frontend reference. It is ready to be used as the canonical extension base for new secure AI-first SaaS projects, provided the frontend qualification is preserved until the frontend reference is embedded directly in the scaffold template.
+The migration has produced a safe, installable, scaffoldable fullstack starter foundation with an embedded frontend template. It is ready to be used as the canonical extension base for new secure AI-first SaaS projects while the current gap baseline drives follow-up hardening tasks.
