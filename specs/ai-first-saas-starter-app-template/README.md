@@ -69,6 +69,7 @@ The migration is complete when the repository contains:
 4. `sprints/04-agent-governance-sprint.md` — complete governed runtime agent seed documents, Agent Admin, governance/policy, trace, and behavior-editing foundation.
 5. `sprints/05-packaging-install-sprint.md` — package the starter app as an explicit scaffold/init mode alongside skills-only installation.
 6. `sprints/06-legacy-cleanup-review-sprint.md` — quarantine/archive stale DCA/seed code from canonical paths, run final acceptance, and publish completion summary.
+7. `sprints/07-fullstack-gap-closure-sprint.md` — close post-review gaps now that the frontend is embedded: refresh acceptance docs, add fullstack smoke validation, make the frontend production-first, improve local auth/onboarding/email, introduce durable Akka slices, strengthen admin/governance APIs, and rerun final acceptance.
 
 ## Non-goals
 

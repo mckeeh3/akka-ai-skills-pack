@@ -532,3 +532,310 @@
   - packaging validation passed: `bash tools/build-pack.sh --output-dir "$TMP" --clean --no-archive --github-repo example/akka-ai-skills-pack`.
   - check passed: `git diff --check`.
   - final acceptance is qualified: scaffold renders backend starter foundation and planning seeds; validated React/Vite workstream UI remains a frontend reference until embedded directly in the scaffold template.
+
+### TASK-STARTER-07-001: Refresh starter acceptance and gap baseline
+
+- status: pending
+- source: post-review gap analysis for making `ai-first-saas-starter` a fully functioning fullstack starter app
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/01-refresh-acceptance-gap-baseline.md
+- depends on: [TASK-STARTER-06-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - templates/ai-first-saas-starter/README.md
+  - templates/ai-first-saas-starter/TEMPLATE-MANIFEST.md
+  - specs/ai-first-saas-starter-app-template/final-acceptance-review.md
+  - specs/ai-first-saas-starter-app-template/migration-completion-summary.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/ai-first-saas-starter-app-template/sprints/07-fullstack-gap-closure-sprint.md
+- skills:
+  - none; repository planning/review task
+- expected outputs:
+  - refreshed final acceptance and migration summary language
+  - current explicit gap list
+- required checks:
+  - git diff --check
+  - direct scaffold path verification for embedded frontend/backend files
+- done criteria:
+  - stale frontend-not-embedded qualification is removed or superseded
+  - remaining fullstack gaps are explicit
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-002: Add scaffolded fullstack smoke validation
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/02-add-fullstack-smoke-validation.md
+- depends on: [TASK-STARTER-07-001]
+- required reads:
+  - tools/scaffold-ai-first-saas-starter.sh
+  - templates/ai-first-saas-starter/README.md
+  - templates/ai-first-saas-starter/frontend/package.json
+  - templates/ai-first-saas-starter/backend/pom.xml
+  - specs/ai-first-saas-starter-app-template/final-acceptance-review.md
+  - specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- skills:
+  - none; validation/tooling task
+- expected outputs:
+  - fullstack starter validation script or equivalent documented command path
+  - README/spec documentation for the validation path
+- required checks:
+  - git diff --check
+  - new fullstack validation script, or documented environmental failure notes
+- done criteria:
+  - one command can validate scaffolded backend + frontend build/static-resource behavior
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-003: Make starter frontend production-first while retaining fixture mode
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/03-production-first-frontend-copy.md
+- depends on: [TASK-STARTER-07-002]
+- required reads:
+  - templates/ai-first-saas-starter/frontend/README.md
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/api/**
+  - templates/ai-first-saas-starter/frontend/src/workstream/**
+  - templates/ai-first-saas-starter/frontend/src/screens/**
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-web-ui-testing/SKILL.md
+- skills:
+  - akka-web-ui-apps
+  - akka-web-ui-testing
+- expected outputs:
+  - production-first frontend copy and docs
+  - fixture mode retained only as explicit dev/test path
+  - updated frontend tests where needed
+- required checks:
+  - git diff --check
+  - cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build
+- done criteria:
+  - default frontend does not appear fixture-backed
+  - fixture mode remains explicitly available and tested
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-004: Make local AuthKit and first-admin bootstrap turnkey
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/04-turnkey-local-auth-bootstrap.md
+- depends on: [TASK-STARTER-07-003]
+- required reads:
+  - templates/ai-first-saas-starter/.env.example
+  - templates/ai-first-saas-starter/frontend/.env.example
+  - templates/ai-first-saas-starter/README.md
+  - templates/ai-first-saas-starter/backend/src/main/resources/application.conf
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AuthContextResolver.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/StarterSecurityComponents.java
+  - skills/akka-workos-user-auth/SKILL.md
+  - skills/akka-http-endpoint-jwt/SKILL.md
+- skills:
+  - akka-workos-user-auth
+  - akka-http-endpoint-jwt
+- expected outputs:
+  - local AuthKit setup docs/env comments
+  - safe first-admin/bootstrap semantics and tests where practical
+- required checks:
+  - git diff --check
+  - rendered-template Maven tests
+  - frontend typecheck/build if frontend changed
+- done criteria:
+  - local auth/bootstrap is explicit, safe, and practical for clean scaffolds
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-005: Implement invitation acceptance end-to-end
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/05-invitation-acceptance-e2e.md
+- depends on: [TASK-STARTER-07-004]
+- required reads:
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/security/Invitation.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/api/workstream/WorkstreamEndpoint.java
+  - templates/ai-first-saas-starter/frontend/src/workstream/**
+  - specs/core-app-full-stack-readiness/invitation-onboarding-reference-slice.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+- skills:
+  - akka-saas-invitation-onboarding
+- expected outputs:
+  - invitation acceptance API/browser flow
+  - tests for accepted/expired/revoked/duplicate/wrong-account behavior
+- required checks:
+  - git diff --check
+  - rendered-template Maven tests for invitation slice
+  - frontend tests/typecheck/build if frontend changed
+- done criteria:
+  - invitation acceptance is exercisable from scaffolded API/browser paths
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-006: Implement Resend adapter boundary and captured outbox checks
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/06-resend-adapter-outbox.md
+- depends on: [TASK-STARTER-07-005]
+- required reads:
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/ResendEmailService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/security/EmailOutboxMessage.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/security/EmailDeliveryStatus.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationAndUserAdminServiceTest.java
+  - templates/ai-first-saas-starter/.env.example
+  - skills/akka-resend-email-service/SKILL.md
+- skills:
+  - akka-resend-email-service
+- expected outputs:
+  - real Resend adapter boundary
+  - local/test captured outbox checks
+  - secret-boundary tests/docs
+- required checks:
+  - git diff --check
+  - rendered-template Maven tests for email/invitation slice
+  - no-secret scan over frontend/static assets if static assets exist
+- done criteria:
+  - production email is no longer represented by a hardcoded success stub
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-007: Add durable Akka identity, invitation, and audit slices
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/07-durable-identity-invitation-audit-slices.md
+- depends on: [TASK-STARTER-07-006]
+- required reads:
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/IdentityRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InMemoryIdentityRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InMemoryInvitationRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/security/**
+  - skills/akka-key-value-entities/SKILL.md
+  - skills/akka-event-sourced-entities/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-workflows/SKILL.md
+- skills:
+  - akka-key-value-entities
+  - akka-event-sourced-entities
+  - akka-views
+  - akka-workflows
+- expected outputs:
+  - first durable identity/invitation/audit Akka slice behind existing ports
+  - component/service tests
+- required checks:
+  - git diff --check
+  - rendered-template Maven tests for changed backend slice
+  - direct scaffold + mvn test if feasible
+- done criteria:
+  - at least one foundation repository path is durable or has an explicit component seam
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-008: Add durable Akka governed-agent behavior slices
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/08-durable-agent-governance-slices.md
+- depends on: [TASK-STARTER-07-007]
+- required reads:
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/InMemoryAgentBehaviorRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoader.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/**
+  - skills/akka-agent-seed-documents/SKILL.md
+  - skills/akka-agent-runtime-state/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-event-sourced-entities/SKILL.md
+- skills:
+  - akka-agent-seed-documents
+  - akka-agent-runtime-state
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-event-sourced-entities
+- expected outputs:
+  - first durable governed-agent Akka slice behind existing ports
+  - seed/readSkill/prompt/proposal tests
+- required checks:
+  - git diff --check
+  - rendered-template Maven tests for agent governance slice
+  - direct scaffold + mvn test if feasible
+- done criteria:
+  - at least one governed-agent repository path is durable or has an explicit component seam
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-009: Expand admin, governance, and audit APIs with integration tests
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/09-admin-governance-api-integration-tests.md
+- depends on: [TASK-STARTER-07-008]
+- required reads:
+  - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/api/**
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/UserAdminService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-http-endpoint-jwt/SKILL.md
+  - skills/akka-http-endpoint-request-context/SKILL.md
+  - skills/akka-integration-testing/SKILL.md
+- skills:
+  - akka-http-endpoints
+  - akka-http-endpoint-jwt
+  - akka-http-endpoint-request-context
+  - akka-integration-testing
+- expected outputs:
+  - strengthened concrete admin/governance/audit APIs
+  - endpoint/integration tests for auth, tenant isolation, idempotency, audit, and denials
+- required checks:
+  - git diff --check
+  - rendered-template Maven tests for endpoint/integration slice
+  - frontend tests/typecheck/build if frontend API clients changed
+- done criteria:
+  - at least one major admin/governance/audit capability family has concrete protected API coverage beyond generic action dispatch
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-STARTER-07-010: Rerun final fullstack acceptance and publish updated summary
+
+- status: pending
+- source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
+- task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/10-final-fullstack-acceptance-rerun.md
+- depends on: [TASK-STARTER-07-009]
+- required reads:
+  - specs/ai-first-saas-starter-app-template/README.md
+  - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
+  - specs/ai-first-saas-starter-app-template/final-acceptance-review.md
+  - specs/ai-first-saas-starter-app-template/migration-completion-summary.md
+  - specs/ai-first-saas-starter-app-template/sprints/07-fullstack-gap-closure-sprint.md
+  - tools/validate-ai-first-saas-starter-fullstack.sh if present
+  - tools/build-pack.sh
+  - install.sh
+- skills:
+  - none; acceptance/release validation task
+- expected outputs:
+  - updated final acceptance review
+  - updated migration completion summary
+  - follow-up backlog if any remaining gaps remain
+- required checks:
+  - git diff --check
+  - fullstack starter validation script if present
+  - direct scaffold + mvn test
+  - scaffolded frontend npm install/test/typecheck/build
+  - installed pack scaffold validation
+  - build-pack validation
+- done criteria:
+  - final acceptance reflects actual fullstack starter behavior and evidence
+  - task changes and queue update are committed
+- notes: []
