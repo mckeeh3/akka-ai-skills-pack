@@ -20,12 +20,12 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 ## Required reading
 
 Read these first if present:
-- `../../../docs/capability-first-backend-architecture.md`
+- `../../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/agents/testing.html.md`
-- `../../../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/WalletEntityTest.java`
+- `../../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/WalletEntityTest.java`
 
 ## Capability-first test role
 

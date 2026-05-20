@@ -21,8 +21,8 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 Read these first if present:
 - `akka-context/sdk/access-control.html.md`
 - `akka-context/sdk/http-endpoints.html.md`
-- `../../../src/main/java/com/example/api/InternalStatusEndpoint.java`
-- `../../../src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/api/InternalStatusEndpoint.java`
+- `../../src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

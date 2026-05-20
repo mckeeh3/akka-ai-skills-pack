@@ -31,11 +31,11 @@ Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `akka-context/sdk/auth-with-jwts.html.md`
 - `akka-context/reference/jwts.html.md`
-- `../../../docs/security-pattern-selection.md`
-- `../../../docs/security-workos-auth-and-admin.md`
-- `../../../docs/security-review-checklist.md`
-- `../../../src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../../../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
+- `../../docs/security-pattern-selection.md`
+- `../../docs/security-workos-auth-and-admin.md`
+- `../../docs/security-review-checklist.md`
+- `../../src/main/java/com/example/api/SecureGreetingEndpoint.java`
+- `../../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

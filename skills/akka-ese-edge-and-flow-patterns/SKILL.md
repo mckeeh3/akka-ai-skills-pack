@@ -12,11 +12,11 @@ Use this skill when deciding how an event sourced entity participates in a large
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../../src/main/java/com/example/application/OrderEntity.java`
-- `../../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../../src/main/java/com/example/api/OrderEndpoint.java`
+- `../../src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../../src/main/java/com/example/application/OrderEntity.java`
+- `../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../../src/main/java/com/example/api/OrderEndpoint.java`
 
 ## Capability-first framing
 

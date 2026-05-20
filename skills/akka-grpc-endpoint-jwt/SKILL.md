@@ -23,12 +23,12 @@ Read these first if present:
 - `akka-context/sdk/auth-with-jwts.html.md`
 - `akka-context/reference/jwts.html.md`
 - `../references/akka-grpc-jwt-patterns.md`
-- `../../../src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
-- `../../../src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
-- `../../../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../../../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../../../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
+- `../../src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
+- `../../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `../../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
+- `../../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

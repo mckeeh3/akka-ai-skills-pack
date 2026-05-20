@@ -13,13 +13,13 @@ Read these first if present:
 - `akka-context/sdk/agents/calling.html.md`
 - `akka-context/sdk/agents/orchestrating.html.md`
 - `akka-context/sdk/workflows.html.md`
-- `../../../src/main/java/com/example/application/AgentTeamWorkflow.java`
-- `../../../src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
-- `../../../src/main/java/com/example/application/SelectorAgent.java`
-- `../../../src/main/java/com/example/application/PlannerAgent.java`
-- `../../../src/main/java/com/example/application/SummarizerAgent.java`
-- `../../../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
+- `../../src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `../../src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
+- `../../src/main/java/com/example/application/SelectorAgent.java`
+- `../../src/main/java/com/example/application/PlannerAgent.java`
+- `../../src/main/java/com/example/application/SummarizerAgent.java`
+- `../../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
 
 ## Use this pattern when
 

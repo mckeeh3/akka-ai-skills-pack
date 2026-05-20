@@ -40,26 +40,26 @@ Read these first if present:
 - `akka-context/reference/views/concepts/result-mapping.html.md`
 - `akka-context/reference/views/syntax/order-by.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../docs/capability-first-backend-architecture.md`
+- `../../docs/capability-first-backend-architecture.md`
 - existing project view examples under `src/main/java/**/application/*View.java`
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../../../src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../../../src/main/java/com/example/application/DraftCartLifecycleView.java`
-- `../../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../../../src/main/java/com/example/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
-- `../../../src/main/java/com/example/application/ShoppingCartTopicView.java`
-- `../../../docs/service-to-service-views.md`
-- `../../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SupervisedExportEvidenceViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
+- `../../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `../../src/main/java/com/example/application/ShoppingCartAuditView.java`
+- `../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../src/main/java/com/example/application/DraftCartLifecycleView.java`
+- `../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../../src/main/java/com/example/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
+- `../../src/main/java/com/example/application/ShoppingCartTopicView.java`
+- `../../docs/service-to-service-views.md`
+- `../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/SupervisedExportEvidenceViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -84,7 +84,7 @@ Load the companion skill that matches the current task:
 
 If the source is another Akka service via service-to-service eventing, use this top-level skill plus:
 - `akka-view-from-service-stream`
-- `../../../docs/service-to-service-views.md`
+- `../../docs/service-to-service-views.md`
 - `akka-context/sdk/views.html.md`
 - `akka-context/sdk/consuming-producing.html.md`
 

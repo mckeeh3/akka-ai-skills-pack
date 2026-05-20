@@ -586,7 +586,7 @@
 
 ### TASK-AWSR-05-006: Validate and repair source skill path references
 
-- status: pending
+- status: done
 - source: follow-up review found fragile source skill relative paths
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/06-validate-source-skill-paths.md
 - depends on: [TASK-AWSR-05-005]
@@ -604,7 +604,10 @@
 - done criteria:
   - source skill path issues are documented and highest-impact breakages are fixed or queued
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Audit source skill path references
+  - check passed: `git diff --check`
+  - check passed: `python3 tools/audit-source-skill-paths.py`
 
 ### TASK-AWSR-05-007: Update starter acceptance consistency for Sprint 08 queue
 

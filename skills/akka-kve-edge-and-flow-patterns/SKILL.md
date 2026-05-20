@@ -12,11 +12,11 @@ Use this skill when deciding how a key value entity participates in a larger flo
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../src/main/java/com/example/application/DraftCartEntity.java`
-- `../../../src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../../../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../../../src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../../src/main/java/com/example/application/DraftCartEntity.java`
+- `../../src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../../src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
 
 ## Capability-first framing
 

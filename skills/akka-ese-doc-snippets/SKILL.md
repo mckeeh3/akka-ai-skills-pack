@@ -12,14 +12,14 @@ Use this skill when the task is to write documentation examples for event source
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../../src/main/java/com/example/application/OrderEntity.java`
-- `../../../src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
-- `../../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../../src/test/java/com/example/application/ShoppingCartEntityTest.java`
-- `../../../src/test/java/com/example/application/OrderEntityTest.java`
-- `../../../src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
+- `../../src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../../src/main/java/com/example/application/OrderEntity.java`
+- `../../src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
+- `../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../../src/test/java/com/example/application/ShoppingCartEntityTest.java`
+- `../../src/test/java/com/example/application/OrderEntityTest.java`
+- `../../src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
 - `../references/akka-entity-comparison.md`
 
 ## Mission

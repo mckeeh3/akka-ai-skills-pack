@@ -50,16 +50,16 @@ Read these first if present:
 - matching gRPC endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../../src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../../../src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
-- `../../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../../../src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
-- `../../../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../../../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../../../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
+- `../../src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
+- `../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `../../src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
+- `../../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `../../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
+- `../../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Companion skills
 

@@ -23,9 +23,9 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/structured.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../../../src/main/java/com/example/application/ActivityAgent.java`
-- `../../../src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
-- `../../../src/test/java/com/example/application/ActivityAgentTest.java`
+- `../../src/main/java/com/example/application/ActivityAgent.java`
+- `../../src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
+- `../../src/test/java/com/example/application/ActivityAgentTest.java`
 
 ## Use this pattern when
 

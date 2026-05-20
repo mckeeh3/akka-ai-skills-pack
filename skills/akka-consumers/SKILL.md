@@ -44,17 +44,17 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../../../src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
-- `../../../src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../../../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../../../src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
-- `../../../docs/consumer-reference.md`
-- `../../../src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../../src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
+- `../../src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
+- `../../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../../src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
+- `../../docs/consumer-reference.md`
+- `../../src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
+- `../../src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `../../src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Companion skills
 

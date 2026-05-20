@@ -22,10 +22,10 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
-- `../../../src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../../../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
-- `../../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
+- `../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Read patterns
 

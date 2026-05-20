@@ -23,9 +23,9 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../src/test/java/com/example/application/ShoppingCartEntityTest.java`
-- `../../../src/test/java/com/example/application/OrderEntityTest.java`
-- `../../../src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
+- `../../src/test/java/com/example/application/ShoppingCartEntityTest.java`
+- `../../src/test/java/com/example/application/OrderEntityTest.java`
+- `../../src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
 
 ## Test kit rules
 

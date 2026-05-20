@@ -45,62 +45,62 @@ Read these first if present:
 - `akka-context/sdk/agents/llm_eval.html.md`
 - `akka-context/sdk/agents/testing.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../docs/agent-coverage-matrix.md`
-- `../../../docs/agent-runtime-state-reference.md`
-- `../../../docs/agent-runtime-invocation-pattern.md`
+- `../../docs/agent-coverage-matrix.md`
+- `../../docs/agent-runtime-state-reference.md`
+- `../../docs/agent-runtime-invocation-pattern.md`
 
 In this repository, prefer these examples:
-- `../../../src/main/java/com/example/application/ActivityAgent.java`
-- `../../../src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
-- `../../../src/main/java/com/example/application/TemplateBackedActivityAgent.java`
-- `../../../src/main/java/com/example/application/WeatherAgent.java`
-- `../../../src/main/java/com/example/application/WeatherForecastTools.java`
-- `../../../src/main/java/com/example/application/CartInspectorAgent.java`
-- `../../../src/main/java/com/example/application/RemoteShoppingCartAgent.java`
-- `../../../src/main/java/com/example/application/DocumentAnalysisAgent.java`
-- `../../../src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
-- `../../../src/main/java/com/example/application/StreamingActivityAgent.java`
-- `../../../src/main/java/com/example/application/AgentTeamWorkflow.java`
-- `../../../src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
-- `../../../src/main/java/com/example/application/SelectorAgent.java`
-- `../../../src/main/java/com/example/application/PlannerAgent.java`
-- `../../../src/main/java/com/example/application/SummarizerAgent.java`
-- `../../../src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
-- `../../../src/main/java/com/example/application/SessionMemoryByComponentView.java`
-- `../../../src/main/java/com/example/application/SessionMemoryAlertView.java`
-- `../../../src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
-- `../../../src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
-- `../../../src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
-- `../../../src/main/java/com/example/application/PromptTemplateHistoryView.java`
-- `../../../src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
-- `../../../src/main/java/com/example/application/CompetitorMentionGuard.java`
-- `../../../src/main/java/com/example/api/ActivityAgentEndpoint.java`
-- `../../../src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java`
-- `../../../src/main/java/com/example/api/ActivityPromptEndpoint.java`
-- `../../../src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
-- `../../../src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
-- `../../../src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
-- `../../../src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java`
-- `../../../src/test/java/com/example/application/ActivityAgentTest.java`
-- `../../../src/test/java/com/example/application/ActivityAgentGuardrailIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
-- `../../../src/test/java/com/example/application/CartInspectorAgentTest.java`
-- `../../../src/test/java/com/example/application/RemoteShoppingCartAgentTest.java`
-- `../../../src/test/java/com/example/application/DocumentAnalysisAgentTest.java`
-- `../../../src/test/java/com/example/application/WorkerMemorySummaryAgentTest.java`
-- `../../../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
+- `../../src/main/java/com/example/application/ActivityAgent.java`
+- `../../src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
+- `../../src/main/java/com/example/application/TemplateBackedActivityAgent.java`
+- `../../src/main/java/com/example/application/WeatherAgent.java`
+- `../../src/main/java/com/example/application/WeatherForecastTools.java`
+- `../../src/main/java/com/example/application/CartInspectorAgent.java`
+- `../../src/main/java/com/example/application/RemoteShoppingCartAgent.java`
+- `../../src/main/java/com/example/application/DocumentAnalysisAgent.java`
+- `../../src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
+- `../../src/main/java/com/example/application/StreamingActivityAgent.java`
+- `../../src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `../../src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
+- `../../src/main/java/com/example/application/SelectorAgent.java`
+- `../../src/main/java/com/example/application/PlannerAgent.java`
+- `../../src/main/java/com/example/application/SummarizerAgent.java`
+- `../../src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
+- `../../src/main/java/com/example/application/SessionMemoryByComponentView.java`
+- `../../src/main/java/com/example/application/SessionMemoryAlertView.java`
+- `../../src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
+- `../../src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
+- `../../src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
+- `../../src/main/java/com/example/application/PromptTemplateHistoryView.java`
+- `../../src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
+- `../../src/main/java/com/example/application/CompetitorMentionGuard.java`
+- `../../src/main/java/com/example/api/ActivityAgentEndpoint.java`
+- `../../src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java`
+- `../../src/main/java/com/example/api/ActivityPromptEndpoint.java`
+- `../../src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
+- `../../src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
+- `../../src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
+- `../../src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java`
+- `../../src/test/java/com/example/application/ActivityAgentTest.java`
+- `../../src/test/java/com/example/application/ActivityAgentGuardrailIntegrationTest.java`
+- `../../src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
+- `../../src/test/java/com/example/application/CartInspectorAgentTest.java`
+- `../../src/test/java/com/example/application/RemoteShoppingCartAgentTest.java`
+- `../../src/test/java/com/example/application/DocumentAnalysisAgentTest.java`
+- `../../src/test/java/com/example/application/WorkerMemorySummaryAgentTest.java`
+- `../../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/SessionMemoryViewEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
+- `../../src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
+- `../../src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ## Companion skills
 
@@ -110,7 +110,7 @@ Load the companion skill that matches the current task:
   - functional/context-area agent versus internal-agent placement, workstream shell context, structured surfaces, and capability-first routing
 - `akka-agent-behavior-profiles`
   - durable tenant-scoped AgentDefinition, lifecycle, owner/steward, functional/internal placement metadata, authority level, model references, tool permission boundaries, admin views, and runtime profile lookup
-- `../../../docs/agent-runtime-invocation-pattern.md`
+- `../../docs/agent-runtime-invocation-pattern.md`
   - concrete runtime invocation sequence from AuthContext through active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
 - `akka-agent-governed-documents`
   - tenant-scoped governed prompts, skills, rubrics, policies, and examples with version history, immutable snapshots, review, activation, diff UI, and audit
@@ -218,7 +218,7 @@ Before implementation, identify:
 ### 2. Durable behavior profile / managed runtime agent
 Use when the app manages agents as tenant-scoped runtime actors with lifecycle, owner/steward, authority, model configuration references, prompt/skill references, tool permission boundaries, or admin UI.
 
-Load `akka-agent-behavior-profiles` before prompt, skill, tool, orchestration, or Java agent implementation details. For managed runtime invocation handoff, read `../../../docs/agent-runtime-invocation-pattern.md` and use an `AgentRuntimeResolver`-style helper to resolve AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace before model invocation.
+Load `akka-agent-behavior-profiles` before prompt, skill, tool, orchestration, or Java agent implementation details. For managed runtime invocation handoff, read `../../docs/agent-runtime-invocation-pattern.md` and use an `AgentRuntimeResolver`-style helper to resolve AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace before model invocation.
 
 ### 3. Governed behavior documents
 Use when prompts, skills, rubrics, policies, or examples need tenant-scoped version history, review, approval, activation, immutable snapshots, diff/history UI, or audit.
@@ -291,7 +291,7 @@ Use when output quality or runtime safety checks are a first-class concern.
 Repository examples:
 - `ActivityAnswerEvaluatorAgent`
 - `CompetitorMentionGuard`
-- `../../../src/main/resources/application.conf`
+- `../../src/main/resources/application.conf`
 
 ## Final review checklist
 

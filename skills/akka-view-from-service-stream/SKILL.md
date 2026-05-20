@@ -26,10 +26,10 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
-- `../../../docs/service-to-service-views.md`
-- `../../../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../../../docs/capability-first-backend-architecture.md`
+- `../../docs/service-to-service-views.md`
+- `../../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../../docs/capability-first-backend-architecture.md`
 
 ## Use this pattern when
 

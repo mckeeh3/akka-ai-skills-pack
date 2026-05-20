@@ -31,18 +31,18 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../../../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../../../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
+- `../../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Test harness rules
 

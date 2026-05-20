@@ -26,11 +26,11 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
-- `../../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../../../src/main/java/com/example/application/DraftCartLifecycleView.java`
-- `../../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
-- `../../../docs/capability-first-backend-architecture.md`
+- `../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../src/main/java/com/example/application/DraftCartLifecycleView.java`
+- `../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
+- `../../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
 

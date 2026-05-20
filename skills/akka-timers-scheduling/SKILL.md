@@ -22,15 +22,15 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 - `akka-context/sdk/timed-actions.html.md`
 - `akka-context/sdk/setup-and-dependency-injection.html.md`
-- `../../../src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../../../src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../../../src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../../../src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../../../src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../../../src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../../../src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../../../src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../../../src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../../src/main/java/com/example/api/TicketReservationEndpoint.java`
+- `../../src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../../src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/api/ReminderJobEndpoint.java`
+- `../../src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `../../src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../../src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `../../src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
 
 ## Where timers may be scheduled
 

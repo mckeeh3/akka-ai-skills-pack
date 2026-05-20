@@ -22,8 +22,8 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 
 Read these first if present:
 - `akka-context/sdk/agents/prompt.html.md`
-- `../../../src/main/java/com/example/application/DocumentAnalysisAgent.java`
-- `../../../src/test/java/com/example/application/DocumentAnalysisAgentTest.java`
+- `../../src/main/java/com/example/application/DocumentAnalysisAgent.java`
+- `../../src/test/java/com/example/application/DocumentAnalysisAgentTest.java`
 
 ## Use this pattern when
 

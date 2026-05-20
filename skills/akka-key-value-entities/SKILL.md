@@ -41,15 +41,15 @@ If these files exist, read them first:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../../src/main/java/com/example/application/DraftCartEntity.java`
-- `../../../src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../../../src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
-- `../../../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../../../src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../../../src/test/java/com/example/application/DraftCartEntityTest.java`
-- `../../../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
-- `../../../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
+- `../../src/main/java/com/example/application/DraftCartEntity.java`
+- `../../src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../../src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
+- `../../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../../src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../../src/test/java/com/example/application/DraftCartEntityTest.java`
+- `../../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
+- `../../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
 
 ## Companion skills
 

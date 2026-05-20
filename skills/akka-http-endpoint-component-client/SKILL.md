@@ -32,18 +32,18 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../../src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../../../src/main/java/com/example/api/OrderEndpoint.java`
-- `../../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../../../docs/workflow-endpoint-pattern.md`
-- `../../../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../../../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../../src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../../src/main/java/com/example/api/OrderEndpoint.java`
+- `../../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../../docs/workflow-endpoint-pattern.md`
+- `../../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
+- `../../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

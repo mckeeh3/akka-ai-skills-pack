@@ -31,32 +31,32 @@ In AI-first SaaS implementations, use workflows as durable execution plans for l
 ## Required reading before coding
 
 Read these first if present:
-- `../../../docs/capability-first-backend-architecture.md`
+- `../../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 - existing project workflow examples under `src/main/java/**/application/*Workflow.java`
 - matching workflow tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../../src/main/java/com/example/application/TransferWorkflow.java`
-- `../../../src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../../src/main/java/com/example/application/RefundApprovalWorkflow.java`
-- `../../../src/main/java/com/example/application/SupervisedExportWorkflow.java`
-- `../../../src/main/java/com/example/application/ReviewWorkflow.java`
-- `../../../src/main/java/com/example/application/WalletEntity.java`
-- `../../../src/main/java/com/example/domain/TransferState.java`
-- `../../../src/main/java/com/example/domain/ApprovalState.java`
-- `../../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../../../docs/workflow-endpoint-pattern.md`
-- `../../../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `../../../src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
-- `../../../src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../../src/main/java/com/example/application/TransferWorkflow.java`
+- `../../src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../../src/main/java/com/example/application/RefundApprovalWorkflow.java`
+- `../../src/main/java/com/example/application/SupervisedExportWorkflow.java`
+- `../../src/main/java/com/example/application/ReviewWorkflow.java`
+- `../../src/main/java/com/example/application/WalletEntity.java`
+- `../../src/main/java/com/example/domain/TransferState.java`
+- `../../src/main/java/com/example/domain/ApprovalState.java`
+- `../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../../docs/workflow-endpoint-pattern.md`
+- `../../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../../src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
+- `../../src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -77,7 +77,7 @@ If the workflow drives or is consumed by other components, also load:
 - `akka-consumer-from-workflow`
 - `akka-view-from-workflow`
 - `akka-http-endpoint-component-client` when exposing workflow commands through HTTP
-- `../../../docs/workflow-endpoint-pattern.md` for the shared HTTP workflow endpoint shape
+- `../../docs/workflow-endpoint-pattern.md` for the shared HTTP workflow endpoint shape
 
 ## Default package layout
 

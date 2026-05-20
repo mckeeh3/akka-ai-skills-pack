@@ -12,14 +12,14 @@ Use this skill for the `domain` package of an Akka Java SDK key value entity.
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../src/main/java/com/example/domain/DraftCart.java`
-- `../../../src/main/java/com/example/domain/DraftCartValidator.java`
-- `../../../src/main/java/com/example/domain/DraftCartCommandHandler.java`
-- `../../../src/main/java/com/example/domain/PurchaseOrder.java`
-- `../../../src/main/java/com/example/domain/PurchaseOrderValidator.java`
-- `../../../src/main/java/com/example/domain/PurchaseOrderCommandHandler.java`
-- `../../../src/main/java/com/example/domain/PurchaseOrderReadyToShipBusinessLogic.java`
-- `../../../src/main/java/com/example/domain/ExpiringDraftCartSession.java`
+- `../../src/main/java/com/example/domain/DraftCart.java`
+- `../../src/main/java/com/example/domain/DraftCartValidator.java`
+- `../../src/main/java/com/example/domain/DraftCartCommandHandler.java`
+- `../../src/main/java/com/example/domain/PurchaseOrder.java`
+- `../../src/main/java/com/example/domain/PurchaseOrderValidator.java`
+- `../../src/main/java/com/example/domain/PurchaseOrderCommandHandler.java`
+- `../../src/main/java/com/example/domain/PurchaseOrderReadyToShipBusinessLogic.java`
+- `../../src/main/java/com/example/domain/ExpiringDraftCartSession.java`
 
 ## Mission
 

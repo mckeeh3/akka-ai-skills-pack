@@ -25,19 +25,19 @@ If these are absent and the work is generated SaaS implementation, route back to
 ## Read first
 
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../../src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../../../src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../../../src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../../../src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../../../src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../../../src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../../../src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../../../src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../../../src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
-- `../../../src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../../../src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
-- `../../../src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../../../src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../../src/test/java/com/example/application/TicketReservationTimedActionTest.java`
+- `../../src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../../src/main/java/com/example/api/TicketReservationEndpoint.java`
+- `../../src/test/java/com/example/application/ReminderJobTimedActionTest.java`
+- `../../src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `../../src/main/java/com/example/api/ReminderJobEndpoint.java`
+- `../../src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
+- `../../src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../../src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
+- `../../src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `../../src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
 
 ## Test modes
 

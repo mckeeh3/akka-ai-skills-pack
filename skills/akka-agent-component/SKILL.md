@@ -28,10 +28,10 @@ Read these first if present:
 - `akka-context/sdk/agents.html.md`
 - `akka-context/sdk/agents/prompt.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../../../src/main/java/com/example/application/ActivityAgent.java`
-- `../../../src/main/java/com/example/application/TemplateBackedActivityAgent.java`
-- `../../../src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
-- `../../../src/main/java/com/example/api/ActivityPromptEndpoint.java`
+- `../../src/main/java/com/example/application/ActivityAgent.java`
+- `../../src/main/java/com/example/application/TemplateBackedActivityAgent.java`
+- `../../src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
+- `../../src/main/java/com/example/api/ActivityPromptEndpoint.java`
 - `../akka-agent-model-governance/SKILL.md` when model aliases, `ModelConfigRef`, model policy, fallback model policy, or provider secret boundaries are in scope
 
 ## Core pattern

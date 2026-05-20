@@ -21,8 +21,8 @@ Expose read-only scoped evidence capabilities more readily than side-effecting c
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
 - `akka-context/sdk/access-control.html.md`
-- `../../../src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
-- `../../../src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
+- `../../src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
+- `../../src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
 
 ## Use this pattern when
 

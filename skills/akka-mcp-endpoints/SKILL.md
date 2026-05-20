@@ -50,11 +50,11 @@ Read these first if present:
 - matching MCP endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../../../src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
-- `../../../src/main/resources/mcp/checkout-guidelines.md`
-- `../../../src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
-- `../../../src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
+- `../../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../../src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
+- `../../src/main/resources/mcp/checkout-guidelines.md`
+- `../../src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
+- `../../src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
 
 ## Companion skills
 

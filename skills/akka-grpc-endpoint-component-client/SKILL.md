@@ -21,11 +21,11 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../../../src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../../../src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../../../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
+- `../../src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
+- `../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `../../src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `../../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
