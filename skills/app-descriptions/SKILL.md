@@ -59,7 +59,7 @@ If the task is already clearly narrowed to one description concern, load the foc
 
 ## Companion skills
 
-Load the companion skill that matches the current task:
+Load the companion skill that matches the current task. Users do not need to name these skills; infer them from ordinary product language. For generated full-stack AI-first SaaS apps, requests for a dashboard, admin console, portal, workspace, workflow view, queue, form, table, approval surface, audit timeline, or agent/chat area should route first through functional-agent and structured-surface modeling, then capability modeling, before `55-ui/` browser realization or routes are discussed.
 
 - `app-description-bootstrap`
   - create the initial internal app-description tree for a new app or sparse early app idea
@@ -165,7 +165,9 @@ Start with:
 Start with:
 - `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 - `app-description-intake-router`
-- then `app-description-capability-modeling` when capability scope is changing
+- then `app-description-functional-agent-modeling` when the request changes a user-facing work area, admin/operations portal, command center, work queue, or agent/chat area
+- then `app-description-surface-modeling` when the request changes dashboards, forms, tables, charts, approvals, decisions, audit timelines, workflow status, or other renderable workstream artifacts
+- then `app-description-capability-modeling` when capability scope, operations, queries, authority, side effects, or exposure surfaces are changing
 - then `app-description-behavior-specification`
 - then `app-description-test-specification`
 

@@ -211,7 +211,7 @@
 
 ### TASK-AWDD-03-003: Review top-level skill routing for design cleanup consistency
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/03-skill-routing-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/03-skill-routing/03-review-top-level-skill-routing-consistency.md
 - depends on: [TASK-AWDD-03-002]
@@ -232,7 +232,9 @@
 - done criteria:
   - top-level routing is consistent with lower-level skills
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Tighten top-level workstream routing`
+  - completed: clarified that ordinary UI/dashboard/admin/portal/workflow requests route through functional-agent, structured-surface, and capability modeling before browser UI realization or routes.
 
 ### TASK-AWDD-04-001: Refresh or label the DCA app-description UI example
 

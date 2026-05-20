@@ -98,7 +98,7 @@ Initial app-description skills:
 - `app-description-change-impact` — determine which layers, maps, readiness state, and generated outputs are affected by a change
 - `app-description-auth-security` — update the authoritative auth/security layer of the app description
 - `app-description-observability` — update the authoritative observability layer of the app description
-- `app-description-ui` — update the authoritative frontend/UI layer of the app description, including mandatory `55-ui/style-guide.md` for generated full-stack AI-first SaaS apps
+- `app-description-ui` — update the authoritative frontend/UI realization layer of the app description after functional-agent/surface/capability meaning is clear, including mandatory `55-ui/style-guide.md` for generated full-stack AI-first SaaS apps
 - `app-description-readiness-assessment` — assess whether the current app description is sufficiently complete for generation
 - `app-generate-app` — realize the current app description as generated outputs
 - `app-description-change-summary` — summarize what changed after a revision request
@@ -108,9 +108,9 @@ Default description-first flow:
 1. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet
 2. normalize the input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 3. route the user input with `app-description-intake-router`
-4. update functional agents with `app-description-functional-agent-modeling` when the request changes user-facing work areas, left-rail agents, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
-5. update structured surfaces with `app-description-surface-modeling` when the request changes dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, surface payloads, reusable surface placement, allowed actions, states, traces, or rendering tests
-6. update capabilities with `app-description-capability-modeling` when the request changes scope, actors, business outcomes, backend operation/query contracts, or capability exposure surfaces
+4. update functional agents with `app-description-functional-agent-modeling` when ordinary user language asks for a dashboard, admin console, portal, workspace, work queue, workflow view, command center, agent/chat area, user-facing work area, left-rail agent, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
+5. update structured surfaces with `app-description-surface-modeling` when the request changes dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, surface payloads, reusable functional-agent placement, allowed actions, states, traces, or rendering tests
+6. update capabilities with `app-description-capability-modeling` when the request changes scope, actors, business outcomes, backend operation/query contracts, protected operations/queries, action authority, side effects, approval, audit, or capability exposure surfaces
 7. update behavior with `app-description-behavior-specification` when the request changes what the app should do
 8. update tests with `app-description-test-specification` when the request needs acceptance, regression, edge-case, or verification definition
 9. run `app-description-change-impact` to identify cross-layer and realization implications
