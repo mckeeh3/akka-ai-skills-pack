@@ -471,7 +471,7 @@
 
 ### TASK-STARTER-06-001: Apply legacy asset quarantine and canonical routing cleanup
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/06-legacy-cleanup-review-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/06-legacy-cleanup-review/01-quarantine-legacy-assets-routing-cleanup.md
 - depends on: [TASK-STARTER-05-002]
@@ -493,7 +493,10 @@
 - done criteria:
   - only the starter app remains canonical for full-core implementation guidance
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Quarantine legacy starter guidance`
+  - check passed: `git diff --check`
+  - tests not run: docs/skills/spec routing-only cleanup; no executable frontend/backend files changed.
 
 ### TASK-STARTER-06-002: Run final starter acceptance and publish completion summary
 

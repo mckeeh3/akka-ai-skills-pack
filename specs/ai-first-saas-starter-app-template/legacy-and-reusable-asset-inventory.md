@@ -86,6 +86,21 @@ Classification key:
 | `frontend/src/api/ApiClient.ts`, `FixtureApiClient.ts`, `HttpApiClient.ts`, `RealtimeClient.ts`, `FixtureRealtimeClient.ts`, `types.ts` | migrate | Generic API/realtime seams can remain support code if workstream-specific clients compose them. | Ensure starter public contracts are `/api/me`, governed capabilities, surfaces, and streams rather than old page routes. |
 | Older frontend contract tests: `mission-control`, `goal-decision-flows`, `governance-audit-admin-profile` | migrate | Preserve useful assertions for governance, audit, admin/profile, decisions, and quality. | Rewrite around functional agents/surfaces if any route/page assumptions remain. |
 
+## Starter quarantine application status
+
+Status after starter scaffold packaging: **canonical routing cleanup applied**.
+
+Use this rule for docs and skills:
+
+- canonical full-core generated-app implementation guidance: `templates/ai-first-saas-starter/**` in this repository and `resources/templates/ai-first-saas-starter/**` in installed packs
+- canonical UI architecture and reusable frontend patterns: `docs/workstream-ui-reference-architecture.md` plus `frontend/src/workstream/**` / installed `resources/examples/frontend/**`
+- mechanics-only Akka examples: keep for focused component semantics and tests after the solution shape is known
+- DCA/supplies assets: keep quarantined as domain-rich vertical AI-first references; cite only for delegated decision, policy, trace, workflow, outcome, and acceptance-test mechanics
+- purchase-request assets: keep as description/planning mechanics references only
+- static UI assets under `src/main/resources/static-resources/**`: treat as generated output, endpoint-delivery mechanics, or quarantined vertical UI; never as canonical generated SaaS frontend source
+
+No source asset is removed by this cleanup pass. Deletion remains `delete-later` until replacement routes, build output, tests, and docs no longer depend on the asset.
+
 ## Must-not-reference-as-canonical list
 
 After the starter template replaces current transitional references, do not cite these as canonical full-core guidance:

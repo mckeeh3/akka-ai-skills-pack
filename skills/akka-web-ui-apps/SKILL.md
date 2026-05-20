@@ -52,13 +52,17 @@ Read these first if present:
 Canonical frontend project integration reference:
 - `../../docs/frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
 
+Canonical full-core starter implementation reference:
+- source repository: `../../templates/ai-first-saas-starter/**`
+- installed pack: `../../resources/templates/ai-first-saas-starter/**`
+
 Canonical source-repository workstream UI reference:
 - reusable implementation modules: `../../frontend/src/workstream/**`
 - fixture client seams: `../../frontend/src/api/WorkstreamApiClient.ts` and `../../frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `../../frontend/src/main.tsx`
-- User Admin dashboard/list/detail-edit vertical: `../../frontend/src/workstream/fixtures/**` and `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- User Admin dashboard/list/detail-edit vertical pattern: `../../frontend/src/workstream/fixtures/**` and `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
-Use these files as implementation examples for generated SaaS workstream shells. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
+Use the starter template as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Do not use legacy `frontend/src/screens/**`, DCA/supplies static UI, or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
 
 ## Use this skill when
 

@@ -2,27 +2,50 @@
 
 ## Purpose
 
-This gap list records remaining reference implementation and test gaps after the AI-first migration. It distinguishes completed non-runnable app-description coverage from executable examples that still need future planning and code.
+This gap list records remaining reference implementation and test gaps after the AI-first migration. It distinguishes the canonical starter scaffold from domain-rich vertical references, mechanics-only examples, and executable examples that still need future planning and code.
 
-Use it to avoid hiding coverage gaps behind broad doctrine or retrofitting existing conventional examples into agentic ones without explicit intent.
+Use it to avoid hiding coverage gaps behind broad doctrine or retrofitting existing conventional, DCA-specific, or static UI examples into canonical generated-app guidance without explicit intent.
 
 ## Current coverage baseline
 
 The repository already has strong focused examples for individual Akka substrate families:
 
+- canonical full-core starter scaffold source under `templates/ai-first-saas-starter/**` for new generated secure AI-first SaaS apps;
+- reusable workstream UI reference modules under `frontend/src/workstream/**` and installed frontend examples for shell/surface mechanics;
 - agents, structured responses, tools, guardrails, evaluation, orchestration, memory/runtime state, and streaming;
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
-- a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/`;
-- a completed non-runnable AI-first app-description reference under `docs/examples/ai-first-dca-app-description/`.
+- a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/` for description/planning mechanics only;
+- a completed non-runnable AI-first DCA app-description reference under `docs/examples/ai-first-dca-app-description/` for domain-rich vertical extension semantics only.
 
-The DCA app-description reference now covers durable goals, bounded agents, retained human authority, policies, approval gates, decision cards, audit/work/decision traces, supervision UI surfaces, outcome metrics, traceability, and realization slice sequencing. It is not runnable application code.
+The starter scaffold is the canonical end-to-end implementation baseline. The DCA app-description reference covers durable goals, bounded agents, retained human authority, policies, approval gates, decision cards, audit/work/decision traces, supervision UI surfaces, outcome metrics, traceability, and realization slice sequencing, but it is not canonical starter structure. The executable supplies slice and static supplies UI remain quarantined domain-rich mechanics references, not the full-core SaaS foundation.
 
 ## Priority key
 
 - **P0 required**: needed for future agents to confidently generate AI-first SaaS apps without guessing core operating-model semantics.
 - **P1 important**: closes recurring implementation/test gaps once the first executable slice exists.
 - **P2 breadth**: useful breadth examples, but not required before the first complete AI-first reference path.
+
+## Completed canonical starter coverage
+
+### Full-core secure AI-first SaaS starter scaffold
+
+Status: **canonical starter implementation baseline**.
+
+Reference:
+- source repository: `templates/ai-first-saas-starter/**`
+- installed pack: `resources/templates/ai-first-saas-starter/**`
+- scaffold command: `.agents/bin/scaffold-ai-first-saas-starter.sh`
+
+Covered starter scope:
+
+- selected Java base package rendering, Maven skeleton, and starter scaffold rules;
+- secure SaaS foundation records and `/api/me` AuthContext bootstrap;
+- invitation/user-admin backend services, views/seams, captured outbox/Resend boundary, and tests;
+- governed agent records, seed import, prompt assembly, authorized `readSkill`, behavior-editing flow, and tests;
+- workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces.
+
+Canonical routing rule: for new full-core generated apps, scaffold and extend this starter. Use DCA/supplies, purchase-request, shopping-cart, and standalone static UI examples only for domain-specific or substrate mechanics after the starter/foundation architecture is clear.
 
 ## Completed app-description coverage
 
@@ -49,7 +72,9 @@ Placement note: audit/trace/outcome meaning is introduced by `15-operating-model
 
 ### P0: first executable AI-first implementation slice derived from the worked app-description
 
-Status: **complete as a runnable reference slice**.
+Status: **complete as a quarantined runnable domain-rich reference slice**.
+
+Canonicality: use for DCA/supplies-specific AI-first decision, policy, trace, workflow, and acceptance-test mechanics. Do not use as the canonical full-core starter, security foundation, or generated SaaS UI structure.
 
 References:
 - implementation: `src/main/java/com/example/domain/supplies/`, `src/main/java/com/example/application/supplies/`, `src/main/java/com/example/api/supplies/`, `src/main/resources/static-resources/supplies/`
@@ -106,7 +131,15 @@ Covered/remaining pattern notes:
 
 ### P1: AI-first web UI reference surface
 
-Status: **covered as a minimal packaged supplies UI** under `src/main/resources/static-resources/supplies/`. Future breadth may add a full React/Vite frontend project.
+Status: **covered by the workstream UI reference and starter routing; supplies static UI quarantined as mechanics-only**.
+
+References:
+- canonical UI architecture: `docs/workstream-ui-reference-architecture.md`
+- reusable frontend modules: `frontend/src/workstream/**`
+- starter scaffold baseline: `templates/ai-first-saas-starter/**`
+- mechanics-only DCA/supplies static UI: `src/main/resources/static-resources/supplies/`
+
+Future breadth may add more vertical React/Vite workstream examples, but the supplies static UI is not canonical generated SaaS UI structure.
 
 Covered/remaining pattern notes:
 
