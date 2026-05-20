@@ -100,7 +100,7 @@
 
 ### TASK-AWSR-01-004: Review routing sprint and create next tasks
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/01-routing-intake-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/01-routing-intake/04-review-routing-sprint.md
 - depends on: [TASK-AWSR-01-003]
@@ -120,7 +120,8 @@
 - done criteria:
   - Sprint 01 review exists and Sprint 02 is either unblocked or superseded by more routing tasks
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Review routing alignment sprint
 
 ### TASK-AWSR-02-001: Audit app-description and PRD planning alignment
 
