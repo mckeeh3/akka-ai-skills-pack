@@ -44,7 +44,7 @@
 
 ### TASK-STARTER-01-001: Define starter app scope and acceptance criteria
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/01-template-scope-inventory-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/01-template-scope-inventory/01-define-starter-app-scope.md
 - depends on: [TASK-STARTER-00-001]
@@ -66,7 +66,8 @@
 - done criteria:
   - starter full-core scope, non-goals, install modes, and acceptance criteria are explicit
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Define starter app scope and acceptance`
 
 ### TASK-STARTER-01-002: Inventory legacy and reusable assets
 
