@@ -12,7 +12,7 @@ test('frontend entry composes the canonical workstream shell instead of route pa
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /<WorkstreamStream/);
   assert.match(main, /<SurfaceRenderer/);
-  assert.match(main, /meTenantAdmin/);
+  assert.match(main, /HttpWorkstreamApiClient/);
   assert.doesNotMatch(main, /function RouteShell/);
   assert.doesNotMatch(main, /function SidebarNav/);
   assert.doesNotMatch(main, /from '.\/screens\//);
@@ -28,10 +28,11 @@ test('deep links select functional agents, stream items, and surfaces', () => {
   assert.match(main, /window\.history\.pushState/);
 });
 
-test('workstream shell uses fixture contracts and capability action feedback', () => {
-  assert.match(main, /FixtureWorkstreamApiClient/);
-  assert.match(main, /canonicalSurfaceEnvelopes/);
-  assert.match(main, /initialWorkstreamItems/);
+test('workstream shell uses production API by default while retaining explicit fixture mode', () => {
+  assert.match(main, /HttpWorkstreamApiClient/);
+  assert.match(main, /useFixtureWorkstream \? new FixtureWorkstreamApiClient\(\) : new HttpWorkstreamApiClient/);
+  assert.doesNotMatch(main, /canonicalSurfaceEnvelopes/);
+  assert.doesNotMatch(main, /initialWorkstreamItems/);
   assert.match(main, /workstreamClient\.bootstrap\(\)/);
   assert.match(main, /handleSurfaceAction/);
   assert.match(main, /runCapabilityAction/);
@@ -83,7 +84,7 @@ test('status and command-strip components use tokenized semantic classes', () =>
   assert.match(components, /\.status-pill\.warning/);
   assert.match(components, /\.status-pill\.danger/);
   assert.match(main, /Ready .* workstream shell/);
-  assert.match(main, /Pending .* fixture client/);
+  assert.match(main, /Explicit fixture mode/);
   assert.match(main, /Guarded .* backend authority/);
 });
 

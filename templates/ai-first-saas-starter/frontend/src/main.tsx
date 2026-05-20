@@ -13,9 +13,6 @@ import { SurfaceRenderer } from './workstream/surfaces';
 import { buildCapabilityActionRequest } from './workstream/actions';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
-  canonicalSurfaceEnvelopes,
-  initialWorkstreamItems,
-  meTenantAdmin,
   type MeResponse,
   type RealtimeConnectionState,
   type SurfaceAction,
@@ -35,7 +32,7 @@ type BootstrapState =
   | { status: 'error'; message: string };
 
 const modeStorageKey = 'seed-ui-mode';
-// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · fixture client; Guarded · backend authority; production path uses HttpWorkstreamApiClient and WorkOS AuthKit getAccessToken.
+// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Explicit fixture mode; Guarded · backend authority; production path uses HttpWorkstreamApiClient and WorkOS AuthKit getAccessToken.
 
 type WorkstreamAppProps = {
   tokenProvider?: TokenProvider;
@@ -94,11 +91,10 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
     };
   }, []);
 
-  const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
-  const me = ready.me;
-  const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? me.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId;
-  const selectedItems = ready.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId);
-  const selectedSurfaceId = selection.selectedSurfaceId ?? selectedItems.find((item) => item.surfaceId)?.surfaceId ?? surfaceForAgent(ready.surfaces, selectedFunctionalAgentId)?.surfaceId;
+  const me = bootstrap.status === 'ready' ? bootstrap.me : undefined;
+  const selectedFunctionalAgentId = me ? selection.selectedFunctionalAgentId ?? me.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId : undefined;
+  const selectedItems = bootstrap.status === 'ready' ? bootstrap.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId) : [];
+  const selectedSurfaceId = bootstrap.status === 'ready' ? selection.selectedSurfaceId ?? selectedItems.find((item) => item.surfaceId)?.surfaceId ?? surfaceForAgent(bootstrap.surfaces, selectedFunctionalAgentId)?.surfaceId : undefined;
 
   React.useEffect(() => {
     if (bootstrap.status !== 'ready') return;
@@ -141,13 +137,15 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
   }
 
   function selectAgent(functionalAgentId: string) {
-    const defaultSurface = surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
+    if (bootstrap.status !== 'ready') return;
+    const defaultSurface = surfaceForAgent(bootstrap.surfaces, functionalAgentId)?.surfaceId;
     updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
   }
 
   function openSurface(surfaceId: string) {
-    const surface = ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
+    if (bootstrap.status !== 'ready') return;
+    const surface = bootstrap.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
     updateSelection({
       selectedFunctionalAgentId: surface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId,
       selectedSurfaceId: surfaceId,
@@ -156,8 +154,9 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
   }
 
   async function handleSurfaceAction(action: SurfaceAction, surfaceId: string) {
+    if (bootstrap.status !== 'ready') return;
     const request = buildCapabilityActionRequest(action, {
-      selectedContextId: me.selectedAuthContext.selectedContextId,
+      selectedContextId: bootstrap.me.selectedAuthContext.selectedContextId,
       surfaceId,
       input: {},
       surfaceCorrelationId: `corr-${action.actionId}`
@@ -250,6 +249,7 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
   if (bootstrap.status === 'error') {
     return <main className="content workstream-panel"><p className="eyebrow">Real API client error</p><h1>Could not load workstream shell</h1><p>{bootstrap.message}</p></main>;
   }
+  if (!me) return null;
 
   return (
     <>
@@ -263,11 +263,11 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
       onComposerSubmit={handleComposerSubmit}
     >
       <WorkstreamStream items={selectedItems} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} />
-      <SurfaceRenderer envelopes={ready.surfaces} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
-      <section className="ds-card" aria-label="Workstream API status Reference fixture status">
-        <p className="eyebrow">{useFixtureWorkstream ? 'Fixture client' : 'Real API client'}</p>
-        <h3>Workstream-first shell reference</h3>
-        <p>Routes are deep links into functional agents, stream items, and structured surfaces; production data loads through /api/workstream endpoints.</p>
+      <SurfaceRenderer envelopes={bootstrap.surfaces} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
+      <section className="ds-card" aria-label="Workstream API status">
+        <p className="eyebrow">{useFixtureWorkstream ? 'Explicit fixture client' : 'Real API client'}</p>
+        <h3>Production workstream shell</h3>
+        <p>Routes are deep links into functional agents, stream items, and structured surfaces; the default path loads backend-authoritative data through /api/workstream endpoints.</p>
         <p className="text-muted">Realtime status: {realtimeStatusLabel(realtimeConnection)}</p>
         <ThemeModeToggle mode={mode} onModeChange={setMode} />
       </section>

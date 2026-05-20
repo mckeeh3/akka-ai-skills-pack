@@ -17,8 +17,8 @@ const realtime = read('./workstream/realtime/workstreamEvents.ts');
 test('Mission Control legacy screen is quarantined while the app entry uses the workstream shell', () => {
   assert.ok(existsSync(new URL('./screens/briefing/BriefingPage.tsx', import.meta.url)));
   assert.match(main, /<WorkstreamShell/);
-  assert.match(main, /initialWorkstreamItems/);
-  assert.match(main, /canonicalSurfaceEnvelopes/);
+  assert.match(main, /HttpWorkstreamApiClient/);
+  assert.match(main, /useFixtureWorkstream \? new FixtureWorkstreamApiClient/);
   assert.match(workstreamShell, /FunctionalAgentRail/);
   assert.match(workstreamShell, /WorkstreamComposer/);
   assert.match(panel, /Continuous workstream/);
@@ -34,7 +34,7 @@ test('workstream shell provides mission-control responsibilities through shell r
   assert.match(contextBar, /Browser-safe capabilities/);
   assert.match(stream, /aria-label="Workstream items"/);
   assert.match(stream, /Empty workstream/);
-  assert.match(main, /Reference fixture status/);
+  assert.match(main, /aria-label="Workstream API status"/);
   assert.match(main, /Realtime status:/);
 });
 

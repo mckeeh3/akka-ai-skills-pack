@@ -596,7 +596,7 @@
 
 ### TASK-STARTER-07-003: Make starter frontend production-first while retaining fixture mode
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/03-production-first-frontend-copy.md
 - depends on: [TASK-STARTER-07-002]
@@ -622,7 +622,10 @@
   - default frontend does not appear fixture-backed
   - fixture mode remains explicitly available and tested
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Make starter frontend production first`
+  - frontend checks passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build`.
+  - check passed: `git diff --check`.
 
 ### TASK-STARTER-07-004: Make local AuthKit and first-admin bootstrap turnkey
 
