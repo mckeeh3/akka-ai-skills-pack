@@ -186,7 +186,7 @@
 
 ### TASK-STARTER-02-003: Implement invitation onboarding and user admin backend slice
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/02-foundation-backend-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/02-foundation-backend/03-implement-invitation-user-admin-backend.md
 - depends on: [TASK-STARTER-02-002]
@@ -216,7 +216,9 @@
 - done criteria:
   - invite lifecycle and user admin are executable with audit, idempotency, and tenant-isolation coverage
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement starter invitation user admin backend`
+  - rendered-template Maven test command passed with `{{JAVA_BASE_PACKAGE}}=ai.first` and `{{JAVA_PACKAGE_PATH}}=ai/first`.
 
 ### TASK-STARTER-03-001: Define real workstream browser API contracts
 

@@ -82,6 +82,14 @@ public final class InMemoryIdentityRepository implements IdentityRepository {
     settings.put(userSettings.accountId(), userSettings);
   }
 
+  public Optional<Membership> findMembership(String membershipId) {
+    return Optional.ofNullable(memberships.get(membershipId));
+  }
+
+  public List<Membership> membershipRows() {
+    return memberships.values().stream().toList();
+  }
+
   public void putMembership(Membership membership) {
     memberships.put(membership.membershipId(), membership);
   }
