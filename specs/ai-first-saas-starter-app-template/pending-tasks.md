@@ -154,7 +154,7 @@
 
 ### TASK-STARTER-02-002: Implement `/api/me`, AuthContext, membership, role, and audit foundation
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/02-foundation-backend-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/02-foundation-backend/02-implement-me-authcontext-admin-audit-foundation.md
 - depends on: [TASK-STARTER-02-001]
@@ -181,7 +181,8 @@
 - done criteria:
   - `/api/me` returns browser-safe context/capabilities and denies disabled/no-membership/forbidden states correctly
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement starter auth context me foundation`
 
 ### TASK-STARTER-02-003: Implement invitation onboarding and user admin backend slice
 

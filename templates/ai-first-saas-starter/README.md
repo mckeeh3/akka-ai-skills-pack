@@ -38,4 +38,12 @@ The package layout follows the skills-pack convention:
 - `application` contains Akka components: entities, views, workflows, consumers, timed actions, and agents.
 - `api` contains HTTP/gRPC/MCP endpoints and API DTOs.
 
-Follow-up foundation tasks add WorkOS/AuthKit request context, `/api/me`, local authorization state, admin audit, invitation onboarding, governed runtime agent records, views, and security tests.
+The first backend foundation slice includes:
+
+- canonical Account/Profile/Settings/Tenant/Customer/Membership/Role/AuthContext/AdminAudit domain records;
+- local AuthContext resolution from WorkOS JWT identity plus Akka-owned account and membership state;
+- JWT-protected `GET /api/me` returning browser-safe account, profile, settings, selected context, memberships, capabilities, functional-agent availability, and audit correlation;
+- backend denial paths for disabled accounts, missing memberships, forbidden selected contexts, and tenant/customer mismatch;
+- service tests that can run after scaffold placeholder rendering.
+
+Follow-up foundation tasks replace the in-memory identity adapter with durable Akka entities/views, add invitation onboarding, support access, governed runtime agent records, complete admin APIs, frontend surfaces, and security tests.

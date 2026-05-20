@@ -19,7 +19,7 @@
 
 ## Starter-owned roots
 
-- `backend/` — Akka Java SDK backend template source.
+- `backend/` — Akka Java SDK backend template source, including the first `/api/me` and AuthContext foundation slice.
 - `frontend/` — React/Vite/TypeScript frontend template source; added by later tasks.
 - `app-description/` — maintained app description seed; expanded by later tasks.
 - `specs/` — starter planning/checklist seed; expanded by later tasks.
