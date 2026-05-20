@@ -73,6 +73,7 @@ Accepted:
 Already closed:
 
 1. **Embedded scaffold frontend:** `templates/ai-first-saas-starter/frontend/**` is present and direct scaffold verification renders `frontend/package.json`, `frontend/src/main.tsx`, and backend `pom.xml`.
+2. **Integration smoke command:** `tools/validate-ai-first-saas-starter-fullstack.sh` scaffolds the starter, runs backend Maven tests, installs/tests/typechecks/builds the frontend, verifies generated Akka static resources, and scans built static assets for obvious backend secret markers.
 
 Still open:
 
@@ -80,9 +81,8 @@ Still open:
 2. **Local auth bootstrap:** WorkOS/AuthKit and safe first-admin setup need a more turnkey clean-scaffold path.
 3. **Invitation E2E:** invitation acceptance needs an end-to-end browser/API path with accepted, expired, revoked, duplicate, and wrong-account coverage.
 4. **Resend adapter:** production Resend delivery remains a boundary/seam that needs adapter behavior plus captured outbox checks.
-5. **Integration smoke:** a single fullstack smoke command should validate scaffolded backend, frontend build, and static-resource behavior together.
-6. **Concrete admin/governance APIs:** admin, audit, and governance workstream capabilities need stronger concrete HTTP contracts and integration tests.
-7. **Provider production configuration:** WorkOS, Resend, and model providers require tenant/project-specific configuration and secret management outside browser DTOs and traces.
+5. **Concrete admin/governance APIs:** admin, audit, and governance workstream capabilities need stronger concrete HTTP contracts and integration tests.
+6. **Provider production configuration:** WorkOS, Resend, and model providers require tenant/project-specific configuration and secret management outside browser DTOs and traces.
 
 ## Conclusion
 

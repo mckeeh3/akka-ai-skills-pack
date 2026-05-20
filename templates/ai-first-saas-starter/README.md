@@ -51,6 +51,16 @@ The scaffolded backend foundation includes:
 
 The scaffold includes the validated React/Vite workstream frontend under `frontend/`. Its production build writes Akka static resources to `src/main/resources/static-resources/`, and `StarterFrontendEndpoint` serves `/`, `/ui`, `/workstream`, `/favicon.ico`, and `/assets/**` while protected APIs remain under `/api/...`.
 
+## Fullstack scaffold validation
+
+From the skills-pack source repository, validate the rendered starter with one command:
+
+```bash
+tools/validate-ai-first-saas-starter-fullstack.sh
+```
+
+The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test`, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, and scans the built static assets for obvious backend secret markers. Use `--keep` to retain the generated target for inspection.
+
 ## Local build and manual-test commands
 
 From a scaffolded project:

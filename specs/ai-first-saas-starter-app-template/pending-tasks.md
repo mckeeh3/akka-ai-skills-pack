@@ -567,7 +567,7 @@
 
 ### TASK-STARTER-07-002: Add scaffolded fullstack smoke validation
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/02-add-fullstack-smoke-validation.md
 - depends on: [TASK-STARTER-07-001]
@@ -589,7 +589,10 @@
 - done criteria:
   - one command can validate scaffolded backend + frontend build/static-resource behavior
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add starter fullstack smoke validation`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - check passed: `git diff --check`
 
 ### TASK-STARTER-07-003: Make starter frontend production-first while retaining fixture mode
 
