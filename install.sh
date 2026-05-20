@@ -25,8 +25,11 @@ Options:
   --dry-run           Show planned actions without writing files
   --help              Show this help text
 
+Installed scaffold command:
+  .agents/bin/scaffold-ai-first-saas-starter.sh --target /path/to/empty-project --app-name "My App" --base-package ai.first
+
 Notes:
-  - This installer always installs the full packaged skill library, repository docs, Java examples, frontend workstream reference examples, and pack-facing AGENTS.md guidance
+  - This installer always installs the full packaged skill library, repository docs, Java examples, frontend workstream reference examples, starter template resources, and pack-facing AGENTS.md guidance
   - This installer uses cross-harness locations, not project-local .pi directories
   - project mode installs into <project-root>/.agents and offers to install pack guidance at <project-root>/AGENTS.md
   - if <project-root>/AGENTS.md exists, choose replace, append, or skip; --force replaces it
@@ -86,6 +89,8 @@ done
 [[ -d "$REPO_ROOT/docs" ]] || fail "Expected docs at $REPO_ROOT/docs"
 [[ -d "$REPO_ROOT/src" ]] || fail "Expected Java examples under $REPO_ROOT/src"
 [[ -d "$REPO_ROOT/frontend" ]] || fail "Expected frontend examples under $REPO_ROOT/frontend"
+[[ -d "$REPO_ROOT/templates/ai-first-saas-starter" ]] || fail "Expected starter template under $REPO_ROOT/templates/ai-first-saas-starter"
+[[ -f "$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh" ]] || fail "Expected starter scaffold script at $REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required"
 
 resolve_location() {
@@ -404,8 +409,11 @@ AGENTS_ROOT="$(resolve_location "$LOCATION")"
 SKILLS_DIR="$AGENTS_ROOT/skills"
 DOCS_DIR="$AGENTS_ROOT/docs"
 MANIFESTS_DIR="$AGENTS_ROOT/manifests"
+BIN_DIR="$AGENTS_ROOT/bin"
 JAVA_EXAMPLES_DIR="$AGENTS_ROOT/resources/examples/java"
 FRONTEND_EXAMPLES_DIR="$AGENTS_ROOT/resources/examples/frontend"
+TEMPLATE_RESOURCES_DIR="$AGENTS_ROOT/resources/templates"
+STARTER_TEMPLATE_DIR="$TEMPLATE_RESOURCES_DIR/ai-first-saas-starter"
 PACK_MANIFEST_TARGET="$MANIFESTS_DIR/akka-ai-skills-pack.yaml"
 
 # Install the complete docs tree dynamically so newly added docs are bundled
@@ -421,11 +429,19 @@ log "Pack source:       $REPO_ROOT"
 ensure_dir "$SKILLS_DIR"
 ensure_dir "$DOCS_DIR"
 ensure_dir "$MANIFESTS_DIR"
+ensure_dir "$BIN_DIR"
 ensure_dir "$JAVA_EXAMPLES_DIR"
 ensure_dir "$FRONTEND_EXAMPLES_DIR"
+ensure_dir "$TEMPLATE_RESOURCES_DIR"
 
 copy_file "$REPO_ROOT/pack/manifest.yaml" "$PACK_MANIFEST_TARGET"
 copy_file "$REPO_ROOT/pack/AGENTS.md" "$AGENTS_ROOT/AGENTS.md"
+copy_file "$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh" "$BIN_DIR/scaffold-ai-first-saas-starter.sh"
+if [[ "$DRY_RUN" == true ]]; then
+  printf '[dry-run] chmod +x %q\n' "$BIN_DIR/scaffold-ai-first-saas-starter.sh"
+else
+  chmod +x "$BIN_DIR/scaffold-ai-first-saas-starter.sh"
+fi
 install_project_agents_guidance
 copy_file "$REPO_ROOT/skills/README.md" "$SKILLS_DIR/README.md"
 copy_dir_replace "$REPO_ROOT/skills/references" "$SKILLS_DIR/references"
@@ -443,6 +459,7 @@ copy_file "$REPO_ROOT/pack/EXAMPLES-README.md" "$JAVA_EXAMPLES_DIR/README.md"
 copy_dir_replace "$REPO_ROOT/src/main" "$JAVA_EXAMPLES_DIR/src/main"
 copy_dir_replace "$REPO_ROOT/src/test" "$JAVA_EXAMPLES_DIR/src/test"
 copy_frontend_reference "$REPO_ROOT/frontend" "$FRONTEND_EXAMPLES_DIR"
+copy_dir_replace "$REPO_ROOT/templates/ai-first-saas-starter" "$STARTER_TEMPLATE_DIR"
 
 rewrite_installed_docs
 rewrite_installed_skills
@@ -460,4 +477,6 @@ else
   log "Installed skills:   $SKILLS_DIR"
   log "Installed Java examples:      $JAVA_EXAMPLES_DIR"
   log "Installed frontend examples:  $FRONTEND_EXAMPLES_DIR"
+  log "Installed starter template:    $STARTER_TEMPLATE_DIR"
+  log "Installed scaffold command:    $BIN_DIR/scaffold-ai-first-saas-starter.sh"
 fi

@@ -72,7 +72,18 @@ Dry run:
 bash install.sh --location project --project /path/to/project --dry-run
 ```
 
-A project install creates `.agents/` under the target project. A global install creates `~/.agents`.
+A project install creates `.agents/` under the target project. A global install creates `~/.agents`. Both modes are skills/resource installs only by default; they do not copy starter application code into the project root.
+
+After a project install, explicitly scaffold the starter into an empty or bootstrap-only project when you want the packaged full-core starter app:
+
+```bash
+.agents/bin/scaffold-ai-first-saas-starter.sh \
+  --target /path/to/project \
+  --app-name "My App" \
+  --base-package ai.first
+```
+
+Use `--dry-run` first to inspect rendered paths and conflicts. If `--base-package` is omitted, the command prompts for the Java base package; pressing Enter uses `ai.first`. The scaffold command refuses existing application files by default and writes `specs/scaffold-report.md` after a successful run.
 
 ## Getting started: build the core app from PRD inputs
 
@@ -160,10 +171,14 @@ A project install creates a directory like this:
 ```text
 .agents/
 ├── AGENTS.md
+├── bin/
+│   └── scaffold-ai-first-saas-starter.sh
 ├── docs/
 ├── manifests/
 │   └── akka-ai-skills-pack.yaml
 ├── resources/
+│   ├── templates/
+│   │   └── ai-first-saas-starter/
 │   └── examples/
 │       └── java/
 │           ├── pom.xml
@@ -181,6 +196,8 @@ Important files and directories:
 - `.agents/docs/` — installed reference docs used by the harness
 - `.agents/skills/` — internal routing and implementation guidance loaded by the harness
 - `.agents/resources/examples/java/` — Akka Java SDK reference examples available to the harness
+- `.agents/resources/templates/ai-first-saas-starter/` — read-only starter scaffold source
+- `.agents/bin/scaffold-ai-first-saas-starter.sh` — explicit starter scaffold command; default installs never run it automatically
 - `.agents/manifests/akka-ai-skills-pack.yaml` — installed manifest metadata
 
 As a user, you usually interact with the harness rather than directly reading the installed skill files.
@@ -377,7 +394,16 @@ Read docs/input/revisions/small-ui-copy-tweak.md. Apply the documented copy twea
 
 ### Start a new app
 
-For the packaged core foundation, use the canonical core PRD plus an explicit scope choice:
+For the fastest secure AI-first SaaS starting point, install the pack into an empty project and explicitly scaffold the packaged starter:
+
+```bash
+bash install.sh --location project --project /path/to/project
+/path/to/project/.agents/bin/scaffold-ai-first-saas-starter.sh --target /path/to/project --app-name "My App" --base-package ai.first
+```
+
+Then use `app-description/`, `specs/`, backend source, and frontend source as harness-maintained outputs to extend by vertical capability slices.
+
+For the packaged core foundation planning flow without scaffolding, use the canonical core PRD plus an explicit scope choice:
 
 ```text
 Use the Akka skills pack to ingest docs/input/initial/core-app-prd.md and docs/input/initial/scope-choice.md. Ask for and record Full core or Module 1-only / not full core before generation, create or update app-description/specs, queue questions instead of guessing, and do not start coding yet. Do not mark full core complete without User Admin and Agent Admin functional agents.

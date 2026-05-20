@@ -26,7 +26,7 @@ Options:
 
 Notes:
   - akka-context is intentionally excluded from the bundle
-  - the bundle contains install.sh, manifests, repository docs, skills, a pack-facing AGENTS source file, Java reference examples, and frontend workstream reference examples
+  - the bundle contains install.sh, manifests, repository docs, skills, a pack-facing AGENTS source file, Java reference examples, frontend workstream reference examples, starter template resources, and scaffold tooling
   - installed skill rewriting still happens at install time via install.sh
   - a versioned GitHub release installer script is generated alongside the archive
 EOF
@@ -80,11 +80,15 @@ This is a build artifact for the Akka AI skills pack.
 - repository skills under skills/
 - Akka SDK Java reference examples exported from src/
 - React/Vite workstream UI reference examples exported from frontend/
+- AI-first SaaS starter template source under templates/
+- starter scaffold command under tools/scaffold-ai-first-saas-starter.sh
 - repository pom.xml and example-set README
 - frontend workstream UI reference source under frontend/
 
 ## Excluded
 - akka-context/
+
+The starter template is installed as a scaffold resource only; default installs do not copy starter application code into the target project root.
 
 The akka-context directory is intentionally excluded from this bundle. Installed skills are rewritten
 at install time so they point to installed examples and generic official Akka SDK documentation
@@ -371,6 +375,8 @@ validate_source_tree() {
     "$REPO_ROOT/pack/EXAMPLES-README.md"
     "$REPO_ROOT/pack/manifest.schema.yaml"
     "$REPO_ROOT/frontend"
+    "$REPO_ROOT/templates/ai-first-saas-starter"
+    "$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh"
     "$INSTALLER_TEMPLATE"
   )
 
@@ -495,6 +501,9 @@ copy_tree "$REPO_ROOT/skills" "$STAGE_DIR/skills"
 copy_tree "$REPO_ROOT/pack" "$STAGE_DIR/pack"
 copy_tree "$REPO_ROOT/src" "$STAGE_DIR/src"
 copy_frontend_reference "$REPO_ROOT/frontend" "$STAGE_DIR/frontend"
+copy_tree "$REPO_ROOT/templates" "$STAGE_DIR/templates"
+mkdir -p "$STAGE_DIR/tools"
+cp "$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh" "$STAGE_DIR/tools/scaffold-ai-first-saas-starter.sh"
 cp "$REPO_ROOT/install.sh" "$STAGE_DIR/install.sh"
 cp "$REPO_ROOT/pom.xml" "$STAGE_DIR/pom.xml"
 cp "$REPO_ROOT/README.md" "$STAGE_DIR/README.md"
@@ -512,6 +521,7 @@ write_bundle_readme
 write_build_info
 write_release_installer
 chmod +x "$STAGE_DIR/install.sh"
+chmod +x "$STAGE_DIR/tools/scaffold-ai-first-saas-starter.sh"
 
 if [[ "$NO_ARCHIVE" == false ]]; then
   log "Creating archive $ARCHIVE_PATH"

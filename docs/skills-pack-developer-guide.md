@@ -36,6 +36,8 @@ The Akka Java SDK code under `src/` is executable reference material used to val
 ├── skills/                           # source skill library
 ├── src/                              # executable Akka Java SDK reference examples
 ├── frontend/                         # frontend seed shell/reference assets
+├── templates/                        # scaffoldable starter app template source
+├── tools/scaffold-ai-first-saas-starter.sh
 ├── tools/build-pack.sh               # distribution builder
 ├── tools/check-version-consistency.sh
 ├── tools/install-release-template.sh
@@ -204,6 +206,8 @@ The distribution includes:
 - source-authored skills copied from `skills/**`
 - selected pack-facing docs from `docs/**`
 - selected reference examples exported from `src/main` and `src/test`
+- starter template resources exported from `templates/ai-first-saas-starter/**`
+- explicit starter scaffold command exported from `tools/scaffold-ai-first-saas-starter.sh`
 - `pom.xml` and example support files
 - `README.md`
 - `install.sh`
@@ -218,6 +222,8 @@ The installed pack intentionally excludes repository-internal maintainer-only gu
 - `akka-context/**`
 
 During installation, copied skill files are rewritten so installed references point to `.agents/` paths and do not depend on repository-local maintainer paths.
+
+Default installs are skills/resource-only. Starter application files are copied into a target project only when the user explicitly runs `.agents/bin/scaffold-ai-first-saas-starter.sh`; the scaffold command is fail-closed and should be validated with `--dry-run` before release.
 
 ## Build a distribution
 
@@ -258,7 +264,10 @@ Test a built archive:
 tar -xzf dist/akka-ai-skills-pack-<version>.tar.gz -C /tmp
 cd /tmp/akka-ai-skills-pack-<version>
 bash install.sh --location project --project /path/to/test/project
+/path/to/test/project/.agents/bin/scaffold-ai-first-saas-starter.sh --target /path/to/test/project --app-name "Test App" --base-package ai.first --dry-run
 ```
+
+Run the scaffold without `--dry-run` only in a disposable empty target and verify `specs/scaffold-report.md` plus rendered backend paths.
 
 Use `--dry-run` to check installer behavior without writing files.
 

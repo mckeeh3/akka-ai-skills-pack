@@ -8,6 +8,8 @@ This pack intentionally includes:
 - `skills/**`, including AI-first SaaS routing, description-first, planning, and implementation skills
 - repository docs under `docs/**`, including AI-first doctrine, description-first doctrine/architecture references, planning references, and example app-description artifacts
 - reference examples exported from `src/**`
+- starter app template resources exported from `templates/ai-first-saas-starter/**`
+- scaffold tooling exported from `tools/scaffold-ai-first-saas-starter.sh`
 - pack manifests
 - installer scripts
 - a pack-facing `AGENTS.md` that is installed as `<agents-root>/AGENTS.md`
@@ -96,7 +98,17 @@ Installed layout:
     ...
   manifests/
     akka-ai-skills-pack.yaml
+  bin/
+    scaffold-ai-first-saas-starter.sh
   resources/
+    templates/
+      ai-first-saas-starter/
+        README.md
+        TEMPLATE-MANIFEST.md
+        scaffold-rules.md
+        app-description/
+        specs/
+        backend/
     examples/
       java/
         pom.xml
@@ -167,7 +179,7 @@ Where `<agents-root>` is either `<project-root>/.agents` or `~/.agents`.
 ## Install model
 
 The pack is versioned as one release artifact.
-Each install copies the full packaged skill library, shared references, exported examples, and selected AI-first and description-first reference docs.
+Each install copies the full packaged skill library, shared references, exported examples, selected AI-first and description-first reference docs, starter template resources, and the explicit starter scaffold command. Default skills-only/project/global installs do not materialize starter application code into the project root.
 
 ## Path rewrite rules
 
@@ -224,3 +236,5 @@ Recommended release flow:
 - if `--location global` is provided, `install.sh` installs into `~/.agents` without prompting
 - if `--location` is omitted, `install.sh` prompts the user to choose between those two modes
 - `--project <dir>` can be used to set the project root for project mode; otherwise the current directory is used
+- after project install, users may explicitly scaffold the starter with `<project-root>/.agents/bin/scaffold-ai-first-saas-starter.sh --target <project-root> --app-name "My App" --base-package ai.first`
+- scaffold mode is fail-closed by default: it reports conflicts with `--dry-run`, refuses existing app files unless `--force-overwrite` is deliberately selected, and writes `specs/scaffold-report.md`

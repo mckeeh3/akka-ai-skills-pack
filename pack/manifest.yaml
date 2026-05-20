@@ -20,12 +20,16 @@ install:
       manifestsDir: '{projectRoot}/.agents/manifests'
       examplesDir: '{projectRoot}/.agents/resources/examples/java'
       frontendExamplesDir: '{projectRoot}/.agents/resources/examples/frontend'
+      templatesDir: '{projectRoot}/.agents/resources/templates'
+      binDir: '{projectRoot}/.agents/bin'
     global:
       rootDir: ~/.agents
       skillsDir: ~/.agents/skills
       manifestsDir: ~/.agents/manifests
       examplesDir: ~/.agents/resources/examples/java
       frontendExamplesDir: ~/.agents/resources/examples/frontend
+      templatesDir: ~/.agents/resources/templates
+      binDir: ~/.agents/bin
 
 content:
   skills:
@@ -520,6 +524,12 @@ content:
     exclude:
       - frontend/node_modules
       - frontend/.env.local
+  templates:
+    - id: ai-first-saas-starter
+      exportFrom: templates/ai-first-saas-starter
+      installAs: '{agentsRoot}/resources/templates/ai-first-saas-starter'
+      scaffoldCommand: '{agentsRoot}/bin/scaffold-ai-first-saas-starter.sh'
+      defaultInstallMaterializesAppCode: false
 
 bundles:
   - id: all

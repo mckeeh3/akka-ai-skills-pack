@@ -414,7 +414,7 @@
 
 ### TASK-STARTER-05-001: Add starter scaffold packaging mode
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/05-packaging-install-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/05-packaging-install/01-add-starter-scaffold-packaging-mode.md
 - depends on: [TASK-STARTER-04-003]
@@ -438,7 +438,8 @@
 - done criteria:
   - skills-only and starter-app scaffold modes are clearly separated and safe
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add starter scaffold packaging mode`
 
 ### TASK-STARTER-05-002: Update extension workflow docs and routing
 
