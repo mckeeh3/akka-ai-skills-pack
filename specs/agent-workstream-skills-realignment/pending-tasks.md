@@ -215,7 +215,7 @@
 
 ### TASK-AWSR-02-004: Review planning sprint and create next tasks
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/02-planning-description-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/02-planning-description/04-review-planning-sprint.md
 - depends on: [TASK-AWSR-02-003]
@@ -236,7 +236,8 @@
 - done criteria:
   - Sprint 02 review exists and Sprint 03 is either unblocked or superseded by more planning tasks
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Review planning alignment sprint
 
 ### TASK-AWSR-03-001: Audit implementation skills for input-contract drift
 
