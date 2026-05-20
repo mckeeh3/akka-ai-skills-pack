@@ -629,7 +629,7 @@
 
 ### TASK-STARTER-07-004: Make local AuthKit and first-admin bootstrap turnkey
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/07-fullstack-gap-closure-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/07-fullstack-gap-closure/04-turnkey-local-auth-bootstrap.md
 - depends on: [TASK-STARTER-07-003]
@@ -655,7 +655,12 @@
 - done criteria:
   - local auth/bootstrap is explicit, safe, and practical for clean scaffolds
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Document starter local auth bootstrap`
+  - rendered-template Maven tests passed with `{{JAVA_BASE_PACKAGE}}=ai.first`, `{{JAVA_PACKAGE_PATH}}=ai/first`, `{{MAVEN_GROUP_ID}}=ai.first`, `{{APP_SLUG}}=ai-first-saas-starter`, and `{{APP_NAME}}=AI First SaaS Starter`.
+  - frontend check passed after rendering and reinstalling dependencies in the temporary scaffold: `npm run typecheck && npm run build`.
+  - direct template frontend check passed: `cd templates/ai-first-saas-starter/frontend && npm run typecheck && npm run build`.
+  - check passed: `git diff --check`.
 
 ### TASK-STARTER-07-005: Implement invitation acceptance end-to-end
 

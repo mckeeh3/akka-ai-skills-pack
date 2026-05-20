@@ -49,6 +49,34 @@ class MeServiceTest {
   }
 
   @Test
+  void configuredBootstrapAdminLinksOnlyExplicitLocalAccount() {
+    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:TENANT_ADMIN:tenant-starter");
+
+    var linked = meService.me(identity("workos-owner", "owner@example.com"), null, "corr-bootstrap");
+
+    assertEquals("owner@example.com", linked.account().accountId());
+    assertEquals("active", linked.account().status());
+    assertEquals("tenant-starter", linked.selectedAuthContext().tenantId());
+    assertTrue(linked.visibleCapabilityIds().contains("tenant.user.manage"));
+    assertEquals("workos-owner", repository.findAccountByEmail("owner@example.com").orElseThrow().workosUserId());
+
+    var unknown = assertThrows(
+        AuthorizationException.class,
+        () -> meService.me(identity("workos-unknown", "unknown@example.com"), null, "corr-unknown"));
+    assertEquals("no-local-account-or-invitation", unknown.reasonCode());
+  }
+
+  @Test
+  void bootstrapConfigRejectsImplicitPrivilegeAndWrongScope() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:OWNER"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:TENANT_ADMIN:other-tenant"));
+  }
+
+  @Test
   void disabledAccountIsDeniedAndAudited() {
     inviteTenantAdmin("disabled@example.com", AccountStatus.DISABLED, MembershipStatus.ACTIVE, "tenant-1");
 
