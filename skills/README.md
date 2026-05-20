@@ -15,6 +15,12 @@ This file serves both:
 - the **source repository**, where app-description trees under `docs/examples/` are reference assets for the pack itself
 - the **installed pack** in a real development project, where the project's maintained `app-description/` tree belongs in the project workspace rather than under `.agents/`, unless that project explicitly chooses another internal location
 
+Starter scaffold routing for installed packs:
+- skills-only install remains the default: `.agents/` is a guidance/resource library and application artifacts live in the target workspace
+- for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer explicit scaffold-then-extend: run `.agents/bin/scaffold-ai-first-saas-starter.sh` in an empty or bootstrap-only project, then extend the scaffolded `app-description/`, `specs/`, backend, and frontend
+- if `specs/scaffold-report.md` exists, treat the project as scaffolded from the starter; preserve the recorded Java base package, starter foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
+- do not regenerate a parallel fresh app, replace scaffolded foundation files, or use `.agents/resources/templates/ai-first-saas-starter/` as a writable project source unless the user explicitly asks for destructive reset or template maintenance
+
 ## AI-first SaaS entry routing
 
 For high-level product input, treat the target as a secure AI-first SaaS **agent workstream application** unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material. Interpret mandatory foundation security, role-authorized functional agents, continuous workstreams, structured surfaces, delegated operational work, autonomous or semi-autonomous decisions, agent or agent-team execution, policy/permission controls, human supervision, approval or exception handling, audit traces, and outcome accountability before modeling capabilities or decomposing into Akka components.

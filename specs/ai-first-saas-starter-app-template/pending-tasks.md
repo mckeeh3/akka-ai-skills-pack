@@ -443,7 +443,7 @@
 
 ### TASK-STARTER-05-002: Update extension workflow docs and routing
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-app-template/backlog/05-packaging-install-build-backlog.md
 - task brief: specs/ai-first-saas-starter-app-template/tasks/05-packaging-install/02-update-extension-workflow-docs-routing.md
 - depends on: [TASK-STARTER-05-001]
@@ -465,7 +465,9 @@
 - done criteria:
   - downstream users know how to install/scaffold the starter and extend it safely
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update starter extension workflow routing`
+  - check passed: `git diff --check`
 
 ### TASK-STARTER-06-001: Apply legacy asset quarantine and canonical routing cleanup
 

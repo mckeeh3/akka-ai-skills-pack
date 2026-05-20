@@ -36,6 +36,18 @@ The task sounds like one of these:
 
 Do **not** use this skill when the user already has a settled slice/backlog and wants code directly. In that case, use the focused Stage 3 implementation skills.
 
+## Scaffold-aware planning
+
+If the target project contains `specs/scaffold-report.md`, it is already scaffolded from the packaged AI-first SaaS starter. In that case, use this skill to extend the existing baseline, not to plan a separate fresh application:
+
+- read `specs/scaffold-report.md` before creating or rewriting planning artifacts
+- preserve the recorded Java base package, Maven group id, starter foundation scope, workstream UI baseline, and existing app-description/spec structure
+- reconcile new PRD/domain input into the existing `app-description/` and `specs/` before creating tasks
+- create vertical capability backlogs and `specs/pending-tasks.md` entries that build on the starter foundation
+- queue questions for conflicts with scaffolded foundation semantics instead of overwriting them silently
+
+Only plan a full replacement of scaffolded files when the user explicitly asks for a destructive reset or fresh regeneration.
+
 ## Relationship to other skills
 
 This skill sits above normal decomposition.
@@ -64,6 +76,7 @@ Read these first if present:
 - `../../specs/README.md`
 - `../../specs/backlog/README.md`
 - `../../specs/tasks/README.md`
+- `../../specs/scaffold-report.md` if it exists, to detect starter-scaffold extension mode and preserve rendered package/path decisions
 - `../../specs/pending-questions.md` if it already exists
 - `../../specs/pending-tasks.md` if it already exists
 - `../../docs/pending-question-queue.md`

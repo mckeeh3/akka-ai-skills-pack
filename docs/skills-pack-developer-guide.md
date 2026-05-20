@@ -225,6 +225,20 @@ During installation, copied skill files are rewritten so installed references po
 
 Default installs are skills/resource-only. Starter application files are copied into a target project only when the user explicitly runs `.agents/bin/scaffold-ai-first-saas-starter.sh`; the scaffold command is fail-closed and should be validated with `--dry-run` before release.
 
+## Starter extension workflow expectations
+
+The packaged starter is the preferred new-project baseline for downstream users who want an immediately scaffolded secure AI-first SaaS foundation. Keep the workflow explicit:
+
+1. install the pack into the target project as `.agents/`
+2. run `.agents/bin/scaffold-ai-first-saas-starter.sh` only in an empty or bootstrap-only target
+3. commit the scaffolded baseline, including `specs/scaffold-report.md`
+4. add product/domain input under `docs/input/`
+5. have the harness extend the existing `app-description/`, `specs/`, backend, and frontend by vertical capability tasks
+
+Maintainer guidance and skills should distinguish this from skills-only planning. If `specs/scaffold-report.md` exists in a downstream project, routing should prefer scaffold extension: preserve the recorded Java base package, scaffolded foundation, workstream shell, auth/admin/governance slices, and pending-task queue history; update app-description/specs first; then add focused implementation tasks. Do not direct the harness to regenerate a separate fresh app or overwrite the starter unless the user explicitly requests a destructive reset.
+
+Release validation should cover both modes: skills-only install and explicit starter scaffold. The starter scaffold path should be tested with `--dry-run`, then in a disposable empty target without `--dry-run`, followed by at least the available rendered-project checks.
+
 ## Build a distribution
 
 Quick build:

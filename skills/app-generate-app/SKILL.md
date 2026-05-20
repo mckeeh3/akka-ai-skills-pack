@@ -65,12 +65,15 @@ For AI-first/delegated operations, never invent missing authority, policy, appro
 
 Full-core generation has an additional hard gate: the generation basis must be labeled `full core` and include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records and `readSkill`; workstream UI; and acceptance/security/agent-governance/frontend tests. Workstream UI realization must start from the canonical `frontend/src/workstream/**` reference and User Admin dashboard → list/search → detail/edit vertical, not legacy `frontend/src/screens/**`, page-first route examples, or standalone static-resource examples. If any are absent, stop generation unless the requested output is explicitly labeled `Module 1-only / not full core` or another named narrower scope with the omitted full-core areas listed.
 
+When the target project contains `specs/scaffold-report.md`, treat it as scaffolded from the packaged starter. Prefer localized extension of the scaffolded foundation over fresh full-app regeneration: preserve the recorded Java base package, existing starter components, workstream shell, app-description/spec queue history, and scaffold report. Generate new outputs as vertical capability extensions unless the user explicitly asks to reset or replace the scaffold.
+
 ## Generation responsibilities
 
 When generating, this skill must:
 - identify the current description baseline
+- detect whether `specs/scaffold-report.md` exists and, if so, treat generation as starter extension by default rather than fresh app replacement
 - identify the generation scope label (`full core`, `Module 1-only / not full core`, or another narrower scope) from the app description/specs/user instruction and report it in the summary
-- resolve the Java base package from existing project configuration, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred; never use `com.example` for generated application code unless explicitly requested
+- resolve the Java base package from existing project configuration, `specs/scaffold-report.md`, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred; never use `com.example` for generated application code unless explicitly requested
 - verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
 - block full-core generation or return to readiness if User Admin, Agent Admin, complete invitation onboarding, full user administration, governed runtime agents, workstream UI, or required tests are missing without an explicit narrower-scope label
 - block or return to readiness if generated SaaS web UI would be realized from `frontend/src/screens/**`, route/page-first tests, or static resource examples instead of the `frontend/src/workstream/**` shell, structured-surface modules, and User Admin reference vertical

@@ -85,6 +85,12 @@ After a project install, explicitly scaffold the starter into an empty or bootst
 
 Use `--dry-run` first to inspect rendered paths and conflicts. If `--base-package` is omitted, the command prompts for the Java base package; pressing Enter uses `ai.first`. The scaffold command refuses existing application files by default and writes `specs/scaffold-report.md` after a successful run.
 
+### Choose skills-only vs starter scaffold
+
+Use **skills-only install** when you already have an application, want the harness to plan from PRDs before code exists, or only need pack guidance in a repository. In this mode `.agents/` is the support library and the harness creates or updates `app-description/`, `specs/`, source, and tests in your project workspace.
+
+Use **starter scaffold** for a new secure AI-first SaaS app when you want the packaged full-core foundation as the first implementation baseline. Scaffold into an empty or bootstrap-only project, commit the scaffolded files, then extend by adding product input under `docs/input/` and asking the harness to reconcile that input into the existing `app-description/`, `specs/`, and `specs/pending-tasks.md` queue. A scaffolded project is identifiable by `specs/scaffold-report.md`; the harness should treat the starter code and descriptions as the extension base rather than regenerating a separate app from scratch.
+
 ## Getting started: build the core app from PRD inputs
 
 For skills-pack release testing, use the core app as an end-to-end sample: PRD inputs should drive app-description/specs, module/sprint backlogs, implementation tasks, generated Akka + React code, tests, and manually testable live-app increments.
@@ -401,7 +407,13 @@ bash install.sh --location project --project /path/to/project
 /path/to/project/.agents/bin/scaffold-ai-first-saas-starter.sh --target /path/to/project --app-name "My App" --base-package ai.first
 ```
 
-Then use `app-description/`, `specs/`, backend source, and frontend source as harness-maintained outputs to extend by vertical capability slices.
+Then commit the scaffolded baseline. To extend it, put feature PRDs, domain notes, bugs, or manual test results under `docs/input/` and ask the harness to update the existing app-description/specs before coding. The scaffold's `specs/scaffold-report.md` records the Java base package and rendered paths; the harness should preserve them and create new vertical capability tasks instead of replacing the starter foundation.
+
+Example extension prompt for a scaffolded app:
+
+```text
+Read docs/input/initial/product-prd.md and specs/scaffold-report.md. Extend the scaffolded AI-first SaaS starter rather than generating a separate app. Reconcile the PRD into the existing app-description and specs, preserve the starter foundation, queue questions instead of guessing, and create vertical capability tasks in specs/pending-tasks.md only for unblocked work.
+```
 
 For the packaged core foundation planning flow without scaffolding, use the canonical core PRD plus an explicit scope choice:
 
