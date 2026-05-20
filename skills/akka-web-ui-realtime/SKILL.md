@@ -13,6 +13,17 @@ For AI-first SaaS surfaces, realtime behavior supports human supervision and tim
 
 Realtime UX must make freshness visible. Show when the stream is connecting, live, reconnecting, stale, or disconnected; avoid presenting old recommendations, risk scores, policy status, or approval queues as current. Merge incoming trace/decision/work events idempotently so reconnects do not duplicate evidence or actions.
 
+
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS UI work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- owning functional agent, workstream, structured surface id/type/version, and surface action or workstream event;
+- governed capability id/class, selected Akka substrate, frontend/API/realtime exposure, and required tests;
+- `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden behavior, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and denial/error shapes.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from UI mechanics.
+
 ## Required reading
 
 - `../akka-http-endpoint-sse/SKILL.md`

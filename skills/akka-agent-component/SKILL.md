@@ -9,6 +9,17 @@ Use this skill when the task is mainly about the agent class itself.
 
 Before writing the class for a generated SaaS app, confirm whether it implements a user-facing functional/context-area agent or a bounded internal agent. Functional agents must align with a workstream, structured surfaces, capabilities, authority indicators, and UI tests; internal agents are invoked behind workflows, tools, timers, consumers, endpoints, or services and should not become primary navigation units by accident.
 
+
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS agent work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- placement as a user-facing functional agent or a bounded internal agent, including owning workstream and structured surface placement when user-facing;
+- capability id/class for each model request, tool call, output, workflow step, endpoint, or evaluation result;
+- caller `AuthContext`, tenant/customer scope, roles/capabilities, allowed data/tools, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from prompt, memory, streaming, guardrail, or test mechanics.
+
 ## Required reading
 
 Read these first if present:

@@ -7,6 +7,17 @@ description: Test Akka-hosted full web apps, including standard frontend project
 
 Use this skill when adding or reviewing tests for Akka-hosted browser apps.
 
+
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS UI work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- owning functional agent, workstream, structured surface id/type/version, and surface action or workstream event;
+- governed capability id/class, selected Akka substrate, frontend/API/realtime exposure, and required tests;
+- `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden behavior, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and denial/error shapes.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from UI mechanics.
+
 ## Required reading
 
 - `../../docs/web-ui-quality-checklist.md`

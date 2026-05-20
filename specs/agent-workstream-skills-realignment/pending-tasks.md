@@ -266,7 +266,7 @@
 
 ### TASK-AWSR-03-002: Align web UI and agent implementation skills
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/backlog/03-implementation-skills-build-backlog.md
 - task brief: specs/agent-workstream-skills-realignment/tasks/03-implementation-skills/02-align-web-ui-agent-skills.md
 - depends on: [TASK-AWSR-03-001]
@@ -289,7 +289,8 @@
 - done criteria:
   - web UI and agent implementation guidance consumes the workstream/surface/capability contract
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Align web UI and agent implementation skills
 
 ### TASK-AWSR-03-003: Align endpoint, component, and test skills
 

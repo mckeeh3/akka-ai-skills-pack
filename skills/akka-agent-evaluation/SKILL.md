@@ -9,6 +9,17 @@ Use this skill when the main task is evaluating AI output quality with another a
 
 Use `akka-agent-closed-loop-improvement` when evaluation results should become governed findings, improvement proposals, replay/simulation evidence, human approvals, activation, monitoring, or rollback.
 
+
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS agent work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- placement as a user-facing functional agent or a bounded internal agent, including owning workstream and structured surface placement when user-facing;
+- capability id/class for each model request, tool call, output, workflow step, endpoint, or evaluation result;
+- caller `AuthContext`, tenant/customer scope, roles/capabilities, allowed data/tools, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from prompt, memory, streaming, guardrail, or test mechanics.
+
 ## Required reading
 
 Read these first if present:
