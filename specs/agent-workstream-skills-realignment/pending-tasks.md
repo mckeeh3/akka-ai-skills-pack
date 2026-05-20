@@ -432,7 +432,7 @@
 
 ### TASK-AWSR-05-001: Refresh installed pack and validate source parity
 
-- status: pending
+- status: done
 - source: follow-up review after broad realignment found stale `.agents/` dogfood output
 - task brief: specs/agent-workstream-skills-realignment/tasks/05-focused-cleanup/01-refresh-installed-pack-parity.md
 - depends on: [TASK-AWSR-04-003]
@@ -455,7 +455,10 @@
 - done criteria:
   - installed dogfood output is refreshed and spot-checked
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: Refresh installed pack parity check
+  - check passed: `git diff --check`
+  - check passed: `git status --short` showed no tracked `.agents/` changes
 
 ### TASK-AWSR-05-002: Align core SaaS foundation with workstream-first foundation verticals
 
