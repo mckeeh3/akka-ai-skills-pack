@@ -47,7 +47,7 @@
 
 ### TASK-AWDD-01-001: Inventory agent workstream design-content drift
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-design-content-migration/backlog/01-inventory-and-target-backlog.md
 - task brief: specs/agent-workstream-design-content-migration/tasks/01-inventory-and-target/01-inventory-design-content-drift.md
 - depends on: [TASK-AWDD-00-001]
@@ -69,7 +69,9 @@
 - done criteria:
   - inventory records files to align, retire, label, or leave unchanged
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Inventory agent workstream design content drift`
+  - completed: created design-content drift inventory across doctrine, app-description skills, AI-first routing, web UI guidance, readiness/generation gates, and examples; no doctrine or skill rewrites were performed.
 
 ### TASK-AWDD-01-002: Define canonical content targets and design review checklist
 
