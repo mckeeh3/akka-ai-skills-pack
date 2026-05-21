@@ -354,7 +354,7 @@
 
 ### TASK-08-001: Final skills cleanup consistency review
 
-- status: pending
+- status: done
 - source: post-cleanup closure recommendation after TASK-01 through TASK-07 completed
 - task brief: none
 - depends on: [TASK-07-001]
@@ -385,7 +385,12 @@
 - done criteria:
   - source-tree skills cleanup is ready for installed-pack parity validation
 - commit message suggestion: `Review skills cleanup consistency`
-- notes: []
+- notes:
+  - reviewed TASK-01 through TASK-07 notes, cleanup-plan completion criteria, canonical AI-first SaaS and capability-first doctrine, and recent cleanup commit stats.
+  - finding: keep-as-is; cleanup sequence is internally coherent across routing, planning/backlog, agent governance, app-description, web UI/foundation, component family, and reference/package guidance.
+  - residual risks: only non-blocking future cleanup candidates remain, chiefly monitoring focused component companions for future drift into raw CRUD/routes/tools without capability ids, auth/scope, idempotency, audit/trace, and tests.
+  - checks: TASK-01 through TASK-07 are all done; no completed task notes describe unresolved blocking follow-up work; top-level routing still preserves secure AI-first SaaS → agent workstream → core SaaS foundation → capability-first backend → app-description/decomposition/planning → focused implementation; git diff --check passed.
+  - commit: Review skills cleanup consistency
 
 ### TASK-08-002: Installed-pack parity and routing smoke check
 
