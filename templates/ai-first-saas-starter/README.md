@@ -111,8 +111,9 @@ For local WorkOS/AuthKit sign-in:
 1. Create/select a WorkOS application for local development.
 2. Add `http://localhost:9000` as the AuthKit redirect/callback URI.
 3. Put the public client id in `frontend/.env.local` as `VITE_WORKOS_CLIENT_ID`; keep `VITE_WORKOS_REDIRECT_URI=http://localhost:9000`.
-4. Put backend-only WorkOS values in `.env`: `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, and `WORKOS_JWT_AUDIENCE` from the same WorkOS environment.
+4. Put backend-only WorkOS values in `.env`: `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, and `WORKOS_JWT_AUDIENCE` from the same WorkOS environment, plus `APP_PUBLIC_BASE_URL=http://localhost:9000`.
 5. Set `ADMIN_USERS="your.email@example.com:TENANT_ADMIN:tenant-starter"` before running the backend for real local AuthKit testing.
+6. Set `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL` before testing production invitation email delivery; local/dev/test may use the captured outbox adapter.
 
 Important variables:
 
@@ -127,3 +128,5 @@ First-admin semantics are intentionally closed:
 - production-ready projects must replace the in-memory starter repository with durable local authorization state and an audited bootstrap/import flow before external use.
 
 Never put backend secrets into frontend env files or built static assets.
+
+Generated backend code that loads required environment values must treat missing, empty, and blank values as unset. Startup/readiness or blocked-operation logs must include the exact missing env var name, for example `Required backend environment variable [WORKOS_API_KEY] is not set or is blank`, and must never log secret values.

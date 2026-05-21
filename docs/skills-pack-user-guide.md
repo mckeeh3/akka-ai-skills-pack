@@ -94,7 +94,7 @@ source .env
 set +a
 ```
 
-Backend-only variables include `WORKOS_API_KEY`, `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `ADMIN_USERS`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, `RESEND_API_BASE_URL`, and optional `OPENAI_API_KEY` for future model-backed agent calls. The frontend build uses browser-public `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI`. Never put backend secrets in frontend env files or built assets.
+Backend-only variables include `WORKOS_API_KEY`, `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `ADMIN_USERS`, `APP_PUBLIC_BASE_URL`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, `RESEND_API_BASE_URL`, and optional `OPENAI_API_KEY` for future model-backed agent calls. The frontend build uses browser-public `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI`. Never put backend secrets in frontend env files or built assets. Generated Java config loaders should log each missing required backend env var as an error with the exact env var name and no secret value.
 
 Initial scaffold validation commands:
 

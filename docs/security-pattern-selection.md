@@ -90,6 +90,8 @@ Backend-only runtime/deployment variables:
 - `INVITE_EMAIL_SUBJECT`
 - JWT key material or deployment secrets
 
+For new project auth setup, require `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL` for real local AuthKit/user-admin testing. Production invitation email delivery additionally requires `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL`. Generated Java config helpers must trim values, treat missing/empty/blank as unset, log an `error` for each missing required backend variable with the full env var name, and never log secret values.
+
 ## Testing minimum
 
 - missing token rejected
@@ -100,6 +102,7 @@ Backend-only runtime/deployment variables:
 - disabled user rejected
 - forbidden access, cross-tenant/customer access, and role/scope denial behavior verified
 - admin bootstrap idempotent and does not create a permanent bypass
+- missing required backend env vars produce startup/readiness error logs containing exact env var names and no secret values
 - complete invitation lifecycle tests cover send/capture, resend, revoke/cancel, expiry, acceptance, delivery failure, idempotency, and no raw-token leakage
 - support-access lifecycle tests cover grant, expiry, revoke, visibility, audit, and no SaaS Owner super-admin bypass
 - audit/work-trace creation verified for protected data access, denials, approvals, and consequential side effects

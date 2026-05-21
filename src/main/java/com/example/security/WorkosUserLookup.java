@@ -35,7 +35,7 @@ public class WorkosUserLookup {
 
     var apiKey = getenv("WORKOS_API_KEY");
     if (apiKey.isBlank()) {
-      logger.warn("WORKOS_API_KEY is not set; cannot look up WorkOS user [{}]", normalizedUserId);
+      logger.error("Required backend environment variable [WORKOS_API_KEY] is not set or is blank; cannot look up WorkOS user [{}]", normalizedUserId);
       return WorkosUser.empty(normalizedUserId);
     }
 

@@ -35,8 +35,17 @@ public class InvitationEmailSender {
 
     var apiKey = getenv("RESEND_API_KEY");
     var from = getenv("INVITE_EMAIL_FROM");
+    if (from.isBlank()) {
+      from = getenv("RESEND_FROM_EMAIL");
+    }
     var appUrl = getenv("APP_PUBLIC_BASE_URL");
     if (apiKey.isBlank() || from.isBlank() || appUrl.isBlank()) {
+      logMissingRequired("RESEND_API_KEY", apiKey);
+      if (from.isBlank()) {
+        logMissingRequired("INVITE_EMAIL_FROM", from);
+        logMissingRequired("RESEND_FROM_EMAIL", from);
+      }
+      logMissingRequired("APP_PUBLIC_BASE_URL", appUrl);
       logger.error(
           "Invitation email cannot be sent for [{}]; required Resend onboarding email configuration is missing",
           recipient);
@@ -72,6 +81,12 @@ public class InvitationEmailSender {
     } catch (Exception ex) {
       logger.warn("Invitation email delivery failed for [{}]", recipient, ex);
       return DeliveryResult.failed("delivery-error");
+    }
+  }
+
+  private void logMissingRequired(String name, String value) {
+    if (value == null || value.isBlank()) {
+      logger.error("Required backend environment variable [{}] is not set or is blank", name);
     }
   }
 

@@ -31,6 +31,27 @@ VITE_WORKOS_REDIRECT_URI=http://localhost:9000
 
 When issuer/audience checking is part of the endpoint contract, record the WorkOS JWT issuer and audience in backend-only deployment configuration, commonly `WORKOS_JWT_ISSUER` and `WORKOS_JWT_AUDIENCE`, and use those values in Akka JWT configuration/annotations. Never put `WORKOS_API_KEY`, Resend keys, invite sender secrets, bootstrap admin configuration, JWT key material, or service credentials in `frontend/.env*`.
 
+For a new AI-first SaaS project, make user auth one of the first implemented and tested verticals. Minimum local setup for real AuthKit testing is:
+
+1. configure the WorkOS/AuthKit app with the local redirect URI, usually `http://localhost:9000`;
+2. set browser-public `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI` in `frontend/.env.local` only;
+3. set backend-only `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `APP_PUBLIC_BASE_URL`, and `ADMIN_USERS` in the backend `.env` or deployment secret store;
+4. set production email variables `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL` before testing invitation email delivery; local/dev/test may use the captured outbox adapter instead;
+5. run `/api/me`, protected API, disabled-user, forbidden-role, tenant/customer-scope, invitation-linking, and frontend secret-boundary tests before app-specific features are called ready.
+
+## Required environment variable handling in Java
+
+Every generated Java class that reads backend environment variables must use one small validation/helper path rather than scattered `System.getenv(...)` calls. The helper must:
+
+- trim values and treat missing, empty, and blank values as unset;
+- log an `error` for each missing required variable at the point the app validates startup readiness or blocks a required operation;
+- include the full environment variable name in each log message, for example `Required backend environment variable [WORKOS_API_KEY] is not set or is blank`;
+- never log secret values;
+- fail startup/readiness for required production variables instead of silently falling back to insecure auth or disabled email delivery;
+- distinguish optional variables such as `WORKOS_API_BASE_URL` and `RESEND_API_BASE_URL` from required variables.
+
+Required variables for full local AuthKit/user-admin testing are `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL`. Required variables for production invitation email delivery are `RESEND_API_KEY` plus `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL`. Frontend `VITE_` values should be validated by frontend configuration/UI tests, not by backend Java secret loaders.
+
 ## Recommended full-stack shape
 
 ```text
@@ -285,6 +306,7 @@ Bootstrap behavior:
 - [ ] frontend navigation is treated as UX only, not authorization
 - [ ] backend secrets are not present in `frontend/.env*` or built assets
 - [ ] startup bootstrap is idempotent
+- [ ] startup/readiness validation logs each missing required backend environment variable as an error and includes the full env var name, without logging secret values
 - [ ] production readiness fails when required Resend invite email delivery configuration is missing
 - [ ] local/dev/test invite email adapter captures messages in an outbox without external delivery
 - [ ] invite/link/activate flow has send, resend, revoke/cancel, expiry, delivery failure, acceptance, idempotency, and audit tests

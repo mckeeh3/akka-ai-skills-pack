@@ -11,9 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Resend-only production email seam with safe local/test captured delivery. */
 public final class ResendEmailService {
+  private static final Logger logger = LoggerFactory.getLogger(ResendEmailService.class);
   private static final String DEFAULT_RESEND_API_BASE_URL = "https://api.resend.com";
 
   private final Map<String, String> environment;
@@ -33,6 +36,12 @@ public final class ResendEmailService {
     if (mode == DeliveryMode.PRODUCTION) {
       var config = ResendConfiguration.from(environment);
       if (!config.ready()) {
+        logMissingRequired("RESEND_API_KEY", config.apiKey());
+        if (config.fromEmail() == null || config.fromEmail().isBlank()) {
+          logger.error("Required backend environment variable [INVITE_EMAIL_FROM] is not set or is blank");
+          logger.error("Required backend environment variable [RESEND_FROM_EMAIL] is not set or is blank");
+        }
+        logger.error("Production email delivery is blocked because required Resend environment configuration is missing");
         return DeliveryResult.failed("resend-config-missing");
       }
       try {
@@ -53,6 +62,12 @@ public final class ResendEmailService {
   public enum DeliveryMode {
     PRODUCTION,
     LOCAL_OR_TEST
+  }
+
+  private static void logMissingRequired(String name, String value) {
+    if (value == null || value.isBlank()) {
+      logger.error("Required backend environment variable [{}] is not set or is blank", name);
+    }
   }
 
   public interface EmailDeliveryPort {

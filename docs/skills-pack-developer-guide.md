@@ -156,7 +156,7 @@ Common variables include:
 - `VITE_WORKOS_CLIENT_ID`
 - `VITE_WORKOS_REDIRECT_URI`
 
-Only `VITE_` variables are public and may be embedded into the frontend bundle.
+Only `VITE_` variables are public and may be embedded into the frontend bundle. Java code that validates or reads required backend variables must log an error for each missing or blank variable with the exact env var name and without logging secret values.
 
 ## Running the seed app locally
 

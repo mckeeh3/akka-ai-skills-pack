@@ -144,6 +144,8 @@ INVITE_EMAIL_SUBJECT="Account access information"
 Local/dev/test may use an explicit safe delivery adapter that captures invite emails in an outbox without external delivery.
 
 Bootstrap rules:
+- validate required backend env/config early for real AuthKit/admin testing: `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL`; production invitation delivery also requires `RESEND_API_KEY` plus `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL`
+- every Java env/config helper must trim values, treat missing/empty/blank as unset, log an `error` for each missing required variable with the full env var name (for example `Required backend environment variable [ADMIN_USERS] is not set or is blank`), never log secret values, and fail startup/readiness instead of silently granting access or disabling auth/email delivery
 - parse entries defensively and accept canonical foundation roles first (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), with app-specific role aliases only when explicitly mapped to capabilities
 - normalize email addresses
 - create missing invited/admin users idempotently
@@ -228,6 +230,7 @@ Add tests for:
 - customer admin cannot manage tenant-wide users
 - tenant/customer-scoped list queries cannot leak cross-scope rows and preserve cross-scope filtering guarantees
 - tenant admin cannot grant `SAAS_OWNER_ADMIN` or other out-of-scope capabilities
+- startup/readiness validation logs missing required backend env vars with exact env var names and no secret values
 - production readiness blocks missing required Resend configuration
 - local/dev/test invite adapter captures outbound messages in an outbox without external delivery
 - invite send, resend, revoke/cancel, expiry, acceptance, replayed acceptance, duplicate email handling, delivery failure, and delivery-attempt audit behavior

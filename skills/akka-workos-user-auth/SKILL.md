@@ -44,17 +44,19 @@ Frontend route guards, left-rail visibility, hidden buttons, and WorkOS claims a
 
 ## Runtime configuration
 
+Set up and test user auth as one of the first verticals in every new AI-first SaaS project.
+
 Backend-only runtime variables or deployment secrets:
 
 ```bash
 ADMIN_USERS="jane@example.com:SAAS_OWNER_ADMIN:OWNER,joe@example.com:TENANT_ADMIN:tenant-123"
 WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
-WORKOS_JWT_ISSUER="configured-workos-issuer" # when env-backed JWT config is used
-WORKOS_JWT_AUDIENCE="configured-workos-audience" # when env-backed JWT config is used
+WORKOS_JWT_ISSUER="configured-workos-issuer"
+WORKOS_JWT_AUDIENCE="configured-workos-audience"
 APP_PUBLIC_BASE_URL="http://localhost:9000"
-RESEND_API_KEY="re_xxxxxxxxx"
-INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+RESEND_API_KEY="re_xxxxxxxxx" # required for production invite email delivery
+INVITE_EMAIL_FROM="Acme <onboarding@example.com>" # or RESEND_FROM_EMAIL for shared sender config
 INVITE_EMAIL_SUBJECT="Account access information"
 ```
 
@@ -65,7 +67,22 @@ VITE_WORKOS_CLIENT_ID=client_your_workos_client_id
 VITE_WORKOS_REDIRECT_URI=http://localhost:9000
 ```
 
+New-project setup checklist:
+1. configure the WorkOS/AuthKit app redirect/callback URI, usually `http://localhost:9000` locally;
+2. put only `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI` in `frontend/.env.local`;
+3. put `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL` in backend `.env` or deployment secrets;
+4. put `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL` in backend secrets before production invite email delivery is considered ready;
+5. run `/api/me`, protected API, invitation-linking, disabled-user, forbidden-role/scope, tenant/customer-isolation, and frontend secret-boundary tests before app-specific features.
+
 If issuer/audience validation is required, store WorkOS issuer/audience values in backend-only deployment configuration, commonly `WORKOS_JWT_ISSUER` and `WORKOS_JWT_AUDIENCE`, and apply them in Akka JWT configuration/annotations. Never put `WORKOS_API_KEY`, Resend keys, bootstrap admin data, JWT key material, or service credentials in `frontend/.env*`.
+
+Java environment-variable handling rules:
+- use a shared env/config helper for backend variables; do not scatter raw `System.getenv(...)` calls;
+- trim values and treat missing, empty, and blank values as unset;
+- when a required variable is missing at startup/readiness validation or while blocking a required operation, log `error` and include the full env var name, e.g. `Required backend environment variable [WORKOS_API_KEY] is not set or is blank`;
+- never log secret values;
+- fail startup/readiness for required production variables instead of silently disabling auth or email delivery;
+- keep optional variables explicit (`WORKOS_API_BASE_URL`, `RESEND_API_BASE_URL`) and do not log them as errors when absent.
 
 ## Security model
 
@@ -174,6 +191,7 @@ Reject or return a pending state when:
 
 Add tests for:
 - missing bearer token rejected
+- backend env validation reports missing or blank `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `APP_PUBLIC_BASE_URL`, and production email variables with error logs that include the exact env var names and no secret values
 - bearer token claims available through `requestContext().getJwtClaims()`
 - `/api/me` returns linked active account, memberships, selected AuthContext, tenant/customer scopes, and browser-safe capabilities
 - invited account first-login link and replayed invitation acceptance are idempotent
