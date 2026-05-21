@@ -66,11 +66,13 @@ Do not force every AI-first pattern when the task is clearly:
 
 Even when this skill is used, apply only the AI-first patterns justified by the product intent, while keeping the `core-saas-foundation` mandatory for generated SaaS apps.
 
-## Anti-chatbot rule
+## Anti-chatbot and minimum starter rule
 
 Do not treat an AI-first app as a chatbot bolted onto CRUD.
 
 Conversation can collect intent or explain status, but consequential work should resolve into durable, inspectable objects such as goals, plans, tasks, policies, decisions, approvals, traces, and outcomes.
+
+When the user asks for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-only **User Admin workstream v0** with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser actions/agent tools.
 
 ## Interpretation workflow
 
@@ -121,7 +123,7 @@ Prefer mechanically enforced permissions and versioned policy records over promp
 
 ### 5. Choose the downstream operating path
 
-First load `core-saas-foundation` for the mandatory Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline. For generated full-stack SaaS apps, next load `agent-workstream-apps` and hand downstream work an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
+First load `core-saas-foundation` for the mandatory Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline. For generated full-stack SaaS apps, next load `agent-workstream-apps` and hand downstream work an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. For minimum/starter/basic/chatbot-like generated SaaS requests, that inventory starts with User Admin workstream v0, bounded bootstrap authority, `markdown_response`, durable workstream log, audit/work trace substrate, and follow-up gates for full-core readiness. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
 
 - Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative application description before generation, preserving functional agents, surfaces, capabilities, and horizontal Akka implementation notes.
 - Use `capability-first-backend` when surface actions, agent tools, workflow steps, APIs, timers, consumers, or internal operations need governed backend contracts.

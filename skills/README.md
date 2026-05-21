@@ -18,7 +18,8 @@ This file serves both:
 Starter scaffold routing for installed packs:
 - skills-only install remains the default: `.agents/` is a guidance/resource library and application artifacts live in the target workspace
 - for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer explicit scaffold-then-extend: run `.agents/bin/scaffold-ai-first-saas-starter.sh` in an empty or bootstrap-only project, then extend the scaffolded `app-description/`, `specs/`, backend, and frontend
-- the starter template is the canonical full-core generated-app implementation baseline; DCA/supplies, purchase-request, shopping-cart, and standalone static UI examples are domain/mechanics references only
+- natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `../docs/minimum-ai-first-saas-app.md`: a bootstrap-only User Admin workstream v0 with `markdown_response`, not a generic public chatbot or page-first CRUD shell
+- the starter template is the canonical full-core generated-app implementation baseline; the minimum starter is a narrower first-slice readiness state that must record follow-up work to reach full-core readiness; DCA/supplies, purchase-request, shopping-cart, and standalone static UI examples are domain/mechanics references only
 - if `specs/scaffold-report.md` exists, treat the project as scaffolded from the starter; preserve the recorded Java base package, starter foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
 - do not regenerate a parallel fresh app, replace scaffolded foundation files, or use `.agents/resources/templates/ai-first-saas-starter/` as a writable project source unless the user explicitly asks for destructive reset or template maintenance
 
@@ -40,6 +41,7 @@ Mandatory secure SaaS, agent workstream, and web UI foundation before app-specif
 
 Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS requests
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/structured-surface-contracts.md`
 - `../docs/capability-first-backend-architecture.md`
@@ -71,7 +73,7 @@ AI-first companion skills:
 - `ai-first-saas-ui-surfaces` — select supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces and route to web UI/API skills
 - `ai-first-saas-outcomes-metrics` — define outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces
 
-After secure AI-first SaaS interpretation, route through `core-saas-foundation`, interpret the application as an agent workstream with functional agents, internal agents, workstreams, and structured surfaces, model the capability-first backend substrate, then choose the normal operating path:
+After secure AI-first SaaS interpretation, route through `core-saas-foundation`, interpret the application as an agent workstream with functional agents, internal agents, workstreams, and structured surfaces, model the capability-first backend substrate, then choose the normal operating path. For minimum/starter/basic/chatbot-like generated SaaS prompts, the first vertical is User Admin workstream v0 with `markdown_response`; still model backend behavior as governed capabilities before choosing components or exposing browser actions/agent tools:
 1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization; functional agents, surfaces, capability inventory, behavior, auth/security, UI, observability, readiness, and tests belong in the description layer
 2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known; derive governed capabilities from workstream actions, surfaces, agents, workflows, APIs, timers, and consumers before selecting Akka components
 3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts; preserve functional-agent/surface context plus capability ids, auth/scope, side effects, approval, audit, exposure surfaces, and tests in generated tasks

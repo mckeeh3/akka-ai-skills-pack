@@ -154,7 +154,7 @@
 
 ### TASK-MINAPP-02-002: Update top-level routing for minimum app interpretation
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/02-foundation-routing-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/02-foundation-routing/02-update-minimum-routing.md
 - depends on: [TASK-MINAPP-02-001]
@@ -177,7 +177,8 @@
 - done criteria:
   - harness routing reflects the minimum app rule
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update minimum app routing`
 
 ### TASK-MINAPP-02-003: Update readiness, generation, and planning gates
 
