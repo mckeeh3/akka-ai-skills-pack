@@ -28,8 +28,8 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 2. Prefer a fresh context session for every task.
 3. Do not combine adjacent tasks just because their files are nearby.
 4. Select the first `pending` task whose dependencies are `done` or empty.
-5. Mark a task `done` only after its required checks pass or are explicitly reported as not runnable.
-6. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, or build/runtime preconditions are missing.
+5. Mark a task `done` only after its required checks pass and its done criteria are satisfied. A check that is not runnable blocks completion unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the task's notes say why the named feature still works.
+6. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, build/runtime preconditions, or local validation prerequisites are missing.
 7. For AI-first work, unresolved delegated authority, approval, policy/risk threshold, evidence, audit/trace, supervision UI, evaluation, or outcome decisions block only the affected tasks.
 8. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
 9. Mark a task `superseded` when a later app-description/spec/PRD change replaces the task and it should not be executed.
@@ -44,7 +44,7 @@ Use these exact status values:
 - `pending` — ready or potentially ready to execute when dependencies are satisfied
 - `in-progress` — currently being executed in this harness run
 - `blocked` — cannot proceed without a decision, dependency, missing input, or failed prerequisite
-- `done` — completed and validated as far as the task requires
+- `done` — completed and validated as far as the task requires; for generated app implementation, the implemented behavior works through its intended local runtime/API/UI surface or the task is explicitly non-runtime/internal-only
 - `deferred` — intentionally postponed and not eligible for automatic next-task selection
 - `superseded` — replaced by a later requirement, spec, backlog, or task and not eligible for execution
 
@@ -132,7 +132,7 @@ Use bounded task families such as:
 - `AgentWorkTrace` recording/search/detail UI and trace-retention/security tests
 - focused security/admin/agent-governance regression tests across tenant isolation, AuthContext/scope, approval, audit/trace, disabled agents, unassigned skills, and unauthorized prompt/skill/tool changes
 
-Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation scope it covers. For generated full-stack AI-first SaaS, each runnable implementation task must also carry its vertical workstream contract: functional agent or internal-only/foundation scope, structured surface/action or workstream event/non-UI trigger, capability id/class, selected Akka substrate, frontend/API/realtime work, and required tests.
+Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation scope it covers. For generated full-stack AI-first SaaS, each runnable implementation task must also carry its vertical workstream contract: functional agent or internal-only/foundation scope, structured surface/action or workstream event/non-UI trigger, capability id/class, selected Akka substrate, frontend/API/realtime work, and required tests. If the task is part of a sprint's named visible capability, include the local app-run, API call, browser/workstream action, or manual smoke path that will prove the feature works; otherwise state that the task is non-runtime/internal-only.
 
 ## Implementation-ready vertical task rule
 
@@ -146,7 +146,7 @@ Each runnable task should state or inherit from its task brief/backlog:
 - `AuthContext`, tenant/customer scope, and role/capability rules;
 - selected Akka substrate and exposure surface such as HTTP/API, agent tool, workflow, timer, consumer, view, MCP, or internal method;
 - frontend/API/realtime work when user-facing;
-- success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, and smoke checks as applicable.
+- success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, local-run/manual-smoke checks as applicable, or an explicit non-runtime/internal-only reason.
 
 If this contract is missing, block the task for backlog/task-brief repair instead of guessing the missing workstream, surface, authority, or component scope.
 
@@ -202,7 +202,7 @@ Before coding, update the selected task to:
 - status: in-progress
 ```
 
-After coding and validation, update to:
+After coding and validation, update to `done` only when required checks pass and done criteria are satisfied. For generated app features, this includes the intended local runtime/API/UI validation path unless the task is explicitly non-runtime/internal-only:
 
 ```md
 - status: done

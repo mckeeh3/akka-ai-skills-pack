@@ -86,6 +86,10 @@ Capability-first backend entry skill:
 
 Use companion skills only for the AI-first concerns that are actually in scope, except `ai-first-saas-admin-agents` which is mandatory whenever generating the core SaaS user-administration foundation. Existing Stage 3 skills remain horizontal implementation substrate skills for the AI-first, agent-workstream, and capability-first architecture: agents, workflows, entities, views, consumers, timed actions, endpoints, and web UI delivery. Do not replace those skills with narrative guidance; route to them after functional agents, surfaces, goals, plans, authority, capabilities, supervision, traces, UI surfaces, and outcome loops are clear enough for the requested scope.
 
+## Implementation completion standard
+
+For generated Akka apps, a named feature is implemented only when it works at the stated scope through the intended local runtime surface. Akka local execution is production-like validation for these apps. If a sprint or task says `user auth`, `sign-in`, `invitation onboarding`, `User Admin`, `Agent Admin`, or an app-specific workstream is done, the required backend components, endpoints, frontend/workstream UI, authorization, audit/trace behavior, tests, and local smoke/manual validation for that named feature must be present. Deferrals are allowed only when they explicitly narrow or rename the goal, mark affected work blocked/deferred, or are outside the selected scope. Do not use `explicitly deferred` to count missing required behavior as implemented.
+
 ## Description-first intake skills
 
 This repository now also includes an initial description-first skill path for maintaining **application descriptions as the source of truth** before app realization.

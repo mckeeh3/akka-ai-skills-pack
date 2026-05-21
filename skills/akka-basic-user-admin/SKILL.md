@@ -45,6 +45,8 @@ Use this as the local authorization and admin-management foundation after WorkOS
 
 This skill must preserve backend-authoritative authorization: `/api/me` and frontend navigation expose browser-safe capability hints only; every command, query, stream, workflow action, consumer side effect, timer action, and agent tool still revalidates local Account/Membership/Role/Capability state and selected `AuthContext`.
 
+When a sprint, task, or user request says `User Admin`, `user administration`, `membership management`, or `invitation onboarding` is implemented, the stated scope must work through the locally running Akka app rather than only as isolated entities or endpoints. For full-core generated SaaS, that means admin list/search, invite/resend/revoke/acceptance visibility, role/membership lifecycle, disabled-user denial, last-admin protection, scoped audit/search, required User Admin surfaces, backend authorization, tenant/customer isolation, and tests are present. If any required part is deferred, the sprint/task must be labeled as a narrower internal slice or marked blocked/incomplete; do not call User Admin fully implemented.
+
 ## Core model
 
 Authentication proves who the caller is. Local Akka admin state decides what they may do.

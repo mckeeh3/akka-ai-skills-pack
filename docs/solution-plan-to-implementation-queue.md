@@ -8,8 +8,8 @@ Purpose:
 - turn unresolved design decisions into a durable clarification queue when needed
 - preserve full-stack secure AI-first SaaS operating-model context, including mandatory foundation, UI surfaces, governance, supervision, audit, and outcomes
 - turn the solution plan into a downstream implementation work queue
-- keep coding focused on one component family at a time
-- make code generation and test generation explicit follow-on work
+- keep coding focused on one bounded vertical increment at a time
+- make code generation, test generation, local runtime validation, and manual/smoke verification explicit follow-on work
 
 ## Rule
 
@@ -17,72 +17,65 @@ A solution plan is not the final output.
 It is the implementation contract for downstream work.
 
 That contract should tell the next agent or next phase:
-- what to build
-- in what order to build it
+- what fully working app state each increment should produce
+- in what order to build increments
+- which functional agent, surface/action, workstream event, or internal trigger owns each increment
+- which governed capability id/class, AuthContext, authorization rule, approval, audit/trace, and exposure channel each increment implements
+- which Akka substrate and frontend/API/realtime files are expected
 - which skills to load for each build step
-- which tests to generate alongside each component
-- whether endpoint, web UI, or documentation/snippet work is also required
+- which tests and local validation paths prove the increment works
 - which delegated authority, policy/approval, trace, supervision UI, evaluation, and outcome requirements must be carried into each generated SaaS task
+
+## Done means working
+
+For generated Akka apps, especially full-stack secure AI-first SaaS apps, do not treat a queue item or sprint as complete merely because a component was generated. A named feature such as `user sign-in`, `user auth`, `invitation onboarding`, `User Admin`, `Agent Admin`, or an app-specific workstream is implemented only when the required backend, API, frontend/workstream surface, authorization, audit/trace, and tests needed for that named scope work together.
+
+Deferrals are allowed only when they narrow or rename the goal, are marked as blocked/deferred in the queue, or are outside the explicitly selected scope. If a deferral prevents the named feature from working through the locally running Akka app, the feature is not done.
 
 ## Minimal transformation
 
 Take these sections from the solution plan:
 - AI-first interpretation: delegated work, retained authority, durable objects, policy/approval/exception needs, traces, mandatory UI surfaces, and outcomes
-- chosen components
+- functional agents, internal agents, workstream events, structured surfaces, and surface actions
+- governed capability inventory: ids/classes, actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure channels, and tests
+- chosen Akka substrate and frontend/API/realtime outputs
 - skill routing
 - recommended implementation order
-- required tests
+- required tests and local validation paths
 
-Then convert them into a queue like this:
+Then convert them into a vertical queue like this:
 
 ```md
 # Implementation Queue
 
-1. Domain model
-   - output: domain records, validation helpers, API records
-   - skills:
-     - <skill>
-   - tests:
-     - <test type>
+1. <Foundation or feature vertical>: <working state>
+   - goal: user can <exercise visible/API/workstream behavior> in the locally running Akka app
+   - functional agent / surface / trigger: <agent + surface/action, workstream event, or internal-only foundation scope>
+   - capability: <capability id/class>
+   - auth/scope: <AuthContext, role/capability, tenant/customer rules>
+   - Akka substrate: <entity/workflow/view/consumer/timer/agent/endpoint>
+   - frontend/API/realtime: <UI/API/client/stream work, or non-UI reason>
+   - outputs: <files or file families>
+   - skills: <focused skills>
+   - required checks: <unit/integration/frontend/security/audit checks>
+   - local validation: <Akka run, endpoint smoke, browser/workstream action, or manual checklist>
+   - done means: <observable behavior that proves this increment works>
 
-2. Stateful core
-   - output: <entity or workflow>
-   - skills:
-     - <skill>
-     - <skill>
-   - tests:
-     - <test type>
-
-3. Read model
-   - output: <view>
-   - skills:
-     - <skill>
-   - tests:
-     - <test type>
-
-4. Async or timed support
-   - output: <consumer or timed action>
-   - skills:
-     - <skill>
-   - tests:
-     - <test type>
-
-5. Edge delivery
-   - output: <http endpoint / grpc endpoint / mcp endpoint / web ui>
-   - skills:
-     - <skill>
-   - tests:
-     - <test type>
+2. <Next vertical increment>: <working state>
+   - ...
 ```
+
+Use component family names to describe implementation files, not to define the task boundary. Avoid queues like `all domain`, `all entities`, `all views`, then `all UI` unless the item is explicitly an internal prerequisite and its done criteria state why it is not a user-visible increment.
 
 ## Practical use
 
 For each queue item:
 1. load only the listed skills
-2. generate the code for that component or layer
+2. generate or update the code for that bounded vertical increment
 3. generate its corresponding tests before moving on
-4. preserve only the AI-first context needed for that queue item; do not reread or duplicate the full doctrine unless the task needs it
-5. keep later components out of context until their step begins
+4. run the required checks and local validation path when the task implements runtime behavior
+5. preserve only the AI-first context needed for that queue item; do not reread or duplicate the full doctrine unless the task needs it
+6. keep later increments out of context until their step begins
 
 For reliable follow-on work across sessions, first convert unresolved blocking decisions into `specs/pending-questions.md` and answer them with `akka-do-next-pending-question`. Then convert unblocked implementation work into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
 
@@ -95,21 +88,26 @@ When requirements evolve after the queue exists:
 ## What belongs downstream
 
 The downstream implementation phase may include:
-- component generation
+- backend component generation
 - endpoint generation
 - web UI generation
 - test generation
+- local run, endpoint smoke, browser/workstream smoke, or manual verification notes
 - documentation or snippet generation when the task asks for it
 
 ## Quick checklist
 
 Before starting code generation, verify that the solution plan already answers:
-- which component is first
-- which skills implement it
-- which tests belong with it
-- which later components depend on it
+- what working app state this task or sprint should produce
+- which functional agent, surface/action, workstream event, governed capability, or internal trigger owns the work
+- which component/files are first
+- which skills implement them
+- which tests belong with them
+- which local run/manual smoke path proves the named behavior works
+- which later increments depend on this one
 - whether any open questions still block coding
 - whether blocking questions are resolved or explicitly deferred in `specs/pending-questions.md`
+- whether any explicit deferral narrows the feature goal instead of being counted as completed work
 - whether AI-first authority, policy, approval, trace, UI, evaluation, or outcome decisions are represented in the relevant queue items instead of silently dropped
 
 ## Related docs
@@ -118,6 +116,7 @@ Before starting code generation, verify that the solution plan already answers:
 - `pending-task-queue.md`
 - `intent-driven-usage-flow.md`
 - `prd-to-akka-flow.md`
+- `module-sprint-planning.md`
 - `examples/purchase-request-solution-plan.md`
 - `examples/purchase-request-pending-tasks.md`
 - `../skills/README.md`

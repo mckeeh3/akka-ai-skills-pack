@@ -32,7 +32,7 @@ The skill must:
 - load only the task's required reads and listed skills
 - preserve any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
 - generate or update the requested outputs
-- run the task's required checks when possible
+- run the task's required checks and local/runtime validation path when the task implements app behavior
 - update the queue status before finishing
 - report any blocking pending question or the next runnable pending task
 
@@ -202,20 +202,26 @@ Not allowed:
 
 Run each listed `required checks` command or the closest available equivalent.
 
-If a check cannot run, record:
-- which check was not run
+For generated app implementation tasks, also run the task's intended local runtime/API/UI validation path when specified by the task, backlog, or sprint. This may be an Akka local run, endpoint smoke call, frontend build plus route/API smoke, or manual-test checklist entry. Treat Akka local execution as production-like validation for the increment.
+
+If a check or local validation path cannot run, record:
+- which check or validation path was not run
 - why it was not run
 - whether that blocks completion
+
+A non-runnable required check blocks marking the task `done` unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the remaining done criteria still prove the named feature works.
 
 ### 6. Update queue status
 
 When finished:
 
-Mark `done` only if done criteria are satisfied:
+Mark `done` only if done criteria are satisfied and required checks/local validation passed or are legitimately out of scope for this task:
 
 ```md
 - status: done
 ```
+
+Do not mark a feature-bearing task `done` merely because code was written, compiled, or unit-tested if the task's named user-visible/API/workstream behavior cannot be exercised through its intended local runtime surface. If the missing validation means "user auth", "sign-in", "onboarding", "User Admin", or another named feature is not actually usable, keep or set the task `blocked` instead of deferring the missing pieces silently.
 
 Mark `blocked` if implementation cannot proceed safely:
 
@@ -265,7 +271,8 @@ Block instead of guessing when:
 - AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
 - the task conflicts with current code or specs
 - a required external credential/service is unavailable and no mock/test substitute is specified
-- the task cannot be completed without widening into another queue item
+- required local app-run, endpoint, browser, or manual-smoke validation cannot be performed and no accepted non-runtime limitation applies
+- completing the named feature would require widening into another queue item
 
 ## Queue update discipline
 

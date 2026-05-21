@@ -287,7 +287,8 @@ A good sprint spec contains:
 - AuthContext, tenant/customer scope, role/capability rules, approval/audit/trace obligations, and required tests for every user-facing action
 - acceptance behavior and module-level tests
 - pending questions and explicit defer list
-- done criteria that include full-stack smoke/integration validation when applicable
+- done criteria that define the working local app state for the sprint and include full-stack smoke/integration validation when applicable
+- local app-run or manual test checklist expectations for the visible/API/workstream behavior named by the sprint; if local execution is not applicable, state why
 
 For smaller plans, create vertical slices that are:
 - independently meaningful to the business
@@ -318,11 +319,11 @@ For each sprint or slice, create a matching backlog file that includes:
 - test plan by class/family, including guardrail/evaluation/governance/audit/outcome tests when applicable
 - implementation order
 - suggested harness task breakdown
-- done criteria
-- explicit defer list
+- done criteria, including what must work through the locally running app or API/UI surface
+- explicit defer list, including whether each deferral narrows the delivery goal or blocks calling the feature implemented
 
 The suggested harness task breakdown is the default leaf layer.
-Each task item should be phrased as a bounded independent vertical implementation prompt that carries the workstream/structured-surface/capability contract, not as a vague module/page/component slice. For module sprints, include a final module-level full-stack smoke/integration task when backend plus frontend or multiple backend exposure channels must work together.
+Each task item should be phrased as a bounded independent vertical implementation prompt that carries the workstream/structured-surface/capability contract, not as a vague module/page/component slice. For module sprints, include a final module-level full-stack smoke/integration task when backend plus frontend or multiple backend exposure channels must work together. If the sprint goal names a user-visible feature, at least one backlog or queue item must prove that feature through the locally running Akka app, an endpoint smoke path, a browser/workstream smoke path, or an explicit manual-test checklist. Do not count deferred work as complete when that deferral prevents the named feature from functioning.
 
 ### 5. Materialize optional leaf task briefs when needed
 
@@ -386,7 +387,7 @@ The queue must:
 - represent dependencies with `depends on: [...]`
 - include the smallest `required reads` needed for the task; include the AI-first doctrine and focused AI-first companion skills only when the task implements or verifies goals/plans, agents, policies, decisions, approvals, traces, UI surfaces, governance, or outcomes
 - include the exact implementation `skills` to load, pairing AI-first companion skills with the concrete Akka substrate skills rather than replacing them
-- include expected outputs, required checks, and done criteria
+- include expected outputs, required checks, local/runtime validation when applicable, and done criteria
 - preserve vertical workstream context in each implementation task: functional agent(s), structured surface/action or workstream event, capability id(s)/class(es), AuthContext, role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
 - preserve capability context in each implementation task: capability id(s), authority/scope, schemas, side effects, idempotency, approval rules, audit/trace obligations, and exposure channels affected
 - mark or keep tasks `blocked` when they name only a component, page, module, or generic UI feature without the workstream/surface/capability contract needed for implementation
@@ -580,7 +581,8 @@ Create this queue only when open decisions are meaningful enough to affect plann
 - skills
 - expected outputs
 - required checks
-- done criteria
+- done criteria that say what observable behavior proves the task is complete
+- local-run/manual-smoke validation when the task implements runtime app behavior, or an explicit non-runtime/internal-only reason
 - notes when useful
 
 Create queue tasks from backlog `Suggested harness task breakdown` items, not from every class name. A queue task should be one focused harness implementation run. For SaaS foundation work, never collapse invitation lifecycle, email delivery, user directory/search, membership/role management, admin audit/search, access review queues, `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, behavior editing agents, AI admin, decision cards for risky admin recommendations, admin/agent-governance UI, and security/admin/agent-governance tests into a single broad `auth/admin` or `agent governance` queue item.
@@ -624,7 +626,8 @@ Before finishing, verify:
 - `specs/pending-tasks.md` exists when follow-on implementation work remains and is sufficiently unblocked
 - pending tasks map to backlog task-breakdown items
 - pending tasks preserve capability ids, authority/scope, schemas, side effects, idempotency, audit, approval, and exposure decisions when implementing capability behavior
-- pending tasks include required reads, skills, expected outputs, checks, and done criteria
+- pending tasks include required reads, skills, expected outputs, checks, local/runtime validation where applicable, and done criteria
+- no sprint, backlog, or pending task describes a named feature such as user auth, sign-in, onboarding, User Admin, Agent Admin, or an app-specific workflow as implemented unless the required backend, API, UI/workstream surface, authorization, audit/trace, and tests for the stated scope are included or the scope is explicitly narrowed
 - AI-first pending tasks include relevant AI-first reads/skills plus concrete Akka substrate skills
 - cross-cutting concerns are not duplicated excessively across modules, sprints, or slices
 - browser UI work, including agent catalog/detail, prompt governance, skill governance, manifest management, tool-boundary, behavior editing proposal, and trace surfaces, has a selected style-guide spec or a pending/deferred style-selection question before UI tasks are created

@@ -93,10 +93,10 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - pending questions that block or affect the sprint
 - implementation task groups
 - module-level full-stack test plan
-- done criteria
-- explicit defer list
+- done criteria, including local-run/manual-test expectations for the named sprint goal
+- explicit defer list, with impact on whether the sprint goal remains fully working
 
-A sprint should end with something demonstrable and testable through the relevant backend and frontend surface.
+A sprint should end with a named, working app state. For generated full-stack Akka apps, the sprint goal is not complete until the user-visible capability named by the sprint can be exercised through the locally running Akka app, including the relevant backend, API, frontend/workstream surface, authorization boundary, audit/trace behavior, and required tests. If a planned deferral prevents that capability from working end to end, narrow or rename the sprint goal, mark the affected work blocked/incomplete, or split the sprint; do not call the original feature implemented.
 
 ## Backlog alignment
 
@@ -116,7 +116,8 @@ The backlog should break the sprint into harness-sized vertical tasks. Each impl
 - side effects, idempotency, approval, audit, and trace obligations;
 - selected Akka substrate and endpoint/tool/workflow/timer/consumer exposure;
 - frontend/API/realtime work where user-facing;
-- required success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, and smoke tests.
+- required success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, and smoke tests;
+- the local app-run or manual verification path that proves the task contributes to the sprint's working state, or an explicit statement that the task is non-runtime/internal-only.
 
 Prefer this order when applicable:
 
@@ -177,15 +178,19 @@ Each task should include required reads for the smallest useful set:
 
 ## Done criteria for a module sprint
 
+A module sprint is done only when the named sprint goal is fully working at the stated scope. "Working" means a developer can run the Akka app locally, exercise the visible feature or operational surface named by the sprint, and observe the expected authorized success, denial/error, audit/trace, and UI/API behavior. Akka local execution is treated as production-like validation for the increment.
+
 A module sprint is done only when:
 
-- all runnable tasks for the sprint are done or explicitly deferred
+- all tasks required for the named sprint goal are `done`; tasks may be `deferred` only when they do not prevent the named goal from working, or when the sprint goal is explicitly narrowed/renamed
 - backend component tests pass
 - endpoint tests pass for the sprint API surface
 - frontend checks/tests pass for generated full-stack AI-first SaaS
 - at least one module-level integration or smoke path verifies the full stack for the sprint
-- deferred items and blocked questions are visible in the sprint spec, backlog, or queues
-- AI-first authority, policy, trace, evaluation, and outcome constraints are either implemented, explicitly deferred, or blocked by named questions
+- the app has been run locally, or the sprint completion summary records the exact reason local execution was not possible and whether that blocks completion
+- a manual test checklist exists for the sprint's visible feature(s), including sign-in/context, happy path, forbidden/disabled/tenant-scope behavior where relevant, and the expected audit/trace evidence
+- deferred items and blocked questions are visible in the sprint spec, backlog, or queues and state whether they narrow the sprint goal or block completion
+- AI-first authority, policy, trace, evaluation, and outcome constraints required for the named goal are implemented; constraints may be deferred only when the sprint scope explicitly excludes the affected behavior and the output is not described as fully implemented
 
 ## Anti-patterns
 

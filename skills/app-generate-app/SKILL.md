@@ -21,6 +21,7 @@ The skill should:
 - choose full regeneration or localized regeneration deliberately
 - make assumptions and generation scope explicit
 - support downstream running, testing, and manual evaluation
+- make clear whether the generated app was actually run locally and what visible/API/workstream behavior was validated
 - report clearly what changed and what remains uncertain
 
 ## Required reading
@@ -84,6 +85,7 @@ When generating, this skill must:
 - verify readiness did not ignore the required `15-operating-model/` for generated AI-first SaaS apps
 - identify whether generation is full or localized
 - identify which outputs are in scope
+- identify the local run, endpoint smoke, browser/workstream smoke, or manual-test path expected to prove the generated scope works
 - realize outputs from the description
 - keep generated outputs consistent with the current description
 - avoid treating generated code as authoritative
@@ -206,7 +208,7 @@ Before finishing, verify:
 - Java base package is explicit and is not accidentally inherited from `com.example` reference examples
 - regeneration scope is explicit
 - outputs in scope are listed clearly
-- executed steps and results are reported clearly
+- executed steps and results are reported clearly, including whether the app was run locally and what visible/API/workstream paths were validated
 - semantic gaps discovered during generation are surfaced as description issues, not buried in code changes
 
 ## Response style

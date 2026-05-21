@@ -34,6 +34,8 @@ Read these first if present:
 
 This skill owns WorkOS/AuthKit authentication, bearer-token transport, Akka JWT validation, `/api/me` identity bootstrap/linking, and frontend/backend secret boundaries.
 
+When a sprint, task, or user request says `user auth`, `sign-in`, `login`, or `authentication` is implemented, do not interpret that as only adding AuthKit widgets or a JWT annotation. At the stated scope, the feature is implemented only when a developer can run the Akka app locally, sign in or use the configured local/test token path, call `/api/me`, receive the browser-safe local authorization context, exercise at least one protected API/UI path, observe disabled/forbidden handling, and run the required auth, secret-boundary, and audit tests. If invitation linking, `/api/me`, local authorization, frontend bearer-token calls, protected route checks, or tests are deferred, label the output as a narrower auth seam or mark the task/sprint incomplete; do not call user auth fully implemented.
+
 It does not replace:
 - `akka-basic-user-admin` for local Account, Membership, Role/Capability, UserDirectoryView, support-access, admin audit, and backend authorization semantics;
 - `akka-saas-invitation-onboarding` for complete invitation lifecycle, acceptance, expiry, resend/revoke, delivery status, and onboarding tests;
@@ -72,7 +74,8 @@ New-project setup checklist:
 2. put only `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI` in `frontend/.env.local`;
 3. put `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL` in backend `.env` or deployment secrets;
 4. put `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL` in backend secrets before production invite email delivery is considered ready;
-5. run `/api/me`, protected API, invitation-linking, disabled-user, forbidden-role/scope, tenant/customer-isolation, and frontend secret-boundary tests before app-specific features.
+5. run `/api/me`, protected API, invitation-linking, disabled-user, forbidden-role/scope, tenant/customer-isolation, and frontend secret-boundary tests before app-specific features;
+6. run the Akka app locally and verify the intended sign-in/auth flow or documented local/test-token substitute reaches the authenticated shell and protected API path before marking the auth sprint complete.
 
 If issuer/audience validation is required, store WorkOS issuer/audience values in backend-only deployment configuration, commonly `WORKOS_JWT_ISSUER` and `WORKOS_JWT_AUDIENCE`, and apply them in Akka JWT configuration/annotations. Never put `WORKOS_API_KEY`, Resend keys, bootstrap admin data, JWT key material, or service credentials in `frontend/.env*`.
 

@@ -376,10 +376,12 @@ This is usually more efficient than doing an entire sprint in one long harness s
 
 After the runnable tasks for a sprint are complete, ask the harness to summarize what changed and how to test it. Then perform manual testing through the relevant surfaces: API, UI, integrations, or local app behavior.
 
+A sprint goal is complete only when the named app state works at the selected scope in the locally running Akka app or through the documented local test substitute. If a deferral prevents the named feature from working, treat the sprint as narrowed, blocked, or incomplete rather than completed.
+
 Example prompts:
 
 ```text
-Summarize sprint 02: completed tasks, changed files, automated checks, deferred items, and manual test instructions.
+Summarize sprint 02: completed tasks, changed files, automated checks, local app-run status, deferred items, and manual test instructions. Say whether the sprint goal is fully working, narrowed, blocked, or incomplete.
 ```
 
 ```text

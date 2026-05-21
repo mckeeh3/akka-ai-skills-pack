@@ -95,9 +95,10 @@ Each task brief must include:
 6. Skills to load
 7. Expected outputs
 8. Required tests
-9. Done criteria
+9. Local/runtime validation path when the task implements app behavior
+10. Done criteria
 
-The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, and done criteria from the brief. It must also preserve relevant source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
+The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
 
 ## AI-first context preservation
 
@@ -131,7 +132,7 @@ The task brief must not silently widen the backlog item.
 Allowed:
 - narrowing one backlog item into a smaller implementation contract
 - making file outputs explicit
-- clarifying exact tests and stopping conditions
+- clarifying exact tests, local validation, and stopping conditions
 - splitting one oversized backlog item into two or more task briefs when necessary
 
 Not allowed:
@@ -184,7 +185,7 @@ Avoid names like:
 Avoid:
 - rewriting the whole backlog item without narrowing it
 - omitting non-goals
-- omitting tests
+- omitting tests or local/runtime validation for feature-bearing tasks
 - listing broad outputs like "implement service management"
 - leaving the skill list too vague for the next run
 - creating task briefs for every backlog item even when the backlog item is already small enough
@@ -201,8 +202,9 @@ Before finishing, verify:
 - AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome context from the backlog item is either preserved in the brief or explicitly out of scope
 - unresolved AI-first blockers are captured as pending questions and block only affected queue entries
 - required tests are named clearly
+- local app-run, endpoint smoke, browser/workstream smoke, or manual-test validation is named for tasks that implement runtime behavior, or the task explicitly says it is non-runtime/internal-only
 - the listed skills match the task's component type
-- done criteria define a clear stopping point
+- done criteria define a clear stopping point and do not call a named feature implemented when required backend/API/UI/auth/audit/test pieces are deferred
 - `specs/pending-tasks.md` has a matching entry or updated existing entry for this task brief
 - existing queue task IDs and statuses are preserved
 

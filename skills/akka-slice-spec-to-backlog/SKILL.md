@@ -98,8 +98,8 @@ The backlog file must include:
 9. Test plan by file/class
 10. Implementation order
 11. Suggested harness task breakdown
-12. Done criteria
-13. Explicit defer list
+12. Done criteria, including the working local app/API/UI state for the slice or sprint goal
+13. Explicit defer list, including whether each deferral narrows the goal or blocks calling the feature implemented
 
 The suggested harness task breakdown is the default leaf layer for implementation.
 Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
@@ -108,7 +108,8 @@ When the target slice or sprint is the SaaS foundation, split the breakdown into
 
 Also split governed runtime agent foundation work into separate backlog and pending-task items by component/UI/test family: `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance with prompt assembly and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, authorized `readSkill(skillId)` and `SkillLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents and proposed-diff approval, prompt/skill/manifest/tool-boundary UI, trace UI, and security/admin/agent-governance tests. Do not produce one broad managed-agent or `agent governance` item that spans all of these.
 
-For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant source capability ids, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, audit/trace requirements, UI surface, and concrete checks rather than reducing the work to a vague implementation label.
+For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant source capability ids, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
+If the slice or sprint goal names a feature such as sign-in, user auth, invitation onboarding, User Admin, Agent Admin, or an app-specific workflow, the backlog must include the backend, endpoint/API, frontend/workstream surface, authorization, audit/trace, tests, and local smoke/manual verification needed for that named feature to work at the stated scope. Deferrals that prevent that working state must narrow/rename the goal or block completion; they must not be counted as done.
 If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
 Preserve existing task IDs and statuses when updating an existing queue.
 
@@ -166,7 +167,7 @@ A good backlog usually supports independent tasks such as:
 
 Avoid:
 - restating the slice spec without implementation detail
-- omitting tests or done criteria
+- omitting tests, local/runtime validation, or done criteria
 - inventing classes unrelated to the slice or sprint's purpose
 - widening scope to future slices or sprints
 - breaking sprint/backlog or slice/backlog numbering consistency
@@ -181,7 +182,8 @@ Before finishing, verify:
 - UI tasks include the selected style guide in required reads, or are blocked by the style-selection question
 - AI-first delegated-work, authority, policy, decision, trace, UI-surface, evaluation, and outcome constraints from the source slice are preserved in backlog sections and pending-task entries when applicable
 - unresolved AI-first authority, approval, policy, risk, trace, UI, evaluation, or outcome decisions block only the affected tasks and are captured as pending questions
-- the tests cover entity/workflow/view/endpoint behavior as applicable
+- the tests cover entity/workflow/view/endpoint/frontend behavior as applicable
+- the local app-run, endpoint smoke, browser/workstream smoke, or manual-test path is present for feature-bearing sprint/slice goals
 - the harness task breakdown is composed of bounded operations
 - any oversized task item is explicitly marked for further decomposition before coding
 - `specs/pending-tasks.md` has matching queue entries for runnable harness tasks
