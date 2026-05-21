@@ -71,6 +71,8 @@ The job of this skill is to define:
 
 It should avoid prematurely locking in code structure unless the behavior itself requires a structural distinction.
 
+Behavior specs do not own capability boundaries. If a behavior change adds or changes actors/callers, AuthContext, inputs/outputs, side effects, idempotency, approval, audit, exposure surfaces, source functional agents, or source surface actions, update or route to `app-description-capability-modeling` instead of burying those contract changes only in `20-behavior/`.
+
 ## What this skill must capture
 
 For each requested change, identify and describe as applicable:

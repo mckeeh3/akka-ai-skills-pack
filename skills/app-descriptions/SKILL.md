@@ -98,6 +98,30 @@ Load the companion skill that matches the current task. Users do not need to nam
 
 For generated full-stack SaaS, do not change `10-capabilities/`, `55-ui/`, readiness, generation scope, or implementation planning for a user-facing request without first checking whether `12-workstreams/functional-agents.md`, `12-workstreams/surfaces-index.md`, and relevant `12-workstreams/surface-contracts/**` must change. `12-workstreams/` owns functional agent placement, surface meaning, surface actions, and surface-to-capability traceability. `10-capabilities/` owns governed backend contracts. `55-ui/` owns browser realization only.
 
+## Companion boundary matrix
+
+Use this ownership matrix to avoid loading every app-description skill for one change:
+
+| Concern | Primary owner | Must link to |
+|---|---|---|
+| Initial tree, scope label, baseline readiness/generation policy | `app-description-bootstrap` | secure foundation, workstreams, capabilities, operating model, tests, security, observability, UI |
+| Messy or mixed user input | `app-description-input-normalization` | downstream routing only; it is not authoritative app meaning |
+| Intent classification and next-step choice | `app-description-intake-router` | smallest focused companion; no long-lived layer ownership |
+| User-facing work areas and left-rail agents | `app-description-functional-agent-modeling` | surfaces, capabilities, authority, traces, tests, UI |
+| Typed renderable workstream artifacts and actions | `app-description-surface-modeling` | functional agents, capability ids, auth, observability, rendering tests, UI |
+| Governed backend operations/queries | `app-description-capability-modeling` | source functional agent/surface/action or explicit `internal-only`, behavior, tests, security, observability |
+| Rules, flows, state transitions, invariants | `app-description-behavior-specification` | existing or newly required capability contract, tests, security, observability |
+| Acceptance, regression, negative, security, observability verification | `app-description-test-specification` | capability/behavior/security/UI/observability artifacts under test |
+| Identity, authorization, tenant isolation, data protection, denial behavior | `app-description-auth-security` | protected capabilities, behavior, tests, audit/trace obligations |
+| Logs, metrics, audit, traces, health, alerts, diagnosability | `app-description-observability` | capability evidence, behavior, tests, security, supervision/audit UI |
+| Browser realization of workstream shell, surfaces, routes, APIs, states, style | `app-description-ui` | `12-workstreams/`, `10-capabilities/`, auth/security, tests, observability |
+| Cross-layer impact and regeneration locality | `app-description-change-impact` | all changed authoritative layers, traceability, readiness, specs/backlogs when present |
+| Generation readiness state | `app-description-readiness-assessment` | actual authoritative layers; it must not fill missing semantics |
+| Realized code/tests/assets | `app-generate-app` | readiness result and current description; generation must not invent missing meaning |
+| Human review summaries | `app-description-change-summary`, `app-description-readiness-summary` | authoritative layers or latest assessment; summaries are derived, not source of truth |
+
+When a change crosses rows, update the primary owner first, then only the linked layers that the semantic change actually affects. Do not use readiness, summaries, UI routes, or generated output diffs to define application meaning that belongs in workstreams, capabilities, behavior, tests, security, or observability.
+
 ## Default flow
 
 Prefer this sequence unless the task is already narrowly scoped:

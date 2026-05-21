@@ -40,6 +40,8 @@ Read these first if present:
 Prefer to use `app-description-input-normalization` first when the input is broad, mixed, or ambiguous.
 If normalization has not yet occurred, this skill may perform lightweight extraction itself.
 
+This skill is routing-only. It may name candidate deltas and the next focused skill, but it must not treat its own routing notes as authoritative app-description content. Long-lived meaning belongs in the focused owner layer: `12-workstreams/`, `10-capabilities/`, `15-operating-model/`, `20-behavior/`, `30-tests/`, `40-auth-security/`, `50-observability/`, or `55-ui/`.
+
 If the user does **not** explicitly ask to generate code, run the app, execute tests, or otherwise realize outputs, treat the input as:
 - **change only the app description**
 

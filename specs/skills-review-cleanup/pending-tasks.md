@@ -155,7 +155,7 @@
 
 ### TASK-04-001: App-description boundary audit
 
-- status: pending
+- status: done
 - source: skills review recommended execution order step 4
 - task brief: none
 - depends on: [TASK-03-001]
@@ -204,7 +204,12 @@
 - done criteria:
   - app-description skills present a coherent maintenance workflow with clear layer ownership
 - commit message suggestion: `Clarify app-description skill boundaries`
-- notes: []
+- notes:
+  - reviewed app-description doctrine, architecture, maintenance flow, AI-first and capability-first doctrine, seed app-description reference, cleanup plan, and app-description companion skills listed in required reads.
+  - finding: minor-alignment-edit; app-description family was broadly coherent, with remaining risk around agents treating routing/readiness/summary notes as authoritative or burying capability-boundary changes in behavior artifacts.
+  - edits: added a companion boundary matrix to `app-descriptions`; clarified `app-description-intake-router` as routing-only; clarified that `app-description-behavior-specification` must route capability-contract changes to capability modeling.
+  - checks: description-first path preserves functional agents, structured surfaces, capabilities, auth/security, tests, observability, readiness, and generation policy; readiness/generation gates still block guessed secure SaaS security or workstream semantics; git diff --check passed.
+  - commit: Clarify app-description skill boundaries
 
 ### TASK-05-001: Web UI/auth/foundation skill audit
 
