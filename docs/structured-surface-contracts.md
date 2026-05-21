@@ -85,6 +85,49 @@ Payload rules:
 - Return frontend-safe, scoped, redacted fields only. Do not send hidden secrets or cross-tenant data and rely on the UI not to display them.
 - Use role-specific action lists only as a UX hint; backend denial must still be correct if an action is submitted manually.
 
+## Base surface: `markdown_response`
+
+Use `markdown_response` as the smallest valid structured surface for User Admin workstream v0 and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
+
+Contract:
+
+| Field | Requirement |
+|---|---|
+| Surface identity | `surfaceType: "markdown_response"`; stable `surfaceId`; semantic `surfaceVersion`; owner functional agent; workstream entry id. |
+| Payload data | `markdown` string, optional `title`, optional `summary`, optional `sections[]` with stable anchors, optional `codeBlockLanguageHints[]`, and optional `sourceRefs[]` for cited capabilities, documents, or trace/evidence records. |
+| Traceability | Include `correlationId`, `traceIds`, producing `agentId`, producing `workstreamEntryId`, selected `AuthContext`, and response generation timestamp. |
+| Rendering | Render markdown only through an approved markdown parser and sanitizer pipeline; browser output is sanitized HTML, not raw model HTML. |
+| Sanitization | Strip or neutralize raw HTML that can execute code, `<script>`, event-handler attributes, dangerous URL schemes such as `javascript:`, unsafe iframes/embeds, inline styles unless explicitly allow-listed, and untrusted target behavior. External links must be transformed according to the UI security policy, usually with safe `rel` attributes and visible destination affordance. |
+| Redaction | Markdown content must already be scoped and redacted by the producing capability/agent; the renderer must not reveal hidden fields, secrets, prompt text, provider credentials, cross-tenant data, or support-only facts. |
+| Actions | Prefer no consequential inline actions in v0. Allowed actions, when present, use the normal `SurfaceAction` shape and link to governed capabilities such as `open_trace`, `copy_response`, `retry_request`, `request_clarification`, or `open_follow_up_task`; backend authorization remains authoritative. |
+| UI states | Define loading/generating, ready, empty, error, forbidden, stale/reconnecting, and redacted states. Forbidden and redacted states must avoid leaking the original unsafe content. |
+| Accessibility | Preserve semantic headings, lists, tables, code blocks, blockquotes, and links; provide keyboard navigation, visible focus, readable code-block wrapping/copy affordance where allowed, screen-reader-friendly status changes, and heading hierarchy that does not skip the surrounding shell structure. |
+| Realtime | If streamed or updated incrementally, partial markdown must be rendered safely at every increment or shown as plain text until finalized; reconnect either resumes from a safe event id or marks the surface stale and requests refresh. |
+| Tests | Cover markdown-to-sanitized-HTML rendering, blocked scripts/event handlers/unsafe links, code-block and table rendering, trace/correlation link presence, loading/empty/error/forbidden/redacted states, accessibility semantics, stale/reconnect behavior when used, frontend secret boundaries, and backend authorization for any action. |
+
+Minimal type-specific data shape:
+
+```ts
+type MarkdownResponseData = {
+  markdown: string;
+  title?: string;
+  summary?: string;
+  workstreamEntryId: string;
+  producingAgentId: string;
+  sourceRefs?: Array<{
+    refType: "capability" | "trace" | "document" | "evidence";
+    refId: string;
+    label: string;
+  }>;
+  sections?: Array<{
+    anchor: string;
+    title: string;
+  }>;
+};
+```
+
+`markdown_response` is acceptable for first-slice guidance, explanations, denials, and summaries. Do not use it to hide missing typed surfaces for decisions, approvals, forms, tables, settings, access reviews, audit timelines, or workflow status once those richer interactions are required.
+
 ## Surface action shape
 
 Each surface action is a UI exposure of a governed capability.

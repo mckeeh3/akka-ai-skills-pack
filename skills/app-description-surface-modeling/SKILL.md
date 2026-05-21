@@ -66,6 +66,7 @@ Create or update only the smallest files needed. Keep `12-workstreams/surface-co
 
 Use these types unless the product intent requires a more specific typed surface:
 
+- `markdown_response` for the minimum User Admin workstream v0 and other low-ceremony explanatory replies that still require a typed payload, sanitized rendering, trace/correlation ids, explicit states, accessibility, and rendering/security tests; do not treat it as an informal chat blob or as a substitute for richer typed surfaces when decisions, approvals, forms, tables, settings, audit timelines, or workflow status are required;
 - `dashboard` / `attention-surface`;
 - `form` / `guided-intake`;
 - `table` / `search-results`;

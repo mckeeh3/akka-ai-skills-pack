@@ -100,7 +100,7 @@
 
 ### TASK-MINAPP-01-003: Define markdown_response structured surface contract
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/01-minimum-app-doctrine-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/01-doctrine/03-define-markdown-response-surface.md
 - depends on: [TASK-MINAPP-01-002]
@@ -123,7 +123,8 @@
 - done criteria:
   - `markdown_response` is a first-class structured surface contract
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Define markdown response surface contract`
 
 ### TASK-MINAPP-02-001: Split core foundation guidance into minimum starter and full-core readiness
 
