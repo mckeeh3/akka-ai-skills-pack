@@ -32,23 +32,41 @@ The interface is not a generic analytics dashboard with a chat box. The assistan
 - **Mode parity:** light and dark mode must preserve layout, hierarchy, status semantics, and contrast.
 - **Style restraint:** lightweight style variants may change only colors and fonts; layout, component anatomy, spacing scale, and interaction rules remain stable.
 
-## Supported modes and style variants
+## Supported themes, modes, and style variants
 
-### Mode policy
+### Theme and mode policy
 
-- The design must support `light`, `dark`, and `system` color mode selection.
-- Both light and dark token sets are required for the selected style system.
-- Mode switching must be token-driven through CSS variables, not hard-coded component branches.
-- Generated frontend code may toggle a documented mode class or `data-mode` attribute only.
+- The design must support a user-selectable UI theme in user settings.
+- A theme is a named style package that defines both a light token set and a dark token set.
+- Each theme mainly alters background, surface, border, and font/text color tokens; it may also alter font-family tokens.
+- Each theme must support `light`, `dark`, and `system` color mode selection.
+- `system` mode selects the active theme's light or dark token set from `prefers-color-scheme` while preserving the user's selected theme.
+- Theme and mode preferences are user-experience settings, not authorization state; they must not grant or imply permissions.
+- Both light and dark token sets are required for every supported theme.
+- Theme and mode switching must be token-driven through CSS variables, not hard-coded component branches.
+- Generated frontend code may toggle documented root attributes such as `data-theme="atlas-ops"` and `data-mode="light|dark"` only.
 
-### Lightweight style scope
+### User settings requirement
 
-Style variants are limited to:
+The profile/settings UI must include appearance controls:
 
-- color tokens;
+- theme selector using human-readable theme names;
+- mode selector for `light`, `dark`, and `system`;
+- preview or immediate application of the selected theme/mode before or after save;
+- save, saved, validation, and failed-save states;
+- persistence through the user settings API/client seam so the preference survives refresh and sign-in;
+- safe fallback to the default theme and `system` mode if a stored theme is unavailable.
+
+### Lightweight theme scope
+
+Themes and lightweight style variants are limited to:
+
+- background, surface, and border color tokens;
+- font/text color tokens;
+- semantic accent/status/chart tokens when needed for contrast and harmony;
 - font-family tokens.
 
-Style variants must not change:
+Themes and lightweight style variants must not change:
 
 - screen inventory;
 - navigation structure;
@@ -61,9 +79,9 @@ Style variants must not change:
 - UX copy rules;
 - accessibility constraints.
 
-## Seed style system: Atlas Ops supervisory console
+## Seed theme: Atlas Ops supervisory console
 
-This is the initial AI-first style system to test against the seed app.
+This is the initial AI-first theme to test against the seed app. It is the default theme and must be implemented as one named theme with both light and dark token sets.
 
 ### Font tokens
 
@@ -301,6 +319,27 @@ Required elements:
 - enabled/verified status;
 - link to edit policy guardrails or inspect policy history.
 
+### Profile and appearance settings
+
+Purpose: let each signed-in UI user personalize the interface without changing authorization, layout, or product behavior.
+
+Required elements:
+
+- profile summary and settings context;
+- theme selector listing supported themes;
+- mode selector for `light`, `dark`, and `system`;
+- short explanation that themes change appearance only;
+- immediate preview or clear saved-state feedback;
+- reset-to-default action;
+- save, saving, saved, validation-error, and failed-save states.
+
+Rules:
+
+- appearance settings must be scoped to the signed-in user settings record;
+- changing theme or mode must not change visible capabilities, tenant/customer context, functional agents, or available actions;
+- all supported themes must maintain WCAG AA contrast in both light and dark modes;
+- screenshots/mockups for a theme should include both light and dark examples when practical.
+
 ### Data visualization
 
 - Charts use selected style chart tokens only.
@@ -401,18 +440,22 @@ Authoritative seed app UI files to update during validation:
 Expected generated frontend shape when realization is requested:
 
 - React + Vite + TypeScript frontend;
-- tokenized CSS variables for style and mode;
+- tokenized CSS variables for theme and mode;
+- documented root attributes for selected theme and resolved mode, such as `data-theme` and `data-mode`;
+- user settings seam for persisting selected theme and preferred mode;
 - no copied demo names, users, logos, or metrics from mockups;
 - app-specific names and data from the seed app description;
 - components consume tokens and semantic props rather than hard-coded colors;
-- tests or checks verify both light and dark mode render without inaccessible contrast regressions where practical.
+- tests or checks verify each supported theme renders in both light and dark mode without inaccessible contrast regressions where practical.
 
 ## Acceptance checklist
 
-- [ ] Light and dark modes are both specified and visually equivalent in hierarchy.
-- [ ] Style overrides are limited to color and font tokens.
-- [ ] App shell, command strip, KPI band, decision cards, agent activity, governance controls, and audit paths are represented.
+- [ ] At least one named theme is specified with both light and dark token sets.
+- [ ] UI users can change theme and light/dark/system mode from profile/settings.
+- [ ] Light and dark modes are both specified and visually equivalent in hierarchy for every supported theme.
+- [ ] Theme/style overrides are limited to color and font tokens.
+- [ ] App shell, command strip, KPI band, decision cards, agent activity, governance controls, appearance settings, and audit paths are represented.
 - [ ] AI-first surfaces expose human authority, agent activity, evidence/risk/policy, trace links, and outcome context.
 - [ ] Responsive behavior preserves the primary decision/action on narrow screens.
-- [ ] Accessibility rules cover contrast, focus, keyboard, color-not-alone semantics, and reduced motion.
+- [ ] Accessibility rules cover contrast, focus, keyboard, color-not-alone semantics, and reduced motion across every theme/mode combination.
 - [ ] Seed app UI description can reference this spec without copying mockup demo content.
