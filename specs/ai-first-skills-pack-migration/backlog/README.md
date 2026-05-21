@@ -4,15 +4,13 @@ This directory contains sprint-aligned build backlogs for the AI-first skills pa
 
 ## Execution rules
 
-- Use `../pending-tasks.md` as the source of executable task order.
+- Use `../pending-tasks.md` as historical queue context only; many completed or superseded domain-specific tasks were removed after cleanup.
 - Execute one task per fresh Pi session.
 - Each task must make a git commit containing only that task's intended changes and its queue-status update before it is marked `done`.
 - Each backlog item should be small enough for one focused session or point to a task brief.
 - Sprint 1 has physical task briefs under `../tasks/01-architectural-pivot-and-doctrine/`.
-- Later sprint backlog items are intentionally detailed enough to guide future task-brief creation, but should be revalidated after earlier sprints complete.
-- Sprint 8 is the planned future executable AI-first supplies autopilot reference slice; execute it only after Sprint 7 is complete.
+- Domain-specific worked-example and supplies-reference backlogs were removed after the starter, seed app-description, and focused Akka examples superseded their reusable skills-pack value.
 - Sprint 9 finalizes high-level packaging, release metadata, and AI-first terminology consistency before later component-skill revisions.
-- Sprint 10 adapts the working user-auth onboarding PoC into the authenticated seed app foundation plan for the AI-first DCA example.
 
 ## Backlog files
 
@@ -21,8 +19,5 @@ This directory contains sprint-aligned build backlogs for the AI-first skills pa
 3. `03-app-description-ai-first-refactor-build-backlog.md`
 4. `04-prd-spec-backlog-intake-refactor-build-backlog.md`
 5. `05-substrate-implementation-skill-reframing-build-backlog.md`
-6. `06-worked-example-and-inbox-cleanup-build-backlog.md`
-7. `07-ai-first-alignment-hardening-build-backlog.md`
-8. `08-executable-ai-first-reference-slice-build-backlog.md`
-9. `09-ai-first-packaging-and-terminology-finalization-build-backlog.md`
-10. `10-authenticated-seed-app-foundation-build-backlog.md`
+6. `07-ai-first-alignment-hardening-build-backlog.md`
+7. `09-ai-first-packaging-and-terminology-finalization-build-backlog.md`

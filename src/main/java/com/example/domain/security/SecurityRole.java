@@ -1,7 +1,7 @@
 package com.example.domain.security;
 
 /**
- * DCA seed app roles. WorkOS authenticates users; these local roles authorize app actions.
+ * Reference app roles. WorkOS authenticates users; these local roles authorize app actions.
  *
  * <p>These roles are reference-specific capability roles, not the generic SaaS foundation baseline.
  * New generated SaaS apps should start from foundation roles such as SAAS_OWNER_ADMIN,

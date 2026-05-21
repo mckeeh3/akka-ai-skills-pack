@@ -3,8 +3,8 @@ package com.example.domain.security;
 /**
  * Scoped role assignment owned by local Akka state, not by frontend state or JWT role claims.
  *
- * <p>This DCA reference uses APP_ADMIN as an app-specific bootstrap alias. It is not the
- * preferred generic SaaS role name; use SAAS_OWNER_ADMIN in new foundation implementations.
+ * <p>This executable reference uses APP_ADMIN as an app-specific bootstrap alias. It is not
+ * the preferred generic SaaS role name; use SAAS_OWNER_ADMIN in new foundation implementations.
  */
 public record RoleAssignment(SecurityRole role, String tenantId, String customerId) {
 

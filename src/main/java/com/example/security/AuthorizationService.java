@@ -15,7 +15,7 @@ import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.unauthorized;
 
 /**
- * Central backend authorization helper for DCA seed APIs.
+ * Central backend authorization helper for authenticated reference APIs.
  *
  * <p>WorkOS/JWT authenticates the browser user. Local Akka account state is the authority for
  * status, roles, and tenant/customer scopes.

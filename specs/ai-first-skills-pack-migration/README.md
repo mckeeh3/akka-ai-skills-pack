@@ -32,11 +32,9 @@ The migration is planning-only until individual pending tasks are executed in fr
 3. `sprints/03-app-description-ai-first-refactor-sprint.md` — refactor app-description intake and maintained description layers around the agentic operating model.
 4. `sprints/04-prd-spec-backlog-intake-refactor-sprint.md` — refactor PRD/spec/change-request planning around AI-first interpretation before Akka component selection.
 5. `sprints/05-substrate-implementation-skill-reframing-sprint.md` — reframe existing Akka component implementation skills as the AI-first runtime substrate.
-6. `sprints/06-worked-example-and-inbox-cleanup-sprint.md` — convert DCA concept material into a worked example and retire temporary inbox material.
+6. Former domain-specific worked-example sprints were removed after the starter template, seed app-description, and focused Akka examples superseded their reusable skills-pack value.
 7. `sprints/07-ai-first-alignment-hardening-sprint.md` — close post-migration alignment gaps across packaging, paths, flow docs, lifecycle skills, examples, and future executable reference planning.
-8. `sprints/08-executable-ai-first-reference-slice-sprint.md` — planned future executable supplies autopilot reference slice derived from the DCA app-description example.
-9. `sprints/09-ai-first-packaging-and-terminology-finalization-sprint.md` — finalize high-level packaging, release, doctrine, and AI-first terminology consistency before component-skill revisions.
-10. `sprints/10-authenticated-seed-app-foundation-sprint.md` — adapt the working auth/onboarding PoC into a plan for an authenticated WorkOS/JWT/local-account seed app foundation for the DCA example.
+8. `sprints/09-ai-first-packaging-and-terminology-finalization-sprint.md` — finalize high-level packaging, release, doctrine, and AI-first terminology consistency before component-skill revisions.
 
 ## Backlog alignment
 
@@ -47,13 +45,11 @@ Each sprint has a matching backlog:
 - `backlog/03-app-description-ai-first-refactor-build-backlog.md`
 - `backlog/04-prd-spec-backlog-intake-refactor-build-backlog.md`
 - `backlog/05-substrate-implementation-skill-reframing-build-backlog.md`
-- `backlog/06-worked-example-and-inbox-cleanup-build-backlog.md`
+- former domain-specific worked-example backlogs were removed after cleanup
 - `backlog/07-ai-first-alignment-hardening-build-backlog.md`
-- `backlog/08-executable-ai-first-reference-slice-build-backlog.md`
 - `backlog/09-ai-first-packaging-and-terminology-finalization-build-backlog.md`
-- `backlog/10-authenticated-seed-app-foundation-build-backlog.md`
 
-Sprint 1 has detailed physical task briefs for the initial doctrine pivot. Sprint 8 has implementation task briefs for the first executable AI-first reference slice. Sprint 10 has future task briefs for authenticated seed-app foundation work derived from the user-auth onboarding PoC.
+Sprint 1 has detailed physical task briefs for the initial doctrine pivot. Former domain-specific task briefs were removed after cleanup.
 
 ## Target architecture summary
 

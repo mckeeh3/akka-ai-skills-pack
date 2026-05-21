@@ -2,7 +2,7 @@
 
 Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
-For generated AI-first SaaS work in this source repository, compare end-to-end scaffolded behavior against `templates/ai-first-saas-starter/**`, then compare UI architecture against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under `frontend/src/workstream/**`. In an installed pack, use the starter template under `resources/templates/ai-first-saas-starter/**`, the same architecture doc under `docs/`, and the exported frontend reference under `resources/examples/frontend/**`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**`, DCA/supplies static UI, and standalone static examples are not canonical generated-app structure.
+For generated AI-first SaaS work in this source repository, compare end-to-end scaffolded behavior against `templates/ai-first-saas-starter/**`, then compare UI architecture against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under `frontend/src/workstream/**`. In an installed pack, use the starter template under `resources/templates/ai-first-saas-starter/**`, the same architecture doc under `docs/`, and the exported frontend reference under `resources/examples/frontend/**`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**` and standalone static examples are not canonical generated-app structure.
 
 ## UX completeness
 

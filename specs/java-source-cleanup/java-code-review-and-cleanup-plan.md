@@ -7,6 +7,7 @@ Keep the skills pack's Java code directly useful as executable reference materia
 ## Current decisions
 
 - The legacy `examples/poc-user-auth-onboarding/**` PoC is removed.
+- The DCA/supplies domain-specific vertical is removed.
 - The starter template under `templates/ai-first-saas-starter/**` is the canonical generated-app starter source.
 - Root `src/main/java` remains an executable reference fixture set, not an end-user application.
 - Deletions from root `src/main/java` require skill-family inventory and focused validation because many classes are discovered by Akka annotations or exercised by route tests without direct imports.
@@ -17,6 +18,7 @@ Keep the skills pack's Java code directly useful as executable reference materia
 - Removed unused `src/main/java/com/example/domain/security/BootstrapAdmin.java`.
 - Added `docs/java-validation-guide.md`.
 - Added `specs/java-source-cleanup/src-main-java-inventory.md`.
+- Removed DCA/supplies app-description, Java source, tests, and static resources in the follow-up cleanup pass.
 
 ## Validation expectation
 
@@ -86,7 +88,7 @@ grep -R "poc-user-auth-onboarding" -n docs specs .agents --exclude-dir=target --
 
 **Validation:** rendered starter backend compiles and tests pass or documented blockers are explicit.
 
-### Task JAVA-CLEANUP-003 — Decide DCA security/admin reference ownership
+### Task JAVA-CLEANUP-003 — Decide core security/admin reference ownership
 
 **Goal:** Decide whether root security/admin code remains a canonical executable reference, moves to a named example slice, or is superseded by the starter template.
 
@@ -107,23 +109,7 @@ grep -R "poc-user-auth-onboarding" -n docs specs .agents --exclude-dir=target --
 
 **Validation:** run security/admin focused tests if code changes are made.
 
-### Task JAVA-CLEANUP-004 — Decide DCA/supplies vertical ownership
-
-**Goal:** Decide whether the supplies autopilot slice should stay in root `src/`, move to a named executable example, or be split into smaller skill-specific fixtures.
-
-**Scope:**
-
-- `src/main/java/com/example/api/supplies/**`
-- `src/main/java/com/example/application/supplies/**`
-- `src/main/java/com/example/domain/supplies/**`
-- matching tests under `src/test/java/com/example/application/supplies/**` and `src/test/java/com/example/domain/supplies/**`
-- DCA app-description docs and AI-first SaaS skills that refer to the slice
-
-**Output:** decision record plus a follow-up task list. Do not delete the slice in the same session unless the replacement references and tests are obvious and small.
-
-**Validation:** run supplies focused tests if code changes are made.
-
-### Task JAVA-CLEANUP-005 — Frontend reference endpoint decision
+### Task JAVA-CLEANUP-004 — Frontend reference endpoint decision
 
 **Goal:** Decide whether `FrontendReferenceApiEndpoint` and `FrontendReferenceUiEndpoint` are canonical web UI fixtures or redundant.
 
@@ -139,7 +125,7 @@ grep -R "poc-user-auth-onboarding" -n docs specs .agents --exclude-dir=target --
 
 **If removing:** remove endpoints, resources, and test together, then run focused endpoint tests plus compile.
 
-### Task JAVA-CLEANUP-006 — Test phase/profile cleanup proposal
+### Task JAVA-CLEANUP-005 — Test phase/profile cleanup proposal
 
 **Goal:** Reduce harness friction by separating fast deterministic tests from Akka runtime integration tests without losing coverage.
 
@@ -157,7 +143,7 @@ grep -R "poc-user-auth-onboarding" -n docs specs .agents --exclude-dir=target --
 
 **Output:** proposal under `specs/java-source-cleanup/` and any small doc update.
 
-### Task JAVA-CLEANUP-007 — Remove fixed sleeps from stream/realtime tests
+### Task JAVA-CLEANUP-006 — Remove fixed sleeps from stream/realtime tests
 
 **Goal:** Replace brittle `Thread.sleep(...)` patterns in stream/realtime tests with deterministic Awaitility or route/client readiness checks.
 

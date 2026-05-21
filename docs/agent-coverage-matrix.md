@@ -61,8 +61,8 @@ Use this addendum when checking whether agent-facing examples preserve governed 
 | Consequential capability uses proposal/approval before side effect | `RefundProposalTools`, `RefundApprovalAgent`, `RefundApprovalWorkflow` | `RefundApprovalCapabilityTest` | ✅ |
 | Workflow-backed supervised capability with trace, approval/denial, idempotency, and validation | `SupervisedExportWorkflow` | `SupervisedExportWorkflowIntegrationTest` | ✅ |
 | View-backed scoped evidence capability with redaction | `SupervisedExportEvidenceView` | `SupervisedExportEvidenceViewIntegrationTest` | ✅ |
-| Timer-backed capability execution | `SupplyDecisionTimedAction`, `SupplyAutopilotWorkflow` | `SupplyDecisionTimedActionTest`, `SupplyAutopilotWorkflowIntegrationTest`, `SupplySliceAcceptanceIntegrationTest` | ◑ covered by the broader AI-first supply slice, not a minimal standalone capability-first example |
-| Event-reactive consumer capability execution | existing consumer examples plus supply slice event flow | consumer integration tests exist, but no minimal capability-first consumer reference was added in the migration | △ |
+| Timer-backed capability execution | existing timed-action examples | timed-action and workflow tests exist, but no minimal capability-first timer reference has been added | △ |
+| Event-reactive consumer capability execution | existing consumer examples | consumer integration tests exist, but no minimal capability-first consumer reference has been added | △ |
 
 ## Current cleanup backlog
 

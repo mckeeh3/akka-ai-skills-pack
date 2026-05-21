@@ -15,7 +15,7 @@ Read first:
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
-Use canonical doctrine plus this skill for surface selection. Also use `../../docs/agent-workstream-application-architecture.md` and `../../docs/structured-surface-contracts.md` when deciding where a surface belongs in the agent workstream model. Use the starter template (`../../templates/ai-first-saas-starter/**` in this repository or `../../resources/templates/ai-first-saas-starter/**` in an installed pack) as the canonical full-core implementation baseline. Use `../../docs/examples/ai-first-dca-app-description/` only as a worked domain-rich vertical UI reference when useful; do not treat consolidated historical UI files as canonical if they conflict with functional-agent workstream placement. Archived inbox UI notes are provenance only, not operative guidance.
+Use canonical doctrine plus this skill for surface selection. Also use `../../docs/agent-workstream-application-architecture.md` and `../../docs/structured-surface-contracts.md` when deciding where a surface belongs in the agent workstream model. Use the starter template (`../../templates/ai-first-saas-starter/**` in this repository or `../../resources/templates/ai-first-saas-starter/**` in an installed pack) as the canonical full-core implementation baseline. Archived inbox UI notes are provenance only, not operative guidance.
 
 Then load focused downstream implementation skills only for the selected UI, API, realtime, and backing component scope.
 

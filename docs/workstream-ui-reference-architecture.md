@@ -20,7 +20,7 @@ Current implementation references:
 - canonical User Admin UI vertical pattern: fixtures in `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
 
-Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Older `frontend/src/screens/**` files and static examples under `src/main/resources/static-resources/frontend-reference/**`, `supplies/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` are mechanics or legacy references only; do not promote them as canonical generated-app structure.
+Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Older `frontend/src/screens/**` files and static examples under `src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` are mechanics or legacy references only; do not promote them as canonical generated-app structure.
 
 ## Core rule
 
@@ -383,7 +383,7 @@ Do not hand-edit generated assets under `src/main/resources/static-resources/**`
 
 Do not delete `frontend/src/screens/**` until the replacement shell and reusable surfaces are in place and contract tests have moved to the workstream taxonomy.
 
-Do not promote legacy static examples under `src/main/resources/static-resources/frontend-reference/**`, `supplies/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` as canonical full-stack SaaS UI guidance. Keep them as quarantined mechanics references until later cleanup.
+Do not promote legacy static examples under `src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` as canonical full-stack SaaS UI guidance. Keep them as quarantined mechanics references until later cleanup.
 
 ## Implementation handoff sequence
 

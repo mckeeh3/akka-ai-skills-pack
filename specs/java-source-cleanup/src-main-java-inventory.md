@@ -1,6 +1,6 @@
 # `src/main/java` inventory by skills-pack family
 
-Status: current inventory after removing the legacy PoC and the unused `BootstrapAdmin` record.
+Status: current inventory after removing the legacy PoC, the unused `BootstrapAdmin` record, and the DCA/supplies domain-specific vertical slice.
 
 ## Keep as canonical or directly useful executable fixtures
 
@@ -21,7 +21,6 @@ Status: current inventory after removing the legacy PoC and the unused `Bootstra
 | Agent safety/tools/multimodal | `CompetitorMentionGuard`, `DocumentAnalysisAgent`, `CartInspectorAgent`, `RemoteShoppingCartAgent`, `RefundApproval*` | Guardrails, multimodal, component tools, remote MCP tools, decision/proposal workflow. |
 | Governed runtime agent foundation | `application/agentfoundation/**`, `domain/agentfoundation/**`, `ManagedReferenceAgentEndpoint` | Durable agent definitions, governed prompt/skill docs, manifests, tool boundaries, prompt assembly, skill authorization, behavior editing, work traces, closed-loop improvement. |
 | Core SaaS security/admin reference | `api/security/**`, `application/security/**`, `domain/security/**`, `security/**` | WorkOS-backed `/api/me`, local authorization, user/admin/tenant/customer entities, admin audit, invite email seam. This remains a richer executable reference alongside the generated starter template. |
-| AI-first SaaS DCA/supplies vertical | `api/supplies/**`, `application/supplies/**`, `domain/supplies/**` | Domain-rich vertical fixture for decision cards, policy gates, audit/trace views, timed suppression, workflow supervision, UI endpoints, agent tool stubs. |
 | Capability-first supervised export | `SupervisedExportWorkflow`, `SupervisedExportEvidenceView`, `SupervisedExportState` | High-risk governed capability, approval pause, audit/evidence view, idempotency. |
 | Web UI reference pair | `FrontendReferenceApiEndpoint`, `FrontendReferenceUiEndpoint` | Tested lightweight frontend/API fixture for web UI skills; keep unless replaced by a clearer canonical web UI example. |
 | Package docs | `package-info.java` files | Low-cost package orientation for source examples. |
@@ -32,23 +31,24 @@ Status: current inventory after removing the legacy PoC and the unused `Bootstra
 | --- | --- |
 | `examples/poc-user-auth-onboarding/**` | Legacy portable PoC superseded by `templates/ai-first-saas-starter/**` and current root security/admin reference code. |
 | `src/main/java/com/example/domain/security/BootstrapAdmin.java` | Unused record; active bootstrap code uses `AdminUserBootstrap.BootstrapAdminSpec`. |
+| `docs/examples/ai-first-dca-app-description/**` | Domain-specific app-description vertical superseded by the canonical seed app-description and starter template guidance. |
+| `src/main/java/com/example/api/supplies/**`, `src/main/java/com/example/application/supplies/**`, `src/main/java/com/example/domain/supplies/**` | Domain-specific supplies/DCA vertical no longer provides unique reusable skills-pack value. |
+| `src/test/java/com/example/application/supplies/**`, `src/test/java/com/example/domain/supplies/**` | Tests covered removed DCA/supplies vertical only. |
+| `src/main/resources/static-resources/supplies/**` | Static domain-specific supplies UI superseded by workstream UI reference and starter guidance. |
+| `src/main/java/com/example/api/security/DcaSeedFrontendEndpoint.java` and matching DCA seed tests | DCA-named frontend/security bridge superseded by starter/workstream frontend references. |
 
 ## Cleanup candidates that require separate decisions
 
 These are useful today, but should be reviewed in focused future sessions rather than deleted opportunistically.
 
-1. **DCA seed security/admin ownership**
+1. **Core security/admin reference ownership**
    - Scope: `api/security/**`, `application/security/**`, `domain/security/**`, `security/**`.
    - Decision: keep as richer executable reference, move to a named example slice, or supersede with starter-template coverage.
 
-2. **DCA/supplies vertical ownership**
-   - Scope: `api/supplies/**`, `application/supplies/**`, `domain/supplies/**`.
-   - Decision: keep as domain-rich vertical fixture, move to a named example module, or split into smaller skill-specific examples.
-
-3. **Frontend reference pair**
+2. **Frontend reference pair**
    - Scope: `FrontendReferenceApiEndpoint`, `FrontendReferenceUiEndpoint`, matching static resources and integration test.
    - Decision: document as canonical lightweight web UI reference or remove after replacement.
 
-4. **Test phase cleanup**
+3. **Test phase cleanup**
    - Scope: `src/test/java` integration/runtime tests.
    - Decision: introduce Maven profiles/tags or documented slice commands; do not silently drop coverage.

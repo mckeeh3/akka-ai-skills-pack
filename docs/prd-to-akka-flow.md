@@ -53,7 +53,7 @@ For queue templates, see `module-sprint-planning.md`, `solution-plan-to-implemen
 ## What the example demonstrates
 
 The example is not an AI-first SaaS target architecture; it intentionally stays close to a conventional approval workflow while demonstrating decomposition mechanics.
-For generated SaaS foundation structure, start with `examples/ai-first-saas-seed-app-description/README.md`. For additional AI-first operating-model reference structure, see `examples/ai-first-dca-app-description/README.md`.
+For generated SaaS foundation structure, start with `examples/ai-first-saas-seed-app-description/README.md`.
 
 The purchase-request example intentionally includes enough scope to justify multiple component families:
 - one write model

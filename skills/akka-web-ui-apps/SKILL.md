@@ -62,7 +62,7 @@ Canonical source-repository workstream UI reference:
 - integrated shell example: `../../frontend/src/main.tsx`
 - User Admin dashboard/list/detail-edit vertical pattern: `../../frontend/src/workstream/fixtures/**` and `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
-Use the starter template as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Do not use legacy `frontend/src/screens/**`, DCA/supplies static UI, or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
+Use the starter template as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
 
 ## Use this skill when
 

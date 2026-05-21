@@ -28,17 +28,17 @@ Observed in this repository:
 `examples/poc-user-auth-onboarding` duplicated older versions of user/admin/security reference code while the canonical direction moved to:
 
 - `templates/ai-first-saas-starter/backend/src/**` for generated starter code.
-- `src/main/java/com/example/domain/security/**` and related `api/security` / `application/security` files for richer DCA/reference examples.
+- `src/main/java/com/example/domain/security/**` and related `api/security` / `application/security` files for richer executable security/reference examples.
 
 Cleanup result:
 
 1. Removed the PoC from normal examples.
-2. Updated active DCA app-description docs to point to the starter template and current root security reference packages.
-3. Left follow-up task guidance for repairing or annotating historical migration-spec references.
+2. Updated active app-description docs to point to the starter template and current root security reference packages.
+3. Later removed the DCA app-description and supplies executable vertical when it no longer provided unique skills-pack value.
 
 ### P1 — Root `src/` is an overgrown all-in-one reference app
 
-The root executable reference project now mixes many unrelated examples: carts, orders, workflows, agents, security, supplies, frontend, MCP, gRPC, SSE, WebSocket, runtime agent state, and governed agent foundation patterns.
+The root executable reference project now mixes many unrelated examples: carts, orders, workflows, agents, security, frontend, MCP, gRPC, SSE, WebSocket, runtime agent state, and governed agent foundation patterns.
 
 Cleanup direction:
 
@@ -75,12 +75,12 @@ Cleanup direction:
 - Added `docs/java-validation-guide.md`.
 - Added `specs/java-source-cleanup/src-main-java-inventory.md`.
 - Added `specs/java-source-cleanup/java-code-review-and-cleanup-plan.md` with self-contained future task briefs.
+- Removed DCA/supplies app-description, Java source, tests, and static resources in the follow-up cleanup pass.
 
 ## Recommended next tasks
 
 1. Repair active docs/spec references to the removed PoC; leave only explicit historical provenance references.
 2. Add rendered-starter template compile/test validation.
-3. Decide ownership of the DCA security/admin root reference slice.
-4. Decide ownership of the DCA/supplies vertical fixture.
-5. Decide whether the frontend reference endpoint pair is canonical or redundant.
-6. Introduce Maven profiles/tags only after confirming whether current CI expects all `*IntegrationTest` tests under `mvn test`.
+3. Decide ownership of the core security/admin root reference slice.
+4. Decide whether the frontend reference endpoint pair is canonical or redundant.
+5. Introduce Maven profiles/tags only after confirming whether current CI expects all `*IntegrationTest` tests under `mvn test`.

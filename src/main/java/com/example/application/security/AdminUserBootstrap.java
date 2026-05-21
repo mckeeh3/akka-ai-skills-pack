@@ -18,7 +18,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Idempotent backend-only bootstrap for initial DCA seed administrators. */
+/** Idempotent backend-only bootstrap for initial reference administrators. */
 @Setup
 public class AdminUserBootstrap implements ServiceSetup {
 

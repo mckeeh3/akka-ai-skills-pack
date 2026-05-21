@@ -90,8 +90,6 @@ Installed layout:
         08-module-audit-work-trace-prd.md
         09-module-evaluation-closed-loop-improvement-prd.md
         10-canonical-core-app-prd.md
-      ai-first-dca-app-description/
-        app-description/55-ui/style-guide.md
       purchase-request-app-description/
       purchase-request-prd.md
       purchase-request-solution-plan.md
