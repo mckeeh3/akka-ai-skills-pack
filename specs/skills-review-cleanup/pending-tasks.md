@@ -15,7 +15,7 @@
 
 ### TASK-01-001: Routing map audit
 
-- status: pending
+- status: done
 - source: user request for whole-skills alignment review and cleanup plan
 - task brief: none
 - depends on: []
@@ -46,7 +46,11 @@
 - done criteria:
   - top-level routing is clearer and no broader family rewrite occurred
 - commit message suggestion: `Clarify skills routing map`
-- notes: []
+- notes:
+  - reviewed AGENTS.md, skills/README.md, AI-first and capability-first doctrine, cleanup plan, and top-level routing skills.
+  - finding: minor-alignment-edit; clarified canonical handoff order and prevented foundation object lists from replacing workstream/surface/capability routing.
+  - checks: canonical sequence, natural-language routing, and Stage 1/2/3 guidance remain consistent; git diff --check passed.
+  - commit: Clarify skills routing map
 
 ### TASK-02-001: Planning/spec/backlog skill audit
 

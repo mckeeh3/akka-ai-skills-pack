@@ -80,7 +80,7 @@ Agent tools, HTTP/gRPC/MCP endpoints, browser actions, workflow steps, timer cal
 
 ### 1. Preserve the mandatory foundation
 
-For generated SaaS apps, load `core-saas-foundation` first. Every protected capability must enforce authenticated account, selected `AuthContext`, active membership, tenant/customer scope, role/permission/capability authorization, backend checks, audit, and tenant-isolation tests.
+For generated SaaS apps, verify `core-saas-foundation` has been applied and keep its rules in force while modeling capabilities. The upstream handoff should already identify functional agents, workstreams, and structured surfaces; represent foundation work as protected capabilities behind those surfaces, not as unauthenticated object access. Every protected capability must enforce authenticated account, selected `AuthContext`, active membership, tenant/customer scope, role/permission/capability authorization, backend checks, audit, and tenant-isolation tests.
 
 Prompt text, tool descriptions, frontend navigation, and hidden fields are never authorization controls.
 
