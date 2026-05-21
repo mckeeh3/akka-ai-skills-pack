@@ -31,6 +31,20 @@ Read these first if present:
 - users can be disabled, reactivated, linked to WorkOS identity, reset/relinked under policy, or scoped to tenants/customers
 - generated SaaS apps need UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView in the first admin slice so admins do not need caller-supplied user IDs to find users or access problems
 
+## Boundary with auth, invitation, email, and UI skills
+
+Use this as the local authorization and admin-management foundation after WorkOS authentication is established. Keep adjacent concerns routed as follows:
+
+| Concern | Primary skill |
+|---|---|
+| WorkOS/AuthKit sign-in, JWT bearer transport, and `/api/me` identity-claim handling | `akka-workos-user-auth` |
+| Invitation entity/workflow, acceptance context, expiry, resend/revoke, delivery status, and lifecycle tests | `akka-saas-invitation-onboarding` |
+| Resend production email delivery, captured local/dev/test outbox, reusable email capabilities, and agent email tools | `akka-resend-email-service` |
+| User Admin functional-agent shell surfaces for Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings | `akka-web-ui-apps` plus focused web UI companions |
+| Protected JSON endpoint route mechanics and JWT/request-context extraction | `akka-http-endpoints`, `akka-http-endpoint-jwt`, and `akka-http-endpoint-request-context` |
+
+This skill must preserve backend-authoritative authorization: `/api/me` and frontend navigation expose browser-safe capability hints only; every command, query, stream, workflow action, consumer side effect, timer action, and agent tool still revalidates local Account/Membership/Role/Capability state and selected `AuthContext`.
+
 ## Core model
 
 Authentication proves who the caller is. Local Akka admin state decides what they may do.

@@ -213,7 +213,7 @@
 
 ### TASK-05-001: Web UI/auth/foundation skill audit
 
-- status: pending
+- status: done
 - source: skills review recommended execution order step 5
 - task brief: none
 - depends on: [TASK-04-001]
@@ -259,7 +259,12 @@
 - done criteria:
   - web UI/auth/foundation skills consistently route from workstream/surface/capability contracts to implementation
 - commit message suggestion: `Align web UI and foundation skills`
-- notes: []
+- notes:
+  - reviewed web UI/auth/foundation docs and skills listed in required reads.
+  - finding: minor-alignment-edit; existing guidance was strongly aligned, with remaining risk around agents confusing WorkOS auth, local authorization/admin, invitation onboarding, email delivery, and workstream UI ownership.
+  - edits: added focused companion ownership boundaries to `akka-web-ui-apps`; clarified `akka-workos-user-auth` does not replace local admin, invitation, Resend, or UI skills; clarified `akka-basic-user-admin` handoffs to auth, invitation, email, UI, and endpoint skills.
+  - checks: generated SaaS UI remains workstream-first; WorkOS/AuthKit remains supported browser auth default; Resend remains supported production email service; frontend navigation/static assets are not authorization controls; git diff --check passed.
+  - commit: Align web UI and foundation skills
 
 ### TASK-06-001: Akka component family audit
 

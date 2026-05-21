@@ -30,6 +30,18 @@ Read these first if present:
 - `/api/me` should return the signed-in user's local Akka account/profile/roles
 - first login should link a WorkOS identity to a local invited account
 
+## Boundary with foundation and UI skills
+
+This skill owns WorkOS/AuthKit authentication, bearer-token transport, Akka JWT validation, `/api/me` identity bootstrap/linking, and frontend/backend secret boundaries.
+
+It does not replace:
+- `akka-basic-user-admin` for local Account, Membership, Role/Capability, UserDirectoryView, support-access, admin audit, and backend authorization semantics;
+- `akka-saas-invitation-onboarding` for complete invitation lifecycle, acceptance, expiry, resend/revoke, delivery status, and onboarding tests;
+- `akka-resend-email-service` for production Resend delivery/outbox and captured local/dev/test email behavior;
+- `akka-web-ui-apps` and companions for the workstream shell, functional-agent rail, structured surfaces, rendering, and frontend UX.
+
+Frontend route guards, left-rail visibility, hidden buttons, and WorkOS claims are not sufficient authorization. Every protected backend route, stream, component action, and agent tool must re-check local Akka-owned authorization for the selected `AuthContext`.
+
 ## Runtime configuration
 
 Backend-only runtime variables or deployment secrets:

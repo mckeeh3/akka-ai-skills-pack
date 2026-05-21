@@ -104,16 +104,18 @@ For generated SaaS apps, auth/session/security behavior is expected input. If pr
 
 ## Skill routing
 
-Load only the focused companions needed:
+Load only the focused companions needed. Keep ownership boundaries crisp:
 
-- `akka-web-ui-ux-design` — workstream shell and structured surface intent, hierarchy, UX copy, feedback, recovery, responsive behavior, and keyboard/focus path
-- `akka-web-ui-frontend-project` — standard frontend project integration, such as React/Vite build output hosted by Akka
-- `akka-web-ui-api-client` — typed fetch clients and API error mapping
-- `akka-web-ui-state-rendering` — state model and rendering/component update boundaries
-- `akka-web-ui-forms-validation` — forms, validation, submit state, server error mapping
-- `akka-web-ui-realtime` — SSE/WebSocket browser behavior
-- `akka-web-ui-accessibility-responsive` — semantic HTML, keyboard, focus, responsive layout
-- `akka-web-ui-testing` — frontend checks/builds, endpoint tests, optional DOM/browser smoke checks
+| Skill | Owns | Does not own |
+|---|---|---|
+| `akka-web-ui-ux-design` | Workstream shell and structured surface UX intent, hierarchy, copy, feedback, recovery, responsive behavior, and keyboard/focus path. | Backend capability semantics, WorkOS setup, or endpoint implementation. |
+| `akka-web-ui-frontend-project` | React/Vite/TypeScript project layout, source/build output, workstream module organization, and static asset integration. | Auth provider secrets, backend authorization, or hand-editing generated assets. |
+| `akka-web-ui-api-client` | Browser-safe DTO clients, fetch wrappers, and normalized API errors. | Raw component state exposure or backend permission decisions. |
+| `akka-web-ui-state-rendering` | Explicit UI state and structured surface rendering from frontend-safe payloads. | Capability design or treating stale/hidden UI state as authorization. |
+| `akka-web-ui-forms-validation` | Client form behavior, accessible validation, submit state, and server validation mapping. | Authoritative business validation or role/scope checks. |
+| `akka-web-ui-realtime` | Browser SSE/WebSocket lifecycle, event parsing, dedupe, reconnect, and stale-state UX. | Stream authorization or event payload scoping. |
+| `akka-web-ui-accessibility-responsive` | Semantic HTML, keyboard/focus behavior, contrast/status text, and narrow-layout survival. | Visual style selection when no style guide is chosen. |
+| `akka-web-ui-testing` | Frontend checks/builds, frontend logic tests, asset route tests, and optional smoke checks. | Replacing endpoint/component/security tests. |
 
 Always pair with Akka hosting/API skills as needed:
 - `akka-http-endpoints`
