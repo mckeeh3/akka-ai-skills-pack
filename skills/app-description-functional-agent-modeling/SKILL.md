@@ -148,7 +148,7 @@ Use this shape when adding or revising a functional agent:
 1. **Functional agents are verticals.** Model each as a role-authorized work area with surfaces and capabilities. Do not model it as an Akka `Agent` class first.
 2. **Backend capabilities remain authoritative.** A functional agent can call or expose capabilities, but prompt text, rail visibility, and tool descriptions never authorize work.
 3. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, version cards, and outcome panels over free-text-only responses.
-4. **Foundation agents are mandatory for full core SaaS scope.** Full generated core apps must include User Admin and Agent Admin functional agents, plus access/profile, audit/trace, and governance/policy coverage as justified by scope. If deferred, record the narrower scope explicitly.
+4. **Foundation agents are scope-sensitive.** Minimum starter scope must include User Admin workstream v0 as a real role-authorized functional agent with bootstrap authority, `markdown_response`, a durable workstream log, trace links, capability/tool boundaries, denial behavior, and follow-up gaps to full core. Full generated core apps must include full User Admin and Agent Admin functional agents, plus access/profile, audit/trace, and governance/policy coverage as justified by scope. If deferred, record the narrower scope explicitly and never label it full-core ready.
 5. **Keep internal agents separate.** Classifiers, summarizers, evaluators, proposal drafters, and governance reviewers may support a functional agent, but they do not become left-rail work areas unless they represent a user-facing responsibility boundary.
 6. **Record tool boundaries as governed behavior.** Side-effecting tools should default to proposal or approval flows unless accepted policy grants bounded autonomous authority.
 7. **Link tests immediately.** A functional agent is incomplete without authorization, surface, capability, prompt/tool-boundary, and trace tests.
@@ -184,6 +184,7 @@ Avoid:
 - granting authority through prompt instructions, hidden UI state, or rail visibility;
 - listing tools without linking them to governed capabilities;
 - omitting tenant/customer scope or AuthContext;
+- treating a minimum starter as a generic chatbot instead of User Admin workstream v0;
 - leaving User Admin or Agent Admin out of full core SaaS scope without an explicit deferral;
 - allowing a functional agent to perform side effects without approval, policy, idempotency, and audit semantics.
 

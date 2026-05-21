@@ -17,7 +17,8 @@ Create a minimum viable internal app-description tree that:
 - establishes the mandatory secure SaaS foundation for Account/Profile/Settings/Membership/Tenant/Customer/admin/audit before app-specific features
 - establishes authoritative layers for capabilities, role-authorized functional-agent workstreams, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
 - records an initial readiness posture
-- defines a generation policy that labels scope as `full core`, `Module 1-only / not full core`, or another explicit narrower scope
+- defines a generation policy that labels scope as `minimum starter / not full core`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
+- for starter/basic/minimum app requests, represents User Admin workstream v0 with `markdown_response`, bootstrap auth/security, durable workstream log, trace substrate, and explicit follow-up gaps to full core
 - creates enough cross-linking that later changes can stay localized and traceable
 
 ## Required reading
@@ -100,6 +101,7 @@ app-description/
     functional-agents.md
     surfaces-index.md
     surface-contracts/
+      00-markdown-response.md      # required for minimum starter / User Admin workstream v0
       01-access-profile.md
       02-user-admin.md
       03-agent-admin.md
@@ -169,14 +171,15 @@ app-description/
 
 This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS seed reference. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
-## Full-core scope gate
+## Scope gates
 
 At bootstrap time, classify the requested generation scope before writing readiness or generation policy:
+- `minimum starter / not full core` means the app-description may be small but must describe a real User Admin workstream v0: bootstrap-authorized identity, selected `AuthContext`, role/capability-checked UserAdminAgent, durable workstream request/response log, `markdown_response` structured surface, backend capability boundary for actions/tools, audit/work trace substrate, bootstrap auth/security rules, and explicit follow-up gaps to full core. This is the canonical interpretation for “minimum app”, “starter app”, “basic app”, or initial chatbot-like generated SaaS requests.
 - `full core` means the app-description must include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, manifests, tool boundaries, traces, and `readSkill`); workstream UI; managed-agent UI files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`); and full security/test coverage.
-- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, Access/Profile, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops.
+- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, Access/Profile, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops. Do not use this label for minimum starter requests that should be User Admin workstream v0.
 - any other narrower scope must be named in `00-system/app-manifest.md`, repeated in `00-system/readiness-status.md`, and enforced by `00-system/generation-policy.md`.
 
-Do not allow a bootstrap to imply full-core readiness while omitting User Admin, Agent Admin, Invitation onboarding, governed runtime agents, the workstream UI, or required tests. Missing full-core elements are acceptable only when the generated app is explicitly labeled as Module 1-only or another accepted narrower scope.
+Do not allow a bootstrap to imply full-core readiness while omitting full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, complete workstream UI, or required tests. Missing full-core elements are acceptable only when the generated app is explicitly labeled as `minimum starter / not full core`, Module 1-only, or another accepted narrower scope. Minimum starter readiness must not be reported as full-core readiness.
 
 ## What this skill must derive from input
 
@@ -186,15 +189,15 @@ From the initial user input, derive as applicable:
 - top-level goal
 - whether the app has AI-first/delegated operating-model semantics
 - delegated work versus retained human authority when applicable
-- selected scope label: `full core`, `Module 1-only / not full core`, or another explicit narrower scope
-- first in-scope capability set, starting with the secure SaaS foundation capability
+- selected scope label: `minimum starter / not full core`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
+- first in-scope capability set, starting with the secure SaaS foundation capability and, for minimum starter scope, the User Admin workstream v0 read/explain/deny capability boundary
 - likely primary behavior flow, starting with sign-in, `/api/me`, context selection, Account/Profile/Settings maintenance, administration, invitations, support-access, audit viewing, and tenant/customer-scoped access
 - first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
 - initial auth/security expectations based on `core-saas-foundation`, including explicit default-deny authorization for every route, agent tool, data access, workflow action, view query, stream, and generated UI action
 - initial governed runtime agent expectations: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap loading of implementation-developed default behavior seed documents, deterministic prompt assembly, authorized `readSkill(skillId)`, behavior-editing agent proposals, and denial of unauthorized authority expansion
 - initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and consequential AI/tool events
 - initial policy, approval, exception, audit, trace, and outcome expectations for the AI-first SaaS operating model
-- initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, audit, agent catalog, agent detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, and trace surfaces
+- initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, audit, agent catalog, agent detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, and trace surfaces; for minimum starter scope, record the User Admin workstream shell, composer, workstream log, `markdown_response` rendering, trace links, and deferred richer surfaces
 - selected web UI style guide when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
 - an initial readiness posture
@@ -222,7 +225,7 @@ For most fresh bootstraps, prefer:
 - or `ready-with-assumptions` only if the input is already unusually complete
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels full-core versus narrower generation scope, blocks unlabeled omissions of User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, and forbids using `com.example` for generated application code unless explicitly requested.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, and forbids using `com.example` for generated application code unless explicitly requested. For `minimum starter / not full core`, require follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security coverage.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.

@@ -182,9 +182,11 @@ Should include:
 Stores the current readiness posture.
 Should include:
 - current state: `not-ready`, `ready-with-assumptions`, or `ready`
+- readiness scope when relevant: `minimum starter / not full core`, `full core`, `app-specific`, or another accepted narrower scope
 - decisive reasons
 - blocking gaps
 - accepted assumptions
+- explicit follow-up gaps when a minimum starter is ready but full-core SaaS readiness is not yet complete
 - last readiness update basis
 
 ### `generation-policy.md`
@@ -199,7 +201,7 @@ Should include:
 ## `10-capabilities/`
 Business capability inventory and governed backend capability contracts.
 
-For generated SaaS apps, the first capability must be `01-secure-tenant-user-foundation.md`, covering Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, and tenant/customer isolation before app-specific capabilities.
+For generated SaaS apps, the first capability must be `01-secure-tenant-user-foundation.md`, covering Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, and tenant/customer isolation before app-specific capabilities. For `minimum starter / not full core`, this capability may be intentionally narrow but must still include bootstrap-authorized identity, selected AuthContext, backend authorization checks, a User Admin workstream v0 capability boundary for read/explain/deny behavior, durable workstream log requirements, audit/work trace substrate, and explicit full-core follow-up gaps.
 
 This layer answers:
 - what business or user-visible capabilities exist?
@@ -592,6 +594,14 @@ app-description/
 ```
 
 Then expand into the full structure as complexity grows. For generated AI-first SaaS, even a very small project is full-stack and must include a browser UI description.
+
+For the canonical `minimum starter / not full core`, the small tree must additionally make these semantics explicit, even if they live in the compact files above rather than in many separate files:
+- `12-workstreams/functional-agents.md` names User Admin workstream v0 as the first role-authorized functional agent, not a generic chatbot.
+- `12-workstreams/surfaces-index.md` and/or `surface-contracts/01-markdown-response.md` define `markdown_response` as a typed, sanitized, trace-linked structured surface.
+- `20-behavior/flows/01-secure-foundation-access-flow.md` or equivalent records bootstrap auth, selected AuthContext, request/response timeline, denials, and follow-up handoff behavior.
+- `40-auth-security/` records bootstrap-only access, no public self-registration, backend authorization for every protected workstream/API/tool/action, and no prompt- or frontend-only authority.
+- `50-observability/` records durable workstream log and audit/work trace expectations for requests, responses, tool/capability checks, denials, and trace references.
+- `00-system/readiness-status.md` and `generation-policy.md` state that the starter can be minimum-starter ready while still not full-core ready, and list the deferred full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security coverage work.
 
 ## Operating rule
 

@@ -211,7 +211,7 @@
 
 ### TASK-MINAPP-03-001: Update app-description guidance for User Admin v0
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/03-description-starter-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/03-description-starter/01-update-app-description-guidance.md
 - depends on: [TASK-MINAPP-02-003]
@@ -235,7 +235,8 @@
 - done criteria:
   - description-first path supports minimum starter semantics
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update app-description guidance for minimum starter`
 
 ### TASK-MINAPP-03-002: Update seed example references and starter progression docs
 
