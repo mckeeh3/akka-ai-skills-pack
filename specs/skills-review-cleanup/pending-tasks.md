@@ -1,0 +1,318 @@
+# Pending Tasks
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Update task status before finishing the harness response.
+- Each task must make one git commit before being marked `done`; the commit should include only that task's intended changes and its queue-status update.
+- Record the task commit hash in that task's `notes` when practical. If embedding the hash would require amending the same commit, reference the commit message instead.
+- This queue is for skills-pack source maintenance, rooted at `specs/skills-review-cleanup/`.
+- Do not treat this repository as a generated Akka application while executing these tasks.
+
+## Tasks
+
+### TASK-01-001: Routing map audit
+
+- status: pending
+- source: user request for whole-skills alignment review and cleanup plan
+- task brief: none
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+- skills:
+  - none; repository routing-maintenance task
+- scope:
+  - `skills/README.md`
+  - top-level routing references among `ai-first-saas`, `agent-workstream-apps`, `core-saas-foundation`, `capability-first-backend`, `app-descriptions`, `akka-solution-decomposition`, and `akka-prd-to-specs-backlog`
+- out of scope:
+  - focused component implementation rewrites
+  - generated application code
+  - broad agent governance cleanup beyond top-level routing references
+- expected outputs:
+  - concise edits to `skills/README.md` and/or top-level routing skills only if needed
+  - task notes summarizing reviewed files and findings
+- required checks:
+  - verify the canonical high-level sequence remains: secure AI-first SaaS → agent workstream model → core SaaS foundation → capability-first backend → description/decomposition/planning → focused implementation
+  - verify users are not expected to know internal skill taxonomy
+  - verify Stage 1/2/3 guidance remains consistent
+  - run `git diff --check`
+- done criteria:
+  - top-level routing is clearer and no broader family rewrite occurred
+- commit message suggestion: `Clarify skills routing map`
+- notes: []
+
+### TASK-02-001: Planning/spec/backlog skill audit
+
+- status: pending
+- source: skills review recommended execution order step 2
+- task brief: none
+- depends on: [TASK-01-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/akka-revised-prd-reconciliation/SKILL.md
+  - skills/akka-change-request-to-spec-update/SKILL.md
+  - skills/akka-slice-spec-to-backlog/SKILL.md
+  - skills/akka-backlog-to-pending-tasks/SKILL.md
+  - skills/akka-backlog-item-to-task-brief/SKILL.md
+  - skills/akka-pending-question-generation/SKILL.md
+  - skills/akka-pending-question-queue-maintenance/SKILL.md
+  - skills/akka-pending-task-queue-maintenance/SKILL.md
+  - skills/akka-do-next-pending-question/SKILL.md
+  - skills/akka-do-next-pending-task/SKILL.md
+- skills:
+  - none; repository planning-skill maintenance task
+- scope:
+  - planning, decomposition, specs, backlog, pending-question, and pending-task skills
+- out of scope:
+  - changing actual project specs queues outside `specs/skills-review-cleanup/` unless needed for this task's status update
+  - component implementation skill rewrites
+- expected outputs:
+  - focused edits that tighten planning-skill boundaries, lifecycle order, and handoffs
+  - notes identifying any future merge/split candidates without performing risky rewrites
+- required checks:
+  - planning lifecycle remains coherent: PRD/change → app-description/spec update → solution plan → backlog → pending tasks → task brief → implementation
+  - Java base package policy remains preserved for generated source tasks
+  - scaffold-extension semantics remain preserved
+  - run `git diff --check`
+- done criteria:
+  - planning and queue skills consistently preserve AI-first SaaS, capability ids, auth/scope, audit, approval, tests, and execution order
+- commit message suggestion: `Align planning and backlog skills`
+- notes: []
+
+### TASK-03-001: Agent governance skill audit
+
+- status: pending
+- source: skills review recommended execution order step 3
+- task brief: none
+- depends on: [TASK-02-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - docs/agent-coverage-matrix.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - skills/akka-agent-governed-documents/SKILL.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-model-governance/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
+  - skills/akka-agent-work-trace/SKILL.md
+  - skills/akka-agent-behavior-editing/SKILL.md
+  - skills/akka-agent-closed-loop-improvement/SKILL.md
+- skills:
+  - none; repository agent-skill maintenance task
+- scope:
+  - agent orchestration skill and agent governance companion skills
+  - routing matrix among durable agent definitions, governed documents, prompts, skills, tools, model configs, seeding, traces, editing, and improvement loops
+- out of scope:
+  - changing Akka SDK API examples unless a routing edit requires it
+  - replacing governed runtime architecture
+- expected outputs:
+  - a clear routing matrix in `akka-agents` and/or related governance skills
+  - focused boundary edits where skills overlap
+- required checks:
+  - managed runtime agent foundation remains mandatory for generated SaaS foundations
+  - prompt/skill content is never described as granting authority
+  - tool boundaries, AuthContext, tenant scope, traces, and approval gates remain backend-enforced
+  - run `git diff --check`
+- done criteria:
+  - future agents can choose the right agent governance skill without reading every agent-governance file first
+- commit message suggestion: `Clarify agent governance skill routing`
+- notes: []
+
+### TASK-04-001: App-description boundary audit
+
+- status: pending
+- source: skills review recommended execution order step 4
+- task brief: none
+- depends on: [TASK-03-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/description-first-application-doctrine.md
+  - docs/internal-app-description-architecture.md
+  - docs/app-description-maintenance-flow.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+  - skills/app-descriptions/SKILL.md
+  - skills/app-description-bootstrap/SKILL.md
+  - skills/app-description-input-normalization/SKILL.md
+  - skills/app-description-intake-router/SKILL.md
+  - skills/app-description-functional-agent-modeling/SKILL.md
+  - skills/app-description-surface-modeling/SKILL.md
+  - skills/app-description-capability-modeling/SKILL.md
+  - skills/app-description-behavior-specification/SKILL.md
+  - skills/app-description-test-specification/SKILL.md
+  - skills/app-description-auth-security/SKILL.md
+  - skills/app-description-observability/SKILL.md
+  - skills/app-description-ui/SKILL.md
+  - skills/app-description-change-impact/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - skills/app-description-change-summary/SKILL.md
+  - skills/app-description-readiness-summary/SKILL.md
+  - skills/app-generate-app/SKILL.md
+- skills:
+  - app-descriptions
+- scope:
+  - description-first skills and boundaries among intake, normalization, routing, workstreams, surfaces, capabilities, behavior, tests, security, observability, UI, change impact, readiness, summaries, and generation
+- out of scope:
+  - modifying example app-description trees unless a broken reference requires it
+  - generating application code
+- expected outputs:
+  - focused edits clarifying ownership of app-description layers and routing between skills
+  - notes identifying any remaining overlap or future cleanup candidates
+- required checks:
+  - description-first path preserves functional agents, structured surfaces, capabilities, auth/security, tests, observability, readiness, and generation policy
+  - readiness/generation gates do not permit guessing mandatory SaaS security or workstream semantics
+  - run `git diff --check`
+- done criteria:
+  - app-description skills present a coherent maintenance workflow with clear layer ownership
+- commit message suggestion: `Clarify app-description skill boundaries`
+- notes: []
+
+### TASK-05-001: Web UI/auth/foundation skill audit
+
+- status: pending
+- source: skills review recommended execution order step 5
+- task brief: none
+- depends on: [TASK-04-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/core-ai-first-saas-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - skills/akka-web-ui-ux-design/SKILL.md
+  - skills/akka-web-ui-frontend-project/SKILL.md
+  - skills/akka-web-ui-api-client/SKILL.md
+  - skills/akka-web-ui-state-rendering/SKILL.md
+  - skills/akka-web-ui-forms-validation/SKILL.md
+  - skills/akka-web-ui-realtime/SKILL.md
+  - skills/akka-web-ui-accessibility-responsive/SKILL.md
+  - skills/akka-web-ui-testing/SKILL.md
+  - skills/akka-http-endpoint-web-ui/SKILL.md
+  - skills/akka-workos-user-auth/SKILL.md
+  - skills/akka-basic-user-admin/SKILL.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+  - skills/akka-resend-email-service/SKILL.md
+- skills:
+  - none; repository web-ui/foundation skill maintenance task
+- scope:
+  - web UI, WorkOS user auth, user admin, invitation onboarding, Resend email, and HTTP web UI hosting skills
+- out of scope:
+  - frontend implementation changes
+  - template implementation rewrites unless explicitly needed to fix skill references
+- expected outputs:
+  - focused edits that preserve workstream-first UI and mandatory security/foundation guidance
+- required checks:
+  - generated SaaS UI remains workstream-first, not page-first CRUD or chatbot-bolt-on
+  - WorkOS/AuthKit remains supported browser auth default
+  - Resend remains supported production email service
+  - frontend navigation/static assets are not described as authorization controls
+  - run `git diff --check`
+- done criteria:
+  - web UI/auth/foundation skills consistently route from workstream/surface/capability contracts to implementation
+- commit message suggestion: `Align web UI and foundation skills`
+- notes: []
+
+### TASK-06-001: Akka component family audit
+
+- status: pending
+- source: skills review recommended execution order step 6
+- task brief: none
+- depends on: [TASK-05-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+  - skills/akka-event-sourced-entities/SKILL.md
+  - skills/akka-key-value-entities/SKILL.md
+  - skills/akka-workflows/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-consumers/SKILL.md
+  - skills/akka-timed-actions/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+  - skills/akka-grpc-endpoints/SKILL.md
+  - skills/akka-mcp-endpoints/SKILL.md
+- skills:
+  - none; repository component-skill maintenance task
+- scope:
+  - component family orchestrator skills and targeted companion-skill references when necessary
+  - entities, workflows, views, consumers, timers, HTTP, gRPC, and MCP endpoint families
+- out of scope:
+  - broad low-level implementation example rewrites
+  - generated application code
+- expected outputs:
+  - focused edits ensuring family orchestrators frame components as capability carriers/exposure channels
+  - notes listing any companion skills needing future focused cleanup
+- required checks:
+  - Stage 3 skills are still loaded only after capability contracts and solution shape are clear
+  - component skills preserve auth/scope, idempotency, audit/trace, and testing expectations where relevant
+  - low-level skills are not overloaded with duplicated top-level doctrine
+  - run `git diff --check`
+- done criteria:
+  - component family routing is consistent with capability-first and AI-first SaaS doctrine
+- commit message suggestion: `Align Akka component skill families`
+- notes: []
+
+### TASK-07-001: Reference and package wording cleanup
+
+- status: pending
+- source: skills review recommended execution order step 7
+- task brief: none
+- depends on: [TASK-06-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+- skills:
+  - none; repository reference/package policy cleanup task
+- scope:
+  - skills and reference docs that mention `com.example`, bundled examples, reference example paths, Java base package selection, scaffold package policy, or generated source package defaults
+- out of scope:
+  - renaming existing reference example packages
+  - changing generated starter/package rendering logic unless a clear defect is found and kept within this task's scope
+- expected outputs:
+  - normalized wording where needed:
+    - `com.example` is reference/example material only
+    - generated applications must use the selected Java base package
+    - default generated package is `ai.first` only when accepted or deferred
+    - never silently generate `com.example`
+- required checks:
+  - run `rg -n "com\.example|Java base package|ai\.first|generated package|reference example" skills docs templates pack README.md AGENTS.md`
+  - run `git diff --check`
+- done criteria:
+  - reference paths remain useful without implying `com.example` is the generated application default
+- commit message suggestion: `Normalize reference package guidance`
+- notes: []
