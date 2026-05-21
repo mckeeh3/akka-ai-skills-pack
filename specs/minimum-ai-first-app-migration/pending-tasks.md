@@ -44,7 +44,7 @@
 
 ### TASK-MINAPP-01-001: Add canonical minimum app doctrine
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/01-minimum-app-doctrine-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/01-doctrine/01-add-minimum-app-doctrine.md
 - depends on: [TASK-MINAPP-00-001]
@@ -69,7 +69,8 @@
 - done criteria:
   - canonical minimum app doctrine exists and is linked from AI-first doctrine
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add canonical minimum app doctrine`
 
 ### TASK-MINAPP-01-002: Integrate minimum workstream into agent workstream doctrine
 
