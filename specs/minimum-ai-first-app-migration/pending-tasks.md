@@ -298,7 +298,7 @@
 
 ### TASK-MINAPP-04-001: Final consistency review and completion summary
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/04-final-review-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/04-review/01-final-consistency-review.md
 - depends on: [TASK-MINAPP-03-003]
@@ -325,4 +325,7 @@
   - migration completion summary exists
   - no known canonical drift remains, or follow-up tasks are queued
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Complete minimum app migration review`
+  - checks passed: `git diff --check`; reviewed `chatbot` matches and confirmed remaining hits are anti-pattern warnings, legacy-drift review records, or explicit minimum-starter routing to User Admin workstream v0.
+  - completion summary written to `specs/minimum-ai-first-app-migration/migration-completion-summary.md`.
