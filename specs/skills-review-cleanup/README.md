@@ -34,6 +34,7 @@ This plan is for maintaining this repository as the source project for the `akka
 5. Web UI/auth/foundation audit
 6. Akka component family audit
 7. Reference/package wording cleanup
+8. Final consistency, installed-pack parity, routing smoke checks, and completion summary
 
 The durable queue is `pending-tasks.md` in this directory.
 
@@ -64,7 +65,9 @@ Use these labels in task notes when summarizing a reviewed skill or family:
 
 This cleanup plan is complete when:
 
-- all seven ordered tasks are `done` or explicitly `superseded` with rationale;
+- all seven ordered cleanup tasks plus the closure tasks are `done` or explicitly `superseded` with rationale;
 - each completed task has a corresponding git commit;
 - top-level routing, planning, agent governance, app-description, web UI/foundation, component, and reference/package guidance tell one consistent story;
+- installed-pack parity and representative routing smoke checks have been completed or explicitly deferred with rationale;
+- `completion-summary.md` records the outcome and release-readiness recommendation;
 - no task has introduced generated-application implementation work unrelated to skills-pack maintenance.

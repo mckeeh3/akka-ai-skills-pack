@@ -351,3 +351,119 @@
   - edits: clarified `skills/README.md` repository reference examples, root `README.md`, `pack/README.md`, and the governed-agent executable examples plan so `com.example` remains reference-only and generated apps use the selected Java base package.
   - checks: required `rg` scan completed; `git diff --check` passed.
   - commit: Normalize reference package guidance
+
+### TASK-08-001: Final skills cleanup consistency review
+
+- status: pending
+- source: post-cleanup closure recommendation after TASK-01 through TASK-07 completed
+- task brief: none
+- depends on: [TASK-07-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+- skills:
+  - none; repository release-readiness review task
+- scope:
+  - completed TASK-01 through TASK-07 notes and resulting source changes
+  - high-level consistency across routing, planning, agent governance, app-description, web UI/foundation, component, and reference/package guidance
+- out of scope:
+  - broad new cleanup edits beyond small consistency fixes discovered during review
+  - generated application implementation work
+- expected outputs:
+  - small consistency fixes if needed
+  - task notes summarizing whether the cleanup sequence is internally coherent
+  - list of any residual follow-up risks that should not block closure
+- required checks:
+  - verify all TASK-01 through TASK-07 entries are `done` or explicitly `superseded`
+  - verify no completed task notes describe unresolved blocking follow-up work
+  - verify top-level routing still preserves secure AI-first SaaS → agent workstream → core foundation → capability-first backend → app-description/decomposition/planning → focused implementation
+  - run `git diff --check`
+- done criteria:
+  - source-tree skills cleanup is ready for installed-pack parity validation
+- commit message suggestion: `Review skills cleanup consistency`
+- notes: []
+
+### TASK-08-002: Installed-pack parity and routing smoke check
+
+- status: pending
+- source: post-cleanup closure recommendation after final source consistency review
+- task brief: none
+- depends on: [TASK-08-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - pack/README.md
+  - install.sh
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+- skills:
+  - none; installed-pack validation task
+- scope:
+  - source `skills/` versus installed `.agents/skills/` parity after refreshing the local installed pack if appropriate
+  - installed routing metadata and guidance visible to the harness
+  - representative natural-language routing smoke scenarios
+- out of scope:
+  - editing source skills beyond parity or packaging fixes discovered during validation
+  - changing generated app templates unless parity validation reveals a directly related packaging defect
+- expected outputs:
+  - refreshed local `.agents/` install if the repository install workflow requires it for validation
+  - small install/packaging/routing fixes if needed
+  - task notes documenting parity status and smoke scenario results
+- smoke scenarios:
+  - high-level PRD for a new secure AI-first SaaS app
+  - request to create or revise an app-description tree
+  - request to decompose requirements into Akka components
+  - request to implement a workflow after architecture is clear
+  - request to add governed agent prompts or skills
+  - request to build the user admin foundation
+  - request to expose a governed capability over HTTP/gRPC/MCP
+- required checks:
+  - compare source and installed skill names/counts after install or refresh
+  - verify installed `skills/README.md` and top-level skills reflect the cleaned source routing
+  - verify smoke scenarios route to the expected entry skills without requiring the user to know internal taxonomy
+  - run `git diff --check`
+- done criteria:
+  - installed-pack view is consistent with source view, or documented non-blocking differences are explicit
+- commit message suggestion: `Validate installed skills pack parity`
+- notes: []
+
+### TASK-08-003: Create skills cleanup completion summary
+
+- status: pending
+- source: post-cleanup closure recommendation after installed-pack parity validation
+- task brief: none
+- depends on: [TASK-08-002]
+- required reads:
+  - AGENTS.md
+  - specs/skills-review-cleanup/README.md
+  - specs/skills-review-cleanup/pending-tasks.md
+  - skills/README.md
+- skills:
+  - none; repository closure-summary task
+- scope:
+  - completion summary for the skills review and cleanup effort
+  - release-readiness recommendation for the cleaned skills pack
+- out of scope:
+  - additional skill rewrites unless a summary-blocking inconsistency is discovered
+- expected outputs:
+  - `specs/skills-review-cleanup/completion-summary.md`
+  - queue notes marking this task done after commit
+- required summary contents:
+  - tasks completed and commit references when available
+  - major alignment outcomes
+  - installed-pack parity status
+  - routing smoke-check results
+  - remaining known risks or future non-blocking cleanup candidates
+  - release recommendation
+- required checks:
+  - every task in this queue is `done` or explicitly `superseded` before final release recommendation
+  - completion summary does not claim generated application work was performed
+  - run `git diff --check`
+- done criteria:
+  - skills review cleanup has an explicit closure artifact and release-readiness recommendation
+- commit message suggestion: `Summarize skills cleanup completion`
+- notes: []
