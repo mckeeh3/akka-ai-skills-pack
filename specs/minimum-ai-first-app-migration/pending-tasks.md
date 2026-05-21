@@ -329,3 +329,121 @@
   - commit message: `Complete minimum app migration review`
   - checks passed: `git diff --check`; reviewed `chatbot` matches and confirmed remaining hits are anti-pattern warnings, legacy-drift review records, or explicit minimum-starter routing to User Admin workstream v0.
   - completion summary written to `specs/minimum-ai-first-app-migration/migration-completion-summary.md`.
+
+### TASK-MINAPP-04-002: Post-completion objectives review
+
+- status: done
+- source: user request to verify completed migration against original objectives and add tasks for remaining changes
+- task brief: none; review artifact is `specs/minimum-ai-first-app-migration/post-completion-objectives-review.md`
+- depends on: [TASK-MINAPP-04-001]
+- required reads:
+  - specs/minimum-ai-first-app-migration/README.md
+  - specs/minimum-ai-first-app-migration/migration-completion-summary.md
+  - docs/minimum-ai-first-saas-app.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - skills/README.md
+  - skills/agent-workstream-apps/SKILL.md
+  - skills/core-saas-foundation/SKILL.md
+  - pack/manifest.yaml
+- skills:
+  - agent-workstream-apps
+  - core-saas-foundation
+- expected outputs:
+  - specs/minimum-ai-first-app-migration/post-completion-objectives-review.md
+  - follow-up pending tasks for any required changes
+- required checks:
+  - git diff --check
+  - targeted ripgrep checks recorded in the review artifact
+- done criteria:
+  - review identifies whether the migration meets the objectives
+  - follow-up tasks are queued for remaining gaps
+  - task changes and queue update are committed
+- notes:
+  - commit message: `Review minimum app migration objectives`
+  - completed: reviewed completed migration outputs against the User Admin workstream v0 objectives and queued targeted hardening tasks.
+
+### TASK-MINAPP-05-001: Expose minimum app doctrine in pack metadata and verify installed-pack parity
+
+- status: pending
+- source: specs/minimum-ai-first-app-migration/post-completion-objectives-review.md Finding 1
+- task brief: specs/minimum-ai-first-app-migration/tasks/05-follow-up-hardening/01-expose-minimum-doctrine-in-pack.md
+- depends on: [TASK-MINAPP-04-002]
+- required reads:
+  - specs/minimum-ai-first-app-migration/post-completion-objectives-review.md
+  - docs/minimum-ai-first-saas-app.md
+  - pack/manifest.yaml
+  - tools/build-pack.sh
+  - install.sh
+- skills:
+  - none; packaging metadata/parity task
+- expected outputs:
+  - pack/manifest.yaml
+  - optional pack README/installed guidance updates only if they explicitly list canonical docs and omit the minimum doctrine
+- required checks:
+  - git diff --check
+  - rg -n "minimum-ai-first-saas-app" pack/manifest.yaml pack/README.md pack/AGENTS.md skills/README.md
+  - build/install parity check proving `.agents/docs/minimum-ai-first-saas-app.md` is installed in a temporary project
+- done criteria:
+  - pack manifest explicitly lists the minimum app doctrine
+  - temporary installed pack contains the minimum doctrine doc
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-MINAPP-05-002: Resolve core foundation minimum-vs-full readiness wording
+
+- status: pending
+- source: specs/minimum-ai-first-app-migration/post-completion-objectives-review.md Finding 2
+- task brief: specs/minimum-ai-first-app-migration/tasks/05-follow-up-hardening/02-resolve-core-foundation-readiness-wording.md
+- depends on: [TASK-MINAPP-05-001]
+- required reads:
+  - specs/minimum-ai-first-app-migration/post-completion-objectives-review.md
+  - docs/minimum-ai-first-saas-app.md
+  - docs/core-ai-first-saas-foundation.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+- skills:
+  - core-saas-foundation
+  - app-description-readiness-assessment
+- expected outputs:
+  - skills/core-saas-foundation/SKILL.md
+  - docs/core-ai-first-saas-foundation.md if similar wording is found there
+- required checks:
+  - git diff --check
+  - rg -n "minimum starter|full-core|explicitly deferred|not full core|blocks full-core|blocks generation" skills/core-saas-foundation/SKILL.md docs/core-ai-first-saas-foundation.md
+- done criteria:
+  - minimum starter, full-core, and app-specific readiness are consistently scoped
+  - full-core omissions remain blocking for full-core/app-specific generation
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-MINAPP-05-003: Harden minimum doctrine and markdown_response discoverability
+
+- status: pending
+- source: specs/minimum-ai-first-app-migration/post-completion-objectives-review.md Finding 3
+- task brief: specs/minimum-ai-first-app-migration/tasks/05-follow-up-hardening/03-harden-minimum-doctrine-discoverability.md
+- depends on: [TASK-MINAPP-05-002]
+- required reads:
+  - specs/minimum-ai-first-app-migration/post-completion-objectives-review.md
+  - docs/minimum-ai-first-saas-app.md
+  - docs/agent-workstream-application-architecture.md
+  - skills/agent-workstream-apps/SKILL.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/ai-first-saas/SKILL.md
+- skills:
+  - agent-workstream-apps
+  - core-saas-foundation
+  - ai-first-saas
+- expected outputs:
+  - docs/agent-workstream-application-architecture.md
+  - skills/agent-workstream-apps/SKILL.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/ai-first-saas/SKILL.md if needed
+- required checks:
+  - git diff --check
+  - rg -n "markdown_response|minimum-ai-first-saas-app" docs/agent-workstream-application-architecture.md skills/agent-workstream-apps/SKILL.md skills/core-saas-foundation/SKILL.md skills/ai-first-saas/SKILL.md
+- done criteria:
+  - canonical surface taxonomy includes `markdown_response`
+  - minimum/starter routing skills load the minimum doctrine before applying it
+  - task changes and queue update are committed
+- notes: []
