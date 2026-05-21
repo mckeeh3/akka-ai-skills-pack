@@ -94,67 +94,148 @@ curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2
 
 For global installs, dry runs, archive installs, and detailed usage, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md).
 
-## Getting started: core app readiness test
+## Getting started: implement your initial AI-first app
 
-A good way to test a skills-pack release is to create a fresh independent Akka project, install the released pack, copy the packaged core PRD input set into `docs/input/`, and ask the harness to work from those PRDs to manually testable live-app sprints.
-
-Recommended release-test loop:
-
-1. update or add PRDs in this skills-pack repository under `docs/examples/core-ai-first-saas-input/`;
-2. create a versioned skills-pack release;
-3. create a fresh target project outside this repository;
-4. install the released pack into that project as `.agents/`;
-5. copy the installed core PRD inputs into the target project's `docs/input/initial/`;
-6. ask the harness to create app-description/specs/pending questions and tasks;
-7. execute one implementation task per fresh harness session;
-8. after each sprint, run Akka locally and manually test the visible app feature(s).
-
-Start a fresh target project from the packaged core input documents:
-
-```bash
-mkdir -p docs/input/initial
-cp .agents/docs/examples/core-ai-first-saas-input/*.md docs/input/initial/
-cat > docs/input/initial/scope-choice.md <<'EOF'
-# Core app scope choice
-
-Selected scope: full core
-
-Use the full core PRD sequence. Full core includes:
-- Module 1: Minimal Auth and App Access MVP
-- Module 2: Agent Workstream Runtime Bootstrap
-- Module 3: User Administration
-- Module 4: Agent Definition Foundation
-- Module 5: Prompt Governance
-- Module 6: Skill Governance
-- Module 7: Audit and Work Trace
-- Module 8: Evaluation and Closed-Loop Improvement
-
-The agent runtime bootstrap must happen before full User Administration because
-User Admin is a functional-agent workstream, not a page-first CRUD console.
-EOF
-```
-
-Then ask your harness to bootstrap planning artifacts from those inputs:
+The recommended first-user path is incremental. Start with the packaged secure AI-first SaaS starter, make the starter functional, then use the same pattern to add domain-specific capabilities. The starter is not just boilerplate; it is a working training vertical for the app's future feature work:
 
 ```text
-First read .agents/AGENTS.md and .agents/skills/README.md.
-Then read all files under docs/input/initial/.
-
-Use the installed core PRDs as the source input for a full-core secure AI-first SaaS app.
-Record the selected scope as full core in app-description/specs. Preserve the module order:
-1 Minimal Auth and App Access, 2 Agent Workstream Runtime Bootstrap, 3 User Administration,
-4 Agent Definition Foundation, 5 Prompt Governance, 6 Skill Governance, 7 Audit and Work Trace,
-8 Evaluation and Closed-Loop Improvement.
-
-Bootstrap or update the app-description, solution plan, module specs, sprint specs,
-pending questions, and pending task queue. Do not generate application source code yet.
-Queue questions instead of guessing. Each sprint must produce live-app behavior that can
-be manually tested with Akka running locally. Do not treat a full core app as complete
-unless User Admin and Agent Admin functional agents are included and backed by the
-agent workstream/runtime, authorization, audit, and tests described in the PRDs.
+intent → functional agent/workstream → structured surface → governed backend capability
+→ Akka components → tests → UI integration → audit/security review
 ```
 
-When planning is complete and questions are resolved, use fresh harness sessions to execute the next pending task. The harness should ask for the Java base package before generating Java code; press Enter to use `ai.first` unless you want another package. Use `Module 1-only / not full core` only when you intentionally want a narrow first-slice test rather than the complete core app.
+### Step 1 — Create a target app project and install the pack
+
+Create a fresh project directory outside this skills-pack repository, then install the pack into that project as `.agents/`.
+
+```bash
+mkdir my-ai-first-app
+cd my-ai-first-app
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.1/install-akka-ai-skills-pack-0.2.1.sh | bash -s --
+```
+
+### Step 2 — Ask the harness to scaffold the starter
+
+Use your AI coding harness from the target project directory. Start with a direct prompt like this:
+
+```text
+Read .agents/AGENTS.md and .agents/skills/README.md.
+
+I want to build the initial secure AI-first SaaS app from the installed skills pack.
+Use the packaged AI-first SaaS starter scaffold as the baseline.
+App name: <your app name>.
+Java base package: <press Enter/use ai.first unless I provide another package>.
+
+Scaffold the starter into this project. Do not invent a different architecture.
+Preserve the skills-pack defaults: secure SaaS foundation, agent workstream shell,
+User Admin workstream v0, markdown_response surface, capability-first backend boundaries,
+audit/work trace substrate, backend authorization, and frontend secret boundaries.
+After scaffolding, summarize what was created and what I need to configure next.
+```
+
+The harness should run the installed scaffold command, roughly:
+
+```bash
+.agents/bin/scaffold-ai-first-saas-starter.sh \
+  --target . \
+  --app-name "<your app name>" \
+  --base-package ai.first
+```
+
+Use a different Java base package if you already have one. Do not use `com.example` unless you explicitly want that package.
+
+### Step 3 — Ask for a starter readiness review
+
+After scaffolding, ask the harness to inspect the generated project before changing code:
+
+```text
+Review the scaffolded starter app for minimum AI-first SaaS starter readiness.
+Read specs/scaffold-report.md, app-description/, specs/, backend/, frontend/, and .env.example.
+
+Tell me:
+1. what is already implemented,
+2. what configuration I must provide locally,
+3. what commands I should run to build/test the backend and frontend,
+4. what minimum-starter readiness gaps remain,
+5. which pending tasks should be done before app-specific domain features.
+Do not implement changes yet.
+```
+
+### Step 4 — Configure local environment placeholders
+
+Copy the generated environment example and fill only the values needed for local testing. Keep backend secrets out of frontend files.
+
+```text
+Help me configure the local environment for this scaffolded app.
+Read .env.example and frontend/.env.example.
+Explain which values are backend-only secrets, which VITE_ values are browser-public,
+and which values can remain as local/test placeholders for now.
+Do not commit real secrets.
+```
+
+Typical later values include WorkOS/AuthKit, JWT configuration, Resend, bootstrap admin settings, and optional model-provider keys. Local/dev/test may use captured outbox behavior where supported.
+
+### Step 5 — Run the app checks and fix scaffold-level issues first
+
+Ask the harness to run the generated checks, then fix only starter/foundation issues:
+
+```text
+Run the generated backend and frontend checks for the scaffolded starter.
+If something fails, fix only scaffold-level or configuration-related issues needed for the
+minimum starter to run. Do not add domain-specific features yet.
+Report every command run and its result.
+```
+
+### Step 6 — Make the initial User Admin workstream functional
+
+Once basic checks pass, continue with the first vertical rather than jumping to domain work:
+
+```text
+Use the installed skills pack to continue the initial app rollout.
+Focus on making the User Admin workstream v0 functional end to end:
+bootstrap-authorized access, selected AuthContext, durable workstream entries,
+markdown_response rendering, backend capability checks, denials, and audit/work traces.
+Update app-description/specs/pending-tasks as needed before code changes.
+Implement one small task at a time and include tests.
+```
+
+This phase teaches the repeatable app pattern: workstream action, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.
+
+### Step 7 — Advance from minimum starter to full core readiness
+
+After the minimum starter works locally, ask the harness to plan and execute the remaining core foundation in small live-app increments:
+
+```text
+Assess this project against full core secure AI-first SaaS readiness.
+Create or update specs/pending-tasks.md with small implementation tasks for the missing core foundation:
+full User Admin, invitations/onboarding with Resend or captured outbox, Agent Admin,
+governed prompt/skill/tool-boundary documents, audit/trace search UI, support access,
+tenant-isolation tests, forbidden-access tests, frontend secret-boundary tests, and security review.
+Do not add app-specific domain features until the core readiness gaps are explicit.
+```
+
+Then execute tasks one at a time, preferably in fresh harness sessions:
+
+```text
+Read .agents/AGENTS.md, .agents/skills/README.md, specs/pending-tasks.md, and the files relevant to the next task.
+Select the next runnable pending task for the initial core app rollout.
+Implement only that task, update tests, run the relevant checks, and update specs/pending-tasks.md with the result.
+```
+
+### Step 8 — Add domain-specific features after the foundation is usable
+
+When the initial app is functional, use natural product prompts to extend it. The pack should make reasonable decisions, record assumptions, and ask only for blocking information.
+
+```text
+Now extend this AI-first SaaS app with this domain feature:
+<describe the feature in normal product language>
+
+Use the established pattern from the initial app rollout:
+functional agent/workstream, structured surfaces, governed backend capabilities,
+Akka component selection, tests, UI integration, authorization, audit/work traces, and readiness review.
+Make best-judgment decisions where safe, record assumptions, and ask only for blocking questions.
+```
+
+A good feature iteration should preserve the app-description, specs, pending questions, pending tasks, code, tests, and UI as aligned artifacts.
 
 ## Repository status
 
