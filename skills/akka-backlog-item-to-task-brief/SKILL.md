@@ -7,7 +7,7 @@ description: Turn one specific item from a specs/backlog/*-build-backlog.md file
 
 Use this skill when the repository already has a slice spec and build backlog, but one backlog item is still too large, too cross-cutting, or too ambiguous to hand directly to code generation.
 
-This is the **leaf planning skill** below `akka-prd-to-specs-backlog` and `akka-slice-spec-to-backlog`.
+This is the **leaf planning skill** below `akka-prd-to-specs-backlog` and `akka-slice-spec-to-backlog`. It creates the implementation contract for exactly one focused harness run; it does not implement the task and does not broaden the source backlog item.
 
 ## Goal
 
@@ -97,7 +97,7 @@ Each task brief must include:
 8. Required tests
 9. Done criteria
 
-The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, and done criteria from the brief. It must also preserve relevant source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, audit/trace obligations, UI surfaces, and test/check expectations from the backlog item.
+The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, and done criteria from the brief. It must also preserve relevant source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
 
 ## AI-first context preservation
 

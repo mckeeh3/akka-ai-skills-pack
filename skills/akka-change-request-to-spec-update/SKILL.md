@@ -35,6 +35,8 @@ Use `akka-revised-prd-reconciliation` instead when the input is a full revised P
 
 Use `akka-do-next-pending-task` instead when the user wants to execute an existing queue item without changing the plan.
 
+Keep this skill local-delta oriented. It may update affected app-description/spec/backlog/task-brief/queue artifacts, but it must not rederive the whole PRD plan or regenerate the queue from scratch. Preserve existing queue IDs/statuses and existing Java base package, scaffold-report, style-guide, capability id, AuthContext/scope, approval, audit/trace, and test decisions unless the change request explicitly modifies them.
+
 ## Required reading
 
 Read these first if present:

@@ -38,6 +38,8 @@ Use `akka-change-request-to-spec-update` for small feature requests, bug reports
 
 Use `akka-prd-to-specs-backlog` when no existing planning artifacts exist or the user explicitly wants a clean initial planning package.
 
+Use this skill as a reconciliation layer, not as a fresh planning generator: preserve existing app-description/spec/backlog/task-brief/queue IDs and statuses, supersede obsolete non-done tasks instead of deleting them, append follow-up tasks for completed work that must change, and carry forward capability ids, AuthContext/scope, approval gates, audit/trace obligations, tests, Java base package, scaffold-extension semantics, and style-guide decisions unless the revised PRD explicitly replaces them.
+
 ## Required reading
 
 Read these first if present:

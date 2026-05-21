@@ -62,6 +62,17 @@ It should reuse the reasoning shape of:
 
 Then continue into repo file generation.
 
+Lifecycle ownership:
+- `akka-prd-to-specs-backlog` owns the initial PRD/requirements → solution plan → cross-cutting specs → module/sprint or slice specs → backlog → pending-question/pending-task package.
+- `akka-revised-prd-reconciliation` owns replacement or substantially revised PRDs after planning artifacts already exist; it produces a controlled delta instead of regenerating the queue from scratch.
+- `akka-change-request-to-spec-update` owns local feature/bug/discovery deltas against existing app-description/spec/backlog/queue artifacts.
+- `akka-slice-spec-to-backlog` owns one existing slice or sprint → one matching build backlog plus queue entries.
+- `akka-backlog-to-pending-tasks` owns queue materialization or repair from existing backlogs; it does not redo PRD decomposition.
+- `akka-backlog-item-to-task-brief` owns one oversized backlog item → one focused task brief and matching queue entry.
+- `akka-do-next-pending-question` resolves one queued planning question; `akka-do-next-pending-task` executes one already-runnable queue task.
+
+Do not skip lifecycle stages by turning a PRD directly into code, turning a local change into a full replan, or regenerating pending tasks without preserving existing IDs, statuses, source capability ids, AuthContext/scope, approval, audit/trace, tests, and scaffold/base-package decisions.
+
 ## Required reading
 
 Read these first if present:

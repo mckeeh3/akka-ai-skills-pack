@@ -54,7 +54,7 @@
 
 ### TASK-02-001: Planning/spec/backlog skill audit
 
-- status: pending
+- status: done
 - source: skills review recommended execution order step 2
 - task brief: none
 - depends on: [TASK-01-001]
@@ -95,7 +95,12 @@
 - done criteria:
   - planning and queue skills consistently preserve AI-first SaaS, capability ids, auth/scope, audit, approval, tests, and execution order
 - commit message suggestion: `Align planning and backlog skills`
-- notes: []
+- notes:
+  - reviewed planning/decomposition/reconciliation/backlog/queue skills listed in required reads.
+  - finding: minor-alignment-edit; added lifecycle ownership and boundary guidance to planning skills without broad rewrites.
+  - edits: clarified PRD-to-specs lifecycle handoffs, revised-PRD vs local-change boundaries, one-slice backlog expansion, queue materialization, and leaf task-brief handoffs.
+  - checks: planning lifecycle, Java base package policy, scaffold-extension semantics, capability/auth/audit/approval/test preservation reviewed; git diff --check passed.
+  - commit: Align planning and backlog skills
 
 ### TASK-03-001: Agent governance skill audit
 

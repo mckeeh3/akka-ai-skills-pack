@@ -82,6 +82,8 @@ produce the matching backlog file:
 Also create or update:
 - `specs/pending-tasks.md`
 
+This skill is a one-increment expansion step. Do not reinterpret the whole PRD or change unrelated slices/sprints while creating the backlog. The backlog and queue entries must inherit the selected Java base package, scaffold-extension assumptions, style-guide status, capability ids, AuthContext/scope, role/capability rules, approval gates, audit/trace obligations, and test expectations from the solution plan and source slice/sprint. If the source increment lacks those contracts, block or queue the narrow repair question instead of inventing implementation authority.
+
 ## Required backlog content
 
 The backlog file must include:
