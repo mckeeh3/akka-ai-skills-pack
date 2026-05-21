@@ -74,7 +74,7 @@
 
 ### TASK-MINAPP-01-002: Integrate minimum workstream into agent workstream doctrine
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/01-minimum-app-doctrine-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/01-doctrine/02-integrate-workstream-doctrine.md
 - depends on: [TASK-MINAPP-01-001]
@@ -95,7 +95,8 @@
 - done criteria:
   - workstream doctrine can guide minimum starter planning without page/chatbot drift
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Integrate minimum workstream doctrine`
 
 ### TASK-MINAPP-01-003: Define markdown_response structured surface contract
 
