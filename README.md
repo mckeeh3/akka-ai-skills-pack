@@ -105,10 +105,13 @@ intent → functional agent/workstream → structured surface → governed backe
 
 ### Step 1 — Create a target app project and install the pack
 
-Create a fresh project directory outside this skills-pack repository, then install the pack into that project as `.agents/`.
+Create a fresh empty project outside this skills-pack repository with the Akka CLI, then install the pack into that project as `.agents/`.
 
 ```bash
-mkdir my-ai-first-app
+akka code init
+# Select: Empty project
+# Project directory name: my-ai-first-app
+# Which AI assistant: None
 cd my-ai-first-app
 curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.1/install-akka-ai-skills-pack-0.2.1.sh | bash -s --
 ```
