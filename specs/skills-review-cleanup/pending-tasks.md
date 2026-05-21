@@ -445,7 +445,7 @@
 
 ### TASK-08-003: Create skills cleanup completion summary
 
-- status: pending
+- status: done
 - source: post-cleanup closure recommendation after installed-pack parity validation
 - task brief: none
 - depends on: [TASK-08-002]
@@ -478,4 +478,7 @@
 - done criteria:
   - skills review cleanup has an explicit closure artifact and release-readiness recommendation
 - commit message suggestion: `Summarize skills cleanup completion`
-- notes: []
+- notes:
+  - created `specs/skills-review-cleanup/completion-summary.md` with completed-task commit references, major alignment outcomes, installed-pack parity status, smoke-check results, residual non-blocking risks, and release-readiness recommendation.
+  - checks: all prior tasks are done; completion summary explicitly states no generated application implementation work was performed; git diff --check passed.
+  - commit: Summarize skills cleanup completion
