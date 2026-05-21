@@ -394,7 +394,7 @@
 
 ### TASK-08-002: Installed-pack parity and routing smoke check
 
-- status: pending
+- status: done
 - source: post-cleanup closure recommendation after final source consistency review
 - task brief: none
 - depends on: [TASK-08-001]
@@ -434,7 +434,14 @@
 - done criteria:
   - installed-pack view is consistent with source view, or documented non-blocking differences are explicit
 - commit message suggestion: `Validate installed skills pack parity`
-- notes: []
+- notes:
+  - refreshed local project `.agents/` with `./install.sh --location project --project "$PWD" --force`; restored repository `AGENTS.md` afterward because project-mode install writes pack-facing guidance there.
+  - parity: source `skills/` and installed `.agents/skills/` both contain 151 skill directories; name comparison reported no missing or extra installed skills.
+  - installed routing check: `.agents/skills/README.md` preserves the cleaned canonical handoff order: secure AI-first SaaS → agent workstream model → core SaaS foundation → capability-first backend → description/decomposition/planning → focused implementation.
+  - smoke routes: new secure AI-first SaaS PRD → `ai-first-saas` plus `agent-workstream-apps`, `core-saas-foundation`, and `capability-first-backend` before description/decomposition/planning; app-description create/revise → `app-descriptions`; requirements-to-components → `akka-solution-decomposition`; clear workflow implementation → `akka-workflows`/workflow companions; governed prompts or skills → `akka-agents` then prompt/skill governance companions; user admin foundation → `core-saas-foundation`, `akka-basic-user-admin`, invitation/email/auth companions; governed HTTP/gRPC/MCP exposure → capability contract then endpoint family skills.
+  - finding: keep-as-is; no source skill, pack, installer, or routing fix was needed.
+  - checks: source/installed skill count and names compared; installed README and top-level routing markers inspected; smoke scenarios route without requiring the user to know internal taxonomy; git diff --check passed.
+  - commit: Validate installed skills pack parity
 
 ### TASK-08-003: Create skills cleanup completion summary
 
