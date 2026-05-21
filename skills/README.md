@@ -392,9 +392,12 @@ This skill routes to:
 Once a solution plan is accepted, treat it as the work queue for coding:
 1. take the chosen components in implementation order
 2. load only the Stage 3 skills named for the next component
-3. generate that component's code and its corresponding tests
-4. repeat for each remaining component
-5. finish any downstream endpoint, web UI, or documentation/snippet work called out by the plan
+3. carry the accepted capability contract into the selected component family: capability id, AuthContext/scope, schemas, side effects, idempotency, approval/policy, audit/trace, exposure surfaces, and tests
+4. generate that component's code and its corresponding tests
+5. repeat for each remaining component
+6. finish any downstream endpoint, web UI, or documentation/snippet work called out by the plan
+
+Stage 3 family orchestrators are the capability handoff point. Focused companion skills should implement the selected Akka mechanics without re-litigating top-level doctrine or being loaded before the capability and solution shape are clear.
 
 For durable multi-session execution, materialize the work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
 

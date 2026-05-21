@@ -97,7 +97,9 @@ Rules:
 10. Dynamic resources use `uriTemplate`; each placeholder must match a `String` parameter name.
 11. Prompt methods return `String`. Prefer required `String` parameters in repository examples; verify `Optional<String>` prompt parameters against the exact SDK version before relying on them.
 12. Extend `AbstractMcpEndpoint` only when request context access is needed.
-13. Default MCP testing is direct method invocation. Use raw MCP-over-HTTP payloads only when transport behavior itself is under test.
+13. For generated SaaS MCP surfaces, resolve caller context and authorize every protected tool/resource/prompt against tenant/customer scope, allowed tool/resource grants, and required capability before calling components.
+14. Side-effecting tools must preserve the named capability's idempotency, approval/policy, and audit/work-trace semantics; prefer proposal or approval-request tools when authority is not explicitly granted.
+15. Default MCP testing is direct method invocation. Use raw MCP-over-HTTP payloads only when transport behavior itself is under test.
 
 ## Decision guide
 
@@ -142,7 +144,9 @@ Before finishing, verify:
 - `uri` and `uriTemplate` usage matches the method signature
 - prompt parameters use the simplest shape that the current SDK/runtime version supports reliably
 - request-context access uses `AbstractMcpEndpoint` only when needed
-- tests cover the tool/resource/prompt behavior directly
+- protected tools/resources/prompts enforce backend authorization, tenant/customer scope, redaction, and allowed-surface filtering before returning data or invoking components
+- side-effecting tools use explicit idempotency, approval/policy, and audit/work-trace behavior or are narrowed to proposal/approval-request semantics
+- tests cover the tool/resource/prompt behavior directly, including forbidden/cross-scope behavior when protected
 
 ## Response style
 

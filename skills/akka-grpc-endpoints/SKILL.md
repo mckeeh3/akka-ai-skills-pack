@@ -114,7 +114,9 @@ Rules:
 9. Keep production endpoint code synchronous for unary calls.
 10. For server streaming, return `Source<Reply, NotUsed>`.
 11. Design streams so clients can resume explicitly if reconnects matter.
-12. Test gRPC endpoints through `getGrpcEndpointClient(...)`, not `componentClient`.
+12. For generated SaaS services, extract or receive caller context and authorize every protected method against tenant/customer scope and required capability before calling components.
+13. Map missing authentication, disabled users, forbidden roles/scopes, and cross-tenant/customer attempts to explicit gRPC denial statuses and required audit/work-trace records.
+14. Test gRPC endpoints through `getGrpcEndpointClient(...)`, not `componentClient`.
 
 ## Decision guide
 
@@ -163,6 +165,9 @@ Before finishing, verify:
 - `AbstractGrpcEndpoint` is used only if request context is needed
 - expected failures become explicit gRPC statuses
 - streaming methods return `Source<Reply, NotUsed>`
+- protected methods have JWT/request-context handling and backend authorization checks or are explicitly service-only through ACL
+- tenant/customer ids are filtered or rejected server-side for every scoped command, query, stream, and component call
+- forbidden, disabled-user, role/scope denial, cross-tenant/customer, and audit expectations are covered or explicitly delegated to foundation tests
 - tests use `getGrpcEndpointClient(...)`
 
 ## Response style

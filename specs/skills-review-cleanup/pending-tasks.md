@@ -268,7 +268,7 @@
 
 ### TASK-06-001: Akka component family audit
 
-- status: pending
+- status: done
 - source: skills review recommended execution order step 6
 - task brief: none
 - depends on: [TASK-05-001]
@@ -307,7 +307,13 @@
 - done criteria:
   - component family routing is consistent with capability-first and AI-first SaaS doctrine
 - commit message suggestion: `Align Akka component skill families`
-- notes: []
+- notes:
+  - reviewed component family orchestrator skills for Event Sourced Entities, Key Value Entities, Workflows, Views, Consumers, Timed Actions, HTTP endpoints, gRPC endpoints, and MCP endpoints.
+  - finding: minor-alignment-edit; family orchestrators were mostly aligned with capability-first doctrine, with small gaps around planning-to-Stage-3 handoff wording and protected gRPC/MCP final checklists.
+  - edits: clarified Stage 3 family orchestrators as the capability handoff point in `skills/README.md`; added protected gRPC method auth/audit/test checks; added protected MCP tool/resource/prompt authorization, side-effect, and forbidden/cross-scope test checks.
+  - future cleanup candidates: focused companion skills can remain mostly as-is; only revisit if future examples drift into raw CRUD/routes/tools without capability ids, auth/scope, idempotency, audit/trace, and tests.
+  - checks: Stage 3 still loads only after capability contracts and solution shape are clear; component skills preserve auth/scope, idempotency, audit/trace, and testing expectations; low-level skills were not overloaded with duplicated top-level doctrine; git diff --check passed.
+  - commit: Align Akka component skill families
 
 ### TASK-07-001: Reference and package wording cleanup
 
