@@ -146,6 +146,19 @@ For `@FunctionTool` methods and external tool classes:
 - return safe denial, validation, approval-required, or success results;
 - trace allowed and denied invocations.
 
+## Non-component ComponentClient-backed tool facades
+
+For local/external `@FunctionTool` classes that use `ComponentClient` internally:
+
+- treat the facade method as the model-facing tool and assign it one stable tool id plus capability id;
+- register the facade binding separately from any component methods it calls;
+- list underlying component calls, data resources, tenant/customer scopes, and side-effect classes in the tool registry entry;
+- enforce boundary checks before the facade reads protected data or performs side effects, not only inside downstream components;
+- resolve AuthContext, correlation id, customer/tenant scope, and idempotency keys outside model-supplied arguments when possible;
+- return scoped, redacted, computed DTOs rather than leaking raw component state or internal component layout;
+- trace the facade invocation with safe summaries of underlying component/data access and side effects;
+- do not require the underlying component methods to be annotated with `@FunctionTool` unless they are also intentionally exposed directly as model-selectable component tools.
+
 ## Akka component tools
 
 For `.tools(ComponentClass.class)`:
@@ -207,6 +220,7 @@ Plan tests for:
 - `readSkill(skillId)` allowed only when both `AgentSkillManifest` and `ToolPermissionBoundary` permit it;
 - MCP allowed-tool filtering and remote denial propagation;
 - component-tool `uniqueId` scope validation;
+- facade-tool boundary checks for underlying component/data access, redaction, and trace summaries;
 - approval-required response for authority expansion or high-impact side effects;
 - idempotent duplicate side-effecting tool calls;
 - traces include `ToolPermissionBoundary`, tool id, capability id, authorization decision, policy/approval refs, and safe summaries.

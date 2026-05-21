@@ -65,6 +65,7 @@ Official Akka agent tooling supports local `@FunctionTool` methods, external too
 Capability-first interpretation of those tools:
 
 - `@FunctionTool` exposes a capability operation to an agent for model-selected invocation.
+- Local/external `@FunctionTool` classes may act as non-component capability facades backed by `ComponentClient`; use them when one model-facing tool should compose multiple component calls, hide component layout, enforce policy/scope/redaction, or return a computed agent-safe DTO.
 - `.tools(ComponentClass.class)` exposes selected component command/query handlers as tools; it does not make the component itself the product boundary.
 - MCP tools expose capabilities across an explicit remote boundary and must preserve service ACLs, allowed-tool filtering, tenant scope, and audit.
 - Tool descriptions and loaded skill text should communicate impact and required inputs to the model, but capability enforcement must happen in backend code.

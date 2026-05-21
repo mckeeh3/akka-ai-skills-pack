@@ -454,7 +454,7 @@ Use when the agent should return typed JSON-mapped output.
 - `akka-agent-structured-responses`
 
 ### Tools
-Use when the agent should call local or external function tools.
+Use when the agent should call local or external function tools, including non-component tool facades that use `ComponentClient` to compose multiple Akka component calls plus processing/redaction/policy logic behind one stable model-facing tool.
 - `akka-agent-tools`
 
 ### Tool permission boundaries
@@ -466,7 +466,7 @@ Use when managed agents need governed `ModelConfigRef` records, model policy, te
 - `akka-agent-model-governance`
 
 ### Component tools
-Use when an agent should call selected Akka View, entity, or workflow capability surfaces as tools after the capability contract permits model-invoked access.
+Use when an agent should call selected Akka View, entity, or workflow capability surfaces as tools after the capability contract permits model-invoked access. Do not annotate every eligible generated component method by default; use `akka-agent-tools` facade guidance when the agent-facing tool should compose multiple components or hide component internals.
 - `akka-agent-component-tools`
 
 ### MCP tools

@@ -15,6 +15,9 @@ Read these first if present:
 - `akka-context/sdk/agents/failures.html.md`
 - `../../src/main/java/com/example/application/WeatherAgent.java`
 - `../../src/main/java/com/example/application/WeatherForecastTools.java`
+- `../../src/main/java/com/example/application/CartCheckoutAdvisorAgent.java`
+- `../../src/main/java/com/example/application/CartCheckoutAdvisorTools.java`
+- `../../src/test/java/com/example/application/CartCheckoutAdvisorAgentTest.java`
 
 If the main task is not local or external tool classes, load the focused companion skill instead:
 - `akka-agent-tool-boundaries` for backend-enforced ToolPermissionBoundary grants, tool registry/catalog, denied-tool semantics, approval-required expansion, and tool invocation traces
@@ -46,18 +49,67 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 6. Register external tool classes with `.tools(instance)` or `.tools(Class)`.
 7. Agent-local `@FunctionTool` methods are automatically available.
 8. Keep tool behavior deterministic and fast.
-9. Handle tool failures with `.onFailure(...)` in the agent, returning safe denial/failure shapes.
-10. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
-11. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
-12. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
-13. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`.
-14. Do not try to use one agent as a tool for another agent.
-15. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
-16. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.
-17. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
-18. Skill-loading tools must check AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
-19. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
-20. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
+9. Use a non-component tool facade when one tool should hide several component calls, combine component results, enforce capability policy/scope, redact data, or return a model-friendly computed result.
+10. Handle tool failures with `.onFailure(...)` in the agent, returning safe denial/failure shapes.
+11. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
+12. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
+13. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
+14. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`.
+15. Do not try to use one agent as a tool for another agent.
+16. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
+17. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.
+18. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
+19. Skill-loading tools must check AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
+20. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
+21. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
+
+## Tool pattern decision matrix
+
+| Need | Prefer |
+|---|---|
+| Simple helper such as current date, formatting, or deterministic calculation | Agent-local `@FunctionTool` method |
+| Reusable plain Java service/API wrapper with no Akka component orchestration | External tool class registered with `.tools(instance)` or `.tools(Class)` |
+| One model-facing capability must call multiple Akka components, hide component layout, apply policy/redaction/scoring, or return a computed DTO | Non-component `ComponentClient`-backed tool facade |
+| The agent should directly call one selected View/entity/workflow command or query already shaped as a capability surface | Component tool via `.tools(ComponentClass.class)` and `akka-agent-component-tools` |
+| The tool is hosted by another service or third-party AI/tool boundary | Remote MCP tool via `.mcpTools(...)` and `akka-agent-mcp-tools` |
+| The agent loads approved behavior guidance | Governed `readSkill(skillId)` or packaged guidance tools via the skill-governance/harness-skills companions |
+
+## Non-component tool facade pattern
+
+Use this pattern when a single agent tool should represent a capability that is broader or safer than any one component method.
+
+Prefer a non-component facade over a direct component tool when:
+- the tool must call more than one Akka component through `ComponentClient`;
+- the tool needs processing, ranking, summarization, scoring, policy checks, redaction, or DTO shaping before returning data to the model;
+- the underlying component methods are internal, too low-level, or should not appear as model-selectable tools;
+- the capability should keep a stable tool contract even if the component layout changes;
+- authorization, tenant/customer scope, correlation ids, or idempotency keys should be resolved outside model-supplied arguments.
+
+Implementation shape:
+
+```text
+Agent command handler
+→ resolve request AuthContext/correlation/mode
+→ construct or inject CapabilityTools(ComponentClient, AuthContext, policy services, trace sink)
+→ effects().tools(capabilityTools)
+→ model calls one stable @FunctionTool method
+→ tool facade calls View/entity/workflow/component methods through ComponentClient
+→ tool facade enforces scope/policy/idempotency/redaction and returns a curated result
+```
+
+Rules:
+- keep the tool class a focused capability facade, not a generic service locator;
+- annotate only the public facade methods that are safe model-selectable operations;
+- do not expose raw component ids, tool names, URLs, or internal method choices as free-form model authority;
+- prefer View calls for evidence, then entity/workflow calls for scoped current state or supervised actions;
+- for side effects, derive idempotency keys/correlation ids and return `approval_required` unless policy grants bounded autonomy;
+- register the facade instance with `.tools(instance)` when it needs request-scoped context or injected Akka services;
+- register `.tools(Class)` only when dependencies can be supplied safely by the service `DependencyProvider` and no request-scoped context is required;
+- component methods called internally through `ComponentClient` do not need `@FunctionTool`; annotate an underlying component method only when it is also intentionally exposed directly to the model as a component tool.
+
+Canonical example:
+- `CartCheckoutAdvisorAgent` injects `ComponentClient` and registers `new CartCheckoutAdvisorTools(componentClient)`.
+- `CartCheckoutAdvisorTools#adviseCheckout` is a read-only `cart.checkout-advice` facade that calls `ShoppingCartEntity#inspectCartSummary` and `ShoppingCartsByCheckedOutView#getCarts`, applies deterministic readiness logic, and returns a curated `CartCheckoutAdvice` result.
 
 ## Capability-first tool design
 
@@ -77,6 +129,8 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
   - public external tool method with parameter descriptions
 - `RefundApprovalAgent` / `RefundProposalTools` / `RefundApprovalCapabilityTest`
   - consequential `refund.issue` capability exposed as a proposal-only tool; approval workflow or explicit bounded policy grant commits the side effect
+- `CartCheckoutAdvisorAgent` / `CartCheckoutAdvisorTools` / `CartCheckoutAdvisorAgentTest`
+  - non-component `cart.checkout-advice` facade tool backed by `ComponentClient`, combining entity and view evidence plus deterministic processing into one model-facing tool
 
 ## Review checklist
 
