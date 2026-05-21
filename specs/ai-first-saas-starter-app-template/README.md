@@ -4,6 +4,23 @@ This planning package defines the migration from scattered executable examples a
 
 The starter app is intended to be the preferred foundation for new generated applications: users install or scaffold a working secure AI-first SaaS app, then extend it through app-description, capability, Akka component, and workstream UI tasks.
 
+## Minimum-first relationship
+
+Natural-language requests for a “minimum AI-first app”, “starter app”, “basic app”, “smallest useful app”, or chatbot-like initial SaaS must start with the doctrine in `../../docs/minimum-ai-first-saas-app.md`: **User Admin workstream v0** with bootstrap authorization, selected `AuthContext`, bounded `UserAdminAgent`, durable workstream log, `markdown_response`, backend capability boundary, and audit/work trace substrate.
+
+That minimum starter is a valid first slice, not a full-core completion claim. The starter template migration still targets the full-core scaffold, but its growth path must keep this order visible:
+
+```text
+User Admin workstream v0
+→ fuller User Admin structured capabilities
+→ Agent Admin and governed behavior documents
+→ Audit/Trace workstream UI and search
+→ invitations/onboarding, support access, and security completeness
+→ app-specific workstreams, surfaces, capabilities, and outcomes
+```
+
+Starter docs, scaffold seeds, and pending queues should not route a new app to a generic chatbot, public assistant, page-first CRUD shell, Agent Admin, Audit/Trace UI, or app-specific domain workstream before the User Admin v0 slice and full-core follow-up gates are explicit.
+
 ## Why this migration exists
 
 The repository now has strong doctrine, app-description guidance, workstream UI design, React/Vite implementation modules, and many focused Akka examples. The remaining confidence gap is an end-to-end full-core implementation that proves the whole pack can generate and extend a real app without relying on old DCA/static examples or fixture-only frontend seams.

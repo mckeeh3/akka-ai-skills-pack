@@ -4,11 +4,13 @@
 
 This document captures the recommended progressive module sequence for the core AI-first SaaS seed app. It is the implementation progression that future PRD/spec input documents should support.
 
-Use `10-canonical-core-app-prd.md` as the full-core PRD target. Full core scope requires the agent workstream shell plus Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents. If User Admin or Agent Admin are deferred, the selected scope is explicitly `Module 1-only / not full core` rather than full core.
+Use `10-canonical-core-app-prd.md` as the full-core PRD target. Full core scope requires the agent workstream shell plus Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents. If User Admin or Agent Admin are deferred, the selected scope is explicitly a narrower non-full-core scope rather than full core.
 
 The seed app is not implemented all at once. It is planned and delivered as a sequence of modules, each broken into sprints and harness-sized tasks. Each sprint should produce demonstrable behavior through the live app UI and/or APIs, with tests.
 
-Because the canonical UI is workstream-agent-backed, basic auth must be followed by a narrow agent workstream runtime bootstrap before full User Admin. Otherwise User Admin would be generated as a page-first CRUD console or as hard-coded shell state instead of a functional-agent workstream backed by governed runtime behavior. The bootstrap is deliberately small: seeded agent definitions, prompts, skills, manifests, tool boundaries, deterministic runtime invocation, composer integration, and trace facts for Access/Profile and User Admin orientation/status behavior. Full Agent Admin and full prompt/skill governance still arrive later as their own modules.
+For minimum/starter/basic/chatbot-like generated SaaS requests, the first implementation slice is not the full-core module sequence below. It is the `docs/minimum-ai-first-saas-app.md` minimum starter: **User Admin workstream v0** with bootstrap authorization, selected `AuthContext`, bounded `UserAdminAgent`, durable request/response timeline, `markdown_response`, backend capability boundary, and audit/work trace substrate. Full-core expansion remains explicit and non-optional for full readiness.
+
+Because the canonical UI is workstream-agent-backed, the minimum starter begins with a narrow User Admin workstream runtime rather than a generic chatbot, page-first CRUD console, or hard-coded shell state. Full User Admin structured surfaces, Agent Admin, governed prompt/skill documents, Audit/Trace UI, invitations/onboarding, support access, and security completeness arrive later as follow-up modules/gates.
 
 ## Delivery model
 
@@ -23,6 +25,41 @@ module PRD
 
 The first sprint of each module should create user-visible value. Backend components, endpoints, frontend UI, tests, and audit/security behavior should be planned together.
 
+## Minimum starter prelude: User Admin workstream v0
+
+### Goal
+
+A bootstrap-authorized user can enter the app, operate in a selected `AuthContext`, and use the User Admin functional agent through a durable workstream timeline whose first structured surface is `markdown_response`.
+
+### Scope label
+
+The prelude by itself is `minimum starter ready / not full core`. It explicitly defers full User Admin structured capabilities, Agent Admin, Audit/Trace UI, invitations/onboarding, support access, full governed behavior document administration, and app-specific workstreams.
+
+### Required visible outcome
+
+A bootstrap user can ask the User Admin agent what access exists, what capabilities are available, what full-core gaps remain, and why unsupported actions are denied or deferred. The response is rendered through sanitized `markdown_response`, linked to workstream log entries and trace facts.
+
+### Core scope
+
+- Bootstrap-authorized human user only; no public self-registration.
+- Selected local `AuthContext` with account/user identity, scope, roles/capabilities, and actor metadata.
+- Role-authorized User Admin functional-agent rail entry and persistent composer.
+- Bounded `UserAdminAgent` for orientation, access explanation, safe next-step guidance, and denials/deferments.
+- Durable workstream log for request, response, capability/tool result, denial, correlation id, and trace references.
+- `markdown_response` payload and sanitized rendering contract.
+- Backend capability boundary for every protected workstream, API, component, and tool action.
+- Audit/work trace substrate for identity, authorization, prompt/skill/tool use, capability checks, data access, denials, and response generation.
+- Tests for allowed bootstrap access, forbidden access, trace creation, markdown sanitization, frontend secret boundary, and unsupported action denial.
+
+### Explicit defers
+
+- Complete invitation lifecycle and Resend/outbox production readiness.
+- Full user directory, membership, role, access-review, support-access, and admin audit management.
+- Agent Admin surfaces and full prompt/skill/manifest/tool-boundary governance.
+- Audit/Trace search/detail UI.
+- Governance/Policy proposal and outcome loops.
+- App-specific domain functional agents and capabilities.
+
 ## Module 1: Minimal Auth and App Access MVP
 
 ### Goal
@@ -31,7 +68,7 @@ Users can sign in, enter the app, retrieve their current identity/context, and u
 
 ### Scope label
 
-Module 1 by itself is `Module 1-only / not full core`. It explicitly defers User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents.
+Module 1 by itself is a narrower non-full-core scope. It must not be used to override the minimum starter rule for starter/basic/chatbot-like requests, and it explicitly defers User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents.
 
 ### Required visible outcome
 

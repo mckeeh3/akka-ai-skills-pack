@@ -4,6 +4,12 @@ This planning package turns the current skills-pack gap assessment into an execu
 
 The migration is planning-only until individual pending tasks are executed in fresh harness sessions. Each task must be self-contained, update `pending-tasks.md`, and end with a git commit.
 
+## Minimum-first relationship
+
+Full-core readiness remains stricter than the minimum starter. For minimum/starter/basic/chatbot-like generated SaaS requests, the first implementation slice is **User Admin workstream v0** as defined by `../../docs/minimum-ai-first-saas-app.md`: bootstrap authorization, selected `AuthContext`, bounded `UserAdminAgent`, durable workstream log, `markdown_response`, backend capability boundary, and audit/work trace substrate.
+
+That first slice must carry explicit follow-up gates to reach full-core readiness: fuller User Admin structured capabilities, Agent Admin and governed behavior documents, Audit/Trace search/UI, invitation onboarding with email/outbox, support access, security completeness, and only then app-specific domain workstreams. A plan or implementation that stops at the minimum starter must be labeled narrower than full core.
+
 ## Why this migration exists
 
 The repository now clearly defines the full core app target:

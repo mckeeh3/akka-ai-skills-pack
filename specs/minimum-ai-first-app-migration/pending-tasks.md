@@ -240,7 +240,7 @@
 
 ### TASK-MINAPP-03-002: Update seed example references and starter progression docs
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/03-description-starter-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/03-description-starter/02-update-seed-and-starter-docs.md
 - depends on: [TASK-MINAPP-03-001]
@@ -262,7 +262,9 @@
 - done criteria:
   - examples and starter docs teach the same minimum-first growth path
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Align seed docs with minimum starter path`
+  - checks passed: `git diff --check`; verified first implementation slice language names User Admin workstream v0 before Agent Admin, Audit/Trace UI, or app-specific workstreams.
 
 ### TASK-MINAPP-03-003: Update starter template/scaffold guidance and queues
 

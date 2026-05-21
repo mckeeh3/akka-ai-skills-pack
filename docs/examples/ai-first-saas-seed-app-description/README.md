@@ -31,6 +31,23 @@ Frontend implementation reference:
 - fixture API/realtime seams: `../../../frontend/src/api/WorkstreamApiClient.ts` and `../../../frontend/src/api/WorkstreamRealtimeClient.ts`
 - User Admin reference vertical: `../../../frontend/src/workstream/fixtures/**` and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
+## Minimum-first growth path
+
+For “minimum app”, “starter app”, “basic app”, or chatbot-like generated SaaS requests, use `../../minimum-ai-first-saas-app.md` before treating this seed as full-core ready. The first implementation slice is **User Admin workstream v0**: bootstrap-authorized user, selected `AuthContext`, bounded `UserAdminAgent`, durable request/response timeline, `markdown_response`, backend capability boundary, and audit/work trace substrate.
+
+That first slice is intentionally narrower than this full-core seed. It must record explicit follow-up work in this order:
+
+```text
+User Admin workstream v0
+→ fuller User Admin structured capabilities
+→ Agent Admin and governed behavior documents
+→ Audit/Trace search and investigation UI
+→ invitations/onboarding, support access, and security completeness
+→ app-specific functional agents, surfaces, capabilities, and outcomes
+```
+
+Do not use this seed README to justify a generic public chatbot, unauthenticated assistant, page-first CRUD console, or app-specific domain workstream before the User Admin v0 minimum slice and full-core progression gates are visible.
+
 The seed app UI docs below describe functional agents, workstreams, structured surfaces, and deep links. They are not a page-first route/screen template. Older page/screen examples in the repository are legacy or mechanics references only.
 
 Use `../../agent-workstream-design-review-checklist.md` when checking whether another example, spec, or generated output still matches this canonical seed direction.
