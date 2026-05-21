@@ -102,6 +102,31 @@ In this repository, prefer these examples:
 - `../../src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
 - `../../src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
+## Agent governance routing matrix
+
+Use this matrix before reading every governance companion. Load the first matching row, then add only the named companions required by the task.
+
+| If the task is mainly about... | Load first | Add when needed |
+|---|---|---|
+| Agent identity, lifecycle, owner/steward, functional/internal placement, authority level, active references, or admin catalog | `akka-agent-behavior-profiles` | `akka-agent-model-governance`, `akka-agent-tool-boundaries`, `akka-agent-work-trace` |
+| Tenant-scoped versioned artifacts such as prompts, skills, rubrics, policies, examples, snapshots, review, activation, diff/history, or rollback | `akka-agent-governed-documents` | focused prompt/skill/policy/rubric skills |
+| First install, tenant bootstrap, or upgrade import of implementation-developed default AgentDefinitions, prompts, skills, manifests, or tool boundaries | `akka-agent-seed-documents` | `akka-agent-governed-documents`, prompt/skill/tool-boundary skills |
+| Prompt versions, prompt review/activation, effective prompt assembly, prompt test console, or `PromptAssemblyTrace` | `akka-agent-prompt-governance` | `akka-agent-governed-documents`, `akka-agent-behavior-editing` |
+| Runtime skills, compact `AgentSkillManifest`, `readSkill(skillId)`, skill-load denials, or `SkillLoadTrace` | `akka-agent-skill-governance` | `akka-agent-tool-boundaries`, `akka-agent-governed-documents` |
+| Tool registry/catalog, local/component/MCP/readSkill grants, data scope, side effects, approval-required tool expansion, or tool invocation denials | `akka-agent-tool-boundaries` | `akka-agent-tools`, `akka-agent-component-tools`, `akka-agent-mcp-tools`, `akka-agent-work-trace` |
+| Model aliases, `ModelConfigRef`, fallback policy, provider secret boundaries, tenant/agent/task model selection, or model-use traces | `akka-agent-model-governance` | `akka-agent-behavior-profiles`, `akka-agent-work-trace` |
+| Prompt/skill/manifest/tool-boundary/policy/rubric changes drafted by an editing agent with proposed diffs and review routing | `akka-agent-behavior-editing` | affected governance skill, `ai-first-saas-decision-cards` |
+| Agent execution explainability, prompt/skill/model/tool/data references, correlation, redaction, investigation UI, or trace search | `akka-agent-work-trace` | `ai-first-saas-audit-trace`, capability/component skills producing traces |
+| Evaluator findings becoming behavior-change proposals, replay/simulation, approval, activation, monitoring, or rollback | `akka-agent-closed-loop-improvement` | `akka-agent-evaluation`, affected governance skill |
+
+Boundary rules:
+- `AgentDefinition` decides whether an agent may run and which governed prompt, skill manifest, model ref, and tool boundary are active; it does not contain prompt/skill text or provider secrets.
+- `PromptDocument` and `SkillDocument` are behavior guidance; they never grant role, data, tenant/customer, tool, model, approval, or autonomous authority.
+- `AgentSkillManifest` advertises compact skill ids and when-to-use hints; full skill text is returned only through authorized `readSkill(skillId)`.
+- `ToolPermissionBoundary`, AuthContext, permissions/capabilities, approval policy, and backend checks are the authority source for tool/data/side-effect access.
+- Seed files are import sources only; runtime agents resolve governed records after bootstrap.
+- Editing agents and evaluator agents may draft proposals and evidence, not directly activate consequential changes unless a narrow backend-enforced auto-approval policy is explicitly modeled and tested.
+
 ## Companion skills
 
 Load the companion skill that matches the current task:

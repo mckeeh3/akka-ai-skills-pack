@@ -104,7 +104,7 @@
 
 ### TASK-03-001: Agent governance skill audit
 
-- status: pending
+- status: done
 - source: skills review recommended execution order step 3
 - task brief: none
 - depends on: [TASK-02-001]
@@ -146,7 +146,12 @@
 - done criteria:
   - future agents can choose the right agent governance skill without reading every agent-governance file first
 - commit message suggestion: `Clarify agent governance skill routing`
-- notes: []
+- notes:
+  - reviewed agent orchestrator and governance companion skills listed in required reads.
+  - finding: minor-alignment-edit; added an agent governance routing matrix to `akka-agents` covering behavior profiles, governed documents, seed documents, prompt/skill governance, tool boundaries, model governance, behavior editing, work traces, and closed-loop improvement.
+  - edits: clarified behavior-editing handoffs to current tool/model governance skills and tightened model-governance boundaries around model selection, policy, fallback, secret handling, and trace concerns.
+  - checks: managed runtime foundation remains mandatory; prompt/skill content is guidance only and cannot grant authority; ToolPermissionBoundary, AuthContext, tenant scope, traces, and approval gates remain backend-enforced; git diff --check passed.
+  - commit: Clarify agent governance skill routing
 
 ### TASK-04-001: App-description boundary audit
 

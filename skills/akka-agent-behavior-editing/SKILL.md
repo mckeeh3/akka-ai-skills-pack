@@ -7,7 +7,7 @@ description: Implement AgentBehaviorEditorAgent flows for governed prompt, skill
 
 Use this skill when generated AI-first SaaS apps need an agent-mediated maintenance path for runtime agent behavior: prompts, skills, skill manifests, tool permission boundaries, policies, rubrics, reference examples, or related governed documents.
 
-This skill defines the `AgentBehaviorEditorAgent` responsibility and proposal contract. It does not replace focused governance skills; route to `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-governed-documents`, `ai-first-saas-policy-governance`, and future tool-boundary guidance for the target artifact implementation.
+This skill defines the `AgentBehaviorEditorAgent` responsibility and proposal contract. It does not replace focused governance skills; route to `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-governed-documents`, `akka-agent-tool-boundaries`, `akka-agent-model-governance`, `ai-first-saas-policy-governance`, and the target artifact implementation skill as needed.
 
 ## Required reading
 

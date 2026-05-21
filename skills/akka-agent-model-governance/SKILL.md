@@ -9,6 +9,8 @@ Use this skill when agent behavior profiles include runtime model selection or m
 
 This skill governs model configuration. It does not replace `akka-agent-component` for Java `Agent` class structure or `akka-agent-behavior-profiles` for durable `AgentDefinition` lifecycle.
 
+Use this skill only for model-selection authority, policy, fallback, secret-boundary, and model-use trace concerns. Use `akka-agent-behavior-profiles` for which agent references a model config, `akka-agent-tool-boundaries` for tool/data/side-effect authority, and prompt/skill governance skills for model-visible behavior guidance. Prompt text, skill text, or evaluator recommendations cannot select an unapproved provider or bypass model policy.
+
 ## Required reading
 
 Read these first if present:
