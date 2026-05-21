@@ -113,6 +113,25 @@ Example AI-first core scenarios:
 
 ## Initial implementation slices
 
+### Slice 0: minimum starter
+
+Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, starter app, or chatbot-like bootstrap shell. Slice 0 is the **User Admin workstream v0** defined in `minimum-ai-first-saas-app.md`; it is not full-core readiness and it is not a generic public chatbot.
+
+Slice 0 must include all of these together:
+
+- bootstrap-authorized human user only; no public self-registration and no prompt- or UI-only privilege grant;
+- selected local `AuthContext` containing account/user identity, bootstrap scope, roles/capabilities, tenant/customer boundary when applicable, and actor metadata;
+- role/capability checks for protected workstream, surface, API, component, and agent-tool actions;
+- `UserAdminAgent` with bounded bootstrap authority that answers and guides within established admin scope, denies or defers unsupported full-core actions, and never expands privileges autonomously;
+- durable workstream log for requests, `markdown_response` entries, capability/tool results, denials, correlation ids, and trace references;
+- audit/work trace substrate for identity, authorization, prompt/skill/tool use, capability checks, data access, denials, and response generation;
+- capability-first backend contracts before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
+- tests for allowed bootstrap access, forbidden access, missing/disabled authority where modeled, trace creation, markdown sanitization, and frontend secret boundaries.
+
+Slice 0 must create explicit follow-up work for full-core readiness: WorkOS/AuthKit completion, `/api/me`, invitations/onboarding, Resend/outbox email delivery, full User Admin, Agent Admin and governed agent documents, Audit/Trace search UI, support access, subscription/billing boundary where relevant, and full tenant-isolation/security coverage.
+
+### Full-core foundation slices
+
 1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
 2. Mandatory invitation lifecycle: `Invitation` record, invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotent duplicate handling.
 3. Mandatory email delivery foundation: Resend (resend.com) production email service configuration, plus a safe local/dev/test adapter that captures messages in an outbox without external delivery. This reusable foundation sends invitation/account emails first and must support future app-specific email features and governed agent `@FunctionTool` email tools.

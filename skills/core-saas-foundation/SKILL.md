@@ -98,6 +98,25 @@ All broad planning and generation paths must include:
 
 For every new SaaS app, implement or specify the secure foundation before app-specific CRM/domain features. User-facing foundation work must be modeled as functional agents, structured surfaces, and surface actions mapped to governed capabilities before component selection. Do not start from object lists, CRUD screens, or Akka component families alone.
 
+### Slice 0: minimum starter readiness
+
+When the user asks for a minimum, starter, basic, or chatbot-like generated AI-first SaaS app, the valid first slice is **User Admin workstream v0**, not a generic chatbot and not full-core readiness. Route this through `docs/minimum-ai-first-saas-app.md` and require all of the following before calling the starter ready:
+
+- bootstrap-authorized human user only; no public self-registration and no prompt-, skill-, route-, or frontend-only privilege grant;
+- selected local `AuthContext` with account/user identity, bootstrap scope, roles/capabilities, tenant/customer boundary when applicable, and actor metadata;
+- backend-enforced role/capability boundary for protected workstream, surface, API, component, and agent-tool actions;
+- bounded `UserAdminAgent` that can answer bootstrap user-admin questions, explain current access, guide full-core follow-up, and deny/defer actions whose capabilities are not implemented;
+- durable workstream log with request, `markdown_response`, capability/tool result, denial, correlation id, and trace references;
+- audit/work trace substrate for identity, authorization, prompt/skill/tool use, capability checks, data access, denials, and response generation;
+- capability-first backend contracts before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
+- tests for allowed bootstrap access, forbidden access, missing/disabled authority where modeled, trace creation, markdown sanitization, and frontend secret boundaries.
+
+Minimum starter readiness must always carry follow-up tasks/gates for full-core SaaS readiness. It may defer complete WorkOS/AuthKit setup, invitation/onboarding, Resend/outbox, complete User Admin, Agent Admin governed documents, Audit/Trace UI, support access, billing boundary, and complete security coverage, but only as explicit follow-up work. It must not claim app-specific readiness.
+
+### Full-core foundation readiness
+
+Full-core readiness remains stricter than Slice 0. For full generated SaaS readiness, require the complete foundation sequence below before app-specific CRM/domain work:
+
 1. Foundation workstream contract: Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing functional agents where relevant; default structured surfaces; action-to-capability mappings; AuthContext, tenant/customer scope, approval, audit/trace, and tests for each surface action.
 2. Common identity/tenancy types: IDs, scope enums, canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), app-specific role-to-capability mappings, permissions/capabilities, AuthContext, audit metadata.
 3. WorkOS/AuthKit sign-in, WorkOS JWT validation, and request-context extraction.
@@ -133,11 +152,17 @@ Every app PRD must create `specs/cross-cutting/01-auth-tenancy-audit.md` and a f
 
 ### Generation
 
-Generation must stop or mark the description not-ready when the foundation is missing. Do not invent access semantics during code generation; add description/spec gaps instead.
+Generation must stop or mark the description not-ready when the requested readiness target is missing.
+
+- For minimum starter generation, the description/spec must satisfy Slice 0 User Admin workstream v0 readiness and must emit follow-up tasks for full-core SaaS readiness.
+- For full-core or app-specific generation, Slice 0 is insufficient; missing WorkOS/AuthKit completion, `/api/me`, invitations/onboarding, Resend/outbox, full User Admin, Agent Admin governed documents, Audit/Trace UI, support access, billing boundary where relevant, tenant-isolation/security coverage, or app-specific domain contracts must keep readiness blocked.
+
+Do not invent access semantics during code generation; add description/spec gaps instead.
 
 ## Output checklist
 
 Before handing off to downstream implementation, verify:
+- The target readiness state is explicit: minimum starter ready, full-core ready, or app-specific ready. Minimum starter ready means Slice 0 User Admin workstream v0 with bootstrap auth, selected AuthContext, backend role/capability boundary, workstream log, `markdown_response`, audit/work trace substrate, no public self-registration, and full-core follow-up tasks. Full-core ready and app-specific ready require the stricter checks below.
 - Foundation functional-agent and structured-surface semantics are present before component selection: Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing where relevant; each has surface actions mapped to governed capabilities, AuthContext/tenant/customer scope, audit/work-trace obligations, and tests. Missing foundation functional-agent/surface semantics blocks full-core readiness.
 - SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, complete Invitation lifecycle, AuthContext, first-slice UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AdminAuditEvent, support-access, subscription/billing boundary, and foundation web UI surfaces are present or explicitly deferred only for non-SaaS reference work.
 - Invitation and other application email delivery use Resend (resend.com) configuration for production readiness, or local/dev/test uses an explicit captured outbox adapter; delivery failures are visible to admins and auditable; focused implementation routes through `akka-saas-invitation-onboarding` for InvitationWorkflow and invite lifecycle work, and through `akka-resend-email-service` for reusable Resend delivery/outbox, future app feature emails, and governed `@FunctionTool` email tools.

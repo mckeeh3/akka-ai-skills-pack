@@ -128,7 +128,7 @@
 
 ### TASK-MINAPP-02-001: Split core foundation guidance into minimum starter and full-core readiness
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/02-foundation-routing-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/02-foundation-routing/01-split-core-foundation-readiness.md
 - depends on: [TASK-MINAPP-01-003]
@@ -149,7 +149,8 @@
 - done criteria:
   - foundation guidance supports a valid first slice without weakening full-core SaaS readiness
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Split core foundation readiness`
 
 ### TASK-MINAPP-02-002: Update top-level routing for minimum app interpretation
 
