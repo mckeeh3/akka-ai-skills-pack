@@ -9,7 +9,7 @@ Current files:
 - `agent-permissions.md` — mechanical authority boundaries for agents, tools, workflows, action-boundary judging, admin-assistant agents, supplies autopilot, governed policy/prompt changes, and audit traces.
 - `data-protection.md` — sensitive data classes, frontend/backend secret separation, response/log minimization, retention/trace visibility, deny-by-default cases, and linked tests.
 - `foundation-onboarding-admin-boundaries.md` — mandatory invitation lifecycle, auditable admin operations, support-access rules, and SaaS Owner billing/subscription boundary.
-- `boundary-and-surface-rules.md` — public static routes versus protected `/api/...` routes, frontend UX boundaries, backend enforcement boundaries, integration boundaries, support-access, and PoC adaptation notes.
+- `boundary-and-surface-rules.md` — public static routes versus protected `/api/...` routes, frontend UX boundaries, backend enforcement boundaries, integration boundaries, support-access, and implementation reference notes.
 
 Core rules:
 
@@ -19,7 +19,7 @@ Core rules:
 - Privileged self-registration from WorkOS claims alone is forbidden; privileged access requires a valid invitation, accepted membership policy, or bounded audited bootstrap path.
 - Invitation delivery, resend, revoke/cancel, expiry, acceptance, delivery failure visibility, support-access, billing-boundary, and consequential admin activity emit `AdminAuditEvent` and/or work/decision trace facts.
 
-Source reference: these files may adapt patterns from `examples/poc-user-auth-onboarding/` as implementation guidance only; they are not a drop-in production security system.
+Source reference: use `templates/ai-first-saas-starter/` for the canonical generated starter foundation and the current root security reference packages under `src/main/java/com/example/**/security` for executable WorkOS/AuthKit and local-authorization patterns; these files are not a drop-in production security system.
 
 Linked layers:
 

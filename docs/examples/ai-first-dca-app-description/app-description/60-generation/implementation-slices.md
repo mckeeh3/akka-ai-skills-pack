@@ -32,7 +32,7 @@ Future realization tasks should start from these refreshed description files bef
 
 Business goal: provide a secure, role-aware, Akka-hosted application foundation before broadening DCA operational automation.
 
-Primary source references: `../10-capabilities/01-secure-tenant-user-foundation.md`, the `../40-auth-security/` layer, `../30-tests/*`, `../55-ui/ui-surfaces.md`, and `../50-observability/*`. A future task may adapt the working `examples/poc-user-auth-onboarding/` proof-of-concept for WorkOS/AuthKit, JWT-protected APIs, local Akka user/account authorization, admin audit logging, and React/Vite static hosting. Treat that PoC as implementation guidance only; the DCA foundation must add the current mandatory invitation lifecycle, scoped administration, support-access, billing-boundary, admin-agent recommendation, tenant-isolation, frontend secret-boundary, and audit/trace contracts rather than relying on bootstrap-only onboarding.
+Primary source references: `../10-capabilities/01-secure-tenant-user-foundation.md`, the `../40-auth-security/` layer, `../30-tests/*`, `../55-ui/ui-surfaces.md`, and `../50-observability/*`. Use `templates/ai-first-saas-starter/` for the canonical generated starter foundation and the current root security reference packages under `src/main/java/com/example/**/security` for executable WorkOS/AuthKit, JWT-protected APIs, local Akka user/account authorization, admin audit logging, and React/Vite static hosting patterns. The DCA foundation must include the current mandatory invitation lifecycle, scoped administration, support-access, billing-boundary, admin-agent recommendation, tenant-isolation, frontend secret-boundary, and audit/trace contracts rather than relying on bootstrap-only onboarding.
 
 Seed scope:
 

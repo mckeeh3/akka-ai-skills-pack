@@ -63,6 +63,6 @@ Rules:
 
 Support access is a Tenant-created, time-limited, reasoned, visible, revocable, and audited Tenant-scoped membership for SaaS Owner personnel. It is not impersonation by default and not a global super-admin bypass. Support-access create, use, extension, expiry, revocation, denied attempts, and review-agent recommendations must cite tenant scope, reason, actor, target surface, expiry, permission checked, decision-card link where present, and correlation id in audit/work traces.
 
-## PoC adaptation note
+## Implementation reference note
 
-The `examples/poc-user-auth-onboarding/` ideas remain implementation guidance for WorkOS/AuthKit, React/Vite hosting, and same-origin APIs. The DCA reference must preserve the current secure foundation capability, selected UI style guide, AI-first supervision surfaces, tenant/customer boundaries, and audit/trace requirements rather than copying PoC policies as production-ready rules.
+The legacy `examples/poc-user-auth-onboarding/` PoC has been removed. Use `templates/ai-first-saas-starter/` for the generated starter foundation and the current root security reference packages (`src/main/java/com/example/domain/security`, `src/main/java/com/example/application/security`, `src/main/java/com/example/api/security`, and `src/main/java/com/example/security`) for executable WorkOS/AuthKit, React/Vite hosting, and same-origin API patterns. The DCA reference must preserve the current secure foundation capability, selected UI style guide, AI-first supervision surfaces, tenant/customer boundaries, and audit/trace requirements rather than copying historical PoC policies as production-ready rules.
