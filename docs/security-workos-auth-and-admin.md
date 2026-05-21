@@ -285,6 +285,8 @@ export INVITE_EMAIL_SUBJECT="Account access information"
 Local/dev/test environments may replace external delivery with an explicit safe adapter that captures emails in an outbox for inspection without sending externally. Production startup/readiness must fail or report not-ready when required Resend configuration is missing.
 
 Bootstrap behavior:
+- implement startup bootstrap in the service's single Akka `@Setup` class implementing `akka.javasdk.ServiceSetup`; `onStartup()` must load `ADMIN_USERS` before `/api/me` or admin endpoints depend on local admin state
+- keep bootstrap idempotent because Akka invokes `onStartup()` for each service instance and restart; do not rely on endpoint lazy initialization or tests calling the seeder directly as the production startup path
 - parse configured initial admins at startup using canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`) plus explicitly mapped app-specific roles when needed
 - create invited local Akka user accounts idempotently
 - create Invitation records with invite token or acceptance context, status, expiry, delivery status, delivery attempts, and audit metadata
@@ -305,7 +307,7 @@ Bootstrap behavior:
 - [ ] admin operations cover invite, resend invite, revoke invite, list/search, view user detail, edit allowed profile fields, role assignment/replacement/removal, membership lifecycle, disable/reactivate, reset/relink identity subject under policy, support-access grant/revoke/expiry, and last-admin protection
 - [ ] frontend navigation is treated as UX only, not authorization
 - [ ] backend secrets are not present in `frontend/.env*` or built assets
-- [ ] startup bootstrap is idempotent
+- [ ] startup bootstrap is implemented through the single Akka `@Setup` `ServiceSetup.onStartup()` path and is idempotent
 - [ ] startup/readiness validation logs each missing required backend environment variable as an error and includes the full env var name, without logging secret values
 - [ ] production readiness fails when required Resend invite email delivery configuration is missing
 - [ ] local/dev/test invite email adapter captures messages in an outbox without external delivery

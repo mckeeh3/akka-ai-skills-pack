@@ -4,9 +4,11 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
 import java.time.Clock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Shared starter-template service registry for local/demo endpoints. Replace with dependency injection in production apps. */
 public final class StarterSecurityComponents {
+  private static final AtomicBoolean STARTED = new AtomicBoolean(false);
   private static final Clock CLOCK = Clock.systemUTC();
   private static final InMemoryIdentityRepository IDENTITY_REPOSITORY = new InMemoryIdentityRepository();
   private static final InMemoryInvitationRepository INVITATION_REPOSITORY = new InMemoryInvitationRepository();
@@ -22,11 +24,18 @@ public final class StarterSecurityComponents {
   private static final WorkstreamService WORKSTREAM_SERVICE = new WorkstreamService(ME_SERVICE, AUTH_CONTEXT_RESOLVER, USER_DIRECTORY_VIEW, INVITATION_VIEW, USER_ADMIN_SERVICE, INVITATION_SERVICE, AGENT_BEHAVIOR_REPOSITORY, AGENT_RUNTIME_SERVICE);
 
   static {
-    seedDemoTenantAdmin();
-    AGENT_BEHAVIOR_SEED_LOADER.importStarterDefaults("tenant-starter", "starter-bootstrap", "corr-starter-agent-seed");
+    startup();
   }
 
   private StarterSecurityComponents() {}
+
+  /** Idempotent startup hook used by the Akka @Setup class and by local tests/endpoints. */
+  public static void startup() {
+    if (STARTED.compareAndSet(false, true)) {
+      seedDemoTenantAdmin();
+      AGENT_BEHAVIOR_SEED_LOADER.importStarterDefaults("tenant-starter", "starter-bootstrap", "corr-starter-agent-seed");
+    }
+  }
 
   public static AuthContextResolver authContextResolver() {
     return AUTH_CONTEXT_RESOLVER;

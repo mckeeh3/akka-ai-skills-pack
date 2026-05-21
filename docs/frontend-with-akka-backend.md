@@ -352,12 +352,12 @@ The backend still performs final authorization checks in Java before performing 
 
 ## Startup admin bootstrap and first login
 
-The backend can bootstrap initial admin users from the `ADMIN_USERS` environment variable on Akka startup.
+The backend must bootstrap initial admin users from the `ADMIN_USERS` environment variable on Akka startup using the service's single `@Setup` class implementing `akka.javasdk.ServiceSetup`. Put the idempotent `ADMIN_USERS` load in `onStartup()` so local admin state exists before `/api/me` or admin endpoints are called.
 
 Example:
 
 ```bash
-export ADMIN_USERS="jane@gmail.com:ADMIN:ALL,joe@outlook.com:TENANT_ADMIN:tenant-123"
+export ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER,joe@outlook.com:TENANT_ADMIN:tenant-123"
 export RESEND_API_KEY="re_xxxxxxxxx"
 export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
@@ -365,7 +365,7 @@ export APP_BASE_URL="http://localhost:9000"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 ```
 
-When the service starts, it creates invited local Akka users and sends standard invite emails.
+When the service starts, Akka invokes `onStartup()` for each service instance/restart, so the bootstrap logic must be idempotent. It creates invited local Akka users and sends or captures standard invite emails without depending on endpoint lazy initialization.
 
 When an invited user signs in through WorkOS, Akka links the WorkOS identity to the invited local account and activates it. The frontend then receives an active `/api/me` response and displays the authenticated app shell.
 

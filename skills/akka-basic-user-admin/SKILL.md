@@ -144,17 +144,42 @@ INVITE_EMAIL_SUBJECT="Account access information"
 Local/dev/test may use an explicit safe delivery adapter that captures invite emails in an outbox without external delivery.
 
 Bootstrap rules:
+- implement admin bootstrap in the single Akka service startup hook: one class annotated `@Setup` that implements `akka.javasdk.ServiceSetup`, with idempotent `onStartup()` logic that loads `ADMIN_USERS` and seeds initial admin state before normal traffic depends on it
+- do not rely on endpoint lazy initialization, frontend calls, static-only registries, or tests calling the seeder directly as the production bootstrap mechanism; `@Setup` is the required startup path, and repeated service-instance startup/rolling restarts must be safe
 - validate required backend env/config early for real AuthKit/admin testing: `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL`; production invitation delivery also requires `RESEND_API_KEY` plus `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL`
 - every Java env/config helper must trim values, treat missing/empty/blank as unset, log an `error` for each missing required variable with the full env var name (for example `Required backend environment variable [ADMIN_USERS] is not set or is blank`), never log secret values, and fail startup/readiness instead of silently granting access or disabling auth/email delivery
 - parse entries defensively and accept canonical foundation roles first (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), with app-specific role aliases only when explicitly mapped to capabilities
 - normalize email addresses
-- create missing invited/admin users idempotently
+- create missing invited/admin users idempotently from `ADMIN_USERS` inside `onStartup()`; never require the first `/api/me` or admin endpoint call to trigger this seed
 - create Invitation records with expiry, delivery status, delivery attempts, and audit metadata
 - send invite emails in production or capture them in the local/dev/test outbox adapter
 - block production readiness when required Resend configuration is missing
 - update only allowed bootstrap-managed fields on repeated startup
 - never expose bootstrap secrets to frontend assets
-- surface invalid bootstrap or Resend email service config clearly at startup or in operational status
+- surface invalid bootstrap or Resend email service config clearly from `@Setup` startup or in operational status
+
+Minimal startup hook shape:
+
+```java
+import akka.javasdk.ServiceSetup;
+import akka.javasdk.annotations.Setup;
+
+@Setup
+public final class ServiceBootstrap implements ServiceSetup {
+  private final AdminBootstrapService adminBootstrapService;
+
+  public ServiceBootstrap(AdminBootstrapService adminBootstrapService) {
+    this.adminBootstrapService = adminBootstrapService;
+  }
+
+  @Override
+  public void onStartup() {
+    adminBootstrapService.seedAdminUsersFromEnvironment(); // idempotent ADMIN_USERS load
+  }
+}
+```
+
+Akka permits only one `@Setup` `ServiceSetup` class per service. If the app also needs dependency-provider setup or other startup operations, compose them in the same setup class rather than adding a second one.
 
 ## Complete admin management baseline
 
