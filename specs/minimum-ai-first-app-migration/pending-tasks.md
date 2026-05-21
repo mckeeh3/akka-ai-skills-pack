@@ -182,7 +182,7 @@
 
 ### TASK-MINAPP-02-003: Update readiness, generation, and planning gates
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/02-foundation-routing-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/02-foundation-routing/03-update-readiness-planning-gates.md
 - depends on: [TASK-MINAPP-02-002]
@@ -206,7 +206,8 @@
 - done criteria:
   - planning and generation can target minimum starter without falsely claiming full-core readiness
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Update minimum app readiness gates`
 
 ### TASK-MINAPP-03-001: Update app-description guidance for User Admin v0
 

@@ -75,11 +75,12 @@ Assess the current description across these dimensions:
 
 ### 0. Scope-label and full-core gate
 Before scoring readiness, identify the app's declared generation scope from `00-system/app-manifest.md`, `00-system/readiness-status.md`, `00-system/generation-policy.md`, specs, or user instruction:
+- `minimum starter`: readiness may be assessed for User Admin workstream v0 only: bootstrap-authorized user, selected AuthContext, role-authorized UserAdminAgent, durable request/response workstream log, `markdown_response` surface, backend capability boundary, audit/work trace substrate, markdown sanitization, and tests for bootstrap access, forbidden access, trace creation, markdown rendering security, and frontend secret boundaries. The result must state that full User Admin, Agent Admin, Audit/Trace UI/search, invitation/onboarding, governed prompt/skill/manifest/tool-boundary management, support access, billing boundary, full tenant isolation/security coverage, and app-specific workstreams remain required follow-up.
 - `full core`: readiness is blocked unless the description includes Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`); workstream UI realized from the canonical `frontend/src/workstream/**` shell/reference and User Admin vertical rather than legacy screens/static examples; and acceptance/security/agent-governance/frontend tests.
 - `Module 1-only / not full core`: readiness may be assessed for minimal authentication, `/api/me`, selected AuthContext, Access/Profile, and authenticated shell only, but the result must state that User Admin, Agent Admin, Invitation lifecycle, governed prompts/skills/manifests/tool boundaries, unified audit/work trace UI, and governance loops are deferred.
 - other narrower scope: readiness may be assessed only when the scope is named and every omitted full-core area is listed as out of scope.
 
-If the scope is unlabeled and the user asks for generated AI-first SaaS, assume full-core expectations for readiness. Do not return `ready` or `ready-with-assumptions` for a full-core request that silently omits User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, or required tests.
+If the user asks for a minimum/starter/basic/chatbot-like generated SaaS app, treat the scope as `minimum starter` and apply `docs/minimum-ai-first-saas-app.md`; do not report full-core readiness. Keep the readiness states separate: `minimum starter ready` means the User Admin workstream v0 slice is ready; `full-core ready` means the complete secure SaaS foundation is ready; `app-specific ready` means full core plus product/domain workstreams, capabilities, surfaces, tests, and operational reviews are ready. If the scope is unlabeled and the user asks for generated AI-first SaaS without minimum-starter language, assume full-core expectations for readiness. Do not return `ready` or `ready-with-assumptions` for a full-core request that silently omits User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, or required tests.
 
 ### 1. Core secure SaaS foundation completeness
 For every generated SaaS app, this is blocking readiness. Check that the description explicitly defines:
@@ -210,7 +211,7 @@ Use this response shape:
 - not-ready | ready-with-assumptions | ready
 
 ## Scope label and full-core gate
-- scope label: full core | Module 1-only / not full core | other narrower scope | unlabeled
+- scope label: minimum starter | full core | Module 1-only / not full core | other narrower scope | unlabeled
 - status:
 - notes:
 
@@ -330,6 +331,7 @@ Avoid:
 Before finishing, verify:
 - the result uses one of the three allowed states
 - scope label and full-core gate were assessed before readiness state selection
+- minimum starter readiness, when used, is labeled separately and records follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitations/onboarding, governed agent documents, and full security coverage
 - full-core omissions of User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, or required tests blocked readiness unless the output explicitly labeled a narrower scope
 - core secure SaaS foundation completeness was assessed explicitly for generated SaaS apps
 - missing foundation/security blocks generation or marks the description `not-ready`

@@ -63,7 +63,9 @@ If generation reveals a semantic gap, the fix belongs in the app description, no
 For every generated SaaS app, never invent missing secure foundation semantics during generation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete Invitation lifecycle, AuthContext, `/api/me`, backend authorization, audit, support-access, billing boundary, admin surfaces, AI-assisted admin offload, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap default behavior seed import, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`), agent governance UI, tenant-isolation, disabled-user, forbidden-access, role/scope-denial, and frontend secret-boundary tests must already be described or generation must stop/mark not-ready.
 For AI-first/delegated operations, never invent missing authority, policy, approval, decision, evidence, trace, outcome, or supervision semantics during generation.
 
-Full-core generation has an additional hard gate: the generation basis must be labeled `full core` and include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records and `readSkill`; workstream UI; and acceptance/security/agent-governance/frontend tests. Workstream UI realization must start from the canonical `frontend/src/workstream/**` reference and User Admin dashboard → list/search → detail/edit vertical, not legacy `frontend/src/screens/**`, page-first route examples, or standalone static-resource examples. If any are absent, stop generation unless the requested output is explicitly labeled `Module 1-only / not full core` or another named narrower scope with the omitted full-core areas listed.
+Minimum-starter generation is a named narrower scope, not a full-core shortcut. If the user asks for a minimum/starter/basic/chatbot-like generated SaaS app, the generation basis must be labeled `minimum starter`, use `docs/minimum-ai-first-saas-app.md`, realize User Admin workstream v0 with bootstrap authorization, selected AuthContext, bounded UserAdminAgent, durable workstream log, `markdown_response`, backend capability boundary, audit/work trace substrate, markdown sanitization, and starter tests, and emit follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI/search, invitation/onboarding, governed prompt/skill/manifest/tool-boundary management, support access, billing boundary, and full security coverage. Do not describe this output as full-core ready or app-specific ready; app-specific readiness requires full core plus product/domain workstreams, capabilities, surfaces, tests, and operational reviews.
+
+Full-core generation has an additional hard gate: the generation basis must be labeled `full core` and include Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records and `readSkill`; workstream UI; and acceptance/security/agent-governance/frontend tests. Workstream UI realization must start from the canonical `frontend/src/workstream/**` reference and User Admin dashboard → list/search → detail/edit vertical, not legacy `frontend/src/screens/**`, page-first route examples, or standalone static-resource examples. If any are absent, stop generation unless the requested output is explicitly labeled `minimum starter`, `Module 1-only / not full core`, or another named narrower scope with the omitted full-core areas listed.
 
 When the target project contains `specs/scaffold-report.md`, treat it as scaffolded from the packaged starter. Prefer localized extension of the scaffolded foundation over fresh full-app regeneration: preserve the recorded Java base package, existing starter components, workstream shell, app-description/spec queue history, and scaffold report. Generate new outputs as vertical capability extensions unless the user explicitly asks to reset or replace the scaffold.
 
@@ -72,7 +74,7 @@ When the target project contains `specs/scaffold-report.md`, treat it as scaffol
 When generating, this skill must:
 - identify the current description baseline
 - detect whether `specs/scaffold-report.md` exists and, if so, treat generation as starter extension by default rather than fresh app replacement
-- identify the generation scope label (`full core`, `Module 1-only / not full core`, or another narrower scope) from the app description/specs/user instruction and report it in the summary
+- identify the generation scope label (`minimum starter`, `full core`, `Module 1-only / not full core`, or another narrower scope) from the app description/specs/user instruction and report it in the summary
 - resolve the Java base package from existing project configuration, `specs/scaffold-report.md`, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred; never use `com.example` for generated application code unless explicitly requested
 - verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
 - block full-core generation or return to readiness if User Admin, Agent Admin, complete invitation onboarding, full user administration, governed runtime agents, workstream UI, or required tests are missing without an explicit narrower-scope label
@@ -131,7 +133,7 @@ Use this response shape when summarizing generation:
 ## Generation basis
 - description state:
 - readiness state:
-- generation scope label: full core | Module 1-only / not full core | other narrower scope
+- generation scope label: minimum starter | full core | Module 1-only / not full core | other narrower scope
 - operating-model basis:
 - secure SaaS foundation basis:
 - assumptions used:
@@ -195,7 +197,8 @@ Avoid:
 Before finishing, verify:
 - the description basis for generation is explicit
 - readiness state is explicit
-- generation scope label is explicit and full-core omissions are blocked or labeled as Module 1-only / not full core or another narrower scope
+- generation scope label is explicit; minimum-starter outputs are not represented as full-core ready and carry full-core follow-up tasks
+- full-core omissions are blocked or labeled as minimum starter, Module 1-only / not full core, or another narrower scope
 - secure SaaS foundation basis is explicit and complete enough for generation, including foundation behavior, auth/security, observability, mandatory web UI, and baseline tests
 - missing foundation/security semantics block generation instead of becoming assumptions
 - operating-model basis is explicit for generated AI-first SaaS
