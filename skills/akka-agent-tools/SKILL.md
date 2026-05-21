@@ -37,7 +37,7 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 - agent output depends on current date, lookup services, or component calls
 - tool descriptions materially affect model behavior but do not enforce authorization
 - an agent should approximate harness skill loading by exposing approved guidance blocks as tools
-- an agent should load tenant-managed governed skills through `readSkill(skillId)` with manifest authorization
+- a managed agent should load tenant-managed governed skills through `readSkill(skillId)` with per-agent manifest authorization; this is the required skill-loading tool pattern for generated managed agents
 
 ## Core pattern
 
@@ -54,12 +54,12 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 11. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
 12. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
 13. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
-14. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`.
+14. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`; managed agents must register this as a normal Akka `@FunctionTool` so Akka injects it with the rest of the allowed tool list.
 15. Do not try to use one agent as a tool for another agent.
 16. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
 17. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.
 18. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
-19. Skill-loading tools must check AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
+19. Skill-loading tools must check the active agent-specific AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
 20. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
 21. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
 

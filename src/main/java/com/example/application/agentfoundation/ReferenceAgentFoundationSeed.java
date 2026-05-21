@@ -130,6 +130,13 @@ public final class ReferenceAgentFoundationSeed {
         AGENT_ID,
         Set.of(ASSIGNED_SKILL_ID),
         Map.of(ASSIGNED_SKILL_ID, "skill-version-active"),
+        Map.of(
+            ASSIGNED_SKILL_ID,
+            new ReferenceAgentSkillManifest.SkillEntry(
+                ASSIGNED_SKILL_ID,
+                "Rainy Day Planning",
+                "Plan safe activity recommendations when weather is risky.",
+                "Use when a request involves rain, storms, weather risk, or indoor alternatives.")),
         true);
   }
 

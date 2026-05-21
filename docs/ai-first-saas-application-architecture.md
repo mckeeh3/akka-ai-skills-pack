@@ -180,10 +180,15 @@ Runtime assembly contract:
 resolve active AgentDefinition
 → reject disabled/archived/out-of-scope agents
 → resolve approved active PromptDocument/PromptVersion
-→ include compact AgentSkillManifest, not full skill text
-→ authorize readSkill(skillId) against tenant, agent, manifest, version, mode, and AuthContext
+→ resolve that agent's active AgentSkillManifest
+→ include only compact assigned skill ids, names, descriptions/purposes, and when-to-use hints, not full skill text
+→ register readSkill(skillId) as a normal Akka @FunctionTool along with the agent's other allowed tools
+→ let Akka inject the tool list into the model context
+→ authorize readSkill(skillId) against tenant, agent, manifest, version, mode, AuthContext, and ToolPermissionBoundary
 → trace prompt assembly, allowed/denied skill loads, tool/data access, and consequential results
 ```
+
+This managed-agent invocation path is mandatory for generated AI-first SaaS foundation agents. `UserAdminAgent`, `AgentAdminAgent`, Audit/Trace, Governance/Policy, and app-specific managed agents each have a unique assigned skill manifest; do not use one global skill list or preload all skill text into every prompt.
 
 Normal runtime behavior maintenance should also be governed. Generated AI-first SaaS foundations default to an `AgentBehaviorEditorAgent` or equivalent editing-agent responsibility for prompt, skill, manifest, and tool-boundary changes:
 

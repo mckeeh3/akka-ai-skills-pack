@@ -39,6 +39,8 @@ public record ReferenceAgentBehaviorSeedManifest(
       String skillDocumentId,
       String skillVersionId,
       String displayName,
+      String purpose,
+      String whenToUse,
       String resource,
       String checksum) {}
 
@@ -61,6 +63,8 @@ public record ReferenceAgentBehaviorSeedManifest(
                     skillId,
                     required(properties, "skill." + skillId + ".versionId"),
                     required(properties, "skill." + skillId + ".displayName"),
+                    properties.getProperty("skill." + skillId + ".purpose", "Assigned governed skill").trim(),
+                    properties.getProperty("skill." + skillId + ".whenToUse", "Use when the agent request matches this assigned skill.").trim(),
                     required(properties, "skill." + skillId + ".resource"),
                     required(properties, "skill." + skillId + ".checksum")))
         .toList();

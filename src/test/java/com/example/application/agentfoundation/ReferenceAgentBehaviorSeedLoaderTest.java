@@ -36,7 +36,16 @@ class ReferenceAgentBehaviorSeedLoaderTest {
     assertEquals(
         manifest.promptChecksum(), state.promptVersions().get(manifest.promptVersionId()).checksum());
     assertEquals(2, state.skillDocuments().size());
-    assertEquals(2, state.skillManifests().get(manifest.skillManifestId()).assignedSkillIds().size());
+    var seededSkillManifest = state.skillManifests().get(manifest.skillManifestId());
+    assertEquals(2, seededSkillManifest.assignedSkillIds().size());
+    assertEquals(
+        "Access Review", seededSkillManifest.skillEntries().get("skill-access-review-reference").displayName());
+    assertTrue(
+        seededSkillManifest
+            .skillEntries()
+            .get("skill-access-review-reference")
+            .whenToUse()
+            .contains("User Admin requests about access review"));
     assertTrue(
         state
             .toolBoundaries()

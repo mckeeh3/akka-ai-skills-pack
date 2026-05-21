@@ -54,7 +54,23 @@ public final class ReferencePromptAssembler {
   private String compactManifest(ReferenceAgentSkillManifest skillManifest) {
     return skillManifest.assignedSkillIds().stream()
         .sorted(Comparator.naturalOrder())
-        .map(skillId -> skillId + "@" + skillManifest.activeSkillVersionFor(skillId))
-        .collect(Collectors.joining(","));
+        .map(
+            skillId -> {
+              var entry = skillManifest.skillEntries().get(skillId);
+              var name = entry == null ? skillId : entry.displayName();
+              var purpose = entry == null ? "Assigned governed skill" : entry.purpose();
+              var whenToUse =
+                  entry == null ? "Use when the request matches this skill." : entry.whenToUse();
+              return skillId
+                  + "@"
+                  + skillManifest.activeSkillVersionFor(skillId)
+                  + " | name="
+                  + name
+                  + " | purpose="
+                  + purpose
+                  + " | use="
+                  + whenToUse;
+            })
+        .collect(Collectors.joining("; "));
   }
 }

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this reference when implementing a managed runtime Akka agent whose behavior is selected from tenant-scoped governed records rather than only from static Java code.
+Use this reference when implementing a managed runtime Akka agent whose behavior is selected from tenant-scoped governed records rather than only from static Java code. For generated AI-first SaaS apps, this is **the required managed-agent invocation pattern**: do not invoke User Admin, Agent Admin, Governance, Audit/Trace, or app-specific managed agents through ad hoc static prompts that bypass `AgentDefinition`, compact skill manifests, `readSkill(skillId)`, tool boundaries, and traces.
 
 This pattern is the implementation handoff between:
 - secure SaaS `AuthContext` and capability authorization;
@@ -35,11 +35,12 @@ request from HTTP/workflow/timer/consumer/test console
 → load active tenant-scoped AgentDefinition
 → reject disabled, archived, draft-in-runtime, cross-tenant, or unauthorized agents
 → resolve active PromptDocument/PromptVersion refs
-→ resolve active AgentSkillManifest compact entries
+→ resolve active per-agent AgentSkillManifest compact entries with skill ids, names, descriptions, and when-to-use hints
 → resolve ToolPermissionBoundary and model config reference
-→ assemble effective system prompt with compact manifest only
+→ assemble effective system prompt with active prompt plus compact assigned-skill list only
 → emit PromptAssemblyTrace for allowed or denied assembly
-→ invoke Java Agent with assembled prompt/profile context
+→ invoke Java Agent with assembled prompt/profile context and registered Akka tools, including `readSkill(skillId)`
+→ let Akka inject the registered tool list into the model context
 → enforce ToolPermissionBoundary for every tool/data/readSkill request
 → authorize readSkill(skillId) against manifest and skill version
 → emit SkillLoadTrace for allowed and denied skill loads
@@ -72,7 +73,7 @@ ResolvedAgentRuntime
 - AuthContext
 - AgentDefinition id/version/status/authority level
 - PromptDocument/PromptVersion refs and assembled prompt text
-- AgentSkillManifest id/version and compact manifest text
+- AgentSkillManifest id/version and compact manifest text containing only assigned skill ids, names, descriptions, and when-to-use hints
 - ToolPermissionBoundary snapshot
 - ModelConfigRef
 - trace ids/checksums
@@ -124,11 +125,12 @@ Before invoking the Java `Agent`, verify:
 4. `AgentDefinition` belongs to the tenant and is active for runtime mode.
 5. Draft or unapproved prompt/skill versions are used only in authorized test/replay/evaluation modes.
 6. Active prompt version exists and passes checksum/secret-boundary checks.
-7. Compact `AgentSkillManifest` is rendered; full skill text is not preloaded.
-8. `ToolPermissionBoundary` is present and defaults to deny.
-9. `ModelConfigRef` is allowed by tenant/agent/model policy and exposes no provider secrets.
-10. Correlation/work trace ids are available.
-11. `PromptAssemblyTrace` has been recorded or scheduled for durable recording.
+7. Compact `AgentSkillManifest` is rendered with only skills assigned to that agent; full skill text is not preloaded.
+8. `readSkill(skillId)` is registered as a normal Akka `@FunctionTool` for managed agents, and Akka injects it with the rest of the allowed tool list.
+9. `ToolPermissionBoundary` is present and defaults to deny.
+10. `ModelConfigRef` is allowed by tenant/agent/model policy and exposes no provider secrets.
+11. Correlation/work trace ids are available.
+12. `PromptAssemblyTrace` has been recorded or scheduled for durable recording.
 
 If any check fails, deny before model invocation and emit an audit/work trace event.
 
@@ -187,7 +189,7 @@ Plan tests for:
 - disabled/archived/draft agent denial in runtime mode;
 - cross-tenant agent denial;
 - missing permission/capability denial;
-- active prompt assembly with compact `AgentSkillManifest` only;
+- active prompt assembly with compact per-agent `AgentSkillManifest` entries only;
 - draft prompt allowed only in test/replay mode;
 - `PromptAssemblyTrace` creation for allowed and denied assembly;
 - `readSkill(skillId)` allowed for assigned active skill;

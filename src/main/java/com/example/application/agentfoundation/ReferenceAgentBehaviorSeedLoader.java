@@ -146,8 +146,13 @@ public final class ReferenceAgentBehaviorSeedLoader {
     }
 
     var skillRefs = new HashMap<String, String>();
+    var skillEntries = new HashMap<String, ReferenceAgentSkillManifest.SkillEntry>();
     for (var skill : manifest.skills()) {
       skillRefs.put(skill.skillDocumentId(), skill.skillVersionId());
+      skillEntries.put(
+          skill.skillDocumentId(),
+          new ReferenceAgentSkillManifest.SkillEntry(
+              skill.skillDocumentId(), skill.displayName(), skill.purpose(), skill.whenToUse()));
     }
     if (!manifests.containsKey(manifest.skillManifestId())) {
       manifests.put(
@@ -159,6 +164,7 @@ public final class ReferenceAgentBehaviorSeedLoader {
               manifest.agentDefinitionId(),
               skillRefs.keySet(),
               skillRefs,
+              skillEntries,
               true));
       provenance.put(
           "manifest:" + manifest.skillManifestVersionId(),

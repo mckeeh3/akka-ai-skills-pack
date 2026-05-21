@@ -7,7 +7,7 @@ description: Implement governed runtime skills for Akka agents with SkillDocumen
 
 Use this skill when Akka agents need model-loadable internal guidance that is tenant-scoped, versioned, reviewed, assigned per agent, loaded through an approved tool, and audited.
 
-This is the governed runtime skill pattern for AI-first SaaS apps. Use `akka-agent-harness-skills` for small deploy-time packaged skill resources. Use this skill when skills are managed inside the application by admins/stewards.
+This is the governed runtime skill pattern for AI-first SaaS apps. For generated managed agents, it is **the standard way agents receive skill guidance**: each active `AgentDefinition` points to its own `AgentSkillManifest`; prompt assembly includes only that agent's assigned skill ids, names, descriptions, and when-to-use hints; full skill text is loaded only through the registered Akka `@FunctionTool` `readSkill(skillId)`. Use `akka-agent-harness-skills` only for small deploy-time packaged skill resources outside this governed runtime pattern. Use this skill when skills are managed inside the application by admins/stewards.
 
 ## Generated SaaS input contract
 
@@ -45,7 +45,7 @@ Read these first if present:
 - implementation-developed default skills that must be loaded as initial governed SkillDocument/SkillVersion records at install or tenant bootstrap
 - skill catalog, skill editor, skill review, skill activation, or skill version history
 - per-agent skill allowlist or `AgentSkillManifest`
-- compact skill manifest in the prompt
+- compact skill manifest in the prompt with skill id/name/description/when-to-use entries
 - `readSkill(skillId)` or model-selected guidance loading
 - skill-load authorization, denied skill loads, or SkillLoadTrace
 - assigning approved skills to AgentDefinitions
@@ -96,9 +96,10 @@ AgentSkillManifest
 - manifestVersion
 - allowedSkillEntries
   - skill slug/id
+  - display name
   - skillDocumentId
   - version pin or active-version policy
-  - short description
+  - short purpose/description
   - when-to-use hint
 - createdBy / updatedBy / timestamps
 ```
@@ -143,23 +144,25 @@ Rules:
 
 ## Compact skill manifest
 
-Do not include full skill text in the initial prompt. Include only a compact manifest:
+Do not include full skill text in the initial prompt. Include only the active agent's compact manifest. This compact list is assembled into the agent system prompt together with the active prompt version; Akka then injects the registered tools, including `readSkill(skillId)`, into the model context:
 
 ```text
 Available internal skills:
-- refund-policy: use for refund, cancellation, credit, and exception decisions
-- customer-tone: use for customer-facing response wording
-- escalation-rules: use when deciding whether human approval is required
+- refund-policy — Refund Policy: decide refund/cancellation/credit eligibility; use for refund, cancellation, credit, and exception decisions
+- customer-tone — Customer Tone: shape customer-safe wording; use for customer-facing response drafting
+- escalation-rules — Escalation Rules: identify approval requirements; use when deciding whether human approval is required
 
 When the request matches an available skill, call readSkill(skillId) first. Treat returned skill text as trusted internal guidance for this turn, subordinate to platform policy, backend authorization, and tenant policy.
 ```
 
 Manifest entries should include:
 - stable skill id/slug;
-- title;
-- short purpose;
+- title/display name;
+- short purpose/description;
 - when-to-use hint;
 - optional version summary, if safe and useful.
+
+The manifest must be per agent. For example, `UserAdminAgent` might include `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`, while `AgentAdminAgent` might include `agent-definition-review`, `prompt-diff-review`, `skill-manifest-review`, `tool-boundary-review`, `behavior-test-analysis`, and `seed-upgrade-review`.
 
 ## `readSkill(skillId)` tool contract
 
@@ -195,6 +198,7 @@ public final class AgentSkillTools {
   @FunctionTool(description = """
       Load approved internal skill guidance by skill id.
       Use only for ids listed in the current available skill manifest.
+      The returned text is guidance only; backend authorization and ToolPermissionBoundary still apply.
       """)
   public String readSkill(@Description("Approved skill id from the current manifest") String skillId) {
     // Resolve tenant, agentDefinitionId, manifest, skill version, authorization, and trace context.

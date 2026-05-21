@@ -29,6 +29,9 @@ class ReferenceAgentRuntimeResolverTest {
     assertTrue(resolved.assembledPrompt().contains("AgentSkillManifest compact"));
     assertTrue(
         resolved.assembledPrompt().contains(ReferenceAgentFoundationFixtures.ASSIGNED_SKILL_ID));
+    assertTrue(resolved.assembledPrompt().contains("name=Rainy Day Planning"));
+    assertTrue(resolved.assembledPrompt().contains("purpose=Plan safe activity recommendations"));
+    assertTrue(resolved.assembledPrompt().contains("use=Use when a request involves rain"));
     assertFalse(
         resolved
             .assembledPrompt()

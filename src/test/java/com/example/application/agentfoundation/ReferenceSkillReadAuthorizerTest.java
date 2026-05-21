@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import akka.javasdk.annotations.FunctionTool;
 import com.example.domain.agentfoundation.ReferenceAgentDefinition;
 import com.example.domain.agentfoundation.ReferenceAgentSkillManifest;
 import com.example.domain.agentfoundation.ReferencePromptVersion;
@@ -34,6 +35,14 @@ class ReferenceSkillReadAuthorizerTest {
     assertTrue(traceSink.skillLoadTraces().getFirst().allowed());
     assertEquals("allowed", traceSink.skillLoadTraces().getFirst().decisionReason());
     assertEquals("corr-skill", traceSink.skillLoadTraces().getFirst().correlationId());
+  }
+
+  @Test
+  void readSkillToolWrapperIsModelSelectableFunctionTool() throws NoSuchMethodException {
+    var method = ReferenceAgentSkillTools.class.getMethod("readSkill", String.class);
+
+    assertTrue(method.isAnnotationPresent(FunctionTool.class));
+    assertTrue(method.getAnnotation(FunctionTool.class).description().contains("Load approved internal skill guidance"));
   }
 
   @Test

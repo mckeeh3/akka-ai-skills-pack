@@ -7,7 +7,7 @@ description: Seed implementation-developed default AgentDefinition, PromptDocume
 
 Use this skill when an AI-first SaaS app stores agent system prompts, runtime skills, manifests, tool boundaries, or default agent definitions inside the application and needs to load the implementation-developed first versions when the app is installed, upgraded, or a tenant is created.
 
-This skill complements `akka-agent-governed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, and `akka-agent-behavior-profiles`. It covers the **initial loading path** for governed agent behavior artifacts; it does not replace runtime editing, review, approval, or `readSkill(skillId)` authorization.
+This skill complements `akka-agent-governed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, and `akka-agent-behavior-profiles`. It covers the **initial loading path** for governed agent behavior artifacts; it does not replace runtime editing, review, approval, or `readSkill(skillId)` authorization. Generated apps must seed each managed agent with its own default skill manifest; for example, `UserAdminAgent` and `AgentAdminAgent` start with different skill ids, names, descriptions, and when-to-use hints.
 
 Reference example:
 - `../../src/main/java/com/example/domain/agentfoundation/ReferenceAgentBehaviorSeedManifest.java`
@@ -34,7 +34,7 @@ packaged seed bundle in app artifact
 → AgentBehaviorSeedManifest validates ids, checksums, dependencies, and target scope
 → install/tenant-bootstrap workflow imports missing records idempotently
 → governed document/version entities store v1 snapshots with seed provenance
-→ AgentDefinition references active prompt, active manifest, tool boundary, and model config refs
+→ AgentDefinition references active prompt, per-agent active skill manifest, tool boundary, and model config refs
 → audit events record seeded documents, skipped existing records, and failed validations
 → later edits use normal draft/review/approval flow
 ```
@@ -50,14 +50,21 @@ src/main/resources/agent-behavior-seeds/
   manifest.yaml
   agents/user-admin-agent.yaml
   prompts/user-admin-system.md
-  skills/access-review.md
-  skills/admin-risk-scoring.md
-  skills/invitation-drafting.md
-  skills/role-recommendation.md
-  skills/support-access-review.md
-  skills/audit-summary.md
+  skills/user-admin/access-review.md
+  skills/user-admin/admin-risk-scoring.md
+  skills/user-admin/invitation-drafting.md
+  skills/user-admin/role-recommendation.md
+  skills/user-admin/support-access-review.md
+  skills/user-admin/audit-summary.md
+  skills/agent-admin/agent-definition-review.md
+  skills/agent-admin/prompt-diff-review.md
+  skills/agent-admin/skill-manifest-review.md
+  skills/agent-admin/tool-boundary-review.md
+  skills/agent-admin/behavior-test-analysis.md
   manifests/user-admin-agent-manifest.yaml
+  manifests/agent-admin-agent-manifest.yaml
   tool-boundaries/user-admin-agent-tools.yaml
+  tool-boundaries/agent-admin-agent-tools.yaml
 ```
 
 Manifest fields should include:
@@ -70,7 +77,7 @@ createdBy: implementation | migration | operator
 agentDefinitions[]
 promptDocuments[]
 skillDocuments[]
-skillManifests[]
+skillManifests[] with per-agent entries containing skill id, display name, purpose/description, when-to-use hint, version ref, and assignment target
 toolPermissionBoundaries[]
 modelConfigRefs[] or requiredModelPolicies[]
 checksums
@@ -90,7 +97,7 @@ Use stable ids/slugs. Do not use filesystem paths as runtime ids.
 7. Emit `AdminAuditEvent`/work trace facts for created, activated, skipped, unchanged, and failed seed imports.
 8. Do not overwrite tenant-edited active behavior during later app upgrades. If packaged defaults changed and the tenant already customized the artifact, create a draft/proposal or upgrade recommendation for review.
 9. Disabled/archived tenant agents stay disabled/archived after seed re-run unless an explicit migration approval reactivates them.
-10. Runtime invocation remains unchanged: resolve only application-managed active records and trace prompt assembly/skill loads.
+10. Runtime invocation remains unchanged: resolve only application-managed active records, assemble only the active agent's compact assigned-skill list into the system prompt, register `readSkill(skillId)` as an Akka tool, and trace prompt assembly/skill loads.
 
 ## Upgrade behavior
 
