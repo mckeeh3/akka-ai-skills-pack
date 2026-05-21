@@ -237,5 +237,5 @@ Recommended release flow:
 - if `--location global` is provided, `install.sh` installs into `~/.agents` without prompting
 - if `--location` is omitted, `install.sh` prompts the user to choose between those two modes
 - `--project <dir>` can be used to set the project root for project mode; otherwise the current directory is used
-- after project install, users may explicitly scaffold the starter with `<project-root>/.agents/bin/scaffold-ai-first-saas-starter.sh --target <project-root> --app-name "My App" --base-package ai.first`
+- after project install, users may explicitly scaffold the starter with `<project-root>/.agents/bin/scaffold-ai-first-saas-starter.sh --target <project-root> --app-name "My App" --base-package ai.first`; `ai.first` is the accepted/deferred default example, and generated apps should use the selected Java base package rather than `com.example` from bundled reference examples
 - scaffold mode is fail-closed by default: it reports conflicts with `--dry-run`, refuses existing app files unless `--force-overwrite` is deliberately selected, and writes `specs/scaffold-report.md`

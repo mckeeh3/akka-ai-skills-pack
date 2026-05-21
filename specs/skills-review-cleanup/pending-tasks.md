@@ -317,7 +317,7 @@
 
 ### TASK-07-001: Reference and package wording cleanup
 
-- status: pending
+- status: done
 - source: skills review recommended execution order step 7
 - task brief: none
 - depends on: [TASK-06-001]
@@ -345,4 +345,9 @@
 - done criteria:
   - reference paths remain useful without implying `com.example` is the generated application default
 - commit message suggestion: `Normalize reference package guidance`
-- notes: []
+- notes:
+  - reviewed package/reference wording in required reads plus required occurrence scan across skills, docs, templates, pack, README.md, and AGENTS.md.
+  - finding: minor-alignment-edit; most package policy wording was already aligned, with small ambiguity around `com.example` reference paths and `ai.first` scaffold command examples.
+  - edits: clarified `skills/README.md` repository reference examples, root `README.md`, `pack/README.md`, and the governed-agent executable examples plan so `com.example` remains reference-only and generated apps use the selected Java base package.
+  - checks: required `rg` scan completed; `git diff --check` passed.
+  - commit: Normalize reference package guidance

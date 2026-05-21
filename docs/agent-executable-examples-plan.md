@@ -396,7 +396,7 @@ The example set is sufficient when a future harness can read the new skills and 
 
 Resolve during Slice 1 planning:
 
-1. Should these examples reuse existing `com.example.domain.security` records directly or use lightweight fixture auth records in `com.example.domain.agents`?
+1. Should these source-repo reference examples reuse existing `com.example.domain.security` fixture records directly or use lightweight fixture auth records in `com.example.domain.agents`? (`com.example` remains reference-only and is not generated-application package guidance.)
 2. Should trace facts be written directly by components in early slices or introduced only through Slice 4 ingestion?
 3. Should endpoint integration tests require real auth headers, or use simplified tenant/capability request records to keep examples focused?
 4. Should version snapshots be separate Key Value Entities from the first prompt/skill slice, or mocked by views until the snapshot consumer slice is implemented?

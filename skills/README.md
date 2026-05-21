@@ -1292,7 +1292,7 @@ Load:
 
 ## Repository reference examples
 
-These Java examples are **Akka substrate references**, not generated-product architecture templates. Use them to copy component structure, APIs, tests, and edge patterns after secure AI-first SaaS foundation and operating-model decisions are already made. Do not use shopping-cart or other low-level examples to choose the product architecture.
+These Java examples are **Akka substrate references**, not generated-product architecture templates. Use them to copy component structure, APIs, tests, and edge patterns after secure AI-first SaaS foundation and operating-model decisions are already made. Do not use shopping-cart or other low-level examples to choose the product architecture. Paths under `com.example` are bundled reference examples only; never copy that package into generated application code unless the user explicitly selected `com.example` as the target Java base package.
 
 ### Event sourced entities
 Core entities:
