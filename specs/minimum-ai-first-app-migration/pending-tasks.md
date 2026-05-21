@@ -268,7 +268,7 @@
 
 ### TASK-MINAPP-03-003: Update starter template/scaffold guidance and queues
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/backlog/03-description-starter-build-backlog.md
 - task brief: specs/minimum-ai-first-app-migration/tasks/03-description-starter/03-update-starter-template-guidance.md
 - depends on: [TASK-MINAPP-03-002]
@@ -290,7 +290,11 @@
 - done criteria:
   - starter/scaffold work is aligned or follow-up tasks are queued where implementation changes are too large
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Align starter scaffold with minimum path`
+  - check passed: `git diff --check`
+  - verified starter template guidance names User Admin workstream v0 with `markdown_response` as the minimum-first slice and keeps full-core readiness as an explicit follow-up gate.
+  - changed pending queue preserves existing task IDs/statuses and clarifies that later starter-template extension tasks do not redefine the first generated-app slice.
 
 ### TASK-MINAPP-04-001: Final consistency review and completion summary
 

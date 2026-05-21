@@ -1,8 +1,16 @@
 # AI-First SaaS Starter Template
 
-This template is the isolated scaffold source for a full-core secure AI-first SaaS application generated with the skills pack.
+This template is the isolated scaffold source for a secure AI-first SaaS application generated with the skills pack.
 
 It is template source, not a runnable project until placeholders are rendered by the scaffold command.
+
+## Minimum-first scaffold path
+
+Natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “smallest useful app,” or chatbot-like initial SaaS must start from the canonical minimum doctrine in `docs/minimum-ai-first-saas-app.md`: **User Admin workstream v0**, not a generic chatbot.
+
+The first runnable starter slice is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded `UserAdminAgent`, durable workstream log, `markdown_response`, backend capability boundary, and audit/work trace substrate. The scaffold must record follow-up work for fuller User Admin structured surfaces, Agent Admin, Audit/Trace UI/search, invitation onboarding, support access, governed agent documents, security completeness, and only then app-specific workstreams.
+
+This template may contain broader full-core scaffold assets, but generated-app guidance must not claim full-core readiness unless those follow-up gates are satisfied and tested.
 
 ## Base package policy
 

@@ -9,6 +9,7 @@
 - Each task must make one git commit before being marked `done`; the commit should include only that task's intended changes and its queue-status update.
 - If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
 - This queue is for the starter app template migration, rooted at `specs/ai-first-saas-starter-app-template/`.
+- Minimum/starter/basic generated SaaS requests still begin with User Admin workstream v0 from `docs/minimum-ai-first-saas-app.md`; later pending starter-template extension tasks refine an existing scaffold and do not redefine the first generated-app slice.
 
 ## Tasks
 

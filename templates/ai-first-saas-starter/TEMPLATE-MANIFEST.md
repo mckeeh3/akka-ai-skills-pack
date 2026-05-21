@@ -5,7 +5,7 @@
 - template id: `ai-first-saas-starter`
 - source path: `templates/ai-first-saas-starter/`
 - installed resource path: `resources/templates/ai-first-saas-starter/`
-- scope: full-core secure AI-first SaaS starter
+- scope: minimum-first secure AI-first SaaS starter with full-core growth path
 
 ## Placeholder contract
 
