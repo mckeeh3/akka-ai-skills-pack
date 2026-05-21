@@ -485,6 +485,7 @@ content:
       category: component-suite
   references:
     - skills/README.md
+    - docs/minimum-ai-first-saas-app.md
     - docs/agent-workstream-application-architecture.md
     - docs/agent-workstream-design-review-checklist.md
     - docs/structured-surface-contracts.md

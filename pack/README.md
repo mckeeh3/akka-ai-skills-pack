@@ -45,6 +45,7 @@ Installed layout:
   AGENTS.md
   docs/
     ai-first-saas-application-architecture.md
+    minimum-ai-first-saas-app.md
     agent-workstream-application-architecture.md
     agent-workstream-design-review-checklist.md
     structured-surface-contracts.md

@@ -101,7 +101,7 @@ After installation, the main entry points are:
 - `AGENTS.md` — this installed-pack guidance file
 - `skills/README.md` — routing map across the installed skill library, including description-first and implementation paths
 - `skills/<skill-name>/SKILL.md` — focused implementation or routing guidance
-- `docs/` — selected pack-facing reference docs used by installed skills, including AI-first doctrine, capability-first backend doctrine, core secure SaaS foundation docs, the AI-first SaaS seed app-description reference when packaged, and description-first mechanics examples
+- `docs/` — selected pack-facing reference docs used by installed skills, including AI-first doctrine, `docs/minimum-ai-first-saas-app.md`, capability-first backend doctrine, core secure SaaS foundation docs, the AI-first SaaS seed app-description reference when packaged, and description-first mechanics examples
 - `resources/examples/java/` — exported Akka Java SDK substrate examples and tests for concrete component implementation patterns; these examples are not product-architecture templates
 - `resources/examples/frontend/` — exported React/Vite/TypeScript agent workstream UI reference, including `src/workstream/**` and contract tests for the generated SaaS workstream shell and User Admin vertical
 

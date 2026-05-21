@@ -365,7 +365,7 @@
 
 ### TASK-MINAPP-05-001: Expose minimum app doctrine in pack metadata and verify installed-pack parity
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/post-completion-objectives-review.md Finding 1
 - task brief: specs/minimum-ai-first-app-migration/tasks/05-follow-up-hardening/01-expose-minimum-doctrine-in-pack.md
 - depends on: [TASK-MINAPP-04-002]
@@ -388,7 +388,9 @@
   - pack manifest explicitly lists the minimum app doctrine
   - temporary installed pack contains the minimum doctrine doc
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Expose minimum app doctrine in pack metadata`
+  - checks passed: `git diff --check`; `rg -n "minimum-ai-first-saas-app" pack/manifest.yaml pack/README.md pack/AGENTS.md skills/README.md`; temporary build/install parity check confirmed `.agents/docs/minimum-ai-first-saas-app.md` is installed.
 
 ### TASK-MINAPP-05-002: Resolve core foundation minimum-vs-full readiness wording
 
