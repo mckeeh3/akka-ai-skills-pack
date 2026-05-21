@@ -394,7 +394,7 @@
 
 ### TASK-MINAPP-05-002: Resolve core foundation minimum-vs-full readiness wording
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/post-completion-objectives-review.md Finding 2
 - task brief: specs/minimum-ai-first-app-migration/tasks/05-follow-up-hardening/02-resolve-core-foundation-readiness-wording.md
 - depends on: [TASK-MINAPP-05-001]
@@ -417,7 +417,10 @@
   - minimum starter, full-core, and app-specific readiness are consistently scoped
   - full-core omissions remain blocking for full-core/app-specific generation
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Resolve core foundation readiness wording`
+  - checks passed: `git diff --check`; `rg -n "minimum starter|full-core|explicitly deferred|not full core|blocks full-core|blocks generation" skills/core-saas-foundation/SKILL.md docs/core-ai-first-saas-foundation.md`
+  - clarified that minimum starter generation is blocked only by missing Slice 0 User Admin workstream v0 semantics, while full-core omissions are explicit follow-up gates and remain blocking for full-core/app-specific readiness.
 
 ### TASK-MINAPP-05-003: Harden minimum doctrine and markdown_response discoverability
 
