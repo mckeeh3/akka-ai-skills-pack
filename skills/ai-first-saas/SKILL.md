@@ -40,6 +40,8 @@ Read these first when using this skill:
 - `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
 - `../../docs/structured-surface-contracts.md` when surfaces or surface actions need implementation-ready contracts
 
+For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../../docs/minimum-ai-first-saas-app.md` before applying the anti-chatbot and minimum starter rule.
+
 For description-first work, also read the app-description docs named by `skills/README.md`.
 For generated SaaS foundations, also load `../ai-first-saas-admin-agents/SKILL.md` for mandatory AI-assisted admin offload. For direct Akka implementation, load only the focused Stage 3 skills after the functional-agent/workstream/surface model and capability contracts have selected the substrate components.
 

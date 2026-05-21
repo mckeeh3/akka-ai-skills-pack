@@ -424,7 +424,7 @@
 
 ### TASK-MINAPP-05-003: Harden minimum doctrine and markdown_response discoverability
 
-- status: pending
+- status: done
 - source: specs/minimum-ai-first-app-migration/post-completion-objectives-review.md Finding 3
 - task brief: specs/minimum-ai-first-app-migration/tasks/05-follow-up-hardening/03-harden-minimum-doctrine-discoverability.md
 - depends on: [TASK-MINAPP-05-002]
@@ -451,4 +451,7 @@
   - canonical surface taxonomy includes `markdown_response`
   - minimum/starter routing skills load the minimum doctrine before applying it
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Harden minimum app discoverability`
+  - checks passed: `git diff --check`; `rg -n "markdown_response|minimum-ai-first-saas-app" docs/agent-workstream-application-architecture.md skills/agent-workstream-apps/SKILL.md skills/core-saas-foundation/SKILL.md skills/ai-first-saas/SKILL.md`
+  - added `markdown_response` to canonical surface types and required minimum doctrine reads for starter/basic/chatbot-like generated SaaS routing.

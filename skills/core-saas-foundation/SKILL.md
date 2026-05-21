@@ -21,6 +21,8 @@ Read these first when using this skill:
 - `../../docs/agent-workstream-application-architecture.md`
 - `../../docs/structured-surface-contracts.md`
 
+For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../../docs/minimum-ai-first-saas-app.md` before applying Slice 0 readiness.
+
 Then load only the focused downstream skills needed for the selected path:
 - `ai-first-saas` for operating-model interpretation
 - `agent-workstream-apps` before app-description, PRD/backlog, decomposition, or implementation work so foundation user-facing work is modeled as functional agents, structured surfaces, surface actions, and governed capabilities before Akka components

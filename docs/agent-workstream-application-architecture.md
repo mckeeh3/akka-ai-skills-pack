@@ -111,6 +111,7 @@ Surfaces are structured renderable results, not just text. They are associated w
 
 Canonical surface types:
 
+- `markdown_response` for sanitized model-authored markdown in the minimum User Admin workstream v0 and other intentionally text-first responses;
 - dashboard / attention surface;
 - form or guided intake;
 - data table / search results;

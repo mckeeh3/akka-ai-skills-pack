@@ -18,6 +18,8 @@ Read these first when using this skill:
 - `../../docs/structured-surface-contracts.md`
 - `../../docs/capability-first-backend-architecture.md`
 
+For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../../docs/minimum-ai-first-saas-app.md` before applying the minimum starter routing rule.
+
 For high-level product input, also read `../../docs/ai-first-saas-application-architecture.md` and load `../ai-first-saas/SKILL.md` plus `../core-saas-foundation/SKILL.md`.
 
 ## Use when
