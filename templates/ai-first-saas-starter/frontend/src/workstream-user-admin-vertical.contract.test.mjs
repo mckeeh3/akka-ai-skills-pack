@@ -72,7 +72,7 @@ test('workstream and API clients support dashboard-to-list-to-detail navigation 
   assert.match(main, /HttpWorkstreamApiClient/);
   assert.match(main, /fixtureWorkstream/);
   assert.match(main, /result\.value\.resultSurface/);
-  assert.match(main, /selectedSurfaceId: result\.value\.resultSurface\.surfaceId/);
+  assert.match(main, /selectedSurfaceId: targetSurface\.surfaceId/);
 });
 
 test('composer opens User Admin list/detail surfaces instead of page routes', () => {
@@ -81,7 +81,7 @@ test('composer opens User Admin list/detail surfaces instead of page routes', ()
   assert.match(main, /showUserDetail/);
   assert.match(main, /surface-user-admin-list/);
   assert.match(main, /surface-user-admin-detail-admin/);
-  assert.match(main, /Composer intent “show users”/);
-  assert.match(main, /Composer intent “show admin@example\.test detail”/);
+  assert.match(main, /requestedSurface/);
+  assert.match(main, /kind: 'surface'/);
   assert.doesNotMatch(main, /window\.location\.assign\('\/users/);
 });

@@ -4,20 +4,34 @@
   min-height: 100vh;
 }
 
+.workstream-shell:has(.workstream-functional-agent-rail.collapsed) {
+  grid-template-columns: 5rem minmax(0, 1fr);
+}
+
 .sidebar {
   position: sticky;
   top: 0;
   height: 100vh;
   background: color-mix(in srgb, var(--color-sidebar) 94%, transparent);
   border-right: 1px solid var(--color-border);
-  padding: var(--space-6);
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
   z-index: 8;
 }
 
 .main-column { min-width: 0; }
+
+.workstream-main-column {
+  position: relative;
+  min-height: 100vh;
+}
+
+.workstream-panel {
+  min-height: 100vh;
+  padding-bottom: 12rem;
+}
 
 .topbar {
   position: sticky;
@@ -43,6 +57,11 @@
 .content {
   width: min(100%, var(--content-max-width));
   padding: var(--space-8);
+}
+
+.workstream-panel.content {
+  width: 100%;
+  max-width: none;
 }
 
 .page-header {
@@ -75,7 +94,8 @@
 .nav-backdrop { display: none; }
 
 @media (max-width: 960px) {
-  .app-shell { grid-template-columns: 1fr; }
+  .app-shell,
+  .workstream-shell:has(.workstream-functional-agent-rail.collapsed) { grid-template-columns: 1fr; }
 
   .sidebar {
     position: fixed;

@@ -1,4 +1,4 @@
-import type { AcceptInvitationRequest, InvitationAcceptanceResult, WorkstreamBootstrapResponse, WorkstreamClient } from './WorkstreamApiClient';
+import type { WorkstreamBootstrapResponse, WorkstreamClient } from './WorkstreamApiClient';
 import type { ApiError, ApiResult } from './types';
 import type {
   CapabilityActionRequest,
@@ -45,10 +45,6 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
     return this.post('/api/workstream/actions', request);
   }
 
-  acceptInvitation(request: AcceptInvitationRequest): Promise<ApiResult<InvitationAcceptanceResult>> {
-    return this.post('/api/workstream/invitations/accept', request);
-  }
-
   private get<T>(path: string): Promise<ApiResult<T>> {
     return this.request<T>(path);
   }
@@ -84,7 +80,12 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
 }
 
 async function mapWorkstreamApiError(response: Response): Promise<ApiError> {
-  const parsed = await parseErrorBody(response);
+  let parsed: Record<string, unknown> = {};
+  try {
+    parsed = await response.json() as Record<string, unknown>;
+  } catch {
+    parsed = { message: await response.text() };
+  }
   const reasonCode = typeof parsed.reasonCode === 'string' ? parsed.reasonCode : undefined;
   const code = reasonCode ?? (typeof parsed.code === 'string' ? parsed.code : httpCode(response.status));
   return {
@@ -93,17 +94,6 @@ async function mapWorkstreamApiError(response: Response): Promise<ApiError> {
     correlationId: typeof parsed.correlationId === 'string' ? parsed.correlationId : response.headers.get('x-correlation-id') ?? 'missing-correlation-id',
     fieldErrors: isFieldErrors(parsed.fieldErrors) ? parsed.fieldErrors : undefined
   };
-}
-
-async function parseErrorBody(response: Response): Promise<Record<string, unknown>> {
-  const text = await response.text();
-  if (!text) return {};
-  try {
-    const parsed = JSON.parse(text) as unknown;
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed as Record<string, unknown> : { message: text };
-  } catch {
-    return { message: text };
-  }
 }
 
 function isFieldErrors(value: unknown): value is Record<string, string[]> {

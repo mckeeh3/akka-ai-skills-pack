@@ -190,6 +190,19 @@ copy_frontend_reference() {
   copy_dir_replace "$src/src" "$dest/src"
 }
 
+copy_starter_template() {
+  local src="$1"
+  local dest="$2"
+  copy_dir_replace "$src" "$dest"
+  if [[ "$DRY_RUN" == true ]]; then
+    printf '[dry-run] rm -rf %q\n' "$dest/frontend/node_modules"
+    printf '[dry-run] rm -f %q\n' "$dest/frontend/.env.local"
+  else
+    rm -rf "$dest/frontend/node_modules"
+    rm -f "$dest/frontend/.env.local"
+  fi
+}
+
 prompt_project_agents_action() {
   local dest="$1"
 
@@ -459,7 +472,7 @@ copy_file "$REPO_ROOT/pack/EXAMPLES-README.md" "$JAVA_EXAMPLES_DIR/README.md"
 copy_dir_replace "$REPO_ROOT/src/main" "$JAVA_EXAMPLES_DIR/src/main"
 copy_dir_replace "$REPO_ROOT/src/test" "$JAVA_EXAMPLES_DIR/src/test"
 copy_frontend_reference "$REPO_ROOT/frontend" "$FRONTEND_EXAMPLES_DIR"
-copy_dir_replace "$REPO_ROOT/templates/ai-first-saas-starter" "$STARTER_TEMPLATE_DIR"
+copy_starter_template "$REPO_ROOT/templates/ai-first-saas-starter" "$STARTER_TEMPLATE_DIR"
 
 rewrite_installed_docs
 rewrite_installed_skills

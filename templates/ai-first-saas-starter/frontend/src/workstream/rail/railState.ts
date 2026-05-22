@@ -25,7 +25,7 @@ export function toRailEntry(agent: FunctionalAgentSummary, selectedFunctionalAge
 export function visibleRailEntries(agents: FunctionalAgentSummary[], selectedFunctionalAgentId: string | undefined, visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active'): FunctionalAgentRailEntry[] {
   return agents
     .map((agent) => toRailEntry(agent, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus))
-    .filter((entry) => entry.availability !== 'hidden');
+    .filter((entry) => entry.availability === 'visible' && entry.visibilityReason === 'has-capability');
 }
 
 export function isAgentSelectable(entry: FunctionalAgentRailEntry): boolean {

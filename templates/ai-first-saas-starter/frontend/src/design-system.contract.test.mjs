@@ -45,7 +45,7 @@ test('app shell now consumes workstream primitives while design-system primitive
 
   assert.match(main, /<WorkstreamShell/);
   assert.match(shell, /FunctionalAgentRail/);
-  assert.match(shell, /ContextAuthorityBar/);
+  assert.match(shell, /WorkstreamPanel/);
   assert.match(shell, /WorkstreamComposer/);
   assert.match(surface, /ds-card|status-pill/);
   assert.doesNotMatch(main, /PageHeader as DsPageHeader/);

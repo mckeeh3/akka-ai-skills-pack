@@ -17,11 +17,11 @@ const realtime = read('./workstream/realtime/workstreamEvents.ts');
 test('Mission Control legacy screen is quarantined while the app entry uses the workstream shell', () => {
   assert.ok(existsSync(new URL('./screens/briefing/BriefingPage.tsx', import.meta.url)));
   assert.match(main, /<WorkstreamShell/);
-  assert.match(main, /HttpWorkstreamApiClient/);
-  assert.match(main, /useFixtureWorkstream \? new FixtureWorkstreamApiClient/);
+  assert.match(main, /initialWorkstreamItems/);
+  assert.match(main, /canonicalSurfaceEnvelopes/);
   assert.match(workstreamShell, /FunctionalAgentRail/);
   assert.match(workstreamShell, /WorkstreamComposer/);
-  assert.match(panel, /Continuous workstream/);
+  assert.match(panel, /Workstream interaction flow|workstream-flow/);
   assert.doesNotMatch(main, /new FixtureApiClient/);
   assert.doesNotMatch(main, /<BriefingPage|route === 'briefing'/);
 });
@@ -32,10 +32,11 @@ test('workstream shell provides mission-control responsibilities through shell r
   assert.match(contextBar, /Selected AuthContext/);
   assert.match(contextBar, /Roles:/);
   assert.match(contextBar, /Browser-safe capabilities/);
-  assert.match(stream, /aria-label="Workstream items"/);
+  assert.match(stream, /aria-label="Workstream interaction flow"|aria-label="Workstream items"/);
   assert.match(stream, /Empty workstream/);
-  assert.match(main, /aria-label="Workstream API status"/);
-  assert.match(main, /Realtime status:/);
+  assert.doesNotMatch(main, /Reference fixture status/);
+  assert.match(main, /withRuntimeNotification/);
+  assert.match(main, /realtimeStatusLabel/);
 });
 
 test('workstream fixtures cover attention, decisions, workflow progress, audit trace, and action feedback', () => {

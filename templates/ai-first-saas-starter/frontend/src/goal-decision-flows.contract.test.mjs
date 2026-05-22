@@ -24,7 +24,7 @@ test('goal and decision legacy screens are quarantined behind the workstream she
     assert.ok(existsSync(new URL(path, import.meta.url)), `${path} remains only as a quarantined mechanics reference`);
   }
   assert.match(main, /<WorkstreamShell/);
-  assert.match(main, /<SurfaceRenderer/);
+  assert.match(main, /<WorkstreamStream/);
   assert.match(main, /selectedFunctionalAgentId/);
   assert.match(main, /selectedSurfaceId/);
   assert.doesNotMatch(main, /import \{ GoalWorkbenchPage \}|import \{ DecisionQueuePage \}/);
@@ -66,5 +66,6 @@ test('workstream items carry goal and decision-like work through the stream rath
   assert.match(workstream, /surface-decision-card/);
   assert.match(workstream, /surface-workflow-status/);
   assert.match(workstream, /waiting-for-human/);
-  assert.match(main, /Routes are deep links into functional agents, stream items, and structured surfaces/);
+  assert.match(main, /parseWorkstreamDeepLink/);
+  assert.match(main, /serializeWorkstreamDeepLink/);
 });

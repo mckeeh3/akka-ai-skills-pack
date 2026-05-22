@@ -8,6 +8,19 @@ type FunctionalAgentRailItemProps = {
 };
 
 const severityLabel = (severity: string) => `${severity} attention`;
+const iconGlyph = (icon?: string, label?: string) => {
+  const icons: Record<string, string> = {
+    'user-circle': 'P',
+    users: 'U',
+    bot: 'B',
+    'bot-off': 'B',
+    timeline: 'T',
+    shield: 'G',
+    'credit-card': '$',
+    'life-ring': 'S'
+  };
+  return icon ? icons[icon] ?? icon.slice(0, 1).toUpperCase() : label?.slice(0, 1).toUpperCase() ?? 'W';
+};
 
 export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: FunctionalAgentRailItemProps) {
   const selectable = isAgentSelectable(entry);
@@ -26,20 +39,17 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
         disabled={!selectable}
         onClick={() => selectable && onSelect?.(entry.functionalAgentId)}
       >
-        <span className="nav-icon" aria-hidden="true">{entry.icon ?? 'agent'}</span>
-        {!collapsed && (
-          <span className="workstream-rail-copy">
-            <span id={labelId}>{entry.label}</span>
-            <small>{entry.purpose}</small>
-          </span>
-        )}
+        <span className="nav-icon" aria-hidden="true">{iconGlyph(entry.icon, entry.label)}</span>
+        <span className="workstream-rail-copy">
+          <span id={labelId}>{entry.label}</span>
+        </span>
         {entry.attention && (
           <span className={`status-pill ${entry.attention.severity === 'critical' ? 'danger' : entry.attention.severity}`} aria-label={`${entry.attention.count} ${severityLabel(entry.attention.severity)}`}>
             {entry.attention.count}
           </span>
         )}
       </button>
-      {!collapsed && disabledReason && <p id={reasonId} className="fixture-defer-note">{disabledReason}</p>}
+      <span id={reasonId} className="sr-only">{disabledReason}</span>
     </li>
   );
 }

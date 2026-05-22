@@ -195,6 +195,14 @@ validate_source_tree() {
     [[ -n "$skill_dir" ]] || continue
     [[ -f "$skill_dir/SKILL.md" ]] || fail "Skill directory missing SKILL.md: $skill_dir"
   done < <(find "$REPO_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
+
+  if ! diff -qr \
+    --exclude node_modules \
+    --exclude .env.local \
+    "$REPO_ROOT/frontend/src" \
+    "$REPO_ROOT/templates/ai-first-saas-starter/frontend/src" >/dev/null; then
+    fail "Starter template frontend/src is out of sync with frontend/src. Sync templates/ai-first-saas-starter/frontend before building a release."
+  fi
 }
 
 copy_tree() {
@@ -305,6 +313,8 @@ copy_tree "$REPO_ROOT/pack" "$STAGE_DIR/pack"
 copy_tree "$REPO_ROOT/src" "$STAGE_DIR/src"
 copy_frontend_reference "$REPO_ROOT/frontend" "$STAGE_DIR/frontend"
 copy_tree "$REPO_ROOT/templates" "$STAGE_DIR/templates"
+rm -rf "$STAGE_DIR/templates/ai-first-saas-starter/frontend/node_modules"
+rm -f "$STAGE_DIR/templates/ai-first-saas-starter/frontend/.env.local"
 mkdir -p "$STAGE_DIR/tools"
 cp "$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh" "$STAGE_DIR/tools/scaffold-ai-first-saas-starter.sh"
 cp "$REPO_ROOT/install.sh" "$STAGE_DIR/install.sh"

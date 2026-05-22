@@ -44,14 +44,14 @@ export function applyWorkstreamRealtimeEvent(state: WorkstreamRealtimeViewState,
 export function realtimeStatusLabel(state: RealtimeConnectionState): string {
   switch (state.status) {
     case 'connecting':
-      return 'Connecting to workstream events';
+      return 'Connecting to fixture workstream events';
     case 'connected':
-      return state.lastEventId ? `Live after ${state.lastEventId}` : 'Live workstream events';
+      return state.lastEventId ? `Live after ${state.lastEventId}` : 'Live fixture workstream events';
     case 'reconnecting':
-      return 'Reconnecting to workstream events';
+      return 'Reconnecting to fixture workstream events';
     case 'stale':
       return `Stale: ${state.reason}`;
     case 'disconnected':
-      return state.reason ? `Disconnected: ${state.reason}` : 'Disconnected from workstream events';
+      return state.reason ? `Disconnected: ${state.reason}` : 'Disconnected from fixture workstream events';
   }
 }

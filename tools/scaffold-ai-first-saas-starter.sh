@@ -223,6 +223,8 @@ for source in sorted(TEMPLATE_DIR.rglob("*")):
     if not source.is_file():
         continue
     rel = source.relative_to(TEMPLATE_DIR)
+    if "node_modules" in rel.parts or rel.name == ".env.local":
+        continue
     target_rel = target_relative_path(rel)
     if target_rel is None:
         continue
