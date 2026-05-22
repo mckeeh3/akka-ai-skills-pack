@@ -41,6 +41,10 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
   assert.match(composer, /Ask \{selectedAgent\?\.label/);
   assert.match(composer, /disabled=\{Boolean\(disabledReason\)\}/);
   assert.match(composer, /disabled=\{submitDisabled\}/);
+  assert.match(composer, /rows=\{1\}/);
+  assert.match(composer, /useLayoutEffect/);
+  assert.match(composer, /input\.style\.height = 'auto'/);
+  assert.match(composer, /input\.scrollHeight/);
   assert.match(composer, /autoFocus/);
   assert.match(composer, /buildComposerRequest/);
 });
