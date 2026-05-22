@@ -29,7 +29,9 @@
 - reviewer can approve or reject a decision card and workflow responds accordingly
 - auditor can find trace entries for goal, plan, agent, tool, policy, and decision activity
 - frontend shell shows authenticated agent workstream layout, selected tenant/customer context, functional-agent rail, persistent composer, loading/empty/error/forbidden states, and validation feedback
-- User Admin workstream exposes Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings surfaces with capability-gated actions
+- User Admin workstream exposes the canonical `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` surfaces plus Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings surfaces with capability-gated actions
+- User Admin fullstack completion requires selecting the User Admin functional agent, loading `user-admin-dashboard`, opening `user-admin-user-list`, searching/filtering users, opening `user-admin-user-account`, invoking at least one safe mutation or decision-card-producing action, and seeing linked AdminAuditEvent/AgentWorkTrace evidence
+- User Admin acceptance fails when the dashboard/list/detail path is fixture-only, API-only, or UI-only rather than backed by scoped backend APIs, capabilities, Akka views/components, authorization, and audit/trace output
 - Agent Admin workstream exposes agent catalog, agent detail, prompt governance, skill governance, skill manifest management, tool permission management, edit-agent proposal review, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace exploration
 
 ## UI design acceptance checks

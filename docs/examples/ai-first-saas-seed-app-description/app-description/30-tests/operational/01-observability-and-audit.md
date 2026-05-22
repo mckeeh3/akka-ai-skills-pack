@@ -5,7 +5,7 @@
 - goal execution emits trace events for plan generation, task start/end, decision-card creation, and completion
 - policy invocation records policy id/version/clause where applicable
 - invite send, resend, revoke, expire, accept, delivery status change, and delivery failure produce AdminAuditEvent records
-- admin list/search, membership lifecycle changes, support-access changes, identity reset/relink attempts, and last-admin protection decisions produce searchable AdminAuditView facts
+- User Admin dashboard load, user list/search/filter, user account/detail open, safe mutation, decision-card-producing action, membership lifecycle changes, support-access changes, identity reset/relink attempts, and last-admin protection decisions produce searchable AdminAuditView facts and linked work traces
 - AccessReviewAgent, AdminRiskAgent, RoleRecommendationAgent, InvitationDraftAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent emit work traces for protected reads, recommendations, decision-card creation, denials, and summaries
 - decision cards for risky admin actions link to related AdminAuditView, AccessReviewQueueView, MembershipView, InvitationView, and UserDirectoryView evidence
 - timed invitation expiry produces an audit event

@@ -3,12 +3,14 @@
 - unauthenticated browser API request is rejected
 - authenticated user without active membership is rejected
 - member without admin role cannot invite users, resend invite, revoke invite, or assign elevated roles
-- cross-tenant admin cannot list/search users, inspect MembershipView, InvitationView, AdminAuditView, or AccessReviewQueueView outside scope
+- cross-tenant admin cannot load `user-admin-dashboard`, list/search users through `user-admin-user-list`, open `user-admin-user-account`, inspect MembershipView, InvitationView, AdminAuditView, or AccessReviewQueueView outside scope
 - disabled inviter cannot create, resend, revoke, or bulk prepare invitations
 - revoked invitation cannot be accepted
 - expired invitation cannot be accepted
 - replayed acceptance cannot create duplicate memberships or bypass current tenant/customer policy
 - delivery-failed invitation does not activate a membership until valid acceptance succeeds
+- Customer Admin cannot perform Tenant-level User Admin actions and receives a safe Tenant-level denial without hidden Tenant rows
+- SaaS Owner Admin cannot read tenant application User Admin data without Tenant-created support access and receives a no-support-access denial
 - admin cannot remove/suspend/reactivate the last admin without last-admin protection and required decision-card approval
 - admin cannot reset/relink identity subject outside policy and authority scope
 - agent cannot execute a tool without permission grant

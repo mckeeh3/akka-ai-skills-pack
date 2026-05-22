@@ -2,13 +2,14 @@
 
 - same object id in different tenants never crosses data boundaries
 - user with membership in tenant A cannot read/write tenant B data
-- user directory, membership, invitation, admin audit, and access-review queries remain tenant/customer scoped after projection updates
+- `user-admin-dashboard`, `user-admin-user-list`, `user-admin-user-account`, user directory, membership, invitation, admin audit, and access-review queries remain tenant/customer scoped after projection updates
 - repeated invite command for the same target email/scope/role uses the documented idempotency behavior and does not create duplicate active invitations
 - repeated resend invite updates delivery attempts and audit facts without losing original invitation history
 - repeated revoke invite is safe and does not reactivate or delete audit history
 - repeated invitation acceptance is safe and does not duplicate active memberships
 - expired and revoked invitations remain impossible to accept after retries, projection rebuilds, or service restart
 - membership lifecycle retries for add/suspend/reactivate/remove preserve current status and audit facts
+- safe User Admin mutations and decision-card-producing actions remain idempotent across retries and still emit trace/audit evidence
 - last-admin protection remains enforced after role replacement/removal retries and view rebuilds
 - AccessReviewQueueView remains correct for stale invites, dormant access, support-access expiry, and last-admin risk after projection updates
 - AdminRiskAgent, AccessReviewAgent, RoleRecommendationAgent, and governed UserAdminAgent responsibility recommendations do not create side effects when replayed or retried

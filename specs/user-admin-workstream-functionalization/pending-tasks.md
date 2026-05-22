@@ -224,7 +224,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-008: Add fullstack acceptance/readiness gates for User Admin functional completion
 
-- status: pending
+- status: done
+- completion note: Added fullstack User Admin dashboard/list/detail gates to readiness, generation, and PRD-to-backlog skills; expanded the full-core acceptance matrix with canonical `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` proof requirements; updated acceptance, regression, negative, and operational test docs to fail fixture-only/API-only/UI-only coverage and require scoped audit/trace-backed behavior.
 - source: TASK-UA-006
 - task brief: none
 - depends on: [TASK-UA-005, TASK-UA-006, TASK-UA-007]
