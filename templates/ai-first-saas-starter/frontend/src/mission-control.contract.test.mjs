@@ -45,7 +45,7 @@ test('workstream fixtures cover attention, decisions, workflow progress, audit t
   }
   assert.match(workstreamFixtures, /traceLinks/);
   assert.match(workstreamFixtures, /waiting-for-human/);
-  assert.match(workstreamFixtures, /surface-user-admin-dashboard/);
+  assert.match(workstreamFixtures, /user-admin-dashboard/);
 });
 
 test('stale, duplicate, reconnecting, and cross-context realtime behavior is encoded in workstream contracts', () => {

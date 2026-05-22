@@ -24,10 +24,10 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(toggle, /aria-expanded=\{!collapsed\}/);
   assert.match(toggle, /aria-controls="workstream-functional-agent-rail-list"/);
   assert.match(rail, /aria-label="Functional agents"/);
-  assert.match(rail, /Current user workstream/);
-  assert.match(rail, /myAccountAgentId/);
-  assert.match(rail, /My Account/);
-  assert.doesNotMatch(rail, /aria-haspopup="menu"/);
+  assert.match(rail, /rail-user-button/);
+  assert.match(rail, /Profile/);
+  assert.match(rail, /Settings/);
+  assert.match(rail, /Sign out/);
   assert.match(rail, /onToggleCollapsed/);
 });
 

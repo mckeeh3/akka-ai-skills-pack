@@ -11,8 +11,6 @@ const severityLabel = (severity: string) => `${severity} attention`;
 const iconGlyph = (icon?: string, label?: string) => {
   const icons: Record<string, string> = {
     'user-circle': 'P',
-    'my-account': 'M',
-    profile: 'P',
     users: 'U',
     bot: 'B',
     'bot-off': 'B',

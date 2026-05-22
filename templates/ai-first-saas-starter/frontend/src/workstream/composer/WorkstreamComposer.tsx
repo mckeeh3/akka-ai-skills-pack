@@ -45,7 +45,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
           onChange={(event) => setDraft(event.currentTarget.value)}
           aria-describedby={helperId}
           disabled={Boolean(disabledReason)}
-          placeholder={disabledReason ?? 'Ask for an outcome…'}
+          placeholder={disabledReason ?? "What's next..."}
         />
         <p id={helperId} className="sr-only">
           {disabledReason ?? `Selected context ${authContext.selectedContextId}; requests are scoped to ${selectedAgent?.label ?? 'the selected agent'}.`}

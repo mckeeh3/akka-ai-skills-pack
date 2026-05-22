@@ -10,7 +10,7 @@ import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
 import { buildCapabilityActionRequest } from './workstream/actions';
-import { defaultSelectableAgentId, myAccountAgentId } from './workstream/rail';
+import { defaultSelectableAgentId } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
   canonicalSurfaceEnvelopes,
@@ -144,11 +144,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   function selectAgent(functionalAgentId: string) {
-    const defaultSurface = surfaceForAgent(ready.surfaces, functionalAgentId);
-    if (functionalAgentId === myAccountAgentId && defaultSurface) {
-      appendSurfaceRequestAndResponse(defaultSurface, 'Open my account', 'Open the signed-in user account workstream.');
-    }
-    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface?.surfaceId });
+    const defaultSurface = surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
+    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
   }
 
@@ -239,7 +236,6 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         surfacePlacement: 'inline'
       });
     }
-    if (action.actionId === 'action-sign-out' && result.ok) onSignOut?.();
   }
 
   function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
@@ -258,9 +254,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       status: 'ready'
     };
     const requestedSurface = showUserDetail
-      ? ready.surfaces.find((surface) => surface.surfaceId === 'surface-user-admin-detail-admin')
+      ? ready.surfaces.find((surface) => surface.surfaceId === 'user-admin-user-account')
       : showUsers
-        ? ready.surfaces.find((surface) => surface.surfaceId === 'surface-user-admin-list')
+        ? ready.surfaces.find((surface) => surface.surfaceId === 'user-admin-user-list')
         : undefined;
     const surfaceResponseItem: WorkstreamItem | undefined = requestedSurface ? {
       itemId: `composer-surface-${requestedSurface.surfaceId}-${Date.now()}`,
@@ -277,9 +273,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) }
       : current);
     if (showUserDetail) {
-      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-detail-admin', surfacePlacement: 'inline' });
+      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'user-admin-user-account', surfacePlacement: 'inline' });
     } else if (showUsers) {
-      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-list', surfacePlacement: 'inline' });
+      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'user-admin-user-list', surfacePlacement: 'inline' });
     }
   }
 
