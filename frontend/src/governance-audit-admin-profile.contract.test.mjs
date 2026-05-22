@@ -26,7 +26,7 @@ test('governance, audit, admin, and profile legacy screens are not primary app r
     assert.ok(existsSync(new URL(path, import.meta.url)), `${path} remains only as a quarantined mechanics reference`);
   }
   assert.match(main, /<WorkstreamShell/);
-  assert.match(main, /<SurfaceRenderer/);
+  assert.match(main, /<WorkstreamStream/);
   assert.doesNotMatch(main, /import \{ GovernancePoliciesPage \}|import \{ AuditTraceExplorerPage \}|import \{ AdminUsersPage \}|import \{ ProfilePreferencesPage \}/);
   assert.doesNotMatch(main, /route === 'governance'|route === 'audit'|route === 'admin'|route === 'profile'/);
 });

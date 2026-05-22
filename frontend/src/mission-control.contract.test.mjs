@@ -21,7 +21,7 @@ test('Mission Control legacy screen is quarantined while the app entry uses the 
   assert.match(main, /canonicalSurfaceEnvelopes/);
   assert.match(workstreamShell, /FunctionalAgentRail/);
   assert.match(workstreamShell, /WorkstreamComposer/);
-  assert.match(panel, /Continuous workstream/);
+  assert.match(panel, /Workstream interaction flow|workstream-flow/);
   assert.doesNotMatch(main, /new FixtureApiClient/);
   assert.doesNotMatch(main, /<BriefingPage|route === 'briefing'/);
 });
@@ -32,7 +32,7 @@ test('workstream shell provides mission-control responsibilities through shell r
   assert.match(contextBar, /Selected AuthContext/);
   assert.match(contextBar, /Roles:/);
   assert.match(contextBar, /Browser-safe capabilities/);
-  assert.match(stream, /aria-label="Workstream items"/);
+  assert.match(stream, /aria-label="Workstream interaction flow"|aria-label="Workstream items"/);
   assert.match(stream, /Empty workstream/);
   assert.match(main, /Reference fixture status/);
   assert.match(main, /Realtime status:/);

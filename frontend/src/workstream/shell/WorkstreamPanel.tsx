@@ -10,12 +10,8 @@ type WorkstreamPanelProps = {
 export function WorkstreamPanel({ selectedAgent, items = [], children }: WorkstreamPanelProps) {
   return (
     <main id="main-content" className="content workstream-panel" aria-labelledby="workstream-panel-title" tabIndex={-1}>
-      <section className="page-header">
-        <p className="eyebrow">Continuous workstream</p>
-        <h2 id="workstream-panel-title">{selectedAgent?.label ?? 'Select a functional agent'}</h2>
-        <p>{selectedAgent?.purpose ?? 'Choose a role-authorized functional agent to open its workstream.'}</p>
-      </section>
-      <section className="flow-stack" aria-label="Workstream items">
+      <h1 id="workstream-panel-title" className="sr-only">{selectedAgent?.label ?? 'Select a workstream'}</h1>
+      <section className="flow-stack workstream-flow" aria-label="Workstream interaction flow">
         {children ?? items.map((item) => (
           <article key={item.itemId} id={item.itemId} className={`ds-card workstream-item ${item.kind}`} tabIndex={-1}>
             <p className="eyebrow">{item.kind.replace(/-/g, ' ')}</p>

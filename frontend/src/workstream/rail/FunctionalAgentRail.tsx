@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { AccountStatus, FunctionalAgentSummary } from '../types';
 import { CollapsedRailToggle } from './CollapsedRailToggle';
 import { FunctionalAgentRailItem } from './FunctionalAgentRailItem';
@@ -9,8 +10,11 @@ type FunctionalAgentRailProps = {
   visibleCapabilityIds: string[];
   accountStatus?: AccountStatus;
   collapsed?: boolean;
+  appName?: string;
+  userDisplayName: string;
   onSelectAgent?: (functionalAgentId: string) => void;
   onToggleCollapsed?: (collapsed: boolean) => void;
+  onSignOut?: () => void;
 };
 
 export function FunctionalAgentRail({
@@ -19,23 +23,24 @@ export function FunctionalAgentRail({
   visibleCapabilityIds,
   accountStatus = 'active',
   collapsed = false,
+  appName = 'Workstream',
+  userDisplayName,
   onSelectAgent,
-  onToggleCollapsed
+  onToggleCollapsed,
+  onSignOut
 }: FunctionalAgentRailProps) {
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const entries = visibleRailEntries(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus);
 
   return (
     <aside className={`sidebar workstream-functional-agent-rail ${collapsed ? 'collapsed' : 'expanded'}`} aria-label="Functional agents">
-      <div className="brand-lockup">
-        <span className="brand-mark" aria-hidden="true">AI</span>
-        {!collapsed && (
-          <span>
-            <strong>Workstream</strong>
-            <span>Role-authorized agents</span>
-          </span>
-        )}
+      <div className="rail-top">
+        <div className="brand-lockup">
+          <span className="brand-mark" aria-hidden="true">AI</span>
+          {!collapsed && <strong>{appName}</strong>}
+        </div>
+        <CollapsedRailToggle collapsed={collapsed} onToggle={onToggleCollapsed} />
       </div>
-      <CollapsedRailToggle collapsed={collapsed} onToggle={onToggleCollapsed} />
       <nav aria-label="Functional agent work areas">
         <ul id="workstream-functional-agent-rail-list" className="nav-list workstream-agent-list">
           {entries.map((entry) => (
@@ -43,14 +48,19 @@ export function FunctionalAgentRail({
           ))}
         </ul>
       </nav>
-      {!collapsed && (
-        <div className="sidebar-bottom">
-          <p className="notification-summary">
-            <span className="notification-dot" aria-hidden="true">{entries.filter((entry) => entry.attention).length}</span>
-            Attention indicators are scoped by the selected AuthContext and browser-safe capabilities.
-          </p>
-        </div>
-      )}
+      <div className="sidebar-bottom rail-user-region">
+        <button type="button" className="rail-user-button" aria-haspopup="menu" aria-expanded={userMenuOpen} onClick={() => setUserMenuOpen((open) => !open)}>
+          <span className="user-avatar" aria-hidden="true">{userDisplayName.slice(0, 1).toUpperCase()}</span>
+          {!collapsed && <span>{userDisplayName}</span>}
+        </button>
+        {userMenuOpen && (
+          <div className="rail-user-menu" role="menu">
+            <button type="button" role="menuitem">Profile</button>
+            <button type="button" role="menuitem">Settings</button>
+            <button type="button" role="menuitem" onClick={onSignOut}>Sign out</button>
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

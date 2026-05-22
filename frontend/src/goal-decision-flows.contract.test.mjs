@@ -24,7 +24,7 @@ test('goal and decision legacy screens are quarantined behind the workstream she
     assert.ok(existsSync(new URL(path, import.meta.url)), `${path} remains only as a quarantined mechanics reference`);
   }
   assert.match(main, /<WorkstreamShell/);
-  assert.match(main, /<SurfaceRenderer/);
+  assert.match(main, /<WorkstreamStream/);
   assert.match(main, /selectedFunctionalAgentId/);
   assert.match(main, /selectedSurfaceId/);
   assert.doesNotMatch(main, /import \{ GoalWorkbenchPage \}|import \{ DecisionQueuePage \}/);

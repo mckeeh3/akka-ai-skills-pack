@@ -2,7 +2,6 @@ import { ReactNode, useMemo, useState } from 'react';
 import type { ComposerRequest, MeResponse, WorkstreamItem } from '../types';
 import { WorkstreamComposer } from '../composer';
 import { FunctionalAgentRail } from '../rail';
-import { ContextAuthorityBar } from './ContextAuthorityBar';
 import { selectedFunctionalAgent } from './shellState';
 import { WorkstreamPanel } from './WorkstreamPanel';
 
@@ -11,11 +10,13 @@ type WorkstreamShellProps = {
   initialFunctionalAgentId?: string;
   items?: WorkstreamItem[];
   children?: ReactNode;
+  appName?: string;
   onSelectAgent?: (functionalAgentId: string) => void;
   onComposerSubmit?: (request: ComposerRequest) => void;
+  onSignOut?: () => void;
 };
 
-export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, onSelectAgent, onComposerSubmit }: WorkstreamShellProps) {
+export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, onSignOut }: WorkstreamShellProps) {
   const initialAgentId = initialFunctionalAgentId ?? me.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId ?? me.functionalAgents[0]?.functionalAgentId;
   const [selectedFunctionalAgentId, setSelectedFunctionalAgentId] = useState(initialAgentId);
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -35,11 +36,13 @@ export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], chil
         visibleCapabilityIds={me.visibleCapabilityIds}
         accountStatus={me.account.status}
         collapsed={railCollapsed}
+        appName={appName}
+        userDisplayName={me.account.displayName}
         onSelectAgent={selectAgent}
         onToggleCollapsed={setRailCollapsed}
+        onSignOut={onSignOut}
       />
       <div className="main-column workstream-main-column">
-        <ContextAuthorityBar me={me} authContext={me.selectedAuthContext} pendingApprovalCount={2} />
         <WorkstreamPanel selectedAgent={selectedAgent} items={items}>{children}</WorkstreamPanel>
         <footer className="workstream-composer-region" aria-label="Persistent composer region">
           <WorkstreamComposer me={me} authContext={me.selectedAuthContext} selectedAgent={selectedAgent} onSubmit={onComposerSubmit} />

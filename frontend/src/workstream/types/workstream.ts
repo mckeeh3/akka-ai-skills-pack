@@ -7,6 +7,9 @@ export type WorkstreamItemKind =
   | 'decision'
   | 'audit-trace'
   | 'action-feedback'
+  | 'system-notification'
+  | 'workstream-notification'
+  | 'surface-request'
   | 'system-status';
 
 export type WorkstreamItemStatus = 'working' | 'waiting-for-human' | 'blocked' | 'ready' | 'failed' | 'stale';

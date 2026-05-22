@@ -9,7 +9,6 @@ import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkst
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
-import { SurfaceRenderer } from './workstream/surfaces';
 import { buildCapabilityActionRequest } from './workstream/actions';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
@@ -97,8 +96,12 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
   const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
   const me = ready.me;
   const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? me.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId;
-  const selectedItems = ready.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId);
-  const selectedSurfaceId = selection.selectedSurfaceId ?? selectedItems.find((item) => item.surfaceId)?.surfaceId ?? surfaceForAgent(ready.surfaces, selectedFunctionalAgentId)?.surfaceId;
+  const selectedItems = buildVisibleWorkstreamItems(
+    ready.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId),
+    ready.surfaces,
+    selectedFunctionalAgentId,
+    selection.selectedSurfaceId
+  );
 
   React.useEffect(() => {
     if (bootstrap.status !== 'ready') return;
@@ -148,11 +151,43 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
 
   function openSurface(surfaceId: string) {
     const surface = ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
+    if (!surface) return;
+    appendSurfaceRequestAndResponse(surface, `Show ${surface.title}`, 'Requested from a workstream item.');
     updateSelection({
-      selectedFunctionalAgentId: surface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId,
+      selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? selectedFunctionalAgentId,
       selectedSurfaceId: surfaceId,
       surfacePlacement: 'inline'
     });
+  }
+
+  function appendSurfaceRequestAndResponse(surface: SurfaceEnvelope<unknown>, title: string, body?: string) {
+    const now = Date.now();
+    const functionalAgentId = surface.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'agent-user-admin';
+    const requestItem: WorkstreamItem = {
+      itemId: `surface-request-${now}`,
+      functionalAgentId,
+      kind: 'surface-request',
+      createdAt: new Date().toISOString(),
+      correlationId: `corr-surface-request-${now}`,
+      traceIds: surface.traceIds,
+      title,
+      body,
+      status: 'ready'
+    };
+    const responseItem: WorkstreamItem = {
+      itemId: `surface-response-${surface.surfaceId}-${now}`,
+      functionalAgentId,
+      kind: 'surface',
+      createdAt: new Date().toISOString(),
+      correlationId: surface.correlationId,
+      traceIds: surface.traceIds,
+      surfaceId: surface.surfaceId,
+      title: surface.title,
+      status: 'ready'
+    };
+    setBootstrap((current) => current.status === 'ready'
+      ? { ...current, items: pruneWorkstreamItems([...current.items, requestItem, responseItem]) }
+      : current);
   }
 
   async function handleSurfaceAction(action: SurfaceAction, surfaceId: string) {
@@ -163,29 +198,41 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
       surfaceCorrelationId: `corr-${action.actionId}`
     });
     const result = await workstreamClient.runCapabilityAction(request);
-    const feedbackItem: WorkstreamItem = {
-      itemId: `feedback-${Date.now()}`,
-      functionalAgentId: selectedFunctionalAgentId ?? 'agent-user-admin',
-      kind: 'action-feedback',
+    const targetSurface = result.ok ? result.value.resultSurface ?? ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId) : undefined;
+    const now = Date.now();
+    const actionRequestItem: WorkstreamItem = {
+      itemId: `surface-action-request-${now}`,
+      functionalAgentId: targetSurface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'agent-user-admin',
+      kind: 'surface-request',
       createdAt: new Date().toISOString(),
       correlationId: result.ok ? result.value.correlationId : result.error.correlationId,
       traceIds: result.ok ? result.value.traceIds : [],
-      surfaceId: result.ok ? result.value.resultSurface?.surfaceId ?? surfaceId : surfaceId,
-      title: result.ok ? `${action.label} ${result.value.status}` : `${action.label} failed`,
-      body: result.ok ? `${result.value.message} Backend authority, idempotency, audit, and result-surface handling remain capability-backed.` : result.error.message,
+      title: action.label,
+      body: result.ok ? result.value.message : result.error.message,
       status: result.ok && result.value.status === 'accepted' ? 'ready' : 'blocked'
     };
+    const surfaceResponseItem: WorkstreamItem | undefined = targetSurface ? {
+      itemId: `surface-action-response-${targetSurface.surfaceId}-${now}`,
+      functionalAgentId: targetSurface.ownerFunctionalAgentId,
+      kind: 'surface',
+      createdAt: new Date().toISOString(),
+      correlationId: targetSurface.correlationId,
+      traceIds: targetSurface.traceIds,
+      surfaceId: targetSurface.surfaceId,
+      title: targetSurface.title,
+      status: 'ready'
+    } : undefined;
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = result.ok && result.value.resultSurface && !current.surfaces.some((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId)
         ? [...current.surfaces, result.value.resultSurface]
         : current.surfaces;
-      return { ...current, surfaces: nextSurfaces, items: [...current.items, feedbackItem] };
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
-    if (result.ok && result.value.resultSurface) {
+    if (targetSurface) {
       updateSelection({
-        selectedFunctionalAgentId: result.value.resultSurface.ownerFunctionalAgentId,
-        selectedSurfaceId: result.value.resultSurface.surfaceId,
+        selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId,
+        selectedSurfaceId: targetSurface.surfaceId,
         surfacePlacement: 'inline'
       });
     }
@@ -234,7 +281,7 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
           }
         : undefined;
     setBootstrap((current) => current.status === 'ready'
-      ? { ...current, items: [...current.items, userRequestItem, ...(navigationFeedbackItem ? [navigationFeedbackItem] : [])] }
+      ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, ...(navigationFeedbackItem ? [navigationFeedbackItem] : [])]) }
       : current);
     if (showUserDetail) {
       updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-detail-admin', surfacePlacement: 'inline' });
@@ -253,18 +300,18 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
 
   return (
     <>
-    {authStatusLabel ? <div className="auth-status-bar" role="status">{authStatusLabel}{onSignOut ? <button type="button" onClick={onSignOut}>Sign out</button> : null}</div> : null}
     <WorkstreamShell
       key={selectedFunctionalAgentId}
       me={me}
       initialFunctionalAgentId={selectedFunctionalAgentId}
       items={selectedItems}
+      appName="Workstream"
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
+      onSignOut={onSignOut}
     >
-      <WorkstreamStream items={selectedItems} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} />
-      <SurfaceRenderer envelopes={ready.surfaces} selectedSurfaceId={selectedSurfaceId} onAction={handleSurfaceAction} />
-      <section className="ds-card" aria-label="Workstream API status Reference fixture status">
+      <WorkstreamStream items={selectedItems} surfaces={ready.surfaces} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} onSurfaceAction={handleSurfaceAction} />
+      <section className="ds-card workstream-notification system-notification" aria-label="Workstream API status Reference fixture status">
         <p className="eyebrow">{useFixtureWorkstream ? 'Fixture client' : 'Real API client'}</p>
         <h3>Workstream-first shell reference</h3>
         <p>Routes are deep links into functional agents, stream items, and structured surfaces; production data loads through /api/workstream endpoints.</p>
@@ -297,6 +344,27 @@ function readDeepLinkSelection(): Partial<WorkstreamSelection> {
 
 function surfaceForAgent(surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string) {
   return surfaces.find((surface) => surface.ownerFunctionalAgentId === functionalAgentId);
+}
+
+function buildVisibleWorkstreamItems(items: WorkstreamItem[], surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string, selectedSurfaceId?: string): WorkstreamItem[] {
+  if (items.some((item) => item.kind === 'surface')) return items;
+  const surface = surfaces.find((candidate) => candidate.surfaceId === selectedSurfaceId && candidate.ownerFunctionalAgentId === functionalAgentId) ?? surfaceForAgent(surfaces, functionalAgentId);
+  if (!surface) return items;
+  return [{
+    itemId: `default-surface-${surface.surfaceId}`,
+    functionalAgentId: surface.ownerFunctionalAgentId,
+    kind: 'surface',
+    createdAt: surface.generatedAt,
+    correlationId: surface.correlationId,
+    traceIds: surface.traceIds,
+    surfaceId: surface.surfaceId,
+    title: surface.title,
+    status: 'ready'
+  }, ...items];
+}
+
+function pruneWorkstreamItems(items: WorkstreamItem[], maxItems = 80): WorkstreamItem[] {
+  return items.length > maxItems ? items.slice(items.length - maxItems) : items;
 }
 
 function readStoredMode(): ModePreference {

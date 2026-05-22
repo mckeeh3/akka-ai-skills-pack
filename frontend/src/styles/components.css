@@ -1,3 +1,15 @@
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .brand-lockup {
   display: flex;
   align-items: center;
@@ -8,6 +20,29 @@
 .brand-lockup span { display: block; }
 
 .brand-lockup span { color: var(--color-muted); font-size: 0.875rem; }
+
+.rail-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.workstream-functional-agent-rail.collapsed {
+  align-items: center;
+  padding-inline: var(--space-3);
+}
+
+.workstream-functional-agent-rail.collapsed .rail-top,
+.workstream-functional-agent-rail.collapsed nav,
+.workstream-functional-agent-rail.collapsed .nav-list,
+.workstream-functional-agent-rail.collapsed .sidebar-bottom {
+  width: 100%;
+}
+
+.workstream-functional-agent-rail.collapsed .rail-top {
+  flex-direction: column;
+}
 
 .brand-mark,
 .ai-mark,
@@ -101,13 +136,96 @@
   border-color: var(--color-border);
 }
 
-.nav-icon { color: var(--color-primary); }
+.nav-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.workstream-functional-agent-rail.collapsed .nav-item {
+  justify-content: center;
+  min-width: 0;
+  padding: 0;
+}
+
+.workstream-functional-agent-rail.collapsed .workstream-rail-copy,
+.workstream-functional-agent-rail.collapsed .collapse-button span:not(:first-child) {
+  display: none;
+}
+
+.workstream-agent-button.active .nav-icon {
+  background: var(--color-primary);
+  color: var(--color-inverse-text);
+}
 
 .sidebar-bottom {
   display: grid;
   gap: var(--space-3);
   margin-top: auto;
 }
+
+.rail-user-region {
+  position: relative;
+}
+
+.rail-user-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--control-height);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  padding: 0 var(--space-2);
+  font-weight: 800;
+}
+
+.rail-user-button:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.workstream-functional-agent-rail.collapsed .rail-user-button {
+  justify-content: center;
+  padding: 0;
+}
+
+.rail-user-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + var(--space-2));
+  display: grid;
+  min-width: 12rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-2);
+  z-index: 10;
+}
+
+.rail-user-menu button {
+  justify-content: flex-start;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  padding: var(--space-3);
+  text-align: left;
+  font-weight: 800;
+}
+
+.rail-user-menu button:hover { background: var(--color-primary-soft); }
 
 .notification-summary,
 .fixture-defer-note {
@@ -191,6 +309,37 @@
 }
 
 .command-strip h2 { margin-bottom: var(--space-2); }
+
+.workstream-composer-region {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  left: calc(var(--shell-sidebar-width) + var(--space-6));
+  z-index: 6;
+  pointer-events: none;
+}
+
+.workstream-shell:has(.workstream-functional-agent-rail.collapsed) .workstream-composer-region {
+  left: calc(5rem + var(--space-6));
+}
+
+.workstream-composer {
+  pointer-events: auto;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  border-color: color-mix(in srgb, var(--color-ai) 55%, var(--color-border));
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.workstream-composer .ai-mark { display: none; }
+
+.workstream-composer textarea {
+  min-height: 3rem;
+  resize: vertical;
+}
+
+.workstream-composer .field-helper { display: none; }
 
 .prompt-row {
   display: flex;
@@ -550,6 +699,75 @@
   gap: var(--space-3);
 }
 
+.workstream-flow {
+  gap: var(--space-5);
+  max-width: 76rem;
+  margin-inline: auto;
+}
+
+.workstream-flow-entry {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.workstream-item.user-request,
+.workstream-item.surface-request {
+  justify-self: end;
+  max-width: min(48rem, 78%);
+  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
+  background: var(--color-primary-soft);
+}
+
+.workstream-item.system-notification,
+.workstream-item.workstream-notification,
+.workstream-notification {
+  border-color: color-mix(in srgb, var(--color-warning) 48%, var(--color-border));
+  background: var(--color-warning-soft);
+}
+
+.structured-surface,
+.surface-frame {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+}
+
+.surface-header {
+  margin-bottom: var(--space-5);
+}
+
+.surface-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.surface-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.surface-action-bar button {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  padding: 0.65rem 0.9rem;
+  font-weight: 800;
+}
+
+.surface-action-bar button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
 .stacked-form { gap: var(--space-4); }
 
 .form-card,
@@ -774,6 +992,21 @@
 }
 
 @media (max-width: 640px) {
+  .workstream-composer-region {
+    right: var(--space-3);
+    bottom: var(--space-3);
+    left: var(--space-3);
+  }
+  .workstream-shell:has(.workstream-functional-agent-rail.collapsed) .workstream-composer-region {
+    left: var(--space-3);
+  }
+  .workstream-composer {
+    grid-template-columns: 1fr;
+  }
+  .workstream-item.user-request,
+  .workstream-item.surface-request {
+    max-width: 100%;
+  }
   .mission-kpi-band { grid-template-columns: 1fr; }
   .attention-row,
   .policy-row,

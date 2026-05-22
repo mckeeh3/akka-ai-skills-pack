@@ -11,7 +11,6 @@ const components = readFileSync(new URL('./styles/components.css', import.meta.u
 test('frontend entry composes the canonical workstream shell instead of route pages', () => {
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /<WorkstreamStream/);
-  assert.match(main, /<SurfaceRenderer/);
   assert.match(main, /meTenantAdmin/);
   assert.doesNotMatch(main, /function RouteShell/);
   assert.doesNotMatch(main, /function SidebarNav/);
@@ -35,9 +34,9 @@ test('workstream shell uses fixture contracts and capability action feedback', (
   assert.match(main, /workstreamClient\.bootstrap\(\)/);
   assert.match(main, /handleSurfaceAction/);
   assert.match(main, /runCapabilityAction/);
-  assert.match(main, /kind: 'action-feedback'/);
+  assert.match(main, /kind: 'surface-request'/);
+  assert.match(main, /kind: 'surface'/);
   assert.match(main, /buildCapabilityActionRequest/);
-  assert.match(main, /Backend authority, idempotency, audit, and result-surface handling/);
 });
 
 test('workstream entry wires fixture realtime client into stream state', () => {
