@@ -251,7 +251,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-009: Review User Admin functionalization readiness and add gap-closing tasks
 
-- status: pending
+- status: done
+- completion note: Created `specs/user-admin-workstream-functionalization/readiness-review.md`; assessed surface contracts, API DTOs, capability/action mapping, SaaS Owner/Tenant/Customer variants, backend Akka realization maps, UserAdminAgent behavior, frontend fixtures/tests, readiness gates, and downstream handoff. Found one material partial gap in frontend fixture/action matrix coverage and added TASK-UA-011 before final handoff.
 - source: user request for readiness review and follow-up task creation
 - task brief: none
 - depends on: [TASK-UA-008]
@@ -290,7 +291,7 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - status: pending
 - source: TASK-UA-009
 - task brief: none
-- depends on: [TASK-UA-009]
+- depends on: [TASK-UA-009, TASK-UA-011]
 - required reads:
   - specs/user-admin-workstream-functionalization/gap-inventory.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
@@ -307,4 +308,36 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - `git diff --check`
 - done criteria:
   - Future implementation sessions have concrete, ordered, self-sufficient code-realization tasks.
+  - A git commit exists for the changes.
+
+### TASK-UA-011: Expand frontend User Admin fixture action matrix coverage
+
+- status: pending
+- source: TASK-UA-009 readiness review GAP-UA-RR-001
+- task brief: none
+- depends on: [TASK-UA-009]
+- required reads:
+  - specs/user-admin-workstream-functionalization/readiness-review.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - frontend/src/workstream/fixtures/surfaces.ts
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+- expected outputs:
+  - Expand `frontend/src/workstream/fixtures/surfaces.ts` so User Admin fixture actions explicitly cover the canonical action/capability matrix needed by dashboard, list, and account surfaces.
+  - Include concrete fixture actions and action metadata for membership add/suspend/reactivate/remove, role replace/remove, account disable/reactivate, identity relink request/complete or decision-card path, support-access read/grant/revoke/extend, access-review read/resolve, and admin-audit read.
+  - Preserve the fixtures as reference/demo data and avoid implying frontend authorization; every action must carry a named backend capability id, idempotency requirement where mutating, trace/audit metadata, and denial/decision-card metadata where risky.
+  - Expand `frontend/src/workstream-user-admin-vertical.contract.test.mjs` so tests assert representative capability ids from every required action family plus denial categories for cross-tenant, disabled actor, Customer Admin Tenant-level denial, SaaS Owner no-support-access, role escalation, and last-admin loss.
+  - Keep canonical surface ids `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` and dashboard-to-list-to-detail navigation behavior unchanged.
+- required checks:
+  - `rg -n "admin\.memberships\.(add|suspend|reactivate|remove)|admin\.roles\.(replace|remove)|admin\.users\.(disable|reactivate)|admin\.users\.identity_relink\.(request|complete)|admin\.support_access\.(read|grant|revoke|extend)|admin\.access_review\.(read|resolve)|admin\.audit\.read" frontend/src/workstream/fixtures/surfaces.ts frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+  - `rg -n "cross-tenant|disabled actor|CUSTOMER_ADMIN_TENANT_ACTION_DENIED|SAAS_OWNER_NO_SUPPORT_ACCESS|role escalation|last-admin" frontend/src/workstream/fixtures/surfaces.ts frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+  - `npm --prefix frontend test -- --runInBand` if supported by the frontend package; otherwise run the existing frontend test command documented in `frontend/README.md` and record the actual command in the completion note.
+  - `npm --prefix frontend run typecheck` if supported by the frontend package.
+  - `git diff --check`
+- done criteria:
+  - Frontend User Admin fixture actions and contract tests cover every canonical action family required by the surface/API/capability specs without treating frontend fixtures as authorization.
+  - TASK-UA-010 remains blocked until this task is done.
   - A git commit exists for the changes.
