@@ -8,6 +8,7 @@
 - Treat this repository as the skills-pack source: changes are primarily to skills, docs, examples, specs, templates, and reference tests unless a task explicitly targets executable starter/reference code.
 - Update this file before finishing the harness response: set completed tasks to `done`, add a completion note, and add any discovered follow-up task rather than expanding the current task.
 - Every completed task must end with a git commit.
+- Review tasks must add new self-sufficient tasks for discovered gaps rather than silently accepting partial readiness.
 - Commit message format: `user-admin-workstream: <short task title>`.
 
 ## Goal
@@ -240,12 +241,48 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - Generation/readiness cannot claim User Admin functional completion without fullstack dashboard/list/detail behavior and tests.
   - A git commit exists for the changes.
 
-### TASK-UA-009: Create implementation handoff tasks for generated/starter code realization
+### TASK-UA-009: Review User Admin functionalization readiness and add gap-closing tasks
 
 - status: pending
-- source: TASK-UA-008
+- source: user request for readiness review and follow-up task creation
 - task brief: none
 - depends on: [TASK-UA-008]
+- required reads:
+  - specs/user-admin-workstream-functionalization/pending-tasks.md
+  - specs/user-admin-workstream-functionalization/gap-inventory.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-horizontal-map.md
+  - specs/core-app-full-stack-readiness/full-core-acceptance-test-matrix.md
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+- expected outputs:
+  - Create `specs/user-admin-workstream-functionalization/readiness-review.md`.
+  - Review whether the docs/specs/tests now define a functional fullstack User Admin vertical with dashboard, user list, and user account surfaces.
+  - Assess these dimensions: surface contracts, typed API payloads, capability/action mapping, SaaS Owner/Tenant/Customer Admin variants, backend Akka realization map, UserAdminAgent behavior, frontend reference fixtures/tests, readiness gates, and downstream implementation handoff.
+  - Classify each dimension as `ready`, `partial`, or `gap` with evidence links.
+  - Add new self-sufficient pending tasks to this file for every material `partial` or `gap` finding. New tasks must have ids after the current last task, dependencies, required reads, expected outputs, required checks, done criteria, and commit expectations.
+  - If no material gaps remain, state that explicitly and leave TASK-UA-010 as the final handoff task.
+- required checks:
+  - `test -f specs/user-admin-workstream-functionalization/readiness-review.md`
+  - `rg -n "ready|partial|gap|user-admin-dashboard|user-admin-user-list|user-admin-user-account|SaaS Owner|Tenant Admin|Customer Admin|fullstack" specs/user-admin-workstream-functionalization/readiness-review.md`
+  - `rg -n "TASK-UA-0(1[1-9]|[2-9][0-9])|gap|partial" specs/user-admin-workstream-functionalization/pending-tasks.md specs/user-admin-workstream-functionalization/readiness-review.md`
+  - `git diff --check`
+- done criteria:
+  - Readiness review exists and gives an evidence-backed functionalization assessment.
+  - Every material gap has a new self-sufficient follow-up task, or the review explicitly states that no material gaps remain.
+  - A git commit exists for the changes.
+
+### TASK-UA-010: Create implementation handoff tasks for generated/starter code realization
+
+- status: pending
+- source: TASK-UA-009
+- task brief: none
+- depends on: [TASK-UA-009]
 - required reads:
   - specs/user-admin-workstream-functionalization/gap-inventory.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
