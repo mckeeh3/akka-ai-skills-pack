@@ -27,12 +27,24 @@
 ## AI-assisted admin offload
 
 1. Runtime resolves an active `AgentDefinition` for the admin assistant or `UserAdminAgent`, assembles active governed `PromptDocument`/`PromptVersion` content, includes compact `AgentSkillManifest` entries, enforces `ToolPermissionBoundary`, and creates `PromptAssemblyTrace` before work begins.
-2. Access-review responsibility scans scoped UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for stale invites, dormant access, failed delivery, support-access expiry, and last-admin risk.
-3. Admin-risk-scoring responsibility scores proposed high-risk access changes and creates decision cards when policy requires human review.
-4. Invitation-drafting responsibility drafts invite copy and role rationale without exposing raw tokens; if granted email tools, it may preview approved Resend templates and may queue email only through governed `@FunctionTool` capability checks, approval policy, idempotency, and traces.
-5. Role-recommendation responsibility recommends least-privilege roles with evidence and confidence.
-6. Support-access-review responsibility recommends support-access expiry or revocation candidates.
-7. Admin-audit-summary responsibility summarizes selected admin audit/search results with links to audit traces and decision cards.
-8. Responsibilities may be implemented by one governed skilled `UserAdminAgent` or by specialized agents; in both cases, full skill text loads require authorized `readSkill(skillId)` and create `SkillLoadTrace`.
-9. Agents may draft, summarize, recommend, and create low-risk tasks, but must not autonomously grant admin roles, remove last admins, expand support access, bulk disable users, or change policy/permissions.
-10. Consequential recommendations, tool/data access, denials, decisions, and approvals create `AgentWorkTrace` records.
+2. When the admin asks to open dashboard, `UserAdminAgent` loads `user-admin-dashboard` through scoped dashboard/read capabilities, summarizes invitations, users, support access, access-review risk, and recent audit evidence, and records the surface load in `AgentWorkTrace`.
+3. When the admin asks to search users or list users, `UserAdminAgent` calls authorized UserDirectoryView-backed search/list tools for the selected `AuthContext`, explains pagination/redaction/empty/forbidden states, and returns a `user-admin-user-list` surface payload rather than asking the caller for known user ids.
+4. When the admin asks to open a user account, `UserAdminAgent` resolves the selected row through scoped detail capability, opens `user-admin-user-account`, explains allowed and denied actions, and links visible account, membership, invitation, support-access, access-review, and audit evidence.
+5. Access-review responsibility scans scoped UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView for stale invites, dormant access, failed delivery, support-access expiry, and last-admin risk.
+6. Admin-risk-scoring responsibility scores proposed high-risk access changes and creates decision cards when policy requires human review.
+7. Invitation-drafting responsibility returns an `InvitationDraft` with invite copy and role rationale without exposing raw tokens; if granted email tools, it may preview approved Resend templates and may queue email only through governed `@FunctionTool` capability checks, approval policy, idempotency, and traces.
+8. Role-recommendation responsibility returns a `RoleRecommendation` with least-privilege roles, evidence, confidence, policy caveats, and escalation warnings.
+9. Support-access-review responsibility recommends support-access expiry or revocation candidates.
+10. Admin-audit-summary responsibility returns an `AdminAuditSummary` for selected admin audit/search results with links to audit traces and decision cards.
+11. Responsibilities may be implemented by one governed skilled `UserAdminAgent` or by specialized agents; in both cases, full skill text loads require authorized `readSkill(skillId)` and create `SkillLoadTrace`.
+12. Agents may draft, summarize, recommend, and create low-risk tasks, but consequential mutations default to human-confirmed capability calls or decision-card flows; agents must not autonomously grant admin roles, remove last admins, expand support access, bulk disable users, reset/relink identity, or change policy/permissions.
+13. Tool boundaries default to read/list/detail/summarize within the selected `AuthContext`; denied tool calls for cross-tenant data, Customer Admin Tenant-level actions, SaaS Owner no-support-access access, disabled actors, missing roles/capabilities, role escalation, last-admin loss, raw invitation tokens, provider secrets, and unredacted out-of-scope data are safe denials.
+14. Consequential recommendations, tool/data access, denials, decisions, approvals, surface/action outcomes, and prompt/skill activity create `AgentWorkTrace`, `PromptAssemblyTrace`, and `SkillLoadTrace` records.
+
+## UserAdminAgent trace and verification obligations
+
+- Prompt assembly tests verify `AgentDefinition`, `PromptDocument`/`PromptVersion`, compact `AgentSkillManifest`, `ToolPermissionBoundary`, and `PromptAssemblyTrace` before dashboard/list/detail work begins.
+- Skill-load tests verify authorized and denied `readSkill(skillId)` calls create `SkillLoadTrace` without leaking full skill text outside caller authority.
+- Tool-boundary tests verify dashboard read, search/list users, open user account, `InvitationDraft`, `RoleRecommendation`, `AdminAuditSummary`, and decision-card creation are allowed only when the selected `AuthContext` has the matching capability.
+- Denial tests cover disabled actor, missing capability, cross-tenant access, Customer Admin Tenant-level action, SaaS Owner without support access, role escalation, last-admin protection, raw token exposure, and provider secret exposure.
+- Surface outcome tests verify `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` carry correlation ids, trace ids, audit links, redaction markers, allowed/denied action metadata, and forbidden/empty/error/stale state behavior.

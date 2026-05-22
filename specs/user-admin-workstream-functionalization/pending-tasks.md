@@ -146,7 +146,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-005: Specify UserAdminAgent behavior, tools, prompts, and traces for the functional vertical
 
-- status: pending
+- status: done
+- completion note: Expanded `user-admin-agent` from a named left-rail item into a governed skilled functional agent for the dashboard/list/detail vertical, including supported intents, seeded runtime documents, tool-boundary defaults, safe denial behavior, decision-card routing, and prompt/skill/tool/work trace tests; aligned the onboarding/access flow with the same end-to-end agent behaviors.
 - source: TASK-UA-002
 - task brief: none
 - depends on: [TASK-UA-002, TASK-UA-004]
