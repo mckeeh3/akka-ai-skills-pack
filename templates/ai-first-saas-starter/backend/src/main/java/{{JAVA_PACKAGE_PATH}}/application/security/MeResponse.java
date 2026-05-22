@@ -142,11 +142,11 @@ public record MeResponse(
           && capabilities.contains("agent.runtime.test");
       return List.of(
           new FunctionalAgentSummary(
-              "agent-access-profile",
-              "Access/Profile",
-              "Review the signed-in account, selected AuthContext, profile preferences, support-access state, and browser-safe capability basis.",
-              "profile",
-              "detail-edit",
+              "agent-my-account",
+              "My Account",
+              "Review the signed-in account, profile, settings, selected AuthContext, sign-out action, and browser-safe capability basis.",
+              "my-account",
+              "dashboard",
               List.of("profile.read"),
               profileVisible ? "visible" : "denied",
               profileVisible ? null : "No active profile context is available."),

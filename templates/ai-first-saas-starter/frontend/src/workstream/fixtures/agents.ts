@@ -2,11 +2,11 @@ import type { FunctionalAgentSummary } from '../types';
 
 export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
   {
-    functionalAgentId: 'agent-access-profile',
-    label: 'Access/Profile',
-    purpose: 'Review signed-in account, selected context, settings, and authority basis.',
-    icon: 'user-circle',
-    defaultSurfaceType: 'detail-edit',
+    functionalAgentId: 'agent-my-account',
+    label: 'My Account',
+    purpose: 'Review signed-in account, profile, settings, selected context, sign-out action, and authority basis.',
+    icon: 'my-account',
+    defaultSurfaceType: 'dashboard',
     requiredCapabilityIds: ['profile.read'],
     availability: 'visible'
   },

@@ -56,7 +56,7 @@ The default authenticated app shell uses a familiar AI chat layout, but the left
 
 Required shell regions:
 
-1. **Left rail functional agents** — show only agents the selected `AuthContext` may use. Examples: Access/Profile, User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Sales Pipeline, Approval Queue, Risk & Exceptions.
+1. **Left rail functional agents** — show only agents the selected `AuthContext` may use. Examples: My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Sales Pipeline, Approval Queue, Risk & Exceptions. The signed-in user tile at the bottom of the rail should open the My Account workstream rather than a separate profile/settings menu.
 2. **Main workstream panel** — shows a continuous vertical stream of user intent, agent responses, structured surfaces, capability results, workflow status, decision cards, traces, and links.
 3. **Persistent composer** — accepts natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent.
 4. **Context and authority indicators** — show selected tenant/customer context, active role/capability basis, pending approvals, trace links, and safe denial/recovery states.
@@ -80,7 +80,7 @@ A generated app grows by adding vertical functional agents. Each functional agen
 
 Foundation generated SaaS apps must include user-facing functional agents for secure operation, especially:
 
-- **Access/Profile Agent** for current account, context selection, profile, settings, and safe self-service.
+- **My Account Agent** for current account, context selection, profile, settings, sign out, and safe self-service. Its default dashboard should be a simple workstream surface with Profile, Settings, and Sign out actions; selecting Profile or Settings appends the corresponding request and response surface in the My Account flow.
 - **User Admin Agent** for invitations, users, memberships, roles/capabilities, disabled access, access review, support access visibility, and admin audit.
 - **Agent Admin Agent** for agent definitions, prompts, skills, manifests, tool boundaries, lifecycle, proposals, approvals, behavior tests, and traces.
 - **Audit/Trace Agent** for security, authorization, data access, tool use, decision, workflow, and outcome investigation.

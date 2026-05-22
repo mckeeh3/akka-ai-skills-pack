@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import type { AccountStatus, FunctionalAgentSummary } from '../types';
 import { CollapsedRailToggle } from './CollapsedRailToggle';
 import { FunctionalAgentRailItem } from './FunctionalAgentRailItem';
-import { visibleRailEntries } from './railState';
+import { myAccountAgentId, toRailEntry, visibleRailEntries } from './railState';
 
 type FunctionalAgentRailProps = {
   agents: FunctionalAgentSummary[];
@@ -14,7 +13,6 @@ type FunctionalAgentRailProps = {
   userDisplayName: string;
   onSelectAgent?: (functionalAgentId: string) => void;
   onToggleCollapsed?: (collapsed: boolean) => void;
-  onSignOut?: () => void;
 };
 
 export function FunctionalAgentRail({
@@ -26,11 +24,13 @@ export function FunctionalAgentRail({
   appName = 'Workstream',
   userDisplayName,
   onSelectAgent,
-  onToggleCollapsed,
-  onSignOut
+  onToggleCollapsed
 }: FunctionalAgentRailProps) {
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const entries = visibleRailEntries(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus);
+  const myAccountAgent = agents.find((agent) => agent.functionalAgentId === myAccountAgentId);
+  const visibleMyAccountEntry = entries.find((entry) => entry.functionalAgentId === myAccountAgentId);
+  const myAccountEntry = visibleMyAccountEntry ?? (myAccountAgent ? toRailEntry(myAccountAgent, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus) : undefined);
+  const workAreaEntries = entries.filter((entry) => entry.functionalAgentId !== myAccountAgentId);
 
   return (
     <aside className={`sidebar workstream-functional-agent-rail ${collapsed ? 'collapsed' : 'expanded'}`} aria-label="Functional agents">
@@ -43,22 +43,21 @@ export function FunctionalAgentRail({
       </div>
       <nav aria-label="Functional agent work areas">
         <ul id="workstream-functional-agent-rail-list" className="nav-list workstream-agent-list">
-          {entries.map((entry) => (
+          {workAreaEntries.map((entry) => (
             <FunctionalAgentRailItem key={entry.functionalAgentId} entry={entry} collapsed={collapsed} onSelect={onSelectAgent} />
           ))}
         </ul>
       </nav>
-      <div className="sidebar-bottom rail-user-region">
-        <button type="button" className="rail-user-button" aria-haspopup="menu" aria-expanded={userMenuOpen} onClick={() => setUserMenuOpen((open) => !open)}>
-          <span className="user-avatar" aria-hidden="true">{userDisplayName.slice(0, 1).toUpperCase()}</span>
-          {!collapsed && <span>{userDisplayName}</span>}
-        </button>
-        {userMenuOpen && (
-          <div className="rail-user-menu" role="menu">
-            <button type="button" role="menuitem">Profile</button>
-            <button type="button" role="menuitem">Settings</button>
-            <button type="button" role="menuitem" onClick={onSignOut}>Sign out</button>
-          </div>
+      <div className="sidebar-bottom rail-user-region" aria-label="Current user workstream: My Account">
+        {myAccountEntry ? (
+          <ul className="nav-list workstream-agent-list rail-user-workstream-list">
+            <FunctionalAgentRailItem entry={{ ...myAccountEntry, label: userDisplayName }} collapsed={collapsed} onSelect={onSelectAgent} />
+          </ul>
+        ) : (
+          <button type="button" className="rail-user-button" disabled>
+            <span className="user-avatar" aria-hidden="true">{userDisplayName.slice(0, 1).toUpperCase()}</span>
+            {!collapsed && <span>{userDisplayName}</span>}
+          </button>
         )}
       </div>
     </aside>

@@ -41,7 +41,7 @@ test('me fixtures cover active admin, member, auditor/support, disabled, and for
 });
 
 test('functional agent fixtures include foundation agents and visibility states', () => {
-  for (const label of ['Access/Profile', 'User Admin', 'Agent Admin', 'Audit/Trace', 'Governance/Policy', 'Billing', 'Support Access']) {
+  for (const label of ['My Account', 'User Admin', 'Agent Admin', 'Audit/Trace', 'Governance/Policy', 'Billing', 'Support Access']) {
     assert.match(agentFixtures, new RegExp(label.replace('/', '\\/')));
   }
   for (const availability of ["availability: 'visible'", "availability: 'denied'", "availability: 'hidden'", "availability: 'disabled'"]) {

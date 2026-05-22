@@ -185,7 +185,7 @@ type FunctionalAgentSummary = {
 };
 ```
 
-Foundation fixture agents should include Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, and optional Billing/Support Access examples. Rail rendering must be collapsible and role/capability aware.
+Foundation fixture agents should include My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, and optional Billing/Support Access examples. Rail rendering must be collapsible and role/capability aware. The signed-in user tile at the bottom of the rail opens the My Account workstream, whose dashboard exposes Profile, Settings, and Sign out actions as normal workstream surface actions.
 
 ### Workstream items
 

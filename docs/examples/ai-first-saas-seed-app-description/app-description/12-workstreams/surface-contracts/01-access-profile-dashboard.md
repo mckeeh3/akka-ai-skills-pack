@@ -1,16 +1,26 @@
-# Surface Contract: Access Profile Dashboard
+# Surface Contract: My Account Dashboard
 
-- surface-id: `access-profile-dashboard`
+- surface-id: `my-account-dashboard`
 - type/version: dashboard/v1
-- functional agents: Access/Profile
+- functional agents: My Account
+- placement:
+  - the signed-in user tile at the bottom of the left rail opens the My Account workstream
+  - Profile and Settings are surface actions, not a separate shell menu
 - payload schema:
-  - current account summary, profile, settings, selected/default AuthContext, memberships, browser-safe capabilities, safe denial reasons
-- allowed actions:
-  - select tenant/customer context → `secure-tenant-user-foundation`
-  - update own profile/settings → `secure-tenant-user-foundation`
+  - current account summary, selected/default AuthContext, browser-safe capabilities, and dashboard actions for Profile, Settings, and Sign out
+- default dashboard actions:
+  - show user profile → appends request `Show user profile` and response `user-profile` surface
+  - show user settings → appends request `Show user settings` and response `user-settings` surface
+  - sign out → shell/session action with backend/session trace where available
+- profile/settings surfaces:
+  - current user's editable profile fields and preferences only
+  - administrative roles, memberships, support access, and tenant/customer authority changes remain in User Admin/Governance surfaces
 - states:
-  - loading `/api/me`, no memberships, forbidden/disabled account, stale settings save, successful context switch
+  - loading `/api/me`, no memberships, forbidden/disabled account, stale settings save, successful context switch or save
 - auth/security:
   - backend scopes every context; frontend never trusts stored context without `/api/me` refresh
+  - profile/settings edits map to governed backend capabilities and audit profile/settings changes where consequential
 - rendering tests:
-  - active member sees only authorized contexts; disabled user gets safe denial; narrow layout preserves context switcher.
+  - active member sees My Account from the bottom rail user tile
+  - Profile and Settings actions append both request and response entries in the My Account flow
+  - disabled user gets safe denial; narrow layout preserves context and action affordances.

@@ -9,6 +9,9 @@ import {
   displayAgentDetailActionResult,
   displayUserDetailActionResult,
   displayUserListActionResult,
+  showMyProfileActionResult,
+  showMySettingsActionResult,
+  signOutActionResult,
   initialWorkstreamItems,
   meTenantAdmin
 } from '../workstream/fixtures';
@@ -48,7 +51,13 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     const action = allSurfaceActions.find((candidate) => candidate.actionId === request.actionId || candidate.capabilityId === request.capabilityId);
     if (!action) return delayedError('not_found', 'The requested capability action is not exposed by this surface.');
     if (action.disabled) return delayedOk({ ...actionResultsByStatus.denied, message: action.disabled.message, correlationId: request.correlationId });
-    const result = request.actionId === 'action-display-user-detail'
+    const result = request.actionId === 'action-show-my-profile' || request.actionId === 'action-update-my-profile'
+      ? showMyProfileActionResult
+      : request.actionId === 'action-show-my-settings' || request.actionId === 'action-update-my-settings'
+        ? showMySettingsActionResult
+        : request.actionId === 'action-sign-out'
+          ? signOutActionResult
+          : request.actionId === 'action-display-user-detail'
       ? displayUserDetailActionResult
       : request.actionId === 'action-display-agent-detail' || request.actionId === 'action-open-agent-detail'
         ? displayAgentDetailActionResult

@@ -10,7 +10,7 @@ import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
 import { buildCapabilityActionRequest } from './workstream/actions';
-import { defaultSelectableAgentId } from './workstream/rail';
+import { defaultSelectableAgentId, myAccountAgentId } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
   canonicalSurfaceEnvelopes,
@@ -144,8 +144,11 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   function selectAgent(functionalAgentId: string) {
-    const defaultSurface = surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
-    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface });
+    const defaultSurface = surfaceForAgent(ready.surfaces, functionalAgentId);
+    if (functionalAgentId === myAccountAgentId && defaultSurface) {
+      appendSurfaceRequestAndResponse(defaultSurface, 'Open my account', 'Open the signed-in user account workstream.');
+    }
+    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface?.surfaceId });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
   }
 
@@ -236,6 +239,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         surfacePlacement: 'inline'
       });
     }
+    if (action.actionId === 'action-sign-out' && result.ok) onSignOut?.();
   }
 
   function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {

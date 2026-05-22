@@ -56,7 +56,7 @@ The scaffolded backend foundation includes:
 - a first durable Akka invitation repository seam: `DurableInvitationRepositoryEntity` stores current invitation/outbox state behind the existing `InvitationRepository` contract through `AkkaInvitationRepository` while preserving the in-memory adapter as the default local/demo fallback;
 - a first durable Akka governed-agent repository seam: `DurableAgentBehaviorRepositoryEntity` stores current AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, and ToolPermissionBoundary records behind `AgentBehaviorRepository` through `AkkaAgentBehaviorRepository` while preserving the in-memory adapter as the default local/demo fallback;
 - governed runtime agent records, seed import, deterministic prompt assembly, authorized `readSkill(skillId)`, behavior-change proposal semantics, and trace records;
-- workstream API services for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface payloads;
+- workstream API services for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface payloads;
 - service tests that can run after scaffold placeholder rendering.
 
 Current durability coverage:

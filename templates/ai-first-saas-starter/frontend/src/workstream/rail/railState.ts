@@ -1,5 +1,7 @@
 import type { AccountStatus, FunctionalAgentRailEntry, FunctionalAgentSummary } from '../types';
 
+export const myAccountAgentId = 'agent-my-account';
+
 export function hasRequiredCapabilities(agent: FunctionalAgentSummary, visibleCapabilityIds: string[]): boolean {
   return agent.requiredCapabilityIds.every((capabilityId) => visibleCapabilityIds.includes(capabilityId));
 }
@@ -42,5 +44,6 @@ export function agentDisabledReason(entry: FunctionalAgentRailEntry): string | u
 }
 
 export function defaultSelectableAgentId(agents: FunctionalAgentSummary[], visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active'): string | undefined {
-  return visibleRailEntries(agents, undefined, visibleCapabilityIds, accountStatus).find(isAgentSelectable)?.functionalAgentId;
+  const selectableEntries = visibleRailEntries(agents, undefined, visibleCapabilityIds, accountStatus).filter(isAgentSelectable);
+  return selectableEntries.find((entry) => entry.functionalAgentId !== myAccountAgentId)?.functionalAgentId ?? selectableEntries[0]?.functionalAgentId;
 }

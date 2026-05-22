@@ -57,7 +57,9 @@ class WorkstreamServiceTest {
     assertEquals("membership-admin", bootstrap.me().selectedAuthContext().selectedContextId());
     assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
     assertTrue(bootstrap.items().stream().anyMatch(item -> item.surfaceId().equals("surface-user-admin-dashboard")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-access-profile") && surface.ownerFunctionalAgentId().equals("agent-access-profile")));
+    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-account-dashboard") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
+    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-profile") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
+    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-settings") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
     assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-user-admin-list")));
     assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-audit-timeline") && surface.surfaceType().equals("audit-timeline")));
     assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-governance-policy") && surface.surfaceType().equals("governance-diff")));

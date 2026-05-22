@@ -120,7 +120,7 @@ Required shell regions:
 
 | Shell region | Purpose |
 |---|---|
-| Left rail functional agents | Show role-authorized functional/context-area agents for the selected `AuthContext`, such as Access/Profile, User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Approval Queue, Risk & Exceptions, or Outcome Metrics. |
+| Left rail functional agents | Show role-authorized functional/context-area agents for the selected `AuthContext`, such as My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Approval Queue, Risk & Exceptions, or Outcome Metrics. The signed-in user tile at the bottom of the rail opens the My Account workstream instead of a special profile/settings menu. |
 | Main workstream panel | Show the continuous timeline for the selected functional agent: user intent, agent responses, capability results, workflow progress, decisions, traces, and structured surfaces. |
 | Persistent composer | Accept natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent. |
 | Context and authority indicators | Show selected tenant/customer context, role/capability basis, pending approvals, trace links, and safe denial/recovery states. |
@@ -136,7 +136,7 @@ Required structured surface families:
 | Async Digest / Executive Briefing | Compress routine activity while surfacing material events, pending decisions, outcomes, and trace links. |
 | Audit / Work Trace | Explain who/what/when/why/how-authorized for actions, decisions, tool calls, data access, approvals, and outcomes. |
 
-Foundation generated SaaS apps must include secure-operation functional agents, especially Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy when behavior-governing artifacts or approval policy are in scope. Surface actions must map to governed backend capabilities; frontend affordances are never authorization controls.
+Foundation generated SaaS apps must include secure-operation functional agents, especially My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy when behavior-governing artifacts or approval policy are in scope. Surface actions must map to governed backend capabilities; frontend affordances are never authorization controls.
 
 When these concepts are maintained in an app-description tree, `12-workstreams/` owns functional agents, internal agents, durable workstreams, structured surface contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide. `55-ui/` links back to `12-workstreams/` and capability/security/test layers instead of redefining application meaning.
 

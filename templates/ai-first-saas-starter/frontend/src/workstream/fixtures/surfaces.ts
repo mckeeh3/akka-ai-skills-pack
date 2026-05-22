@@ -169,6 +169,58 @@ export const userAdminSurfaceActions = {
   }
 } satisfies Record<string, SurfaceAction>;
 
+export const myAccountSurfaceActions = {
+  showProfile: {
+    actionId: 'action-show-my-profile',
+    label: 'Show user profile',
+    intent: 'read',
+    capabilityId: 'profile.read',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-my-profile', openPlacement: 'inline' },
+    audit: { eventType: 'UserProfileDisplayed', traceRequired: true }
+  },
+  showSettings: {
+    actionId: 'action-show-my-settings',
+    label: 'Show user settings',
+    intent: 'read',
+    capabilityId: 'profile.read',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-my-settings', openPlacement: 'inline' },
+    audit: { eventType: 'UserSettingsDisplayed', traceRequired: true }
+  },
+  updateProfile: {
+    actionId: 'action-update-my-profile',
+    label: 'Save profile changes',
+    intent: 'command',
+    capabilityId: 'profile.update',
+    inputSchemaRef: 'schema.my-account.profile.update.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-my-profile', openPlacement: 'inline' },
+    audit: { eventType: 'UserProfileUpdateRequested', traceRequired: true }
+  },
+  updateSettings: {
+    actionId: 'action-update-my-settings',
+    label: 'Save settings changes',
+    intent: 'command',
+    capabilityId: 'profile.update',
+    inputSchemaRef: 'schema.my-account.settings.update.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-my-settings', openPlacement: 'inline' },
+    audit: { eventType: 'UserSettingsUpdateRequested', traceRequired: true }
+  },
+  signOut: {
+    actionId: 'action-sign-out',
+    label: 'Sign out',
+    intent: 'command',
+    capabilityId: 'profile.read',
+    requiresConfirmation: true,
+    idempotency: { required: false },
+    audit: { eventType: 'SessionSignOutRequested', traceRequired: true }
+  }
+} satisfies Record<string, SurfaceAction>;
+
 const agentDefinitionsCapability = 'agent.definitions.manage';
 const agentPromptsCapability = 'agent.prompts.govern';
 const agentSkillsCapability = 'agent.skills.govern';
@@ -277,6 +329,70 @@ function envelope<TData>(surfaceId: string, surfaceType: string, title: string, 
     links: [{ label: 'Open surface', href: `/ui?surfaceId=${surfaceId}`, rel: 'deep-link' }]
   };
 }
+
+export const myAccountDashboardSurface = envelope(
+  'surface-my-account-dashboard',
+  'dashboard',
+  'My Account',
+  'agent-my-account',
+  {
+    cards: [
+      { cardId: 'card-my-profile', label: 'Profile', value: 'View or edit', severity: 'info' },
+      { cardId: 'card-my-settings', label: 'Settings', value: 'Preferences', severity: 'info' },
+      { cardId: 'card-sign-out', label: 'Sign out', value: 'End session', severity: 'warning' }
+    ],
+    sections: [
+      { sectionId: 'self-service', label: 'Self-service', summary: 'Profile and settings open as request/response surfaces in this My Account workstream.' },
+      { sectionId: 'security-boundary', label: 'Security boundary', summary: 'Roles, memberships, support access, and tenant administration stay in governed admin workstreams.' }
+    ]
+  },
+  [myAccountSurfaceActions.showProfile, myAccountSurfaceActions.showSettings, myAccountSurfaceActions.signOut, surfaceActionsByIntent.trace]
+);
+
+export const myProfileSurface = envelope(
+  'surface-my-profile',
+  'detail-edit',
+  'User profile',
+  'agent-my-account',
+  {
+    recordId: 'acct-admin-profile',
+    recordLabel: 'Tenant Admin · admin@example.test',
+    recordKind: 'profile',
+    summary: 'Current signed-in user profile. Administrative role and membership changes are intentionally not editable here.',
+    fields: [
+      { fieldId: 'displayName', label: 'Display name', value: 'Tenant Admin', editable: true, inputType: 'text' },
+      { fieldId: 'email', label: 'Email', value: 'admin@example.test', editable: false, inputType: 'email', disabledReason: 'Email is owned by WorkOS/AuthKit identity reconciliation.' },
+      { fieldId: 'locale', label: 'Locale', value: 'en-US', editable: true, inputType: 'select', options: [{ value: 'en-US', label: 'English (US)' }, { value: 'en-GB', label: 'English (UK)' }] },
+      { fieldId: 'timeZone', label: 'Time zone', value: 'America/New_York', editable: true, inputType: 'text' }
+    ],
+    version: 1,
+    permissionState: { canEdit: true, authoritativeCapabilityId: 'profile.update' },
+    audit: { lastEventType: 'UserProfileDisplayed', lastActor: 'Tenant Admin', traceIds: ['trace-surface-my-profile'] }
+  },
+  [myAccountSurfaceActions.updateProfile, surfaceActionsByIntent.trace]
+);
+
+export const mySettingsSurface = envelope(
+  'surface-my-settings',
+  'detail-edit',
+  'User settings',
+  'agent-my-account',
+  {
+    recordId: 'acct-admin-settings',
+    recordLabel: 'Tenant Admin settings',
+    recordKind: 'settings',
+    summary: 'Current signed-in user preferences for the workstream shell and notifications.',
+    fields: [
+      { fieldId: 'preferredColorMode', label: 'Color mode', value: 'system', editable: true, inputType: 'select', options: [{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }] },
+      { fieldId: 'notificationDigest', label: 'Notification digest', value: 'daily', editable: true, inputType: 'select', options: [{ value: 'realtime', label: 'Realtime' }, { value: 'daily', label: 'Daily' }, { value: 'off', label: 'Off' }] },
+      { fieldId: 'composerDensity', label: 'Composer density', value: 'comfortable', editable: true, inputType: 'select', options: [{ value: 'compact', label: 'Compact' }, { value: 'comfortable', label: 'Comfortable' }] }
+    ],
+    version: 1,
+    permissionState: { canEdit: true, authoritativeCapabilityId: 'profile.update' },
+    audit: { lastEventType: 'UserSettingsDisplayed', lastActor: 'Tenant Admin', traceIds: ['trace-surface-my-settings'] }
+  },
+  [myAccountSurfaceActions.updateSettings, surfaceActionsByIntent.trace]
+);
 
 export const userAdminDashboardSurface = envelope(
   'surface-user-admin-dashboard',
@@ -543,7 +659,7 @@ export const agentAdminTraceSurface = envelope(
   [agentAdminSurfaceActions.openAgentTrace]
 );
 
-export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-access-profile', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }] }, [surfaceActionsByIntent.read]);
+export const dashboardSurface = myAccountDashboardSurface;
 export const listSearchSurface = userAdminListSearchSurface;
 export const detailEditSurface = userAdminDetailEditSurface;
 export const decisionSurface = envelope('surface-decision-card', 'decision', 'Approve bounded outreach plan', 'agent-governance-policy', { decisionId: 'decision-1', recommendation: 'Approve after evidence review.', riskScore: 72, confidenceScore: 84, evidence: [{ evidenceId: 'evidence-1', label: 'Trace summary', summary: 'Agent stayed within tool boundary.' }] }, [surfaceActionsByIntent.approval, surfaceActionsByIntent.trace]);
@@ -553,6 +669,9 @@ export const governanceDiffSurface = envelope('surface-governance-diff', 'govern
 export const outcomeSurface = envelope('surface-outcome-review', 'outcome', 'Outcome review', 'agent-governance-policy', { outcomeId: 'outcome-1', metrics: [{ metricId: 'decision-cycle-time', label: 'Decision cycle time', current: 4, target: 2, unit: 'hours' }] }, [surfaceActionsByIntent.read]);
 
 export const canonicalSurfaceEnvelopes = [
+  myAccountDashboardSurface,
+  myProfileSurface,
+  mySettingsSurface,
   userAdminDashboardSurface,
   userAdminListSearchSurface,
   agentAdminCatalogSurface,
@@ -572,7 +691,7 @@ export const canonicalSurfaceEnvelopes = [
   governanceDiffSurface,
   outcomeSurface
 ];
-export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions)];
+export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(myAccountSurfaceActions), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions)];
 
 const resultBase = { correlationId: 'corr-action-result', traceIds: ['trace-action-result'] };
 export const actionResultsByStatus: Record<CapabilityActionResult['status'], CapabilityActionResult> = {
@@ -583,6 +702,30 @@ export const actionResultsByStatus: Record<CapabilityActionResult['status'], Cap
   conflict: { status: 'conflict', message: 'The surface changed. Refresh and try again.', ...resultBase },
   'no-op': { status: 'no-op', message: 'No change was needed.', ...resultBase },
   failed: { status: 'failed', message: 'Action failed safely.', ...resultBase }
+};
+
+export const showMyProfileActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Show user profile. The profile surface is appended in the My Account workstream with scoped fields and trace links.',
+  correlationId: 'corr-show-my-profile',
+  traceIds: ['trace-show-my-profile'],
+  resultSurface: myProfileSurface
+};
+
+export const showMySettingsActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Show user settings. The settings surface is appended in the My Account workstream with scoped preferences and trace links.',
+  correlationId: 'corr-show-my-settings',
+  traceIds: ['trace-show-my-settings'],
+  resultSurface: mySettingsSurface
+};
+
+export const signOutActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Sign out requested. The browser session will be ended by the authenticated shell.',
+  correlationId: 'corr-sign-out',
+  traceIds: ['trace-sign-out'],
+  resultSurface: myAccountDashboardSurface
 };
 
 export const displayUserListActionResult: CapabilityActionResult = {

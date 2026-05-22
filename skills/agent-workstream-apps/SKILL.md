@@ -88,7 +88,7 @@ For each user-facing work area, define:
 - capabilities it can call directly or through tools/workflows;
 - escalation, approval, denial, exception, audit, trace, and test needs.
 
-Common foundation functional agents include Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing.
+Common foundation functional agents include My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing.
 
 ### 3. Distinguish internal agents
 
