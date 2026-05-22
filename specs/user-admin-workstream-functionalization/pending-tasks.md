@@ -121,7 +121,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-004: Add surface action to capability and authorization matrix
 
-- status: pending
+- status: done
+- completion note: Added a User Admin named capability matrix covering dashboard/search/detail, invitation, membership, role, account, support-access, access-review, and audit capabilities; documented SaaS Owner/Tenant/Customer/Auditor/support-access actor differences and required denial categories; expanded surface and functional-agent traceability maps from broad foundation references to concrete `admin.*` capability ids.
 - source: TASK-UA-002
 - task brief: none
 - depends on: [TASK-UA-002]
