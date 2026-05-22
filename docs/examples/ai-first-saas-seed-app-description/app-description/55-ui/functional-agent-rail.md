@@ -5,7 +5,7 @@
 | Rail entry | Functional agent id | Default surface | Primary route/deep link |
 |---|---|---|---|
 | Access/Profile | `access-profile-agent` | `access-profile-dashboard` | `/ui/access` |
-| User Admin | `user-admin-agent` | `user-admin-command-center` | `/ui/admin/users` |
+| User Admin | `user-admin-agent` | `user-admin-dashboard` with `user-admin-user-list` and `user-admin-user-account` deep links | `/ui/admin/users` |
 | Agent Admin | `agent-admin-agent` | `agent-governance-center` | `/ui/agents` |
 | Mission Control | `mission-control-agent` | `mission-control-briefing` | `/ui/mission-control` |
 | Governance/Policy | `governance-policy-agent` | `policy-governance-workbench` / `agent-governance-center` | `/ui/governance/policies` |

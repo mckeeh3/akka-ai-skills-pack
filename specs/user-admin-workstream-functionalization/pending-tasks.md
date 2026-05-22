@@ -58,7 +58,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-002: Split User Admin command center into three canonical surface contracts
 
-- status: pending
+- status: done
+- completion note: Added canonical `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` surface contracts with scope-aware variants, states, action capability hints, trace/security requirements, and rendering tests; updated the surface index, functional-agent default surface, rail, and traceability maps away from the former aggregate command-center. Shifted Agent Governance and Mission Control contract filenames to `07-*` and `08-*` to keep the User Admin contract sequence canonical.
 - source: TASK-UA-001
 - task brief: none
 - depends on: [TASK-UA-001]
