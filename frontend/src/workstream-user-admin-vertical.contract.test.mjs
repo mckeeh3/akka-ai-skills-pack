@@ -81,7 +81,7 @@ test('composer opens User Admin list/detail surfaces instead of page routes', ()
   assert.match(main, /showUserDetail/);
   assert.match(main, /surface-user-admin-list/);
   assert.match(main, /surface-user-admin-detail-admin/);
-  assert.match(main, /Composer intent “show users”/);
-  assert.match(main, /Composer intent “show admin@example\.test detail”/);
+  assert.match(main, /requestedSurface/);
+  assert.match(main, /kind: 'surface'/);
   assert.doesNotMatch(main, /window\.location\.assign\('\/users/);
 });

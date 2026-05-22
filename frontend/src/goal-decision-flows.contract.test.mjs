@@ -66,5 +66,6 @@ test('workstream items carry goal and decision-like work through the stream rath
   assert.match(workstream, /surface-decision-card/);
   assert.match(workstream, /surface-workflow-status/);
   assert.match(workstream, /waiting-for-human/);
-  assert.match(main, /Routes are deep links into functional agents, stream items, and structured surfaces/);
+  assert.match(main, /parseWorkstreamDeepLink/);
+  assert.match(main, /serializeWorkstreamDeepLink/);
 });

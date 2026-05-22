@@ -2,6 +2,7 @@ import { ReactNode, useMemo, useState } from 'react';
 import type { ComposerRequest, MeResponse, WorkstreamItem } from '../types';
 import { WorkstreamComposer } from '../composer';
 import { FunctionalAgentRail } from '../rail';
+import { defaultSelectableAgentId } from '../rail';
 import { selectedFunctionalAgent } from './shellState';
 import { WorkstreamPanel } from './WorkstreamPanel';
 
@@ -17,7 +18,7 @@ type WorkstreamShellProps = {
 };
 
 export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, onSignOut }: WorkstreamShellProps) {
-  const initialAgentId = initialFunctionalAgentId ?? me.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId ?? me.functionalAgents[0]?.functionalAgentId;
+  const initialAgentId = initialFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status) ?? me.functionalAgents[0]?.functionalAgentId;
   const [selectedFunctionalAgentId, setSelectedFunctionalAgentId] = useState(initialAgentId);
   const [railCollapsed, setRailCollapsed] = useState(false);
   const selectedAgent = useMemo(() => selectedFunctionalAgent(me.functionalAgents, selectedFunctionalAgentId ?? ''), [me.functionalAgents, selectedFunctionalAgentId]);

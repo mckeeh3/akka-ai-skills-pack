@@ -10,6 +10,7 @@ import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
 import { buildCapabilityActionRequest } from './workstream/actions';
+import { defaultSelectableAgentId } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
   canonicalSurfaceEnvelopes,
@@ -38,11 +39,10 @@ const modeStorageKey = 'seed-ui-mode';
 
 type WorkstreamAppProps = {
   tokenProvider?: TokenProvider;
-  authStatusLabel?: string;
   onSignOut?: () => void;
 };
 
-function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: WorkstreamAppProps) {
+function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const workstreamClient = React.useMemo<WorkstreamClient>(() => useFixtureWorkstream ? new FixtureWorkstreamApiClient() : new HttpWorkstreamApiClient(tokenProvider), [tokenProvider]);
   const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => useFixtureWorkstream ? new FixtureWorkstreamRealtimeClient() : new HttpWorkstreamRealtimeClient(), []);
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
@@ -95,7 +95,7 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
 
   const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
   const me = ready.me;
-  const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? me.functionalAgents.find((agent) => agent.availability === 'visible')?.functionalAgentId;
+  const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status);
   const selectedItems = buildVisibleWorkstreamItems(
     ready.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId),
     ready.surfaces,
@@ -152,7 +152,7 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
   function openSurface(surfaceId: string) {
     const surface = ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
     if (!surface) return;
-    appendSurfaceRequestAndResponse(surface, `Show ${surface.title}`, 'Requested from a workstream item.');
+    appendSurfaceRequestAndResponse(surface, `Show ${surface.title}`);
     updateSelection({
       selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? selectedFunctionalAgentId,
       selectedSurfaceId: surfaceId,
@@ -249,39 +249,28 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
       createdAt: new Date().toISOString(),
       correlationId: request.idempotencyKey,
       traceIds: [],
-      title: 'Composer request captured',
+      title: 'You',
       body: request.prompt,
       status: 'ready'
     };
-    const navigationFeedbackItem: WorkstreamItem | undefined = showUserDetail
-      ? {
-          itemId: `composer-display-user-detail-${Date.now()}`,
-          functionalAgentId: 'agent-user-admin',
-          kind: 'action-feedback',
-          createdAt: new Date().toISOString(),
-          correlationId: 'corr-composer-display-user-detail',
-          traceIds: ['trace-composer-display-user-detail', 'trace-user-admin-detail'],
-          surfaceId: 'surface-user-admin-detail-admin',
-          title: 'Display user account detail',
-          body: 'Composer intent “show admin@example.test detail” opened the tenant-scoped User Admin detail/edit structured surface with backend-authoritative denial language.',
-          status: 'ready'
-        }
+    const requestedSurface = showUserDetail
+      ? ready.surfaces.find((surface) => surface.surfaceId === 'surface-user-admin-detail-admin')
       : showUsers
-        ? {
-            itemId: `composer-display-users-${Date.now()}`,
-            functionalAgentId: 'agent-user-admin',
-            kind: 'action-feedback',
-            createdAt: new Date().toISOString(),
-            correlationId: 'corr-composer-display-users',
-            traceIds: ['trace-composer-display-users'],
-            surfaceId: 'surface-user-admin-list',
-            title: 'Display the user list view',
-            body: 'Composer intent “show users” opened the tenant-scoped User Admin list/search structured surface.',
-            status: 'ready'
-          }
+        ? ready.surfaces.find((surface) => surface.surfaceId === 'surface-user-admin-list')
         : undefined;
+    const surfaceResponseItem: WorkstreamItem | undefined = requestedSurface ? {
+      itemId: `composer-surface-${requestedSurface.surfaceId}-${Date.now()}`,
+      functionalAgentId: requestedSurface.ownerFunctionalAgentId,
+      kind: 'surface',
+      createdAt: new Date().toISOString(),
+      correlationId: requestedSurface.correlationId,
+      traceIds: requestedSurface.traceIds,
+      surfaceId: requestedSurface.surfaceId,
+      title: requestedSurface.title,
+      status: 'ready'
+    } : undefined;
     setBootstrap((current) => current.status === 'ready'
-      ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, ...(navigationFeedbackItem ? [navigationFeedbackItem] : [])]) }
+      ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) }
       : current);
     if (showUserDetail) {
       updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-detail-admin', surfacePlacement: 'inline' });
@@ -310,30 +299,9 @@ function WorkstreamApp({ tokenProvider, authStatusLabel, onSignOut }: Workstream
       onComposerSubmit={handleComposerSubmit}
       onSignOut={onSignOut}
     >
-      <WorkstreamStream items={selectedItems} surfaces={ready.surfaces} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} onSurfaceAction={handleSurfaceAction} />
-      <section className="ds-card workstream-notification system-notification" aria-label="Workstream API status Reference fixture status">
-        <p className="eyebrow">{useFixtureWorkstream ? 'Fixture client' : 'Real API client'}</p>
-        <h3>Workstream-first shell reference</h3>
-        <p>Routes are deep links into functional agents, stream items, and structured surfaces; production data loads through /api/workstream endpoints.</p>
-        <p className="text-muted">Realtime status: {realtimeStatusLabel(realtimeConnection)}</p>
-        <ThemeModeToggle mode={mode} onModeChange={setMode} />
-      </section>
+      <WorkstreamStream items={withRuntimeNotification(selectedItems, realtimeConnection)} surfaces={ready.surfaces} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} onSurfaceAction={handleSurfaceAction} />
     </WorkstreamShell>
     </>
-  );
-}
-
-function ThemeModeToggle({ mode, onModeChange }: { mode: ModePreference; onModeChange: (mode: ModePreference) => void }) {
-  return (
-    <fieldset className="mode-toggle">
-      <legend>Display mode</legend>
-      {(['light', 'dark', 'system'] as const).map((option) => (
-        <label key={option} className={mode === option ? 'mode-choice selected' : 'mode-choice'}>
-          <input type="radio" name="mode" value={option} checked={mode === option} onChange={() => onModeChange(option)} />
-          <span>{option}</span>
-        </label>
-      ))}
-    </fieldset>
   );
 }
 
@@ -363,6 +331,22 @@ function buildVisibleWorkstreamItems(items: WorkstreamItem[], surfaces: SurfaceE
   }, ...items];
 }
 
+function withRuntimeNotification(items: WorkstreamItem[], connection: RealtimeConnectionState): WorkstreamItem[] {
+  if (connection.status === 'connected') return items;
+  const notification: WorkstreamItem = {
+    itemId: `system-realtime-${connection.status}`,
+    functionalAgentId: items[0]?.functionalAgentId ?? 'system',
+    kind: 'system-notification',
+    createdAt: new Date().toISOString(),
+    correlationId: `corr-realtime-${connection.status}`,
+    traceIds: [],
+    title: realtimeStatusLabel(connection),
+    body: connection.status === 'stale' || connection.status === 'disconnected' ? 'Workstream surfaces may be stale until realtime events resume.' : undefined,
+    status: connection.status === 'stale' || connection.status === 'disconnected' ? 'stale' : 'working'
+  };
+  return [...items, notification];
+}
+
 function pruneWorkstreamItems(items: WorkstreamItem[], maxItems = 80): WorkstreamItem[] {
   return items.length > maxItems ? items.slice(items.length - maxItems) : items;
 }
@@ -385,11 +369,11 @@ function AuthenticatedRoot() {
       </div>
     );
   }
-  return <WorkstreamApp tokenProvider={() => getAccessToken()} authStatusLabel={`Signed in as ${user.email ?? 'authenticated user'}`} onSignOut={() => signOut()} />;
+  return <WorkstreamApp tokenProvider={() => getAccessToken()} onSignOut={() => signOut()} />;
 }
 
 function Root() {
-  if (useFixtureWorkstream) return <WorkstreamApp authStatusLabel="Fixture workstream mode" />;
+  if (useFixtureWorkstream) return <WorkstreamApp />;
   if (!hasConfiguredWorkosClient) {
     return (
       <div className="auth-gate">

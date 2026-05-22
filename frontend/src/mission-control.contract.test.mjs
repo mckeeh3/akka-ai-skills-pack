@@ -34,8 +34,9 @@ test('workstream shell provides mission-control responsibilities through shell r
   assert.match(contextBar, /Browser-safe capabilities/);
   assert.match(stream, /aria-label="Workstream interaction flow"|aria-label="Workstream items"/);
   assert.match(stream, /Empty workstream/);
-  assert.match(main, /Reference fixture status/);
-  assert.match(main, /Realtime status:/);
+  assert.doesNotMatch(main, /Reference fixture status/);
+  assert.match(main, /withRuntimeNotification/);
+  assert.match(main, /realtimeStatusLabel/);
 });
 
 test('workstream fixtures cover attention, decisions, workflow progress, audit trace, and action feedback', () => {
