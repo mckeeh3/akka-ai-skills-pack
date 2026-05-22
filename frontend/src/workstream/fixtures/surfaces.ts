@@ -18,7 +18,21 @@ const userAdminCapabilities = {
   invitationResend: 'admin.invitations.resend',
   invitationRevoke: 'admin.invitations.revoke',
   profilePatch: 'admin.users.profile.patch',
+  membershipAdd: 'admin.memberships.add',
+  membershipSuspend: 'admin.memberships.suspend',
+  membershipReactivate: 'admin.memberships.reactivate',
+  membershipRemove: 'admin.memberships.remove',
   roleReplace: 'admin.roles.replace',
+  roleRemove: 'admin.roles.remove',
+  accountDisable: 'admin.users.disable',
+  accountReactivate: 'admin.users.reactivate',
+  identityRelinkRequest: 'admin.users.identity_relink.request',
+  identityRelinkComplete: 'admin.users.identity_relink.complete',
+  supportAccessRead: 'admin.support_access.read',
+  supportAccessGrant: 'admin.support_access.grant',
+  supportAccessRevoke: 'admin.support_access.revoke',
+  supportAccessExtend: 'admin.support_access.extend',
+  accessReviewRead: 'admin.access_review.read',
   accessReviewResolve: 'admin.access_review.resolve',
   auditRead: 'admin.audit.read'
 } as const;
@@ -122,6 +136,27 @@ export const userAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDirectorySearched', traceRequired: true }
   },
+  displayUserDetail: {
+    actionId: 'action-display-user-detail',
+    label: 'Display user account detail',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.detailRead,
+    inputSchemaRef: 'schema.user-admin.detail.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminDetailDisplayed', traceRequired: true }
+  },
+  createInvitation: {
+    actionId: 'action-create-invitation',
+    label: 'Create invitation',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.invite,
+    inputSchemaRef: 'schema.invitation.create.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { appendSurfaceType: 'workflow-status', openPlacement: 'inline' },
+    audit: { eventType: 'InvitationRequested', traceRequired: true }
+  },
   resendInvitation: {
     actionId: 'action-resend-invitation',
     label: 'Resend pending invitation',
@@ -144,15 +179,52 @@ export const userAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
     audit: { eventType: 'InvitationRevoked', traceRequired: true }
   },
-  displayUserDetail: {
-    actionId: 'action-display-user-detail',
-    label: 'Display user account detail',
-    intent: 'read',
-    capabilityId: userAdminCapabilities.detailRead,
-    inputSchemaRef: 'schema.user-admin.detail.v1',
-    idempotency: { required: false },
+  addMembership: {
+    actionId: 'action-add-membership',
+    label: 'Add membership',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.membershipAdd,
+    inputSchemaRef: 'schema.membership.add.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
-    audit: { eventType: 'UserAdminDetailDisplayed', traceRequired: true }
+    audit: { eventType: 'MembershipAddRequested', traceRequired: true }
+  },
+  suspendMembership: {
+    actionId: 'action-suspend-membership',
+    label: 'Suspend membership',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.membershipSuspend,
+    inputSchemaRef: 'schema.membership.suspend.v1',
+    requiresConfirmation: true,
+    disabled: { reasonCode: 'last-admin', message: 'Backend authorization would deny this fixture action when it causes last-admin loss.' },
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    audit: { eventType: 'MembershipSuspendDenied', traceRequired: true }
+  },
+  reactivateMembership: {
+    actionId: 'action-reactivate-membership',
+    label: 'Reactivate membership',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.membershipReactivate,
+    inputSchemaRef: 'schema.membership.reactivate.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    audit: { eventType: 'MembershipReactivated', traceRequired: true }
+  },
+  removeMembership: {
+    actionId: 'action-remove-membership',
+    label: 'Remove membership',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.membershipRemove,
+    inputSchemaRef: 'schema.membership.remove.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    disabled: { reasonCode: 'role escalation', message: 'Decision-card review required when removal could hide role escalation or last-admin risk.' },
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
+    audit: { eventType: 'MembershipRemovalDecisionRequired', traceRequired: true }
   },
   updateUserProfile: {
     actionId: 'action-update-user-profile',
@@ -172,10 +244,128 @@ export const userAdminSurfaceActions = {
     capabilityId: userAdminCapabilities.roleReplace,
     inputSchemaRef: 'schema.membership.role.replace.v1',
     requiresConfirmation: true,
+    requiresApproval: true,
     disabled: { reasonCode: 'last-admin-risk', message: 'Backend authorization denied this fixture action: cannot remove the last tenant admin without an approved replacement.' },
     idempotency: { required: true, keySource: 'surface-item' },
     resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
     audit: { eventType: 'MembershipRoleReplacementDenied', traceRequired: true }
+  },
+  removeRole: {
+    actionId: 'action-remove-membership-role',
+    label: 'Remove membership role',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.roleRemove,
+    inputSchemaRef: 'schema.membership.role.remove.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    disabled: { reasonCode: 'last-admin', message: 'Backend authorization denies role removal that would create last-admin loss.' },
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
+    audit: { eventType: 'MembershipRoleRemovalDenied', traceRequired: true }
+  },
+  disableAccount: {
+    actionId: 'action-disable-account',
+    label: 'Disable account',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.accountDisable,
+    inputSchemaRef: 'schema.user-admin.account.disable.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    disabled: { reasonCode: 'disabled actor', message: 'Disabled actors and inactive memberships cannot disable accounts.' },
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
+    audit: { eventType: 'AccountDisableDecisionRequired', traceRequired: true }
+  },
+  reactivateAccount: {
+    actionId: 'action-reactivate-account',
+    label: 'Reactivate account',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.accountReactivate,
+    inputSchemaRef: 'schema.user-admin.account.reactivate.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    audit: { eventType: 'AccountReactivateRequested', traceRequired: true }
+  },
+  requestIdentityRelink: {
+    actionId: 'action-request-identity-relink',
+    label: 'Request identity relink',
+    intent: 'proposal',
+    capabilityId: userAdminCapabilities.identityRelinkRequest,
+    inputSchemaRef: 'schema.user-admin.identity-relink.request.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
+    audit: { eventType: 'IdentityRelinkDecisionRequested', traceRequired: true }
+  },
+  completeIdentityRelink: {
+    actionId: 'action-complete-identity-relink',
+    label: 'Complete identity relink',
+    intent: 'approval',
+    capabilityId: userAdminCapabilities.identityRelinkComplete,
+    inputSchemaRef: 'schema.user-admin.identity-relink.complete.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'server-issued' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    audit: { eventType: 'IdentityRelinkCompleted', traceRequired: true }
+  },
+  readSupportAccess: {
+    actionId: 'action-read-support-access',
+    label: 'Read support access grants',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.supportAccessRead,
+    inputSchemaRef: 'schema.support-access.search.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
+    audit: { eventType: 'SupportAccessRead', traceRequired: true }
+  },
+  grantSupportAccess: {
+    actionId: 'action-grant-support-access',
+    label: 'Grant support access',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.supportAccessGrant,
+    inputSchemaRef: 'schema.support-access.grant.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    disabled: { reasonCode: 'SAAS_OWNER_NO_SUPPORT_ACCESS', message: 'SaaS Owner cannot self-grant Tenant support access; Tenant-created grant and decision-card approval are required.' },
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
+    audit: { eventType: 'SupportAccessGrantDecisionRequired', traceRequired: true }
+  },
+  revokeSupportAccess: {
+    actionId: 'action-revoke-support-access',
+    label: 'Revoke support access',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.supportAccessRevoke,
+    inputSchemaRef: 'schema.support-access.revoke.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    audit: { eventType: 'SupportAccessRevoked', traceRequired: true }
+  },
+  extendSupportAccess: {
+    actionId: 'action-extend-support-access',
+    label: 'Extend support access',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.supportAccessExtend,
+    inputSchemaRef: 'schema.support-access.extend.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
+    audit: { eventType: 'SupportAccessExtendDecisionRequired', traceRequired: true }
+  },
+  readAccessReview: {
+    actionId: 'action-read-access-review',
+    label: 'Read access review item',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.accessReviewRead,
+    inputSchemaRef: 'schema.access-review.read.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
+    audit: { eventType: 'AccessReviewRead', traceRequired: true }
   },
   approveRiskyAccess: {
     actionId: 'action-approve-risky-access',
@@ -187,6 +377,15 @@ export const userAdminSurfaceActions = {
     idempotency: { required: true, keySource: 'surface-item' },
     resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
     audit: { eventType: 'RiskyAccessDecisionApproved', traceRequired: true }
+  },
+  openAdminAudit: {
+    actionId: 'action-open-admin-audit',
+    label: 'Open admin audit evidence',
+    intent: 'trace',
+    capabilityId: userAdminCapabilities.auditRead,
+    idempotency: { required: false },
+    resultSurface: { appendSurfaceType: 'audit-timeline', openPlacement: 'deep-link' },
+    audit: { eventType: 'AdminAuditOpened', traceRequired: true }
   }
 } satisfies Record<string, SurfaceAction>;
 
@@ -329,7 +528,15 @@ export const userAdminDashboardSurface = envelope(
       stale: 'Stale state preserves trace-user-admin-dashboard and disables mutations until refresh.'
     }
   },
-  [userAdminSurfaceActions.refreshDashboard, userAdminSurfaceActions.displayUserList, surfaceActionsByIntent.command, userAdminSurfaceActions.approveRiskyAccess, surfaceActionsByIntent.trace]
+  [
+    userAdminSurfaceActions.refreshDashboard,
+    userAdminSurfaceActions.displayUserList,
+    userAdminSurfaceActions.createInvitation,
+    userAdminSurfaceActions.readSupportAccess,
+    userAdminSurfaceActions.readAccessReview,
+    userAdminSurfaceActions.approveRiskyAccess,
+    userAdminSurfaceActions.openAdminAudit
+  ]
 );
 
 // Legacy fixture alias preserved for stale-screen quarantine tests: surface-user-list now resolves conceptually to user-admin-user-list.
@@ -367,11 +574,24 @@ export const userAdminListSearchSurface = envelope(
   [
     userAdminSurfaceActions.searchUsers,
     userAdminSurfaceActions.displayUserDetail,
-    surfaceActionsByIntent.command,
+    userAdminSurfaceActions.createInvitation,
     userAdminSurfaceActions.resendInvitation,
     userAdminSurfaceActions.revokeInvitation,
+    userAdminSurfaceActions.addMembership,
+    userAdminSurfaceActions.suspendMembership,
+    userAdminSurfaceActions.reactivateMembership,
+    userAdminSurfaceActions.removeMembership,
     userAdminSurfaceActions.replaceRole,
-    surfaceActionsByIntent.trace
+    userAdminSurfaceActions.removeRole,
+    userAdminSurfaceActions.disableAccount,
+    userAdminSurfaceActions.reactivateAccount,
+    userAdminSurfaceActions.readSupportAccess,
+    userAdminSurfaceActions.grantSupportAccess,
+    userAdminSurfaceActions.revokeSupportAccess,
+    userAdminSurfaceActions.extendSupportAccess,
+    userAdminSurfaceActions.readAccessReview,
+    userAdminSurfaceActions.approveRiskyAccess,
+    userAdminSurfaceActions.openAdminAudit
   ]
 );
 
@@ -418,8 +638,25 @@ export const userAdminDetailEditSurface = envelope(
   },
   [
     userAdminSurfaceActions.updateUserProfile,
+    userAdminSurfaceActions.requestIdentityRelink,
+    userAdminSurfaceActions.completeIdentityRelink,
+    userAdminSurfaceActions.addMembership,
+    userAdminSurfaceActions.suspendMembership,
+    userAdminSurfaceActions.reactivateMembership,
+    userAdminSurfaceActions.removeMembership,
     userAdminSurfaceActions.replaceRole,
-    surfaceActionsByIntent.trace
+    userAdminSurfaceActions.removeRole,
+    userAdminSurfaceActions.disableAccount,
+    userAdminSurfaceActions.reactivateAccount,
+    userAdminSurfaceActions.resendInvitation,
+    userAdminSurfaceActions.revokeInvitation,
+    userAdminSurfaceActions.readSupportAccess,
+    userAdminSurfaceActions.grantSupportAccess,
+    userAdminSurfaceActions.revokeSupportAccess,
+    userAdminSurfaceActions.extendSupportAccess,
+    userAdminSurfaceActions.readAccessReview,
+    userAdminSurfaceActions.approveRiskyAccess,
+    userAdminSurfaceActions.openAdminAudit
   ]
 );
 

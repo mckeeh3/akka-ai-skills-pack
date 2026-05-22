@@ -312,7 +312,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-011: Expand frontend User Admin fixture action matrix coverage
 
-- status: pending
+- status: done
+- completion note: Expanded User Admin frontend fixture actions and contract-test assertions to cover membership add/suspend/reactivate/remove, role replace/remove, account disable/reactivate, identity relink request/complete, support-access read/grant/revoke/extend, access-review read/resolve, admin-audit read, idempotency, approval/decision-card metadata, trace/audit metadata, and required denial categories. Verified with required rg checks, `npm --prefix frontend test -- --runInBand`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 - source: TASK-UA-009 readiness review GAP-UA-RR-001
 - task brief: none
 - depends on: [TASK-UA-009]

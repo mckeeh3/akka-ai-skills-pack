@@ -54,9 +54,39 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /Display user list view/);
   assert.match(surfaces, /UserAdminListDisplayed/);
   assert.match(surfaces, /secureTenantUserFoundation = 'secure-tenant-user-foundation'/);
-  for (const capabilityId of ['admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.invitations.resend', 'admin.invitations.revoke', 'admin.users.profile.patch', 'admin.roles.replace', 'admin.access_review.resolve', 'admin.audit.read']) {
+  for (const capabilityId of [
+    'admin.users.dashboard.read',
+    'admin.users.search',
+    'admin.users.detail.read',
+    'admin.invitations.create',
+    'admin.invitations.resend',
+    'admin.invitations.revoke',
+    'admin.users.profile.patch',
+    'admin.memberships.add',
+    'admin.memberships.suspend',
+    'admin.memberships.reactivate',
+    'admin.memberships.remove',
+    'admin.roles.replace',
+    'admin.roles.remove',
+    'admin.users.disable',
+    'admin.users.reactivate',
+    'admin.users.identity_relink.request',
+    'admin.users.identity_relink.complete',
+    'admin.support_access.read',
+    'admin.support_access.grant',
+    'admin.support_access.revoke',
+    'admin.support_access.extend',
+    'admin.access_review.read',
+    'admin.access_review.resolve',
+    'admin.audit.read'
+  ]) {
     assert.match(surfaces, new RegExp(capabilityId.replaceAll('.', '\\.')));
   }
+  for (const denialCategory of ['cross-tenant', 'disabled actor', 'CUSTOMER_ADMIN_TENANT_ACTION_DENIED', 'SAAS_OWNER_NO_SUPPORT_ACCESS', 'role escalation', 'last-admin']) {
+    assert.match(surfaces, new RegExp(denialCategory));
+  }
+  assert.match(surfaces, /requiresApproval: true/);
+  assert.match(surfaces, /idempotency: \{ required: true/);
   assert.match(surfaces, /traceRequired: true/);
   assert.match(surfaces, /displayUserListActionResult/);
   assert.match(surfaces, /action-display-user-detail/);
