@@ -934,6 +934,11 @@
   - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
   - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
   - specs/core-app-full-stack-readiness/invitation-onboarding-reference-slice.md
+  - specs/user-admin-workstream-functionalization/gap-inventory.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
   - docs/agent-workstream-application-architecture.md
   - docs/structured-surface-contracts.md
   - skills/akka-saas-invitation-onboarding/SKILL.md
@@ -953,9 +958,10 @@
   - akka-views
   - akka-web-ui-apps
 - expected outputs:
-  - User Admin invitation dashboard/table/detail and invitation acceptance result/recovery surfaces
-  - create, resend, revoke, accept, expire, reminder, delivery-status, and captured-outbox actions/APIs
-  - invitation lifecycle tests including email boundary and realtime/stale UI behavior where present
+  - Invitation queues, delivery-state cards, and invitation history wired into the canonical User Admin surfaces: `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account`.
+  - Acceptance result/recovery surface for invited users entering through Access/Profile.
+  - Protected create, resend, revoke, accept, expire, reminder, delivery-status, and captured-outbox actions/APIs using the shared `/api/admin/users/dashboard`, `/api/admin/users`, and `/api/admin/users/{accountId}` payload contracts where the action is rendered.
+  - Invitation lifecycle tests including email boundary, idempotency, audit trace ids, raw-token redaction, scope-aware dashboard/list/detail rendering, and realtime/stale UI behavior where present.
 - required checks:
   - git diff --check
   - tools/validate-ai-first-saas-starter-fullstack.sh
@@ -964,8 +970,8 @@
   - task changes and queue update are committed
 - notes:
   - functional agent: User Admin; reusable entry path: Access/Profile invited-user acceptance
-  - surface/action: `surface.user_admin.invitations.v1`, `surface.user_admin.invitation_detail.v1`, `surface.access.invitation_acceptance.v1`; actions create/resend/revoke/accept/expire/retry-delivery
-  - capability ids/classes: `core.invitations.manage` command/workflow; `core.invitations.read` read/evidence; `core.email.outbox.deliver` reactive/internal; `core.invitations.expire` scheduled
+  - surface/action: canonical surface ids `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account`; reusable sections `surface.user_admin.invitations.v1`, `surface.user_admin.invitation_detail.v1`, and `surface.access.invitation_acceptance.v1`; actions create/resend/revoke/accept/expire/retry-delivery
+  - capability ids/classes: `admin.invitations.create`, `admin.invitations.resend`, `admin.invitations.revoke`, `core.invitations.manage` command/workflow; `core.invitations.read` read/evidence; `core.email.outbox.deliver` reactive/internal; `core.invitations.expire` scheduled
   - AuthContext/scope: tenant admin or invitation recipient for acceptance; tenant-scoped invitation lookup; wrong-account/expired/revoked/duplicate denials are safe and auditable
   - Akka substrate/exposure: ESE invitation lifecycle or durable seam; InvitationWorkflow; TimedAction expiry/reminder; Consumer email/outbox; InvitationView; HTTP/workstream APIs; frontend structured surfaces
   - audit/trace/tests: idempotency, delivery failure status, tenant isolation, raw token redaction, outbox/no-secret checks, rendering states, API/realtime parity
@@ -982,6 +988,15 @@
   - specs/ai-first-saas-starter-app-template/starter-app-scope-and-acceptance.md
   - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
+  - specs/user-admin-workstream-functionalization/readiness-review.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
+  - skills/ai-first-saas-admin-agents/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
   - docs/agent-workstream-application-architecture.md
   - docs/structured-surface-contracts.md
   - skills/akka-basic-user-admin/SKILL.md
@@ -998,10 +1013,15 @@
   - akka-web-ui-apps
   - akka-web-ui-forms-validation
   - akka-web-ui-testing
+  - ai-first-saas-admin-agents
+  - akka-agent-seed-documents
 - expected outputs:
-  - User Admin user directory, member detail, role/capability assignment, support-access, and access-review surfaces/actions
-  - protected APIs and views for directory/search, membership status, role updates, support access, access-review commit, and last-admin protection
-  - frontend/backend tests for validation, forbidden, idempotency, audit, and tenant isolation
+  - Canonical User Admin fullstack vertical: `user-admin-dashboard` -> `user-admin-user-list` -> `user-admin-user-account`, backed by `UserAdminDashboardPayload`, `UserAdminUserListPayload`, and `UserAdminUserAccountPayload` instead of fixture-only data.
+  - Protected `/api/admin/users/dashboard`, `/api/admin/users`, `/api/admin/users/{accountId}`, membership, role, account lifecycle, identity-relink, support-access, access-review, and admin-audit APIs and views.
+  - Backend implementation of scoped dashboard counts/queues, user directory search without known ids, account detail, membership status, role updates, support access, access-review commit/decision-card path, last-admin protection, and audit reads.
+  - Frontend surface integration for SaaS Owner Admin, Tenant Admin, and Customer Admin variants with capability-backed visible actions, redaction, loading/empty/error/forbidden/stale states, and no frontend authorization assumptions.
+  - UserAdminAgent runtime behavior for opening dashboard/list/detail, explaining allowed/denied actions, summarizing audit evidence, recommending least-privilege roles, and routing risky mutations to decision cards; seed AgentDefinition/prompt/skill/manifest/tool-boundary records and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace tests must align with the surface actions.
+  - Frontend/backend tests for validation, forbidden/disabled/cross-tenant denial, Customer Admin Tenant-level denial, SaaS Owner no-support-access denial, role escalation, last-admin loss, idempotency, audit, trace ids, and tenant isolation.
 - required checks:
   - git diff --check
   - tools/validate-ai-first-saas-starter-fullstack.sh
@@ -1010,11 +1030,11 @@
   - task changes and queue update are committed
 - notes:
   - functional agent: User Admin
-  - surface/action: `surface.user_admin.directory.v1`, `surface.user_admin.member_detail.v1`, `surface.user_admin.access_review.v1`, `surface.user_admin.support_access.v1`; actions update-role, disable/reactivate, grant/revoke support access, commit access review
-  - capability ids/classes: `core.memberships.manage` command; `core.access_review.commit` governance/command; `core.user_directory.search` read/evidence; `core.support_access.manage` command
-  - AuthContext/scope: Tenant Admin or scoped support authority; selected tenant/customer only; last-admin protection and disabled-user fail-closed behavior
-  - Akka substrate/exposure: KVE/ESE as appropriate for membership/profile state; UserDirectoryView/MembershipView/AccessReviewQueueView; HTTP/workstream action APIs; frontend forms/tables
-  - audit/trace/tests: AdminAuditEvent for every mutation/denial/no-op, tenant isolation, support boundary, idempotent updates, rendering/forms/accessibility checks
+  - surface/action: canonical surface ids `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account`; reusable sections `surface.user_admin.directory.v1`, `surface.user_admin.member_detail.v1`, `surface.user_admin.access_review.v1`, `surface.user_admin.support_access.v1`; actions search/open-detail, add/suspend/reactivate/remove membership, replace/remove role, disable/reactivate account, request/complete identity relink, grant/revoke/extend support access, read/resolve access review, read admin audit
+  - capability ids/classes: `admin.users.dashboard.read`, `admin.users.search`, `admin.users.detail.read`, `admin.users.disable`, `admin.users.reactivate`, `admin.users.identity_relink.request`, `admin.users.identity_relink.complete`, `admin.memberships.add`, `admin.memberships.suspend`, `admin.memberships.reactivate`, `admin.memberships.remove`, `admin.roles.replace`, `admin.roles.remove`, `admin.support_access.read`, `admin.support_access.grant`, `admin.support_access.revoke`, `admin.support_access.extend`, `admin.access_review.read`, `admin.access_review.resolve`, `admin.audit.read`; `core.memberships.manage` command; `core.access_review.commit` governance/command; `core.user_directory.search` read/evidence; `core.support_access.manage` command
+  - AuthContext/scope: SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, or scoped support authority; selected tenant/customer only; last-admin protection and disabled-user fail-closed behavior
+  - Akka substrate/exposure: Account/Profile/Settings KVE; Membership/Role ESE or durable seam; Invitation integration; SupportAccessGrant; AdminAuditEvent; UserDirectoryView/MembershipView/InvitationView/AdminAuditView/AccessReviewQueueView; HTTP/workstream action APIs; frontend structured surfaces/forms/tables
+  - audit/trace/tests: AdminAuditEvent for every mutation/denial/no-op, PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace for UserAdminAgent tool allow/deny and surface/action outcomes, tenant isolation, support boundary, idempotent updates, rendering/forms/accessibility checks
   - supersedes future task shape for: TASK-STARTER-02-003, TASK-STARTER-03-002, TASK-STARTER-07-007, TASK-STARTER-07-009
 
 ### TASK-STARTER-08-004: Agent Admin catalog, definition lifecycle, and seed governance vertical
@@ -1215,6 +1235,10 @@
   - templates/ai-first-saas-starter/README.md
   - templates/ai-first-saas-starter/TEMPLATE-MANIFEST.md
   - tools/validate-ai-first-saas-starter-fullstack.sh
+  - specs/user-admin-workstream-functionalization/readiness-review.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
   - docs/agent-workstream-application-architecture.md
   - docs/structured-surface-contracts.md
   - skills/akka-web-ui-apps/SKILL.md
@@ -1232,9 +1256,10 @@
   - akka-web-ui-testing
   - akka-http-endpoint-testing
 - expected outputs:
-  - workstream shell validation for role-authorized functional-agent rail, persistent composer, context/authority indicators, and named starter surfaces
-  - realtime/stale/reconnect and static asset hosting checks tied to surface ids and capability ids
-  - scaffold/install/build-pack validation updates if needed
+  - Workstream shell validation for role-authorized functional-agent rail, persistent composer, context/authority indicators, and named starter surfaces.
+  - User Admin fullstack acceptance proof that `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` load from real backend APIs/components, exercise dashboard-to-list-to-detail navigation, perform at least one safe mutation or decision-card-producing action, and emit audit/trace output.
+  - Realtime/stale/reconnect and static asset hosting checks tied to surface ids and capability ids.
+  - Scaffold/install/build-pack validation updates if needed.
 - required checks:
   - git diff --check
   - tools/validate-ai-first-saas-starter-fullstack.sh
@@ -1245,8 +1270,8 @@
   - task changes and queue update are committed
 - notes:
   - functional agent: cross-cutting shell/realtime/static-hosting validation; validates Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy surfaces
-  - surface/action: shell role-authorized functional-agent rail, workstream events, surface stale/reconnect markers, static frontend asset routes, protected API separation
-  - capability ids/classes: `frontend.workstream.shell` frontend/shell; validates `core.access.me`, `core.invitations.manage`, `core.memberships.manage`, `agent.definitions.manage`, `agent.prompts.govern`, `agent.skills.govern`, `agent.tool_boundaries.manage`, `audit.trace.search`, `governance.proposals.review`
+  - surface/action: shell role-authorized functional-agent rail, workstream events, surface stale/reconnect markers, static frontend asset routes, protected API separation, canonical User Admin `user-admin-dashboard`/`user-admin-user-list`/`user-admin-user-account`
+  - capability ids/classes: `frontend.workstream.shell` frontend/shell; validates `core.access.me`, `admin.users.dashboard.read`, `admin.users.search`, `admin.users.detail.read`, `core.invitations.manage`, `core.memberships.manage`, `admin.audit.read`, `agent.definitions.manage`, `agent.prompts.govern`, `agent.skills.govern`, `agent.tool_boundaries.manage`, `audit.trace.search`, `governance.proposals.review`
   - AuthContext/scope: selected tenant/customer context, role/capability-derived visibility, backend denial remains authoritative
   - Akka substrate/exposure: HTTP static hosting, protected workstream APIs, SSE/realtime where present, React/Vite build/static-resource handoff
   - audit/trace/tests: smoke plus named-surface contract tests, no frontend secrets, forbidden/disabled/no-access rendering, stale/reconnect no-crash, route/static asset assertions

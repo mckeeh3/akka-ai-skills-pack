@@ -288,7 +288,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-010: Create implementation handoff tasks for generated/starter code realization
 
-- status: pending
+- status: done
+- completion note: Updated the downstream starter-app implementation queue so User Admin realization inherits the canonical `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` vertical; added required reads and self-sufficient outputs for invitation actions, dashboard/list/account APIs and payloads, UserDirectoryView-backed search/detail, membership/role/account/support/access-review/admin-audit capabilities, UserAdminAgent runtime behavior, scope-aware denials, audit/trace tests, and final fullstack validation. No separate core readiness queue task was added because the core readiness specs are already complete and the active code-realization queue is `specs/ai-first-saas-starter-app-template/pending-tasks.md`.
 - source: TASK-UA-009
 - task brief: none
 - depends on: [TASK-UA-009, TASK-UA-011]
