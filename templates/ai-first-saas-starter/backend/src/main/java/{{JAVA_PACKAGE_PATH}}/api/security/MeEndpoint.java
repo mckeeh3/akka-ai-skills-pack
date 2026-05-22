@@ -11,7 +11,7 @@ import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.unauthorized;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
-import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
+import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
 
 /** JWT-protected browser bootstrap endpoint for the selected local AuthContext. */
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.INTERNET))
@@ -22,12 +22,7 @@ public class MeEndpoint extends AbstractHttpEndpoint {
   @Get
   public HttpResponse me() {
     try {
-      var claims = requestContext().getJwtClaims();
-      var identity =
-          new WorkosIdentity(
-              claims.subject().orElse(null),
-              claims.getString("email").orElse(null),
-              claims.getString("name").orElse(null));
+      var identity = WorkosIdentityResolver.fromClaims(requestContext().getJwtClaims());
       var selectedMembershipId = requestContext().requestHeader("X-Selected-Context-Id")
           .or(() -> requestContext().requestHeader("X-Selected-Membership-Id"))
           .map(header -> header.value())

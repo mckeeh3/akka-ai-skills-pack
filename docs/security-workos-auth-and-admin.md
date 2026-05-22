@@ -149,6 +149,14 @@ public class MeEndpoint extends AbstractHttpEndpoint {
 }
 ```
 
+AuthKit access tokens may not include `email`. Generated backends must not construct local identity independently in each endpoint from `claims.getString("email")`. Use one backend resolver for all browser-protected APIs:
+
+```java
+var identity = WorkosIdentityResolver.fromClaims(requestContext().getJwtClaims());
+```
+
+The resolver should read subject from `subject()`/`sub`, email from `email`, `preferred_username`, or `username`, display name from `name`, `given_name`, or `nickname`, and when subject is present but email is missing fetch the WorkOS user-management profile server-side with backend-only `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL`. Cache successful local/starter lookups in memory. Never expose or log `WORKOS_API_KEY`.
+
 Use `bearerTokenIssuers` and `staticClaims` when the WorkOS issuer/audience/claim contract is known:
 
 ```java
@@ -166,12 +174,12 @@ Use `/api/me` as the frontend's local account bootstrap endpoint.
 
 Responsibilities:
 - validate JWT
-- read WorkOS identity claims from `requestContext().getJwtClaims()`
+- resolve WorkOS identity from `requestContext().getJwtClaims()` through the shared backend resolver; use token email claims when present, otherwise call the WorkOS user-management API server-side
 - find an existing linked local account or link an invited account only through a valid invitation, invite token/acceptance context, or explicit membership policy
 - return browser-facing profile, status, role, and tenant/customer scope DTOs
 - never return internal secrets or full domain state accidentally
 
-`/api/me` must not silently self-register privileged users from WorkOS claims alone. If no valid invitation or accepted self-registration policy exists, return a safe pending/forbidden outcome rather than creating admin access.
+The WorkOS profile lookup is identity resolution only. Local Akka account, membership, invitation, and configured `ADMIN_USERS` state remains the authorization source of truth. `/api/me` must not silently self-register privileged users from WorkOS claims or WorkOS profile data alone. If no valid invitation or accepted self-registration policy exists, return a safe pending/forbidden outcome rather than creating admin access.
 
 Example response shape:
 

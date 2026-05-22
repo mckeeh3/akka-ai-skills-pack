@@ -16,6 +16,7 @@ import static akka.javasdk.http.HttpException.unauthorized;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService.AcceptInvitationRequest;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
+import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.CapabilityActionRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 
@@ -71,8 +72,7 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
 
   private HttpResponse authorized(AuthorizedCall call) {
     try {
-      var claims = requestContext().getJwtClaims();
-      var identity = new WorkosIdentity(claims.subject().orElse(null), claims.getString("email").orElse(null), claims.getString("name").orElse(null));
+      var identity = WorkosIdentityResolver.fromClaims(requestContext().getJwtClaims());
       var selectedContextId = requestContext().requestHeader("X-Selected-Context-Id")
           .or(() -> requestContext().requestHeader("X-Selected-Membership-Id"))
           .map(header -> header.value())

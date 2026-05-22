@@ -140,13 +140,22 @@ public class MeEndpoint extends AbstractHttpEndpoint {
 }
 ```
 
-Use `AbstractHttpEndpoint` when reading claims:
+Use `AbstractHttpEndpoint` plus a reusable backend identity resolver when reading claims. AuthKit access tokens may contain `sub` without `email`; generated code must not assume `claims.getString("email")` is present in every endpoint.
 
 ```java
-var claims = requestContext().getJwtClaims();
-var subject = claims.subject().orElseThrow();
-var email = claims.getString("email").orElse(null);
+var identity = WorkosIdentityResolver.fromClaims(requestContext().getJwtClaims());
 ```
+
+The resolver must:
+- read subject from `JwtClaims.subject()` or raw `sub`;
+- read email from `email`, `preferred_username`, or `username` when present;
+- read display name from `name`, `given_name`, or `nickname` when present;
+- when subject exists but email is missing, call the WorkOS user-management API server-side with backend-only `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL`;
+- cache successful local/starter profile lookups in memory;
+- never expose or log `WORKOS_API_KEY`;
+- return only resolved identity data, leaving local Akka account/membership/invitation checks authoritative.
+
+Apply the shared resolver to every browser-protected endpoint that resolves the signed-in user, including `/api/me`, workstream bootstrap/action/event APIs, admin APIs, and invitation acceptance/admin APIs. Do not duplicate endpoint-local `new WorkosIdentity(claims.subject(), claims.getString("email"), ...)` construction.
 
 Prefer issuer/audience claim validation when the WorkOS token contract is known:
 
@@ -161,7 +170,7 @@ Prefer issuer/audience claim validation when the WorkOS token contract is known:
 
 `GET /api/me` should:
 - require JWT
-- read WorkOS identity claims
+- resolve WorkOS identity through the shared backend resolver; use token email claims when available, otherwise fetch the WorkOS profile server-side using backend-only `WORKOS_API_KEY`
 - find existing linked local account, or link an invited account only through a valid invitation, invite token/acceptance context, or explicit membership policy
 - return a browser-facing `MeResponse`
 - include account status, memberships, selected/default AuthContext, tenant/customer ids, roles/capabilities, profile, settings, and context-switch options needed for navigation
@@ -177,7 +186,7 @@ Typical local statuses:
 
 When an invited user signs in:
 1. validate JWT
-2. extract stable WorkOS subject and email claims
+2. extract stable WorkOS subject and resolve email via token claims or server-side WorkOS profile lookup
 3. find invited local account by normalized email plus valid invitation, invite token policy, or acceptance context
 4. reject expired, revoked/cancelled, delivery-failed-without-admin-override, or already-accepted-by-another-subject invitations
 5. link WorkOS subject to local account idempotently
@@ -198,6 +207,11 @@ Add tests for:
 - startup bootstrap invokes the `@Setup` `ServiceSetup.onStartup()` path and idempotently loads configured `ADMIN_USERS` before `/api/me` or admin endpoints are called
 - backend env validation reports missing or blank `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `APP_PUBLIC_BASE_URL`, and production email variables with error logs that include the exact env var names and no secret values
 - bearer token claims available through `requestContext().getJwtClaims()`
+- token contains `sub` and `email`, and `/api/me` resolves without WorkOS profile lookup
+- token contains `sub` but no `email`, mocked WorkOS user-management API returns email, and `/api/me` resolves/links to the configured local account
+- token contains `sub` but no `email`, WorkOS profile lookup is unavailable/fails, and `missing-workos-claims` or equivalent denial remains safe
+- WorkOS profile lookup returns an email that is not in `ADMIN_USERS` and has no valid invitation, and `no-local-account-or-invitation` remains forbidden
+- secret-boundary coverage confirms `WORKOS_API_KEY` is not emitted to frontend bundles, API responses, logs, errors, or resolved identity DTOs
 - `/api/me` returns linked active account, memberships, selected AuthContext, tenant/customer scopes, and browser-safe capabilities
 - invited account first-login link and replayed invitation acceptance are idempotent
 - expired, revoked/cancelled, missing, and cross-scope invitations cannot activate membership
@@ -218,3 +232,5 @@ Avoid:
 - returning internal user/account entity records from `/api/me`
 - using `/api/me` to create privileged local authorization state without a valid invitation or membership policy
 - reading JWT claims without `@JWT`
+- assuming AuthKit access tokens always contain an `email` claim
+- self-registering unknown local users only because WorkOS profile lookup returned an email
