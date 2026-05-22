@@ -14,4 +14,4 @@ Review guardrails:
 - canonical doctrine: `../ai-first-saas-application-architecture.md`, `../agent-workstream-application-architecture.md`, `../structured-surface-contracts.md`, and `../capability-first-backend-architecture.md`
 - design review checklist: `../agent-workstream-design-review-checklist.md`
 
-When generating or reviewing a full-stack AI-first SaaS app, start from the seed app-description and the review checklist. Use conventional, static, page/screen, or consolidated examples only for explicitly labeled mechanics or domain-content reference.
+When generating or reviewing a full-stack AI-first SaaS app, start from the seed app-description and the review checklist. Use conventional, static, page/screen, or consolidated examples only for explicitly labeled mechanics or domain-content reference. Do not use historical/example domain names such as DCA as generic labels for app-specific follow-up work; say `domain-specific` or use the user's actual domain name.

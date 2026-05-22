@@ -166,6 +166,12 @@ forbid_rg "security.*optional|optional.*security|when security is in scope|only 
   skills/README.md \
   docs/ai-first-saas-application-architecture.md
 
+log "checking generic domain terminology guardrails"
+require_rg "DCA-specific.*unless DCA is explicitly the user.s domain|historical/example domain names as generic placeholders" \
+  AGENTS.md \
+  pack/AGENTS.md \
+  skills/README.md
+
 log "checking forbidden optional invitation-email phrasing in foundation/admin docs"
 forbid_rg "optional invite email|optionally sends invite|optionally send invite|invite email delivery is optional|invite email.*may be omitted|email-invite.*optional|optional.*email-invite" \
   docs/core-ai-first-saas-foundation.md \

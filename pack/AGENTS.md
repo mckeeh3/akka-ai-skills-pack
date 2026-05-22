@@ -36,6 +36,10 @@ This pack supports a secure AI-first interpretation layer plus two complementary
 Users should be able to speak in natural language.
 They do not need to know the pack's internal skill taxonomy.
 
+Terminology guardrail:
+- Use `domain-specific` or the user's actual domain name for app-specific follow-up work.
+- Do not use `DCA`, `DCA-specific`, or other historical/example domain names as generic placeholders unless the user explicitly says the target product is that domain.
+
 ## Java base package intake
 
 Before creating a new Java Akka project, scaffolding Java source files, or realizing an app description into Java code, ask the user for the application's Java base package unless it is already present in project configuration or the user has already provided it.
@@ -156,6 +160,8 @@ To continue, ask:
 If blocking questions remain, do not create or execute affected implementation tasks unless the question is explicitly deferred with an accepted default or limitation.
 
 ## Pending task reminders
+
+When the user asks "what's next" after an app is running, recommend the next milestone from the target project's actual pending tasks, readiness gaps, or app description. For generated SaaS apps, prefer full core SaaS readiness before app/domain-specific features, but describe that follow-up as `domain-specific` or by the user's actual domain name, never as `DCA-specific` unless DCA is explicitly the user's domain.
 
 When the target project contains `specs/pending-tasks.md`, treat it as the durable follow-on implementation queue.
 

@@ -41,6 +41,8 @@ If the user's real goal is to build a separate Akka app that merely **uses** thi
 **Users should talk to the harness naturally.**
 They should not need to know the repository's internal skill taxonomy, stage model, or file layout.
 
+Terminology guardrail: use `domain-specific` or the user's actual domain name for app-specific follow-up work. Do not use `DCA`, `DCA-specific`, or other historical/example domain names as generic placeholders unless the target product is explicitly that domain.
+
 The repository's skills, docs, examples, and routing structure exist primarily to help the harness:
 - interpret intent correctly
 - choose the right Akka design path
