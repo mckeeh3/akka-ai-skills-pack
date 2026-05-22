@@ -146,21 +146,43 @@ The harness should run the installed scaffold command, roughly:
 
 Use a different Java base package if you already have one. Do not use `com.example` unless you explicitly want that package.
 
-### Step 3 — Ask for a starter readiness review
+### Step 3 — Ask for an actionable starter readiness triage
 
-After scaffolding, ask the harness to inspect the generated project before changing code:
+After scaffolding, ask the harness to inspect the generated project before changing code. This is a readiness gate, not a general audit: the goal is to confirm what landed, identify only the configuration and checks needed now, and separate true blockers from later foundation follow-up work.
 
 ```text
 Review the scaffolded starter app for minimum AI-first SaaS starter readiness.
-Read specs/scaffold-report.md, app-description/, specs/, backend/, frontend/, and .env.example.
+Read specs/scaffold-report.md, app-description/, specs/, backend/, frontend/, .env.example,
+and frontend/.env.example if present.
 
-Tell me:
-1. what is already implemented,
-2. what configuration I must provide locally,
-3. what commands I should run to build/test the backend and frontend,
-4. what minimum-starter readiness gaps remain,
-5. which pending tasks should be done before app-specific domain features.
-Do not implement changes yet.
+Do not implement changes yet. Do not give me a broad perfect-SaaS backlog.
+Return the answer in this exact format:
+
+1. Current status
+   - Ready to build/test? yes/no, with one sentence why.
+   - Ready to run locally? yes/no, with one sentence why.
+   - Ready for app-specific domain features? yes/no, with one sentence why.
+
+2. Required local configuration
+   - List only values I must set now.
+   - For each value, say where it goes and whether a local/test placeholder is acceptable.
+   - Clearly mark backend-only secrets versus browser-public VITE_ values.
+
+3. Commands to run next
+   - Give exact commands in order.
+   - Include backend checks and frontend checks.
+   - Say what success should look like for each command.
+
+4. Blocking issues
+   - Include only issues that prevent build/test/local run or invalidate the starter foundation.
+   - For each issue, include the exact next action or prompt I should give you.
+
+5. Non-blocking foundation follow-up
+   - Include only starter/foundation tasks that can wait until after the starter builds/runs.
+   - Do not include app-specific domain features.
+
+6. Recommended next prompt
+   - Give me the single next prompt I should send.
 ```
 
 ### Step 4 — Configure local environment placeholders
