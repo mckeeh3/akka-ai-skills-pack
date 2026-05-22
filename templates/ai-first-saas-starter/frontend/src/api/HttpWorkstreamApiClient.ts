@@ -84,12 +84,7 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
 }
 
 async function mapWorkstreamApiError(response: Response): Promise<ApiError> {
-  let parsed: Record<string, unknown> = {};
-  try {
-    parsed = await response.json() as Record<string, unknown>;
-  } catch {
-    parsed = { message: await response.text() };
-  }
+  const parsed = await parseErrorBody(response);
   const reasonCode = typeof parsed.reasonCode === 'string' ? parsed.reasonCode : undefined;
   const code = reasonCode ?? (typeof parsed.code === 'string' ? parsed.code : httpCode(response.status));
   return {
@@ -98,6 +93,17 @@ async function mapWorkstreamApiError(response: Response): Promise<ApiError> {
     correlationId: typeof parsed.correlationId === 'string' ? parsed.correlationId : response.headers.get('x-correlation-id') ?? 'missing-correlation-id',
     fieldErrors: isFieldErrors(parsed.fieldErrors) ? parsed.fieldErrors : undefined
   };
+}
+
+async function parseErrorBody(response: Response): Promise<Record<string, unknown>> {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed as Record<string, unknown> : { message: text };
+  } catch {
+    return { message: text };
+  }
 }
 
 function isFieldErrors(value: unknown): value is Record<string, string[]> {

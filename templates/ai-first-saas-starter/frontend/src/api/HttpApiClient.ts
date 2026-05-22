@@ -94,16 +94,27 @@ function queryString(query?: Record<string, string | undefined>) {
 }
 
 async function mapApiError(response: Response): Promise<ApiError> {
-  let parsed: Partial<ApiError> = {};
-  try {
-    parsed = await response.json() as Partial<ApiError>;
-  } catch {
-    parsed = { message: await response.text() };
-  }
+  const parsed = await parseErrorBody(response);
   return {
-    code: parsed.code ?? `http_${response.status}`,
-    message: parsed.message ?? `HTTP ${response.status}`,
-    correlationId: parsed.correlationId ?? response.headers.get('x-correlation-id') ?? 'missing-correlation-id',
-    fieldErrors: parsed.fieldErrors
+    code: typeof parsed.code === 'string' ? parsed.code : `http_${response.status}`,
+    message: typeof parsed.message === 'string' ? parsed.message : `HTTP ${response.status}`,
+    correlationId: typeof parsed.correlationId === 'string' ? parsed.correlationId : response.headers.get('x-correlation-id') ?? 'missing-correlation-id',
+    fieldErrors: isFieldErrors(parsed.fieldErrors) ? parsed.fieldErrors : undefined
   };
+}
+
+async function parseErrorBody(response: Response): Promise<Record<string, unknown>> {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed as Record<string, unknown> : { message: text };
+  } catch {
+    return { message: text };
+  }
+}
+
+function isFieldErrors(value: unknown): value is Record<string, string[]> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  return Object.values(value).every((entry) => Array.isArray(entry) && entry.every((item) => typeof item === 'string'));
 }
