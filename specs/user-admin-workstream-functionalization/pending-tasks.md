@@ -90,7 +90,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-003: Define typed fullstack payload and frontend API contracts for the three surfaces
 
-- status: pending
+- status: done
+- completion note: Updated `55-ui/frontend-api-contracts.md` with shared scope/action/redaction/trace envelopes, canonical `UserAdminDashboardPayload`, `UserAdminUserListPayload`, and `UserAdminUserAccountPayload` DTOs, dashboard/list/detail route contracts, pagination/filter/state semantics, idempotent mutation routes, and scope-aware SaaS Owner/Tenant/Customer Admin behavior through one shared API group.
 - source: TASK-UA-002
 - task brief: none
 - depends on: [TASK-UA-002]
