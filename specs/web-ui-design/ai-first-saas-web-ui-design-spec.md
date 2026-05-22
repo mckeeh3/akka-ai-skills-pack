@@ -87,8 +87,8 @@ This is the initial AI-first theme to test against the seed app. It is the defau
 
 ```css
 :root {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "Roboto Mono", "SFMono-Regular", Consolas, monospace;
+  --font-sans: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace;
 }
 ```
 

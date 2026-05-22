@@ -25,8 +25,8 @@
 ## Design tokens
 
 - typography:
-  - `--font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
-  - `--font-mono: "Roboto Mono", "SFMono-Regular", Consolas, monospace`
+  - `--font-sans: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace`
+  - `--font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace`
   - tabular numerals for KPIs, counts, percentages, money, time, and queue metrics
 - spacing: stable 4px-based scale from `--space-1` through `--space-8`
 - radius: 8px controls, 12px standard cards, 16px prominent panels, pill badges

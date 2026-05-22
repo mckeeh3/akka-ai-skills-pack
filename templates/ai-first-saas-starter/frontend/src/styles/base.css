@@ -1,6 +1,9 @@
 * { box-sizing: border-box; }
 
-html { color-scheme: light dark; }
+html {
+  color-scheme: light dark;
+  font-family: var(--font-sans);
+}
 
 body {
   margin: 0;
@@ -11,7 +14,7 @@ body {
   background: var(--color-bg);
 }
 
-body, button, input, textarea, select { font: inherit; }
+body, button, input, textarea, select { font-family: var(--font-sans); }
 
 button, a, input { -webkit-tap-highlight-color: transparent; }
 
