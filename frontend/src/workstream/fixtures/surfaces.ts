@@ -10,6 +10,18 @@ const authContext = {
 };
 
 const secureTenantUserFoundation = 'secure-tenant-user-foundation';
+const userAdminCapabilities = {
+  dashboardRead: 'admin.users.dashboard.read',
+  search: 'admin.users.search',
+  detailRead: 'admin.users.detail.read',
+  invite: 'admin.invitations.create',
+  invitationResend: 'admin.invitations.resend',
+  invitationRevoke: 'admin.invitations.revoke',
+  profilePatch: 'admin.users.profile.patch',
+  roleReplace: 'admin.roles.replace',
+  accessReviewResolve: 'admin.access_review.resolve',
+  auditRead: 'admin.audit.read'
+} as const;
 
 export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceAction> = {
   read: {
@@ -24,7 +36,7 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     actionId: 'action-invite-user',
     label: 'Invite user',
     intent: 'command',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.invite,
     inputSchemaRef: 'schema.invitation.create.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -55,7 +67,7 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     actionId: 'action-resume-workflow',
     label: 'Resume workflow',
     intent: 'workflow',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.invite,
     disabled: { reasonCode: 'waiting-for-approval', message: 'Approval is required before this workflow can resume.' },
     idempotency: { required: true, keySource: 'server-issued' },
     resultSurface: { updateSurfaceId: 'surface-workflow-status', openPlacement: 'inline' },
@@ -82,30 +94,39 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
 };
 
 export const userAdminSurfaceActions = {
+  refreshDashboard: {
+    actionId: 'action-refresh-user-admin-dashboard',
+    label: 'Refresh User Admin dashboard',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.dashboardRead,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'user-admin-dashboard', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminDashboardRead', traceRequired: true }
+  },
   displayUserList: {
     actionId: 'action-display-user-list',
     label: 'Display user list view',
     intent: 'read',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.search,
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminListDisplayed', traceRequired: true }
   },
   searchUsers: {
     actionId: 'action-search-users',
     label: 'Search users and invitations',
     intent: 'read',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.search,
     inputSchemaRef: 'schema.user-admin.search.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDirectorySearched', traceRequired: true }
   },
   resendInvitation: {
     actionId: 'action-resend-invitation',
     label: 'Resend pending invitation',
     intent: 'command',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.invitationResend,
     inputSchemaRef: 'schema.invitation.resend.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -116,51 +137,51 @@ export const userAdminSurfaceActions = {
     actionId: 'action-revoke-invitation',
     label: 'Revoke expired invitation',
     intent: 'command',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.invitationRevoke,
     inputSchemaRef: 'schema.invitation.revoke.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
     audit: { eventType: 'InvitationRevoked', traceRequired: true }
   },
   displayUserDetail: {
     actionId: 'action-display-user-detail',
     label: 'Display user account detail',
     intent: 'read',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.detailRead,
     inputSchemaRef: 'schema.user-admin.detail.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDetailDisplayed', traceRequired: true }
   },
   updateUserProfile: {
     actionId: 'action-update-user-profile',
     label: 'Save profile changes',
     intent: 'command',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.profilePatch,
     inputSchemaRef: 'schema.user-admin.profile.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
     audit: { eventType: 'UserProfileUpdateRequested', traceRequired: true }
   },
   replaceRole: {
     actionId: 'action-replace-membership-role',
     label: 'Replace membership role',
     intent: 'command',
-    capabilityId: secureTenantUserFoundation,
+    capabilityId: userAdminCapabilities.roleReplace,
     inputSchemaRef: 'schema.membership.role.replace.v1',
     requiresConfirmation: true,
     disabled: { reasonCode: 'last-admin-risk', message: 'Backend authorization denied this fixture action: cannot remove the last tenant admin without an approved replacement.' },
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
     audit: { eventType: 'MembershipRoleReplacementDenied', traceRequired: true }
   },
   approveRiskyAccess: {
     actionId: 'action-approve-risky-access',
     label: 'Approve risky access decision',
     intent: 'approval',
-    capabilityId: 'governance-decisions-audit',
+    capabilityId: userAdminCapabilities.accessReviewResolve,
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -279,9 +300,9 @@ function envelope<TData>(surfaceId: string, surfaceType: string, title: string, 
 }
 
 export const userAdminDashboardSurface = envelope(
-  'surface-user-admin-dashboard',
+  'user-admin-dashboard',
   'dashboard',
-  'User Admin command center',
+  'User Admin dashboard',
   'agent-user-admin',
   {
     cards: [
@@ -294,14 +315,26 @@ export const userAdminDashboardSurface = envelope(
       { sectionId: 'invitation-queue', label: 'Invitation queue', summary: 'One delivery failure and one invite expiring within 24 hours.' },
       { sectionId: 'access-review', label: 'Access review', summary: 'Last-admin risk requires governance decision before role replacement.' },
       { sectionId: 'admin-audit', label: 'Admin audit excerpts', summary: 'Latest invitation and support-access events have trace links.' }
-    ]
+    ],
+    scopeVariants: [
+      { role: 'SaaS Owner Admin', summary: 'Platform users visible; tenant user data is forbidden without active support access.', visibleActions: ['admin.users.dashboard.read', 'admin.audit.read'], deniedReason: 'SAAS_OWNER_SUPPORT_ACCESS_REQUIRED' },
+      { role: 'Tenant Admin', summary: 'Tenant employees, Customer users, invitations, support access, access review, and scoped audit queues are visible.', visibleActions: ['admin.users.search', 'admin.invitations.create', 'admin.access_review.resolve'] },
+      { role: 'Customer Admin', summary: 'Selected Customer users and invitations are visible; Tenant-level queues and support-access actions are forbidden.', visibleActions: ['admin.users.search'], deniedReason: 'CUSTOMER_ADMIN_TENANT_ACTION_DENIED' }
+    ],
+    stateFixtures: {
+      loading: 'Loading dashboard cards and queues from scoped backend views.',
+      empty: 'Empty tenant/customer scope with safe bootstrap invitation action only when admin.invitations.create is allowed.',
+      error: 'Error state shows correlationId without privileged counts.',
+      forbidden: 'Forbidden state hides counts and row identities for cross-tenant, disabled actor, or missing capability denial.',
+      stale: 'Stale state preserves trace-user-admin-dashboard and disables mutations until refresh.'
+    }
   },
-  [userAdminSurfaceActions.displayUserList, surfaceActionsByIntent.command, userAdminSurfaceActions.approveRiskyAccess, surfaceActionsByIntent.trace]
+  [userAdminSurfaceActions.refreshDashboard, userAdminSurfaceActions.displayUserList, surfaceActionsByIntent.command, userAdminSurfaceActions.approveRiskyAccess, surfaceActionsByIntent.trace]
 );
 
-// Legacy fixture alias preserved for stale-screen quarantine tests: surface-user-list now resolves conceptually to surface-user-admin-list.
+// Legacy fixture alias preserved for stale-screen quarantine tests: surface-user-list now resolves conceptually to user-admin-user-list.
 export const userAdminListSearchSurface = envelope(
-  'surface-user-admin-list',
+  'user-admin-user-list',
   'list-search',
   'Users, invitations, and memberships',
   'agent-user-admin',
@@ -314,9 +347,22 @@ export const userAdminListSearchSurface = envelope(
       { id: 'support-grant-1', rowType: 'support-access', email: 'support@example.test', displayName: 'Support Engineer', role: 'Support', status: 'expiring', supportAccess: true, expiresInHours: 6, traceId: 'trace-support-grant' },
       { id: 'audit-invite-1', rowType: 'admin-audit-excerpt', email: 'admin@example.test', displayName: 'Tenant Admin', role: 'Audit actor', status: 'invited-user', traceId: 'trace-invite' }
     ],
-    pageInfo: { totalKnownCount: 5 },
+    pageInfo: { totalKnownCount: 5, nextPageToken: 'page-token-user-admin-2' },
     emptyMessage: 'No users, invitations, memberships, or support grants match the current scoped query.',
-    mobileFallback: 'table-to-card'
+    mobileFallback: 'table-to-card',
+    dashboardOrigin: { surfaceId: 'user-admin-dashboard', queueId: 'access-review', traceId: 'trace-user-admin-dashboard' },
+    scopeVariants: [
+      { role: 'SaaS Owner Admin', rowPolicy: 'SaaS Owner users plus redacted tenant bootstrap metadata unless support access is active.', forbiddenActions: ['admin.support_access.grant', 'admin.roles.replace'] },
+      { role: 'Tenant Admin', rowPolicy: 'Tenant employees, Customer Admins/Users, invitations, support grants, and access-review rows.', allowedActions: ['admin.users.detail.read', 'admin.invitations.resend', 'admin.roles.replace'] },
+      { role: 'Customer Admin', rowPolicy: 'Selected Customer users and invitations only.', forbiddenActions: ['admin.support_access.grant', 'admin.roles.replace'] }
+    ],
+    stateFixtures: {
+      loading: 'Loading table skeleton preserves filters and disables row mutations.',
+      empty: 'Empty search distinguishes no matches from a redacted result set.',
+      error: 'Error state keeps safe filters, pageToken, and correlation id.',
+      forbidden: 'Forbidden list hides totals and identities for cross-tenant or Customer Admin Tenant-level denial.',
+      stale: 'Stale page token disables row mutation actions until the list refreshes.'
+    }
   },
   [
     userAdminSurfaceActions.searchUsers,
@@ -330,7 +376,7 @@ export const userAdminListSearchSurface = envelope(
 );
 
 export const userAdminDetailEditSurface = envelope(
-  'surface-user-admin-detail-admin',
+  'user-admin-user-account',
   'detail-edit',
   'Tenant Admin account detail',
   'agent-user-admin',
@@ -338,7 +384,7 @@ export const userAdminDetailEditSurface = envelope(
     recordId: 'user-acct-admin',
     recordLabel: 'Tenant Admin · admin@example.test',
     recordKind: 'account',
-    summary: 'Scoped detail/edit surface for a tenant user account. Field editability is advisory; the secure tenant user foundation capability remains authoritative.',
+    summary: 'Scoped detail/edit surface for a tenant user account. Field editability is advisory; named User Admin capabilities remain authoritative.',
     fields: [
       { fieldId: 'displayName', label: 'Display name', value: 'Tenant Admin', editable: true, inputType: 'text' },
       { fieldId: 'email', label: 'Email', value: 'admin@example.test', editable: false, inputType: 'email', disabledReason: 'Email changes require an identity-provider reconciliation workflow.' },
@@ -349,8 +395,21 @@ export const userAdminDetailEditSurface = envelope(
     permissionState: {
       canEdit: true,
       reason: 'Profile fields are editable; role and status remain denied by backend policy for this fixture account.',
-      authoritativeCapabilityId: secureTenantUserFoundation
+      authoritativeCapabilityId: userAdminCapabilities.detailRead
     },
+    scopeVariants: [
+      { role: 'SaaS Owner Admin', visibility: 'SaaS Owner account detail or redacted tenant target unless support access is active.', deniedReason: 'SAAS_OWNER_NO_SUPPORT_ACCESS' },
+      { role: 'Tenant Admin', visibility: 'Tenant account detail, Customer memberships, invitations, support access, access review, and audit excerpts.', deniedReason: 'LAST_ADMIN_LOSS_DENIED for risky role replacement' },
+      { role: 'Customer Admin', visibility: 'Selected Customer account detail only; Tenant employee memberships and support-access sections are forbidden.', deniedReason: 'CUSTOMER_ADMIN_TENANT_ACTION_DENIED' }
+    ],
+    stateFixtures: {
+      loading: 'Loading account skeleton and disabled action panel.',
+      empty: 'Empty scoped target with no memberships, invitations, or audit excerpts.',
+      error: 'Error state shows retry and correlationId without cached sensitive detail.',
+      forbidden: 'Forbidden detail hides target identity unless the backend marks it browser-safe.',
+      stale: 'Stale detail disables profile, role, membership, account, support-access, and access-review mutations.'
+    },
+    denialExamples: ['cross-tenant', 'disabled actor', 'missing capability', 'role escalation', 'last-admin loss'],
     audit: {
       lastEventType: 'UserAdminDetailDisplayed',
       lastActor: 'Tenant Admin',

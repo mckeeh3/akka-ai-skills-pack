@@ -197,7 +197,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-007: Update frontend reference fixtures/tests to match the canonical surface ids and contracts
 
-- status: pending
+- status: done
+- completion note: Aligned frontend User Admin fixtures, workstream items, composer/deep-link selection, and contract tests to canonical `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` ids; added scope-aware SaaS Owner/Tenant/Customer variant strings, named action capability ids, trace/state fixtures for loading/empty/error/forbidden/stale, and updated UI docs to cite the three-surface vertical. Verified with `npm --prefix frontend test -- --runInBand`, `npm --prefix frontend run typecheck`, required `rg`, and `git diff --check`.
 - source: TASK-UA-003
 - task brief: none
 - depends on: [TASK-UA-003, TASK-UA-004]

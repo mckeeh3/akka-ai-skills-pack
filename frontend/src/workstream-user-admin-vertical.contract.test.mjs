@@ -19,17 +19,17 @@ test('User Admin functional agent defaults to a dashboard and uses the governed 
   assert.match(me, /secure-tenant-user-foundation/);
 });
 
-test('User Admin dashboard, list, and detail surfaces model the command-center contract', () => {
+test('User Admin dashboard, list, and detail surfaces use canonical surface ids and scoped variants', () => {
   assert.match(surfaces, /userAdminDashboardSurface/);
-  assert.match(surfaces, /surface-user-admin-dashboard/);
-  assert.match(surfaces, /User Admin command center/);
+  assert.match(surfaces, /user-admin-dashboard/);
+  assert.match(surfaces, /User Admin dashboard/);
   assert.match(surfaces, /invitation-queue/);
   assert.match(surfaces, /access-review/);
   assert.match(surfaces, /admin-audit/);
   assert.match(surfaces, /userAdminListSearchSurface/);
-  assert.match(surfaces, /surface-user-admin-list/);
+  assert.match(surfaces, /user-admin-user-list/);
   assert.match(surfaces, /userAdminDetailEditSurface/);
-  assert.match(surfaces, /surface-user-admin-detail-admin/);
+  assert.match(surfaces, /user-admin-user-account/);
   assert.match(surfaces, /Tenant Admin account detail/);
   assert.match(surfaces, /permissionState/);
   for (const rowKind of ['user-directory', 'invitation-queue', 'membership', 'support-access', 'admin-audit-excerpt']) {
@@ -39,6 +39,14 @@ test('User Admin dashboard, list, and detail surfaces model the command-center c
   assert.match(surfaces, /Backend authorization denied role replacement/);
   assert.match(surfaces, /trace-user-admin-detail/);
   assert.match(surfaces, /table-to-card/);
+  for (const variant of ['SaaS Owner Admin', 'Tenant Admin', 'Customer Admin']) {
+    assert.match(surfaces, new RegExp(variant));
+  }
+  for (const state of ['loading', 'empty', 'error', 'forbidden', 'stale']) {
+    assert.match(surfaces, new RegExp(state));
+  }
+  assert.match(surfaces, /SAAS_OWNER_NO_SUPPORT_ACCESS|SAAS_OWNER_SUPPORT_ACCESS_REQUIRED/);
+  assert.match(surfaces, /CUSTOMER_ADMIN_TENANT_ACTION_DENIED/);
 });
 
 test('User Admin surface actions map to capability ids and trace or audit affordances', () => {
@@ -46,7 +54,9 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /Display user list view/);
   assert.match(surfaces, /UserAdminListDisplayed/);
   assert.match(surfaces, /secureTenantUserFoundation = 'secure-tenant-user-foundation'/);
-  assert.match(surfaces, /governance-decisions-audit/);
+  for (const capabilityId of ['admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.invitations.resend', 'admin.invitations.revoke', 'admin.users.profile.patch', 'admin.roles.replace', 'admin.access_review.resolve', 'admin.audit.read']) {
+    assert.match(surfaces, new RegExp(capabilityId.replaceAll('.', '\\.')));
+  }
   assert.match(surfaces, /traceRequired: true/);
   assert.match(surfaces, /displayUserListActionResult/);
   assert.match(surfaces, /action-display-user-detail/);
@@ -58,10 +68,10 @@ test('User Admin surface actions map to capability ids and trace or audit afford
 test('workstream and API clients support dashboard-to-list-to-detail navigation feedback', () => {
   assert.match(workstream, /item-display-user-list/);
   assert.match(workstream, /Display the user list view/);
-  assert.match(workstream, /surface-user-admin-list/);
+  assert.match(workstream, /user-admin-user-list/);
   assert.match(workstream, /item-display-user-detail/);
   assert.match(workstream, /Display user account detail/);
-  assert.match(workstream, /surface-user-admin-detail-admin/);
+  assert.match(workstream, /user-admin-user-account/);
   assert.match(apiClient, /displayUserListActionResult/);
   assert.match(apiClient, /displayUserDetailActionResult/);
   assert.match(apiClient, /action-display-user-list/);
@@ -79,8 +89,8 @@ test('composer opens User Admin list/detail surfaces instead of page routes', ()
   assert.match(main, /handleComposerSubmit/);
   assert.match(main, /showUsers/);
   assert.match(main, /showUserDetail/);
-  assert.match(main, /surface-user-admin-list/);
-  assert.match(main, /surface-user-admin-detail-admin/);
+  assert.match(main, /user-admin-user-list/);
+  assert.match(main, /user-admin-user-account/);
   assert.match(main, /requestedSurface/);
   assert.match(main, /kind: 'surface'/);
   assert.doesNotMatch(main, /window\.location\.assign\('\/users/);

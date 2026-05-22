@@ -31,5 +31,5 @@
 - implementation reference:
   - `../../../../../docs/workstream-ui-reference-architecture.md`
   - `../../../../../frontend/src/workstream/**` reusable shell, rail, composer, stream, surface, action, realtime, type, and fixture modules
-  - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` for the User Admin dashboard → list/search → detail/edit vertical
+  - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` for the canonical User Admin `user-admin-dashboard` → `user-admin-user-list` → `user-admin-user-account` vertical
   - legacy `frontend/src/screens/**` and standalone static UI examples are not canonical seed-app structure

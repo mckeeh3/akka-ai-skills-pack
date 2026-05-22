@@ -254,9 +254,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       status: 'ready'
     };
     const requestedSurface = showUserDetail
-      ? ready.surfaces.find((surface) => surface.surfaceId === 'surface-user-admin-detail-admin')
+      ? ready.surfaces.find((surface) => surface.surfaceId === 'user-admin-user-account')
       : showUsers
-        ? ready.surfaces.find((surface) => surface.surfaceId === 'surface-user-admin-list')
+        ? ready.surfaces.find((surface) => surface.surfaceId === 'user-admin-user-list')
         : undefined;
     const surfaceResponseItem: WorkstreamItem | undefined = requestedSurface ? {
       itemId: `composer-surface-${requestedSurface.surfaceId}-${Date.now()}`,
@@ -273,9 +273,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) }
       : current);
     if (showUserDetail) {
-      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-detail-admin', surfacePlacement: 'inline' });
+      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'user-admin-user-account', surfacePlacement: 'inline' });
     } else if (showUsers) {
-      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'surface-user-admin-list', surfacePlacement: 'inline' });
+      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'user-admin-user-list', surfacePlacement: 'inline' });
     }
   }
 
