@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { AuthContext, ComposerRequest, FunctionalAgentSummary, MeResponse } from '../types';
 import { buildComposerRequest, canSubmitComposer, composerAvailability } from './composerState';
 
@@ -12,10 +12,18 @@ type WorkstreamComposerProps = {
 
 export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, onSubmit }: WorkstreamComposerProps) {
   const [draft, setDraft] = useState('');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const availability = useMemo(() => composerAvailability(me, selectedAgent), [me, selectedAgent]);
   const disabledReason = availability.status === 'disabled' ? availability.reason : undefined;
   const submitDisabled = !selectedAgent || !canSubmitComposer(draft, availability);
   const helperId = 'workstream-composer-helper';
+
+  useLayoutEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+    input.style.height = 'auto';
+    input.style.height = `${input.scrollHeight}px`;
+  }, [draft]);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,6 +38,8 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
         <label htmlFor="workstream-composer-input" className="sr-only">Ask {selectedAgent?.label ?? 'a functional agent'}</label>
         <textarea
           id="workstream-composer-input"
+          ref={inputRef}
+          rows={1}
           autoFocus
           value={draft}
           onChange={(event) => setDraft(event.currentTarget.value)}
