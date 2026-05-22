@@ -1,6 +1,5 @@
 import { FormEvent, useMemo, useState } from 'react';
 import type { AuthContext, ComposerRequest, FunctionalAgentSummary, MeResponse } from '../types';
-import { ComposerCommandHints } from './ComposerCommandHints';
 import { buildComposerRequest, canSubmitComposer, composerAvailability } from './composerState';
 
 type WorkstreamComposerProps = {
@@ -8,11 +7,10 @@ type WorkstreamComposerProps = {
   authContext: AuthContext;
   selectedAgent?: FunctionalAgentSummary;
   attachedSurfaceId?: string;
-  hints?: string[];
   onSubmit?: (request: ComposerRequest) => void;
 };
 
-export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, hints, onSubmit }: WorkstreamComposerProps) {
+export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, onSubmit }: WorkstreamComposerProps) {
   const [draft, setDraft] = useState('');
   const availability = useMemo(() => composerAvailability(me, selectedAgent), [me, selectedAgent]);
   const disabledReason = availability.status === 'disabled' ? availability.reason : undefined;
@@ -28,9 +26,8 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
 
   return (
     <form className="command-strip workstream-composer" aria-label="Persistent workstream composer" onSubmit={submit}>
-      <span className="ai-mark" aria-hidden="true">AI</span>
-      <div>
-        <label htmlFor="workstream-composer-input" className="eyebrow">Ask {selectedAgent?.label ?? 'a functional agent'}</label>
+      <div className="composer-input-wrap">
+        <label htmlFor="workstream-composer-input" className="sr-only">Ask {selectedAgent?.label ?? 'a functional agent'}</label>
         <textarea
           id="workstream-composer-input"
           autoFocus
@@ -38,15 +35,14 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
           onChange={(event) => setDraft(event.currentTarget.value)}
           aria-describedby={helperId}
           disabled={Boolean(disabledReason)}
-          placeholder={disabledReason ?? 'Describe the outcome you want. Consequential actions will remain capability-backed.'}
+          placeholder={disabledReason ?? 'Ask for an outcome…'}
         />
-        <p id={helperId} className="field-helper">
+        <p id={helperId} className="sr-only">
           {disabledReason ?? `Selected context ${authContext.selectedContextId}; requests are scoped to ${selectedAgent?.label ?? 'the selected agent'}.`}
         </p>
-        <ComposerCommandHints hints={hints} onUseHint={setDraft} />
       </div>
-      <button type="submit" className="ds-button primary" disabled={submitDisabled}>
-        Send to workstream
+      <button type="submit" className="ds-button primary icon-button send-prompt-button" disabled={submitDisabled} aria-label="Send prompt" title="Send prompt">
+        <span aria-hidden="true">↑</span>
       </button>
     </form>
   );

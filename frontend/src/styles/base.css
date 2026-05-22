@@ -8,12 +8,10 @@ body {
   min-height: 100vh;
   font-family: var(--font-sans);
   color: var(--color-text);
-  background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--color-primary) 16%, transparent), transparent 28rem),
-    var(--color-bg);
+  background: var(--color-bg);
 }
 
-body, button, input { font: inherit; }
+body, button, input, textarea, select { font: inherit; }
 
 button, a, input { -webkit-tap-highlight-color: transparent; }
 
@@ -29,6 +27,8 @@ button:disabled { cursor: not-allowed; opacity: 0.65; }
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
 [tabindex]:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;

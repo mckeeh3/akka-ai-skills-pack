@@ -294,7 +294,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       me={me}
       initialFunctionalAgentId={selectedFunctionalAgentId}
       items={selectedItems}
-      appName="Workstream"
+      appName="AI-first SaaS"
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
       onSignOut={onSignOut}
