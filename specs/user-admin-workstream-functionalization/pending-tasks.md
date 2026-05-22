@@ -25,7 +25,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-001: Inventory current User Admin spec and fixture gaps
 
-- status: pending
+- status: done
+- completion note: Created `specs/user-admin-workstream-functionalization/gap-inventory.md`; confirmed the current aggregate command-center prose, frontend API gaps, backend reference slice strengths, and fixture/test-only dashboard/list/detail coverage; no additional follow-up tasks were needed beyond the existing queue.
 - source: user request to make User Admin fully functional with dashboard, user list, and user account surfaces
 - task brief: none
 - depends on: []
