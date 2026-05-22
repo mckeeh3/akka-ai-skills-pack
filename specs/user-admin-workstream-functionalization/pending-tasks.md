@@ -173,7 +173,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
 
 ### TASK-UA-006: Align backend Akka realization contract with the three-surface User Admin vertical
 
-- status: pending
+- status: done
+- completion note: Aligned the full-core realization map and app-description horizontal/traceability maps with the canonical `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` vertical; named the required Akka substrates including Account/Profile/Settings, Membership/Role, Invitation, SupportAccessGrant, AdminAuditEvent, `UserDirectoryView`, `MembershipView`, `InvitationView`, `AdminAuditView`, and `AccessReviewQueueView`; clarified read-only-first boundaries, the initial safe mutation/decision-card path, and that dashboard/list/detail discovery must be backed by scoped view queries rather than caller-supplied known user ids.
 - source: TASK-UA-003
 - task brief: none
 - depends on: [TASK-UA-003, TASK-UA-004]
