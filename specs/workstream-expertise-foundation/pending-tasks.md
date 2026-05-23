@@ -547,7 +547,7 @@
 
 ### TASK-WEF-06-002: Implement runtime reference manifest and loader
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/06-executable-reference-coverage-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/06-executable-reference-coverage/02-runtime-reference-loader.md
 - depends on: [TASK-WEF-06-001]
@@ -572,6 +572,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Implement starter readReferenceDoc runtime
+  - checks: `git diff --check` passed; scaffolded targeted backend `mvn -Dtest=AgentRuntimeServiceTest test` passed
+  - validation note: full `tools/validate-ai-first-saas-starter-fullstack.sh` backend phase passed, but frontend fixture phase failed on pre-existing missing scaffolded `backend/src/main/resources/agent-behavior-seeds/starter-v1/manifest.properties` path assumption
 
 ### TASK-WEF-06-003: Add backend reference governance tests
 

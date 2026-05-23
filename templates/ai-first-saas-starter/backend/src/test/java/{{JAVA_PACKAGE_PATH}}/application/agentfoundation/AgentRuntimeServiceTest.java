@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService.BehaviorChangeRequest;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService.PromptAssemblyRequest;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService.ReferenceReadRequest;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService.SkillReadRequest;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
@@ -57,8 +58,11 @@ class AgentRuntimeServiceTest {
     assertEquals(AgentRuntimeTrace.Decision.ALLOWED, first.decision());
     assertEquals(first.checksum(), second.checksum());
     assertTrue(first.assembledSystemPrompt().contains("# Compact skill manifest"));
+    assertTrue(first.assembledSystemPrompt().contains("# Compact reference manifest"));
     assertTrue(first.assembledSystemPrompt().contains("ua.access-review-triage.v1"));
+    assertTrue(first.assembledSystemPrompt().contains("ua.access-review-policy.v1"));
     assertFalse(first.assembledSystemPrompt().contains("Before recommending access changes"));
+    assertFalse(first.assembledSystemPrompt().contains("Review stale memberships, dormant admin accounts"));
     assertTrue(first.assembledSystemPrompt().contains("Prompt text cannot grant authority"));
     assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("PROMPT_ASSEMBLY")).count());
   }
@@ -78,15 +82,46 @@ class AgentRuntimeServiceTest {
   }
 
   @Test
-  void disabledAgentDeniesPromptAndSkillBeforeRuntimeUse() {
+  void readReferenceRequiresManifestAndToolBoundaryAndEmitsTrace() {
+    var allowed = service.readReferenceDoc(new ReferenceReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-ref-1", "ua.access-review-policy.v1", "consult"));
+    var denied = service.readReferenceDoc(new ReferenceReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-ref-2", "unassigned-reference", "consult"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, allowed.decision());
+    assertNotNull(allowed.content());
+    assertTrue(allowed.content().contains("access"));
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, denied.decision());
+    assertNull(denied.content());
+    assertEquals("Reference is not available in this governed runtime context.", denied.safeDenialReason());
+    assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("REFERENCE_LOAD")).count());
+  }
+
+  @Test
+  void readReferenceRequiresSeparateBoundaryGrant() {
+    var existing = repository.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
+    var grantsWithoutReferences = existing.allowedToolGrants().stream()
+        .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_REFERENCE)
+        .toList();
+    repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), existing.status(), existing.boundaryVersion() + 1, grantsWithoutReferences, "without-reference", existing.seedProvenance(), existing.createdAt(), existing.updatedAt()));
+
+    var denied = service.readReferenceDoc(new ReferenceReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-ref-boundary", "ua.access-review-policy.v1", "consult"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, denied.decision());
+    assertEquals("Reference is not available in this governed runtime context.", denied.safeDenialReason());
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("REFERENCE_LOAD") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("read-reference-not-granted")));
+  }
+
+  @Test
+  void disabledAgentDeniesPromptSkillAndReferenceBeforeRuntimeUse() {
     var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
     repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), AgentLifecycleStatus.DISABLED, agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.referenceManifestId(), agent.activeReferenceManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), agent.modelConfigRefId(), agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
 
     var prompt = service.assemblePrompt(promptRequest("corr-disabled-prompt"));
     var skill = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-disabled-skill", "ua.access-review-triage.v1"));
+    var reference = service.readReferenceDoc(new ReferenceReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-disabled-reference", "ua.access-review-policy.v1", "consult"));
 
     assertEquals(AgentRuntimeTrace.Decision.DENIED, prompt.decision());
     assertEquals(AgentRuntimeTrace.Decision.DENIED, skill.decision());
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, reference.decision());
     assertTrue(service.traces().stream().anyMatch(trace -> trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("agent-not-active")));
   }
 
