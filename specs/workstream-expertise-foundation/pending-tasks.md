@@ -905,7 +905,7 @@
 
 ### TASK-WEF-08-004: Add model-governance tests
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/04-add-model-governance-tests.md
 - depends on: [TASK-WEF-08-003]
@@ -928,6 +928,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Test starter model governance
+  - checks: `git diff --check` passed; `tools/validate-ai-first-saas-starter-fullstack.sh` passed
+  - coverage: added starter runtime tests for active safe model trace refs, cross-scope/unauthorized model denial, fallback policy enforcement, explicit fallback trace facts, disabled/unknown/provider-policy denial, and provider secret boundary checks
 
 ### TASK-WEF-08-005: Align planning, generation, and coverage for model binding
 

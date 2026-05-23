@@ -113,6 +113,69 @@ class AgentRuntimeServiceTest {
   }
 
   @Test
+  void promptAssemblyDeniesCrossScopeAndUnauthorizedModelBindingsSafely() {
+    new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-2", "bootstrap", "corr-seed-tenant-2");
+    var tenantTwoModel = repository.modelConfigRef("tenant-2", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
+    repository.saveModelConfigRef(new ModelConfigRef("tenant-2", "tenant-2-only-model", tenantTwoModel.displayName(), tenantTwoModel.providerAlias(), tenantTwoModel.status(), tenantTwoModel.allowedAgentDefinitionIds(), tenantTwoModel.allowedCapabilityIds(), tenantTwoModel.allowedModes(), tenantTwoModel.allowedAuthorityLevels(), tenantTwoModel.fallbackPolicyRef(), tenantTwoModel.seedProvenance(), tenantTwoModel.createdAt(), tenantTwoModel.updatedAt()));
+    var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
+    repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), agent.status(), agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.referenceManifestId(), agent.activeReferenceManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), "tenant-2-only-model", agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
+    var crossScope = service.assemblePrompt(promptRequest("corr-model-cross-scope"));
+    repository.saveAgentDefinition(agent);
+    var model = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
+    repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), model.status(), List.of("some-other-agent"), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
+    var agentNotAllowed = service.assemblePrompt(promptRequest("corr-model-agent-denied"));
+    repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), model.status(), model.allowedAgentDefinitionIds(), List.of("different.capability"), model.allowedModes(), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
+    var capabilityNotAllowed = service.assemblePrompt(promptRequest("corr-model-capability-denied"));
+    repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), model.status(), model.allowedAgentDefinitionIds(), model.allowedCapabilityIds(), List.of("evaluation"), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
+    var modeNotAllowed = service.assemblePrompt(promptRequest("corr-model-mode-denied"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, crossScope.decision());
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, agentNotAllowed.decision());
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, capabilityNotAllowed.decision());
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, modeNotAllowed.decision());
+    assertTrue(crossScope.safeDenialReason().contains("model-config-not-available"));
+    assertTrue(agentNotAllowed.safeDenialReason().contains("model-agent-not-allowed"));
+    assertTrue(capabilityNotAllowed.safeDenialReason().contains("model-capability-not-allowed"));
+    assertTrue(modeNotAllowed.safeDenialReason().contains("model-mode-not-allowed"));
+  }
+
+  @Test
+  void promptAssemblyRequiresExplicitFallbackPolicyWhenFallbackIsEnabled() {
+    var policy = repository.modelPolicy("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_POLICY_ID).orElseThrow();
+    var model = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
+    repository.saveModelPolicy(new ModelPolicy(policy.tenantId(), policy.modelPolicyRefId(), policy.displayName(), policy.status(), policy.allowedProviderAliases(), policy.deniedProviderAliases(), List.of("starter-default-model"), false, policy.traceLevel(), policy.seedProvenance(), policy.createdAt(), policy.updatedAt()));
+    repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), model.status(), model.allowedAgentDefinitionIds(), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), null, model.seedProvenance(), model.createdAt(), model.updatedAt()));
+    var missingFallback = service.assemblePrompt(promptRequest("corr-model-fallback-missing"));
+    repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), model.status(), model.allowedAgentDefinitionIds(), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), "starter-default-model-policy", model.seedProvenance(), model.createdAt(), model.updatedAt()));
+    var explicitFallback = service.assemblePrompt(promptRequest("corr-model-fallback-explicit"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, missingFallback.decision());
+    assertTrue(missingFallback.safeDenialReason().contains("model-fallback-policy-missing"));
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, explicitFallback.decision());
+    assertTrue(explicitFallback.assembledSystemPrompt().contains("fallback=explicitPolicy"));
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.correlationId().equals("corr-model-fallback-explicit") && trace.safeSummary().contains("fallback=explicitPolicy")));
+  }
+
+  @Test
+  void modelBindingTraceFactsExposeOnlySafeProviderAliases() {
+    var result = service.assemblePrompt(promptRequest("corr-model-trace-safe"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    var trace = service.traces().stream()
+        .filter(candidate -> candidate.traceType().equals("PROMPT_ASSEMBLY") && candidate.correlationId().equals("corr-model-trace-safe"))
+        .findFirst()
+        .orElseThrow();
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, trace.decision());
+    assertEquals(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, trace.agentDefinitionId());
+    assertTrue(trace.safeSummary().contains("modelConfigRef=starter-default-model"));
+    assertTrue(trace.safeSummary().contains("providerAlias=openai-low-temperature"));
+    assertTrue(trace.safeSummary().contains("modelPolicyRef=starter-default-model-policy"));
+    assertFalse(trace.safeSummary().toLowerCase().contains("api_key"));
+    assertFalse(trace.safeSummary().toLowerCase().contains("secret="));
+    assertFalse(trace.safeSummary().toLowerCase().contains("token="));
+  }
+
+  @Test
   void readSkillRequiresManifestAndToolBoundaryAndEmitsTrace() {
     var allowed = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-1", "ua.access-review-triage.v1"));
     var denied = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-2", "unassigned-skill"));
