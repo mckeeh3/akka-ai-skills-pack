@@ -933,7 +933,7 @@
 
 ### TASK-WEF-08-005: Align planning, generation, and coverage for model binding
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/05-align-planning-generation-coverage.md
 - depends on: [TASK-WEF-08-004]
@@ -958,6 +958,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Align model binding planning guidance
+  - checks: `git diff --check` passed
+  - coverage: PRD/spec/backlog, pending-task, generation, and readiness guidance now require approved model binding or explicit inherited governed default for LLM-backed workstream agents; coverage matrix records starter executable `ModelConfigRef`/`ModelPolicy` runtime and test coverage
 
 ### TASK-WEF-08-006: Review workstream model-binding sprint
 

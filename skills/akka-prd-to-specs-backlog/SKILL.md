@@ -20,7 +20,7 @@ Generate a consistent planning package from a PRD, requirements document, or hig
 - turns each sprint or slice into a build backlog suitable for one or more independent harness operations
 - creates or updates `specs/pending-questions.md` when unresolved decisions should be answered before safe task generation, including AI-first authority, policy, evidence, risk, approval, trace, UI mode, and outcome blockers
 - creates or updates `specs/pending-tasks.md` as the durable execution queue when follow-on implementation work is sufficiently unblocked, preserving capability ids, authority, schemas, side effects, audit, approval, exposure decisions, and workstream expertise requirements
-- creates explicit tasks for every new or materially changed functional-agent workstream expert bundle: prompt intent, skill documents, reference documents, compact manifests, tool boundaries, authorized loaders, seed/import behavior, UI/governance surfaces, traces, and tests
+- creates explicit tasks for every new or materially changed functional-agent workstream expert bundle: prompt intent, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), skill documents, reference documents, compact manifests, tool boundaries, authorized loaders, seed/import behavior, UI/governance surfaces, traces, and tests
 - optionally materializes leaf task briefs when a backlog item is still too large for a single focused harness run
 - writes index files that make execution order and dependencies explicit
 - keeps files small enough to support focused downstream coding sessions
@@ -107,7 +107,7 @@ If the user provided a path to a PRD or requirements file:
 1. read that file completely
 2. first extract AI-first operating-model signals: delegated work, retained human authority, goals/plans, agents, policies, decisions, approvals, exceptions, evidence, risk, traces, outcome loops, and supervision/governance UI needs
 3. then extract the agent workstream model for generated full-stack SaaS: functional agents, internal agents, durable workstreams, structured surfaces, surface actions or workstream events, and candidate action-to-capability links
-4. for each functional agent with LLM behavior, extract or plan its workstream expert bundle: prompt intent, `SkillDocument` entries, `ReferenceDocument` entries, compact `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, authorized `readSkill`/`readReferenceDoc` loaders, traces, governance owner, seed/import expectations, UI surfaces, and tests
+4. for each functional agent with LLM behavior, extract or plan its workstream expert bundle: prompt intent, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), allowed modes, fallback/no-fallback policy, provider secret boundary, model-use trace facts, `SkillDocument` entries, `ReferenceDocument` entries, compact `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, authorized `readSkill`/`readReferenceDoc` loaders, traces, governance owner, seed/import expectations, UI surfaces, and tests
 5. then extract governed backend capabilities before component choices: capability ids/classes, actors/callers, AuthContext and tenant/customer scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace needs, candidate exposure channels, and tests
 6. then generate the file set
 
@@ -541,7 +541,7 @@ Each `specs/backlog/*.md` file should contain:
 - Concrete endpoint list
 - Write-model design decisions
 - Agent/workflow/view/consumer/timer design as relevant
-- Workstream expertise plan for each new or materially changed functional agent: expert bundle id, prompt/skill/reference document families, compact manifests, tool-boundary grants, loaders, traces, seed/import path, UI/governance surfaces, and tests
+- Workstream expertise plan for each new or materially changed functional agent: expert bundle id, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), allowed modes, fallback/no-fallback policy, provider secret boundary, model-use trace facts, prompt/skill/reference document families, compact manifests, tool-boundary grants, loaders, traces, seed/import path, UI/governance surfaces, and tests
 - Test plan by file/class, including guardrail/evaluation/policy/audit/outcome checks when applicable
 - Implementation order
 - Suggested harness task breakdown
@@ -550,7 +550,7 @@ Each `specs/backlog/*.md` file should contain:
 
 For the first SaaS foundation backlog, the `Suggested harness task breakdown` must split user-admin and governed runtime agent foundation work into concrete tasks instead of one vague `auth/admin` or `agent governance` item. Include bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance and prompt assembly/`PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `ReferenceDocument`/`ReferenceVersion` governance, `AgentSkillManifest`, `AgentReferenceManifest`, compact expertise manifest assembly, authorized `readSkill(skillId)`/`SkillLoadTrace`, authorized `readReferenceDoc(referenceId)`/`ReferenceLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace` search/detail, behavior editing agent proposal/review flow, AI admin responsibilities such as AdminRiskAgent and AccessReviewAgent or a skilled `UserAdminAgent`, decision cards for risky admin actions, admin/agent-governance UI surfaces, and security/admin/agent-governance tests before app-specific domain features.
 
-For every new or materially changed domain-specific functional agent, the `Suggested harness task breakdown` must create self-contained fresh-session workstream expertise tasks rather than a single `make the agent expert` item. Split as needed into bounded tasks for app-description expert-bundle definition, seed prompt content, procedural `SkillDocument` content, factual/process `ReferenceDocument` content, compact skill/reference manifests, `ToolPermissionBoundary` and loader grants, runtime `readSkill`/`readReferenceDoc` authorization and denied-load behavior, `PromptAssemblyTrace`/`SkillLoadTrace`/`ReferenceLoadTrace`/`AgentWorkTrace`, expertise manifest and governance UI surfaces, and tests for assigned loads, unassigned denials, boundary denials, no authority expansion from text, tenant isolation, audit/trace visibility, and surface rendering.
+For every new or materially changed domain-specific functional agent, the `Suggested harness task breakdown` must create self-contained fresh-session workstream expertise tasks rather than a single `make the agent expert` item. Split as needed into bounded tasks for app-description expert-bundle definition, governed `ModelConfigRef`/`ModelPolicy` or inherited default binding, fallback/no-fallback policy, provider secret boundary, model-use traces, seed prompt content, procedural `SkillDocument` content, factual/process `ReferenceDocument` content, compact skill/reference manifests, `ToolPermissionBoundary` and loader grants, runtime `readSkill`/`readReferenceDoc` authorization and denied-load behavior, `PromptAssemblyTrace`/`SkillLoadTrace`/`ReferenceLoadTrace`/`AgentWorkTrace`, expertise manifest and governance UI surfaces, and tests for model binding success/denial/fallback and no provider-secret leakage, assigned loads, unassigned denials, boundary denials, no authority expansion from text, tenant isolation, audit/trace visibility, and surface rendering.
 
 ## Required content for the pending question queue
 
@@ -579,7 +579,7 @@ Create this queue only when open decisions are meaningful enough to affect plann
 - functional agent(s) or explicit internal-only/foundation scope
 - surface/action or workstream event, or explicit non-UI/internal trigger
 - capability id(s)/class(es) or explicit foundation/cross-cutting scope, when applicable
-- workstream expert bundle scope when the task touches a functional agent's prompt, skills, references, manifests, loaders, boundaries, traces, seed content, governance UI, or expertise tests
+- workstream expert bundle scope when the task touches a functional agent's model binding, prompt, skills, references, manifests, loaders, boundaries, traces, seed content, governance UI, or expertise tests; LLM-backed agent tasks must name the approved `ModelConfigRef`/`ModelPolicy` or explicit inherited governed default, fallback policy, and model-use trace expectation
 - AuthContext and role/capability rules
 - selected Akka substrate plus frontend/API/realtime work when applicable
 - task brief path or `none`
@@ -610,7 +610,7 @@ Avoid:
 - generating queue tasks that are too broad for one fresh harness context
 - generating tasks that mention only component names while dropping capability authority, schemas, side effects, approval, audit, or capability exposure-channel decisions
 - generating tasks that name only a module, page, dashboard, CRUD screen, or generic UI feature without functional-agent ownership, surface/action contract, capability id/class, AuthContext/rules, Akka substrate, frontend/API/realtime work, and tests
-- generating a vague `make the agent expert`, `agent expertise`, or `agent governance` task without separate prompt, skill, reference, manifest, boundary, loader, UI/governance, trace, and test obligations or an explicit reason one bounded task is sufficient
+- generating a vague `make the agent expert`, `agent expertise`, or `agent governance` task without separate model binding, prompt, skill, reference, manifest, boundary, loader, UI/governance, trace, and test obligations or an explicit reason one bounded task is sufficient
 - inventing new directory structures when `specs/` already has an established pattern
 
 ## Final review checklist
@@ -629,7 +629,7 @@ Before finishing, verify:
 - backlog files exist and align by number with sprint or slice specs
 - backlogs preserve vertical workstream contracts and AI-first operating-model, capability authority/schemas/side effects/approval/audit/exposure-channel decisions, governance, UI-surface, and outcome implications before Akka task breakdown
 - every generated implementation task carries functional agent, surface/action or workstream event, capability id/class, AuthContext/rules, selected Akka substrate, frontend/API/realtime work, and tests, or is explicitly internal-only/foundation/cross-cutting
-- every new or materially changed functional agent with LLM behavior has planned workstream expertise tasks for the expert bundle, prompts, `SkillDocument`/`ReferenceDocument` records, `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, authorized loaders, seed/import behavior, UI/governance surfaces, traces, and assigned/denied/boundary/tenant-isolation tests
+- every new or materially changed functional agent with LLM behavior has planned workstream expertise tasks for the expert bundle, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), fallback/no-fallback behavior, provider secret boundary, prompts, `SkillDocument`/`ReferenceDocument` records, `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, authorized loaders, seed/import behavior, UI/governance surfaces, traces, and model success/denial/fallback, no-secret-leakage, assigned/denied/boundary/tenant-isolation tests
 - `specs/pending-questions.md` exists when unresolved decisions block safe task generation
 - unresolved `blocking` questions do not silently become implementation assumptions
 - `specs/pending-tasks.md` exists when follow-on implementation work remains and is sufficiently unblocked

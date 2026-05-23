@@ -82,7 +82,7 @@ When generating, this skill must:
 - block full-core generation or return to readiness if User Admin cannot be proven through the fullstack `user-admin-dashboard` → `user-admin-user-list` search/filter → `user-admin-user-account` detail/action path, including scoped APIs, backend capability enforcement, UserAdminAgent behavior, audit/trace output, and negative checks for disabled actor, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner without support access, role escalation, and last-admin loss
 - block or return to readiness if generated SaaS web UI would be realized from `frontend/src/screens/**`, route/page-first tests, or static resource examples instead of the `frontend/src/workstream/**` shell, structured-surface modules, and User Admin reference vertical
 - block generation or return to readiness if Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete invitation onboarding, `/api/me`, backend authorization, audit, admin/support-access/billing-boundary semantics, AI-assisted admin offload, governed runtime agent foundation, tenant isolation, forbidden access, disabled-user, role/scope denial, or foundation tests are missing
-- block generation or return to readiness if `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap import of implementation-developed default behavior/reference documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, editing agent proposals, or agent catalog/detail/prompt/skill/reference/manifest/tool-permission UI surfaces are missing for generated AI-first SaaS
+- block generation or return to readiness if `AgentDefinition`, governed model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited default), fallback/no-fallback policy, provider secret boundary, model-use trace facts, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap import of implementation-developed default behavior/reference documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, editing agent proposals, or agent catalog/detail/model/prompt/skill/reference/manifest/tool-permission UI surfaces are missing for generated AI-first SaaS
 - verify readiness did not ignore the required `15-operating-model/` for generated AI-first SaaS apps
 - identify whether generation is full or localized
 - identify which outputs are in scope
@@ -119,7 +119,7 @@ As applicable, generation may include:
 - configuration or deployment assets
 - runtime startup commands or scripts
 - Akka-hosted web UI assets and TypeScript frontend modules when the app description includes `55-ui`, applying the selected `55-ui/style-guide.md`; generated SaaS frontend source should reuse/adapt `frontend/src/workstream/**` shell, rail, composer, stream, surfaces, actions, realtime, and User Admin reference vertical contracts, while treating `frontend/src/screens/**` and standalone static-resource examples as legacy/mechanics references only
-- AI-first substrate outputs when described: durable goals/plans, policy/approval gates, decision cards, traces, outcome loops, agents/workflows/views/endpoints, and supervision UI surfaces
+- AI-first substrate outputs when described: durable goals/plans, governed model bindings for LLM-backed workstream agents, policy/approval gates, decision cards, traces, outcome loops, agents/workflows/views/endpoints, and supervision UI surfaces
 - documentation or evaluation notes
 
 The exact realization set depends on the current repository and user request, but generated AI-first SaaS is full-stack. Route browser UI realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as raw asset delivery or optional polish. Do not invent visual styling during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../../docs/web-ui-style-guide.md`.
@@ -211,6 +211,7 @@ Before finishing, verify:
 - outputs in scope are listed clearly
 - executed steps and results are reported clearly, including whether the app was run locally and what visible/API/workstream paths were validated
 - semantic gaps discovered during generation are surfaced as description issues, not buried in code changes
+- no LLM-backed generated workstream agent is declared ready unless its expert bundle names a specific approved `ModelConfigRef`/`ModelPolicy` or explicit inherited governed default and the generated outputs preserve model denial/fallback traces without provider secrets
 
 ## Response style
 
