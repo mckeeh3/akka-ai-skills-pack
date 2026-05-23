@@ -1,0 +1,50 @@
+# Model Binding Gap Matrix: Workstream Expertise Foundation
+
+## Purpose
+
+Audit where per-workstream governed model binding is ready, implicit, partial, or missing before Sprint 08 fixes are implemented.
+
+Target claim:
+
+> Every generated workstream is backed by a workstream-specific governed agent with a specific approved AI model binding.
+
+Acceptable binding forms:
+
+- explicit per-agent `ModelConfigRef` plus `ModelPolicy`; or
+- deliberate inherited governed default model binding recorded in the workstream expert bundle, `AgentDefinition`, runtime resolution, traces, readiness/generation guidance, and tests.
+
+## Summary
+
+The pack has the conceptual model and several references to model governance, but model binding is not yet part of the workstream expert bundle contract and is not executable in the starter runtime. The current state is therefore **partial**: `AgentDefinition` stores `modelConfigRefId` / `modelPolicyRefId`, and `akka-agent-model-governance` defines the desired rules, but seed bundles, app-description readiness, generation/planning handoffs, starter runtime resolution, starter tests, and the coverage matrix still leave per-workstream model binding implicit or documented-only.
+
+## Gap matrix
+
+| Area | Current evidence | Gap | Required follow-up |
+|---|---|---|---|
+| Doctrine: workstream expertise model | `docs/workstream-expertise-model.md` defines bundle fields for prompt, skills, references, capability map, tool boundary, authority profile, surfaces, traces, tests, governance owner, and seed/upgrade policy. Runtime overview mentions active `AgentDefinition`, prompt, manifests, loaders, boundaries, traces, and tests. | Bundle contract does not require `ModelConfigRef`, `ModelPolicy`, inherited default model binding, fallback policy, provider secret boundary, or model-use trace facts. Readiness checklist does not block missing model binding. | Add model binding as a required bundle field and readiness item for every LLM-backed functional agent. Require explicit binding or explicit inherited governed default. |
+| Runtime invocation doctrine | `docs/agent-runtime-invocation-pattern.md` requires resolving `ToolPermissionBoundary and model config reference`, includes `ModelConfigRef` in `ResolvedAgentRuntime`, and says model config must be allowed by tenant/agent/model policy with no provider secrets before Java Agent invocation. | Runtime pattern is explicit enough conceptually, but does not spell out inherited-default semantics for workstream bundles or starter-specific fallback/no-fallback behavior. | Align with the bundle contract so runtime resolution records whether the model came from a per-agent binding or inherited governed default. |
+| Model governance skill | `skills/akka-agent-model-governance/SKILL.md` defines `ModelConfigRef`, `ModelPolicy`, provider secret boundary, runtime checks, fallback rules, trace requirements, and tests. | Skill is strong, but not yet cross-wired into workstream expertise readiness/generation as a mandatory per-workstream requirement. | Link model governance from workstream expertise, app-description functional-agent modeling, readiness, planning, and generation guidance. |
+| Behavior profile skill | `skills/akka-agent-behavior-profiles/SKILL.md` includes `modelConfigRef` in `AgentDefinition`, routes to model governance, and warns model refs must be secret-free and governed. | This covers durable agent profile fields, not the app-description bundle contract or seed bundle status. It also does not make missing model binding a readiness blocker for functional agents. | Keep as implementation substrate; update app-description/readiness guidance to require these fields in generated workstream agents. |
+| App-description expertise contract | `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/README.md` lists required bundle fields for prompt, skills, references, manifests, loaders, capabilities, tool boundary, surfaces, traces, stewardship, seed policy, and tests. | Required bundle contract omits model binding, model policy, fallback policy, provider secret boundary, and model-use trace requirements. | Add explicit model-binding fields to the contract and state that every LLM-enabled functional agent must name a `ModelConfigRef`/`ModelPolicy` or inherited governed default. |
+| Seed foundation expert bundles | Seed bundles exist for `my-account-agent`, `user-admin-agent`, `agent-admin-agent`, `mission-control-agent`, `governance-policy-agent`, and `audit-trace-agent`. Some mention model policy only as part of Agent Admin/Governance concerns. | No seed bundle names an explicit `ModelConfigRef` or inherited governed default model binding. Tests/trace obligations in bundles do not require model-use trace facts or provider secret boundary checks. | Update all six seed bundles with explicit or inherited model binding, allowed modes, fallback/no-fallback policy, secret boundary, trace, and test obligations. |
+| Seed functional-agent catalog | `functional-agents.md` says `user-admin-agent` has an `AgentDefinition` with model policy, active prompt, skill manifest, reference manifest, tool boundary, steward/reviewer, and lifecycle status. | Only User Admin is explicitly called out in the snippet; model binding is not consistently represented as a per-foundation-agent readiness requirement. | Add or link model-binding expectations for every foundation functional agent, preferably through the workstream expertise files rather than duplicating. |
+| Starter domain model | `templates/ai-first-saas-starter/.../domain/agentfoundation/AgentDefinition.java` stores `modelConfigRefId` and `modelPolicyRefId`. | There are no first-class starter `ModelConfigRef` / `ModelPolicy` records visible in the template domain layer, so ids are stored but not resolved as governed state. | Add starter model-governance domain records or an explicitly scoped starter equivalent. |
+| Starter runtime service | `AgentRuntimeService` resolves active agent, prompt, skill manifest, reference manifest, and tool boundary; prompt assembly includes prompt/manifest/boundary summaries and traces. | It does not resolve `modelConfigRefId` or `modelPolicyRefId`, deny disabled/unknown/cross-tenant model refs, enforce provider policy, choose fallback/no-fallback behavior, or include model refs in `PROMPT_ASSEMBLY`/work traces. | Resolve and validate model binding before prompt/model invocation; emit safe model references and policy/fallback decisions in traces. |
+| Starter seed/import runtime | Existing seed/runtime work imports User Admin prompt, skill/reference docs, manifests, and tool boundaries. Agent definitions carry model ref ids. | Seed import does not materialize governed `ModelConfigRef` / `ModelPolicy` state or prove idempotent upgrade/customization behavior for model config records. | Seed starter default model config and policy records with provenance, checksums/idempotency where appropriate, and secret-free provider aliases. |
+| Starter tests | `AgentRuntimeServiceTest` covers prompt assembly, reference loading, disabled-agent denial, tool-boundary denial, and authority text regression. Coverage matrix notes no executable governed `ModelConfigRef` resolver example yet. | No tests cover active model success, disabled/unknown/cross-tenant model denial, policy-denied provider, provider secret non-exposure, fallback/no-fallback behavior, or model refs in traces. | Add targeted model-governance tests after starter runtime records and resolver are implemented. |
+| Coverage matrix | `docs/agent-coverage-matrix.md` marks governed model configuration as ◑ and says there is no executable governed `ModelConfigRef` resolver example yet. | Accurate current status, but should be updated after executable starter coverage lands. | Keep partial status until tests exist; later update with canonical starter examples/tests. |
+| Planning/backlog guidance | Sprint/backlog material identifies model binding as Sprint 08 work. `akka-agent-model-governance` documents tests to plan. | General PRD/spec/backlog/generation handoffs do not consistently require model-binding tasks for each new workstream agent. | Update `akka-prd-to-specs-backlog` and related planning guidance to create model-binding work items for new workstream agents. |
+| Generation/readiness guidance | `app-generate-app` and readiness routing are not currently found to require per-workstream model binding. Workstream expertise readiness blocks prompt/skill/reference/manifest/boundary gaps, not model binding. | A generated app could be considered ready with workstream agents but no explicit or inherited model binding in app-description artifacts. | Update readiness/generation skills so missing model binding blocks readiness unless explicitly deferred with scope impact. |
+| UI/security surfaces | Starter workstream service has an Agent Model Refs surface that displays safe provider alias and redacted secret placeholder. | UI surface is illustrative, not backed by governed model records or runtime policy enforcement. | Preserve redaction behavior and connect future model refs surface to governed records, policy decisions, and audit/trace links. |
+
+## Recommended Sprint 08 execution order
+
+1. Update workstream expertise doctrine and app-description contracts to make model binding required.
+2. Update all seed foundation expert bundles with explicit or inherited governed default model binding.
+3. Add starter governed model config/policy state, seed import, and runtime validation.
+4. Add starter tests for success, denials, fallback/no-fallback, secret boundary, and trace refs.
+5. Update planning/generation/readiness guidance and coverage matrix after executable coverage exists.
+
+## Audit conclusion
+
+Sprint 08 should proceed. The first implementation task should not add runtime code until the bundle contract is aligned, because later starter records and tests need to know whether a functional agent owns an explicit `ModelConfigRef`/`ModelPolicy` or intentionally inherits a governed foundation default.

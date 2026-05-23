@@ -811,7 +811,7 @@
 
 ### TASK-WEF-08-001: Audit workstream model-binding readiness
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/01-audit-model-binding-readiness.md
 - depends on: [TASK-WEF-07-005]
@@ -837,6 +837,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Audit workstream model binding readiness
+  - checks: `git diff --check` passed
+  - output: `specs/workstream-expertise-foundation/model-binding-gap-matrix.md`
 
 ### TASK-WEF-08-002: Align expertise model-binding contract
 
