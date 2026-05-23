@@ -456,7 +456,7 @@
 
 ### TASK-WEF-05-001: Run final workstream expertise consistency review
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/05-review-hardening-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/05-review-hardening/01-final-consistency-review.md
 - depends on: [TASK-WEF-04-003]
@@ -483,6 +483,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Review workstream expertise consistency
+  - checks: `git diff --check` passed; repository text search found no prompt-only, generic-chatbot, page-first, or CRUD-first readiness path that bypasses workstream expertise
+  - review outcome: proceed to TASK-WEF-05-002 for small cleanup of stale skill-only governed-runtime summaries; no new sprint recommended yet
 
 ### TASK-WEF-05-002: Apply final cleanup or add next sprint
 
