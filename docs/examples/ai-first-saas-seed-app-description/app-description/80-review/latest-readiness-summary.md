@@ -13,6 +13,7 @@
   - production WorkOS authentication setup values and Resend invite-email setup values
 - workstream/UI readiness notes:
   - functional agents, internal agents, workstream retention, surface index, and representative surface contracts are defined
+  - authoritative workstream expert bundles exist for all seed foundation functional agents: My Account, User Admin, Agent Admin, Mission Control, Governance/Policy, and Audit/Trace
   - selected `atlas-ops-supervisory-console` style guide is recorded
   - light/dark/system mode and lightweight style constraints are defined
   - structured surface contracts, form/action behavior, frontend API DTO sketches, realtime behavior, and design-specific acceptance checks are defined
@@ -21,5 +22,5 @@
   - local/prod auth mode
   - first implementation slice boundary
   - v1 component coverage boundary
-  - whether phase-1 frontend includes only Access/Profile, User Admin, and Agent Admin workstreams or also Mission Control, Governance/Policy, and Audit/Trace surfaces
+  - whether phase-1 frontend includes only My Account, User Admin, and Agent Admin workstreams or also Mission Control, Governance/Policy, and Audit/Trace surfaces
   - whether MCP/gRPC are included in seed v1 or deferred modules

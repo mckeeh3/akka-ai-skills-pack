@@ -780,7 +780,7 @@
 
 ### TASK-WEF-07-005: Update traceability/readiness and review foundation expertise
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/07-foundation-expertise-expansion-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/07-foundation-expertise-expansion/05-traceability-readiness-review.md
 - depends on: [TASK-WEF-07-004]
@@ -806,3 +806,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Review foundation expertise expansion
+  - checks: `git diff --check` passed; text-search proof confirmed bundle-id-bearing expertise artifacts for `my-account-agent`, `user-admin-agent`, `agent-admin-agent`, `mission-control-agent`, `governance-policy-agent`, and `audit-trace-agent`
+  - review outcome: Sprint 07 complete; every seed foundation functional agent has a matching expertise bundle and no follow-up task is required from this review

@@ -13,6 +13,7 @@
   - production WorkOS authentication setup values and Resend invite-email setup values
 - decisive reasons:
   - app class, SaaS foundation, complete invitation onboarding, full admin user management, AI-assisted admin offload, agent workstream model, functional agents, structured surfaces, security posture, and horizontal Akka component mapping are defined
+  - every seed foundation functional agent has an authoritative workstream expert bundle under `12-workstreams/workstream-expertise/`: My Account, User Admin, Agent Admin, Mission Control, Governance/Policy, and Audit/Trace
   - selected UI design, light/dark/system mode, lightweight style constraints, workstream shell semantics, surface contracts, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
   - enough structure exists to plan implementation phases and generate initial scaffolding
 - blocking gaps before full code generation:
@@ -21,7 +22,7 @@
   - choose first implementation slice boundary
   - confirm persistence model expectations for local test execution
   - confirm whether MCP and gRPC are in v1 or deferred examples
-  - decide whether the first generated frontend slice should include only phase-1 Access/Profile, User Admin, and Agent Admin workstreams or also phase-2 Mission Control, Governance/Policy, and Audit/Trace surfaces
+  - decide whether the first generated frontend slice should include only phase-1 My Account, User Admin, and Agent Admin workstreams or also phase-2 Mission Control, Governance/Policy, and Audit/Trace surfaces
 - accepted assumptions:
   - v1 may use WorkOS-compatible local test tokens for developer execution while preserving production WorkOS/AuthKit semantics
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules
