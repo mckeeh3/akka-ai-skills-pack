@@ -14,7 +14,7 @@
 
 ### TASK-WEF-01-001: Create workstream expertise doctrine
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/01-doctrine-description-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/01-doctrine-description/01-create-workstream-expertise-doctrine.md
 - depends on: []

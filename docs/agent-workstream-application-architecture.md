@@ -71,7 +71,7 @@ A generated app grows by adding vertical functional agents. Each functional agen
 - authorized roles/capabilities and tenant/customer scope;
 - default dashboard or attention surface;
 - durable workstream semantics and retention expectations;
-- prompt intent, governed behavior documents, skills, and tool boundaries where LLM behavior is involved;
+- prompt intent and a workstream expert bundle where LLM behavior is involved: governed prompt refs, skills, reference documents, compact expertise manifest, loader rules, and tool boundaries;
 - surfaces the agent can render or reuse;
 - capabilities it can call directly or through tools/workflows;
 - escalation, approval, denial, and exception behavior;
@@ -211,6 +211,7 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Authenticated consequential work areas are modeled as functional agents, not primarily as pages.
 - [ ] Left rail functional agents are role-authorized from backend capabilities and selected AuthContext.
 - [ ] Each functional agent has purpose, authority, surfaces, capability mappings, traces, and tests.
+- [ ] Each LLM-backed functional agent has a workstream expert bundle or explicit deferral covering skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests.
 - [ ] User Admin and Agent Admin functional agents are present for full core SaaS scope, or the narrower scope explicitly defers them.
 - [ ] Internal agents are distinguished from functional agents and have governed behavior, tool boundaries, and traces.
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.
@@ -224,7 +225,7 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 
 When this model is maintained in an app-description tree, keep ownership split by layer:
 
-- `12-workstreams/` owns application meaning: functional agents, internal agents, durable workstreams, surface index and contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests.
+- `12-workstreams/` owns application meaning: functional agents, internal agents, durable workstreams, workstream expert bundles under `workstream-expertise/**`, surface index and contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests.
 - `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, forms/interactions, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
 - `55-ui/` must link back to `12-workstreams/`, capability, security, observability, and test layers instead of redefining functional agents, surface contracts, or capability semantics.
 - `60-generation/` and generated frontend source are downstream projections, not authoritative product meaning.
@@ -240,5 +241,7 @@ For high-level product input, apply this sequence:
 5. Route to app-description maintenance, solution decomposition, PRD/spec/backlog planning, or focused implementation.
 6. Use web UI and agent skills to implement the workstream shell and governed agents.
 7. Use Akka component skills to implement the horizontal substrate from accepted capability contracts.
+
+Use `workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream.
 
 This doctrine should be referenced by future app-description, web UI, agent, routing, and review tasks as the single generated-app UI/application architecture default.
