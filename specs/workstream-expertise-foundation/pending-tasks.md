@@ -429,7 +429,7 @@
 
 ### TASK-WEF-04-003: Review planning integration with sample domain workstream
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/04-planning-integration-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/04-planning-integration/03-review-planning-sample.md
 - depends on: [TASK-WEF-04-002]
@@ -451,6 +451,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Review expertise planning integration
+  - checks: `git diff --check` passed; text-search proof covered workstream expertise tasks, self-contained fresh-session execution, `ReferenceDocument`, `AgentReferenceManifest`, `readReferenceDoc`, `ReferenceLoadTrace`, and vague `make the agent expert` / `agent governance` rejection
+  - review outcome: Sprint 05 may proceed; no queue adjustments required before final consistency review
 
 ### TASK-WEF-05-001: Run final workstream expertise consistency review
 
