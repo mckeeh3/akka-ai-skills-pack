@@ -36,6 +36,8 @@ functional workstream
 3. `sprints/03-seed-example-sprint.md` — update seed/starter examples so User Admin demonstrates real workstream expertise.
 4. `sprints/04-planning-integration-sprint.md` — update PRD/spec/backlog/task generation so new workstreams produce expertise tasks.
 5. `sprints/05-review-hardening-sprint.md` — final consistency review, gap closure, and next-sprint decision.
+6. `sprints/06-executable-reference-coverage-sprint.md` — close the starter backend/runtime gap for first-class reference governance.
+7. `sprints/07-foundation-expertise-expansion-sprint.md` — expand or explicitly defer expert bundles for all foundation functional agents.
 
 ## Done state
 
@@ -49,6 +51,8 @@ This plan is complete when:
 - Starter/template seed resources and/or examples include enough packaged default content to demonstrate first-install workstream expertise.
 - PRD/spec/backlog guidance generates self-contained workstream expertise tasks for every new functional agent.
 - Final review finds no major path where a functional agent can be declared ready while lacking assigned expertise documents, runtime load controls, boundaries, and tests.
+- Starter backend/runtime code has executable first-class coverage for reference documents, reference manifests, `readReferenceDoc`, reference-load denials, and reference-load traces.
+- Every foundation functional agent in the seed app-description has a workstream expert bundle or an explicit readiness-impacting deferral.
 
 ## Open suggestions / decisions for sprint reviews
 
