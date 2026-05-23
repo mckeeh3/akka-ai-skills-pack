@@ -9,7 +9,7 @@ Use this skill when agent behavior profiles include runtime model selection or m
 
 This skill governs model configuration. It does not replace `akka-agent-component` for Java `Agent` class structure or `akka-agent-behavior-profiles` for durable `AgentDefinition` lifecycle.
 
-Use this skill only for model-selection authority, policy, fallback, secret-boundary, and model-use trace concerns. Use `akka-agent-behavior-profiles` for which agent references a model config, `akka-agent-tool-boundaries` for tool/data/side-effect authority, and prompt/skill governance skills for model-visible behavior guidance. Prompt text, skill text, or evaluator recommendations cannot select an unapproved provider or bypass model policy.
+Use this skill only for model-selection authority, policy, fallback, secret-boundary, and model-use trace concerns. Use `akka-agent-behavior-profiles` for which agent references a model config, `app-description-functional-agent-modeling` / `docs/workstream-expertise-model.md` for the per-workstream expert bundle contract, `akka-agent-tool-boundaries` for tool/data/side-effect authority, and prompt/skill governance skills for model-visible behavior guidance. Prompt text, skill text, or evaluator recommendations cannot select an unapproved provider or bypass model policy.
 
 ## Required reading
 
@@ -70,7 +70,8 @@ Provider secrets, API keys, base URLs with embedded credentials, and service-acc
 
 Before model invocation, the runtime resolver must verify:
 
-1. `AgentDefinition.modelConfigRef` exists and belongs to the tenant/platform scope allowed for the selected `AuthContext`.
+0. The workstream expert bundle names either an explicit `ModelConfigRef`/`ModelPolicy` pair or an explicit inherited governed default model binding; no implicit provider fallback or prompt-selected model is allowed.
+1. `AgentDefinition.modelConfigRef` exists or resolves through the governed default binding, and belongs to the tenant/platform scope allowed for the selected `AuthContext`.
 2. The referenced model config is active for the invocation mode.
 3. The selected agent, capability, authority level, and task type are allowed by `ModelPolicy`.
 4. Prompt/skill text cannot override model policy or request an unapproved provider.
@@ -117,6 +118,7 @@ Plan tests for:
 
 Before finishing, verify:
 
+- every LLM-backed workstream expert bundle has an explicit `ModelConfigRef`/`ModelPolicy` or explicit inherited governed default model binding;
 - `AgentDefinition` stores a `ModelConfigRef`, not provider secrets;
 - model policy is checked before Java Agent invocation;
 - fallback behavior is explicit and traceable;

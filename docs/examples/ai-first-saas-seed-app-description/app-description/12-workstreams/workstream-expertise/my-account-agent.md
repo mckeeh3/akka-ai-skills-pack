@@ -26,6 +26,16 @@ The bundle guides own-account self-service. It does not grant authority. Backend
 
 The agent may not grant roles, change memberships, invite users, alter support access, approve policies, edit other users, or infer hidden tenant/customer data from denied contexts.
 
+## Model binding
+
+This LLM-backed bundle uses an inherited governed default model binding unless a tenant-approved override is explicitly activated for `my-account-agent`:
+
+- inherited governed default model binding: `ModelConfigRef:foundation-my-account-default-model` with `ModelPolicy:foundation-my-account-model-policy`;
+- allowed modes: runtime, test;
+- fallback policy: no implicit fallback; safe denial is preferred for unavailable model binding;
+- provider secret boundary: the bundle, prompt, skills, references, manifests, traces, and browser surfaces may contain only safe provider/model aliases and never API keys, credential names, secret URLs, or deployment secret values;
+- runtime requirement: resolve and validate the `ModelConfigRef`/`ModelPolicy` before model invocation, deny unknown/disabled/cross-scope/policy-denied bindings fail-closed, and record safe model refs plus policy/fallback decisions in `PromptAssemblyTrace` and `AgentWorkTrace`.
+
 ## Prompt intent
 
 The active `PromptDocument`/`PromptVersion` for `my-account-agent` instructs the model to:
@@ -78,6 +88,6 @@ Deny safely for unassigned/inactive/cross-tenant/oversized/redaction-failed skil
 ## Surfaces, traces, seed, and tests
 
 - `my-account-dashboard`: shows current account summary, selected/default AuthContext, browser-safe capabilities, Profile, Settings, Sign out, context-switch states, and denial/recovery messages.
-- Required traces: `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, data-access trace for `/api/me`, selected-context changes, profile/settings update audit where consequential, and denial traces.
-- Seed policy: tenant bootstrap creates default `AgentDefinition`, prompt, four skills, three references, compact skill/reference manifests, and `ToolPermissionBoundary` with read-only self-service loaders. Imports record provenance, checksums, idempotency, and customization-preserving upgrade behavior.
+- Required traces: safe model binding/model-use facts, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, data-access trace for `/api/me`, selected-context changes, profile/settings update audit where consequential, and denial traces.
+- Seed policy: tenant bootstrap creates default `AgentDefinition`, inherited governed default `ModelConfigRef`/`ModelPolicy` binding, prompt, four skills, three references, compact skill/reference manifests, and `ToolPermissionBoundary` with read-only self-service loaders. Imports record provenance, checksums, idempotency, and customization-preserving upgrade behavior.
 - Test obligations: compact manifest without full bodies; assigned and denied skill/reference loads; missing loader-boundary denial; own-account capability authorization; disabled-user/forbidden-context denials; no authority expansion from profile/settings/prompt/reference text; `my-account-dashboard` rendering; trace emission.

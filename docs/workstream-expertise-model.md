@@ -9,7 +9,7 @@ A functional agent is not ready merely because it has a prompt, a chat surface, 
 ```text
 functional workstream
 → workstream expert bundle
-→ governed prompt, skills, and reference documents
+→ governed prompt, model binding, skills, and reference documents
 → compact per-agent expertise manifest
 → authorized readSkill/readReference loading
 → capability and tool-boundary enforcement
@@ -30,6 +30,7 @@ A bundle must name:
 | Functional agent | Owning left-rail/workstream agent and whether it is foundation or domain-specific. |
 | Scope | Tenant/customer/AuthContext assumptions, supported roles, and workstream responsibilities. |
 | Prompt intent | What the agent helps with, what it refuses, when it asks clarifying questions, and when it escalates. |
+| Model binding | Explicit `ModelConfigRef` plus `ModelPolicy`, or an explicit inherited governed default model binding; include allowed modes, fallback/no-fallback policy, provider secret boundary, and model-use trace requirements. |
 | Skill documents | Procedural guidance the model may load for how to perform workstream tasks. |
 | Reference documents | Durable policy/process/product/domain facts the model may cite or consult; not procedural skill instructions by default. |
 | Expertise manifest | Compact per-agent manifest entries for available skills and references, assembled into prompt context without full document bodies. |
@@ -93,6 +94,7 @@ Runtime invocation should follow this shape:
 ```text
 resolve AuthContext and active AgentDefinition
 → resolve approved active PromptVersion
+→ resolve explicit ModelConfigRef/ModelPolicy or inherited governed default model binding
 → resolve active workstream expert bundle and compact expertise manifest
 → assemble prompt with compact skill/reference entries only
 → register readSkill/readReferenceDoc and other allowed tools
@@ -109,11 +111,13 @@ The model must not receive all skill/reference bodies by default. Full content i
 
 1. Every functional agent with LLM behavior needs an explicit workstream expert bundle or an explicit deferral that prevents readiness from being claimed.
 2. Expertise artifacts are tenant-scoped governed behavior/knowledge records, not static prompt-only text.
-3. Seeded default prompts, skills, references, manifests, and boundaries are imported into governed storage with provenance, checksums, idempotency, audit, and customization-preserving upgrade behavior.
-4. Manifest changes and tool-boundary changes are governance-impacting and must be reviewed, approved, audited, and tested.
-5. Reference documents may use a first-class reference model or a constrained interim governed-document representation, but they must remain distinguishable from procedural skills.
-6. A human steward or approved governance workflow owns activation of high-impact expertise changes.
-7. No expertise text can override platform policy, backend authorization, tenant isolation, approval requirements, or ToolPermissionBoundary enforcement.
+3. Seeded default prompts, model config refs/policies, skills, references, manifests, and boundaries are imported into governed storage with provenance, checksums, idempotency, audit, and customization-preserving upgrade behavior.
+4. Every LLM-backed bundle must name either a specific active `ModelConfigRef`/`ModelPolicy` pair or an inherited governed default model binding; missing or implicit model selection blocks readiness unless explicitly deferred with scope impact.
+5. Provider secrets are never bundle content: bundles may reference safe provider aliases only, while deployment/runtime configuration resolves credentials outside prompts, skills, references, traces, browser payloads, and app-description examples.
+6. Manifest changes, tool-boundary changes, and model-binding/model-policy changes are governance-impacting and must be reviewed, approved, audited, and tested.
+7. Reference documents may use a first-class reference model or a constrained interim governed-document representation, but they must remain distinguishable from procedural skills.
+8. A human steward or approved governance workflow owns activation of high-impact expertise changes.
+9. No expertise text can override platform policy, backend authorization, tenant isolation, approval requirements, or ToolPermissionBoundary enforcement.
 
 ## App-description ownership
 
@@ -127,7 +131,7 @@ app-description/12-workstreams/
     <functional-agent-id>.md
 ```
 
-Each `<functional-agent-id>.md` should capture the bundle contract: prompt intent, skills, references, manifests, capability map, tool boundary, surfaces, traces, governance owner, seed policy, and tests. Cross-layer files should link to it rather than redefining it:
+Each `<functional-agent-id>.md` should capture the bundle contract: prompt intent, model binding, skills, references, manifests, capability map, tool boundary, surfaces, traces, governance owner, seed policy, and tests. Cross-layer files should link to it rather than redefining it:
 
 - `10-capabilities/**` owns detailed capability contracts.
 - `15-operating-model/**` owns governed runtime agent behavior and lifecycle rules.
@@ -143,7 +147,8 @@ Each `<functional-agent-id>.md` should capture the bundle contract: prompt inten
 A functional agent is not expertise-ready until:
 
 - [ ] a workstream expert bundle exists or the missing bundle is explicitly deferred with scope impact;
-- [ ] prompt intent, governed prompt refs, skills, references, and compact manifest entries are listed;
+- [ ] prompt intent, governed prompt refs, model binding, skills, references, and compact manifest entries are listed;
+- [ ] model binding names an explicit `ModelConfigRef`/`ModelPolicy` pair or an explicit inherited governed default, including allowed modes, fallback/no-fallback behavior, provider secret boundary, and model-use trace facts;
 - [ ] references are distinguished from procedural skills;
 - [ ] assigned capabilities and exposure channels are mapped;
 - [ ] `ToolPermissionBoundary` covers loaders and all model-facing tools;
@@ -163,11 +168,12 @@ Workstream expertise tests should verify:
 - skill/reference text cannot grant a forbidden tool, capability, role, tenant scope, or approval right;
 - side-effecting capabilities remain proposal/approval-gated unless policy grants bounded autonomy;
 - surfaces render manifest summaries, decisions, evidence, denials, and trace links safely;
-- traces are emitted for prompt assembly, allowed loads, denied loads, tool invocations, data access, decisions, and consequential work.
+- traces are emitted for prompt assembly, model binding resolution/denial/fallback, allowed loads, denied loads, tool invocations, data access, decisions, and consequential work.
 
 ## Routing implications
 
 - Use `app-description-functional-agent-modeling` when adding or revising a functional agent's expert bundle in app-description artifacts.
+- Use `akka-agent-model-governance` for governed `ModelConfigRef`, `ModelPolicy`, explicit fallback/no-fallback behavior, provider secret boundaries, and model-use trace facts.
 - Use `akka-agent-skill-governance` for governed `SkillDocument`, `SkillVersion`, `AgentSkillManifest`, `readSkill`, and `SkillLoadTrace` implementation guidance.
 - Use `akka-agent-reference-governance` for `ReferenceDocument`, `ReferenceVersion`, `AgentReferenceManifest`, `readReferenceDoc(referenceId)`, denied-load semantics, and ReferenceLoadTrace; do not silently collapse references into generic prompts or procedural skills.
 - Use `akka-agent-tool-boundaries` for enforcing loader/tool permissions.

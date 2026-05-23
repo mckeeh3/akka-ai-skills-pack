@@ -96,7 +96,7 @@ For every generated SaaS app, this is blocking readiness. Check that the descrip
 - required admin read models: UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView where applicable
 - scoped capabilities for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins
 - mandatory AI-assisted admin offload surfaces and behavior: AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent or one governed `UserAdminAgent` with equivalent skills, scoped tools/redaction, audit/work traces, and decision cards for risky admin actions such as admin role grants, support-access expansion, identity relink/reset, bulk operations, and last-admin risk
-- governed runtime agent foundation artifacts: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap default behavior seed import, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`
+- governed runtime agent foundation artifacts: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `ModelConfigRef`/`ModelPolicy` or explicit inherited governed default model binding, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap default behavior seed import, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, model-use trace facts, and `AgentWorkTrace`
 - behavior-editing agent semantics: an `AgentBehaviorEditorAgent` or equivalent editing agent creates proposed diffs, draft prompt/skill/manifest/tool-boundary versions, rationale, risk notes, review/approval routing, activation/rollback flow, audit, and denial of unauthorized authority expansion
 - foundation test artifacts for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, invite send/resend/revoke/expire/accept, delivery failure, user and membership list/search, membership lifecycle, last-admin protection, support-access, AI access review recommendations, admin-agent approval boundaries, governed prompt/skill/manifest/tool-boundary changes, disabled-agent denial, unassigned skill denial, `readSkill(skillId)` authorization, decision cards for risky admin actions, audit/search views, billing boundary, idempotency, and frontend secret-boundary checks
 - observability/audit artifacts for identity, Membership/role, support-access, billing-boundary, policy, approval, data-access, access-review, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, and consequential AI/tool activity
@@ -109,8 +109,8 @@ Check this for generated full-stack AI-first SaaS apps and for any existing `12-
 - full core SaaS scope includes at least My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, or the app description explicitly records a narrower scope that defers User Admin or Agent Admin and identifies the replacement/temporary operational boundary
 - User Admin full-core readiness requires the canonical three-surface vertical: `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account`; all three must have typed payloads, scoped API routes, backend capability mappings, Akka view/component realization, UserAdminAgent behavior, rendering/action tests, and trace/audit expectations for SaaS Owner Admin, Tenant Admin, and Customer Admin variants
 - User Admin is not ready when the dashboard/list/detail flow is fixture-only, API-only, or UI-only; at least one safe mutation or decision-card-producing action must be specified end to end with idempotency, authorization, audit/trace output, and denial behavior
-- workstream expert bundles identify prompt intent, governed prompt refs, procedural skills, reference documents, compact expertise manifest entries, capability map, `ToolPermissionBoundary`, authority profile, structured surfaces, seed/upgrade behavior, trace requirements, governance owner, and tests
-- functional-agent readiness is blocked when expertise artifacts are absent, vague, or prompt-only; missing bundles may be accepted only as explicit deferrals that narrow scope and prevent the affected agent/workstream from being reported ready
+- workstream expert bundles identify prompt intent, governed prompt refs, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, allowed modes, fallback/no-fallback policy, provider secret boundary, procedural skills, reference documents, compact expertise manifest entries, capability map, `ToolPermissionBoundary`, authority profile, structured surfaces, seed/upgrade behavior, trace requirements, governance owner, and tests
+- functional-agent readiness is blocked when expertise artifacts are absent, vague, prompt-only, or missing model binding for LLM-backed behavior; missing bundles or model bindings may be accepted only as explicit deferrals that narrow scope and prevent the affected agent/workstream from being reported ready
 - expert bundle traceability links functional agents to skills, references, manifests, boundaries, capabilities, surfaces, observability/audit traces, and tests
 - internal agents are distinguished from user-facing functional agents and define governed behavior documents, tool boundaries, authority basis, traces, and tests where applicable
 - structured surfaces are defined as typed renderable artifacts with stable ids/types/versions, payload schemas, redaction rules, allowed actions, loading/empty/error/forbidden/stale states, accessibility/responsive expectations, rendering tests, and capability/action tests
@@ -156,7 +156,7 @@ Check whether important behavior is backed by explicit verification expectations
 - negative cases
 - repeated-request behavior
 - failure-path expectations
-- workstream expertise tests for assigned skill/reference loads, unassigned denied loads, tool-boundary denial, no authority expansion from text, tenant isolation, surface rendering, and prompt/skill/reference/work trace emission
+- workstream expertise tests for assigned skill/reference loads, unassigned denied loads, model binding success/denial/fallback where applicable, provider secret non-exposure, tool-boundary denial, no authority expansion from text, tenant isolation, surface rendering, and prompt/skill/reference/model-use/work trace emission
 
 ### 7. Auth/security completeness
 Check whether required production security semantics are defined:
@@ -166,7 +166,7 @@ Check whether required production security semantics are defined:
 - sensitive-data rules
 - denial behavior
 - mechanical enforcement of agent/tool permissions and human authority boundaries when AI-first behavior is in scope
-- governed runtime agent security for disabled agents, active prompt and skill/reference version selection, default behavior seed import validation/provenance/idempotency, `AgentSkillManifest` and reference-manifest assignment, authorized `readSkill(skillId)` and reference-document loading, `ToolPermissionBoundary` enforcement, editing agent proposal approval, denied unassigned/cross-tenant loads, and denial of unauthorized authority expansion
+- governed runtime agent security for disabled agents, active prompt and skill/reference version selection, explicit model config/policy resolution or governed default inheritance, provider secret boundary, disabled/unknown/policy-denied model denials, default behavior seed import validation/provenance/idempotency, `AgentSkillManifest` and reference-manifest assignment, authorized `readSkill(skillId)` and reference-document loading, `ToolPermissionBoundary` enforcement, editing agent proposal approval, denied unassigned/cross-tenant loads, and denial of unauthorized authority expansion
 
 ### 8. Observability completeness
 Check whether required operational evidence is defined:
@@ -176,7 +176,7 @@ Check whether required operational evidence is defined:
 - health signals
 - alert-worthy conditions
 - diagnosability expectations
-- AI-first work traces, decision traces, policy invocations, tool/data-access records, prompt assembly traces, skill/reference load traces including denials, and outcome links when applicable
+- AI-first work traces, decision traces, policy invocations, tool/data-access records, prompt assembly traces, model binding/model-use traces including denials/fallback decisions and safe aliases, skill/reference load traces including denials, and outcome links when applicable
 
 ### 9. Frontend/UI completeness
 Check this for generated full-stack AI-first SaaS apps:

@@ -27,6 +27,16 @@ The bundle guides Agent Admin work. It does not grant authority. Backend capabil
 
 The agent may draft and explain behavior changes, but must not activate prompt, skill, reference, manifest, tool-boundary, model, lifecycle, or authority changes without the required backend authorization and approval flow.
 
+## Model binding
+
+This LLM-backed bundle uses an inherited governed default model binding unless a tenant-approved override is explicitly activated for `agent-admin-agent`:
+
+- inherited governed default model binding: `ModelConfigRef:foundation-agent-admin-default-model` with `ModelPolicy:foundation-agent-admin-model-policy`;
+- allowed modes: runtime, test, replay, evaluation;
+- fallback policy: no implicit fallback; approved fallback requires Policy Owner decision because behavior changes may expand authority;
+- provider secret boundary: the bundle, prompt, skills, references, manifests, traces, and browser surfaces may contain only safe provider/model aliases and never API keys, credential names, secret URLs, or deployment secret values;
+- runtime requirement: resolve and validate the `ModelConfigRef`/`ModelPolicy` before model invocation, deny unknown/disabled/cross-scope/policy-denied bindings fail-closed, and record safe model refs plus policy/fallback decisions in `PromptAssemblyTrace` and `AgentWorkTrace`.
+
 ## Prompt intent
 
 The active `PromptDocument`/`PromptVersion` for `agent-admin-agent` instructs the model to:
@@ -127,7 +137,7 @@ Every Agent Admin turn must preserve correlation ids and selected `AuthContext` 
 
 ## Seed and upgrade policy
 
-First-install or tenant-bootstrap seed import must create default active governed records for this bundle: `AgentDefinition`, prompt v1, eight `SkillDocument`/`SkillVersion` records, seven `ReferenceDocument`/`ReferenceVersion` records, `AgentSkillManifest`, `AgentReferenceManifest`, and `ToolPermissionBoundary` with separate `read_skill` and `read_reference` grants plus proposal/test-console tools. Imports must record provenance, content checksums, idempotency keys, seed bundle version, importer, and audit events. App upgrades may add new defaults or proposed diffs but must not overwrite tenant-customized active prompt, skill, reference, manifest, or boundary records without governed review, tests, and activation.
+First-install or tenant-bootstrap seed import must create default active governed records for this bundle: `AgentDefinition`, inherited governed default `ModelConfigRef`/`ModelPolicy` binding, prompt v1, eight `SkillDocument`/`SkillVersion` records, seven `ReferenceDocument`/`ReferenceVersion` records, `AgentSkillManifest`, `AgentReferenceManifest`, and `ToolPermissionBoundary` with separate `read_skill` and `read_reference` grants plus proposal/test-console tools. Imports must record provenance, content checksums, idempotency keys, seed bundle version, importer, and audit events. App upgrades may add new defaults or proposed diffs but must not overwrite tenant-customized active prompt, skill, reference, manifest, or boundary records without governed review, tests, and activation.
 
 ## Test obligations
 
@@ -141,4 +151,4 @@ Linked tests in `../../30-tests/test-index.md` must cover:
 - draft prompt/skill/reference proposals, manifest proposals, tool-boundary proposals, seed-upgrade proposals, approval/rejection, activation, rollback, and disabled-agent reactivation gates;
 - capability authorization for agent catalog/detail, prompt assembly preview, skill/reference test consoles, manifest/boundary management, behavior proposal creation, decision-card routing, and trace inspection;
 - Steward, Tenant Admin, Policy Owner/Reviewer, Auditor, disabled-user, forbidden, redacted, stale-version, checksum-mismatch, missing-seed, and error surface states;
-- trace emission for `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, tool-boundary denials, behavior proposal decisions, seed imports, and AdminAuditEvent records.
+- model binding resolution/denial trace facts, provider secret non-exposure, and trace emission for `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, tool-boundary denials, behavior proposal decisions, seed imports, and AdminAuditEvent records.

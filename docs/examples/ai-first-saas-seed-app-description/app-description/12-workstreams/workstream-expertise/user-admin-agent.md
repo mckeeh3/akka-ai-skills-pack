@@ -28,6 +28,16 @@ The bundle guides User Admin work. It does not grant authority. Backend capabili
 
 Side-effecting actions default to proposal, human confirmation, or decision-card approval. The agent must not autonomously send invitations, grant roles, disable accounts, alter support access, resolve access reviews, relink identity, reset identity, or change policy.
 
+## Model binding
+
+This LLM-backed bundle uses an inherited governed default model binding unless a tenant-approved override is explicitly activated for `user-admin-agent`:
+
+- inherited governed default model binding: `ModelConfigRef:foundation-user-admin-default-model` with `ModelPolicy:foundation-user-admin-model-policy`;
+- allowed modes: runtime, test, replay, evaluation;
+- fallback policy: no implicit fallback; approved fallback requires admin-governed policy and trace;
+- provider secret boundary: the bundle, prompt, skills, references, manifests, traces, and browser surfaces may contain only safe provider/model aliases and never API keys, credential names, secret URLs, or deployment secret values;
+- runtime requirement: resolve and validate the `ModelConfigRef`/`ModelPolicy` before model invocation, deny unknown/disabled/cross-scope/policy-denied bindings fail-closed, and record safe model refs plus policy/fallback decisions in `PromptAssemblyTrace` and `AgentWorkTrace`.
+
 ## Prompt intent
 
 The active `PromptDocument`/`PromptVersion` for `user-admin-agent` instructs the model to:
@@ -126,7 +136,7 @@ Every User Admin agent turn must preserve correlation ids and selected `AuthCont
 
 ## Seed and upgrade policy
 
-First-install or tenant-bootstrap seed import must create default active governed records for this bundle: `AgentDefinition`, prompt v1, six `SkillDocument`/`SkillVersion` records, six `ReferenceDocument`/`ReferenceVersion` records, `AgentSkillManifest`, `AgentReferenceManifest`, and `ToolPermissionBoundary` with `read_skill` and `read_reference` grants. Imports must record provenance, content checksums, idempotency keys, seed bundle version, and audit events. App upgrades may add or propose new defaults but must not overwrite tenant-customized active versions without a governed review/activation path.
+First-install or tenant-bootstrap seed import must create default active governed records for this bundle: `AgentDefinition`, inherited governed default `ModelConfigRef`/`ModelPolicy` binding, prompt v1, six `SkillDocument`/`SkillVersion` records, six `ReferenceDocument`/`ReferenceVersion` records, `AgentSkillManifest`, `AgentReferenceManifest`, and `ToolPermissionBoundary` with `read_skill` and `read_reference` grants. Imports must record provenance, content checksums, idempotency keys, seed bundle version, and audit events. App upgrades may add or propose new defaults but must not overwrite tenant-customized active versions without a governed review/activation path.
 
 ## Test obligations
 
@@ -139,4 +149,4 @@ Linked tests in `../../30-tests/test-index.md` must cover:
 - no authority expansion from prompt, skill, reference, or manifest text;
 - capability authorization for dashboard read, user search/list, user detail, audit summary, invitation draft/send, role recommendation/change, support access, access review, and risky decision-card routing;
 - Tenant Admin, Customer Admin, SaaS Owner support, Auditor, disabled-user, forbidden, redacted, empty, stale, and error surface states;
-- trace emission for `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, data access, decision-card, and AdminAuditEvent records.
+- model binding resolution/denial trace facts, provider secret non-exposure, and trace emission for `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, data access, decision-card, and AdminAuditEvent records.

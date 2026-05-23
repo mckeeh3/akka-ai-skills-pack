@@ -27,6 +27,16 @@ The bundle guides supervision work. It does not grant authority. Backend capabil
 
 The agent may summarize, triage, draft plans, and prepare decision facts, but must not autonomously approve high-impact actions, override retained human authority, create hidden work, bypass policy gates, or perform side effects outside bounded approved capabilities.
 
+## Model binding
+
+This LLM-backed bundle uses an inherited governed default model binding unless a tenant-approved override is explicitly activated for `mission-control-agent`:
+
+- inherited governed default model binding: `ModelConfigRef:foundation-mission-control-default-model` with `ModelPolicy:foundation-mission-control-model-policy`;
+- allowed modes: runtime, test, replay, evaluation;
+- fallback policy: no implicit fallback for consequential supervision; approved fallback must be decision-traced;
+- provider secret boundary: the bundle, prompt, skills, references, manifests, traces, and browser surfaces may contain only safe provider/model aliases and never API keys, credential names, secret URLs, or deployment secret values;
+- runtime requirement: resolve and validate the `ModelConfigRef`/`ModelPolicy` before model invocation, deny unknown/disabled/cross-scope/policy-denied bindings fail-closed, and record safe model refs plus policy/fallback decisions in `PromptAssemblyTrace` and `AgentWorkTrace`.
+
 ## Prompt intent
 
 The active `PromptDocument`/`PromptVersion` for `mission-control-agent` instructs the model to:
@@ -85,6 +95,6 @@ Deny safely for unassigned/inactive/cross-tenant/oversized/redaction-failed skil
 - `mission-control-briefing`: shows active goals, plan progress, agent activity, upcoming autonomous actions, pending approvals, exceptions, outcome deltas, policy/trust summary, stale-stream states, and trace links.
 - `decision-card`: renders approval/exception decisions with evidence, risk, alternatives, conflict/stale status, and required approver scope.
 - `audit-trace-explorer`: deep-links to work, decision, policy, and outcome traces.
-- Required traces: `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, decision traces, policy invocation traces, data-access traces, and AdminAuditEvent where policy requires.
-- Seed policy: tenant bootstrap creates default `AgentDefinition`, prompt, five skills, four references, compact manifests, and a `ToolPermissionBoundary` with read/proposal defaults and approval-gated side effects. Imports record provenance, checksums, idempotency, and customization-preserving upgrades.
+- Required traces: safe model binding/model-use facts, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, decision traces, policy invocation traces, data-access traces, and AdminAuditEvent where policy requires.
+- Seed policy: tenant bootstrap creates default `AgentDefinition`, inherited governed default `ModelConfigRef`/`ModelPolicy` binding, prompt, five skills, four references, compact manifests, and a `ToolPermissionBoundary` with read/proposal defaults and approval-gated side effects. Imports record provenance, checksums, idempotency, and customization-preserving upgrades.
 - Test obligations: compact manifest without full bodies; assigned/denied skill and reference loads; missing `read_skill`/`read_reference` denial; scoped goal/plan/approval reads; stale-stream and forbidden states; retained-human-authority and no-authority-expansion checks; decision-card routing; trace emission and surface rendering.

@@ -76,7 +76,8 @@ For each functional agent, capture:
 - durable workstream semantics: retention, replay, summarization, attachments, follow-ups, and trace links;
 - prompt intent when LLM behavior is involved: what the agent should help with, what it must refuse, and when it must ask for confirmation;
 - workstream expert bundle reference under `workstream-expertise/<functional-agent-id>.md` or an explicit readiness deferral;
-- governed behavior artifacts: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, reference documents or constrained reference records, compact `AgentSkillManifest`/expertise manifest entries, and `ToolPermissionBoundary` references when applicable;
+- governed behavior artifacts: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `ModelConfigRef`/`ModelPolicy` or an explicit inherited governed default model binding, `SkillDocument`/`SkillVersion`, reference documents or constrained reference records, compact `AgentSkillManifest`/expertise manifest entries, and `ToolPermissionBoundary` references when applicable;
+- model binding notes for LLM-backed agents: allowed runtime/test/replay/evaluation modes, fallback or `noFallback` policy, provider secret boundary, and model-use trace facts;
 - allowed tools and tool-boundary notes, including authorized `readSkill(skillId)` and reference loaders, expressed as capability exposure surfaces rather than primary backend objects;
 - owned and reusable structured surfaces;
 - callable backend capabilities and whether each is read-only, proposal-only, approval-gated, or bounded autonomous;
@@ -115,6 +116,7 @@ Use this shape when adding or revising a functional agent:
 - expert bundle artifact:
 - prompt intent:
 - governed agent definition / prompt references:
+- model binding (`ModelConfigRef`/`ModelPolicy` or inherited governed default):
 - skill documents:
 - reference documents:
 - compact expertise manifest entries:
@@ -167,6 +169,7 @@ When a functional-agent change adds or changes:
 
 - a callable operation/query, update `10-capabilities/` via `app-description-capability-modeling`;
 - surfaces or browser actions, update `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling`, plus `55-ui/**` and surface-to-capability traceability;
+- model binding, provider alias, fallback, or model policy, update `15-operating-model/governed-runtime-agents.md`, model-governance artifacts, readiness state, tests, and trace expectations;
 - prompt intent, skills, tools, or behavior documents, update `15-operating-model/governed-runtime-agents.md` and relevant agent governance artifacts;
 - approval, policy, escalation, or autonomy, update operating-model, behavior, auth/security, tests, and observability layers;
 - roles, permissions, or scope, update auth/security and `/api/me`/capability exposure expectations;
@@ -192,6 +195,7 @@ Avoid:
 - granting authority through prompt instructions, hidden UI state, or rail visibility;
 - listing tools without linking them to governed capabilities;
 - omitting tenant/customer scope or AuthContext;
+- leaving LLM-backed workstream agents with implicit, prompt-selected, or provider-secret-bearing model bindings;
 - treating a minimum starter as a generic chatbot instead of User Admin workstream v0;
 - leaving User Admin or Agent Admin out of full core SaaS scope without an explicit deferral;
 - allowing a functional agent to perform side effects without approval, policy, idempotency, and audit semantics.
@@ -200,7 +204,7 @@ Avoid:
 
 Before finishing a functional-agent update, verify:
 
-- [ ] each user-facing functional agent has purpose, authority, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
+- [ ] each user-facing functional agent has purpose, authority, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
 - [ ] functional agents are distinguished from internal agents;
 - [ ] every side-effecting action maps to a governed capability and backend authorization rule;
 - [ ] surfaces are typed and linked to capability-backed actions;

@@ -28,6 +28,16 @@ The bundle guides Audit/Trace investigation work. It does not grant authority. B
 
 The agent is read-only by default. It may summarize evidence, draft investigation notes, and request export or remediation review, but must not modify traces, delete audit facts, widen retention, bypass redaction, grant support access, or perform tenant/admin mutations.
 
+## Model binding
+
+This LLM-backed bundle uses an inherited governed default model binding unless a tenant-approved override is explicitly activated for `audit-trace-agent`:
+
+- inherited governed default model binding: `ModelConfigRef:foundation-audit-trace-default-model` with `ModelPolicy:foundation-audit-trace-model-policy`;
+- allowed modes: runtime, test, replay, evaluation;
+- fallback policy: no implicit fallback; approved fallback must preserve redaction/export policy and be traced;
+- provider secret boundary: the bundle, prompt, skills, references, manifests, traces, and browser surfaces may contain only safe provider/model aliases and never API keys, credential names, secret URLs, or deployment secret values;
+- runtime requirement: resolve and validate the `ModelConfigRef`/`ModelPolicy` before model invocation, deny unknown/disabled/cross-scope/policy-denied bindings fail-closed, and record safe model refs plus policy/fallback decisions in `PromptAssemblyTrace` and `AgentWorkTrace`.
+
 ## Prompt intent
 
 The active `PromptDocument`/`PromptVersion` for `audit-trace-agent` instructs the model to:
@@ -127,7 +137,7 @@ Every Audit/Trace agent turn must preserve correlation ids and selected `AuthCon
 
 ## Seed and upgrade policy
 
-First-install or tenant-bootstrap seed import must create default active governed records for this bundle: `AgentDefinition`, prompt v1, six `SkillDocument`/`SkillVersion` records, six `ReferenceDocument`/`ReferenceVersion` records, `AgentSkillManifest`, `AgentReferenceManifest`, and `ToolPermissionBoundary` with separate `read_skill` and `read_reference` grants plus read-only trace search/detail/explanation, export-request proposal, denial-analysis, and decision-card drafting tools. Imports must record provenance, content checksums, idempotency keys, seed bundle version, importer, and audit events. App upgrades may add new defaults or proposed diffs but must not overwrite tenant-customized active prompt, skill, reference, manifest, boundary, redaction, export, or support-access records without governed review, tests, and activation.
+First-install or tenant-bootstrap seed import must create default active governed records for this bundle: `AgentDefinition`, inherited governed default `ModelConfigRef`/`ModelPolicy` binding, prompt v1, six `SkillDocument`/`SkillVersion` records, six `ReferenceDocument`/`ReferenceVersion` records, `AgentSkillManifest`, `AgentReferenceManifest`, and `ToolPermissionBoundary` with separate `read_skill` and `read_reference` grants plus read-only trace search/detail/explanation, export-request proposal, denial-analysis, and decision-card drafting tools. Imports must record provenance, content checksums, idempotency keys, seed bundle version, importer, and audit events. App upgrades may add new defaults or proposed diffs but must not overwrite tenant-customized active prompt, skill, reference, manifest, boundary, redaction, export, or support-access records without governed review, tests, and activation.
 
 ## Test obligations
 

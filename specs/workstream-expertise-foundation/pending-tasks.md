@@ -842,7 +842,7 @@
 
 ### TASK-WEF-08-002: Align expertise model-binding contract
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/02-align-expertise-model-binding-contract.md
 - depends on: [TASK-WEF-08-001]
@@ -868,6 +868,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add model binding to expert bundles
+  - checks: `git diff --check` passed; text search confirmed all six seed foundation expert bundles mention `ModelConfigRef` or inherited governed default model binding
 
 ### TASK-WEF-08-003: Add starter model-governance runtime
 
