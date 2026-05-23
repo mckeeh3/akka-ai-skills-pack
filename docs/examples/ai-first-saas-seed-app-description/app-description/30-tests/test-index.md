@@ -15,6 +15,7 @@ Functional-agent readiness requires tests that cover the active workstream exper
 
 For each LLM-enabled functional agent, test coverage must include:
 
+- the agent's authoritative bundle under `12-workstreams/workstream-expertise/` or an explicit readiness-impacting deferral/non-LLM status;
 - compact expertise manifest assembly with assigned skill/reference ids and no full bodies in default prompt context;
 - allowed `readSkill(skillId)` and reference-document loads for assigned active documents;
 - denied unassigned, inactive, cross-tenant, disabled-agent, oversized, or unauthorized mode loads;
@@ -23,3 +24,5 @@ For each LLM-enabled functional agent, test coverage must include:
 - capability authorization and audit behavior for agent-requested or agent-proposed actions;
 - surface rendering of manifest summaries, evidence, denials, decision cards, and trace links where those surfaces are in scope;
 - `PromptAssemblyTrace`, `SkillLoadTrace`, reference-load trace, `AgentWorkTrace`, data-access, decision, and audit emission for allowed and denied work.
+
+Agent Admin coverage must additionally exercise `workstream-expertise/agent-admin-agent.md`: governed behavior artifact proposals, prompt/skill/reference diffs, manifest and tool-boundary proposals, seed-upgrade proposals, approval/rejection/activation/rollback gates, missing `read_skill` and `read_reference` denials, authority-expansion denial, and trace visibility in `agent-governance-center`, `decision-card`, and `audit-trace-explorer`.

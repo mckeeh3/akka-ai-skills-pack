@@ -690,7 +690,7 @@
 
 ### TASK-WEF-07-002: Add Agent Admin expert bundle
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/07-foundation-expertise-expansion-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/07-foundation-expertise-expansion/02-agent-admin-expert-bundle.md
 - depends on: [TASK-WEF-07-001]
@@ -716,6 +716,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add Agent Admin expert bundle
+  - checks: `git diff --check` passed
+  - coverage: added `workstream-expertise/agent-admin-agent.md` with governed behavior artifacts, proposals, approvals, denials, traces, and tests; linked it from functional-agent, surface, traceability, and test guidance
 
 ### TASK-WEF-07-003: Add Audit/Trace expert bundle
 

@@ -43,4 +43,9 @@ Each `<functional-agent-id>.md` should capture:
 
 ## Seed status
 
-The seed app materializes the canonical User Admin expertise example in `user-admin-agent.md`. That bundle is the authoritative seed app-description artifact for User Admin prompt intent, skills, references, compact manifests, boundaries, denied loads, traces, governance ownership, seed policy, and tests. Later seed-resource and test tasks should realize the governed records described there without bypassing app-managed governed storage.
+The seed app materializes detailed expertise examples for:
+
+- `user-admin-agent.md` — canonical User Admin prompt intent, skills, references, compact manifests, boundaries, denied loads, traces, governance ownership, seed policy, and tests.
+- `agent-admin-agent.md` — Agent Admin governed behavior artifact proposals, prompt/skill/reference governance, manifest and tool-boundary governance, seed upgrades, approval gates, denials, traces, and tests.
+
+Later seed-resource and test tasks should realize the governed records described in these bundles without bypassing app-managed governed storage.
