@@ -13,7 +13,7 @@ It helps the harness keep the internal app-description system consistent and dec
 ## Goal
 
 Analyze a requested or completed description change and produce an impact result that:
-- identifies impacted authoritative layers, including the required `15-operating-model/` for generated AI-first SaaS apps
+- identifies impacted authoritative layers, including `12-workstreams/workstream-expertise/` and the required `15-operating-model/` for generated AI-first SaaS apps
 - identifies impacted traceability artifacts
 - identifies whether readiness must be reassessed
 - identifies likely affected generated output areas
@@ -29,6 +29,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/capability-first-backend-architecture.md` for tracing capability contract changes across linked layers and exposure surfaces
+- `../../docs/workstream-expertise-model.md` for tracing per-functional-agent expert bundle changes across skills, references, manifests, boundaries, traces, and tests
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-skills-plan-backlog.md`
@@ -64,6 +65,7 @@ Use it after or alongside changes to:
 - observability
 - UI/supervision surfaces
 - AI-first operating-model semantics such as delegated work, authority, policies, decisions, traces, outcomes, or readiness-driving assumptions
+- workstream expertise semantics such as prompt intent, governed skill documents, reference documents, expertise manifests, loader access, tool boundaries, trace obligations, governance owners, seed/upgrade behavior, or expertise tests
 
 ## Core operating rule
 
@@ -81,13 +83,14 @@ A one-line behavior change may still require:
 
 For each change, determine as applicable:
 - which capability artifacts are impacted, including changes to actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, or selected exposure surfaces
+- which `12-workstreams/workstream-expertise/` artifacts are impacted: bundle scope, prompt intent, skill/reference ids, compact manifest entries, capability map, `ToolPermissionBoundary`, authority profile, loader denials, trace obligations, governance owner, seed/upgrade behavior, or tests
 - which `15-operating-model/` artifacts are impacted for generated AI-first SaaS: goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, evidence, traces, learning, or outcomes
 - which behavior artifacts are impacted
 - which test artifacts are impacted
 - which auth/security artifacts are impacted, especially authority boundaries and permission enforcement
 - which observability artifacts are impacted, especially audit/work/decision traces, policy invocations, tool/data-access events, and outcome metrics
 - which UI artifacts are impacted, especially capability-backed browser actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
-- which traceability maps must change
+- which traceability maps must change, including functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
 - whether `00-system/readiness-status.md` must be updated
 - which generation surfaces are likely affected
 - which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
@@ -105,6 +108,7 @@ Use this response shape:
 
 ## Impacted authoritative layers
 - capabilities:
+- workstream-expertise:
 - operating-model:
 - behavior:
 - tests:
@@ -147,7 +151,7 @@ Any important change in behavior, security, observability, UI supervision, or AI
 Behavior or operating-model changes may force security, observability, and UI updates even when the user did not explicitly ask for them.
 
 ### 5. Reassess readiness when meaning changed materially
-If the change alters core behavior, failure semantics, delegated authority, policies, approvals, decisions, traces, outcomes, production constraints, UI supervision surfaces, or test coverage expectations, readiness should usually be revisited.
+If the change alters core behavior, failure semantics, delegated authority, workstream expert bundles, skill/reference manifests, tool boundaries, policies, approvals, decisions, traces, outcomes, production constraints, UI supervision surfaces, or test coverage expectations, readiness should usually be revisited.
 
 ### 6. Prefer localized regeneration only when the dependency chain is clear
 If the harness cannot confidently bound the affected outputs, recommend broad or full regeneration instead.
@@ -167,6 +171,7 @@ When capability-to-behavior, operating-model-to-behavior, behavior-to-tests, or 
 - multiple authoritative layers changed in connected ways
 - the impact is larger than one bounded feature area
 - readiness or production concerns shifted meaningfully
+- functional-agent expertise, manifest, reference, tool-boundary, or trace requirements changed
 
 ### Recommend `full` when
 - the change affects foundational assumptions
@@ -177,6 +182,7 @@ When capability-to-behavior, operating-model-to-behavior, behavior-to-tests, or 
 ## Handoff rules
 
 Route onward as needed:
+- to `app-description-functional-agent-modeling` when the change creates or revises a functional agent's workstream expert bundle, governed skills, reference documents, manifest entries, loader behavior, tool boundaries, traces, governance owner, or expertise tests
 - to `app-description-capability-modeling` when the change creates or revises a capability contract, operation/query, caller, AuthContext, schema, side effect, idempotency rule, approval gate, audit/trace obligation, or exposure surface
 - to `app-description-test-specification` when verification impact exists
 - to `app-description-auth-security` when access, identity, boundary, or data-protection implications exist
@@ -209,7 +215,7 @@ Avoid:
 ## Final review checklist
 
 Before finishing, verify:
-- impacted authoritative layers are named explicitly, including `10-capabilities/` and `15-operating-model/` for generated AI-first SaaS apps
+- impacted authoritative layers are named explicitly, including `10-capabilities/`, `12-workstreams/workstream-expertise/`, and `15-operating-model/` for generated AI-first SaaS apps
 - impacted derived layers are named explicitly
 - readiness impact is called out when relevant
 - likely generated outputs are named at a useful level

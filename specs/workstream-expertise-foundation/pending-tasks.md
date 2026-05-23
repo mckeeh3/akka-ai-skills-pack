@@ -72,7 +72,7 @@
 
 ### TASK-WEF-01-003: Align readiness and traceability with expertise requirements
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/01-doctrine-description-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/01-doctrine-description/03-readiness-traceability-expertise.md
 - depends on: [TASK-WEF-01-002]

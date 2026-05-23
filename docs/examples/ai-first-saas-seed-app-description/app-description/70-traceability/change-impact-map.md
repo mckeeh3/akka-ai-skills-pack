@@ -7,7 +7,9 @@
 - agent authority change:
   - update operating model, agent rules, policy gates, decision tests, audit trace requirements
 - new or changed functional agent:
-  - update `12-workstreams/functional-agents.md`, workstream retention rules if needed, rail rendering, `/api/me` capability exposure, authorization tests, and traceability maps
+  - update `12-workstreams/functional-agents.md`, `12-workstreams/workstream-expertise/<functional-agent-id>.md` or explicit deferral, workstream retention rules if needed, rail rendering, `/api/me` capability exposure, expertise manifest/tool-boundary/trace tests, authorization tests, and traceability maps
+- workstream expertise bundle change:
+  - update functional-agent map, skill/reference manifest entries, `ToolPermissionBoundary`, capability exposure/authority notes, surfaces showing evidence/denials/traces, observability trace requirements, expertise tests, readiness status, and generated runtime/agent governance specs
 - new structured surface:
   - update `12-workstreams/surfaces-index.md`, surface contract, UI index, structured surface renderer, frontend API contracts, behavior flow if new actions exist, acceptance/rendering tests, and surface-to-capability map
 - new Akka horizontal demonstration:

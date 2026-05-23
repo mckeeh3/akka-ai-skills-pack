@@ -8,3 +8,18 @@
   - `negative/01-forbidden-actions.md`
 - operational:
   - `operational/01-observability-and-audit.md`
+
+## Workstream expertise coverage
+
+Functional-agent readiness requires tests that cover the active workstream expert bundle or an explicit deferral that prevents that agent/workstream from being reported ready.
+
+For each LLM-enabled functional agent, test coverage must include:
+
+- compact expertise manifest assembly with assigned skill/reference ids and no full bodies in default prompt context;
+- allowed `readSkill(skillId)` and reference-document loads for assigned active documents;
+- denied unassigned, inactive, cross-tenant, disabled-agent, oversized, or unauthorized mode loads;
+- `ToolPermissionBoundary` denial for loaders and other model-facing tools outside the bundle;
+- proof that skill/reference text cannot expand roles, tenant scope, approval rights, tools, or backend capabilities;
+- capability authorization and audit behavior for agent-requested or agent-proposed actions;
+- surface rendering of manifest summaries, evidence, denials, decision cards, and trace links where those surfaces are in scope;
+- `PromptAssemblyTrace`, `SkillLoadTrace`, reference-load trace, `AgentWorkTrace`, data-access, decision, and audit emission for allowed and denied work.
