@@ -23,7 +23,12 @@ public final class AgentBehaviorSeedLoader {
   public static final String CONTENT_VERSION = "1";
   public static final String USER_ADMIN_AGENT_ID = "agent-user-admin";
   public static final String USER_ADMIN_PROMPT_ID = "prompt-user-admin-system";
-  public static final String ACCESS_REVIEW_SKILL_DOC_ID = "skill-access-review";
+  public static final String ACCESS_REVIEW_SKILL_DOC_ID = "skill-ua-access-review-triage";
+  public static final String ADMIN_RISK_SKILL_DOC_ID = "skill-ua-admin-risk-scoring";
+  public static final String INVITATION_DRAFTING_SKILL_DOC_ID = "skill-ua-invitation-drafting";
+  public static final String ROLE_RECOMMENDATION_SKILL_DOC_ID = "skill-ua-role-recommendation";
+  public static final String SUPPORT_ACCESS_SKILL_DOC_ID = "skill-ua-support-access-review";
+  public static final String AUDIT_SUMMARY_SKILL_DOC_ID = "skill-ua-audit-summary";
   public static final String USER_ADMIN_MANIFEST_ID = "manifest-user-admin";
   public static final String USER_ADMIN_BOUNDARY_ID = "tool-boundary-user-admin";
 
@@ -39,21 +44,27 @@ public final class AgentBehaviorSeedLoader {
     var result = new SeedImportResult(tenantId, SEED_BUNDLE_ID, CONTENT_VERSION, correlationId);
     var now = Instant.now(clock);
     var promptContent = readSeedResource("/agent-behavior-seeds/starter-v1/user-admin-system.md");
-    var skillContent = readSeedResource("/agent-behavior-seeds/starter-v1/access-review.md");
     validateContent(promptContent, "prompt-user-admin-system");
-    validateContent(skillContent, "skill-access-review");
+    var skillSeeds = userAdminSkillSeeds();
+    for (var seed : skillSeeds) {
+      validateContent(readSeedResource(seed.resourcePath()), seed.documentId());
+    }
 
     var promptChecksum = checksum(promptContent);
-    var skillChecksum = checksum(skillContent);
     var prompt = repository.promptDocument(tenantId, USER_ADMIN_PROMPT_ID)
         .map(existing -> skipOrDraftPrompt(existing, promptChecksum, result))
         .orElseGet(() -> createPrompt(tenantId, promptContent, promptChecksum, importerActor, correlationId, now, result));
-    var skill = repository.skillDocument(tenantId, ACCESS_REVIEW_SKILL_DOC_ID)
-        .map(existing -> skipOrDraftSkill(existing, skillChecksum, result))
-        .orElseGet(() -> createSkill(tenantId, skillContent, skillChecksum, importerActor, correlationId, now, result));
+    var skills = new java.util.ArrayList<SkillDocument>();
+    for (var seed : skillSeeds) {
+      var skillContent = readSeedResource(seed.resourcePath());
+      var skillChecksum = checksum(skillContent);
+      skills.add(repository.skillDocument(tenantId, seed.documentId())
+          .map(existing -> skipOrDraftSkill(existing, skillChecksum, result))
+          .orElseGet(() -> createSkill(tenantId, seed, skillContent, skillChecksum, importerActor, correlationId, now, result)));
+    }
     var manifest = repository.skillManifest(tenantId, USER_ADMIN_MANIFEST_ID)
         .map(existing -> skipExisting("AgentSkillManifest", existing.manifestId(), result, existing))
-        .orElseGet(() -> createManifest(tenantId, skill, importerActor, correlationId, now, result));
+        .orElseGet(() -> createManifest(tenantId, skills, importerActor, correlationId, now, result));
     var boundary = repository.toolBoundary(tenantId, USER_ADMIN_BOUNDARY_ID)
         .map(existing -> skipExisting("ToolPermissionBoundary", existing.boundaryId(), result, existing))
         .orElseGet(() -> createBoundary(tenantId, importerActor, correlationId, now, result));
@@ -70,17 +81,19 @@ public final class AgentBehaviorSeedLoader {
     return prompt;
   }
 
-  private SkillDocument createSkill(String tenantId, String content, String checksum, String actor, String correlationId, Instant now, SeedImportResult result) {
-    var skill = new SkillDocument(tenantId, ACCESS_REVIEW_SKILL_DOC_ID, "access-review", "Access review", "Evaluate tenant-scoped user and membership changes before recommending action.", "Use before changing roles, support access, invitations, or membership status.", List.of("foundation", "user-admin"), AgentLifecycleStatus.ACTIVE, 1, content, checksum, provenance("skills/access-review.md", checksum, actor, correlationId, now, false), now, now);
+  private SkillDocument createSkill(String tenantId, SkillSeed seed, String content, String checksum, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var skill = new SkillDocument(tenantId, seed.documentId(), seed.stableSkillId(), seed.title(), seed.purpose(), seed.whenToUse(), List.of("foundation", "user-admin"), AgentLifecycleStatus.ACTIVE, 1, content, checksum, provenance(seed.resourceId(), checksum, actor, correlationId, now, false), now, now);
     repository.saveSkillDocument(skill);
-    result.created("SkillDocument", ACCESS_REVIEW_SKILL_DOC_ID);
+    result.created("SkillDocument", seed.documentId());
     return skill;
   }
 
-  private AgentSkillManifest createManifest(String tenantId, SkillDocument skill, String actor, String correlationId, Instant now, SeedImportResult result) {
-    var entries = List.of(new AgentSkillManifest.Entry(skill.stableSkillId(), skill.skillDocumentId(), skill.activeVersion(), skill.title(), skill.purpose(), skill.whenToUse()));
+  private AgentSkillManifest createManifest(String tenantId, List<SkillDocument> skills, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var entries = skills.stream()
+        .map(skill -> new AgentSkillManifest.Entry(skill.stableSkillId(), skill.skillDocumentId(), skill.activeVersion(), skill.title(), skill.purpose(), skill.whenToUse()))
+        .toList();
     var checksum = checksum(entries.toString());
-    var manifest = new AgentSkillManifest(tenantId, USER_ADMIN_MANIFEST_ID, USER_ADMIN_AGENT_ID, AgentLifecycleStatus.ACTIVE, 1, entries, checksum, provenance("manifests/user-admin-agent-manifest", checksum, actor, correlationId, now, false), now, now);
+    var manifest = new AgentSkillManifest(tenantId, USER_ADMIN_MANIFEST_ID, USER_ADMIN_AGENT_ID, AgentLifecycleStatus.ACTIVE, 1, entries, checksum, provenance("manifests/user-admin-agent-skill-manifest", checksum, actor, correlationId, now, false), now, now);
     repository.saveSkillManifest(manifest);
     result.created("AgentSkillManifest", USER_ADMIN_MANIFEST_ID);
     return manifest;
@@ -89,6 +102,7 @@ public final class AgentBehaviorSeedLoader {
   private ToolPermissionBoundary createBoundary(String tenantId, String actor, String correlationId, Instant now, SeedImportResult result) {
     var grants = List.of(
         new ToolPermissionBoundary.ToolGrant("readSkill", ToolPermissionBoundary.Category.READ_SKILL, "agent.skills.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "full_work_trace"),
+        new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_REFERENCE, "agent.references.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "full_work_trace"),
         new ToolPermissionBoundary.ToolGrant("userAdminEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, "tenant.user.read", List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "access"));
     var checksum = checksum(grants.toString());
     var boundary = new ToolPermissionBoundary(tenantId, USER_ADMIN_BOUNDARY_ID, USER_ADMIN_AGENT_ID, AgentLifecycleStatus.ACTIVE, 1, grants, checksum, provenance("tool-boundaries/user-admin-agent-tools", checksum, actor, correlationId, now, false), now, now);
@@ -99,7 +113,7 @@ public final class AgentBehaviorSeedLoader {
 
   private AgentDefinition createAgentDefinition(String tenantId, PromptDocument prompt, AgentSkillManifest manifest, ToolPermissionBoundary boundary, String actor, String correlationId, Instant now, SeedImportResult result) {
     var checksum = checksum(prompt.contentChecksum() + manifest.compactManifestChecksum() + boundary.checksum());
-    var definition = new AgentDefinition(tenantId, USER_ADMIN_AGENT_ID, "User Admin Agent", "Role-authorized functional agent for user, invitation, membership, and access-review administration.", AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, "user-admin", AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED, AgentLifecycleStatus.ACTIVE, prompt.promptDocumentId(), prompt.activeVersion(), manifest.manifestId(), manifest.manifestVersion(), boundary.boundaryId(), boundary.boundaryVersion(), "starter-default-model", "starter-default-model-policy", "{{JAVA_BASE_PACKAGE}}.application.agent.UserAdminAgent", List.of("PromptAssemblyTrace", "SkillLoadTrace", "AgentWorkTrace"), provenance("agents/user-admin-agent", checksum, actor, correlationId, now, false), now, now);
+    var definition = new AgentDefinition(tenantId, USER_ADMIN_AGENT_ID, "User Admin Agent", "Role-authorized functional agent for user, invitation, membership, and access-review administration.", AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, "user-admin", AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED, AgentLifecycleStatus.ACTIVE, prompt.promptDocumentId(), prompt.activeVersion(), manifest.manifestId(), manifest.manifestVersion(), boundary.boundaryId(), boundary.boundaryVersion(), "starter-default-model", "starter-default-model-policy", "{{JAVA_BASE_PACKAGE}}.application.agent.UserAdminAgent", List.of("PromptAssemblyTrace", "SkillLoadTrace", "ReferenceLoadTrace", "AgentWorkTrace"), provenance("agents/user-admin-agent", checksum, actor, correlationId, now, false), now, now);
     repository.saveAgentDefinition(definition);
     result.created("AgentDefinition", USER_ADMIN_AGENT_ID);
     return definition;
@@ -131,6 +145,18 @@ public final class AgentBehaviorSeedLoader {
   private SeedProvenance provenance(String resourceId, String checksum, String actor, String correlationId, Instant now, boolean tenantCustomized) {
     return new SeedProvenance(SEED_BUNDLE_ID, CONTENT_VERSION, resourceId, checksum, now, actor, correlationId, tenantCustomized);
   }
+
+  private List<SkillSeed> userAdminSkillSeeds() {
+    return List.of(
+        new SkillSeed(ACCESS_REVIEW_SKILL_DOC_ID, "ua.access-review-triage.v1", "Access Review Triage", "Evaluate stale or risky memberships, roles, support access, and remediation paths.", "Use for stale memberships, risky roles, pending reviews, and proposed access remediation.", "/agent-behavior-seeds/starter-v1/access-review-triage.md", "skills/user-admin/access-review-triage.md"),
+        new SkillSeed(ADMIN_RISK_SKILL_DOC_ID, "ua.admin-risk-scoring.v1", "Admin Action Risk Scoring", "Classify last-admin, role-escalation, support-access, identity, bulk, and low-confidence risks.", "Use before consequential or ambiguous User Admin actions that may require decision-card routing.", "/agent-behavior-seeds/starter-v1/admin-risk-scoring.md", "skills/user-admin/admin-risk-scoring.md"),
+        new SkillSeed(INVITATION_DRAFTING_SKILL_DOC_ID, "ua.invitation-drafting.v1", "Invitation Drafting", "Draft safe invitation, resend, revoke, and onboarding explanations without exposing tokens.", "Use when preparing invitation rationale or human-confirmed invitation actions.", "/agent-behavior-seeds/starter-v1/invitation-drafting.md", "skills/user-admin/invitation-drafting.md"),
+        new SkillSeed(ROLE_RECOMMENDATION_SKILL_DOC_ID, "ua.role-recommendation.v1", "Role Recommendation", "Recommend least-privilege roles and alternatives from context, policy, and audit evidence.", "Use when asked which role or capability set a user should have.", "/agent-behavior-seeds/starter-v1/role-recommendation.md", "skills/user-admin/role-recommendation.md"),
+        new SkillSeed(SUPPORT_ACCESS_SKILL_DOC_ID, "ua.support-access-review.v1", "Support Access Review", "Explain support-access grants, expiry, SaaS Owner limits, and revocation risks.", "Use for support-access visibility, grant review, revocation, or expiry questions.", "/agent-behavior-seeds/starter-v1/support-access-review.md", "skills/user-admin/support-access-review.md"),
+        new SkillSeed(AUDIT_SUMMARY_SKILL_DOC_ID, "ua.audit-summary.v1", "Admin Audit Summary", "Summarize scoped AdminAuditEvent and trace evidence with redaction.", "Use when explaining what changed, who acted, why access changed, or which denials occurred.", "/agent-behavior-seeds/starter-v1/audit-summary.md", "skills/user-admin/audit-summary.md"));
+  }
+
+  private record SkillSeed(String documentId, String stableSkillId, String title, String purpose, String whenToUse, String resourcePath, String resourceId) {}
 
   private void validateContent(String content, String artifactId) {
     if (content == null || content.isBlank()) throw new IllegalStateException("missing seed content: " + artifactId);

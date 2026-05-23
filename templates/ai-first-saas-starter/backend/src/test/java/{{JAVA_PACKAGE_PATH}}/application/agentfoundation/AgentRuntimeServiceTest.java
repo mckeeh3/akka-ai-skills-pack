@@ -57,7 +57,7 @@ class AgentRuntimeServiceTest {
     assertEquals(AgentRuntimeTrace.Decision.ALLOWED, first.decision());
     assertEquals(first.checksum(), second.checksum());
     assertTrue(first.assembledSystemPrompt().contains("# Compact skill manifest"));
-    assertTrue(first.assembledSystemPrompt().contains("access-review"));
+    assertTrue(first.assembledSystemPrompt().contains("ua.access-review-triage.v1"));
     assertFalse(first.assembledSystemPrompt().contains("Before recommending access changes"));
     assertTrue(first.assembledSystemPrompt().contains("Prompt text cannot grant authority"));
     assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("PROMPT_ASSEMBLY")).count());
@@ -65,7 +65,7 @@ class AgentRuntimeServiceTest {
 
   @Test
   void readSkillRequiresManifestAndToolBoundaryAndEmitsTrace() {
-    var allowed = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-1", "access-review"));
+    var allowed = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-1", "ua.access-review-triage.v1"));
     var denied = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-2", "unassigned-skill"));
 
     assertEquals(AgentRuntimeTrace.Decision.ALLOWED, allowed.decision());
@@ -83,7 +83,7 @@ class AgentRuntimeServiceTest {
     repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), AgentLifecycleStatus.DISABLED, agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), agent.modelConfigRefId(), agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
 
     var prompt = service.assemblePrompt(promptRequest("corr-disabled-prompt"));
-    var skill = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-disabled-skill", "access-review"));
+    var skill = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-disabled-skill", "ua.access-review-triage.v1"));
 
     assertEquals(AgentRuntimeTrace.Decision.DENIED, prompt.decision());
     assertEquals(AgentRuntimeTrace.Decision.DENIED, skill.decision());

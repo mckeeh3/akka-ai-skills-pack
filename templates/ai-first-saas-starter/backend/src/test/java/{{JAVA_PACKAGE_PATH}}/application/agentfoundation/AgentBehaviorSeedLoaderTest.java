@@ -29,7 +29,7 @@ class AgentBehaviorSeedLoaderTest {
   void freshTenantImportCreatesApprovedActiveGovernedRecords() {
     var result = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
 
-    assertEquals(5, result.createdCount());
+    assertEquals(10, result.createdCount());
     var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
     var prompt = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
     var skill = repository.skillDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
@@ -45,8 +45,11 @@ class AgentBehaviorSeedLoaderTest {
     assertEquals(AgentLifecycleStatus.ACTIVE, skill.status());
     assertTrue(prompt.seedProvenance().seedBundleId().equals(AgentBehaviorSeedLoader.SEED_BUNDLE_ID));
     assertFalse(prompt.contentBody().contains("api_key"));
-    assertFalse(manifest.entries().get(0).whenToUse().isBlank());
+    assertEquals(6, manifest.entries().size());
+    assertTrue(manifest.entries().stream().anyMatch(entry -> entry.stableSkillId().equals("ua.access-review-triage.v1") && !entry.whenToUse().isBlank()));
+    assertTrue(manifest.entries().stream().anyMatch(entry -> entry.stableSkillId().equals("ua.audit-summary.v1")));
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readSkill") && grant.category().name().equals("READ_SKILL")));
+    assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readReferenceDoc") && grant.category().name().equals("READ_REFERENCE")));
   }
 
   @Test
@@ -56,9 +59,9 @@ class AgentBehaviorSeedLoaderTest {
     var second = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-2");
 
     assertEquals(0, second.createdCount());
-    assertEquals(5, second.skippedCount());
+    assertEquals(10, second.skippedCount());
     assertEquals(1, repository.agentDefinitions("tenant-1").size());
-    assertEquals(1, repository.skillDocuments("tenant-1").size());
+    assertEquals(6, repository.skillDocuments("tenant-1").size());
   }
 
   @Test

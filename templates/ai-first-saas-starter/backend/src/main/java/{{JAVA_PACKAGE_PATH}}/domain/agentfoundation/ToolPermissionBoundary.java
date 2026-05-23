@@ -40,6 +40,7 @@ public record ToolPermissionBoundary(
     COMPONENT,
     MCP,
     READ_SKILL,
+    READ_REFERENCE,
     DATA_LOOKUP,
     EXTERNAL_SIDE_EFFECT
   }

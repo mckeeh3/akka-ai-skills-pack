@@ -293,7 +293,7 @@
 
 ### TASK-WEF-03-002: Add User Admin expertise seed resources or fixtures
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/03-seed-example-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/03-seed-example/02-user-admin-expertise-seeds.md
 - depends on: [TASK-WEF-03-001]
@@ -318,6 +318,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add User Admin expertise seed content
+  - checks: `git diff --check` passed; `tools/validate-ai-first-saas-starter-fullstack.sh` passed
 
 ### TASK-WEF-03-003: Add User Admin expertise tests or contract checks
 

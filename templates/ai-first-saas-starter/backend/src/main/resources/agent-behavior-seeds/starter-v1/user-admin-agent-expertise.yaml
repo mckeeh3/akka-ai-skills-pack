@@ -1,0 +1,97 @@
+bundleId: user-admin-agent.expertise
+agentDefinitionId: agent-user-admin
+functionalAreaId: user-admin
+seedBundleId: starter-agent-behavior-v1
+contentVersion: 1
+activationPolicy: activate-if-missing
+promptDocumentId: prompt-user-admin-system
+skillManifestId: manifest-user-admin
+referenceManifestId: reference-manifest-user-admin
+toolBoundaryId: tool-boundary-user-admin
+governanceOwner: Tenant Admin or delegated Agent Steward
+authorityProfile: approval-required
+compactManifest:
+  includeFullBodies: false
+  skillSection: Available internal skills
+  referenceSection: Available workstream references
+skills:
+  - skillId: ua.access-review-triage.v1
+    documentId: skill-ua-access-review-triage
+    title: Access Review Triage
+    whenToUse: Use for stale memberships, risky roles, pending reviews, and proposed access remediation.
+  - skillId: ua.admin-risk-scoring.v1
+    documentId: skill-ua-admin-risk-scoring
+    title: Admin Action Risk Scoring
+    whenToUse: Use before consequential or ambiguous User Admin actions that may require decision-card routing.
+  - skillId: ua.invitation-drafting.v1
+    documentId: skill-ua-invitation-drafting
+    title: Invitation Drafting
+    whenToUse: Use when preparing invitation rationale or human-confirmed invitation actions.
+  - skillId: ua.role-recommendation.v1
+    documentId: skill-ua-role-recommendation
+    title: Role Recommendation
+    whenToUse: Use when asked which role or capability set a user should have.
+  - skillId: ua.support-access-review.v1
+    documentId: skill-ua-support-access-review
+    title: Support Access Review
+    whenToUse: Use for support-access visibility, grant review, revocation, or expiry questions.
+  - skillId: ua.audit-summary.v1
+    documentId: skill-ua-audit-summary
+    title: Admin Audit Summary
+    whenToUse: Use when explaining what changed, who acted, why access changed, or which denials occurred.
+references:
+  - referenceId: ua.tenant-role-catalog.v1
+    documentId: ref-ua-tenant-role-catalog
+    title: Tenant Role and Capability Catalog
+    whenToConsult: Explain role meanings, least-privilege alternatives, and capability ids.
+  - referenceId: ua.invitation-onboarding-policy.v1
+    documentId: ref-ua-invitation-onboarding-policy
+    title: Invitation and Onboarding Policy
+    whenToConsult: Draft invitation rationale, resend/revoke explanations, expiry behavior, and onboarding caveats.
+  - referenceId: ua.access-review-policy.v1
+    documentId: ref-ua-access-review-policy
+    title: Access Review Policy
+    whenToConsult: Evaluate stale access, review cadence, resolver expectations, and escalation triggers.
+  - referenceId: ua.support-access-procedure.v1
+    documentId: ref-ua-support-access-procedure
+    title: Support Access Operating Procedure
+    whenToConsult: Explain SaaS Owner support access, customer/tenant visibility, expiry, and audit obligations.
+  - referenceId: ua.last-admin-protection.v1
+    documentId: ref-ua-last-admin-protection
+    title: Last Admin Protection Rule
+    whenToConsult: Explain blocked removal, disable, or role downgrade and safe recovery.
+  - referenceId: ua.admin-audit-redaction-guide.v1
+    documentId: ref-ua-admin-audit-redaction-guide
+    title: Admin Audit Redaction Guide
+    whenToConsult: Explain redaction markers, safe evidence summaries, and export limits.
+toolBoundary:
+  grants:
+    - toolId: readSkill
+      category: READ_SKILL
+      capabilityId: agent.skills.read
+      trace: SkillLoadTrace
+    - toolId: readReferenceDoc
+      category: READ_REFERENCE
+      capabilityId: agent.references.read
+      trace: ReferenceLoadTrace
+    - toolId: userAdminEvidence.read
+      category: DATA_LOOKUP
+      capabilityId: tenant.user.read
+      trace: AgentWorkTrace
+requiredDenials:
+  - unassigned skill or reference id
+  - inactive or cross-tenant skill or reference
+  - missing read_skill or read_reference tool-boundary grant
+  - text claiming new roles, tenant scope, tool access, approval rights, or backend capabilities
+  - raw invitation token, provider secret, cross-customer data, or unredacted audit export request
+traces:
+  - PromptAssemblyTrace
+  - SkillLoadTrace
+  - ReferenceLoadTrace
+  - AgentWorkTrace
+  - AdminAuditEvent
+tests:
+  - compact manifest omits full bodies
+  - assigned skill and reference loads are authorized and traced
+  - unassigned loads and missing boundary grants are denied and traced
+  - expertise text cannot expand capability, role, tenant, tool, or approval authority

@@ -56,7 +56,7 @@ class WorkstreamServiceTest {
 
     assertEquals("membership-admin", bootstrap.me().selectedAuthContext().selectedContextId());
     assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
-    assertTrue(bootstrap.items().stream().anyMatch(item -> item.surfaceId().equals("surface-user-admin-dashboard")));
+    assertTrue(bootstrap.items().stream().anyMatch(item -> "surface-user-admin-dashboard".equals(item.surfaceId())));
     assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-account-dashboard") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
     assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-profile") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
     assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-settings") && surface.ownerFunctionalAgentId().equals("agent-my-account")));

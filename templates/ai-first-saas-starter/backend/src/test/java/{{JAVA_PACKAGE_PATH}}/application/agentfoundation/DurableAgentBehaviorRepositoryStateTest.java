@@ -16,8 +16,11 @@ class DurableAgentBehaviorRepositoryStateTest {
   void durableStatePreservesTenantScopedGovernedRecordsForRuntimeResolution() {
     var seeded = seededRepository("tenant-1");
     var state = AgentBehaviorRepositoryState.empty()
-        .savePromptDocument(seeded.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow())
-        .saveSkillDocument(seeded.skillDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow())
+        .savePromptDocument(seeded.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow());
+    for (var skill : seeded.skillDocuments("tenant-1")) {
+      state = state.saveSkillDocument(skill);
+    }
+    state = state
         .saveSkillManifest(seeded.skillManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_MANIFEST_ID).orElseThrow())
         .saveToolBoundary(seeded.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow())
         .saveAgentDefinition(seeded.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow());
@@ -33,7 +36,7 @@ class DurableAgentBehaviorRepositoryStateTest {
     assertEquals(manifest.entries().get(0).pinnedVersion(), skill.activeVersion());
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readSkill")));
     assertTrue(state.agentDefinition("tenant-2", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).isEmpty());
-    assertEquals(1, state.skillDocuments("tenant-1").size());
+    assertEquals(6, state.skillDocuments("tenant-1").size());
     assertEquals(0, state.skillDocuments("tenant-2").size());
   }
 
