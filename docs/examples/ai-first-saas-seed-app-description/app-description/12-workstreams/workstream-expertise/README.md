@@ -47,5 +47,6 @@ The seed app materializes detailed expertise examples for:
 
 - `user-admin-agent.md` — canonical User Admin prompt intent, skills, references, compact manifests, boundaries, denied loads, traces, governance ownership, seed policy, and tests.
 - `agent-admin-agent.md` — Agent Admin governed behavior artifact proposals, prompt/skill/reference governance, manifest and tool-boundary governance, seed upgrades, approval gates, denials, traces, and tests.
+- `audit-trace-agent.md` — Audit/Trace search and explanation behavior, redaction-preserving evidence summaries, support-access audit, export limits, denied loader/tool traces, decision-card escalation, and tests.
 
 Later seed-resource and test tasks should realize the governed records described in these bundles without bypassing app-managed governed storage.

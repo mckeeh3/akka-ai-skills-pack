@@ -721,7 +721,7 @@
 
 ### TASK-WEF-07-003: Add Audit/Trace expert bundle
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/07-foundation-expertise-expansion-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/07-foundation-expertise-expansion/03-audit-trace-expert-bundle.md
 - depends on: [TASK-WEF-07-002]
@@ -747,6 +747,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add Audit Trace expert bundle
+  - checks: `git diff --check` passed
+  - coverage: added `workstream-expertise/audit-trace-agent.md` with trace search/explanation, redaction-preserving summaries, support-access audit, export limits, denied skill/reference/tool-load traces, `ToolPermissionBoundary`, seed policy, and tests; linked it from functional-agent, traceability, expertise README, and test guidance
 
 ### TASK-WEF-07-004: Add remaining foundation bundles or explicit deferrals
 
