@@ -47,7 +47,7 @@ Prefer this default sequence:
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
-5. for generated full-stack SaaS user-facing changes, update or verify `12-workstreams/` ownership first: functional agents, internal-agent support where relevant, durable workstreams, structured surfaces, surface actions, and action-to-capability candidates
+5. for generated full-stack SaaS user-facing changes, update or verify `12-workstreams/` ownership first: functional agents, internal-agent support where relevant, durable workstreams, workstream expert bundles under `workstream-expertise/**`, structured surfaces, surface actions, and action-to-capability candidates
 6. update `10-capabilities/` with governed capability contracts before implementation choices: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, tests, and links back to source functional agents/surfaces/actions for user-facing exposure
 7. update `12-workstreams/` again if capability modeling changes surface payloads, actions, authority, or traceability; capability and surface modeling may iterate, but neither layer is complete without the other for user-facing actions
 8. update `15-operating-model/` for generated AI-first SaaS operating semantics
@@ -83,6 +83,7 @@ Use `app-description-functional-agent-modeling` and `app-description-surface-mod
 
 Capture or verify:
 - source `12-workstreams/functional-agents.md` ownership;
+- workstream expertise ownership under `12-workstreams/workstream-expertise/<functional-agent-id>.md` for each LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, capability map, tool boundary, surfaces, traces, governance owner, seed/upgrade policy, and tests;
 - structured surface ids, payload/action candidates, states, traces, and tests;
 - surface action-to-capability candidates;
 - which changes are browser realization details for `55-ui/` rather than application meaning.
@@ -210,12 +211,12 @@ This keeps workstream/surface ownership and governed capability contracts ahead 
 Every description change should trigger a mental or explicit change-impact pass.
 
 The harness should ask:
-- which `12-workstreams/` functional agents, internal agents, structured surfaces, surface actions, and surface-to-capability maps changed?
+- which `12-workstreams/` functional agents, workstream expert bundles, internal agents, structured surfaces, surface actions, and surface-to-capability maps changed?
 - which capabilities changed?
 - did any capability contract fields change: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, or tests?
 - which behavior artifacts changed?
 - which AI-first operating-model artifacts changed: goals, delegated work, retained authority, agents, governed runtime behavior artifacts, policies, approvals, decisions, exceptions, traces, learning, or outcomes?
-- did the change affect `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `ToolPermissionBoundary`, behavior editing agent proposals, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, or `AgentWorkTrace`?
+- did the change affect a workstream expert bundle, reference documents, `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, compact skill/reference manifest entries, `ToolPermissionBoundary`, behavior editing agent proposals, authorized `readSkill(skillId)`/reference loading, `PromptAssemblyTrace`, `SkillLoadTrace`, reference-load trace, or `AgentWorkTrace`?
 - which tests now need updates?
 - are there new or changed security implications, especially permission enforcement and authority boundaries?
 - are there new or changed observability implications, especially work traces, decision traces, policy invocations, audit events, and outcome metrics?

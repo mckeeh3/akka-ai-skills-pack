@@ -76,6 +76,9 @@ app-description/
     internal-agents.md
     workstreams-and-retention.md
     surfaces-index.md
+    workstream-expertise/
+      README.md
+      <functional-agent-id>.md
     surface-contracts/
       01-<surface>.md
 
@@ -241,6 +244,7 @@ Default files:
 - `internal-agents.md` for non-navigation agents with governed definitions, prompt/skill references, tool boundaries, service or AuthContext authority basis, model policy, traces, and tests
 - `workstreams-and-retention.md` for timeline semantics, persistence, replay, summarization, correlation ids, attachments, follow-up handling, and retention/redaction rules
 - `surfaces-index.md` for stable surface ids, surface type/version, owning or reusable functional agents, payload schema location, allowed actions, linked capabilities, and rendering tests
+- `workstream-expertise/` for one workstream expert bundle contract per LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, capability map, tool boundary, surfaces, traces, governance owner, seed/upgrade policy, and tests
 - `surface-contracts/` for individual structured surface contracts such as dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status cards, evidence bundles, prompt/skill version cards, and outcome panels
 
 A page, route, or screen may deep-link to a surface, but it must not replace the functional-agent/workstream/surface model as the primary description root.
@@ -411,10 +415,15 @@ Default ownership should be:
   - identifies candidate impacted layers
   - does not usually own long-lived authoritative artifacts
 
+- `app-description-functional-agent-modeling`
+  - primarily owns `12-workstreams/functional-agents.md` and `12-workstreams/workstream-expertise/**` for LLM-enabled user-facing functional agents
+  - keeps each workstream expert bundle tied to one functional agent and linked to governed prompts, skills, reference documents, compact expertise manifests, capabilities, tool boundaries, surfaces, traces, governance owner, seed/upgrade policy, tests, and readiness impact
+  - coordinates with capability, surface, operating-model, auth/security, observability, UI, and traceability layers without moving their detailed contracts into the expertise file
+
 - `app-description-capability-modeling`
   - primarily owns `10-capabilities/`
   - maintains capability boundaries and links to downstream layers
-  - links capabilities to `12-workstreams/` when functional agents, surface actions, agent tools, workstream actions, or internal-agent calls expose them
+  - links capabilities to `12-workstreams/` when functional agents, workstream expert bundles, surface actions, agent tools, workstream actions, or internal-agent calls expose them
   - links AI-first capabilities to `15-operating-model/` when they depend on delegated work, goals, policies, decisions, or outcomes
 
 - `app-description-behavior-specification`
@@ -464,18 +473,19 @@ The harness should maintain these invariants:
 
 1. Every generated SaaS app must include the secure tenant/user foundation capability, agent workstream model, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
 2. Every generated full-stack AI-first SaaS app must model authenticated consequential work as role-authorized functional agents, governed internal agents where needed, durable workstreams, and structured surfaces rather than as a primary page/screen hierarchy.
-3. Every surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call must map to a governed capability.
-4. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
-5. Every in-scope capability must link to at least one behavior artifact.
-6. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
-7. Every important behavior change must link to one or more test artifacts.
-8. Security-sensitive behavior must link to relevant auth/security artifacts.
-9. Operationally important behavior must link to relevant observability artifacts.
-10. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
-11. Horizontal Akka components must be selected from capability semantics and recorded as downstream implementation maps, not used as the app-description root.
-12. Readiness must be based on the actual state of workstream model, operating model, capability contracts, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
-13. Generation policy must never override description correctness.
-14. Review summaries must be derivable from authoritative layers.
+3. Every LLM-enabled functional agent must have a `12-workstreams/workstream-expertise/<functional-agent-id>.md` expert bundle or an explicit readiness deferral; the bundle owns prompt intent, skill/reference assignments, compact expertise manifest, tool boundary, capability map, trace obligations, governance owner, seed/upgrade policy, and tests for that workstream.
+4. Every surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call must map to a governed capability.
+5. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
+6. Every in-scope capability must link to at least one behavior artifact.
+7. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
+8. Every important behavior change must link to one or more test artifacts.
+9. Security-sensitive behavior must link to relevant auth/security artifacts.
+10. Operationally important behavior must link to relevant observability artifacts.
+11. Agentic authority, policy enforcement, approvals, exceptions, audit traces, and outcome metrics must not be invented only during generation.
+12. Horizontal Akka components must be selected from capability semantics and recorded as downstream implementation maps, not used as the app-description root.
+13. Readiness must be based on the actual state of workstream model, operating model, capability contracts, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
+14. Generation policy must never override description correctness.
+15. Review summaries must be derivable from authoritative layers.
 
 ## File sizing rules
 

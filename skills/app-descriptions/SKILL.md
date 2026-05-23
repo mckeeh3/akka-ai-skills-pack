@@ -96,7 +96,7 @@ Load the companion skill that matches the current task. Users do not need to nam
 
 ## Generated SaaS workstream ownership invariant
 
-For generated full-stack SaaS, do not change `10-capabilities/`, `55-ui/`, readiness, generation scope, or implementation planning for a user-facing request without first checking whether `12-workstreams/functional-agents.md`, `12-workstreams/surfaces-index.md`, and relevant `12-workstreams/surface-contracts/**` must change. `12-workstreams/` owns functional agent placement, surface meaning, surface actions, and surface-to-capability traceability. `10-capabilities/` owns governed backend contracts. `55-ui/` owns browser realization only.
+For generated full-stack SaaS, do not change `10-capabilities/`, `55-ui/`, readiness, generation scope, or implementation planning for a user-facing request without first checking whether `12-workstreams/functional-agents.md`, `12-workstreams/workstream-expertise/**`, `12-workstreams/surfaces-index.md`, and relevant `12-workstreams/surface-contracts/**` must change. `12-workstreams/` owns functional agent placement, workstream expert bundle contracts, surface meaning, surface actions, and surface-to-capability traceability. `10-capabilities/` owns governed backend contracts. `55-ui/` owns browser realization only.
 
 ## Companion boundary matrix
 
@@ -107,7 +107,7 @@ Use this ownership matrix to avoid loading every app-description skill for one c
 | Initial tree, scope label, baseline readiness/generation policy | `app-description-bootstrap` | secure foundation, workstreams, capabilities, operating model, tests, security, observability, UI |
 | Messy or mixed user input | `app-description-input-normalization` | downstream routing only; it is not authoritative app meaning |
 | Intent classification and next-step choice | `app-description-intake-router` | smallest focused companion; no long-lived layer ownership |
-| User-facing work areas and left-rail agents | `app-description-functional-agent-modeling` | surfaces, capabilities, authority, traces, tests, UI |
+| User-facing work areas, left-rail agents, and workstream expert bundles | `app-description-functional-agent-modeling` | surfaces, capabilities, governed prompts/skills/references, compact expertise manifests, tool boundaries/loaders, authority, traces, tests, UI |
 | Typed renderable workstream artifacts and actions | `app-description-surface-modeling` | functional agents, capability ids, auth, observability, rendering tests, UI |
 | Governed backend operations/queries | `app-description-capability-modeling` | source functional agent/surface/action or explicit `internal-only`, behavior, tests, security, observability |
 | Rules, flows, state transitions, invariants | `app-description-behavior-specification` | existing or newly required capability contract, tests, security, observability |
@@ -131,7 +131,7 @@ Prefer this sequence unless the task is already narrowly scoped:
 3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `12-workstreams/`, `15-operating-model/`, and `55-ui/` for generated full-stack AI-first SaaS apps; for minimum/starter/basic app requests, bootstrap the `minimum starter / not full core` User Admin workstream v0 with `markdown_response`, durable workstream log, trace substrate, bootstrap auth/security, capability boundary, and explicit full-core follow-up gaps
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`
-6. model role-authorized user-facing functional agents with `app-description-functional-agent-modeling` when work areas, left-rail agents, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests changed
+6. model role-authorized user-facing functional agents with `app-description-functional-agent-modeling` when work areas, left-rail agents, prompt intent, skills, reference documents, expertise manifests, tool boundaries/loaders, surfaces, callable capabilities, authority, traces, or tests changed
 7. model structured workstream surfaces with `app-description-surface-modeling` when dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, payloads, reusable placement, allowed actions, states, traces, or rendering tests changed
 8. model governed capability contracts with `app-description-capability-modeling` when scope, business outcomes, protected operations, queries, actors, authority, side effects, approval, audit, or exposure surfaces changed
 9. update `15-operating-model/` semantics when AI-first concerns changed; use focused AI-first companion skills for object model, agent teams, policy/governance, decision cards, audit traces, UI surfaces, and outcomes as needed
@@ -151,7 +151,7 @@ Prefer this sequence unless the task is already narrowly scoped:
 The default internal app-description structure is:
 - `00-system/`
 - `10-capabilities/`
-- `12-workstreams/` for generated full-stack AI-first SaaS apps, including functional agents, internal agents, workstreams, and structured surfaces
+- `12-workstreams/` for generated full-stack AI-first SaaS apps, including functional agents, internal agents, workstreams, workstream expert bundles, and structured surfaces
 - `15-operating-model/` for generated AI-first SaaS apps
 - `20-behavior/`
 - `30-tests/`
@@ -167,8 +167,8 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 ## Core rules
 
 1. The app description is the source of truth.
-2. Functional agents and structured surfaces in `12-workstreams/` are the primary generated-app verticals for authenticated consequential work; page/screen hierarchy is subordinate route/deep-link detail.
-3. For user-facing generated SaaS changes, verify functional agent ownership, structured surface contracts, surface actions, and action-to-capability traceability before treating `10-capabilities/`, `55-ui/`, readiness, or generation scope as complete.
+2. Functional agents, workstream expert bundles, and structured surfaces in `12-workstreams/` are the primary generated-app verticals for authenticated consequential work; page/screen hierarchy is subordinate route/deep-link detail.
+3. For user-facing generated SaaS changes, verify functional agent ownership, workstream expertise ownership, structured surface contracts, surface actions, and action-to-capability traceability before treating `10-capabilities/`, `55-ui/`, readiness, or generation scope as complete.
 4. Capability inventory in `10-capabilities/` is the backend contract layer: record actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, and tests before choosing Akka components or tools.
 5. Generated code is a projection, not the definition of the app.
 6. Humans do not directly edit generated code or internal app-description artifacts.

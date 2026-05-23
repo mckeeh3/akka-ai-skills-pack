@@ -44,7 +44,7 @@
 
 ### TASK-WEF-01-002: Add app-description ownership for workstream expertise
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/01-doctrine-description-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/01-doctrine-description/02-app-description-expertise-ownership.md
 - depends on: [TASK-WEF-01-001]

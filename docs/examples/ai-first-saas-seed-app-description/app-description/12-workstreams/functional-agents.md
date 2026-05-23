@@ -1,6 +1,6 @@
 # Functional Agents
 
-This seed app is modeled as an agent workstream application. These user-facing functional agents are the primary authenticated application verticals; routes and pages are only deep-link or implementation details.
+This seed app is modeled as an agent workstream application. These user-facing functional agents are the primary authenticated application verticals; routes and pages are only deep-link or implementation details. Per-agent workstream expertise belongs under `12-workstreams/workstream-expertise/`; this file may summarize expertise, but the bundle file is authoritative once materialized.
 
 | Functional agent | Purpose | Authorized roles/capabilities | Default surface | Callable capabilities | Trace/test obligations |
 |---|---|---|---|---|---|
@@ -13,7 +13,7 @@ This seed app is modeled as an agent workstream application. These user-facing f
 
 ## User Admin functional-agent contract
 
-`user-admin-agent` is a governed skilled functional agent for the canonical three-surface User Admin vertical. It must operate within the selected `AuthContext`; surface visibility, tool calls, and generated recommendations never expand backend authority.
+`user-admin-agent` is a governed skilled functional agent for the canonical three-surface User Admin vertical. Its expertise contract is currently summarized here and will be materialized under `workstream-expertise/user-admin-agent.md`; after materialization, that bundle file owns User Admin prompt intent, skills, references, manifest, tool boundary, traces, governance owner, seed policy, and tests. It must operate within the selected `AuthContext`; surface visibility, tool calls, and generated recommendations never expand backend authority.
 
 ### Supported intents
 
