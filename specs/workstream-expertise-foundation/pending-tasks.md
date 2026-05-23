@@ -808,3 +808,174 @@
   - commit message: Review foundation expertise expansion
   - checks: `git diff --check` passed; text-search proof confirmed bundle-id-bearing expertise artifacts for `my-account-agent`, `user-admin-agent`, `agent-admin-agent`, `mission-control-agent`, `governance-policy-agent`, and `audit-trace-agent`
   - review outcome: Sprint 07 complete; every seed foundation functional agent has a matching expertise bundle and no follow-up task is required from this review
+
+### TASK-WEF-08-001: Audit workstream model-binding readiness
+
+- status: pending
+- source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
+- task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/01-audit-model-binding-readiness.md
+- depends on: [TASK-WEF-07-005]
+- required reads:
+  - specs/workstream-expertise-foundation/model-binding-readiness-review.md
+  - specs/workstream-expertise-foundation/sprints/08-workstream-model-binding-sprint.md
+  - docs/workstream-expertise-model.md
+  - docs/agent-runtime-invocation-pattern.md
+  - docs/agent-coverage-matrix.md
+  - skills/akka-agent-model-governance/SKILL.md
+  - skills/akka-agent-behavior-profiles/SKILL.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/README.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+- skills:
+  - akka-agent-model-governance
+  - app-description-functional-agent-modeling
+- expected outputs:
+  - specs/workstream-expertise-foundation/model-binding-gap-matrix.md
+- required checks:
+  - git diff --check
+- done criteria:
+  - gap matrix identifies model-binding gaps across doctrine, skills, seed app-description, starter runtime, tests, planning/generation, and coverage matrix
+  - task changes and queue update are committed
+- notes:
+  - commit message: Audit workstream model binding readiness
+
+### TASK-WEF-08-002: Align expertise model-binding contract
+
+- status: pending
+- source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
+- task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/02-align-expertise-model-binding-contract.md
+- depends on: [TASK-WEF-08-001]
+- required reads:
+  - specs/workstream-expertise-foundation/model-binding-gap-matrix.md
+  - docs/workstream-expertise-model.md
+  - skills/app-description-functional-agent-modeling/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - skills/akka-agent-model-governance/SKILL.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/*.md
+- skills:
+  - akka-agent-model-governance
+  - app-description-functional-agent-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - updated workstream expertise doctrine and app-description guidance
+  - seed foundation expert bundles name explicit or inherited model bindings
+- required checks:
+  - git diff --check
+  - text search proving each seed foundation expert bundle mentions `ModelConfigRef` or inherited governed default model binding
+- done criteria:
+  - model binding becomes part of the workstream expert bundle contract and readiness gate
+  - task changes and queue update are committed
+- notes:
+  - commit message: Add model binding to expert bundles
+
+### TASK-WEF-08-003: Add starter model-governance runtime
+
+- status: pending
+- source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
+- task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/03-add-starter-model-governance-runtime.md
+- depends on: [TASK-WEF-08-002]
+- required reads:
+  - specs/workstream-expertise-foundation/model-binding-gap-matrix.md
+  - skills/akka-agent-model-governance/SKILL.md
+  - docs/agent-runtime-invocation-pattern.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/AgentDefinition.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/AgentBehaviorRepositoryState.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoader.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+- skills:
+  - akka-agent-model-governance
+  - akka-agent-behavior-profiles
+  - akka-agent-work-trace
+- expected outputs:
+  - starter model config/policy state and seed import
+  - runtime model config/policy validation before managed agent invocation
+  - trace facts containing safe model refs without provider secrets
+- required checks:
+  - git diff --check
+  - targeted starter backend model-governance tests or runtime tests
+- done criteria:
+  - starter runtime resolves and validates model refs before invocation and fails closed for invalid/disabled/policy-denied model bindings
+  - task changes and queue update are committed
+- notes:
+  - commit message: Add starter model governance runtime
+
+### TASK-WEF-08-004: Add model-governance tests
+
+- status: pending
+- source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
+- task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/04-add-model-governance-tests.md
+- depends on: [TASK-WEF-08-003]
+- required reads:
+  - skills/akka-agent-model-governance/SKILL.md
+  - skills/akka-agent-testing/SKILL.md
+  - docs/agent-coverage-matrix.md
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeServiceTest.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoaderTest.java
+- skills:
+  - akka-agent-model-governance
+  - akka-agent-testing
+- expected outputs:
+  - backend tests for active model success, disabled/unknown/cross-scope denial, provider-policy denial, no secret exposure, fallback/no-fallback behavior where implemented, and model refs in traces
+- required checks:
+  - git diff --check
+  - targeted starter backend tests for agentfoundation package
+- done criteria:
+  - executable tests prove governed model binding without provider secret leakage
+  - task changes and queue update are committed
+- notes:
+  - commit message: Test starter model governance
+
+### TASK-WEF-08-005: Align planning, generation, and coverage for model binding
+
+- status: pending
+- source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
+- task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/05-align-planning-generation-coverage.md
+- depends on: [TASK-WEF-08-004]
+- required reads:
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/app-generate-app/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - docs/pending-task-queue.md
+  - docs/agent-coverage-matrix.md
+  - docs/workstream-expertise-model.md
+- skills:
+  - akka-prd-to-specs-backlog
+  - app-generate-app
+  - akka-agent-model-governance
+- expected outputs:
+  - planning/generation/readiness guidance requires model binding per generated workstream agent
+  - coverage matrix updated after executable model-governance tests exist
+- required checks:
+  - git diff --check
+- done criteria:
+  - generated app plans cannot declare an LLM-backed workstream agent ready without specific approved model binding or explicit inherited default
+  - task changes and queue update are committed
+- notes:
+  - commit message: Align model binding planning guidance
+
+### TASK-WEF-08-006: Review workstream model-binding sprint
+
+- status: pending
+- source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
+- task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/06-review-model-binding-sprint.md
+- depends on: [TASK-WEF-08-005]
+- required reads:
+  - specs/workstream-expertise-foundation/sprints/08-workstream-model-binding-sprint.md
+  - specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
+  - specs/workstream-expertise-foundation/model-binding-readiness-review.md
+  - docs/workstream-expertise-model.md
+  - docs/agent-coverage-matrix.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeServiceTest.java
+- skills:
+  - akka-agent-model-governance
+  - app-description-readiness-assessment
+- expected outputs:
+  - specs/workstream-expertise-foundation/sprint-08-review.md
+  - pending task adjustments if needed
+- required checks:
+  - git diff --check
+- done criteria:
+  - review answers whether workstream expertise is fully ready for generated apps with workstream-specific agents and governed model binding
+  - task changes and queue update are committed
+- notes:
+  - commit message: Review workstream model binding sprint

@@ -38,6 +38,7 @@ functional workstream
 5. `sprints/05-review-hardening-sprint.md` — final consistency review, gap closure, and next-sprint decision.
 6. `sprints/06-executable-reference-coverage-sprint.md` — close the starter backend/runtime gap for first-class reference governance.
 7. `sprints/07-foundation-expertise-expansion-sprint.md` — expand or explicitly defer expert bundles for all foundation functional agents.
+8. `sprints/08-workstream-model-binding-sprint.md` — make per-workstream governed model binding explicit, executable, and generation-ready.
 
 ## Done state
 
@@ -53,6 +54,7 @@ This plan is complete when:
 - Final review finds no major path where a functional agent can be declared ready while lacking assigned expertise documents, runtime load controls, boundaries, and tests.
 - Starter backend/runtime code has executable first-class coverage for reference documents, reference manifests, `readReferenceDoc`, reference-load denials, and reference-load traces.
 - Every foundation functional agent in the seed app-description has a workstream expert bundle or an explicit readiness-impacting deferral.
+- Every LLM-backed generated workstream agent has a specific approved `ModelConfigRef`/`ModelPolicy` or an explicit inherited default model binding, with runtime validation, provider secret boundaries, model-use traces, and tests.
 
 ## Open suggestions / decisions for sprint reviews
 
