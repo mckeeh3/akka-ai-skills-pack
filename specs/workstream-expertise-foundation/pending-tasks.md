@@ -662,7 +662,7 @@
 
 ### TASK-WEF-07-001: Audit foundation functional-agent expertise coverage
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/07-foundation-expertise-expansion-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/07-foundation-expertise-expansion/01-audit-foundation-expertise-coverage.md
 - depends on: [TASK-WEF-06-005]
@@ -685,6 +685,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Audit foundation expertise coverage
+  - checks: `git diff --check` passed
+  - audit outcome: User Admin has the only detailed bundle; Agent Admin and Audit/Trace need detailed bundles; My Account, Mission Control, and Governance/Policy need bundles or explicit deferral/non-LLM status
 
 ### TASK-WEF-07-002: Add Agent Admin expert bundle
 
