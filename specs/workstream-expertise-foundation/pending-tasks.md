@@ -127,7 +127,7 @@
 
 ### TASK-WEF-02-001: Audit governed runtime expertise gaps
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/02-governed-runtime-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/02-governed-runtime/01-audit-runtime-expertise-gaps.md
 - depends on: [TASK-WEF-01-004]
@@ -152,6 +152,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Audit runtime expertise gaps
+  - checks: `git diff --check` passed
 
 ### TASK-WEF-02-002: Define governed reference-document loading pattern
 
