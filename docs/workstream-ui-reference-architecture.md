@@ -202,6 +202,7 @@ type WorkstreamItem = {
     | "decision"
     | "audit-trace"
     | "action-feedback"
+    | "system-message"
     | "system-status";
   createdAt: string;
   correlationId: string;
@@ -261,7 +262,7 @@ Each surface renders loading, empty, ready, submitting, success, pending, approv
 
 ### Capability actions
 
-Every consequential UI action maps to a governed backend capability. Frontend action availability is only a UX hint.
+Every workstream surface action maps to a governed backend capability, including read/query actions and surface-request actions such as show dashboard, search, open detail, refresh, or open trace. Frontend action availability is only a UX hint.
 
 ```ts
 type CapabilityActionRequest = {
@@ -359,7 +360,7 @@ The first implementation slice must include fixtures for:
 - `/api/me` active tenant admin, regular member, auditor/support-like viewer, disabled user, and no-membership/forbidden states
 - selected `AuthContext` with tenant and optional customer scope
 - visible, denied, hidden, disabled, and attention-bearing functional agents
-- initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, and system status
+- initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, system-message surface, and system status
 - surface envelopes for every canonical surface type listed above
 - surface actions covering read, command, proposal, approval, workflow, governance, and trace intents
 - action results for accepted, denied, validation error, approval required, conflict, no-op, and failed outcomes

@@ -2,7 +2,7 @@
 
 Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `agent-workstream-application-architecture.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
-A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear.
+A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string.
 
 ## Contract rule
 
@@ -128,6 +128,41 @@ type MarkdownResponseData = {
 
 `markdown_response` is acceptable for first-slice guidance, explanations, denials, and summaries. Do not use it to hide missing typed surfaces for decisions, approvals, forms, tables, settings, access reviews, audit timelines, or workflow status once those richer interactions are required.
 
+## Base surface: `system_message`
+
+Use `system_message` for typed system feedback in a workstream: success confirmations, denials, validation failures, warnings, approval-required notices, background-work-started notices, stale/reconnect notices, deferred-capability messages, no-op results, and safe recovery guidance. It is a structured surface, not a toast-only string or untracked frontend branch.
+
+Contract:
+
+| Field | Requirement |
+|---|---|
+| Surface identity | `surfaceType: "system_message"`; stable `surfaceId`; semantic `surfaceVersion`; owner functional agent; workstream entry id. |
+| Payload data | Severity, message code, user-safe title/body, optional details, recovery actions, related surface/action ids, related capability id, correlation id, and trace ids. |
+| Authority | Denial and forbidden messages must come from backend capability decisions where protected data or actions are involved; frontend-only hiding is not authorization. |
+| Redaction | Do not leak secrets, missing privileged facts, prompt content, provider details, cross-tenant data, or hidden fields in error/recovery text. |
+| Actions | Recovery, retry, open trace, request approval, request help, or navigate-to-surface actions use normal `SurfaceAction` with capability ids. |
+| Tests | Cover success, warning, validation, forbidden, approval-required, deferred, stale/reconnect, no-op, redaction, trace-link, and action-to-capability behavior. |
+
+Minimal type-specific data shape:
+
+```ts
+type SystemMessageData = {
+  severity: "info" | "success" | "warning" | "error" | "forbidden";
+  code: string;
+  title: string;
+  body: string;
+  workstreamEntryId: string;
+  relatedCapabilityId?: string;
+  relatedSurfaceId?: string;
+  relatedActionId?: string;
+  recovery?: Array<{
+    label: string;
+    actionId?: string;
+    description?: string;
+  }>;
+};
+```
+
 ## Surface action shape
 
 Each surface action is a UI exposure of a governed capability.
@@ -163,11 +198,12 @@ type SurfaceAction = {
 
 Action rules:
 
-- `capabilityId` is required for every consequential action.
+- `capabilityId` is required for every action, including read/query actions and surface-request actions such as show dashboard, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
 - The capability definition owns input validation, authorization, idempotency, side effects, policy/approval, audit, and denial shape.
+- In browser realization, a surface action usually invokes a backend API; the API returns an accepted/denied/error result plus a new surface, updated surface, workstream item, workflow/progress surface, or `system_message` surface.
 - Side-effecting actions should default to proposal or approval flows unless a bounded autonomous policy is explicitly accepted.
 - Disabled/hidden actions must include a user-safe reason when visible; they must not be the only authorization control.
-- Action results should append a new surface, update the current surface, or render workflow/progress state explicitly.
+- Action results should append a new surface, update the current surface, or render workflow/progress/system-message state explicitly.
 
 ## Event shape
 
@@ -234,7 +270,7 @@ Before moving from surface design to code generation, verify:
 
 - [ ] Surface has stable identity, type, version, owner/reuse, placement, and purpose.
 - [ ] Payload schema is typed, scoped, redacted, traceable, and frontend-safe.
-- [ ] Every action maps to a governed backend capability.
+- [ ] Every action, including surface-request/read actions, maps to a governed backend capability.
 - [ ] Backend authorization remains authoritative over UI visibility, prompt text, and tool descriptions.
 - [ ] Events define ordering, dedupe, reconnect, stale, and cross-context handling.
 - [ ] UI states and accessibility/responsive expectations are explicit.

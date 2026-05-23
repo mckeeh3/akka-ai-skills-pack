@@ -9,17 +9,18 @@ Use this doctrine below `ai-first-saas-application-architecture.md` and above de
 
 ## Default generated-app architecture
 
-Generated AI-first SaaS apps are **agent workstream applications by default**. First use: **functional/context-area agent** means a user-facing, role-authorized agent for one durable work area; this document shortens the term to **functional agent** after defining the alias.
+Generated AI-first SaaS apps are **agent workstream applications by default**. The **workstream is the root application abstraction** for authenticated consequential work. First use: **functional/context-area agent** means a user-facing, role-authorized agent for one durable work area; this document shortens the term to **functional agent** after defining the alias.
 
 ```text
-role-authorized functional/context-area agents
-→ continuous workstreams
-→ structured renderable surfaces
+workstream
+→ exactly one backing functional/context-area agent
+→ continuous request/result flow
+→ structured renderable surfaces, including system-message surfaces
 → governed backend capabilities
 → horizontal Akka implementation
 ```
 
-The primary application model is not a conventional page tree, CRUD console, or traditional app with a chatbot attached. Authenticated consequential work areas should be modeled as functional agents with workstreams and structured surfaces. Traditional routes may still exist for implementation, deep linking, static/public pages, asset hosting, or direct surface URLs, but they are not the primary architecture.
+The primary application model is not a conventional page tree, CRUD console, or traditional app with a chatbot attached. Authenticated consequential work areas should be modeled as workstreams, each backed by exactly one functional agent and implemented through structured surfaces. Traditional routes may still exist for implementation, deep linking, static/public pages, asset hosting, or direct surface URLs, but they are not the primary architecture.
 
 ## Minimum initial workstream
 
@@ -43,10 +44,11 @@ Full-core generated SaaS readiness remains stricter than this minimum starter. U
 | Term | Meaning |
 |---|---|
 | Agent workstream shell | Primary authenticated browser shell: role-authorized functional agents in the left rail, continuous workstream in the main panel, persistent composer at the bottom, and structured surfaces embedded in the stream. |
-| Functional/context-area agent | User-facing, role-authorized agent representing a functional area such as User Admin, Agent Admin, Procurement, Finance, Sales Pipeline, Support, Audit, Governance, or Outcome Metrics. Shortened to functional agent after first use. |
+| Functional/context-area agent | User-facing, role-authorized assistant backing exactly one workstream and representing a functional area such as User Admin, Agent Admin, Procurement, Finance, Sales Pipeline, Support, Audit, Governance, or Outcome Metrics. Shortened to functional agent after first use. |
+| Workstream agent | The functional agent in its role as the selected workstream user's assistant. It can answer workstream-specific “how do I...” questions, interpret shorthand requests such as “dashboard” or “show users”, request or refresh surfaces, invoke allowed capability-backed actions, explain denials/errors, and guide users through tasks. It is not the root app abstraction and does not grant authority. |
 | Internal agent | Non-left-rail agent invoked by workflows, tools, consumers, timers, functional agents, or backend services for bounded work such as classification, summarization, evaluation, routing, replay, proposal drafting, or governance review. |
-| Workstream | Durable conversational and operational timeline for a functional agent. It contains user requests, agent responses, tool/capability results, structured surfaces, decisions, workflow progress, traces, and follow-up actions. |
-| Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, or outcome metric panel. |
+| Workstream | Root app unit for authenticated consequential work: a durable conversational and operational timeline backed by exactly one functional agent. It contains user requests, agent responses, tool/capability results, structured surfaces, system-message surfaces, decisions, workflow progress, traces, and follow-up actions. |
+| Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, system message, or outcome metric panel. |
 | Capability | Governed backend contract behind actions, queries, tools, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure channels, and tests. |
 | Horizontal implementation | Akka entities, workflows, views, consumers, timed actions, agents, endpoints, web UI code, auth/security, audit, and tests that implement capabilities for vertical functional agents and surfaces. |
 
@@ -61,18 +63,20 @@ Required shell regions:
 3. **Persistent composer** — accepts natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent.
 4. **Context and authority indicators** — show selected tenant/customer context, active role/capability basis, pending approvals, trace links, and safe denial/recovery states.
 
-Selecting a functional agent should normally produce an initial dashboard, attention, or briefing surface for that work area. Clicking actions should append or update workstream surfaces rather than forcing users through a page-first navigation hierarchy.
+Selecting a functional agent selects its workstream and should normally produce an initial dashboard, attention, or briefing surface for that work area. The selected workstream agent may also request surfaces in response to natural language: “dashboard”, “show the access review queue”, “find Alex”, or “how do I add a new user?” should resolve to guidance, surface requests, or capability-backed actions within that workstream. Clicking actions should append or update workstream surfaces rather than forcing users through a page-first navigation hierarchy.
 
-## Functional agents as verticals
+## Workstreams and functional agents as verticals
 
-A generated app grows by adding vertical functional agents. Each functional agent should define:
+A generated app grows by adding vertical workstreams. Each workstream is backed by exactly one functional agent. Each workstream/agent vertical should define:
 
 - purpose and business responsibility;
 - authorized roles/capabilities and tenant/customer scope;
-- default dashboard or attention surface;
+- default dashboard, attention, or briefing surface;
 - durable workstream semantics and retention expectations;
+- user intents the workstream agent must understand, including help/how-to prompts, shorthand surface requests, read requests, proposals, approvals, and allowed commands;
 - prompt intent and a workstream expert bundle where LLM behavior is involved: governed prompt refs, skills, reference documents, compact expertise manifest, loader rules, and tool boundaries;
-- surfaces the agent can render or reuse;
+- surfaces the workstream can render or reuse;
+- surface actions, including command actions and query/surface-request actions;
 - capabilities it can call directly or through tools/workflows;
 - escalation, approval, denial, and exception behavior;
 - audit/work trace requirements;
@@ -86,7 +90,9 @@ Foundation generated SaaS apps must include user-facing functional agents for se
 - **Audit/Trace Agent** for security, authorization, data access, tool use, decision, workflow, and outcome investigation.
 - **Governance/Policy Agent** where policies, prompts, skills, thresholds, approvals, simulations, or behavior changes are managed.
 
-Other domains add their own functional agents, such as Sales Pipeline, Account Management, Support, Marketing Campaign, Revenue Operations, Finance, Procurement, Inventory/Supply Chain, Order Management, HR/Workforce, Operations Control, Approval Queue, Executive Briefing, Risk & Exceptions, and Outcome Metrics.
+Other domains add their own workstreams backed by functional agents, such as Sales Pipeline, Account Management, Support, Marketing Campaign, Revenue Operations, Finance, Procurement, Inventory/Supply Chain, Order Management, HR/Workforce, Operations Control, Approval Queue, Executive Briefing, Risk & Exceptions, and Outcome Metrics.
+
+Domain-specific intent should decompose into fully functional domain-specific workstreams before implementation. For each proposed domain workstream, capture: business purpose, backing functional agent, authorized roles/capabilities, default surface, required surfaces, user intents, surface actions, action-to-capability mappings, backend capability contracts, Akka component realization, audit/work traces, and tests. Domain workstreams are not special cases; they use the same workstream → functional agent → surfaces → capabilities → Akka substrate pattern as the core SaaS workstreams.
 
 ## Internal agents
 
@@ -107,11 +113,12 @@ Internal agents still require governed `AgentDefinition`, approved prompt/skill 
 
 ## Surfaces
 
-Surfaces are structured renderable results, not just text. They are associated with workstreams and functional agents but may be reused across agents.
+Surfaces are structured renderable results, not just text. They are associated with workstreams and functional agents but may be reused across agents. **All renderable system messages are surfaces**: denials, warnings, success confirmations, validation failures, approval-required notices, background-task-started notices, stale/reconnect notices, deferred-capability notices, and safe recovery messages should use typed `system_message` surface contracts rather than ad hoc UI strings.
 
 Canonical surface types:
 
 - `markdown_response` for sanitized model-authored markdown in the minimum User Admin workstream v0 and other intentionally text-first responses;
+- `system_message` for typed system feedback, denial, warning, success, validation, approval-required, deferred, stale, background-work, and recovery messages;
 - dashboard / attention surface;
 - form or guided intake;
 - data table / search results;
@@ -125,6 +132,8 @@ Canonical surface types:
 - policy, prompt, or skill version card;
 - outcome review panel.
 
+Surfaces may be composed from well-defined reusable UI components such as text blocks, callouts, forms, field groups, tables, filters, pagination, charts, cards, timelines, action bars, confirmation prompts, trace links, status badges, and empty/error/forbidden states. Component reuse must not weaken the surface contract: the surface still owns payload schema, actions, authority assumptions, traceability, tests, and result behavior.
+
 Every surface should have:
 
 - stable surface type and version;
@@ -137,9 +146,18 @@ Every surface should have:
 
 A surface action is not authorization. The backend capability remains authoritative.
 
+Surface actions include both state-changing actions and surface-request actions:
+
+- **Read/query or surface-request actions** request another surface or refresh/update the current surface, such as `show_dashboard`, `search_users`, `view_user`, `open_audit_timeline`, or row-click-to-open-detail.
+- **Command actions** submit changes through classic forms or action controls, such as invite, revoke, disable, save, resend, or update settings.
+- **Proposal/approval/workflow actions** draft changes, request approval, approve/reject, start long-running work, or show progress.
+- **Governance/trace actions** open diffs, simulations, trace details, audit timelines, or behavior-change review surfaces.
+
+Every surface action maps to a governed backend capability. In most browser realizations, that means the action invokes a backend API that enforces authorization and returns a result surface, updated surface, workstream item, or typed `system_message` surface. Frontend-only navigation between consequential work surfaces is not enough; even “show dashboard” and “view user details” are read/evidence capabilities when scoped protected data is involved.
+
 ## Capabilities remain the backend contract
 
-Agent workstreams are a vertical application model. They do not make agents, tools, or UI controls the root backend abstraction.
+Workstreams are the root application abstraction, but capabilities remain the backend contract. Workstreams do not make agents, tools, surfaces, UI controls, or routes the backend design root.
 
 For each operation or query exposed in a workstream, define the capability first:
 
@@ -193,29 +211,31 @@ Allowed exceptions are narrow: public marketing/legal/static pages, direct deep 
 Build generated apps in vertical slices:
 
 ```text
-add or extend one functional agent
+add or extend one workstream
++ exactly one backing functional agent
 + default dashboard/attention surface
-+ one or two useful user actions
++ one or two useful user intents/actions
 + governed capabilities
 + Akka horizontals needed for those capabilities
 + workstream UI rendering
 + authorization, audit, tenant-isolation, and surface tests
 ```
 
-Then repeat as the functional agent gains more surfaces, skills, tools, workflows, internal-agent support, and outcome loops.
+Then repeat as the workstream gains more surfaces, skills, tools, workflows, internal-agent support, and outcome loops.
 
 ## Readiness checklist
 
 Before treating a generated full-stack AI-first SaaS app as architecture-ready, verify:
 
-- [ ] Authenticated consequential work areas are modeled as functional agents, not primarily as pages.
-- [ ] Left rail functional agents are role-authorized from backend capabilities and selected AuthContext.
-- [ ] Each functional agent has purpose, authority, surfaces, capability mappings, traces, and tests.
+- [ ] Authenticated consequential work areas are modeled as workstreams backed by exactly one functional agent, not primarily as pages.
+- [ ] Left rail entries select role-authorized workstreams/functional agents from backend capabilities and selected AuthContext.
+- [ ] Each workstream/functional agent has purpose, authority, supported user intents, surfaces, capability mappings, traces, and tests.
 - [ ] Each LLM-backed functional agent has a workstream expert bundle or explicit deferral covering skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests.
 - [ ] User Admin and Agent Admin functional agents are present for full core SaaS scope, or the narrower scope explicitly defers them.
 - [ ] Internal agents are distinguished from functional agents and have governed behavior, tool boundaries, and traces.
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.
-- [ ] Surface actions, agent tools, APIs, workflows, timers, and consumers map to governed capabilities.
+- [ ] System messages are modeled as typed surfaces, not ad hoc strings.
+- [ ] Surface actions, including surface-request actions, agent tools, APIs, workflows, timers, and consumers map to governed capabilities.
 - [ ] Capability-first backend design remains intact: auth, scope, validation, idempotency, side effects, approval, audit, exposure channels, and tests are defined before Akka component selection.
 - [ ] Akka components are selected as horizontal implementation details from capability semantics.
 - [ ] The UI shell includes left rail functional agents, main workstream, persistent composer, context/authority indicators, denial/recovery states, and trace links.
