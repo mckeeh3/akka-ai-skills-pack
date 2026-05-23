@@ -18,6 +18,7 @@ Reconcile a revised PRD with the current project plan by identifying:
 - clarified requirements
 - conflicting requirements
 - added, changed, or removed AI-first operating-model semantics: delegated work, retained human authority, policies, approvals, exceptions, audit traces, UI supervision, and outcomes
+- added, changed, or removed workstream expertise semantics: functional-agent expert bundles, governed prompts/skills/references, compact manifests, loader authorization, tool boundaries, traces, UI/governance surfaces, seed/upgrade rules, and expertise tests
 - completed implementation work that now needs follow-up
 - pending tasks that remain valid
 - pending tasks that must be updated, blocked, deferred, or superseded
@@ -38,7 +39,7 @@ Use `akka-change-request-to-spec-update` for small feature requests, bug reports
 
 Use `akka-prd-to-specs-backlog` when no existing planning artifacts exist or the user explicitly wants a clean initial planning package.
 
-Use this skill as a reconciliation layer, not as a fresh planning generator: preserve existing app-description/spec/backlog/task-brief/queue IDs and statuses, supersede obsolete non-done tasks instead of deleting them, append follow-up tasks for completed work that must change, and carry forward capability ids, AuthContext/scope, approval gates, audit/trace obligations, tests, Java base package, scaffold-extension semantics, and style-guide decisions unless the revised PRD explicitly replaces them.
+Use this skill as a reconciliation layer, not as a fresh planning generator: preserve existing app-description/spec/backlog/task-brief/queue IDs and statuses, supersede obsolete non-done tasks instead of deleting them, append follow-up tasks for completed work that must change, and carry forward capability ids, AuthContext/scope, approval gates, audit/trace obligations, workstream expertise decisions, tests, Java base package, scaffold-extension semantics, and style-guide decisions unless the revised PRD explicitly replaces them.
 
 ## Required reading
 
@@ -49,6 +50,7 @@ Read these first if present:
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
+- `../../docs/workstream-expertise-model.md` when the revised PRD adds or changes functional agents, workstream expertise, prompts, skills, references, manifests, loaders, tool boundaries, governed agent behavior, traces, seed content, or expertise tests
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-change-request-to-spec-update/SKILL.md`
 - `../app-description-change-impact/SKILL.md`
@@ -74,6 +76,7 @@ Summarize the current baseline from maintained artifacts:
 - capabilities
 - major behavior flows
 - current AI-first interpretation if present: delegated work, durable goals/plans, agent/team authority, approval/exception model, policies, traces, supervision surfaces, and outcome loops
+- current workstream expertise baseline if present: expert bundles, prompt intent, governed skill/reference documents, compact manifests, loader access, `ToolPermissionBoundary`, seed/upgrade policy, trace obligations, UI/governance surfaces, and expertise tests
 - chosen Akka components
 - slice/backlog structure
 - queue status counts
@@ -89,6 +92,7 @@ From the revised PRD, extract:
 - workflows and timers
 - integrations
 - AI-first operating-model facts: human objectives, delegated work, retained authority, agent/team responsibilities, policies, approval gates, exception paths, evidence/risk thresholds, audit/trace needs, UI supervision surfaces, learning loops, and outcome metrics
+- workstream expertise facts: which functional agents need expert bundles, prompt intent changes, procedural skills, reference documents, `AgentSkillManifest`/`AgentReferenceManifest` entries, `readSkill`/`readReferenceDoc` behavior, denied-load rules, tool-boundary grants, seed/upgrade needs, governance owner, trace surfaces, and expertise tests
 - security/auth requirements
 - observability/operational requirements
 - explicit non-goals/de-scopes
@@ -116,17 +120,20 @@ For each delta, identify likely affected:
 
 Do not classify AI-first changes as implementation detail only when they affect authorization, autonomous action, human review, auditability, policy behavior, or outcome accountability.
 
+Do not classify workstream expertise changes as prompt-only or implementation detail only when they affect governed documents, manifests, loaders, tool permissions, reference access, authority profile, capability exposure, UI/governance surfaces, traceability, generation assets, or tests.
+
 ### 4. Update app-description first when present
 
 If `app-description/` exists, update authoritative layers before `specs/`:
-1. capabilities
-2. behavior
-3. tests
-4. auth/security
-5. observability
-6. AI-first operating model and governance sections when delegated work, agent/team boundaries, approvals, exceptions, policy, trace, UI supervision, learning, or outcomes changed
-7. traceability
-8. readiness
+1. `12-workstreams/` workstream expertise when functional-agent expertise changed: bundle scope, prompt intent, governed skills, references, compact manifests, capability map, `ToolPermissionBoundary`, authority profile, loader denial semantics, surfaces, traces, governance owner, seed/upgrade policy, and expertise tests
+2. capabilities, especially when capability exposure, agent-callable tools, approval semantics, or expertise-to-capability mappings changed
+3. behavior
+4. tests, including assigned/unassigned skill/reference loads, tool-boundary denial, no-authority-expansion, trace emission, and UI surface coverage where relevant
+5. auth/security, especially authority boundaries, tenant/customer scope, data-access, and permission enforcement for loaders/tools
+6. observability, especially `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, data-access, decision, and audit events
+7. AI-first operating model and governance sections when delegated work, agent/team boundaries, approvals, exceptions, policy, trace, UI supervision, learning, or outcomes changed
+8. UI/governance surfaces when manifest display, skill/reference review, denied-load recovery, decision cards, supervision, governance center, digest, or audit views changed
+9. traceability, generation maps, and readiness
 
 If the revised PRD conflicts with current app-description meaning, do not silently choose. Ask the smallest clarifying question or mark affected tasks blocked.
 
@@ -136,6 +143,7 @@ Update existing files rather than replacing the whole tree:
 - modify existing slice specs when a slice remains valid
 - add new numbered slice specs for new capability areas
 - preserve or update AI-first sections in solution plans, cross-cutting specs, slices, and backlogs when authority, policy, approval, audit, UI supervision, or outcome semantics changed
+- preserve or update workstream expertise sections/tasks when functional-agent competence changes, keeping prompt/skill/reference documents, manifests, loaders, tool boundaries, UI/governance surfaces, generation/seed assets, and tests as separate bounded work rather than one vague `agent governance` task
 - mark de-scoped behavior in specs explicitly rather than deleting context when useful
 - update matching backlog files
 - create new backlog files for new slices
@@ -150,10 +158,11 @@ Apply queue reconciliation rules:
 - do not delete completed tasks
 - do not reset `done` tasks to `pending`
 - append new tasks for new work
-- update pending tasks whose scope/read list/skills changed but still represent the same work, adding `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior
+- update pending tasks whose scope/read list/skills changed but still represent the same work, adding `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior; add `docs/workstream-expertise-model.md` and focused agent governance/testing skills when expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI are in scope
+- block or decompose vague pending tasks such as `make the agent expert` or `agent governance` unless they have a self-contained fresh-session scope for exactly which expert bundle, governed documents, manifests, loaders, boundaries, surfaces, traces, and tests are included
 - mark obsolete non-done tasks as `superseded`
 - add follow-up tasks for completed work that must change
-- mark tasks `blocked` when the revised PRD creates unresolved decisions about delegation, authority, approvals, policy, evidence/risk, audit, supervision UI, or outcomes
+- mark tasks `blocked` when the revised PRD creates unresolved decisions about delegation, authority, approvals, policy, evidence/risk, audit, supervision UI, workstream expertise, reference access, loader permission, or outcomes
 - keep dependencies valid and not over-serialized
 
 Status counts should be reported after reconciliation.
@@ -229,9 +238,10 @@ Use this response shape:
 
 ## AI-first reconciliation
 - delegated work / authority changes:
+- workstream expertise changes:
 - governance / policy / approval changes:
 - audit / trace / outcome changes:
-- unresolved AI-first blockers:
+- unresolved AI-first or expertise blockers:
 
 ## Replanning recommendation
 - localized | broad | full replanning recommended
@@ -250,7 +260,7 @@ Avoid:
 - letting old pending tasks survive when their source requirement changed
 - treating the revised PRD as additive only
 - skipping removal/de-scope analysis
-- losing prior AI-first governance, audit, policy, approval, or outcome semantics during rewrite
+- losing prior AI-first governance, audit, policy, approval, workstream expertise, trace, UI/governance, generation, test, or outcome semantics during rewrite
 - changing implementation code during reconciliation
 - failing to surface conflicts between the revised PRD and current app-description
 
@@ -261,6 +271,7 @@ Before finishing, verify:
 - current maintained artifacts were used as baseline
 - deltas are categorized as added/changed/removed/clarified/conflict
 - AI-first delegation, authority, governance, audit, UI supervision, and outcome implications were compared against the current baseline
+- workstream expertise implications were compared against the current baseline, including expert bundles, governed prompts/skills/references, compact manifests, loader authorization, `ToolPermissionBoundary`, traces, UI/governance surfaces, seed/generation assets, and tests
 - affected app-description/spec/backlog/task files were updated
 - queue history was preserved
 - obsolete non-done tasks were superseded, not deleted

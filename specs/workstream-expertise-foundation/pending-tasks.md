@@ -403,7 +403,7 @@
 
 ### TASK-WEF-04-002: Align change-impact and iterative update guidance
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/04-planning-integration-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/04-planning-integration/02-align-change-impact-expertise.md
 - depends on: [TASK-WEF-04-001]
@@ -425,6 +425,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Align expertise change impact guidance
+  - checks: `git diff --check` passed; text-search proof covered workstream expertise propagation across behavior, governance, capabilities, auth/security, observability, UI/governance, generation/seed assets, tests, queue blocking/decomposition, `ReferenceDocument`, `AgentReferenceManifest`, `readReferenceDoc`, `ReferenceLoadTrace`, and `ToolPermissionBoundary`
 
 ### TASK-WEF-04-003: Review planning integration with sample domain workstream
 

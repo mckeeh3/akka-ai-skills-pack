@@ -92,7 +92,7 @@ For each change, determine as applicable:
 - which UI artifacts are impacted, especially capability-backed browser actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
 - which traceability maps must change, including functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
 - whether `00-system/readiness-status.md` must be updated
-- which generation surfaces are likely affected
+- which generation surfaces are likely affected, including seeded prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
 - which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
 - whether regeneration can remain localized or should broaden
 
@@ -190,7 +190,7 @@ Route onward as needed:
 - to `app-description-ui` when supervision, decision, governance, digest, goal-to-execution, or audit UI implications exist
 - to focused AI-first companion skills when operating-model semantics changed and need decomposition before app-description updates
 - to `app-description-readiness-assessment` when readiness likely changed
-- to `akka-change-request-to-spec-update` when existing specs/backlogs/pending tasks must be reconciled after a bounded change
+- to `akka-change-request-to-spec-update` when existing specs/backlogs/pending tasks must be reconciled after a bounded change, especially when expertise changes require new or revised tasks for governed documents, manifests, loaders, boundaries, UI/governance surfaces, generation/seed assets, or tests
 - to `akka-revised-prd-reconciliation` when the change basis is a revised/replacement PRD
 - to `app-generate-app` only after the impacted description layers are updated and readiness is acceptable
 
@@ -208,6 +208,7 @@ Examples:
 Avoid:
 - assuming no test impact because the user mentioned only behavior
 - assuming no security impact because the request did not mention auth explicitly
+- treating a workstream expertise change as prompt-only and skipping capability, governance, auth/security, observability, UI, generation, traceability, or test propagation
 - recommending localized regeneration without a clear dependency chain
 - treating review summaries as authoritative instead of derived
 - leaving traceability maps stale after a material semantic change

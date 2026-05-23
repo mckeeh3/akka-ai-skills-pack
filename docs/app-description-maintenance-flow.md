@@ -231,6 +231,7 @@ Readiness is a maintained state, not a one-time milestone.
 
 The harness should reassess readiness after material description changes, especially when they affect:
 - capability contract completeness: actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit, exposure surfaces, and tests
+- workstream expertise completeness: expert bundles, governed prompts/skills/references, compact manifests, authorized loaders, tool boundaries, trace obligations, UI/governance surfaces, seed/generation assets, and expertise tests
 - state transitions
 - failure semantics
 - delegated authority, approvals, exceptions, or policy controls

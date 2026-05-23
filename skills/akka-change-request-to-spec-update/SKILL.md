@@ -14,6 +14,7 @@ This is an **evolution skill**. It keeps the app meaning and implementation plan
 Turn a change request into a controlled planning delta that:
 - preserves the current app-description/spec structure
 - preserves AI-first operating-model meaning when delegated work, governance, decisions, audit, or outcomes are in scope
+- preserves workstream expertise meaning when a functional agent's prompt intent, governed skills, references, expertise manifest, loaders, tool boundary, traces, or tests change
 - updates only the affected authoritative description/spec artifacts
 - adds or revises verification expectations
 - identifies auth/security and observability impact
@@ -44,6 +45,7 @@ Read these first if present:
 - `../../docs/ai-first-saas-application-architecture.md` when the change involves delegated work, agents, governance, approvals, exceptions, audit, or outcomes
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
+- `../../docs/workstream-expertise-model.md` when the change adds or revises a functional agent, expert bundle, governed skills, references, manifests, loader authorization, tool boundaries, traces, seed content, or expertise tests
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../../docs/web-ui-style-guide.md` when the change affects web UI style guide
@@ -69,6 +71,7 @@ Classify the input as one or more of:
 - security/auth change
 - observability/operations change
 - AI-first operating-model change: delegated work, retained human authority, agent/team responsibility, approval gates, exception handling, policy/permission rules, audit traces, evidence/risk thresholds, UI supervision surfaces, or outcome metrics
+- workstream expertise change: functional-agent prompt intent, `SkillDocument`/`ReferenceDocument` content, `AgentSkillManifest`/`AgentReferenceManifest` entries, `readSkill`/`readReferenceDoc` loader access, `ToolPermissionBoundary`, authority profile, seed/upgrade policy, governance owner, `PromptAssemblyTrace`/`SkillLoadTrace`/`ReferenceLoadTrace`/`AgentWorkTrace`, or expertise tests
 - integration contract change
 - UI/API surface change, including web UI style-guide selection or token changes
 - implementation discovery
@@ -87,6 +90,7 @@ Summarize:
 - affected behavior
 - affected tests
 - affected AI-first semantics: durable goals/plans, agent authority, policy, approval, exception, trace, UI, or outcome implications
+- affected workstream expertise semantics: bundle scope, prompt/skill/reference docs, compact manifests, loader denials, tool boundaries, seed/import, governance owner, traces, UI/governance surfaces, and tests
 - likely affected Akka components
 - whether this is local, cross-slice, or foundational
 
@@ -94,27 +98,30 @@ If the change is broad enough to invalidate the current architecture or authorit
 
 When the input changes delegated work or automation authority, apply `ai-first-saas` before selecting implementation artifacts. Do not treat the change as a simple CRUD field or endpoint update if it changes who/what may act, approve, decide, learn, or be audited.
 
+When the input says to make an agent more capable, more expert, more knowledgeable, or better at a workstream, do not collapse the request into prompt text. Route it as a workstream expertise change and identify impacted expert bundle artifacts, governed documents, manifests, loaders, tool boundaries, capabilities, auth/security, observability, UI/governance surfaces, generation assets, and tests.
+
 ### 2. Update authoritative meaning first
 
 If `app-description/` exists, update it before implementation specs:
-1. capabilities when scope/outcomes changed
-2. behavior when app semantics changed
-3. tests for acceptance, regression, negative, idempotency, security, or operational verification
-4. auth/security when identity, authorization, trust, or sensitive data changed
-5. observability when logs, metrics, traces, audit, health, or alerts changed
-6. AI-first operating model when delegated work, retained authority, agent/team boundaries, policy gates, decision cards, work traces, or outcome loops changed
-7. UI style guide when a browser frontend style system, mode policy, density, brand treatment, component styling, supervision surface, decision card, governance center, digest, or audit view changes
-8. traceability and readiness as needed
+1. `12-workstreams/` workstream expertise when functional-agent competence changes: bundle scope, prompt intent, governed skills, reference documents, compact skill/reference manifests, capability map, `ToolPermissionBoundary`, authority profile, loader denial semantics, traces, governance owner, seed/upgrade policy, surfaces, and expertise tests
+2. capabilities when scope/outcomes, capability exposure, agent-callable tools, approval semantics, or capability-to-expertise mappings changed
+3. behavior when app semantics changed
+4. tests for acceptance, regression, negative, idempotency, security, operational, assigned/unassigned loader, tool-boundary, no-authority-expansion, trace, or surface verification
+5. auth/security when identity, authorization, trust, authority boundaries, tenant/customer scope, data access, or sensitive data changed
+6. observability when logs, metrics, traces, audit, health, alerts, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, or `AgentWorkTrace` changed
+7. AI-first operating model when delegated work, retained authority, agent/team boundaries, policy gates, decision cards, work traces, or outcome loops changed
+8. UI style guide or UI/governance surfaces when a browser frontend style system, mode policy, density, brand treatment, component styling, supervision surface, decision card, governance center, manifest/reference/skill display, denied-load recovery, digest, or audit view changes
+9. traceability, generation maps, and readiness as needed
 
 Do not bury new governance, audit, policy, approval, or outcome semantics only in backlog text or generated code.
 
 ### 3. Update realization specs
 
 Update the smallest relevant `specs/` artifacts:
-- `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, authority boundaries, or global implementation order changed
-- `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI style-guide decisions
-- `specs/slices/*.md` for business slice meaning
-- `specs/backlog/*-build-backlog.md` for implementation breakdown
+- `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, workstream expertise foundation, authority boundaries, or global implementation order changed
+- `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, expert bundle governance, prompt/skill/reference document governance, manifest/loader/boundary rules, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI style-guide decisions
+- `specs/slices/*.md` for business slice meaning, including workstream expertise responsibilities when a slice introduces or materially changes a functional agent
+- `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for expert bundle description, seed documents, skill/reference manifests, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task
 - `specs/tasks/**/*.md` when one task brief must change or a new leaf task is needed
 
 Preserve numbering and existing file names unless the user asks for a larger reorganization.
@@ -129,8 +136,9 @@ Rules:
 - append new tasks for new work
 - mark obsolete pending/deferred/blocked tasks as `superseded` when a later spec change replaces them
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
-- update required reads and skills for affected pending tasks, adding `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior
-- block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, or outcome semantics are now ambiguous
+- update required reads and skills for affected pending tasks, adding `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI
+- block or decompose vague pending tasks such as `make the agent expert` or `agent governance` unless they have a self-contained scope for exactly which expert bundle, governed documents, manifests, loaders, boundaries, surfaces, traces, and tests are in or out
+- block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, workstream expertise, or outcome semantics are now ambiguous
 - block web UI tasks whose source spec has no selected style guide and add or update the pending style-selection question
 - block tasks whose source spec is now ambiguous
 - avoid renumbering
@@ -173,7 +181,7 @@ Avoid:
 - deleting completed or obsolete queue entries
 - renumbering task IDs
 - leaving regression tests unspecified for a bug fix
-- treating security, authorization, tenant isolation, audit, or observability impact as skippable after behavior changes
+- treating security, authorization, tenant isolation, audit, observability, UI/governance, generation, or test impact as skippable after behavior or workstream expertise changes
 - silently widening the current implementation task
 
 ## Final review checklist
@@ -182,8 +190,8 @@ Before finishing, verify:
 - the change was classified
 - authoritative description/spec files were updated before queue edits
 - test impact was handled
-- governance, audit, policy, approval, and outcome implications were preserved when applicable
-- security and observability impact were considered
+- governance, audit, policy, approval, workstream expertise, generation, and outcome implications were preserved when applicable
+- security, observability, UI/governance, and test impact were considered
 - affected backlog/task files were updated or intentionally left unchanged
 - queue IDs and statuses were preserved
 - obsolete tasks were superseded rather than deleted
