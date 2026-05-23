@@ -99,7 +99,7 @@
 
 ### TASK-WEF-01-004: Review doctrine and description sprint
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/01-doctrine-description-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/01-doctrine-description/04-review-doctrine-description-sprint.md
 - depends on: [TASK-WEF-01-003]
@@ -123,6 +123,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Review workstream expertise doctrine sprint
+  - checks: `git diff --check` passed; text-search proof recorded in sprint review
 
 ### TASK-WEF-02-001: Audit governed runtime expertise gaps
 
