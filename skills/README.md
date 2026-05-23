@@ -44,6 +44,7 @@ Canonical doctrine:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS requests
 - `../docs/agent-workstream-application-architecture.md`
+- `../docs/domain-workstream-prd-structure.md`
 - `../docs/structured-surface-contracts.md`
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/core-ai-first-saas-foundation.md`

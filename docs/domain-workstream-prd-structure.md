@@ -1,0 +1,261 @@
+# Domain workstream PRD structure
+
+Use this structure when capturing PRDs or seed/reference descriptions for AI-first SaaS domains. It applies to the core SaaS app domain and to later domain-specific app domains.
+
+The goal is to decompose product intent into fully functional workstreams before implementation:
+
+```text
+domain intent
+→ workstreams as root app units
+→ exactly one backing functional/context-area agent per workstream
+→ workstream-agent expertise for user assistance
+→ structured surfaces and system-message surfaces
+→ surface actions and surface requests
+→ governed backend capabilities
+→ Akka/backend/frontend realization and tests
+```
+
+## Directory shape
+
+A domain is a directory with a `README.md`. It contains one directory per workstream.
+
+```text
+<domain-name>/
+  README.md
+
+  <workstream-name>-workstream/
+    README.md
+    capabilities.md
+    tests.md
+
+    workstream-agent/
+      prompt.md
+      skills/
+        <skill-name>/
+          SKILL.md
+
+    surfaces/
+      dashboard.md
+      <surface-name>.md
+      system-messages.md
+```
+
+Example:
+
+```text
+ai-first-saas-core-app-domain/
+  README.md
+
+  user-admin-workstream/
+    README.md
+    capabilities.md
+    tests.md
+
+    workstream-agent/
+      prompt.md
+      skills/
+        user-admin/
+          SKILL.md
+        user-list/
+          SKILL.md
+        user-edit/
+          SKILL.md
+
+    surfaces/
+      dashboard.md
+      user-list.md
+      user-edit.md
+      system-messages.md
+```
+
+## Domain `README.md`
+
+The domain README is the high-level domain PRD. It should define:
+
+- domain purpose and scope;
+- domain vocabulary and shared object names;
+- included workstreams;
+- shared actors, roles, permissions/capabilities, and tenant/customer scope;
+- shared policies, approval rules, authority limits, and exception rules;
+- shared audit/work-trace expectations;
+- shared backend objects or Akka component candidates when already known;
+- domain-level readiness and not-ready conditions.
+
+For the core SaaS app domain, the domain includes the required foundation workstreams such as My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+
+For an app-specific domain, the domain describes the user's business area and then decomposes it into domain-specific workstreams using the same structure.
+
+## Workstream `README.md`
+
+The workstream README is the workstream-level PRD and the primary generation contract for that vertical.
+
+It must state:
+
+- workstream purpose and business responsibility;
+- backing functional/context-area agent; every workstream has exactly one;
+- authorized roles/capabilities and tenant/customer scope;
+- default dashboard, attention, or briefing surface;
+- required surfaces;
+- user intents the workstream agent must understand;
+- surface actions and surface-request actions;
+- capability mapping summary;
+- audit/work-trace behavior;
+- escalation, approval, denial, and exception behavior;
+- readiness and not-ready conditions.
+
+Required invariant text:
+
+```text
+This workstream is backed by exactly one functional/context-area agent.
+Surfaces are the only renderable workstream artifacts.
+System messages are typed surfaces.
+Every surface action, including read/query and surface-request actions, maps to a governed backend capability.
+The workstream agent may request surfaces and guide users, but backend capabilities enforce authority.
+```
+
+## `workstream-agent/`
+
+The `workstream-agent/` directory describes the workstream's user-facing assistant. The workstream remains the root abstraction; the agent backs the workstream and helps users operate within it.
+
+### `prompt.md`
+
+`prompt.md` contains the workstream agent's system-prompt intent, for example: "You are the User Admin workstream assistant..." It should define:
+
+- agent role and responsibility;
+- workstream scope and boundaries;
+- supported user intents;
+- how to answer “how do I...” questions;
+- shorthand surface requests the agent should recognize, such as “dashboard”, “show users”, or “find Alex”;
+- how to request or refresh surfaces;
+- how to explain denials, validation errors, deferred capabilities, and next steps;
+- tool/capability boundaries and authority reminders;
+- when to escalate, request approval, or emit a system-message surface.
+
+### `workstream-agent/skills/`
+
+These are generated-app runtime/workstream-agent skills, not this repository's harness routing skills.
+
+Use them to capture user-assistance knowledge for the workstream agent, such as:
+
+- how to use the workstream;
+- how each surface works;
+- how to interpret fields and statuses;
+- how to guide common tasks;
+- how to explain denials and recovery;
+- examples of supported user requests.
+
+Each `SKILL.md` should be scoped to one user-facing assistance topic. For example, User Admin may have skills for general user administration, user list/search, user edit, invitation guidance, role/capability guidance, or access review.
+
+If a generated app also stores runtime governed skills as `SkillDocument`/`SkillVersion` records, these files are seed/reference content that can be imported into governed storage with provenance, review, activation, and tenant-customization rules.
+
+## `surfaces/`
+
+Each surface file is a surface-level PRD. It is a behavioral contract, not a static visual mockup.
+
+A surface file should define:
+
+- surface id, display name, type, and version;
+- owning workstream and reusable workstreams if any;
+- purpose and when it appears;
+- payload fields and redaction rules;
+- producing read/evidence capability;
+- available actions;
+- next surfaces or updates produced by actions;
+- authority requirements and denial behavior;
+- loading, empty, ready, submitting, success, approval-needed, forbidden, error, conflict, stale/reconnect, and no-op states where relevant;
+- audit/work-trace fields and visible trace links;
+- rendering, action, authorization, tenant-isolation, audit/trace, accessibility, responsive, and realtime tests.
+
+Surface actions include:
+
+- read/query or surface-request actions, such as show dashboard, search users, view user, open audit timeline, row-click-to-open-detail, and refresh;
+- command actions, such as invite, revoke, disable, save, resend, and update settings;
+- proposal/approval/workflow actions, such as draft change, request approval, approve/reject, start review, and show progress;
+- governance/trace actions, such as open diff, simulate, open trace, and view audit timeline.
+
+Every action maps to a governed backend capability. In browser realization, actions usually invoke backend APIs that return a new surface, updated surface, workstream item, workflow/progress surface, or typed `system_message` surface.
+
+### `system-messages.md`
+
+Each workstream should define its common system-message surfaces, including:
+
+- success confirmations;
+- forbidden/denied messages;
+- validation failures;
+- approval-required notices;
+- deferred-capability notices;
+- stale/reconnect notices;
+- background-work-started notices;
+- no-op results;
+- safe recovery guidance.
+
+System messages must not leak secrets, hidden privileged facts, prompt content, provider details, or cross-tenant data.
+
+## `capabilities.md`
+
+Capabilities are backend contracts. They should not exist only as notes inside surface files.
+
+The workstream `capabilities.md` should define every operation/query exposed by the workstream:
+
+- stable capability id and purpose;
+- capability class: read/evidence, command, proposal, approval, workflow, governance, trace/audit, scheduled, reactive;
+- actors/callers: humans, workstream agent, internal agents, workflows, services, timers, consumers, support roles;
+- AuthContext, tenant/customer scope, role/capability requirements, and denial behavior;
+- input/output schemas, validation, redaction, and idempotency;
+- data access and side effects;
+- policy/approval gates and escalation rules;
+- audit/work-trace fields;
+- exposure channels: surface action, browser API, agent tool, workflow step, timer, consumer, MCP, view, or internal method;
+- tests.
+
+Surface files reference capability ids from this file. The capability remains authoritative for backend behavior, security, side effects, idempotency, audit, and tests.
+
+## `tests.md`
+
+`tests.md` summarizes workstream-level acceptance and regression expectations:
+
+- authorized success flows through intended surfaces;
+- user-intent handling by the workstream agent;
+- surface request flow, including dashboard/search/detail navigation;
+- form submission and result-surface behavior;
+- forbidden, disabled-user, missing-role, and tenant-isolation cases;
+- idempotent/no-op behavior;
+- audit/work-trace creation;
+- approval/escalation behavior;
+- system-message rendering and redaction;
+- accessibility, responsive, stale/reconnect, and realtime behavior;
+- local smoke/manual validation expectations.
+
+A workstream is not ready if required surfaces are static mockups, actions do not invoke governed backend capabilities, authorization is frontend-only, protected data is hardcoded, audit/work traces are missing, or tests do not cover forbidden and tenant-isolation paths.
+
+## How domain workstreams are introduced
+
+When consuming domain-specific intent, first identify candidate workstreams before selecting Akka components. A domain workstream should represent a durable user-facing work area with a coherent assistant, surfaces, actions, authority model, and capability set.
+
+For each candidate workstream, define:
+
+1. business responsibility and outcome;
+2. primary users and roles;
+3. backing functional/context-area agent;
+4. default surface;
+5. required surfaces;
+6. supported user intents;
+7. surface actions and requested next surfaces;
+8. governed backend capabilities;
+9. Akka component realization candidates;
+10. audit/work traces and tests.
+
+Domain workstreams use the same pattern as core SaaS workstreams:
+
+```text
+workstream
+→ backing workstream agent
+→ user intents
+→ surfaces
+→ surface actions / surface requests
+→ capabilities
+→ APIs/tools/workflows/views/entities/etc.
+→ tests and traces
+```
+
+Do not decompose a domain first into pages, CRUD screens, entities, or agent tools. Use the workstream and surface model to preserve user intent and then map the required behavior to backend capabilities and Akka components.
