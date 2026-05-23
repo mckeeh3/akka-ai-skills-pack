@@ -169,7 +169,7 @@ Workstream expertise tests should verify:
 
 - Use `app-description-functional-agent-modeling` when adding or revising a functional agent's expert bundle in app-description artifacts.
 - Use `akka-agent-skill-governance` for governed `SkillDocument`, `SkillVersion`, `AgentSkillManifest`, `readSkill`, and `SkillLoadTrace` implementation guidance.
-- Use governed-document or future reference-document guidance for reference documents; do not silently collapse references into generic prompts.
+- Use `akka-agent-reference-governance` for `ReferenceDocument`, `ReferenceVersion`, `AgentReferenceManifest`, `readReferenceDoc(referenceId)`, denied-load semantics, and ReferenceLoadTrace; do not silently collapse references into generic prompts or procedural skills.
 - Use `akka-agent-tool-boundaries` for enforcing loader/tool permissions.
 - Use `akka-agent-seed-documents` for default prompt/skill/reference/manifest/boundary seed import.
 - Use `akka-agent-testing` and `akka-agent-work-trace` for expertise runtime and trace tests.

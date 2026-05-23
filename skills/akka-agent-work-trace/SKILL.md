@@ -1,11 +1,11 @@
 ---
 name: akka-agent-work-trace
-description: Design and implement agent-specific audit/work traces for AgentDefinition, prompt/skill/model/tool/data/policy usage, authorization decisions, redaction, correlation, trace timelines, and investigation UI in AI-first SaaS apps.
+description: Design and implement agent-specific audit/work traces for AgentDefinition, prompt/skill/reference/model/tool/data/policy usage, authorization decisions, redaction, correlation, trace timelines, and investigation UI in AI-first SaaS apps.
 ---
 
 # Akka Agent Work Trace
 
-Use this skill when agent activity must be explainable, searchable, tenant-scoped, and auditable across prompts, skills, models, tools, data access, authorization decisions, approvals, and outcomes.
+Use this skill when agent activity must be explainable, searchable, tenant-scoped, and auditable across prompts, skills, references, models, tools, data access, authorization decisions, approvals, and outcomes.
 
 This is the agent-specific companion to `ai-first-saas-audit-trace`. It does not replace general audit/security, observability, entity, view, endpoint, or web UI skills.
 
@@ -15,7 +15,7 @@ For generated full-stack AI-first SaaS agent trace work, implement only after th
 - functional/internal agent, workstream, trace/audit surface ids, investigation actions, and source surface/action/tool/workflow events;
 - capability ids/classes for trace recording, search, detail, export, redaction, retention, and investigation operations;
 - `AuthContext`, tenant/customer scope, viewer roles/capabilities, support-access rules, sensitive-field redaction, and forbidden behavior;
-- correlation/work trace ids, prompt/skill/model/tool/data/policy refs, outcome/decision links, audit obligations, retention rules, and required tests.
+- correlation/work trace ids, prompt/skill/reference/model/tool/data/policy refs, outcome/decision links, audit obligations, retention rules, and required tests.
 
 If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of logging arbitrary agent metadata.
 
@@ -41,8 +41,8 @@ Read these first if present:
 ## Use when the request mentions
 
 - agent audit, work trace, activity trace, timeline, investigation, or explainability
-- prompt/skill/model/tool version references in audit
-- `PromptAssemblyTrace`, `SkillLoadTrace`, `ToolInvocation`, or `DataAccessEvent`
+- prompt/skill/reference/model/tool version references in audit
+- `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `ToolInvocation`, or `DataAccessEvent`
 - trace search, redaction, trace export, or sensitive trace fields
 - correlation ids across agent tests, workflows, tools, prompt assembly, and skill loads
 - why an agent was allowed, denied, escalated, or approved
@@ -71,7 +71,7 @@ who/what acted?
 under which tenant/customer/auth context?
 which AgentDefinition and lifecycle state?
 which prompt version was assembled?
-which skill manifest and skill versions were available/loaded?
+which skill/reference manifests and versions were available/loaded?
 which model config was used?
 which tools/data were used or denied?
 which permission, policy, approval, or guardrail allowed/denied it?
@@ -107,6 +107,8 @@ AuditTraceEvent
 - promptDocumentId / promptVersion when applicable
 - skillManifestId / skillManifestVersion when applicable
 - skillDocumentId / skillVersion when applicable
+- referenceManifestId / referenceManifestVersion when applicable
+- referenceDocumentId / referenceVersion when applicable
 - modelConfigRef when applicable
 - toolName / toolCategory when applicable
 - dataAccessSummary when applicable
@@ -125,8 +127,9 @@ Plan trace emission for:
 - Prompt assembly for test/runtime/replay/evaluation.
 - Prompt test runs.
 - Skill document lifecycle changes.
-- AgentSkillManifest changes.
+- AgentSkillManifest and AgentReferenceManifest changes.
 - `readSkill(skillId)` allowed and denied calls.
+- `readReferenceDoc(referenceId)` allowed and denied calls, including redaction/access/token-limit denials.
 - Tool invocation allowed and denied calls.
 - Data access by agent tools or component tools.
 - Workflow steps that call agents.
@@ -180,8 +183,8 @@ Provide protected UI for:
 Plan tests for:
 - trace emission for allowed agent actions;
 - trace emission for denied agent/prompt/skill/tool/data actions;
-- prompt version and skill version references in traces;
-- tenant isolation for trace search and detail;
+- prompt version, skill version, and reference version references in traces;
+- tenant/customer isolation for reference-load trace search and detail;
 - redaction behavior for normal and sensitive readers;
 - disabled/archived agent trace behavior;
 - correlation across prompt assembly → skill load → response/test run;

@@ -7,7 +7,7 @@ description: Implement governed runtime skills for Akka agents with SkillDocumen
 
 Use this skill when Akka agents need model-loadable internal guidance that is tenant-scoped, versioned, reviewed, assigned per agent, loaded through an approved tool, and audited.
 
-This is the governed runtime skill pattern for AI-first SaaS apps. For generated managed agents, it is **the standard way agents receive skill guidance**: each active `AgentDefinition` points to its own `AgentSkillManifest`; prompt assembly includes only that agent's assigned skill ids, names, descriptions, and when-to-use hints; full skill text is loaded only through the registered Akka `@FunctionTool` `readSkill(skillId)`. Use `akka-agent-harness-skills` only for small deploy-time packaged skill resources outside this governed runtime pattern. Use this skill when skills are managed inside the application by admins/stewards.
+This is the governed runtime skill pattern for AI-first SaaS apps. For generated managed agents, it is **the standard way agents receive procedural skill guidance**: each active `AgentDefinition` points to its own `AgentSkillManifest`; prompt assembly includes only that agent's assigned skill ids, names, descriptions, and when-to-use hints; full skill text is loaded only through the registered Akka `@FunctionTool` `readSkill(skillId)`. Use `akka-agent-reference-governance` for factual/process reference documents and `readReferenceDoc(referenceId)`. Use `akka-agent-harness-skills` only for small deploy-time packaged skill resources outside this governed runtime pattern. Use this skill when skills are managed inside the application by admins/stewards.
 
 ## Generated SaaS input contract
 
@@ -31,6 +31,7 @@ Read these first if present:
 - `../akka-agent-governed-documents/SKILL.md`
 - `../akka-agent-prompt-governance/SKILL.md`
 - `../akka-agent-tools/SKILL.md`
+- `../akka-agent-reference-governance/SKILL.md`
 - `../akka-agent-harness-skills/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`
 - `../akka-event-sourced-entities/SKILL.md`
@@ -51,6 +52,17 @@ Read these first if present:
 - assigning approved skills to AgentDefinitions
 - skill diff/history UI or skill governance UI
 - agent-mediated skill or manifest maintenance, an `AgentBehaviorEditorAgent`, proposed skill diff, or draft skill version proposal
+
+## Relationship to workstream expertise and references
+
+`AgentSkillManifest` is the procedural-skill section of a workstream expertise manifest. It does not contain factual/process reference documents. When an expert bundle includes references, model them with `AgentReferenceManifest` and authorize loads through `readReferenceDoc(referenceId)` using `akka-agent-reference-governance`.
+
+Required separation:
+- `SkillDocument`/`SkillVersion` = procedural model guidance;
+- `ReferenceDocument`/`ReferenceVersion` = durable factual/process knowledge;
+- `readSkill` and `readReferenceDoc` require separate tool-boundary grants;
+- `SkillLoadTrace` and `ReferenceLoadTrace` remain distinguishable even if an interim governed-document table stores both kinds;
+- neither skill nor reference text can grant backend capabilities, data access, roles, tenant/customer scope, tool access, approval authority, or autonomous side effects.
 
 ## Core model
 
@@ -161,6 +173,8 @@ Manifest entries should include:
 - short purpose/description;
 - when-to-use hint;
 - optional version summary, if safe and useful.
+
+When a workstream expert bundle has both skills and references, render a compact expertise manifest with separate `Available internal skills` and `Available workstream references` sections. Do not mix reference ids into the skill section.
 
 The manifest must be per agent. For example, `UserAdminAgent` might include `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`, while `AgentAdminAgent` might include `agent-definition-review`, `prompt-diff-review`, `skill-manifest-review`, `tool-boundary-review`, `behavior-test-analysis`, and `seed-upgrade-review`.
 
@@ -277,6 +291,7 @@ A skill-loading test console should:
 8. Manifest changes are consequential governance changes and should be audited.
 9. Disabled or archived agents cannot load skills except in authorized inspection/replay modes.
 10. Cross-tenant skill loads must be denied and traced.
+11. A skill manifest assignment does not imply reference-document access; use `AgentReferenceManifest` plus `readReferenceDoc(referenceId)` for references.
 
 ## Review checklist
 
@@ -284,7 +299,7 @@ Before finishing, verify:
 - SkillDocument/SkillVersion follow the governed document/version pattern
 - implementation-developed default skills and manifests are seeded into governed storage with provenance, idempotency, audit, and customization-preserving upgrade behavior
 - AgentSkillManifest is tenant-scoped and tied to AgentDefinition
-- prompt assembly includes compact manifest only
+- prompt assembly includes compact skill manifest only, or a compact expertise manifest with separate skill/reference sections when references are in scope
 - `readSkill(skillId)` enforces tenant, agent, manifest, status, version, and mode checks
 - denied skill loads are safe and audited
 - skill content cannot override mechanical authorization

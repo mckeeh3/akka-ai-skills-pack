@@ -27,8 +27,8 @@ Read these first if present:
 
 ## Use when the request mentions
 
-- prompt governance, skill governance, rubric governance, or behavior documents
-- prompt/skill/policy/rubric/example version history
+- prompt governance, skill governance, reference governance, rubric governance, or behavior documents
+- prompt/skill/reference/policy/rubric/example version history
 - diff UI, history UI, review UI, or approval UI for agent behavior changes
 - activation, deprecation, archival, rollback, or immutable snapshots
 - approved prompt version, approved skill version, policy version, rubric version, or reference-example version
@@ -57,6 +57,7 @@ Concrete document families can share this pattern:
 
 - `PromptDocument` / `PromptVersion`
 - `SkillDocument` / `SkillVersion`
+- `ReferenceDocument` / `ReferenceVersion`
 - `EvaluationRubric` / `RubricVersion`
 - `PolicyDocument` / `PolicyVersion`
 - `ReferenceExample` / `ExampleVersion`
@@ -140,7 +141,7 @@ Normal first-install or tenant-bootstrap flow:
 ```text
 packaged agent behavior seed bundle
 → validate manifest, references, checksums, token limits, and secret-like content
-→ create missing tenant-scoped AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, and ToolPermissionBoundary records
+→ create missing tenant-scoped AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary records
 → mark seed v1 approved/active only under an accepted deployment policy
 → record seed provenance and AdminAuditEvent/work trace facts
 → runtime resolves only governed records, never seed files
@@ -163,7 +164,7 @@ Normal flow:
 ```text
 human change request
 → AgentBehaviorEditorAgent interprets intent and authority context
-→ identifies affected PromptDocument, SkillDocument, AgentSkillManifest, ToolPermissionBoundary, policy, rubric, or example records
+→ identifies affected PromptDocument, SkillDocument, ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, ToolPermissionBoundary, policy, rubric, or example records
 → drafts a proposed diff plus rationale, risk flags, and test/replay suggestions
 → creates a draft version or manifest/tool-boundary proposal
 → routes the proposal to protected review/approval or decision-card flow
@@ -197,15 +198,17 @@ For implementation details, load `akka-agent-behavior-editing` to define the Age
 10. Seed imports must be idempotent and must not overwrite tenant-customized active content during upgrades.
 11. Runtime flows must still enforce data/tool permissions mechanically.
 12. Rollback is an explicit audited activation of a prior approved version, not an invisible state edit.
+13. Workstream reference documents should use `akka-agent-reference-governance` when they need per-agent reference manifests, authorized `readReferenceDoc(referenceId)` loading, denied-load semantics, ReferenceLoadTrace, or compact expertise manifest entries.
 
 ## Runtime lookup contract
 
-When an agent runtime flow needs governed behavior, resolve an effective version by tenant and authorized context:
+When an agent runtime flow needs governed behavior or reference knowledge, resolve an effective version by tenant and authorized context:
 
 ```text
 ResolveBehaviorDocumentVersion
 - tenantId
 - documentId
+- documentKind: prompt | skill | reference | policy | rubric | example | other
 - requestedVersion or active
 - agentDefinitionId when applicable
 - purpose: test | runtime | replay | evaluation
@@ -254,3 +257,4 @@ Before finishing, verify:
 - activation, deprecation, rollback, and archive actions emit audit events
 - runtime agents pin or resolve explicit versions rather than reading mutable draft content
 - governed document text does not grant tool/data permissions by itself
+- reference documents remain distinguishable from procedural skills in manifests, loaders, traces, and tool-boundary grants

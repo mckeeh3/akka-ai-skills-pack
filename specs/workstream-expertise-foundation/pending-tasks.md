@@ -156,7 +156,7 @@
 
 ### TASK-WEF-02-002: Define governed reference-document loading pattern
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/02-governed-runtime-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/02-governed-runtime/02-reference-document-loading-pattern.md
 - depends on: [TASK-WEF-02-001]
@@ -181,6 +181,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Define workstream reference loading pattern
+  - checks: `git diff --check` passed; text-search proof covered ReferenceDocument, AgentReferenceManifest, readReferenceDoc, denied reference loads, read_reference, ReferenceLoadTrace, compact expertise manifest, and SkillDocument relationship
 
 ### TASK-WEF-02-003: Align runtime invocation, seed, and tool-boundary guidance
 

@@ -31,7 +31,7 @@ For high-level product input, treat the target as a secure AI-first SaaS **agent
 Mandatory secure SaaS, agent workstream, and web UI foundation before app-specific features:
 - WorkOS/AuthKit browser user authentication (the supported user auth service)
 - local Akka-owned authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, and selected AuthContext
-- governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, per-agent AgentSkillManifest with compact skill ids/names/descriptions/when-to-use hints in the assembled prompt, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace, deterministic prompt assembly, authorized Akka `@FunctionTool` readSkill(skillId), and first-install/tenant-bootstrap seeding of implementation-developed default prompt/skill/manifest/tool-boundary documents into governed storage
+- governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, per-agent AgentSkillManifest and AgentReferenceManifest with compact skill/reference ids/names/descriptions/when-to-use or when-to-consult hints in the assembled prompt, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, deterministic prompt assembly, authorized Akka `@FunctionTool` readSkill(skillId) and readReferenceDoc(referenceId), and first-install/tenant-bootstrap seeding of implementation-developed default prompt/skill/reference/manifest/tool-boundary documents into governed storage
 - SaaS Owner, Tenant, and Customer organization model with tenant/customer-scoped commands and queries
 - `/api/me` for the signed-in account, memberships, selected context, profile, settings, and browser-safe capabilities
 - complete email-invite onboarding with Resend (resend.com) as the supported production email service, explicit local/dev/test captured outbox behavior, and the same Resend email service reusable for other app email features and governed agent `@FunctionTool` email tools
@@ -57,7 +57,7 @@ Top-level agent workstream entry skill:
 - `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications, identify functional agents, internal agents, workstreams, and structured surfaces, then route to app-description, capability-first backend, web UI, agent, decomposition, PRD/backlog, or focused implementation skills
 
 Mandatory foundation skill:
-- `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, per-agent `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, authorized Akka `@FunctionTool` `readSkill(skillId)`), support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
+- `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, per-agent `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, authorized Akka `@FunctionTool` `readSkill(skillId)`/`readReferenceDoc(referenceId)`), support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
 
 Mandatory foundation companion skill:
 - `akka-saas-invitation-onboarding` — implement complete email-invite onboarding with Invitation entity/audit record, InvitationWorkflow, Resend (resend.com) production email delivery, local/dev/test captured outbox, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, resend, revoke, expiry, acceptance, delivery failure visibility, idempotency, and lifecycle tests
@@ -423,7 +423,7 @@ Use when agents are managed as tenant-scoped runtime actors with durable `AgentD
 - `akka-agent-behavior-profiles`
 
 ### Governed documents
-Use when prompts, skills, rubrics, policies, examples, or other behavior-shaping artifacts need tenant-scoped version history, immutable snapshots, review, approval, activation, deprecation, diff/history UI, or audit.
+Use when prompts, skills, references, rubrics, policies, examples, or other behavior-shaping artifacts need tenant-scoped version history, immutable snapshots, review, approval, activation, deprecation, diff/history UI, or audit.
 - `akka-agent-governed-documents`
 
 ### Seeded default agent documents
@@ -435,15 +435,19 @@ Use when agent system prompts need tenant-scoped review, approval, activation, v
 - `akka-agent-prompt-governance`
 
 ### Skill governance
-Use when agents need tenant-scoped shared skills, skill versions, per-agent skill manifests, compact manifest prompt context, `readSkill(skillId)`, SkillLoadTrace, skill editor/review/diff UI, or a skill-loading test console.
+Use when agents need tenant-scoped shared procedural skills, skill versions, per-agent skill manifests, compact manifest prompt context, `readSkill(skillId)`, SkillLoadTrace, skill editor/review/diff UI, or a skill-loading test console. Pair with `akka-agent-reference-governance` when the same workstream expert bundle also has factual/process reference documents.
 - `akka-agent-skill-governance`
+
+### Reference governance
+Use when agents need tenant/customer-scoped workstream reference documents, reference versions, per-agent reference manifests, compact expertise manifest reference entries, `readReferenceDoc(referenceId)`, ReferenceLoadTrace, redaction/access checks, denied reference-load semantics, or reference evidence/review UI.
+- `akka-agent-reference-governance`
 
 ### Behavior editing
 Use when an `AgentBehaviorEditorAgent` drafts prompt, skill, manifest, tool-boundary, policy, rubric, or example changes with structured proposed diffs, risk classification, draft versions, review/approval routing, decision cards, and denial of unauthorized authority expansion.
 - `akka-agent-behavior-editing`
 
 ### Agent work trace
-Use when agent activity needs audit/work trace events, prompt/skill/model/tool/data references, authorization basis, redaction, correlation ids, trace search, or investigation timelines.
+Use when agent activity needs audit/work trace events, prompt/skill/reference/model/tool/data references, authorization basis, redaction, correlation ids, trace search, or investigation timelines.
 - `akka-agent-work-trace`
 
 ### Closed-loop improvement
@@ -463,7 +467,7 @@ Use when the agent should call local or external function tools, including non-c
 - `akka-agent-tools`
 
 ### Tool permission boundaries
-Use when managed agents need backend-enforced `ToolPermissionBoundary` grants, a tool registry/catalog, read-only vs side-effecting tool rules, component/MCP/readSkill tool authority, approval-required expansion, runtime denied-tool semantics, or tool invocation traces.
+Use when managed agents need backend-enforced `ToolPermissionBoundary` grants, a tool registry/catalog, read-only vs side-effecting tool rules, component/MCP/readSkill/readReferenceDoc tool authority, approval-required expansion, runtime denied-tool semantics, or tool invocation traces.
 - `akka-agent-tool-boundaries`
 
 ### Model governance
@@ -1337,7 +1341,8 @@ Routing references:
 - `akka-agent-governed-documents` for tenant-scoped governed prompts, skills, rubrics, policies, and examples with immutable versions, review, activation, diff/history, and audit
 - `akka-agent-seed-documents` for first-install/tenant-bootstrap loading of implementation-developed default AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, and ToolPermissionBoundary records with idempotency, provenance, upgrade behavior, and audit
 - `akka-agent-prompt-governance` for governed runtime-managed system prompts, PromptDocument/PromptVersion, effective prompt assembly, PromptAssemblyTrace, and prompt test consoles
-- `akka-agent-skill-governance` for governed runtime skills, SkillDocument/SkillVersion, AgentSkillManifest, compact manifest prompt context, readSkill(skillId), and SkillLoadTrace
+- `akka-agent-skill-governance` for governed runtime procedural skills, SkillDocument/SkillVersion, AgentSkillManifest, compact skill manifest prompt context, readSkill(skillId), and SkillLoadTrace
+- `akka-agent-reference-governance` for governed workstream references, ReferenceDocument/ReferenceVersion, AgentReferenceManifest, compact reference manifest prompt context, readReferenceDoc(referenceId), denied reference loads, redaction/access checks, and ReferenceLoadTrace
 - `akka-agent-behavior-editing` for AgentBehaviorEditorAgent proposal flows, proposed diffs, draft versions, review/approval routing, decision cards, and authority-expansion denial
 - `akka-agent-work-trace` for AgentWorkTrace and agent-specific prompt/skill/model/tool/data/policy usage traces, authorization basis, redaction, correlation, and timelines
 - `akka-agent-closed-loop-improvement` for EvaluationRun/Finding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback loops

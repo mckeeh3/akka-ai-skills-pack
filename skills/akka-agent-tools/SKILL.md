@@ -25,6 +25,7 @@ If the main task is not local or external tool classes, load the focused compani
 - `akka-agent-mcp-tools`
 - `akka-agent-harness-skills` for model-loadable internal guidance backed by packaged resources
 - `akka-agent-skill-governance` for tenant-managed, versioned, audited `readSkill(skillId)` guidance tools
+- `akka-agent-reference-governance` for tenant/customer-managed, versioned, audited `readReferenceDoc(referenceId)` reference/evidence tools
 - `akka-resend-email-service` when a managed agent needs a governed Resend-backed email preview/send tool via `@FunctionTool`
 
 ## Use this pattern when
@@ -38,6 +39,7 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 - tool descriptions materially affect model behavior but do not enforce authorization
 - an agent should approximate harness skill loading by exposing approved guidance blocks as tools
 - a managed agent should load tenant-managed governed skills through `readSkill(skillId)` with per-agent manifest authorization; this is the required skill-loading tool pattern for generated managed agents
+- a managed agent should load tenant/customer-governed workstream references through `readReferenceDoc(referenceId)` with per-agent reference manifest authorization, redaction checks, and ReferenceLoadTrace
 
 ## Core pattern
 
@@ -60,7 +62,8 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 17. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.
 18. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
 19. Skill-loading tools must check the active agent-specific AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
-20. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
+20. Reference-loading tools must check the active AgentReferenceManifest, tenant/customer scope, redaction/access limits, token limits, and a separate ToolPermissionBoundary grant such as `read_reference`; a `read_skill` grant must not imply reference access.
+21. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
 21. Preserve the same capability semantics if the operation is also exposed through UI, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
 
 ## Tool pattern decision matrix
@@ -72,7 +75,8 @@ In generated SaaS apps, every tool that reads protected data or performs side ef
 | One model-facing capability must call multiple Akka components, hide component layout, apply policy/redaction/scoring, or return a computed DTO | Non-component `ComponentClient`-backed tool facade |
 | The agent should directly call one selected View/entity/workflow command or query already shaped as a capability surface | Component tool via `.tools(ComponentClass.class)` and `akka-agent-component-tools` |
 | The tool is hosted by another service or third-party AI/tool boundary | Remote MCP tool via `.mcpTools(...)` and `akka-agent-mcp-tools` |
-| The agent loads approved behavior guidance | Governed `readSkill(skillId)` or packaged guidance tools via the skill-governance/harness-skills companions |
+| The agent loads approved procedural guidance | Governed `readSkill(skillId)` or packaged guidance tools via the skill-governance/harness-skills companions |
+| The agent loads approved workstream reference knowledge or evidence | Governed `readReferenceDoc(referenceId)` via `akka-agent-reference-governance` |
 
 ## Non-component tool facade pattern
 
@@ -144,6 +148,7 @@ Before finishing, verify:
 - tool denials, data access, approvals, and side effects are auditable when required by the secure foundation
 - side-effecting tools preserve idempotency and approval/autonomy rules
 - component, MCP, or harness-skill tool cases are routed to the focused companion skill when needed
-- tools that return guidance do not expose arbitrary filesystem paths or unbounded resource content
+- tools that return guidance or references do not expose arbitrary filesystem paths, URLs, classpath resource names, or unbounded resource content
 - tenant-managed skill tools route through `akka-agent-skill-governance` and enforce manifest checks
+- tenant/customer-managed reference tools route through `akka-agent-reference-governance`, enforce reference manifest/redaction/boundary checks, and emit ReferenceLoadTrace
 - agent-to-agent chaining is replaced with workflow orchestration when coordination is needed
