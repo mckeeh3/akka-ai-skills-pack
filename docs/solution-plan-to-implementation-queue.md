@@ -25,6 +25,7 @@ That contract should tell the next agent or next phase:
 - which skills to load for each build step
 - which tests and local validation paths prove the increment works
 - which delegated authority, policy/approval, trace, supervision UI, evaluation, and outcome requirements must be carried into each generated SaaS task
+- which workstream expertise requirements each functional-agent task must preserve: expert bundle id, prompt, skills, references, compact manifests, loader tools, tool boundaries, seed/import behavior, governance UI, traces, and tests
 
 ## Done means working
 
@@ -37,6 +38,7 @@ Deferrals are allowed only when they narrow or rename the goal, are marked as bl
 Take these sections from the solution plan:
 - AI-first interpretation: delegated work, retained authority, durable objects, policy/approval/exception needs, traces, mandatory UI surfaces, and outcomes
 - functional agents, internal agents, workstream events, structured surfaces, and surface actions
+- workstream expert bundles for functional agents with LLM behavior: prompt intent, `SkillDocument` and `ReferenceDocument` families, `AgentSkillManifest` and `AgentReferenceManifest`, `ToolPermissionBoundary`, `readSkill`/`readReferenceDoc`, `SkillLoadTrace`/`ReferenceLoadTrace`, seed/import behavior, governance UI, and tests
 - governed capability inventory: ids/classes, actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure channels, and tests
 - chosen Akka substrate and frontend/API/realtime outputs
 - skill routing
@@ -52,6 +54,7 @@ Then convert them into a vertical queue like this:
    - goal: user can <exercise visible/API/workstream behavior> in the locally running Akka app
    - functional agent / surface / trigger: <agent + surface/action, workstream event, or internal-only foundation scope>
    - capability: <capability id/class>
+   - expertise scope: <none, or expert bundle/prompt/skills/references/manifests/boundaries/loaders/UI/tests>
    - auth/scope: <AuthContext, role/capability, tenant/customer rules>
    - Akka substrate: <entity/workflow/view/consumer/timer/agent/endpoint>
    - frontend/API/realtime: <UI/API/client/stream work, or non-UI reason>
@@ -65,7 +68,7 @@ Then convert them into a vertical queue like this:
    - ...
 ```
 
-Use component family names to describe implementation files, not to define the task boundary. Avoid queues like `all domain`, `all entities`, `all views`, then `all UI` unless the item is explicitly an internal prerequisite and its done criteria state why it is not a user-visible increment.
+Use component family names to describe implementation files, not to define the task boundary. Avoid queues like `all domain`, `all entities`, `all views`, then `all UI` unless the item is explicitly an internal prerequisite and its done criteria state why it is not a user-visible increment. Avoid `make the agent expert` or `agent governance` queue items unless they are split into self-contained fresh-session tasks for expert bundle definition, prompt/skill/reference content, manifests, tool boundaries, authorized loaders, UI/governance, traces, and tests.
 
 ## Practical use
 
@@ -109,6 +112,7 @@ Before starting code generation, verify that the solution plan already answers:
 - whether blocking questions are resolved or explicitly deferred in `specs/pending-questions.md`
 - whether any explicit deferral narrows the feature goal instead of being counted as completed work
 - whether AI-first authority, policy, approval, trace, UI, evaluation, or outcome decisions are represented in the relevant queue items instead of silently dropped
+- whether every new or materially changed functional agent has explicit workstream expertise tasks for prompts, skills, references, manifests, boundaries, loaders, seed/import behavior, UI/governance surfaces, and assigned/denied/boundary/trace tests
 
 ## Related docs
 

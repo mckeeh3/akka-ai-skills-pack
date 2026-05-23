@@ -70,7 +70,7 @@ Choose one format per project and keep it consistent. When using module-oriented
 
 ## Required queue shape
 
-Use this structure. For SaaS app queues, the first runnable tasks must cover the secure user-admin and governed runtime agent foundation before app-specific domain features and must not collapse this work into a vague `auth/admin` or `agent governance` item. Split foundation work into bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, `AgentDefinition` lifecycle/profile, `PromptDocument`/`PromptVersion` governance and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, authorized `readSkill(skillId)`, `SkillLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents, AI admin agents such as AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, agent catalog/detail, prompt/skill/manifest/tool-boundary UI surfaces, trace UI, and security/admin/agent-governance tests.
+Use this structure. For SaaS app queues, the first runnable tasks must cover the secure user-admin and governed runtime agent foundation before app-specific domain features and must not collapse this work into a vague `auth/admin` or `agent governance` item. Split foundation work into bounded tasks for invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, `AgentDefinition` lifecycle/profile, `PromptDocument`/`PromptVersion` governance and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `ReferenceDocument`/`ReferenceVersion` governance, `AgentSkillManifest`, `AgentReferenceManifest`, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `SkillLoadTrace`, `ReferenceLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents, AI admin agents such as AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, agent catalog/detail, prompt/skill/reference/manifest/tool-boundary UI surfaces, trace UI, and security/admin/agent-governance tests.
 
 ```md
 # Pending Tasks
@@ -119,20 +119,28 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
 
 If no separate task brief exists, omit `task brief:` or set it to `none` and make the `source` backlog item specific enough to execute.
 
-## Managed-agent foundation splitting guardrails
+## Managed-agent and workstream expertise splitting guardrails
 
-Generated SaaS queues must never collapse governed runtime agent foundation work into one vague `agent governance`, `managed agents`, or `AI foundation` task. If a backlog item spans `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, behavior editing agents, `ToolPermissionBoundary`, `AgentWorkTrace`, UI, and tests, the item is too broad and must be split or blocked for a task brief.
+Generated SaaS queues must never collapse governed runtime agent foundation work into one vague `agent governance`, `managed agents`, or `AI foundation` task. If a backlog item spans `AgentDefinition`, `PromptDocument`, `SkillDocument`, `ReferenceDocument`, `AgentSkillManifest`, `AgentReferenceManifest`, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, behavior editing agents, `ToolPermissionBoundary`, `AgentWorkTrace`, UI, and tests, the item is too broad and must be split or blocked for a task brief.
 
-Use bounded task families such as:
+Use bounded foundation task families such as:
 - `AgentDefinition` lifecycle/profile, authority, disabled-agent denial, agent catalog/detail UI, and direct tests
 - `PromptDocument`/`PromptVersion` governance, prompt assembly, `PromptAssemblyTrace`, prompt governance UI, and tests
 - `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, authorized `readSkill(skillId)`, `SkillLoadTrace`, skill/manifest UI, and tests
+- `ReferenceDocument`/`ReferenceVersion` governance, `AgentReferenceManifest`, authorized `readReferenceDoc(referenceId)`, `ReferenceLoadTrace`, reference/manifest UI, and tests
 - `ToolPermissionBoundary` management, approval-required authority expansion denial, tool-boundary UI, and tests
 - behavior editing agents, proposed diff creation, review/approval routing, activation/denial audit, and tests
 - `AgentWorkTrace` recording/search/detail UI and trace-retention/security tests
-- focused security/admin/agent-governance regression tests across tenant isolation, AuthContext/scope, approval, audit/trace, disabled agents, unassigned skills, and unauthorized prompt/skill/tool changes
+- focused security/admin/agent-governance regression tests across tenant isolation, AuthContext/scope, approval, audit/trace, disabled agents, unassigned skills/references, and unauthorized prompt/skill/reference/tool changes
 
-Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation scope it covers. For generated full-stack AI-first SaaS, each runnable implementation task must also carry its vertical workstream contract: functional agent or internal-only/foundation scope, structured surface/action or workstream event/non-UI trigger, capability id/class, selected Akka substrate, frontend/API/realtime work, and required tests. If the task is part of a sprint's named visible capability, include the local app-run, API call, browser/workstream action, or manual smoke path that will prove the feature works; otherwise state that the task is non-runtime/internal-only.
+For every new or materially changed domain-specific functional agent with LLM behavior, queue self-contained fresh-session workstream expertise tasks. Split as needed into:
+- app-description expert bundle contract with functional agent, surfaces, capabilities, authority, traces, and tests
+- seeded default prompt, skill documents, reference documents, compact skill/reference manifests, and provenance/checksum expectations
+- runtime loader and boundary work for `readSkill`, `readReferenceDoc`, assigned loads, unassigned denials, missing-boundary denials, redaction/token limits, and trace emission
+- expertise manifest and governance UI surfaces that show compact manifests, evidence, denials, decisions, trace links, and review state without exposing full bodies by default
+- contract/runtime tests for assigned skill/reference loads, denied loads, tool-boundary denial, no authority expansion from prompt/skill/reference text, tenant isolation, audit/work traces, and surface rendering
+
+Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation or workstream expert bundle scope it covers. For generated full-stack AI-first SaaS, each runnable implementation task must also carry its vertical workstream contract: functional agent or internal-only/foundation scope, structured surface/action or workstream event/non-UI trigger, capability id/class, selected Akka substrate, frontend/API/realtime work, expertise artifacts when relevant, and required tests. If the task is part of a sprint's named visible capability, include the local app-run, API call, browser/workstream action, or manual smoke path that will prove the feature works; otherwise state that the task is non-runtime/internal-only.
 
 ## Implementation-ready vertical task rule
 

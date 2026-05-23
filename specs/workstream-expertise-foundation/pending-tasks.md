@@ -377,7 +377,7 @@
 
 ### TASK-WEF-04-001: Align PRD/spec/backlog generation with expertise tasks
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/04-planning-integration-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/04-planning-integration/01-align-prd-backlog-expertise.md
 - depends on: [TASK-WEF-03-004]
@@ -399,6 +399,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add workstream expertise planning tasks
+  - checks: `git diff --check` passed; text-search proof covered workstream expertise tasks, expert bundle, `ReferenceDocument`, `AgentReferenceManifest`, `readReferenceDoc`, `ReferenceLoadTrace`, self-contained fresh-session execution, and vague `make the agent expert`/`agent governance` anti-patterns
 
 ### TASK-WEF-04-002: Align change-impact and iterative update guidance
 
