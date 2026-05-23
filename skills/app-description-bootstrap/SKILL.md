@@ -175,8 +175,8 @@ This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches
 
 At bootstrap time, classify the requested generation scope before writing readiness or generation policy:
 - `minimum starter / not full core` means the app-description may be small but must describe a real User Admin workstream v0: bootstrap-authorized identity, selected `AuthContext`, role/capability-checked UserAdminAgent, durable workstream request/response log, `markdown_response` structured surface, backend capability boundary for actions/tools, audit/work trace substrate, bootstrap auth/security rules, and explicit follow-up gaps to full core. This is the canonical interpretation for “minimum app”, “starter app”, “basic app”, or initial chatbot-like generated SaaS requests.
-- `full core` means the app-description must include My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, manifests, tool boundaries, traces, and `readSkill`); workstream UI; managed-agent UI files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`); and full security/test coverage.
-- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, My Account, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops. Do not use this label for minimum starter requests that should be User Admin workstream v0.
+- `full core` means the app-description must include My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, `readSkill`, and `readReferenceDoc`); workstream UI; managed-agent UI files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, reference-governance surfaces, and `edit-agent-proposals-and-traces.md`); and full security/test coverage.
+- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, My Account, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops. Do not use this label for minimum starter requests that should be User Admin workstream v0.
 - any other narrower scope must be named in `00-system/app-manifest.md`, repeated in `00-system/readiness-status.md`, and enforced by `00-system/generation-policy.md`.
 
 Do not allow a bootstrap to imply full-core readiness while omitting full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, complete workstream UI, or required tests. Missing full-core elements are acceptable only when the generated app is explicitly labeled as `minimum starter / not full core`, Module 1-only, or another accepted narrower scope. Minimum starter readiness must not be reported as full-core readiness.
@@ -194,8 +194,8 @@ From the initial user input, derive as applicable:
 - likely primary behavior flow, starting with sign-in, `/api/me`, context selection, Account/Profile/Settings maintenance, administration, invitations, support-access, audit viewing, and tenant/customer-scoped access
 - first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
 - initial auth/security expectations based on `core-saas-foundation`, including explicit default-deny authorization for every route, agent tool, data access, workflow action, view query, stream, and generated UI action
-- initial governed runtime agent expectations: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap loading of implementation-developed default behavior seed documents, deterministic prompt assembly, authorized `readSkill(skillId)`, behavior-editing agent proposals, and denial of unauthorized authority expansion
-- initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and consequential AI/tool events
+- initial governed runtime agent expectations: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap loading of implementation-developed default behavior/reference seed documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, behavior-editing agent proposals, and denial of unauthorized authority expansion
+- initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, and consequential AI/tool events
 - initial policy, approval, exception, audit, trace, and outcome expectations for the AI-first SaaS operating model
 - initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, audit, agent catalog, agent detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, and trace surfaces; for minimum starter scope, record the User Admin workstream shell, composer, workstream log, `markdown_response` rendering, trace links, and deferred richer surfaces
 - selected web UI style guide when supplied, or an explicit `unselected` style state when not supplied
@@ -225,7 +225,7 @@ For most fresh bootstraps, prefer:
 - or `ready-with-assumptions` only if the input is already unusually complete
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, and forbids using `com.example` for generated application code unless explicitly requested. For `minimum starter / not full core`, require follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security coverage.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, and forbids using `com.example` for generated application code unless explicitly requested. For `minimum starter / not full core`, require follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior/reference documents, and security coverage.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.
@@ -238,7 +238,7 @@ Create `15-operating-model/` for generated AI-first SaaS apps. The secure founda
 Seed only the files justified by the input, but prefer the standard operating-model files when the app is clearly agentic:
 - `goals-and-objectives.md`
 - `agent-roles-and-authority.md`
-- `governed-runtime-agents.md` for `AgentDefinition`, governed prompt and skill documents, default behavior seed import, `AgentSkillManifest`, `ToolPermissionBoundary`, behavior-editing agent responsibilities, `readSkill(skillId)`, and prompt/skill load tracing
+- `governed-runtime-agents.md` for `AgentDefinition`, governed prompt, skill, and reference documents, default behavior/reference seed import, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, behavior-editing agent responsibilities, `readSkill(skillId)`, `readReferenceDoc(referenceId)`, and prompt/skill/reference load tracing
 - `policies-and-approval-gates.md`
 - `decisions-exceptions-and-evidence.md`
 - `audit-trace-and-outcomes.md`
@@ -248,22 +248,22 @@ Capture durable goals, delegated work, retained human authority, agent/team boun
 ### 6. Create the first behavior layer
 Create a `20-behavior/` index plus secure foundation behavior artifacts before app-specific flows:
 - `state-models/01-tenant-user-access-model.md` for Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, support-access, and billing-boundary state semantics
-- `state-models/02-governed-agent-behavior-model.md` for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, seed import/provenance, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` lifecycle semantics
+- `state-models/02-governed-agent-behavior-model.md` for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, seed import/provenance, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` lifecycle semantics
 - `flows/01-secure-foundation-access-flow.md` for sign-in, `/api/me`, context selection, profile/settings, invitation, admin, support-access, audit, and tenant/customer-scoped access
-- `flows/02-governed-agent-behavior-maintenance-flow.md` for editing agent change requests, proposed diffs, draft versions, review/approval, activation, rollback, authorized `readSkill(skillId)`, and trace creation
+- `flows/02-governed-agent-behavior-maintenance-flow.md` for editing agent change requests, proposed diffs, draft versions, review/approval, activation, rollback, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, and trace creation
 - `rules/01-tenant-authz-rules.md` for default-deny authorization, tenant/customer isolation, disabled-user behavior, role/scope checks, and forbidden access behavior
-- `rules/02-agent-prompt-skill-tool-boundary-rules.md` for prompt/skill guidance limits, manifest assignment, tool permission boundaries, skill-load authorization, disabled-agent denial, and authority expansion denial
+- `rules/02-agent-prompt-skill-tool-boundary-rules.md` for prompt/skill/reference guidance limits, skill/reference manifest assignment, tool permission boundaries, skill/reference-load authorization, disabled-agent denial, and authority expansion denial
 
 Then add one primary app-specific flow file when the input supports it. Add deeper app state-model or rules files only if the input clearly contains lifecycle or invariant semantics already.
 
 ### 7. Create the first test layer
 Create a `30-tests/` index plus mandatory secure foundation test artifacts before app-specific tests:
 - `acceptance/01-secure-foundation-acceptance.md` for sign-in seam, `/api/me`, context selection, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, invitation, support-access, admin, audit, and billing-boundary behavior
-- `acceptance/02-governed-agent-foundation-acceptance.md` for agent catalog/detail, prompt governance, skill governance, manifest and tool permission management, editing agent proposals, prompt assembly, authorized `readSkill(skillId)`, and trace search behavior
+- `acceptance/02-governed-agent-foundation-acceptance.md` for agent catalog/detail, prompt governance, skill/reference governance, manifest and tool permission management, editing agent proposals, prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, and trace search behavior
 - `regression/01-tenant-isolation-and-idempotency.md` for cross-tenant isolation, duplicate invite/acceptance, repeated role changes, repeated support-access revoke/expiry, and idempotent `/api/me` reads
-- `regression/02-agent-prompt-skill-manifest-trace-regression.md` for immutable active versions, deterministic prompt assembly, unassigned skill denial, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` creation
+- `regression/02-agent-prompt-skill-manifest-trace-regression.md` for immutable active versions, deterministic prompt assembly, unassigned skill/reference denial, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` creation
 - `negative/01-security-denial-baseline.md` for forbidden access, disabled user, role/scope denial, cross-customer denial, unauthorized stream/query/tool/action attempts, and frontend secret-boundary checks
-- `negative/02-agent-authority-and-skill-denial-baseline.md` for disabled-agent denial, unauthorized prompt/skill/tool-boundary changes, unauthorized `readSkill(skillId)`, and approval-required authority expansion
+- `negative/02-agent-authority-and-skill-denial-baseline.md` for disabled-agent denial, unauthorized prompt/skill/reference/tool-boundary changes, unauthorized `readSkill(skillId)`, unauthorized `readReferenceDoc(referenceId)`, and approval-required authority expansion
 
 Then add app-specific acceptance files. Capture only the strongest initial app-specific expectations plus obvious negative or regression expectations if the input already supports them.
 
@@ -274,10 +274,10 @@ Create:
 - `40-auth-security/authorization-rules.md`
 - `40-auth-security/data-protection.md`
 - `40-auth-security/boundary-and-surface-rules.md`
-- `40-auth-security/governed-agent-security.md` for `AgentDefinition`, prompt/skill/manifest/tool-boundary authorization, disabled-agent denial, authorized `readSkill(skillId)`, and approval-required authority expansion
+- `40-auth-security/governed-agent-security.md` for `AgentDefinition`, prompt/skill/reference/manifest/tool-boundary authorization, disabled-agent denial, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, and approval-required authority expansion
 - `50-observability/logs-and-audit.md`
 - `50-observability/security-and-admin-audit-events.md`
-- `50-observability/governed-agent-traces.md` for `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, prompt/skill activation audit, and denied skill/tool attempts
+- `50-observability/governed-agent-traces.md` for `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, prompt/skill/reference activation audit, and denied skill/reference/tool attempts
 
 These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service for invitation/account emails and future app email features. WorkOS/Resend setup values may remain explicit open questions, but auth or email provider selection should not. Authorization, tenancy, audit, and tenant isolation are not optional. The bootstrap must state that no route, agent tool, data access, workflow action, view query, stream, or generated UI action is public or authorized by default except deliberately public static assets.
 

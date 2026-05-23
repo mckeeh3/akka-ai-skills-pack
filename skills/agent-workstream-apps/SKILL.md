@@ -83,7 +83,7 @@ For each user-facing work area, define:
 - authorized roles/capabilities and tenant/customer scope;
 - default dashboard, attention, or briefing surface;
 - workstream semantics and retention expectations;
-- prompt intent, governed documents, skills, tools, and tool boundaries when LLM behavior is involved;
+- prompt intent, governed documents, skills, reference documents, skill/reference manifests, tools, and tool boundaries when LLM behavior is involved;
 - surfaces it can render or reuse;
 - capabilities it can call directly or through tools/workflows;
 - escalation, approval, denial, exception, audit, trace, and test needs.
@@ -92,7 +92,7 @@ Common foundation functional agents include My Account, User Admin, Agent Admin,
 
 ### 3. Distinguish internal agents
 
-Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. They still need governed `AgentDefinition`, prompts/skills, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests.
+Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests.
 
 ### 4. Define structured surfaces
 

@@ -488,7 +488,7 @@
 
 ### TASK-WEF-05-002: Apply final cleanup or add next sprint
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/05-review-hardening-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/05-review-hardening/02-final-cleanup-or-next-sprint.md
 - depends on: [TASK-WEF-05-001]
@@ -510,3 +510,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Finalize workstream expertise plan
+  - checks: `git diff --check` passed; cleanup aligned stale full-core/foundation summaries with `ReferenceDocument`, `AgentReferenceManifest`, `readReferenceDoc`, and `ReferenceLoadTrace`
+  - outcome: workstream expertise foundation plan complete; no next sprint added
