@@ -349,7 +349,7 @@
 
 ### TASK-WEF-03-004: Review seed/example expertise sprint
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/03-seed-example-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/03-seed-example/04-review-seed-example-sprint.md
 - depends on: [TASK-WEF-03-003]
@@ -372,6 +372,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Review User Admin expertise example
+  - checks: `git diff --check` passed
+  - review outcome: Sprint 04 may proceed; no queue adjustments required before planning integration
 
 ### TASK-WEF-04-001: Align PRD/spec/backlog generation with expertise tasks
 
