@@ -13,7 +13,7 @@ Use this skill when testing agent code or agent-driven flows.
 For generated full-stack AI-first SaaS agent work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
 - placement as a user-facing functional agent or a bounded internal agent, including owning workstream and structured surface placement when user-facing;
 - capability id/class for each model request, tool call, output, workflow step, endpoint, or evaluation result;
-- caller `AuthContext`, tenant/customer scope, roles/capabilities, allowed data/tools, and backend authorization boundary;
+- caller `AuthContext`, tenant/customer scope, roles/capabilities, assigned skill/reference manifests, allowed data/tools, and backend authorization boundary;
 - input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and required tests.
 
 If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from prompt, memory, streaming, guardrail, or test mechanics.
@@ -88,6 +88,17 @@ Cover manifest and skill-loading behavior:
 - disabled/archived agents cannot call `readSkill` except for explicitly authorized inspection/replay;
 - `readSkill` is allowed only when both the active `AgentSkillManifest` and active `ToolPermissionBoundary` grant the skill tool.
 
+### Reference governance and `readReferenceDoc` tests
+
+Cover manifest and reference-loading behavior:
+
+- compact `AgentReferenceManifest` entries appear in the assembled expertise manifest alongside skill entries, but full reference text is absent until `readReferenceDoc(referenceId)` is called;
+- assigned active reference load succeeds and emits `ReferenceLoadTrace` or `DocumentLoadTrace(documentKind=reference)` with manifest version, reference version, requested use, redaction decision, mode, caller, and authorization decision;
+- unassigned reference, inactive/deprecated/unapproved reference, wrong-version reference, unauthorized use mode, oversized/token-limit reference, redaction/access-level denial, and cross-tenant or wrong-customer reference reads are denied with safe model-visible messages;
+- disabled/archived agents cannot call `readReferenceDoc` except for explicitly authorized inspection/replay;
+- `readReferenceDoc` is allowed only when both the active `AgentReferenceManifest` and active `ToolPermissionBoundary` grant the reference loader, such as `read_reference`;
+- reference text that claims an agent can access data, grant roles, use tools, approve changes, bypass tenant/customer scope, or execute side effects cannot expand authority beyond backend capability contracts and tool boundaries.
+
 ### Tool-boundary tests
 
 Cover backend-enforced `ToolPermissionBoundary` semantics:
@@ -114,10 +125,10 @@ Cover `AgentBehaviorEditorAgent` or equivalent editing-agent flows:
 For consequential governed-agent behavior, assert trace facts rather than logs only:
 
 - allowed and denied runtime calls create `AgentWorkTrace`/audit events with correlation ids;
-- `PromptAssemblyTrace` links to any subsequent `SkillLoadTrace`, tool invocation trace, workflow step, decision card, or response summary;
+- `PromptAssemblyTrace` links to any subsequent `SkillLoadTrace`, `ReferenceLoadTrace`, tool invocation trace, workflow step, decision card, or response summary;
 - trace search/detail APIs are tenant-scoped and capability-protected;
-- sensitive prompt, skill, input, output, and tool payload fields are summarized or redacted for normal readers;
-- forbidden, disabled-user, disabled-agent, unassigned skill, tool-boundary denial, and cross-tenant tests include both denial response and trace emission assertions.
+- sensitive prompt, skill, reference, input, output, and tool payload fields are summarized or redacted for normal readers;
+- forbidden, disabled-user, disabled-agent, unassigned skill, unassigned reference, missing `read_skill` or `read_reference` tool-boundary grant, tool-boundary denial, and cross-tenant tests include both denial response and trace emission assertions.
 
 ## Review checklist
 
@@ -127,4 +138,4 @@ Before finishing, verify:
 - structured responses are serialized with `JsonSupport.encodeToString(...)`
 - workflow tests use `Awaitility` when completion is asynchronous
 - endpoint tests use `httpClient`, not `componentClient`
-- governed runtime tests cover active profile resolution, disabled/archived denial, draft-only test/replay behavior, unapproved activation denial, unassigned-skill denial, cross-tenant denial, `PromptAssemblyTrace`, `SkillLoadTrace`, `ToolPermissionBoundary` denial, `AgentBehaviorEditorAgent` proposal flow, and authority expansion approval/denial
+- governed runtime tests cover active profile resolution, disabled/archived denial, draft-only test/replay behavior, unapproved activation denial, unassigned-skill denial, unassigned-reference denial, cross-tenant and wrong-customer denial, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `ToolPermissionBoundary` denial for `read_skill` and `read_reference`, `AgentBehaviorEditorAgent` proposal flow, and authority expansion approval/denial

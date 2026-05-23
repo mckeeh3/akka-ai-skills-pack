@@ -213,7 +213,7 @@
 
 ### TASK-WEF-02-004: Update agent coverage and testing guidance
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/02-governed-runtime-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/02-governed-runtime/04-update-coverage-testing-guidance.md
 - depends on: [TASK-WEF-02-003]
@@ -234,6 +234,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add expertise runtime test guidance
+  - checks: `git diff --check` passed; text-search proof covered assigned/unassigned skill/reference loads, `ReferenceLoadTrace`, `read_reference` boundary denial, tool-boundary denial, and text-cannot-grant-authority
 
 ### TASK-WEF-02-005: Review governed runtime expertise sprint
 

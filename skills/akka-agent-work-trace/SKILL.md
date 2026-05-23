@@ -42,6 +42,7 @@ Read these first if present:
 
 - agent audit, work trace, activity trace, timeline, investigation, or explainability
 - prompt/skill/reference/model/tool version references in audit
+- assigned and unassigned skill/reference loads, including `readSkill` and `readReferenceDoc` denials
 - `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `ToolInvocation`, or `DataAccessEvent`
 - trace search, redaction, trace export, or sensitive trace fields
 - correlation ids across agent tests, workflows, tools, prompt assembly, and skill loads
@@ -127,9 +128,10 @@ Plan trace emission for:
 - Prompt assembly for test/runtime/replay/evaluation.
 - Prompt test runs.
 - Skill document lifecycle changes.
+- Reference document lifecycle changes.
 - AgentSkillManifest and AgentReferenceManifest changes.
-- `readSkill(skillId)` allowed and denied calls.
-- `readReferenceDoc(referenceId)` allowed and denied calls, including redaction/access/token-limit denials.
+- `readSkill(skillId)` allowed and denied calls, including unassigned, inactive, cross-tenant, disabled-agent, unauthorized-mode, oversized, and missing-boundary denials.
+- `readReferenceDoc(referenceId)` allowed and denied calls, including unassigned, inactive/deprecated/unapproved, cross-tenant, wrong-customer, unauthorized-use, redaction/access, token-limit, secret-like-content, and missing-boundary denials.
 - Tool invocation allowed and denied calls.
 - Data access by agent tools or component tools.
 - Workflow steps that call agents.
@@ -182,19 +184,24 @@ Provide protected UI for:
 
 Plan tests for:
 - trace emission for allowed agent actions;
-- trace emission for denied agent/prompt/skill/tool/data actions;
+- trace emission for denied agent/prompt/skill/reference/tool/data actions;
+- assigned skill and assigned reference load traces include manifest version, document/version ids, mode/use, authorization decision, caller, and correlation id;
+- unassigned skill and unassigned reference denials return safe model-visible text and emit protected denial trace facts;
+- missing `read_skill` and `read_reference` ToolPermissionBoundary grants fail closed and trace the boundary decision;
+- prompt, skill, reference, or manifest text that claims expanded authority cannot grant tools, roles, tenant/customer scope, approval authority, or side effects, and the denial/escalation is traceable;
 - prompt version, skill version, and reference version references in traces;
-- tenant/customer isolation for reference-load trace search and detail;
+- tenant/customer isolation for skill-load and reference-load trace search and detail;
 - redaction behavior for normal and sensitive readers;
 - disabled/archived agent trace behavior;
-- correlation across prompt assembly → skill load → response/test run;
+- correlation across prompt assembly → skill load/reference load → tool invocation/response/test run;
 - export redaction by default.
 
 ## Review checklist
 
 Before finishing, verify:
 - consequential agent actions emit durable trace facts
-- prompt, skill, model, tool, data, authorization, and policy references are represented
+- prompt, skill, reference, model, tool, data, authorization, and policy references are represented
+- assigned and denied skill/reference loads emit trace facts and link to the agent work trace
 - correlation ids link related events into a useful timeline
 - sensitive content is summarized, redacted, or not stored
 - trace APIs and views are tenant-scoped and capability-protected
