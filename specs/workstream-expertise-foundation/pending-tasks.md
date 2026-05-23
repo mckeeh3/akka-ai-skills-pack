@@ -322,7 +322,7 @@
 
 ### TASK-WEF-03-003: Add User Admin expertise tests or contract checks
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/03-seed-example-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/03-seed-example/03-user-admin-expertise-tests.md
 - depends on: [TASK-WEF-03-002]
@@ -345,6 +345,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Test User Admin expertise bundle
+  - checks: `git diff --check` passed; `cd templates/ai-first-saas-starter/frontend && npm test -- --test-name-pattern='User Admin expertise|User Admin'` passed
 
 ### TASK-WEF-03-004: Review seed/example expertise sprint
 
