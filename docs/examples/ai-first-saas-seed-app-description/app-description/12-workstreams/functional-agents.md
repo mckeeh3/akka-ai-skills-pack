@@ -5,7 +5,7 @@ This seed app is modeled as an agent workstream application. These user-facing f
 | Functional agent | Purpose | Authorized roles/capabilities | Default surface | Callable capabilities | Trace/test obligations |
 |---|---|---|---|---|---|
 | `my-account-agent` | Current account, selected context, profile, settings, sign out, and safe self-service. The signed-in user tile at the bottom of the left rail opens this workstream. | Any active signed-in member for own account and permitted contexts. | `my-account-dashboard` | `secure-tenant-user-foundation`, `frontend-shell-integration-patterns` | `/api/me`, context selection, disabled-user denial, profile/settings audit where consequential, request/response surface rendering. |
-| `user-admin-agent` | Invitations, users, memberships, roles/capabilities, access review, support-access visibility, and admin audit. | Tenant Admin, Customer Admin within scope, SaaS Owner support roles with explicit support grant. | `user-admin-dashboard` with `user-admin-user-list` and `user-admin-user-account` as the canonical list/detail surfaces | `secure-tenant-user-foundation`, `governance-decisions-audit` | invite lifecycle, tenant isolation, last-admin protection, role denial, AdminAuditEvent coverage. |
+| `user-admin-agent` | Invitations, users, memberships, roles/capabilities, access review, support-access visibility, and admin audit. Authoritative expertise: `workstream-expertise/user-admin-agent.md`. | Tenant Admin, Customer Admin within scope, SaaS Owner support roles with explicit support grant. | `user-admin-dashboard` with `user-admin-user-list` and `user-admin-user-account` as the canonical list/detail surfaces | `secure-tenant-user-foundation`, `managed-agent-foundation`, `governance-decisions-audit` | invite lifecycle, tenant isolation, last-admin protection, role denial, skill/reference load denial, AdminAuditEvent and AgentWorkTrace coverage. |
 | `agent-admin-agent` | Govern AgentDefinition records, prompts, skills, manifests, tool boundaries, lifecycle, behavior proposals, tests, and traces. | Agent Steward, Tenant Admin, Policy Owner, Reviewer, Auditor read-only where permitted. | `agent-governance-center` | `managed-agent-foundation`, `governance-decisions-audit` | active/draft lifecycle, `readSkill(skillId)` authorization, prompt/skill/tool-boundary trace coverage. |
 | `mission-control-agent` | Supervise active goals, plans, delegated work, exceptions, approvals, and outcome signals. | Supervisor, Reviewer/Approver, Outcome Owner, Auditor read-only where permitted. | `mission-control-briefing` | `ai-first-work-management`, `governance-decisions-audit` | workstream timeline rendering, approval queue, policy-triggered exception, outcome link tests. |
 | `governance-policy-agent` | Manage policies, approval gates, proposals, simulations, replay evidence, and activation/rollback. | Policy Owner, Reviewer/Approver, Tenant Admin, Auditor read-only where permitted. | `policy-governance-workbench` | `governance-decisions-audit`, `managed-agent-foundation` | proposal approval, unauthorized authority expansion denial, simulation/replay trace tests. |
@@ -13,7 +13,7 @@ This seed app is modeled as an agent workstream application. These user-facing f
 
 ## User Admin functional-agent contract
 
-`user-admin-agent` is a governed skilled functional agent for the canonical three-surface User Admin vertical. Its expertise contract is currently summarized here and will be materialized under `workstream-expertise/user-admin-agent.md`; after materialization, that bundle file owns User Admin prompt intent, skills, references, manifest, tool boundary, traces, governance owner, seed policy, and tests. It must operate within the selected `AuthContext`; surface visibility, tool calls, and generated recommendations never expand backend authority.
+`user-admin-agent` is a governed skilled functional agent for the canonical three-surface User Admin vertical. Its authoritative expert bundle is `workstream-expertise/user-admin-agent.md`; this section remains a catalog summary. The bundle file owns User Admin prompt intent, skills, references, compact manifests, tool boundary, traces, governance owner, seed policy, denials, and tests. It must operate within the selected `AuthContext`; surface visibility, tool calls, expertise text, and generated recommendations never expand backend authority.
 
 ### Supported intents
 
@@ -33,12 +33,13 @@ This seed app is modeled as an agent workstream application. These user-facing f
 
 The first-install or tenant-bootstrap seed bundle must create active governed records for this functional agent before it can claim functional readiness:
 
-- `AgentDefinition`: `user-admin-agent`, owning the User Admin workstream, model policy, active prompt ref, active skill manifest ref, active tool boundary ref, steward/reviewer roles, and lifecycle status.
+- `AgentDefinition`: `user-admin-agent`, owning the User Admin workstream, model policy, active prompt ref, active skill manifest ref, active reference manifest ref, active tool boundary ref, steward/reviewer roles, and lifecycle status.
 - `PromptDocument`/`PromptVersion`: system instructions for scoped User Admin work, safe denial, tenant/customer redaction, decision-card routing, and no secret/token exposure.
 - `SkillDocument`/`SkillVersion`: focused skills for `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`.
-- `AgentSkillManifest`: compact skill ids, names, descriptions, and when-to-use hints included in the assembled prompt; full text loads only through authorized `readSkill(skillId)`.
-- `ToolPermissionBoundary`: explicit allow/deny rules for scoped reads, summaries, draft/proposal creation, human-confirmed mutation calls, decision-card creation, Resend/email preview or send tools, and forbidden cross-scope data access.
-- `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`: required trace records for prompt assembly, skill loading, tool allow/deny decisions, surface loads, action outcomes, recommendations, denials, and decision-card routing.
+- `ReferenceDocument`/`ReferenceVersion`: focused references for role catalog, invitation/onboarding policy, access-review policy, support-access procedure, last-admin protection, and audit redaction.
+- `AgentSkillManifest` and `AgentReferenceManifest`: compact skill/reference ids, names, descriptions, and when-to-use/consult hints included in the assembled prompt; full text loads only through authorized `readSkill(skillId)` or `readReferenceDoc(referenceId)`.
+- `ToolPermissionBoundary`: explicit allow/deny rules for `read_skill`, `read_reference`, scoped reads, summaries, draft/proposal creation, human-confirmed mutation calls, decision-card creation, Resend/email preview or send tools, and forbidden cross-scope data access.
+- `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace`: required trace records for prompt assembly, skill/reference loading, tool allow/deny decisions, surface loads, action outcomes, recommendations, denials, and decision-card routing.
 
 ### Tool boundary defaults
 
@@ -51,8 +52,9 @@ The first-install or tenant-bootstrap seed bundle must create active governed re
 
 Tests for the functional vertical must cover:
 
-- deterministic prompt assembly from `AgentDefinition`, `PromptDocument`/`PromptVersion`, compact `AgentSkillManifest`, and `ToolPermissionBoundary`, with `PromptAssemblyTrace` emitted;
+- deterministic prompt assembly from `AgentDefinition`, `PromptDocument`/`PromptVersion`, compact `AgentSkillManifest`, compact `AgentReferenceManifest`, and `ToolPermissionBoundary`, with `PromptAssemblyTrace` emitted;
 - authorized and denied `readSkill(skillId)` calls with `SkillLoadTrace` records;
+- authorized and denied `readReferenceDoc(referenceId)` calls with `ReferenceLoadTrace` records;
 - tool allow/deny behavior for dashboard read, user search/list, open user account detail, audit summary, invitation draft, role recommendation, and risky decision-card routing;
 - SaaS Owner Admin, Tenant Admin, and Customer Admin variants for allowed, denied, redacted, forbidden, empty, stale, and error surface states;
 - `AgentWorkTrace` records linking intent, selected `AuthContext`, capability ids, correlation ids, surface ids, audit event ids, recommendation ids, denial codes, and decision-card ids;

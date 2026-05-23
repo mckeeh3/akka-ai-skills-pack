@@ -265,7 +265,7 @@
 
 ### TASK-WEF-03-001: Model User Admin workstream expertise in seed app-description
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/03-seed-example-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/03-seed-example/01-user-admin-expertise-description.md
 - depends on: [TASK-WEF-02-005]
@@ -289,6 +289,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Model User Admin workstream expertise
+  - checks: `git diff --check` passed; text-search proof covered `user-admin-agent.expertise`, `SkillDocument`, `ReferenceDocument`, `AgentReferenceManifest`, `readReferenceDoc`, required denials, `ToolPermissionBoundary`, `ReferenceLoadTrace`, and User Admin test obligations
 
 ### TASK-WEF-03-002: Add User Admin expertise seed resources or fixtures
 

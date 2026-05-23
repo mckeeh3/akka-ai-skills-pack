@@ -11,7 +11,7 @@ Structured surfaces are typed renderable artifacts in functional-agent workstrea
 | `agent-governance-center` | catalog+diff+approval/v1 | Agent Admin, Governance/Policy | `surface-contracts/07-agent-governance-center.md` | create/draft/review/activate agent behavior records, `readSkill` test → `managed-agent-foundation` | draft/approval states, authority expansion denial, trace links. |
 | `mission-control-briefing` | dashboard+timeline+digest/v1 | Mission Control | `surface-contracts/08-mission-control-briefing.md` | create goal, review exception, open decision/trace → `ai-first-work-management`, `governance-decisions-audit` | loading/stale stream, priority attention queue, trace availability. |
 | `decision-card` | decision-card/v1 | Mission Control, Governance/Policy, User Admin | `surface-contracts/05-decision-card.md` | approve/reject/counter/defer/escalate → `governance-decisions-audit` | action permissions, conflict after other reviewer acts, evidence rendering. |
-| `audit-trace-explorer` | audit-timeline+search/v1 | Audit/Trace, User Admin, Agent Admin | `surface-contracts/06-audit-trace-explorer.md` | search/export scoped traces → `governance-decisions-audit`, `managed-agent-foundation` | redaction, tenant/customer filters, export denial. |
+| `audit-trace-explorer` | audit-timeline+search/v1 | Audit/Trace, User Admin, Agent Admin | `surface-contracts/06-audit-trace-explorer.md` | search/export scoped traces, including User Admin PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and denied loader evidence → `governance-decisions-audit`, `managed-agent-foundation` | redaction, tenant/customer filters, export denial, expertise trace visibility. |
 
 ## Surface rules
 

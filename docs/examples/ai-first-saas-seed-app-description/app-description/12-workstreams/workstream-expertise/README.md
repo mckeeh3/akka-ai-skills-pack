@@ -43,4 +43,4 @@ Each `<functional-agent-id>.md` should capture:
 
 ## Seed status
 
-The seed app currently defines the User Admin expertise requirements inline in `functional-agents.md`. A later task will materialize `workstream-expertise/user-admin-agent.md` as the canonical example bundle without changing the ownership contract defined here.
+The seed app materializes the canonical User Admin expertise example in `user-admin-agent.md`. That bundle is the authoritative seed app-description artifact for User Admin prompt intent, skills, references, compact manifests, boundaries, denied loads, traces, governance ownership, seed policy, and tests. Later seed-resource and test tasks should realize the governed records described there without bypassing app-managed governed storage.
