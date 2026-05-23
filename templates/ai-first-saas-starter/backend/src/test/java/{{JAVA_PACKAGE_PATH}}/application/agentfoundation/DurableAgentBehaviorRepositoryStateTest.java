@@ -27,6 +27,8 @@ class DurableAgentBehaviorRepositoryStateTest {
         .saveSkillManifest(seeded.skillManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_MANIFEST_ID).orElseThrow())
         .saveReferenceManifest(seeded.referenceManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_REFERENCE_MANIFEST_ID).orElseThrow())
         .saveToolBoundary(seeded.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow())
+        .saveModelPolicy(seeded.modelPolicy("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_POLICY_ID).orElseThrow())
+        .saveModelConfigRef(seeded.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow())
         .saveAgentDefinition(seeded.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow());
 
     var agent = state.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
@@ -36,6 +38,8 @@ class DurableAgentBehaviorRepositoryStateTest {
     var referenceManifest = state.referenceManifest("tenant-1", agent.referenceManifestId()).orElseThrow();
     var reference = state.referenceDocument("tenant-1", referenceManifest.entries().get(0).referenceDocumentId()).orElseThrow();
     var boundary = state.toolBoundary("tenant-1", agent.toolBoundaryId()).orElseThrow();
+    var modelConfig = state.modelConfigRef("tenant-1", agent.modelConfigRefId()).orElseThrow();
+    var modelPolicy = state.modelPolicy("tenant-1", agent.modelPolicyRefId()).orElseThrow();
 
     assertEquals(AgentLifecycleStatus.ACTIVE, agent.status());
     assertEquals(agent.activePromptVersion(), prompt.activeVersion());
@@ -43,6 +47,9 @@ class DurableAgentBehaviorRepositoryStateTest {
     assertEquals(referenceManifest.entries().get(0).pinnedVersion(), reference.activeVersion());
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readSkill")));
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readReferenceDoc")));
+    assertEquals(AgentLifecycleStatus.ACTIVE, modelConfig.status());
+    assertEquals("openai-low-temperature", modelConfig.providerAlias());
+    assertTrue(modelPolicy.allowedProviderAliases().contains(modelConfig.providerAlias()));
     assertTrue(state.agentDefinition("tenant-2", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).isEmpty());
     assertEquals(6, state.skillDocuments("tenant-1").size());
     assertEquals(6, state.referenceDocuments("tenant-1").size());

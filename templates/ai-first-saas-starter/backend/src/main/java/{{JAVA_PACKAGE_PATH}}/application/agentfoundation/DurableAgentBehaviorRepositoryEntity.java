@@ -6,6 +6,8 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentBehaviorRepositoryState
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
@@ -97,6 +99,22 @@ public class DurableAgentBehaviorRepositoryEntity extends KeyValueEntity<AgentBe
 
   public Effect<ToolPermissionBoundary> saveToolBoundary(ToolPermissionBoundary boundary) {
     return effects().updateState(currentState().saveToolBoundary(boundary)).thenReply(() -> boundary);
+  }
+
+  public ReadOnlyEffect<Optional<ModelConfigRef>> modelConfigRef(RecordQuery query) {
+    return effects().reply(currentState().modelConfigRef(query.tenantId(), query.recordId()));
+  }
+
+  public Effect<ModelConfigRef> saveModelConfigRef(ModelConfigRef modelConfigRef) {
+    return effects().updateState(currentState().saveModelConfigRef(modelConfigRef)).thenReply(() -> modelConfigRef);
+  }
+
+  public ReadOnlyEffect<Optional<ModelPolicy>> modelPolicy(RecordQuery query) {
+    return effects().reply(currentState().modelPolicy(query.tenantId(), query.recordId()));
+  }
+
+  public Effect<ModelPolicy> saveModelPolicy(ModelPolicy modelPolicy) {
+    return effects().updateState(currentState().saveModelPolicy(modelPolicy)).thenReply(() -> modelPolicy);
   }
 
   public record RecordQuery(String tenantId, String recordId) {}

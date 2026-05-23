@@ -16,6 +16,8 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.BehaviorChangeProposal;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
@@ -65,7 +67,49 @@ class AgentRuntimeServiceTest {
     assertFalse(first.assembledSystemPrompt().contains("Before recommending access changes"));
     assertFalse(first.assembledSystemPrompt().contains("Review stale memberships, dormant admin accounts"));
     assertTrue(first.assembledSystemPrompt().contains("Prompt text cannot grant authority"));
+    assertTrue(first.assembledSystemPrompt().contains("# Governed model binding"));
+    assertTrue(first.assembledSystemPrompt().contains("modelConfigRef=starter-default-model"));
+    assertTrue(first.assembledSystemPrompt().contains("providerAlias=openai-low-temperature"));
+    assertFalse(first.assembledSystemPrompt().toLowerCase().contains("api_key=do-not-leak"));
+    assertFalse(first.assembledSystemPrompt().toLowerCase().contains("secret="));
     assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("PROMPT_ASSEMBLY")).count());
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.safeSummary().contains("modelConfigRef=starter-default-model") && trace.safeSummary().contains("fallback=noFallback")));
+  }
+
+  @Test
+  void promptAssemblyDeniesInvalidModelBindingsBeforeRuntimeUse() {
+    var model = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
+    repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), AgentLifecycleStatus.DISABLED, model.allowedAgentDefinitionIds(), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
+
+    var disabled = service.assemblePrompt(promptRequest("corr-model-disabled"));
+    repository.saveModelConfigRef(model);
+    var policy = repository.modelPolicy("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_POLICY_ID).orElseThrow();
+    repository.saveModelPolicy(new ModelPolicy(policy.tenantId(), policy.modelPolicyRefId(), policy.displayName(), policy.status(), List.of("anthropic-safe"), List.of("openai-low-temperature"), policy.fallbackOrder(), policy.noFallback(), policy.traceLevel(), policy.seedProvenance(), policy.createdAt(), policy.updatedAt()));
+    var providerDenied = service.assemblePrompt(promptRequest("corr-model-policy-denied"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, disabled.decision());
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, providerDenied.decision());
+    assertTrue(disabled.safeDenialReason().contains("model-config-not-active"));
+    assertTrue(providerDenied.safeDenialReason().contains("model-provider-denied"));
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.correlationId().equals("corr-model-disabled") && trace.safeSummary().contains("model-config-not-active")));
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.correlationId().equals("corr-model-policy-denied") && trace.safeSummary().contains("model-provider-denied")));
+  }
+
+  @Test
+  void promptAssemblyDeniesUnknownOrSecretLikeModelRefsSafely() {
+    var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
+    repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), agent.status(), agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.referenceManifestId(), agent.activeReferenceManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), "missing-model", agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
+    var missing = service.assemblePrompt(promptRequest("corr-model-missing"));
+    repository.saveAgentDefinition(agent);
+    var model = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
+    repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), "openai-low-temperature api_key=hidden", model.status(), model.allowedAgentDefinitionIds(), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
+    var secretLike = service.assemblePrompt(promptRequest("corr-model-secret"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, missing.decision());
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, secretLike.decision());
+    assertTrue(missing.safeDenialReason().contains("model-config-not-available"));
+    assertTrue(secretLike.safeDenialReason().contains("model-secret-boundary-failed"));
+    assertFalse(service.traces().stream().anyMatch(trace -> trace.safeSummary().contains("api_key=hidden")));
   }
 
   @Test

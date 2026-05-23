@@ -8,6 +8,8 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.BehaviorChangeProposal;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SeedProvenance;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
@@ -52,6 +54,7 @@ public final class AgentRuntimeService {
       var manifest = activeManifest(request.tenantId(), agent.skillManifestId());
       var referenceManifest = activeReferenceManifest(request.tenantId(), agent.referenceManifestId());
       var boundary = activeBoundary(request.tenantId(), agent.toolBoundaryId());
+      var modelBinding = activeModelBinding(request.tenantId(), agent, request.mode(), request.capabilityId());
       var compactSkillManifest = renderCompactManifest(manifest);
       var compactReferenceManifest = renderCompactReferenceManifest(referenceManifest);
       var compactExpertiseManifest = compactSkillManifest + "\n\n" + compactReferenceManifest;
@@ -62,10 +65,11 @@ public final class AgentRuntimeService {
           "# Compact skill manifest\n" + compactSkillManifest,
           "# Compact reference manifest\n" + compactReferenceManifest,
           "# Tool boundary summary\n" + boundarySummary,
+          "# Governed model binding\n" + renderModelBindingSummary(modelBinding),
           "# Runtime mode\nmode=" + request.mode() + "; side effects require backend policy and approval where configured.",
           "# Redacted user input\n" + safe(request.userInput()));
       var checksum = checksum(assembled);
-      var trace = trace("PROMPT_ASSEMBLY", AgentRuntimeTrace.Decision.ALLOWED, request, prompt.promptDocumentId(), "assembled prompt with compact skill and reference manifests only", checksum);
+      var trace = trace("PROMPT_ASSEMBLY", AgentRuntimeTrace.Decision.ALLOWED, request, prompt.promptDocumentId(), "assembled prompt with compact skill and reference manifests only; " + renderModelBindingSummary(modelBinding), checksum);
       return new PromptAssemblyResult(AgentRuntimeTrace.Decision.ALLOWED, assembled, checksum, compactExpertiseManifest, trace.traceId(), null);
     } catch (RuntimeException failure) {
       var trace = trace("PROMPT_ASSEMBLY", AgentRuntimeTrace.Decision.DENIED, request, request.agentDefinitionId(), safeReason(failure), null);
@@ -266,6 +270,42 @@ public final class AgentRuntimeService {
     return boundary;
   }
 
+  private ResolvedModelBinding activeModelBinding(String tenantId, AgentDefinition agent, String mode, String capabilityId) {
+    var model = repository.modelConfigRef(tenantId, agent.modelConfigRefId()).orElseThrow(() -> new AuthorizationException(403, "model-config-not-available"));
+    if (model.status() != AgentLifecycleStatus.ACTIVE) {
+      throw new AuthorizationException(403, "model-config-not-active");
+    }
+    if (!model.allowedAgentDefinitionIds().isEmpty() && !model.allowedAgentDefinitionIds().contains(agent.agentDefinitionId())) {
+      throw new AuthorizationException(403, "model-agent-not-allowed");
+    }
+    if (!model.allowedCapabilityIds().isEmpty() && !model.allowedCapabilityIds().contains(capabilityId)) {
+      throw new AuthorizationException(403, "model-capability-not-allowed");
+    }
+    if (!model.allowedModes().stream().anyMatch(allowedMode -> allowedMode.equalsIgnoreCase(mode))) {
+      throw new AuthorizationException(403, "model-mode-not-allowed");
+    }
+    if (!model.allowedAuthorityLevels().isEmpty() && !model.allowedAuthorityLevels().contains(agent.authorityLevel())) {
+      throw new AuthorizationException(403, "model-authority-not-allowed");
+    }
+    if (containsSecretLikeText(model.providerAlias())) {
+      throw new AuthorizationException(403, "model-secret-boundary-failed");
+    }
+    var policy = repository.modelPolicy(tenantId, agent.modelPolicyRefId()).orElseThrow(() -> new AuthorizationException(403, "model-policy-not-available"));
+    if (policy.status() != AgentLifecycleStatus.ACTIVE) {
+      throw new AuthorizationException(403, "model-policy-not-active");
+    }
+    if (policy.deniedProviderAliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(model.providerAlias()))) {
+      throw new AuthorizationException(403, "model-provider-denied");
+    }
+    if (!policy.allowedProviderAliases().isEmpty() && policy.allowedProviderAliases().stream().noneMatch(alias -> alias.equalsIgnoreCase(model.providerAlias()))) {
+      throw new AuthorizationException(403, "model-provider-not-allowed");
+    }
+    if (!policy.noFallback() && model.fallbackPolicyRef() == null) {
+      throw new AuthorizationException(403, "model-fallback-policy-missing");
+    }
+    return new ResolvedModelBinding(model, policy);
+  }
+
   private void requireReadSkillGrant(ToolPermissionBoundary boundary, String mode) {
     var allowed = boundary.allowedToolGrants().stream().anyMatch(grant -> grant.category() == ToolPermissionBoundary.Category.READ_SKILL && grant.allowedOperations().stream().anyMatch(operation -> operation.equalsIgnoreCase("read")) && grant.allowedModes().stream().anyMatch(allowedMode -> allowedMode.equalsIgnoreCase(mode)));
     if (!allowed) {
@@ -296,6 +336,10 @@ public final class AgentRuntimeService {
 
   private String renderBoundarySummary(ToolPermissionBoundary boundary) {
     return "boundary=" + boundary.boundaryId() + "@" + boundary.boundaryVersion() + "; grants=" + boundary.allowedToolGrants().stream().map(grant -> grant.toolId() + ":" + grant.allowedOperations()).toList();
+  }
+
+  private String renderModelBindingSummary(ResolvedModelBinding modelBinding) {
+    return "modelConfigRef=" + modelBinding.model().modelConfigRefId() + "; providerAlias=" + modelBinding.model().providerAlias() + "; modelPolicyRef=" + modelBinding.policy().modelPolicyRefId() + "; fallback=" + (modelBinding.policy().noFallback() ? "noFallback" : "explicitPolicy") + "; traceLevel=" + modelBinding.policy().traceLevel();
   }
 
   private AgentRuntimeTrace trace(String type, AgentRuntimeTrace.Decision decision, PromptAssemblyRequest request, String targetId, String summary, String checksum) {
@@ -369,6 +413,8 @@ public final class AgentRuntimeService {
   public record SkillReadResult(AgentRuntimeTrace.Decision decision, String content, String checksum, String traceId, String safeDenialReason) {}
   public record ReferenceReadRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String stableReferenceId, String requestedUse) {}
   public record ReferenceReadResult(AgentRuntimeTrace.Decision decision, String title, String content, String checksum, String traceId, String safeDenialReason) {}
+  private record ResolvedModelBinding(ModelConfigRef model, ModelPolicy policy) {}
+
   public record BehaviorChangeRequest(String tenantId, String agentDefinitionId, AuthContext authContext, BehaviorChangeProposal.TargetArtifact targetArtifact, String proposedContent, List<ToolPermissionBoundary.ToolGrant> proposedToolGrants, String rationale, String correlationId) {
     public BehaviorChangeRequest {
       proposedToolGrants = List.copyOf(proposedToolGrants == null ? List.of() : proposedToolGrants);

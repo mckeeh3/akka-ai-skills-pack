@@ -9,8 +9,9 @@ import java.util.Optional;
  *
  * <p>This state backs the first Akka component seam for the starter {@code AgentBehaviorRepository}
  * port. It stores tenant-scoped active AgentDefinition, PromptDocument, SkillDocument,
- * ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary records
- * used by deterministic prompt assembly, {@code readSkill(skillId)}, {@code readReferenceDoc(referenceId)},
+ * ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, ToolPermissionBoundary,
+ * ModelConfigRef, and ModelPolicy records used by deterministic prompt assembly, model binding,
+ * {@code readSkill(skillId)}, {@code readReferenceDoc(referenceId)},
  * seed import, and behavior proposal activation. It intentionally stores governed behavior/reference
  * text only; provider keys and runtime credentials must remain outside these records.
  */
@@ -21,7 +22,9 @@ public record AgentBehaviorRepositoryState(
     Map<String, ReferenceDocument> referenceDocuments,
     Map<String, AgentSkillManifest> skillManifests,
     Map<String, AgentReferenceManifest> referenceManifests,
-    Map<String, ToolPermissionBoundary> toolBoundaries) {
+    Map<String, ToolPermissionBoundary> toolBoundaries,
+    Map<String, ModelConfigRef> modelConfigRefs,
+    Map<String, ModelPolicy> modelPolicies) {
 
   public AgentBehaviorRepositoryState {
     agentDefinitions = Map.copyOf(agentDefinitions == null ? Map.of() : agentDefinitions);
@@ -31,10 +34,12 @@ public record AgentBehaviorRepositoryState(
     skillManifests = Map.copyOf(skillManifests == null ? Map.of() : skillManifests);
     referenceManifests = Map.copyOf(referenceManifests == null ? Map.of() : referenceManifests);
     toolBoundaries = Map.copyOf(toolBoundaries == null ? Map.of() : toolBoundaries);
+    modelConfigRefs = Map.copyOf(modelConfigRefs == null ? Map.of() : modelConfigRefs);
+    modelPolicies = Map.copyOf(modelPolicies == null ? Map.of() : modelPolicies);
   }
 
   public static AgentBehaviorRepositoryState empty() {
-    return new AgentBehaviorRepositoryState(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of());
+    return new AgentBehaviorRepositoryState(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of());
   }
 
   public Optional<AgentDefinition> agentDefinition(String tenantId, String agentDefinitionId) {
@@ -50,7 +55,7 @@ public record AgentBehaviorRepositoryState(
   public AgentBehaviorRepositoryState saveAgentDefinition(AgentDefinition definition) {
     var updated = new java.util.LinkedHashMap<>(agentDefinitions);
     updated.put(key(definition.tenantId(), definition.agentDefinitionId()), definition);
-    return new AgentBehaviorRepositoryState(updated, promptDocuments, skillDocuments, referenceDocuments, skillManifests, referenceManifests, toolBoundaries);
+    return new AgentBehaviorRepositoryState(updated, promptDocuments, skillDocuments, referenceDocuments, skillManifests, referenceManifests, toolBoundaries, modelConfigRefs, modelPolicies);
   }
 
   public Optional<PromptDocument> promptDocument(String tenantId, String promptDocumentId) {
@@ -60,7 +65,7 @@ public record AgentBehaviorRepositoryState(
   public AgentBehaviorRepositoryState savePromptDocument(PromptDocument prompt) {
     var updated = new java.util.LinkedHashMap<>(promptDocuments);
     updated.put(key(prompt.tenantId(), prompt.promptDocumentId()), prompt);
-    return new AgentBehaviorRepositoryState(agentDefinitions, updated, skillDocuments, referenceDocuments, skillManifests, referenceManifests, toolBoundaries);
+    return new AgentBehaviorRepositoryState(agentDefinitions, updated, skillDocuments, referenceDocuments, skillManifests, referenceManifests, toolBoundaries, modelConfigRefs, modelPolicies);
   }
 
   public Optional<SkillDocument> skillDocument(String tenantId, String skillDocumentId) {
@@ -76,7 +81,7 @@ public record AgentBehaviorRepositoryState(
   public AgentBehaviorRepositoryState saveSkillDocument(SkillDocument skill) {
     var updated = new java.util.LinkedHashMap<>(skillDocuments);
     updated.put(key(skill.tenantId(), skill.skillDocumentId()), skill);
-    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, updated, referenceDocuments, skillManifests, referenceManifests, toolBoundaries);
+    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, updated, referenceDocuments, skillManifests, referenceManifests, toolBoundaries, modelConfigRefs, modelPolicies);
   }
 
   public Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId) {
@@ -92,7 +97,7 @@ public record AgentBehaviorRepositoryState(
   public AgentBehaviorRepositoryState saveReferenceDocument(ReferenceDocument reference) {
     var updated = new java.util.LinkedHashMap<>(referenceDocuments);
     updated.put(key(reference.tenantId(), reference.referenceDocumentId()), reference);
-    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, updated, skillManifests, referenceManifests, toolBoundaries);
+    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, updated, skillManifests, referenceManifests, toolBoundaries, modelConfigRefs, modelPolicies);
   }
 
   public Optional<AgentSkillManifest> skillManifest(String tenantId, String manifestId) {
@@ -102,7 +107,7 @@ public record AgentBehaviorRepositoryState(
   public AgentBehaviorRepositoryState saveSkillManifest(AgentSkillManifest manifest) {
     var updated = new java.util.LinkedHashMap<>(skillManifests);
     updated.put(key(manifest.tenantId(), manifest.manifestId()), manifest);
-    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, updated, referenceManifests, toolBoundaries);
+    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, updated, referenceManifests, toolBoundaries, modelConfigRefs, modelPolicies);
   }
 
   public Optional<AgentReferenceManifest> referenceManifest(String tenantId, String manifestId) {
@@ -112,7 +117,7 @@ public record AgentBehaviorRepositoryState(
   public AgentBehaviorRepositoryState saveReferenceManifest(AgentReferenceManifest manifest) {
     var updated = new java.util.LinkedHashMap<>(referenceManifests);
     updated.put(key(manifest.tenantId(), manifest.manifestId()), manifest);
-    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, skillManifests, updated, toolBoundaries);
+    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, skillManifests, updated, toolBoundaries, modelConfigRefs, modelPolicies);
   }
 
   public Optional<ToolPermissionBoundary> toolBoundary(String tenantId, String boundaryId) {
@@ -122,7 +127,27 @@ public record AgentBehaviorRepositoryState(
   public AgentBehaviorRepositoryState saveToolBoundary(ToolPermissionBoundary boundary) {
     var updated = new java.util.LinkedHashMap<>(toolBoundaries);
     updated.put(key(boundary.tenantId(), boundary.boundaryId()), boundary);
-    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, skillManifests, referenceManifests, updated);
+    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, skillManifests, referenceManifests, updated, modelConfigRefs, modelPolicies);
+  }
+
+  public Optional<ModelConfigRef> modelConfigRef(String tenantId, String modelConfigRefId) {
+    return Optional.ofNullable(modelConfigRefs.get(key(tenantId, modelConfigRefId)));
+  }
+
+  public AgentBehaviorRepositoryState saveModelConfigRef(ModelConfigRef modelConfigRef) {
+    var updated = new java.util.LinkedHashMap<>(modelConfigRefs);
+    updated.put(key(modelConfigRef.tenantId(), modelConfigRef.modelConfigRefId()), modelConfigRef);
+    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, skillManifests, referenceManifests, toolBoundaries, updated, modelPolicies);
+  }
+
+  public Optional<ModelPolicy> modelPolicy(String tenantId, String modelPolicyRefId) {
+    return Optional.ofNullable(modelPolicies.get(key(tenantId, modelPolicyRefId)));
+  }
+
+  public AgentBehaviorRepositoryState saveModelPolicy(ModelPolicy modelPolicy) {
+    var updated = new java.util.LinkedHashMap<>(modelPolicies);
+    updated.put(key(modelPolicy.tenantId(), modelPolicy.modelPolicyRefId()), modelPolicy);
+    return new AgentBehaviorRepositoryState(agentDefinitions, promptDocuments, skillDocuments, referenceDocuments, skillManifests, referenceManifests, toolBoundaries, modelConfigRefs, updated);
   }
 
   private static String key(String tenantId, String recordId) {

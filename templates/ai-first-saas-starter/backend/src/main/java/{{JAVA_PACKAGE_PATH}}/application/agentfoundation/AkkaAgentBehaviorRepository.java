@@ -4,6 +4,8 @@ import akka.javasdk.client.ComponentClient;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
@@ -122,5 +124,27 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
   @Override
   public ToolPermissionBoundary saveToolBoundary(ToolPermissionBoundary boundary) {
     return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::saveToolBoundary).invoke(boundary);
+  }
+
+  @Override
+  public Optional<ModelConfigRef> modelConfigRef(String tenantId, String modelConfigRefId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::modelConfigRef)
+        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, modelConfigRefId));
+  }
+
+  @Override
+  public ModelConfigRef saveModelConfigRef(ModelConfigRef modelConfigRef) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::saveModelConfigRef).invoke(modelConfigRef);
+  }
+
+  @Override
+  public Optional<ModelPolicy> modelPolicy(String tenantId, String modelPolicyRefId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::modelPolicy)
+        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, modelPolicyRefId));
+  }
+
+  @Override
+  public ModelPolicy saveModelPolicy(ModelPolicy modelPolicy) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::saveModelPolicy).invoke(modelPolicy);
   }
 }

@@ -4,6 +4,8 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SeedProvenance;
@@ -40,6 +42,8 @@ public final class AgentBehaviorSeedLoader {
   public static final String USER_ADMIN_MANIFEST_ID = "manifest-user-admin";
   public static final String USER_ADMIN_REFERENCE_MANIFEST_ID = "reference-manifest-user-admin";
   public static final String USER_ADMIN_BOUNDARY_ID = "tool-boundary-user-admin";
+  public static final String STARTER_DEFAULT_MODEL_CONFIG_ID = "starter-default-model";
+  public static final String STARTER_DEFAULT_MODEL_POLICY_ID = "starter-default-model-policy";
 
   private final AgentBehaviorRepository repository;
   private final Clock clock;
@@ -92,9 +96,15 @@ public final class AgentBehaviorSeedLoader {
     var boundary = repository.toolBoundary(tenantId, USER_ADMIN_BOUNDARY_ID)
         .map(existing -> skipExisting("ToolPermissionBoundary", existing.boundaryId(), result, existing))
         .orElseGet(() -> createBoundary(tenantId, importerActor, correlationId, now, result));
+    var modelPolicy = repository.modelPolicy(tenantId, STARTER_DEFAULT_MODEL_POLICY_ID)
+        .map(existing -> skipExisting("ModelPolicy", existing.modelPolicyRefId(), result, existing))
+        .orElseGet(() -> createModelPolicy(tenantId, importerActor, correlationId, now, result));
+    var modelConfig = repository.modelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID)
+        .map(existing -> skipExisting("ModelConfigRef", existing.modelConfigRefId(), result, existing))
+        .orElseGet(() -> createModelConfigRef(tenantId, modelPolicy, importerActor, correlationId, now, result));
     repository.agentDefinition(tenantId, USER_ADMIN_AGENT_ID)
         .map(existing -> skipExisting("AgentDefinition", existing.agentDefinitionId(), result, existing))
-        .orElseGet(() -> createAgentDefinition(tenantId, prompt, manifest, referenceManifest, boundary, importerActor, correlationId, now, result));
+        .orElseGet(() -> createAgentDefinition(tenantId, prompt, manifest, referenceManifest, boundary, modelConfig, modelPolicy, importerActor, correlationId, now, result));
     return result;
   }
 
@@ -153,9 +163,27 @@ public final class AgentBehaviorSeedLoader {
     return boundary;
   }
 
-  private AgentDefinition createAgentDefinition(String tenantId, PromptDocument prompt, AgentSkillManifest manifest, AgentReferenceManifest referenceManifest, ToolPermissionBoundary boundary, String actor, String correlationId, Instant now, SeedImportResult result) {
-    var checksum = checksum(prompt.contentChecksum() + manifest.compactManifestChecksum() + referenceManifest.compactManifestChecksum() + boundary.checksum());
-    var definition = new AgentDefinition(tenantId, USER_ADMIN_AGENT_ID, "User Admin Agent", "Role-authorized functional agent for user, invitation, membership, and access-review administration.", AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, "user-admin", AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED, AgentLifecycleStatus.ACTIVE, prompt.promptDocumentId(), prompt.activeVersion(), manifest.manifestId(), manifest.manifestVersion(), referenceManifest.manifestId(), referenceManifest.manifestVersion(), boundary.boundaryId(), boundary.boundaryVersion(), "starter-default-model", "starter-default-model-policy", "{{JAVA_BASE_PACKAGE}}.application.agent.UserAdminAgent", List.of("PromptAssemblyTrace", "SkillLoadTrace", "ReferenceLoadTrace", "AgentWorkTrace"), provenance("agents/user-admin-agent", checksum, actor, correlationId, now, false), now, now);
+  private ModelPolicy createModelPolicy(String tenantId, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var safePolicyFacts = STARTER_DEFAULT_MODEL_POLICY_ID + ":openai-low-temperature:noFallback:summary";
+    var checksum = checksum(safePolicyFacts);
+    var policy = new ModelPolicy(tenantId, STARTER_DEFAULT_MODEL_POLICY_ID, "Starter default model policy", AgentLifecycleStatus.ACTIVE, List.of("openai-low-temperature"), List.of(), List.of(), true, "summary", provenance("model-policies/starter-default-model-policy", checksum, actor, correlationId, now, false), now, now);
+    repository.saveModelPolicy(policy);
+    result.created("ModelPolicy", STARTER_DEFAULT_MODEL_POLICY_ID);
+    return policy;
+  }
+
+  private ModelConfigRef createModelConfigRef(String tenantId, ModelPolicy policy, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var safeModelFacts = STARTER_DEFAULT_MODEL_CONFIG_ID + ":openai-low-temperature:" + policy.modelPolicyRefId();
+    var checksum = checksum(safeModelFacts);
+    var model = new ModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", "openai-low-temperature", AgentLifecycleStatus.ACTIVE, List.of(USER_ADMIN_AGENT_ID), List.of(AgentRuntimeService.INVOKE_CAPABILITY), List.of("runtime", "test", "replay"), List.of(AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED), policy.modelPolicyRefId(), provenance("model-configs/starter-default-model", checksum, actor, correlationId, now, false), now, now);
+    repository.saveModelConfigRef(model);
+    result.created("ModelConfigRef", STARTER_DEFAULT_MODEL_CONFIG_ID);
+    return model;
+  }
+
+  private AgentDefinition createAgentDefinition(String tenantId, PromptDocument prompt, AgentSkillManifest manifest, AgentReferenceManifest referenceManifest, ToolPermissionBoundary boundary, ModelConfigRef modelConfig, ModelPolicy modelPolicy, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var checksum = checksum(prompt.contentChecksum() + manifest.compactManifestChecksum() + referenceManifest.compactManifestChecksum() + boundary.checksum() + modelConfig.modelConfigRefId() + modelPolicy.modelPolicyRefId());
+    var definition = new AgentDefinition(tenantId, USER_ADMIN_AGENT_ID, "User Admin Agent", "Role-authorized functional agent for user, invitation, membership, and access-review administration.", AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, "user-admin", AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED, AgentLifecycleStatus.ACTIVE, prompt.promptDocumentId(), prompt.activeVersion(), manifest.manifestId(), manifest.manifestVersion(), referenceManifest.manifestId(), referenceManifest.manifestVersion(), boundary.boundaryId(), boundary.boundaryVersion(), modelConfig.modelConfigRefId(), modelPolicy.modelPolicyRefId(), "{{JAVA_BASE_PACKAGE}}.application.agent.UserAdminAgent", List.of("PromptAssemblyTrace", "SkillLoadTrace", "ReferenceLoadTrace", "AgentWorkTrace"), provenance("agents/user-admin-agent", checksum, actor, correlationId, now, false), now, now);
     repository.saveAgentDefinition(definition);
     result.created("AgentDefinition", USER_ADMIN_AGENT_ID);
     return definition;

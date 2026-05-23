@@ -3,6 +3,8 @@ package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
@@ -35,4 +37,10 @@ public interface AgentBehaviorRepository {
 
   Optional<ToolPermissionBoundary> toolBoundary(String tenantId, String boundaryId);
   ToolPermissionBoundary saveToolBoundary(ToolPermissionBoundary boundary);
+
+  Optional<ModelConfigRef> modelConfigRef(String tenantId, String modelConfigRefId);
+  ModelConfigRef saveModelConfigRef(ModelConfigRef modelConfigRef);
+
+  Optional<ModelPolicy> modelPolicy(String tenantId, String modelPolicyRefId);
+  ModelPolicy saveModelPolicy(ModelPolicy modelPolicy);
 }

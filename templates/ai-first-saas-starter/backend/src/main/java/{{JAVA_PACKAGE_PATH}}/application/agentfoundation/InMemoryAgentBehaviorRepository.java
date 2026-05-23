@@ -3,6 +3,8 @@ package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
@@ -21,6 +23,8 @@ public final class InMemoryAgentBehaviorRepository implements AgentBehaviorRepos
   private final Map<String, AgentSkillManifest> manifests = new ConcurrentHashMap<>();
   private final Map<String, AgentReferenceManifest> referenceManifests = new ConcurrentHashMap<>();
   private final Map<String, ToolPermissionBoundary> boundaries = new ConcurrentHashMap<>();
+  private final Map<String, ModelConfigRef> modelConfigRefs = new ConcurrentHashMap<>();
+  private final Map<String, ModelPolicy> modelPolicies = new ConcurrentHashMap<>();
 
   @Override public Optional<AgentDefinition> agentDefinition(String tenantId, String agentDefinitionId) { return Optional.ofNullable(agents.get(key(tenantId, agentDefinitionId))); }
   @Override public AgentDefinition saveAgentDefinition(AgentDefinition definition) { agents.put(key(definition.tenantId(), definition.agentDefinitionId()), definition); return definition; }
@@ -45,6 +49,12 @@ public final class InMemoryAgentBehaviorRepository implements AgentBehaviorRepos
 
   @Override public Optional<ToolPermissionBoundary> toolBoundary(String tenantId, String boundaryId) { return Optional.ofNullable(boundaries.get(key(tenantId, boundaryId))); }
   @Override public ToolPermissionBoundary saveToolBoundary(ToolPermissionBoundary boundary) { boundaries.put(key(boundary.tenantId(), boundary.boundaryId()), boundary); return boundary; }
+
+  @Override public Optional<ModelConfigRef> modelConfigRef(String tenantId, String modelConfigRefId) { return Optional.ofNullable(modelConfigRefs.get(key(tenantId, modelConfigRefId))); }
+  @Override public ModelConfigRef saveModelConfigRef(ModelConfigRef modelConfigRef) { modelConfigRefs.put(key(modelConfigRef.tenantId(), modelConfigRef.modelConfigRefId()), modelConfigRef); return modelConfigRef; }
+
+  @Override public Optional<ModelPolicy> modelPolicy(String tenantId, String modelPolicyRefId) { return Optional.ofNullable(modelPolicies.get(key(tenantId, modelPolicyRefId))); }
+  @Override public ModelPolicy saveModelPolicy(ModelPolicy modelPolicy) { modelPolicies.put(key(modelPolicy.tenantId(), modelPolicy.modelPolicyRefId()), modelPolicy); return modelPolicy; }
 
   private String key(String tenantId, String recordId) { return tenantId + ":" + recordId; }
 }

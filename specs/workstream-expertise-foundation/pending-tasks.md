@@ -872,7 +872,7 @@
 
 ### TASK-WEF-08-003: Add starter model-governance runtime
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/03-add-starter-model-governance-runtime.md
 - depends on: [TASK-WEF-08-002]
@@ -900,6 +900,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add starter model governance runtime
+  - checks: `git diff --check` passed; scaffolded targeted backend `mvn -Dtest=AgentRuntimeServiceTest,AgentBehaviorSeedLoaderTest,DurableAgentBehaviorRepositoryStateTest test` passed; `tools/validate-ai-first-saas-starter-fullstack.sh` passed
+  - coverage: added tenant-scoped `ModelConfigRef`/`ModelPolicy` state, seed import, runtime validation before prompt assembly, safe model-binding trace facts, fail-closed disabled/missing/policy-denied/secret-like model denials, and fixed the scaffolded frontend expertise contract resource path
 
 ### TASK-WEF-08-004: Add model-governance tests
 

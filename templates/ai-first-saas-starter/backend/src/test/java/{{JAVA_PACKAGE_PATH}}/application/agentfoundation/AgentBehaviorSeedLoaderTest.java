@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SeedProvenance;
 import java.time.Clock;
@@ -29,7 +31,7 @@ class AgentBehaviorSeedLoaderTest {
   void freshTenantImportCreatesApprovedActiveGovernedRecords() {
     var result = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
 
-    assertEquals(17, result.createdCount());
+    assertEquals(19, result.createdCount());
     var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
     var prompt = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
     var skill = repository.skillDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
@@ -37,6 +39,8 @@ class AgentBehaviorSeedLoaderTest {
     var reference = repository.referenceDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_POLICY_REFERENCE_DOC_ID).orElseThrow();
     var referenceManifest = repository.referenceManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_REFERENCE_MANIFEST_ID).orElseThrow();
     var boundary = repository.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
+    var modelConfig = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
+    var modelPolicy = repository.modelPolicy("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_POLICY_ID).orElseThrow();
 
     assertEquals(AgentLifecycleStatus.ACTIVE, agent.status());
     assertEquals(AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, agent.placement());
@@ -44,6 +48,8 @@ class AgentBehaviorSeedLoaderTest {
     assertEquals(manifest.manifestId(), agent.skillManifestId());
     assertEquals(referenceManifest.manifestId(), agent.referenceManifestId());
     assertEquals(boundary.boundaryId(), agent.toolBoundaryId());
+    assertEquals(modelConfig.modelConfigRefId(), agent.modelConfigRefId());
+    assertEquals(modelPolicy.modelPolicyRefId(), agent.modelPolicyRefId());
     assertEquals(AgentLifecycleStatus.ACTIVE, prompt.status());
     assertEquals(AgentLifecycleStatus.ACTIVE, skill.status());
     assertEquals(AgentLifecycleStatus.ACTIVE, reference.status());
@@ -58,6 +64,13 @@ class AgentBehaviorSeedLoaderTest {
     assertFalse(reference.contentBody().contains("api_key"));
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readSkill") && grant.category().name().equals("READ_SKILL")));
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readReferenceDoc") && grant.category().name().equals("READ_REFERENCE")));
+    assertEquals(AgentLifecycleStatus.ACTIVE, modelConfig.status());
+    assertEquals("openai-low-temperature", modelConfig.providerAlias());
+    assertFalse(modelConfig.providerAlias().toLowerCase().contains("secret"));
+    assertTrue(modelConfig.allowedAgentDefinitionIds().contains(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID));
+    assertEquals(AgentLifecycleStatus.ACTIVE, modelPolicy.status());
+    assertTrue(modelPolicy.allowedProviderAliases().contains("openai-low-temperature"));
+    assertTrue(modelPolicy.noFallback());
   }
 
   @Test
@@ -67,7 +80,7 @@ class AgentBehaviorSeedLoaderTest {
     var second = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-2");
 
     assertEquals(0, second.createdCount());
-    assertEquals(17, second.skippedCount());
+    assertEquals(19, second.skippedCount());
     assertEquals(1, repository.agentDefinitions("tenant-1").size());
     assertEquals(6, repository.skillDocuments("tenant-1").size());
     assertEquals(6, repository.referenceDocuments("tenant-1").size());
