@@ -98,7 +98,7 @@ It must state:
 - required surfaces;
 - user intents the workstream agent must understand;
 - surface actions and surface-request actions;
-- capability mapping summary;
+- capability inventory and exposure-channel summary;
 - audit/work-trace behavior;
 - escalation, approval, denial, and exception behavior;
 - readiness and not-ready conditions.
@@ -193,9 +193,9 @@ System messages must not leak secrets, hidden privileged facts, prompt content, 
 
 ## `capabilities.md`
 
-Capabilities are backend contracts. They should not exist only as notes inside surface files.
+Capabilities are governed backend contracts. APIs and tools are exposure forms over those contracts. Capabilities should not exist only as notes inside surface files.
 
-The workstream `capabilities.md` should define every operation/query exposed by the workstream:
+The workstream `capabilities.md` should define every operation/query exposed by the workstream and its exposure channels:
 
 - stable capability id and purpose;
 - capability class: read/evidence, command, proposal, approval, workflow, governance, trace/audit, scheduled, reactive;
@@ -205,10 +205,19 @@ The workstream `capabilities.md` should define every operation/query exposed by 
 - data access and side effects;
 - policy/approval gates and escalation rules;
 - audit/work-trace fields;
-- exposure channels: surface action, browser API, agent tool, workflow step, timer, consumer, MCP, view, or internal method;
+- exposure channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool/resource, view, or internal method;
 - tests.
 
-Surface files reference capability ids from this file. The capability remains authoritative for backend behavior, security, side effects, idempotency, audit, and tests.
+Surface files and workstream-agent skills reference capability ids from this file. The capability remains authoritative for backend behavior, security, side effects, idempotency, approval, audit, denial shape, and tests.
+
+Exposure-channel rules:
+
+- Browser APIs are frontend exposures of capabilities.
+- Workstream-agent tools are conversational exposures of capabilities.
+- Internal-agent tools are backend AI-worker exposures of capabilities.
+- Surface actions reference capabilities and usually invoke browser APIs.
+- Agent tools may invoke the same capabilities as surface actions when authority, required inputs, confirmation, approval, audit, and result surfaces are preserved.
+- Side-effecting tools default to draft/proposal/approval flows unless a bounded autonomous policy explicitly allows execution.
 
 ## `tests.md`
 
@@ -241,7 +250,7 @@ For each candidate workstream, define:
 5. required surfaces;
 6. supported user intents;
 7. surface actions and requested next surfaces;
-8. governed backend capabilities;
+8. governed backend capabilities and exposure channels;
 9. Akka component realization candidates;
 10. audit/work traces and tests.
 

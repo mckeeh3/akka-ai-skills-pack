@@ -168,10 +168,10 @@ For each operation or query exposed in a workstream, define the capability first
 - data access and side effects;
 - policy, approval, escalation, and autonomy rules;
 - audit/work-trace fields;
-- exposure channels: workstream action, HTTP/gRPC/MCP endpoint, agent tool, workflow step, timer, consumer, view, or internal call;
+- exposure channels: surface/workstream action, browser API, workstream-agent tool, internal-agent tool, HTTP/gRPC/MCP endpoint, workflow step, timer, consumer, view, or internal call;
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and rendering/tool/API tests.
 
-Agent tools are optional capability exposure channels. Side-effecting agent tools require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
+Agent tools are optional capability exposure channels. Workstream-agent tools are conversational exposures of capabilities for the selected workstream; internal-agent tools are backend AI-worker exposures. Side-effecting agent tools require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
 
 ## Horizontal Akka implementation
 

@@ -1,0 +1,136 @@
+# Agent Admin Workstream PRD
+
+## PRD identity
+
+- **Workstream id:** `agent_admin`
+- **Backing functional agent:** `functional_agent.agent_admin`
+- **Domain:** `ai_first_saas_core_app`
+- **Purpose:** govern runtime agents, prompts, skills, references, manifests, tool boundaries, lifecycle, behavior proposals, approvals, deterministic prompt assembly, and agent work traces
+- **Primary users:** tenant admins, agent behavior stewards, governance admins, auditors with read-only authority
+
+## Invariants
+
+```text
+This workstream is backed by exactly one functional/context-area agent.
+Surfaces are the only renderable workstream artifacts.
+System messages are typed surfaces.
+Every surface action, including read/query and surface-request actions, maps to a governed backend capability.
+The workstream agent may request surfaces and guide users, but backend capabilities enforce authority.
+```
+
+Prompt/skill/reference content is behavior guidance only. It cannot grant tool authority, data access, tenant scope, approval authority, or role capabilities.
+
+## User intents
+
+The workstream agent must handle:
+
+- `dashboard`, `show agents`, `show disabled agents`
+- `view UserAdminAgent`, `edit prompt`, `show active prompt version`
+- `show skills`, `add skill draft`, `compare skill versions`
+- `show references`, `open manifest`, `why can this agent read this doc`
+- `show tool boundaries`, `can this agent send email`, `deny this tool`
+- `draft behavior change`, `simulate change`, `request approval`, `activate version`, `rollback`
+- `show prompt assembly trace`, `show skill load trace`, `show agent work trace`
+- help/how-to questions for agent behavior governance
+
+## Required surfaces
+
+| Surface id | Type | Purpose | Producing capability | Primary actions |
+|---|---|---|---|---|
+| `surface.agent_admin.dashboard.v1` | dashboard | agent health, pending behavior proposals, disabled agents, failed tests, recent traces | `agent_admin.dashboard.view` | open agents, open proposals, open tests, open traces |
+| `surface.agent_admin.agents_list.v1` | data_table | list AgentDefinitions | `agent_admin.agents.search` | open agent, create draft, filter |
+| `surface.agent_admin.agent_detail.v1` | detail_card | lifecycle, owner, model policy, prompt/skill/reference manifests, tool boundary | `agent_admin.agents.view` | edit metadata, open prompt, open manifests, open tool boundary, disable/enable |
+| `surface.agent_admin.prompt_versions.v1` | data_table/diff_review | PromptDocument/PromptVersion history and diffs | `agent_admin.prompts.view` | draft prompt, compare, request approval, activate, rollback |
+| `surface.agent_admin.skill_versions.v1` | data_table/diff_review | SkillDocument/SkillVersion history and diffs | `agent_admin.skills.view` | draft skill, compare, request approval, activate, rollback |
+| `surface.agent_admin.reference_versions.v1` | data_table/diff_review | ReferenceDocument/ReferenceVersion lifecycle and access notes | `agent_admin.references.view` | draft reference, approve, activate, rollback |
+| `surface.agent_admin.manifest_editor.v1` | detail/form/diff_review | assigned skill/reference manifests and compact expertise manifest | `agent_admin.manifests.view` | propose manifest change, simulate, request approval |
+| `surface.agent_admin.tool_boundary.v1` | detail/form/diff_review | ToolPermissionBoundary allowed/denied tools, data, side effects | `agent_admin.tool_boundaries.view` | propose boundary change, request approval |
+| `surface.agent_admin.behavior_proposal.v1` | decision_card/diff_review | proposed behavior change with rationale, risk, tests, replay/simulation | `agent_admin.proposals.view` | approve, reject, request changes, simulate, activate |
+| `surface.agent_admin.prompt_assembly_trace.v1` | audit_timeline | assembly inputs, versions, manifests, tool list, authorization decisions | `agent_admin.traces.prompt_assembly.view` | open source doc/version, open agent work trace |
+| `surface.agent_admin.system_message.v1` | system_message | denials, validation, approval required, activation success/failure | capability-specific | retry, open trace, request approval |
+
+## Capability inventory and exposure channels
+
+A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.
+
+For this workstream, read/evidence capabilities may be exposed as tools so the Agent Admin workstream agent can answer conversational requests such as “show the active prompt for UserAdminAgent” or “why can this agent read this skill?”. Draft/proposal capabilities may be exposed as tools when they create governed drafts only. Activation, rollback, tool-boundary expansion, and authority-changing capabilities require explicit approval/surface action and must not be silently invoked by agent conversation.
+
+| Capability id | Class | Purpose | Side effects |
+|---|---|---|---|
+| `agent_admin.dashboard.view` | read/evidence | dashboard summary | read trace |
+| `agent_admin.agents.search` | read/evidence | list AgentDefinitions | read trace |
+| `agent_admin.agents.view` | read/evidence | agent detail | read trace |
+| `agent_admin.agents.update_metadata` | command/approval | update lifecycle/owner/model policy metadata | writes AgentDefinition version/state, audit |
+| `agent_admin.prompts.view` | read/evidence | prompt document/version payloads and diffs | sensitive read audit |
+| `agent_admin.prompts.draft` | proposal | create draft prompt version | draft version, audit |
+| `agent_admin.skills.view` | read/evidence | skill document/version payloads and diffs | sensitive read audit |
+| `agent_admin.skills.draft` | proposal | create draft skill version | draft version, audit |
+| `agent_admin.references.view` | read/evidence | reference documents/versions | sensitive read audit/redaction |
+| `agent_admin.references.draft` | proposal | create draft reference version | draft version, audit |
+| `agent_admin.manifests.view` | read/evidence | skill/reference manifest assignments | read trace |
+| `agent_admin.manifests.propose_change` | proposal/approval | propose skill/reference assignment changes | proposal entity, audit |
+| `agent_admin.tool_boundaries.view` | read/evidence | tool boundary detail | read trace |
+| `agent_admin.tool_boundaries.propose_change` | proposal/approval | propose tool authority changes | proposal entity, audit |
+| `agent_admin.proposals.view` | read/evidence | behavior-change proposal | read trace |
+| `agent_admin.proposals.simulate` | workflow | replay/simulate behavior change | simulation workflow, traces |
+| `agent_admin.proposals.approve` | approval | approve behavior change | approval audit |
+| `agent_admin.versions.activate` | governance/approval | activate approved version/manifest/boundary | active version change, audit |
+| `agent_admin.versions.rollback` | governance/approval | rollback to prior active version | active version change, audit |
+| `agent_admin.traces.prompt_assembly.view` | trace/audit | view assembly trace | sensitive-read audit |
+| `agent_admin.traces.agent_work.view` | trace/audit | view agent work trace | sensitive-read audit |
+
+## Authorization and policy
+
+- Agent admin requires explicit role/capability; auditors may receive read-only redacted views.
+- Activation of prompt/skill/reference/manifest/tool-boundary changes requires approval unless a narrow safe policy says otherwise.
+- Tool-boundary expansion, data-scope expansion, side-effect expansion, email/tool enablement, policy/gov authority changes, and cross-tenant effects require human approval.
+- Prompt/skill text cannot grant authority; backend checks `AuthContext`, `AgentDefinition`, manifest assignment, document status/version, and `ToolPermissionBoundary`.
+- Seeded implementation-developed defaults import into governed storage with provenance/checksums/idempotency and do not overwrite tenant customizations.
+
+## Workstream-agent prompt requirements
+
+`workstream-agent/prompt.md` must define the agent as the agent behavior governance assistant. It must:
+
+- guide users through agent definitions, prompts, skills, references, manifests, boundaries, tests, and traces;
+- draft proposed behavior changes with rationale, risk, expected impact, and test/replay suggestions;
+- explain authority boundaries and why content cannot grant permissions;
+- request surfaces for agents, versions, diffs, manifests, traces, simulations, and proposals;
+- refuse direct activation without the required approval capability;
+- emit system-message surfaces for unsafe requests, denied authority, pending approval, and activation results.
+
+Runtime skills should cover agent lifecycle, prompt governance, skill/reference governance, manifest design, tool boundaries, deterministic assembly, behavior testing, and trace interpretation.
+
+## Akka realization candidates
+
+- ESE: `AgentDefinitionEntity`, `PromptDocumentEntity`, `SkillDocumentEntity`, `ReferenceDocumentEntity`, `ManifestEntity`, `ToolBoundaryEntity`, `BehaviorProposalEntity`.
+- Workflow: behavior proposal approval, simulation/replay, activation/rollback.
+- Views: `AgentCatalogView`, `PromptVersionView`, `SkillVersionView`, `ReferenceVersionView`, `ManifestView`, `ToolBoundaryView`, `BehaviorProposalQueueView`, `AgentTraceView`.
+- Agent: `AgentAdminAgent` and optional `AgentBehaviorEditorAgent`.
+- Tools: governed `readSkill(skillId)`, `readReferenceDoc(referenceId)`, trace readers, proposal draft tools.
+- HTTP: `/api/agent-admin/**` surface payload/action endpoints.
+- Consumers: seed import/audit projection/trace enrichment.
+
+## Tests
+
+Required:
+
+- list/view agents, prompts, skills, references, manifests, tool boundaries;
+- draft prompt/skill/reference changes;
+- diff review and proposal approval/rejection;
+- activation denied without approval;
+- tool-boundary expansion approval required;
+- deterministic prompt assembly includes compact manifests only;
+- `readSkill`/`readReferenceDoc` authorize manifest/version/status/tool boundary and trace allowed/denied loads;
+- seeded defaults idempotent and do not overwrite tenant customizations;
+- audit/work traces emitted for reads, drafts, approvals, activations, rollbacks, denied loads;
+- auditors see redacted read-only surfaces;
+- workstream agent explains and requests surfaces without granting authority.
+
+## Not ready if
+
+- prompt or skill files are edited directly without governed versions;
+- all skills/references are preloaded into every agent prompt;
+- one global skill list is used for all agents;
+- tool descriptions or prompt text are treated as authorization;
+- activation has no approval/audit path;
+- prompt assembly and skill/reference loads are untraced.
