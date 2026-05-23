@@ -2,8 +2,10 @@ package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
 import akka.javasdk.client.ComponentClient;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import java.util.List;
@@ -74,6 +76,22 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
   }
 
   @Override
+  public Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::referenceDocument)
+        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, referenceDocumentId));
+  }
+
+  @Override
+  public ReferenceDocument saveReferenceDocument(ReferenceDocument reference) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::saveReferenceDocument).invoke(reference);
+  }
+
+  @Override
+  public List<ReferenceDocument> referenceDocuments(String tenantId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::referenceDocuments).invoke(tenantId);
+  }
+
+  @Override
   public Optional<AgentSkillManifest> skillManifest(String tenantId, String manifestId) {
     return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::skillManifest)
         .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, manifestId));
@@ -82,6 +100,17 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
   @Override
   public AgentSkillManifest saveSkillManifest(AgentSkillManifest manifest) {
     return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::saveSkillManifest).invoke(manifest);
+  }
+
+  @Override
+  public Optional<AgentReferenceManifest> referenceManifest(String tenantId, String manifestId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::referenceManifest)
+        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, manifestId));
+  }
+
+  @Override
+  public AgentReferenceManifest saveReferenceManifest(AgentReferenceManifest manifest) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableAgentBehaviorRepositoryEntity::saveReferenceManifest).invoke(manifest);
   }
 
   @Override

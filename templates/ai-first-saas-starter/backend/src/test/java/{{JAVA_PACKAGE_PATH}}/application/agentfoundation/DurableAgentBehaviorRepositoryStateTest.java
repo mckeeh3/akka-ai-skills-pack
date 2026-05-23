@@ -20,8 +20,12 @@ class DurableAgentBehaviorRepositoryStateTest {
     for (var skill : seeded.skillDocuments("tenant-1")) {
       state = state.saveSkillDocument(skill);
     }
+    for (var reference : seeded.referenceDocuments("tenant-1")) {
+      state = state.saveReferenceDocument(reference);
+    }
     state = state
         .saveSkillManifest(seeded.skillManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_MANIFEST_ID).orElseThrow())
+        .saveReferenceManifest(seeded.referenceManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_REFERENCE_MANIFEST_ID).orElseThrow())
         .saveToolBoundary(seeded.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow())
         .saveAgentDefinition(seeded.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow());
 
@@ -29,15 +33,21 @@ class DurableAgentBehaviorRepositoryStateTest {
     var prompt = state.promptDocument("tenant-1", agent.promptDocumentId()).orElseThrow();
     var manifest = state.skillManifest("tenant-1", agent.skillManifestId()).orElseThrow();
     var skill = state.skillDocument("tenant-1", manifest.entries().get(0).skillDocumentId()).orElseThrow();
+    var referenceManifest = state.referenceManifest("tenant-1", agent.referenceManifestId()).orElseThrow();
+    var reference = state.referenceDocument("tenant-1", referenceManifest.entries().get(0).referenceDocumentId()).orElseThrow();
     var boundary = state.toolBoundary("tenant-1", agent.toolBoundaryId()).orElseThrow();
 
     assertEquals(AgentLifecycleStatus.ACTIVE, agent.status());
     assertEquals(agent.activePromptVersion(), prompt.activeVersion());
     assertEquals(manifest.entries().get(0).pinnedVersion(), skill.activeVersion());
+    assertEquals(referenceManifest.entries().get(0).pinnedVersion(), reference.activeVersion());
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readSkill")));
+    assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readReferenceDoc")));
     assertTrue(state.agentDefinition("tenant-2", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).isEmpty());
     assertEquals(6, state.skillDocuments("tenant-1").size());
+    assertEquals(6, state.referenceDocuments("tenant-1").size());
     assertEquals(0, state.skillDocuments("tenant-2").size());
+    assertEquals(0, state.referenceDocuments("tenant-2").size());
   }
 
   @Test

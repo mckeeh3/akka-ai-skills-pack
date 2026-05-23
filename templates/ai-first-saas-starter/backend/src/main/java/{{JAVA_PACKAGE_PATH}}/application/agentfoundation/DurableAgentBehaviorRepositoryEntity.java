@@ -4,8 +4,10 @@ import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentBehaviorRepositoryState;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import java.util.List;
@@ -16,8 +18,8 @@ import java.util.Optional;
  *
  * <p>The scaffold keeps {@link InMemoryAgentBehaviorRepository} as the local/demo default, but
  * generated apps can bind {@link AkkaAgentBehaviorRepository} to this component without changing
- * seed import, prompt assembly, {@code readSkill(skillId)}, or behavior proposal services. This
- * Key Value Entity stores the current approved/active governed behavior records; later slices can
+ * seed import, prompt assembly, {@code readSkill(skillId)}, {@code readReferenceDoc(referenceId)},
+ * or behavior proposal services. This Key Value Entity stores the current approved/active governed behavior records; later slices can
  * replace individual lifecycle-heavy artifacts with Event Sourced Entities and project the same port.
  */
 @Component(id = "starter-agent-behavior-repository")
@@ -61,12 +63,32 @@ public class DurableAgentBehaviorRepositoryEntity extends KeyValueEntity<AgentBe
     return effects().reply(currentState().skillDocuments(tenantId));
   }
 
+  public ReadOnlyEffect<Optional<ReferenceDocument>> referenceDocument(RecordQuery query) {
+    return effects().reply(currentState().referenceDocument(query.tenantId(), query.recordId()));
+  }
+
+  public Effect<ReferenceDocument> saveReferenceDocument(ReferenceDocument reference) {
+    return effects().updateState(currentState().saveReferenceDocument(reference)).thenReply(() -> reference);
+  }
+
+  public ReadOnlyEffect<List<ReferenceDocument>> referenceDocuments(String tenantId) {
+    return effects().reply(currentState().referenceDocuments(tenantId));
+  }
+
   public ReadOnlyEffect<Optional<AgentSkillManifest>> skillManifest(RecordQuery query) {
     return effects().reply(currentState().skillManifest(query.tenantId(), query.recordId()));
   }
 
   public Effect<AgentSkillManifest> saveSkillManifest(AgentSkillManifest manifest) {
     return effects().updateState(currentState().saveSkillManifest(manifest)).thenReply(() -> manifest);
+  }
+
+  public ReadOnlyEffect<Optional<AgentReferenceManifest>> referenceManifest(RecordQuery query) {
+    return effects().reply(currentState().referenceManifest(query.tenantId(), query.recordId()));
+  }
+
+  public Effect<AgentReferenceManifest> saveReferenceManifest(AgentReferenceManifest manifest) {
+    return effects().updateState(currentState().saveReferenceManifest(manifest)).thenReply(() -> manifest);
   }
 
   public ReadOnlyEffect<Optional<ToolPermissionBoundary>> toolBoundary(RecordQuery query) {

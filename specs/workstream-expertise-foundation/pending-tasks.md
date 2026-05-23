@@ -515,7 +515,7 @@
 
 ### TASK-WEF-06-001: Add reference domain state and seed import
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/06-executable-reference-coverage-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/06-executable-reference-coverage/01-reference-domain-seed-state.md
 - depends on: [TASK-WEF-05-002]
@@ -542,6 +542,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add starter reference governance state
+  - checks: `git diff --check` passed; scaffolded targeted backend `mvn -Dtest=AgentBehaviorSeedLoaderTest,DurableAgentBehaviorRepositoryStateTest test` passed
+  - validation note: full `tools/validate-ai-first-saas-starter-fullstack.sh` backend phase passed, but frontend fixture phase failed on pre-existing missing scaffolded `backend/src/main/resources/agent-behavior-seeds/starter-v1/manifest.properties` path assumption
 
 ### TASK-WEF-06-002: Implement runtime reference manifest and loader
 

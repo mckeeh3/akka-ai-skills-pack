@@ -17,6 +17,8 @@ public record AgentDefinition(
     int activePromptVersion,
     String skillManifestId,
     int activeSkillManifestVersion,
+    String referenceManifestId,
+    int activeReferenceManifestVersion,
     String toolBoundaryId,
     int activeToolBoundaryVersion,
     String modelConfigRefId,

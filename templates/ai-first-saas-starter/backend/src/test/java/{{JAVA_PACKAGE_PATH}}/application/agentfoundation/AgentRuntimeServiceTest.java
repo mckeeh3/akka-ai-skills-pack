@@ -80,7 +80,7 @@ class AgentRuntimeServiceTest {
   @Test
   void disabledAgentDeniesPromptAndSkillBeforeRuntimeUse() {
     var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
-    repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), AgentLifecycleStatus.DISABLED, agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), agent.modelConfigRefId(), agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
+    repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), AgentLifecycleStatus.DISABLED, agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.referenceManifestId(), agent.activeReferenceManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), agent.modelConfigRefId(), agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
 
     var prompt = service.assemblePrompt(promptRequest("corr-disabled-prompt"));
     var skill = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-disabled-skill", "ua.access-review-triage.v1"));

@@ -1,8 +1,10 @@
 package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import java.util.List;
@@ -21,8 +23,15 @@ public interface AgentBehaviorRepository {
   SkillDocument saveSkillDocument(SkillDocument skill);
   List<SkillDocument> skillDocuments(String tenantId);
 
+  Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId);
+  ReferenceDocument saveReferenceDocument(ReferenceDocument reference);
+  List<ReferenceDocument> referenceDocuments(String tenantId);
+
   Optional<AgentSkillManifest> skillManifest(String tenantId, String manifestId);
   AgentSkillManifest saveSkillManifest(AgentSkillManifest manifest);
+
+  Optional<AgentReferenceManifest> referenceManifest(String tenantId, String manifestId);
+  AgentReferenceManifest saveReferenceManifest(AgentReferenceManifest manifest);
 
   Optional<ToolPermissionBoundary> toolBoundary(String tenantId, String boundaryId);
   ToolPermissionBoundary saveToolBoundary(ToolPermissionBoundary boundary);

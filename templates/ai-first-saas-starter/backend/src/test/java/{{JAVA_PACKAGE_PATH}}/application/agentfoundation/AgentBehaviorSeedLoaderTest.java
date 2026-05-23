@@ -29,25 +29,33 @@ class AgentBehaviorSeedLoaderTest {
   void freshTenantImportCreatesApprovedActiveGovernedRecords() {
     var result = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
 
-    assertEquals(10, result.createdCount());
+    assertEquals(17, result.createdCount());
     var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
     var prompt = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
     var skill = repository.skillDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
     var manifest = repository.skillManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_MANIFEST_ID).orElseThrow();
+    var reference = repository.referenceDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_POLICY_REFERENCE_DOC_ID).orElseThrow();
+    var referenceManifest = repository.referenceManifest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_REFERENCE_MANIFEST_ID).orElseThrow();
     var boundary = repository.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
 
     assertEquals(AgentLifecycleStatus.ACTIVE, agent.status());
     assertEquals(AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, agent.placement());
     assertEquals(prompt.promptDocumentId(), agent.promptDocumentId());
     assertEquals(manifest.manifestId(), agent.skillManifestId());
+    assertEquals(referenceManifest.manifestId(), agent.referenceManifestId());
     assertEquals(boundary.boundaryId(), agent.toolBoundaryId());
     assertEquals(AgentLifecycleStatus.ACTIVE, prompt.status());
     assertEquals(AgentLifecycleStatus.ACTIVE, skill.status());
+    assertEquals(AgentLifecycleStatus.ACTIVE, reference.status());
     assertTrue(prompt.seedProvenance().seedBundleId().equals(AgentBehaviorSeedLoader.SEED_BUNDLE_ID));
     assertFalse(prompt.contentBody().contains("api_key"));
     assertEquals(6, manifest.entries().size());
     assertTrue(manifest.entries().stream().anyMatch(entry -> entry.stableSkillId().equals("ua.access-review-triage.v1") && !entry.whenToUse().isBlank()));
     assertTrue(manifest.entries().stream().anyMatch(entry -> entry.stableSkillId().equals("ua.audit-summary.v1")));
+    assertEquals(6, referenceManifest.entries().size());
+    assertTrue(referenceManifest.entries().stream().anyMatch(entry -> entry.stableReferenceId().equals("ua.access-review-policy.v1") && !entry.whenToConsult().isBlank()));
+    assertTrue(reference.seedProvenance().resourceId().equals("references/user-admin/access-review-policy.md"));
+    assertFalse(reference.contentBody().contains("api_key"));
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readSkill") && grant.category().name().equals("READ_SKILL")));
     assertTrue(boundary.allowedToolGrants().stream().anyMatch(grant -> grant.toolId().equals("readReferenceDoc") && grant.category().name().equals("READ_REFERENCE")));
   }
@@ -59,9 +67,10 @@ class AgentBehaviorSeedLoaderTest {
     var second = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-2");
 
     assertEquals(0, second.createdCount());
-    assertEquals(10, second.skippedCount());
+    assertEquals(17, second.skippedCount());
     assertEquals(1, repository.agentDefinitions("tenant-1").size());
     assertEquals(6, repository.skillDocuments("tenant-1").size());
+    assertEquals(6, repository.referenceDocuments("tenant-1").size());
   }
 
   @Test

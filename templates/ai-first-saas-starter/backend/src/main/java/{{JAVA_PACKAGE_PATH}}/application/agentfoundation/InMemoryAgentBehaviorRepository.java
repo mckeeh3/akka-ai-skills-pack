@@ -1,8 +1,10 @@
 package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import java.util.List;
@@ -15,7 +17,9 @@ public final class InMemoryAgentBehaviorRepository implements AgentBehaviorRepos
   private final Map<String, AgentDefinition> agents = new ConcurrentHashMap<>();
   private final Map<String, PromptDocument> prompts = new ConcurrentHashMap<>();
   private final Map<String, SkillDocument> skills = new ConcurrentHashMap<>();
+  private final Map<String, ReferenceDocument> references = new ConcurrentHashMap<>();
   private final Map<String, AgentSkillManifest> manifests = new ConcurrentHashMap<>();
+  private final Map<String, AgentReferenceManifest> referenceManifests = new ConcurrentHashMap<>();
   private final Map<String, ToolPermissionBoundary> boundaries = new ConcurrentHashMap<>();
 
   @Override public Optional<AgentDefinition> agentDefinition(String tenantId, String agentDefinitionId) { return Optional.ofNullable(agents.get(key(tenantId, agentDefinitionId))); }
@@ -29,8 +33,15 @@ public final class InMemoryAgentBehaviorRepository implements AgentBehaviorRepos
   @Override public SkillDocument saveSkillDocument(SkillDocument skill) { skills.put(key(skill.tenantId(), skill.skillDocumentId()), skill); return skill; }
   @Override public List<SkillDocument> skillDocuments(String tenantId) { return skills.values().stream().filter(skill -> tenantId.equals(skill.tenantId())).toList(); }
 
+  @Override public Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId) { return Optional.ofNullable(references.get(key(tenantId, referenceDocumentId))); }
+  @Override public ReferenceDocument saveReferenceDocument(ReferenceDocument reference) { references.put(key(reference.tenantId(), reference.referenceDocumentId()), reference); return reference; }
+  @Override public List<ReferenceDocument> referenceDocuments(String tenantId) { return references.values().stream().filter(reference -> tenantId.equals(reference.tenantId())).toList(); }
+
   @Override public Optional<AgentSkillManifest> skillManifest(String tenantId, String manifestId) { return Optional.ofNullable(manifests.get(key(tenantId, manifestId))); }
   @Override public AgentSkillManifest saveSkillManifest(AgentSkillManifest manifest) { manifests.put(key(manifest.tenantId(), manifest.manifestId()), manifest); return manifest; }
+
+  @Override public Optional<AgentReferenceManifest> referenceManifest(String tenantId, String manifestId) { return Optional.ofNullable(referenceManifests.get(key(tenantId, manifestId))); }
+  @Override public AgentReferenceManifest saveReferenceManifest(AgentReferenceManifest manifest) { referenceManifests.put(key(manifest.tenantId(), manifest.manifestId()), manifest); return manifest; }
 
   @Override public Optional<ToolPermissionBoundary> toolBoundary(String tenantId, String boundaryId) { return Optional.ofNullable(boundaries.get(key(tenantId, boundaryId))); }
   @Override public ToolPermissionBoundary saveToolBoundary(ToolPermissionBoundary boundary) { boundaries.put(key(boundary.tenantId(), boundary.boundaryId()), boundary); return boundary; }
