@@ -1,6 +1,6 @@
 ---
 name: akka-agent-tool-boundaries
-description: Implement governed ToolPermissionBoundary enforcement for Akka agents across local function tools, Akka component tools, remote MCP tools, readSkill, data access, side effects, approval-required expansion, runtime denials, and traces.
+description: Implement governed ToolPermissionBoundary enforcement for Akka agents across local function tools, Akka component tools, remote MCP tools, readSkill, readReferenceDoc, data access, side effects, approval-required expansion, runtime denials, and traces.
 ---
 
 # Akka Agent Tool Boundaries
@@ -38,7 +38,7 @@ Read these first if present:
 - allowed tool ids, categories, scopes, data resources, side effects, or external integrations
 - read-only vs side-effecting agent tools
 - component tools or MCP tools under managed agent profiles
-- tool denial, unauthorized tool use, cross-scope access, or denied data access traces
+- tool denial, unauthorized tool use, cross-scope access, denied skill/reference loads, or denied data access traces
 - approval-required expansion of an agent's tools, data scope, tenant/customer scope, or autonomy
 - tool permission UI, proposed boundary diffs, simulations, or rollback
 
@@ -64,7 +64,7 @@ ToolPermissionBoundary
 ```text
 ToolGrant
 - toolId: stable id, not method display text alone
-- toolCategory: local_function | component | mcp | read_skill | data_lookup | external_side_effect
+- toolCategory: local_function | component | mcp | read_skill | read_reference | data_lookup | external_side_effect
 - capabilityId
 - surface: agent_tool | component_tool | mcp_tool | skill_tool
 - allowedOperations: read | propose | request_approval | execute
@@ -100,7 +100,7 @@ Create a backend-owned tool registry or catalog before assigning grants. Registr
 
 - stable `toolId` and display name;
 - capability id and purpose;
-- tool category (`local_function`, `component`, `mcp`, `read_skill`, etc.);
+- tool category (`local_function`, `component`, `mcp`, `read_skill`, `read_reference`, etc.);
 - implementation binding: class/method, component method, MCP tool name/server, or governed resource lookup;
 - input/output schema summary and redaction rules;
 - read-only or side-effecting classification;
@@ -113,11 +113,11 @@ Do not allow free-form model-supplied tool names, URLs, component ids, resource 
 
 ## Runtime enforcement sequence
 
-Before model invocation, `AgentRuntimeResolver` should resolve the active `AgentDefinition`, active prompt, compact `AgentSkillManifest`, and active `ToolPermissionBoundary` for the current `AuthContext` and mode.
+Before model invocation, `AgentRuntimeResolver` should resolve the active `AgentDefinition`, active prompt, compact expertise manifest (`AgentSkillManifest` plus `AgentReferenceManifest` when references are assigned), and active `ToolPermissionBoundary` for the current `AuthContext` and mode.
 
 For every tool call:
 
-1. Resolve the stable tool id from the registered local/function/component/MCP/readSkill binding.
+1. Resolve the stable tool id from the registered local/function/component/MCP/readSkill/readReferenceDoc binding.
 2. Load the active `ToolPermissionBoundary` for the `AgentDefinition` and tenant.
 3. Verify the tool id/category/capability is granted for the current mode (`runtime`, `test`, `replay`, `evaluation`).
 4. Verify caller `AuthContext`, tenant/customer scope, active membership, required capability, agent lifecycle, and authority level.
@@ -130,10 +130,22 @@ For every tool call:
 ## Read-only vs side-effecting defaults
 
 - Read-only evidence tools are preferred for agent autonomy when outputs are scoped, redacted, and traced.
-- `readSkill(skillId)` is a `read_skill` tool grant that loads guidance only; it cannot expand other tool or data permissions.
+- `readSkill(skillId)` is a `read_skill` tool grant that loads procedural guidance only; it cannot expand other tool or data permissions.
+- `readReferenceDoc(referenceId)` is a separate `read_reference` tool grant that loads governed factual/process references only when the active expert bundle and reference manifest assign the reference; it cannot expand tool, data, role, tenant/customer, approval, or side-effect authority.
 - Data-export, billing, security, role/membership, cross-tenant, external-message, email-send, delete, irreversible, or high-impact tools default to `approval_required`. Email-send tools must route through `akka-resend-email-service`; Resend is the supported production email service and local/dev/test must use captured outbox behavior.
 - Side-effecting tools must define idempotency, duplicate handling, denial shape, trace fields, rollback or compensation expectations, and approval/autonomy policy.
 - Autonomous side effects require an explicit accepted policy boundary and should be narrow, reversible, and observable.
+
+## Governed loader tools
+
+For `readSkill(skillId)` and `readReferenceDoc(referenceId)`:
+
+- assign stable tool ids such as `agent.read_skill` and `agent.read_reference` plus capability ids;
+- require explicit `read_skill` and `read_reference` grants; one does not imply the other;
+- authorize against tenant, AuthContext, active `AgentDefinition`, active workstream expert bundle, active manifest assignment, document/version status, mode, redaction/token limits, and customer scope when applicable;
+- return safe non-enumerating denials to the model for unassigned, inactive, cross-tenant, wrong-customer, missing-boundary, oversized, or unauthorized loads;
+- emit `SkillLoadTrace` or `ReferenceLoadTrace` for both allowed and denied loads, linked to the same `AgentWorkTrace` and boundary version;
+- treat loaded text as guidance/evidence only, subordinate to backend capability, policy, and boundary enforcement.
 
 ## Local function tools
 
@@ -218,6 +230,8 @@ Plan tests for:
 - cross-tenant/customer denial;
 - disabled/archived agent denial;
 - `readSkill(skillId)` allowed only when both `AgentSkillManifest` and `ToolPermissionBoundary` permit it;
+- `readReferenceDoc(referenceId)` allowed only when both `AgentReferenceManifest` and `ToolPermissionBoundary` permit it, with redaction/customer-scope checks;
+- missing `read_skill` or `read_reference` grants deny loader calls and emit the corresponding load trace;
 - MCP allowed-tool filtering and remote denial propagation;
 - component-tool `uniqueId` scope validation;
 - facade-tool boundary checks for underlying component/data access, redaction, and trace summaries;
@@ -231,8 +245,8 @@ Before finishing, verify:
 
 - every agent tool maps to a named capability and stable tool registry entry
 - active `ToolPermissionBoundary` is resolved before model invocation and checked before each tool execution
-- read-only, side-effecting, external, MCP, component, and `readSkill` tools have explicit grant semantics
-- tool descriptions do not serve as authorization controls
+- read-only, side-effecting, external, MCP, component, `readSkill`, and `readReferenceDoc` tools have explicit grant semantics
+- prompt/skill/reference text, compact manifests, and tool descriptions do not serve as authorization controls
 - denied tool/data access fails closed and emits trace records
 - approval-required expansion cannot be activated by prompt/skill text alone
 - side-effecting tools define idempotency, audit, approval, and rollback/compensation expectations

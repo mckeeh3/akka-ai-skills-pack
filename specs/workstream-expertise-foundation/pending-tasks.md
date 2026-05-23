@@ -185,7 +185,7 @@
 
 ### TASK-WEF-02-003: Align runtime invocation, seed, and tool-boundary guidance
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/02-governed-runtime-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/02-governed-runtime/03-align-runtime-seed-boundaries.md
 - depends on: [TASK-WEF-02-002]
@@ -209,6 +209,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Align runtime expertise loading guidance
+  - checks: `git diff --check` passed; text-search proof covered compact expertise manifest, authorized skill/reference loading, seed import/upgrades, `read_reference`, `ReferenceLoadTrace`, and boundary enforcement
 
 ### TASK-WEF-02-004: Update agent coverage and testing guidance
 

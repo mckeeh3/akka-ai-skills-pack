@@ -67,11 +67,11 @@ Required baseline:
 | Email-invite onboarding | Complete onboarding through mandatory `Invitation` lifecycle: invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency, and audit trail. Production email delivery uses Resend (resend.com), the supported email service for this pack; local/dev/test must use an explicit captured outbox adapter. The same Resend email foundation must be reusable for later app-specific email features and may be exposed to agents only through governed `@FunctionTool` capability surfaces. |
 | `/api/me` | Provide browser-safe current account, status, memberships, selected/default context, roles/capabilities, profile, and settings. First-login linking must require a valid invitation or accepted membership policy and must not silently self-register privileged users. |
 | Backend authorization | Enforce scope mechanically on every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action. |
-| Audit and traces | Record identity, role, membership, tenant/customer, policy, approval, data-access, tool-use, decision, and outcome events as durable audit/work traces, including `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` for managed agents. |
+| Audit and traces | Record identity, role, membership, tenant/customer, policy, approval, data-access, tool-use, decision, and outcome events as durable audit/work traces, including `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` for managed agents. |
 | Tenant isolation | Include tenant/customer ids in scoped records; filter all reads by authorized context; reject cross-tenant/customer commands and queries. |
 | Security tests | Require tenant-isolation, forbidden-access, disabled-user, role/scope denial, `/api/me`, audit, frontend secret-boundary, and security-review tests. |
 | Security review | Treat missing auth/security semantics as not-ready for generation, not as an assumption to fill in later. |
-| Governed runtime agents | Include tenant-scoped `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` from the first foundation slice. Implementation-developed default agent definitions, prompts, skills, manifests, and tool boundaries must be packaged as seed material and imported into governed storage on first install or tenant bootstrap as the initial approved/active versions, with provenance, idempotency, audit, and upgrade rules that do not overwrite tenant customizations. Runtime assembly must resolve the active agent definition, assemble only approved active prompt content, include a compact skill manifest, authorize `readSkill(skillId)` before returning full skill text, and trace prompt assembly and skill loads. |
+| Governed runtime agents | Include tenant-scoped `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` from the first foundation slice. Implementation-developed default agent definitions, prompts, skills, references, manifests, workstream expert bundles, and tool boundaries must be packaged as seed material and imported into governed storage on first install or tenant bootstrap as the initial approved/active versions, with provenance, idempotency, audit, and upgrade rules that do not overwrite tenant customizations. Runtime assembly must resolve the active agent definition, assemble only approved active prompt content, include a compact expertise manifest with skill and reference sections, authorize `readSkill(skillId)` and `readReferenceDoc(referenceId)` before returning full text, and trace prompt assembly, skill loads, and reference loads. |
 
 Use `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, and `core-saas-owner-tenant-billing.md` as the product-agnostic baseline. App-specific requirements may extend this foundation but must not weaken it.
 
@@ -104,7 +104,7 @@ AI-first applications still need domain objects, but they should also model the 
 Core object categories:
 
 - **Intent:** `Goal`, `Objective`, `SuccessCriterion`, `Constraint`, `PolicyDocument`, `PolicyClause`, `Guardrail`, `ReferenceExample`.
-- **Execution:** `Agent`, `AgentTeam`, `AgentDefinition`, `PromptDocument`, `PromptVersion`, `SkillDocument`, `SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, `ExecutionPlan`, `Workflow`, `Task`, `ToolInvocation`, `DataAccessEvent`, `WorkResult`.
+- **Execution:** `Agent`, `AgentTeam`, `AgentDefinition`, `PromptDocument`, `PromptVersion`, `SkillDocument`, `SkillVersion`, `ReferenceDocument`, `ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, `ExecutionPlan`, `Workflow`, `Task`, `ToolInvocation`, `DataAccessEvent`, `WorkResult`.
 - **Judgment:** `Recommendation`, `Decision`, `ApprovalRequest`, `Exception`, `Escalation`, `Counterproposal`, `Precedent`.
 - **Evidence and risk:** `EvidenceItem`, `ConfidenceScore`, `RiskScore`, `ImpactEstimate`, `StakesEstimate`, `AlternativeConsidered`, `ReasoningFactor`.
 - **Learning and governance:** `HumanFeedback`, `LearnedRule`, `SkillProposal`, `PolicyProposal`, `PolicyCommit`, `ReplayResult`, `SimulationResult`.
@@ -168,11 +168,12 @@ Map capability shapes onto Akka components deliberately:
 Treat prompts, skills, policies, rules, thresholds, approval gates, and permissions as runtime business logic. Generated AI-first SaaS foundations must include managed runtime agent behavior from the start:
 
 - `AgentDefinition` controls lifecycle, owner/steward, authority level, model references, prompt references, skill manifest references, and tool permission boundaries;
-- `PromptDocument`/`PromptVersion` and `SkillDocument`/`SkillVersion` are tenant-scoped governed artifacts with review, approval, activation, rollback, checksums, diff/history, and audit;
-- implementation-developed default `AgentDefinition`, prompt, skill, manifest, and tool-boundary content is packaged with the app as a seed bundle and imported into governed storage on first install or tenant bootstrap as versioned records with seed provenance, checksums, idempotency, and audit; later app upgrades create draft/proposed changes when tenant content has diverged rather than overwriting active tenant customizations;
+- `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, and `ReferenceDocument`/`ReferenceVersion` are tenant-scoped governed artifacts with review, approval, activation, rollback, checksums, diff/history, and audit;
+- implementation-developed default `AgentDefinition`, prompt, skill, reference, manifest, workstream expert bundle, and tool-boundary content is packaged with the app as a seed bundle and imported into governed storage on first install or tenant bootstrap as versioned records with seed provenance, checksums, idempotency, and audit; later app upgrades create draft/proposed changes when tenant content has diverged rather than overwriting active tenant customizations;
 - `AgentSkillManifest` exposes only compact skill ids, titles, purposes, and when-to-use hints in prompt assembly;
-- full skill text is loaded only through an authorized `readSkill(skillId)` tool or equivalent governed resource lookup;
-- `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` record active behavior references, authorization decisions, and runtime/test/replay usage.
+- `AgentReferenceManifest` exposes only compact reference ids, summaries, when-to-consult hints, allowed use, and access notes in prompt assembly;
+- full skill/reference text is loaded only through authorized `readSkill(skillId)` and `readReferenceDoc(referenceId)` tools or equivalent governed resource lookups;
+- `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` record active behavior/knowledge references, authorization decisions, and runtime/test/replay usage.
 
 Runtime assembly contract:
 
@@ -180,12 +181,13 @@ Runtime assembly contract:
 resolve active AgentDefinition
 → reject disabled/archived/out-of-scope agents
 → resolve approved active PromptDocument/PromptVersion
-→ resolve that agent's active AgentSkillManifest
-→ include only compact assigned skill ids, names, descriptions/purposes, and when-to-use hints, not full skill text
-→ register readSkill(skillId) as a normal Akka @FunctionTool along with the agent's other allowed tools
+→ resolve that agent's active AgentSkillManifest and AgentReferenceManifest
+→ include only compact assigned skill ids, names, descriptions/purposes, when-to-use hints, reference ids, summaries, and when-to-consult hints, not full skill/reference text
+→ register readSkill(skillId) and readReferenceDoc(referenceId) as normal Akka @FunctionTool loaders along with the agent's other allowed tools
 → let Akka inject the tool list into the model context
 → authorize readSkill(skillId) against tenant, agent, manifest, version, mode, AuthContext, and ToolPermissionBoundary
-→ trace prompt assembly, allowed/denied skill loads, tool/data access, and consequential results
+→ authorize readReferenceDoc(referenceId) against tenant/customer scope, agent, reference manifest, version, mode/use, redaction rules, AuthContext, and ToolPermissionBoundary
+→ trace prompt assembly, allowed/denied skill/reference loads, tool/data access, and consequential results
 ```
 
 This managed-agent invocation path is mandatory for generated AI-first SaaS foundation agents. `UserAdminAgent`, `AgentAdminAgent`, Audit/Trace, Governance/Policy, and app-specific managed agents each have a unique assigned skill manifest; do not use one global skill list or preload all skill text into every prompt.
@@ -194,7 +196,7 @@ Normal runtime behavior maintenance should also be governed. Generated AI-first 
 
 ```text
 human behavior-change request
-→ editing agent identifies affected AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, and ToolPermissionBoundary records
+→ editing agent identifies affected AgentDefinition, PromptDocument, SkillDocument, ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, workstream expert bundle, and ToolPermissionBoundary records
 → drafts a proposed diff, rationale, risk/impact notes, and test/replay suggestions
 → creates a draft version or proposal
 → routes to review/approval or decision-card flow
@@ -240,7 +242,7 @@ Before calling a generated design AI-first, verify:
 - [ ] Agent workstream architecture is present: role-authorized functional agents, continuous workstreams, persistent composer, structured surfaces, context/authority indicators, denial/recovery states, and trace links.
 - [ ] Backend capabilities are inventoried with actors/callers, auth context, schemas, side effects, idempotency, policy/approval rules, audit/trace needs, tests, and selected exposure surfaces.
 - [ ] Agent tools are treated as one optional exposure surface for selected capabilities, not as the backend design root.
-- [ ] Managed runtime agent foundation is present: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
+- [ ] Managed runtime agent foundation is present: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, deterministic compact expertise manifest assembly, authorized `readSkill(skillId)` and `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace`.
 - [ ] Initial/default agent behavior documents are seeded from implementation-developed app resources into governed storage at first install or tenant bootstrap, with active v1 records, seed provenance, idempotency, validation, audit, and customization-preserving upgrade behavior.
 - [ ] Agents have explicit responsibilities, versioned prompts/skills, permissions, thresholds, escalation rules, and traces.
 - [ ] Agent-mediated behavior maintenance exists for prompts, skills, manifests, and tool boundaries, including `AgentBehaviorEditorAgent` proposals, proposed diff review, draft version creation, approval, activation, audit, and denial of unauthorized authority expansion.
