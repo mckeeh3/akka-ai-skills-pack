@@ -963,7 +963,7 @@
 
 ### TASK-WEF-08-006: Review workstream model-binding sprint
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/08-workstream-model-binding-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/08-workstream-model-binding/06-review-model-binding-sprint.md
 - depends on: [TASK-WEF-08-005]
@@ -988,3 +988,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Review workstream model binding sprint
+  - checks: `git diff --check` passed
+  - review outcome: Sprint 08 complete; workstream expertise is ready for generated apps with workstream-specific governed agents and explicit or inherited governed model binding; no additional workstream-expertise sprint required
