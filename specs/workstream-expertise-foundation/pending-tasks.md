@@ -238,7 +238,7 @@
 
 ### TASK-WEF-02-005: Review governed runtime expertise sprint
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/02-governed-runtime-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/02-governed-runtime/05-review-runtime-sprint.md
 - depends on: [TASK-WEF-02-004]
@@ -261,6 +261,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Review runtime expertise sprint
+  - checks: `git diff --check` passed; text-search proof covered compact expertise manifest, `readReferenceDoc`, denied reference loads, `ReferenceLoadTrace`, separate `read_reference` grants, seed import, and no authority expansion from expertise text
 
 ### TASK-WEF-03-001: Model User Admin workstream expertise in seed app-description
 
