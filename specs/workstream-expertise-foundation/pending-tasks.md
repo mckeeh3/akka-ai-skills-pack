@@ -752,7 +752,7 @@
 
 ### TASK-WEF-07-004: Add remaining foundation bundles or explicit deferrals
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/07-foundation-expertise-expansion-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/07-foundation-expertise-expansion/04-remaining-foundation-bundles-or-deferrals.md
 - depends on: [TASK-WEF-07-003]
@@ -775,6 +775,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Add remaining foundation expertise statuses
+  - checks: `git diff --check` passed
+  - coverage: added initial expert bundles for `my-account-agent`, `mission-control-agent`, and `governance-policy-agent`; all seed foundation functional agents now have matching expertise artifacts linked from the catalog
 
 ### TASK-WEF-07-005: Update traceability/readiness and review foundation expertise
 

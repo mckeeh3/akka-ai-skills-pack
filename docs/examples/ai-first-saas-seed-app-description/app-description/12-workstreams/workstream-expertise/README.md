@@ -43,10 +43,13 @@ Each `<functional-agent-id>.md` should capture:
 
 ## Seed status
 
-The seed app materializes detailed expertise examples for:
+The seed app materializes expertise examples for every foundation functional agent:
 
+- `my-account-agent.md` — own-account, selected-context, profile/settings, sign-out, safe self-service, disabled/forbidden context denials, traces, seed policy, and tests.
 - `user-admin-agent.md` — canonical User Admin prompt intent, skills, references, compact manifests, boundaries, denied loads, traces, governance ownership, seed policy, and tests.
 - `agent-admin-agent.md` — Agent Admin governed behavior artifact proposals, prompt/skill/reference governance, manifest and tool-boundary governance, seed upgrades, approval gates, denials, traces, and tests.
+- `mission-control-agent.md` — active goals, plans, delegated work, exceptions, approvals, outcome signals, retained-human-authority denials, traces, seed policy, and tests.
+- `governance-policy-agent.md` — policy clauses, approval gates, proposals, simulations, replay evidence, activation/rollback, authority-expansion denials, traces, seed policy, and tests.
 - `audit-trace-agent.md` — Audit/Trace search and explanation behavior, redaction-preserving evidence summaries, support-access audit, export limits, denied loader/tool traces, decision-card escalation, and tests.
 
 Later seed-resource and test tasks should realize the governed records described in these bundles without bypassing app-managed governed storage.
