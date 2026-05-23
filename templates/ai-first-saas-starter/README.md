@@ -54,17 +54,17 @@ The scaffolded backend foundation includes:
 - backend denial paths for disabled accounts, missing memberships, forbidden selected contexts, and tenant/customer mismatch;
 - invitation onboarding and user administration services with captured-outbox/Resend boundary, idempotency, and audit behavior;
 - a first durable Akka invitation repository seam: `DurableInvitationRepositoryEntity` stores current invitation/outbox state behind the existing `InvitationRepository` contract through `AkkaInvitationRepository` while preserving the in-memory adapter as the default local/demo fallback;
-- a first durable Akka governed-agent repository seam: `DurableAgentBehaviorRepositoryEntity` stores current AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, and ToolPermissionBoundary records behind `AgentBehaviorRepository` through `AkkaAgentBehaviorRepository` while preserving the in-memory adapter as the default local/demo fallback;
-- governed runtime agent records, seed import, deterministic prompt assembly, authorized `readSkill(skillId)`, behavior-change proposal semantics, and trace records;
+- a first durable Akka governed-agent repository seam: `DurableAgentBehaviorRepositoryEntity` stores current AgentDefinition, PromptDocument, SkillDocument, ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary records behind `AgentBehaviorRepository` through `AkkaAgentBehaviorRepository` while preserving the in-memory adapter as the default local/demo fallback;
+- governed runtime agent records, seed import, deterministic prompt assembly with compact skill/reference manifests, authorized `readSkill(skillId)` and `readReferenceDoc(referenceId)`, behavior-change proposal semantics, and trace records;
 - workstream API services for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface payloads;
 - service tests that can run after scaffold placeholder rendering.
 
 Current durability coverage:
 
 - durable/component seam present: invitation current state and captured email outbox through `DurableInvitationRepositoryEntity` plus entity tests for lookup, tenant-scoped duplicate detection, and idempotent outbox enqueue;
-- durable/component seam present: governed-agent current state through `DurableAgentBehaviorRepositoryEntity` and `AgentBehaviorRepositoryState`, covering seeded AgentDefinition, active prompt, active skill, compact manifest, and tool boundary records used by prompt assembly and `readSkill(skillId)`;
+- durable/component seam present: governed-agent current state through `DurableAgentBehaviorRepositoryEntity` and `AgentBehaviorRepositoryState`, covering seeded AgentDefinition, active prompt, active skill, active reference, compact skill/reference manifests, and tool boundary records used by prompt assembly, `readSkill(skillId)`, and `readReferenceDoc(referenceId)`;
 - local/demo fallback retained: `StarterSecurityComponents` still wires `InMemoryIdentityRepository`, `InMemoryInvitationRepository`, and `InMemoryAgentBehaviorRepository` so a clean scaffold runs without dependency injection setup;
-- remaining slices: Account/Profile/Settings/Membership, Tenant/Customer, AdminAuditEvent history, event-sourced invitation lifecycle history, event-sourced PromptDocument/SkillDocument/ToolPermissionBoundary lifecycle history, InvitationView/UserDirectoryView/AdminAuditView/governed-agent projections, and endpoint-level binding to Akka-backed repositories.
+- remaining slices: Account/Profile/Settings/Membership, Tenant/Customer, AdminAuditEvent history, event-sourced invitation lifecycle history, event-sourced PromptDocument/SkillDocument/ReferenceDocument/manifest/ToolPermissionBoundary lifecycle history, InvitationView/UserDirectoryView/AdminAuditView/governed-agent projections, and endpoint-level binding to Akka-backed repositories.
 
 The scaffold includes the validated React/Vite workstream frontend under `frontend/`. Its production build writes Akka static resources to `src/main/resources/static-resources/`, and `StarterFrontendEndpoint` serves `/`, `/ui`, `/workstream`, `/favicon.ico`, and `/assets/**` while protected APIs remain under `/api/...`.
 
@@ -76,7 +76,7 @@ From the skills-pack source repository, validate the rendered starter with one c
 tools/validate-ai-first-saas-starter-fullstack.sh
 ```
 
-The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test`, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, and scans the built static assets for obvious backend secret markers. Use `--keep` to retain the generated target for inspection.
+The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test` including the governed agent seed/runtime tests for User Admin skills and references, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, and scans the built static assets for obvious backend secret markers. Use `--keep` to retain the generated target for inspection.
 
 ## Local build and manual-test commands
 

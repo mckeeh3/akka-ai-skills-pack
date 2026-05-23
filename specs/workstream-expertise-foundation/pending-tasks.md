@@ -605,7 +605,7 @@
 
 ### TASK-WEF-06-004: Update reference coverage docs and validation
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/06-executable-reference-coverage-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/06-executable-reference-coverage/04-update-reference-coverage-docs.md
 - depends on: [TASK-WEF-06-003]
@@ -628,6 +628,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Update reference governance coverage docs
+  - checks: `git diff --check` passed; scaffolded targeted backend `mvn -Dtest=AgentRuntimeServiceTest,AgentBehaviorSeedLoaderTest,DurableAgentBehaviorRepositoryStateTest test` passed
+  - coverage update: agent coverage matrix now marks first-class starter `ReferenceDocument` / `AgentReferenceManifest` / `readReferenceDoc` / `ReferenceLoadTrace` coverage as executable and removes the stale cleanup item
 
 ### TASK-WEF-06-005: Review executable reference coverage sprint
 
