@@ -577,7 +577,7 @@
 
 ### TASK-WEF-06-003: Add backend reference governance tests
 
-- status: pending
+- status: done
 - source: specs/workstream-expertise-foundation/backlog/06-executable-reference-coverage-build-backlog.md
 - task brief: specs/workstream-expertise-foundation/tasks/06-executable-reference-coverage/03-reference-runtime-tests.md
 - depends on: [TASK-WEF-06-002]
@@ -600,6 +600,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: Test starter reference governance runtime
+  - checks: `git diff --check` passed; scaffolded targeted backend `mvn -Dtest=AgentRuntimeServiceTest,AgentBehaviorSeedLoaderTest test` passed
+  - validation note: full `tools/validate-ai-first-saas-starter-fullstack.sh` backend phase passed, but frontend phase failed on pre-existing missing scaffolded `backend/src/main/resources/agent-behavior-seeds/starter-v1/manifest.properties` path assumption
 
 ### TASK-WEF-06-004: Update reference coverage docs and validation
 
