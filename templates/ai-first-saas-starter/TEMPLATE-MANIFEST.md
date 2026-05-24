@@ -5,7 +5,7 @@
 - template id: `ai-first-saas-starter`
 - source path: `templates/ai-first-saas-starter/`
 - installed resource path: `resources/templates/ai-first-saas-starter/`
-- scope: minimum-first secure AI-first SaaS starter with full-core growth path
+- scope: minimum-first secure AI-first SaaS starter with five core v0 workstreams and a full-core growth path
 
 ## Placeholder contract
 
@@ -22,8 +22,8 @@
 - `backend/` — Akka Java SDK backend template source for the secure SaaS foundation, user administration, governed agent records, workstream API services, and static frontend hosting endpoint.
 - `frontend/` — React/Vite/TypeScript workstream frontend source, built into `src/main/resources/static-resources/`.
 - `.env.example` — local environment template for WorkOS/AuthKit, JWT, Resend, bootstrap admin, frontend public AuthKit values, and optional model-provider values.
-- `app-description/` — maintained app description seed for scaffold extension.
-- `specs/` — starter planning/checklist seed and scaffold provenance destination.
+- `app-description/` — maintained app description seed for scaffold extension; identifies My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy as the initial five core v0 workstream set with `markdown_response` before full-core expansion.
+- `specs/` — starter planning/checklist seed and scaffold provenance destination; keeps five-core-v0 readiness separate from full-core follow-up work.
 
 ## Isolation rule
 

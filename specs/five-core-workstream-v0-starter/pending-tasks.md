@@ -107,7 +107,8 @@
 
 ### TASK-5WS-01-003: Align starter template docs and app-description placeholders
 
-- status: pending
+- status: done
+- completion note: Aligned starter template docs, app-description/spec placeholders, scaffold rules, and manifest language around the five core v0 workstream starter target with `markdown_response` and explicit full-core follow-up.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/02-template-docs/01-align-template-docs-app-description.md
 - depends on: [TASK-5WS-01-002]
@@ -128,6 +129,8 @@
 - done criteria:
   - Scaffolded-project docs tell downstream harnesses what the v0 starter is and what full-core follow-up remains.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: align starter template docs`
 
 ### TASK-5WS-02-001: Implement frontend markdown_response surface renderer
 

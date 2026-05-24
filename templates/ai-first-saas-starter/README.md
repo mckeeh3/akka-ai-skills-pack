@@ -6,9 +6,17 @@ It is template source, not a runnable project until placeholders are rendered by
 
 ## Minimum-first scaffold path
 
-Natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “smallest useful app,” or chatbot-like initial SaaS must start from the canonical minimum doctrine in `docs/minimum-ai-first-saas-app.md`: **User Admin workstream v0**, not a generic chatbot.
+Natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “smallest useful app,” or chatbot-like initial SaaS must start from the canonical minimum doctrine in `docs/minimum-ai-first-saas-app.md`: the **five core v0 workstream set**, not a generic chatbot or a single User Admin-only slice.
 
-The first runnable starter slice is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded `UserAdminAgent`, durable workstream log, `markdown_response`, backend capability boundary, and audit/work trace substrate. The scaffold must record follow-up work for fuller User Admin structured surfaces, Agent Admin, Audit/Trace UI/search, invitation onboarding, support access, governed agent documents, security completeness, and only then app-specific workstreams.
+The first runnable starter target is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded functional agents, durable workstream log entries, `markdown_response` v1 surfaces, backend capability boundaries, and audit/work trace substrate for these five core v0 workstreams:
+
+1. My Account
+2. User Admin
+3. Agent Admin
+4. Audit/Trace
+5. Governance/Policy
+
+The scaffold must record follow-up work that distinguishes five-core-v0 readiness from full-core readiness: richer structured surfaces, complete invitation onboarding, support access, full governed agent document lifecycle, searchable audit/trace views, policy/governance workflows, security hardening, and only then app-specific domain workstreams.
 
 This template may contain broader full-core scaffold assets, but generated-app guidance must not claim full-core readiness unless those follow-up gates are satisfied and tested.
 
@@ -76,7 +84,7 @@ From the skills-pack source repository, validate the rendered starter with one c
 tools/validate-ai-first-saas-starter-fullstack.sh
 ```
 
-The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test` including the governed agent seed/runtime tests for User Admin skills and references, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, and scans the built static assets for obvious backend secret markers. Use `--keep` to retain the generated target for inspection.
+The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test` including governed agent seed/runtime tests for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, and scans the built static assets for obvious backend secret markers. Use `--keep` to retain the generated target for inspection.
 
 ## Local build and manual-test commands
 
