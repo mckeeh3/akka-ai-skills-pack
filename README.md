@@ -132,9 +132,11 @@ Java base package: <press Enter/use ai.first unless I provide another package>.
 
 Scaffold the starter into this project. Do not invent a different architecture.
 Preserve the skills-pack defaults: secure SaaS foundation, agent workstream shell,
-five core v0 workstreams (My Account, User Admin, Agent Admin, Audit/Trace,
-and Governance/Policy), markdown_response surfaces, capability-first backend boundaries,
-audit/work trace substrate, backend authorization, and frontend secret boundaries.
+five core v0 workstreams, four primary left-rail workstream links (User Admin,
+Agent Admin, Audit/Trace, and Governance/Policy), the signed-in user tile at the
+bottom of the rail opening My Account, markdown_response surfaces,
+capability-first backend boundaries, audit/work trace substrate, backend
+authorization, and frontend secret boundaries.
 After scaffolding, summarize what was created and what I need to configure next.
 ```
 
@@ -165,8 +167,8 @@ Return the answer in this exact format:
    - Ready to build/test? yes/no, with one sentence why.
    - Ready to run locally? yes/no, with one sentence why.
    - Ready for app-specific domain features? yes/no, with one sentence why.
-   - Five core v0 workstream status: one line for My Account, User Admin, Agent Admin,
-     Audit/Trace, and Governance/Policy.
+   - Five core v0 workstream status: one line for My Account via the signed-in user tile,
+     plus User Admin, Agent Admin, Audit/Trace, and Governance/Policy in the left rail.
 
 2. Required local configuration
    - List only values I must set now.
@@ -222,8 +224,9 @@ Once basic checks pass, continue with the first starter target rather than jumpi
 ```text
 Use the installed skills pack to continue the initial app rollout.
 Focus on making all five core v0 workstreams functional end to end with real
-model-backed workstream-agent responses:
-My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+model-backed workstream-agent responses. My Account is opened by clicking the
+signed-in user tile at the bottom of the left rail; the primary left-rail
+workstream links are User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 For each workstream, preserve bootstrap-authorized access, selected AuthContext,
 durable workstream entries, markdown_response rendering, backend capability checks,
 denials, prompt/model/work traces, and frontend secret boundaries.
@@ -238,7 +241,7 @@ Manual model-backed smoke checklist after the workstream-agent runtime is implem
 
 1. Start the Akka app with backend-only provider variables loaded from `.env`; keep `OPENAI_API_KEY` out of `frontend/.env*` and static assets.
 2. Sign in through AuthKit as a configured `ADMIN_USERS` account.
-3. Select each core workstream: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+3. Select each core workstream: open My Account from the signed-in user tile, then select User Admin, Agent Admin, Audit/Trace, and Governance/Policy from the left rail.
 4. Submit a short prompt in each workstream and verify the response is a provider-backed `markdown_response`, not deterministic fixture copy.
 5. Check prompt/model/work trace surfaces or trace APIs for correlation ids and redacted provider metadata.
 6. Re-run once with provider variables absent and verify message submission is safely blocked with actionable recovery copy and no secret leakage.
@@ -273,10 +276,12 @@ Read .agents/AGENTS.md, .agents/skills/README.md, specs/scaffold-report.md,
 app-description/, specs/, and docs/input/core-app-domain/.
 
 The five core v0 workstreams are now running locally with real model-backed
-markdown_response behavior. Use docs/input/core-app-domain/ as the source PRD
-for the full core app domain. Create or update specs/pending-tasks.md with a
-production-ready rollout plan that implements the core workstreams one at a time:
-1. My Account
+markdown_response behavior. My Account is accessed through the signed-in user
+tile at the bottom of the left rail; do not add a redundant My Account rail link.
+Use docs/input/core-app-domain/ as the source PRD for the full core app domain.
+Create or update specs/pending-tasks.md with a production-ready rollout plan
+that implements the core workstreams one at a time:
+1. My Account via signed-in user tile
 2. User Admin
 3. Agent Admin
 4. Audit/Trace
