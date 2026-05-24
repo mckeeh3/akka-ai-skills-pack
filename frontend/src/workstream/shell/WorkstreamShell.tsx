@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import type { ComposerRequest, MeResponse, WorkstreamItem } from '../types';
 import { WorkstreamComposer } from '../composer';
 import { FunctionalAgentRail } from '../rail';
@@ -23,6 +23,10 @@ export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], chil
   const [selectedFunctionalAgentId, setSelectedFunctionalAgentId] = useState(initialAgentId);
   const [railCollapsed, setRailCollapsed] = useState(false);
   const selectedAgent = useMemo(() => selectedFunctionalAgent(me.functionalAgents, selectedFunctionalAgentId ?? ''), [me.functionalAgents, selectedFunctionalAgentId]);
+
+  useEffect(() => {
+    setSelectedFunctionalAgentId(initialFunctionalAgentId ?? initialAgentId);
+  }, [initialFunctionalAgentId, initialAgentId]);
 
   function selectAgent(functionalAgentId: string) {
     setSelectedFunctionalAgentId(functionalAgentId);

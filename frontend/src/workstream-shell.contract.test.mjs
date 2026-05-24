@@ -23,6 +23,9 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(railItem, /iconGlyph/);
   assert.match(toggle, /aria-expanded=\{!collapsed\}/);
   assert.match(toggle, /aria-controls="workstream-functional-agent-rail-list"/);
+  assert.match(toggle, /collapsed \? 'Expand sidebar' : 'Collapse sidebar'/);
+  assert.match(toggle, /workstream-rail-toggle-tooltip/);
+  assert.doesNotMatch(toggle, /title=/);
   assert.match(rail, /aria-label="Functional agents"/);
   assert.match(rail, /rail-user-button/);
   assert.match(rail, /Profile/);
@@ -55,6 +58,8 @@ test('workstream shell composes left rail, continuous flow, and floating persist
   assert.match(shell, /<WorkstreamPanel/);
   assert.match(shell, /<WorkstreamComposer/);
   assert.match(shell, /submittingFunctionalAgentId === selectedFunctionalAgentId/);
+  assert.match(shell, /useEffect\(\(\) => \{/);
+  assert.match(shell, /setSelectedFunctionalAgentId\(initialFunctionalAgentId \?\? initialAgentId\)/);
   assert.match(shell, /aria-label="Persistent composer region"/);
   assert.match(panel, /<main id="main-content" className="content workstream-panel"/);
   assert.match(panel, /workstream-flow/);

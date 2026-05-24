@@ -43,10 +43,13 @@ class MeServiceTest {
     assertEquals("tenant-1", response.selectedAuthContext().tenantId());
     assertEquals(List.of("tenant-admin"), response.selectedAuthContext().roleIds());
     assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
+    assertTrue(response.visibleCapabilityIds().contains("secure-tenant-user-foundation"));
     assertEquals(
         List.of("agent-my-account", "agent-user-admin", "agent-agent-admin", "agent-audit-trace", "agent-governance-policy"),
         response.functionalAgents().stream().map(MeResponse.FunctionalAgentSummary::functionalAgentId).toList());
     assertTrue(response.functionalAgents().stream().allMatch(agent -> agent.availability().equals("visible")));
+    var userAdminAgent = response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-user-admin")).findFirst().orElseThrow();
+    assertTrue(response.visibleCapabilityIds().containsAll(userAdminAgent.requiredCapabilityIds()));
     assertTrue(response.functionalAgents().stream().allMatch(agent -> agent.defaultSurfaceType().equals("markdown_response")));
     assertEquals("Audit/Trace", response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-audit-trace")).findFirst().orElseThrow().label());
     assertFalse(response.visibleCapabilityIds().contains("WORKOS_API_KEY"));
@@ -63,6 +66,7 @@ class MeServiceTest {
     assertEquals("active", linked.account().status());
     assertEquals("tenant-starter", linked.selectedAuthContext().tenantId());
     assertTrue(linked.visibleCapabilityIds().contains("tenant.user.manage"));
+    assertTrue(linked.visibleCapabilityIds().contains("secure-tenant-user-foundation"));
     assertEquals("workos-owner", repository.findAccountByEmail("owner@example.com").orElseThrow().workosUserId());
 
     var unknown = assertThrows(

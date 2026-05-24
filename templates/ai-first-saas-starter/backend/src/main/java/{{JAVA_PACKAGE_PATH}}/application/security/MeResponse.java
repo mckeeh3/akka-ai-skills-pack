@@ -130,7 +130,8 @@ public record MeResponse(
       String availability,
       String deniedReason) {
     static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
-      var userAdminVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
+      var userAdminVisible = capabilities.contains("secure-tenant-user-foundation")
+          || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var profileVisible = capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var auditVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read"));
       var governanceVisible = capabilities.stream().anyMatch(capability -> capability.startsWith("governance.") || capability.startsWith("improvements.") || capability.contains("policy"));

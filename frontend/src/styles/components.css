@@ -268,6 +268,67 @@
 .user-menu,
 .icon-ghost { padding: 0 var(--space-3); }
 
+.workstream-rail-toggle {
+  position: relative;
+  overflow: visible;
+  width: var(--control-height);
+  padding: 0;
+  border-radius: var(--radius-md);
+}
+
+.workstream-rail-toggle-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.workstream-rail-toggle-tooltip {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + var(--space-2));
+  z-index: 20;
+  display: block;
+  width: max-content;
+  max-width: 14rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface-raised) 96%, var(--color-primary-soft));
+  box-shadow: 0 12px 28px rgb(15 23 42 / 0.16);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) translateX(-0.25rem);
+  transition: opacity 120ms ease, transform 120ms ease;
+  white-space: nowrap;
+}
+
+.workstream-rail-toggle-tooltip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -0.35rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-left: 1px solid color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+  background: inherit;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.workstream-rail-toggle:hover .workstream-rail-toggle-tooltip,
+.workstream-rail-toggle:focus-visible .workstream-rail-toggle-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
 .tenant-switcher,
 .user-menu { gap: var(--space-2); text-align: left; }
 

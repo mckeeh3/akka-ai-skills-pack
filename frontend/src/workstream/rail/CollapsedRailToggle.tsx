@@ -4,18 +4,20 @@ type CollapsedRailToggleProps = {
 };
 
 export function CollapsedRailToggle({ collapsed, onToggle }: CollapsedRailToggleProps) {
+  const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+
   return (
     <button
       type="button"
       className="collapse-button workstream-rail-toggle"
       aria-expanded={!collapsed}
       aria-controls="workstream-functional-agent-rail-list"
-      aria-label={collapsed ? 'Expand' : 'Collapse'}
-      title={collapsed ? 'Expand' : 'Collapse'}
+      aria-label={label}
       onClick={() => onToggle?.(!collapsed)}
     >
-      <span aria-hidden="true">{collapsed ? '›' : '‹'}</span>
-      <span className="sr-only">{collapsed ? 'Expand' : 'Collapse'}</span>
+      <span className="workstream-rail-toggle-icon" aria-hidden="true">{collapsed ? '›' : '‹'}</span>
+      <span className="workstream-rail-toggle-tooltip" role="tooltip">{label}</span>
+      <span className="sr-only">{label}</span>
     </button>
   );
 }

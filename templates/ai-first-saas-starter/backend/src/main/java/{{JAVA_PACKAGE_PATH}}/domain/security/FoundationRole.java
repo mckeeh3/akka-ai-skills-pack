@@ -15,6 +15,7 @@ public enum FoundationRole {
   TENANT_ADMIN(
       ScopeType.TENANT,
       List.of(
+          "secure-tenant-user-foundation",
           "tenant.user.read",
           "tenant.user.manage",
           "tenant.role.manage",
@@ -43,6 +44,7 @@ public enum FoundationRole {
   CUSTOMER_ADMIN(
       ScopeType.CUSTOMER,
       List.of(
+          "secure-tenant-user-foundation",
           "customer.user.read",
           "customer.user.manage",
           "customer.role.manage",
