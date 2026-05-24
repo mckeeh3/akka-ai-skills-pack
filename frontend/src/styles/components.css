@@ -841,6 +841,7 @@
 .workstream-flow-entry {
   display: grid;
   gap: var(--space-3);
+  scroll-margin-bottom: calc(var(--workstream-composer-scroll-clearance) + env(safe-area-inset-bottom, 0px));
 }
 
 .workstream-item.user-request,

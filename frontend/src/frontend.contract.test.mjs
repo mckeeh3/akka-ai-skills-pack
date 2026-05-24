@@ -74,6 +74,10 @@ test('focus, skip link, reduced motion, and responsive shell rules are present',
   assert.match(layout, /@media \(max-width: 640px\)/);
   assert.match(layout, /\.sidebar\.open/);
   assert.match(layout, /\.mobile-menu-button/);
+  assert.match(tokens, /--workstream-composer-scroll-clearance: 22rem/);
+  assert.match(layout, /padding-bottom: calc\(var\(--workstream-composer-scroll-clearance\)/);
+  assert.match(layout, /scroll-padding-bottom: calc\(var\(--workstream-composer-scroll-clearance\)/);
+  assert.match(components, /scroll-margin-bottom: calc\(var\(--workstream-composer-scroll-clearance\)/);
 });
 
 test('status and command-strip components use tokenized semantic classes', () => {
