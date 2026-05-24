@@ -129,7 +129,7 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void submitMessageReturnsAuthorizedMarkdownResponseEnvelope() {
+  void submitMessageReturnsAuthorizedMarkdownResponseEnvelopeAndPersistsIt() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-user-admin", "What can I do next?", "corr-message", "idem-message-1"), "corr-header");
 
@@ -150,6 +150,13 @@ class WorkstreamServiceTest {
     assertTrue(response.surface().data().get("markdown").toString().contains("## agent-user-admin model response"));
     assertNotNull(response.surface().data().get("safety"));
     assertNotNull(response.surface().data().get("trace"));
+
+    var persistedItems = service.items(identity(), "membership-admin", "agent-user-admin", "corr-read");
+    assertTrue(persistedItems.stream().anyMatch(item -> item.itemId().equals(response.userItem().itemId())));
+    assertTrue(persistedItems.stream().anyMatch(item -> item.itemId().equals(response.agentItem().itemId())));
+    var persistedSurface = service.surface(identity(), "membership-admin", response.surface().surfaceId(), "corr-read");
+    assertEquals(response.surface().surfaceId(), persistedSurface.surfaceId());
+    assertEquals("corr-message", persistedSurface.correlationId());
   }
 
   @Test
@@ -166,6 +173,22 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void submitMessageIsIdempotentForDuplicateClientKeys() {
+    var first = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-user-admin", "What can I do next?", "corr-idem-first", "idem-duplicate-message"), "corr-header");
+    var duplicate = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-user-admin", "Changed prompt should not append", "corr-idem-second", "idem-duplicate-message"), "corr-header");
+
+    assertEquals(first.userItem().itemId(), duplicate.userItem().itemId());
+    assertEquals(first.agentItem().itemId(), duplicate.agentItem().itemId());
+    assertEquals(first.surface().surfaceId(), duplicate.surface().surfaceId());
+    var persistedItems = service.items(identity(), "membership-admin", "agent-user-admin", "corr-read-idem").stream()
+        .filter(item -> item.itemId().equals(first.userItem().itemId()) || item.itemId().equals(first.agentItem().itemId()))
+        .toList();
+    assertEquals(2, persistedItems.size());
+  }
+
+  @Test
   void submitMessageRequiresSelectedContextMatch() {
     var mismatch = assertThrows(AuthorizationException.class, () -> service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-other", "agent-user-admin", "Hello", "corr-message", "idem-message-2"), "corr-header"));
@@ -174,11 +197,13 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void submitMessageRejectsDeniedFunctionalAgentBeforeModelResponse() {
+  void submitMessageRejectsDeniedFunctionalAgentBeforeModelResponseAndPersistsDenial() {
     var denied = assertThrows(AuthorizationException.class, () -> service.submitMessage(memberIdentity(), "membership-member", new WorkstreamService.WorkstreamMessageRequest(
         "membership-member", "agent-user-admin", "Invite someone", "corr-denied", "idem-message-3"), "corr-header"));
 
     assertEquals("FUNCTIONAL_AGENT_FORBIDDEN", denied.reasonCode());
+    var deniedItems = service.items(memberIdentity(), "membership-member", "agent-user-admin", "corr-denied-read");
+    assertTrue(deniedItems.stream().anyMatch(item -> item.kind().equals("system_message") && item.status().equals("blocked") && item.body().contains("FUNCTIONAL_AGENT_FORBIDDEN")));
   }
 
   @Test

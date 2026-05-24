@@ -38,6 +38,7 @@ public final class WorkstreamService {
   private final InvitationService invitationService;
   private final AgentBehaviorRepository agentBehaviorRepository;
   private final AgentRuntimeService agentRuntimeService;
+  private final WorkstreamLogRepository workstreamLogRepository;
 
   public WorkstreamService(
       MeService meService,
@@ -48,6 +49,19 @@ public final class WorkstreamService {
       InvitationService invitationService,
       AgentBehaviorRepository agentBehaviorRepository,
       AgentRuntimeService agentRuntimeService) {
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new InMemoryWorkstreamLogRepository());
+  }
+
+  public WorkstreamService(
+      MeService meService,
+      AuthContextResolver authContextResolver,
+      UserDirectoryView userDirectoryView,
+      InvitationView invitationView,
+      UserAdminService userAdminService,
+      InvitationService invitationService,
+      AgentBehaviorRepository agentBehaviorRepository,
+      AgentRuntimeService agentRuntimeService,
+      WorkstreamLogRepository workstreamLogRepository) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.userDirectoryView = userDirectoryView;
@@ -55,6 +69,7 @@ public final class WorkstreamService {
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentRuntimeService = agentRuntimeService;
+    this.workstreamLogRepository = workstreamLogRepository;
   }
 
   public WorkstreamBootstrapResponse bootstrap(WorkosIdentity identity, String selectedContextId, String correlationId) {
@@ -69,13 +84,20 @@ public final class WorkstreamService {
 
   public List<WorkstreamItem> items(WorkosIdentity identity, String selectedContextId, String functionalAgentId, String correlationId) {
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
-    return initialItems(actor, correlationId).stream()
+    var initial = initialItems(actor, correlationId).stream()
         .filter(item -> functionalAgentId == null || functionalAgentId.isBlank() || functionalAgentId.equals(item.functionalAgentId()))
         .toList();
+    var persisted = workstreamLogRepository.items(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), functionalAgentId);
+    var combined = new ArrayList<WorkstreamItem>();
+    combined.addAll(initial);
+    combined.addAll(persisted);
+    return combined;
   }
 
   public SurfaceEnvelope surface(WorkosIdentity identity, String selectedContextId, String surfaceId, String correlationId) {
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
+    var persisted = workstreamLogRepository.surface(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), surfaceId);
+    if (persisted.isPresent()) return persisted.orElseThrow();
     return initialSurfaces(actor, correlationId).stream()
         .filter(surface -> surfaceId.equals(surface.surfaceId()))
         .findFirst()
@@ -119,7 +141,15 @@ public final class WorkstreamService {
         .filter(agent -> request.functionalAgentId().equals(agent.functionalAgentId()))
         .findFirst()
         .orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
-    if (!"visible".equals(functionalAgent.availability())) throw new AuthorizationException(403, "FUNCTIONAL_AGENT_FORBIDDEN");
+    if (!"visible".equals(functionalAgent.availability())) {
+      persistDeniedFunctionalAgent(actor, request.functionalAgentId(), requestCorrelationId, request.idempotencyKey(), "FUNCTIONAL_AGENT_FORBIDDEN");
+      throw new AuthorizationException(403, "FUNCTIONAL_AGENT_FORBIDDEN");
+    }
+    var duplicate = workstreamLogRepository.findByIdempotencyKey(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey());
+    if (duplicate.isPresent()) {
+      var existing = duplicate.orElseThrow();
+      return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
+    }
 
     var runtime = agentRuntimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
         actor.selectedContext().tenantId(), request.functionalAgentId(), actor.selectedContext(), requestCorrelationId, request.prompt()));
@@ -135,7 +165,16 @@ public final class WorkstreamService {
         : "## " + functionalAgent.label() + " unavailable\n\nModel-backed workstream execution was blocked before a response was produced. " + runtime.safeErrorSummary() + "\n\nTrace ids: `" + String.join("`, `", traceIds) + "`.";
     var surface = markdownResponseSurface(surfaceId, agentItemId, functionalAgent, actor, requestCorrelationId, traceIds, markdown);
     var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "markdown_response", now, requestCorrelationId, traceIds, surface.surfaceId(), functionalAgent.label(), runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "Model-backed response produced by governed workstream agent runtime." : "Model-backed workstream response blocked by governed runtime/provider boundary.", runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "ready" : "blocked");
-    return new WorkstreamMessageResponse(requestCorrelationId, request.idempotencyKey(), userItem, agentItem, surface);
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), requestCorrelationId, userItem, agentItem, surface));
+    return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
+
+  private void persistDeniedFunctionalAgent(AuthContextResolver.ResolvedMe actor, String functionalAgentId, String correlationId, String idempotencyKey, String reasonCode) {
+    var now = Instant.now().toString();
+    var seed = firstNonBlank(idempotencyKey, correlationId, functionalAgentId, reasonCode);
+    var item = new WorkstreamItem("item-denial-" + stableSuffix(seed), functionalAgentId, "system_message", now, correlationId, List.of("trace-denial-" + stableSuffix(seed)), null, "Message not submitted", "Backend authorization denied this workstream message: " + reasonCode + ".", "blocked");
+    workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, null);
   }
 
   public List<WorkstreamEvent> events(WorkosIdentity identity, String selectedContextId, String functionalAgentId, String lastEventId, String correlationId) {

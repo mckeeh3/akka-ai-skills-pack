@@ -187,7 +187,8 @@
 
 ### TASK-PRODV0-03-001: Persist workstream messages, surfaces, and traces durably
 
-- status: pending
+- status: done
+- completion note: Added an Akka Key Value Entity-backed WorkstreamLogRepository with Akka and test/local adapters, wired workstream message submission/items/surface lookup through the log with idempotent duplicate handling and persisted denial entries, and added service/entity tests for append, read, surface lookup, duplicate idempotency, tenant/context isolation, and denial persistence.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/03-workstream-runtime/01-persist-workstream-log.md
 - depends on: [TASK-PRODV0-02-002]
