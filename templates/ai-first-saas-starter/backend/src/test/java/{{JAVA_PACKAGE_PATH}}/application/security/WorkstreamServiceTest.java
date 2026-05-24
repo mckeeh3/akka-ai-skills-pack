@@ -53,21 +53,19 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void bootstrapReturnsUserAdminSurfacesWithoutSecrets() {
+  void bootstrapReturnsFiveCoreV0MarkdownSurfacesWithoutSecrets() {
     var bootstrap = service.bootstrap(identity(), null, "corr-bootstrap");
 
     assertEquals("membership-admin", bootstrap.me().selectedAuthContext().selectedContextId());
     assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
-    assertTrue(bootstrap.items().stream().anyMatch(item -> "surface-user-admin-dashboard".equals(item.surfaceId())));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-account-dashboard") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-profile") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-my-settings") && surface.ownerFunctionalAgentId().equals("agent-my-account")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-user-admin-list")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-audit-timeline") && surface.surfaceType().equals("audit-timeline")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-governance-policy") && surface.surfaceType().equals("governance-diff")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-agent-admin-catalog") && surface.surfaceType().equals("list-search")));
-    assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-agent-test-console") && surface.surfaceType().equals("workflow-status")));
-    assertTrue(bootstrap.surfaces().stream().flatMap(surface -> surface.actions().stream()).anyMatch(action -> action.actionId().equals("action-invite-user") && action.idempotency().required()));
+    assertEquals(5, bootstrap.items().size());
+    assertEquals(5, bootstrap.surfaces().size());
+    for (var surfaceId : List.of("surface-v0-my-account-markdown", "surface-v0-user-admin-markdown", "surface-v0-agent-admin-markdown", "surface-v0-audit-trace-markdown", "surface-v0-governance-policy-markdown")) {
+      assertTrue(bootstrap.items().stream().anyMatch(item -> surfaceId.equals(item.surfaceId()) && item.kind().equals("markdown_response")));
+      assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surfaceId.equals(surface.surfaceId()) && surface.surfaceType().equals("markdown_response")));
+    }
+    assertFalse(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-user-admin-dashboard")));
+    assertFalse(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceType().equals("dashboard") || surface.surfaceType().equals("list-search") || surface.surfaceType().equals("governance-diff") || surface.surfaceType().equals("workflow-status")));
     assertFalse(bootstrap.toString().contains("invite-token"));
     assertFalse(bootstrap.toString().contains("tokenHash"));
     assertFalse(bootstrap.toString().contains("providerSecret"));
@@ -89,7 +87,7 @@ class WorkstreamServiceTest {
   void realtimeEventsAreScopedAndResumeWithStaleFallback() {
     var events = service.events(identity(), "membership-admin", null, null, "corr-events");
 
-    assertTrue(events.stream().anyMatch(event -> event.eventType().equals("surface.stale") && event.surfaceId().equals("surface-user-admin-dashboard")));
+    assertTrue(events.stream().anyMatch(event -> event.eventType().equals("surface.stale") && event.surfaceId().equals("surface-v0-user-admin-markdown") && event.surfaceType().equals("markdown_response")));
     assertTrue(events.stream().allMatch(event -> event.tenantId().equals("tenant-1")));
 
     var resumed = service.events(identity(), "membership-admin", null, "evt-audit-appended-002", "corr-events");

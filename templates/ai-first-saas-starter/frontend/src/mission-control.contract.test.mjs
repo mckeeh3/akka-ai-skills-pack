@@ -41,7 +41,7 @@ test('workstream shell provides mission-control responsibilities through shell r
 });
 
 test('workstream fixtures cover the five core v0 shell while richer surfaces remain explicit demos', () => {
-  assert.match(workstreamFixtures, /kind: 'system-status'/);
+  assert.doesNotMatch(workstreamFixtures, /kind: 'system-status'/);
   assert.match(workstreamFixtures, /kind: 'markdown_response'/);
   for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
     assert.match(workstreamFixtures, new RegExp(agentId));

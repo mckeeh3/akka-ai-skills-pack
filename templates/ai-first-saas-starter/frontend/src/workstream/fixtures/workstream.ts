@@ -1,6 +1,7 @@
 import type { WorkstreamItem } from '../types';
 
 const createdAt = '2026-05-19T12:00:00.000Z';
+// The real API bootstrap and fixture bootstrap both start with exactly five core v0 starter markdown_response items.
 
 export const initialWorkstreamItems: WorkstreamItem[] = [
   {
@@ -62,17 +63,6 @@ export const initialWorkstreamItems: WorkstreamItem[] = [
     surfaceId: 'surface-v0-governance-policy-markdown',
     title: 'Governance/Policy v0 response',
     body: 'Five core v0 starter surface for policy guardrails, approval boundaries, and deferred full-core behavior.',
-    status: 'ready'
-  },
-  {
-    itemId: 'item-system-status',
-    functionalAgentId: 'agent-my-account',
-    kind: 'system-status',
-    createdAt,
-    correlationId: 'corr-system',
-    traceIds: [],
-    title: 'Realtime reconnected',
-    body: 'Events resumed from the last known event id for the five core v0 starter shell.',
     status: 'ready'
   }
 ];

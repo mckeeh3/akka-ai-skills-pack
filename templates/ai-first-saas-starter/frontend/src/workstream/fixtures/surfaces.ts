@@ -972,8 +972,7 @@ export const fullCoreDemoSurfaceEnvelopes = [
 ];
 
 export const canonicalSurfaceEnvelopes = [
-  ...fiveCoreV0MarkdownSurfaces,
-  ...fullCoreDemoSurfaceEnvelopes
+  ...fiveCoreV0MarkdownSurfaces
 ];
 export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions)];
 

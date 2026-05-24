@@ -213,7 +213,8 @@
 
 ### TASK-PRODV0-03-002: Normalize backend bootstrap to five markdown v0 surfaces only
 
-- status: pending
+- status: done
+- completion note: Normalized backend bootstrap and fixture bootstrap to exactly five initial core `markdown_response` items/surfaces, moved richer dashboard/list/detail/audit/governance surfaces out of the initial canonical bootstrap set, and updated backend/frontend tests for the five-core v0 shell.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/03-workstream-runtime/02-normalize-backend-bootstrap.md
 - depends on: [TASK-PRODV0-03-001]
