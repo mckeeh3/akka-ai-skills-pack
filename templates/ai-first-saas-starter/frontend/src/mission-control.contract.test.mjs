@@ -11,6 +11,7 @@ const panel = read('./workstream/shell/WorkstreamPanel.tsx');
 const contextBar = read('./workstream/shell/ContextAuthorityBar.tsx');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const workstreamFixtures = read('./workstream/fixtures/workstream.ts');
+const surfaceFixtures = read('./workstream/fixtures/surfaces.ts');
 const workstreamEvents = read('./workstream/fixtures/events.ts');
 const realtime = read('./workstream/realtime/workstreamEvents.ts');
 
@@ -39,13 +40,15 @@ test('workstream shell provides mission-control responsibilities through shell r
   assert.match(main, /realtimeStatusLabel/);
 });
 
-test('workstream fixtures cover attention, decisions, workflow progress, audit trace, and action feedback', () => {
-  for (const kind of ['system-status', 'decision', 'workflow-status', 'audit-trace', 'action-feedback']) {
-    assert.match(workstreamFixtures, new RegExp(`kind: '${kind}'`));
+test('workstream fixtures cover the five core v0 shell while richer surfaces remain explicit demos', () => {
+  assert.match(workstreamFixtures, /kind: 'system-status'/);
+  assert.match(workstreamFixtures, /kind: 'markdown_response'/);
+  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
+    assert.match(workstreamFixtures, new RegExp(agentId));
   }
   assert.match(workstreamFixtures, /traceLinks/);
-  assert.match(workstreamFixtures, /waiting-for-human/);
-  assert.match(workstreamFixtures, /user-admin-dashboard/);
+  assert.match(surfaceFixtures, /fullCoreDemoSurfaceEnvelopes/);
+  assert.match(surfaceFixtures, /userAdminDashboardSurface/);
 });
 
 test('stale, duplicate, reconnecting, and cross-context realtime behavior is encoded in workstream contracts', () => {

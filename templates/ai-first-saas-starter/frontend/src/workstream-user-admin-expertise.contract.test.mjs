@@ -81,6 +81,7 @@ test('User Admin expertise traces are visible from seed and workstream fixtures'
     assert.match(seedResources, new RegExp(trace));
     assert.match(surfaces, new RegExp(trace));
   }
-  assert.match(workstream, /trace-user-admin-dashboard/);
-  assert.match(workstream, /trace-user-admin-detail/);
+  assert.match(workstream, /trace-surface-v0-user-admin-markdown/);
+  assert.match(surfaces, /trace-user-admin-dashboard/);
+  assert.match(surfaces, /trace-user-admin-detail/);
 });

@@ -13,7 +13,7 @@ import {
   meTenantAdmin
 } from '../workstream/fixtures';
 
-const fixtureMessageCapableAgentIds = ['agent-access-profile', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy'];
+const fixtureMessageCapableAgentIds = ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy'];
 
 export class FixtureWorkstreamApiClient implements WorkstreamClient {
   private items: WorkstreamItem[] = [...initialWorkstreamItems];

@@ -31,7 +31,7 @@ test('composer response appends returned items and markdown_response surface', (
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {
-  for (const agentId of ['agent-access-profile', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
+  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
     assert.match(fixtureClient, new RegExp(agentId));
   }
   assert.match(fixtureClient, /surfaceType: 'markdown_response'/);

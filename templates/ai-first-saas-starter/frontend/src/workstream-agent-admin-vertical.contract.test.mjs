@@ -102,19 +102,19 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
   assert.match(apiClient, /agent\.definitions\.manage/);
 });
 
-test('Agent Admin workstream items model review, policy-blocked, waiting, and trace-linked states', () => {
-  for (const itemId of [
-    'item-agent-admin-catalog',
-    'item-agent-admin-detail',
-    'item-agent-prompt-review',
-    'item-agent-tool-boundary',
-    'item-agent-test-console'
+test('Agent Admin defaults to five core v0 markdown and keeps richer governance surfaces demo-scoped', () => {
+  assert.match(workstream, /item-v0-agent-admin-markdown/);
+  assert.match(workstream, /kind: 'markdown_response'/);
+  assert.match(workstream, /governed agent definitions, prompts, skills, tool boundaries, models, and traces/);
+  for (const surfaceId of [
+    'surface-agent-admin-catalog',
+    'surface-agent-admin-detail',
+    'surface-agent-prompt-governance',
+    'surface-agent-tool-boundary-diff',
+    'surface-agent-test-console'
   ]) {
-    assert.match(workstream, new RegExp(itemId));
+    assert.match(surfaces, new RegExp(surfaceId));
   }
-  assert.match(workstream, /Prompt governance review requires validation fixes/);
-  assert.match(workstream, /Tool boundary simulation policy-blocked/);
-  assert.match(workstream, /status: 'blocked'/);
-  assert.match(workstream, /status: 'waiting-for-human'/);
-  assert.match(workstream, /trace-agent-work-88/);
+  assert.match(surfaces, /fullCoreDemoSurfaceEnvelopes/);
+  assert.match(surfaces, /trace-agent-work-88/);
 });

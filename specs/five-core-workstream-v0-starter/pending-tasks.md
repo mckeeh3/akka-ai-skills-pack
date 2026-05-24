@@ -259,7 +259,8 @@
 
 ### TASK-5WS-03-001: Normalize starter fixture data and contract tests around five core markdown v0 surfaces
 
-- status: pending
+- status: done
+- completion note: Normalized frontend fixtures and backend bootstrap/message contract tests around the five visible core v0 workstreams, default `markdown_response` surfaces/items, and explicit full-core demo surface scoping.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/05-validation/01-normalize-fixtures-and-contract-tests.md
 - depends on: [TASK-5WS-02-004]
@@ -286,6 +287,8 @@
 - done criteria:
   - Fixture mode and real API mode communicate the same initial five-core-v0 acceptance target.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: normalize starter fixtures`
 
 ### TASK-5WS-03-002: Validate scaffold fullstack and update final handoff guidance
 

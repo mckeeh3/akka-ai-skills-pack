@@ -152,6 +152,19 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void submitMessageSupportsEveryFiveCoreV0FunctionalAgent() {
+    for (var agentId : List.of("agent-my-account", "agent-user-admin", "agent-agent-admin", "agent-audit-trace", "agent-governance-policy")) {
+      var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+          "membership-admin", agentId, "Show five core v0 readiness", "corr-" + agentId, "idem-" + agentId), "corr-header");
+
+      assertEquals(agentId, response.surface().ownerFunctionalAgentId());
+      assertEquals("markdown_response", response.surface().surfaceType());
+      assertEquals(agentId, response.surface().data().get("producingAgentId"));
+      assertTrue(response.surface().data().get("markdown").toString().contains("five core workstream v0 starter"));
+    }
+  }
+
+  @Test
   void submitMessageRequiresSelectedContextMatch() {
     var mismatch = assertThrows(AuthorizationException.class, () -> service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-other", "agent-user-admin", "Hello", "corr-message", "idem-message-2"), "corr-header"));

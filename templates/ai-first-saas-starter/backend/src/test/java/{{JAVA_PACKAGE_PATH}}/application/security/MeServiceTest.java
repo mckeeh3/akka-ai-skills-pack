@@ -44,9 +44,11 @@ class MeServiceTest {
     assertEquals(List.of("tenant-admin"), response.selectedAuthContext().roleIds());
     assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
     assertEquals(
-        List.of("agent-my-account", "agent-user-admin", "agent-audit-trace", "agent-governance-policy", "agent-agent-admin"),
+        List.of("agent-my-account", "agent-user-admin", "agent-agent-admin", "agent-audit-trace", "agent-governance-policy"),
         response.functionalAgents().stream().map(MeResponse.FunctionalAgentSummary::functionalAgentId).toList());
     assertTrue(response.functionalAgents().stream().allMatch(agent -> agent.availability().equals("visible")));
+    assertTrue(response.functionalAgents().stream().allMatch(agent -> agent.defaultSurfaceType().equals("markdown_response")));
+    assertEquals("Audit/Trace", response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-audit-trace")).findFirst().orElseThrow().label());
     assertFalse(response.visibleCapabilityIds().contains("WORKOS_API_KEY"));
     assertEquals("corr-1", response.auditCorrelationId());
   }
