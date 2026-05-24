@@ -228,7 +228,8 @@
 
 ### TASK-5WS-02-004: Wire frontend composer to backend message submission
 
-- status: pending
+- status: done
+- completion note: Added frontend `submitWorkstreamMessage` API support for HTTP and fixture clients, replaced composer-only prompt heuristics with backend message submission, appended returned user/agent items plus `markdown_response` surfaces, rendered message surfaces inline, and added contract coverage for five initial core fixture workstreams.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/04-frontend/02-wire-composer-to-message-api.md
 - depends on: [TASK-5WS-02-003]
@@ -253,6 +254,8 @@
 - done criteria:
   - The browser composer exercises the backend v0 workstream message contract instead of frontend-only prompt heuristics.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: wire composer message api`
 
 ### TASK-5WS-03-001: Normalize starter fixture data and contract tests around five core markdown v0 surfaces
 

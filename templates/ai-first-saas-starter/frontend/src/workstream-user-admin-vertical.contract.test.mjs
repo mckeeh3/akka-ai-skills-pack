@@ -115,13 +115,11 @@ test('workstream and API clients support dashboard-to-list-to-detail navigation 
   assert.match(main, /selectedSurfaceId: targetSurface\.surfaceId/);
 });
 
-test('composer opens User Admin list/detail surfaces instead of page routes', () => {
+test('composer submits through backend workstream message API instead of page routes or frontend heuristics', () => {
   assert.match(main, /handleComposerSubmit/);
-  assert.match(main, /showUsers/);
-  assert.match(main, /showUserDetail/);
-  assert.match(main, /user-admin-user-list/);
-  assert.match(main, /user-admin-user-account/);
-  assert.match(main, /requestedSurface/);
-  assert.match(main, /kind: 'surface'/);
+  assert.match(main, /submitWorkstreamMessage/);
+  assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
+  assert.match(main, /userItem, agentItem/);
+  assert.doesNotMatch(main, /showUsers|showUserDetail|requestedSurface/);
   assert.doesNotMatch(main, /window\.location\.assign\('\/users/);
 });

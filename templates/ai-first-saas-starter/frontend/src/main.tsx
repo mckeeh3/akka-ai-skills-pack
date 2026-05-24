@@ -238,45 +238,43 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     }
   }
 
-  function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
-    const prompt = request.prompt.toLowerCase();
-    const showUserDetail = /\b(show|display|open|view)\b.*\b(user|account|member)\b.*\b(detail|profile|admin@example\.test|tenant admin)\b/.test(prompt) || /\badmin@example\.test\b/.test(prompt);
-    const showUsers = !showUserDetail && (/\b(show|display|open|list|search)\b.*\b(users|invitations|memberships)\b/.test(prompt) || /\busers\b/.test(prompt));
-    const userRequestItem: WorkstreamItem = {
-      itemId: `composer-${Date.now()}`,
-      functionalAgentId: request.functionalAgentId,
-      kind: 'user-request',
-      createdAt: new Date().toISOString(),
-      correlationId: request.idempotencyKey,
-      traceIds: [],
-      title: 'You',
-      body: request.prompt,
-      status: 'ready'
-    };
-    const requestedSurface = showUserDetail
-      ? ready.surfaces.find((surface) => surface.surfaceId === 'user-admin-user-account')
-      : showUsers
-        ? ready.surfaces.find((surface) => surface.surfaceId === 'user-admin-user-list')
-        : undefined;
-    const surfaceResponseItem: WorkstreamItem | undefined = requestedSurface ? {
-      itemId: `composer-surface-${requestedSurface.surfaceId}-${Date.now()}`,
-      functionalAgentId: requestedSurface.ownerFunctionalAgentId,
-      kind: 'surface',
-      createdAt: new Date().toISOString(),
-      correlationId: requestedSurface.correlationId,
-      traceIds: requestedSurface.traceIds,
-      surfaceId: requestedSurface.surfaceId,
-      title: requestedSurface.title,
-      status: 'ready'
-    } : undefined;
-    setBootstrap((current) => current.status === 'ready'
-      ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) }
-      : current);
-    if (showUserDetail) {
-      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'user-admin-user-account', surfacePlacement: 'inline' });
-    } else if (showUsers) {
-      updateSelection({ selectedFunctionalAgentId: 'agent-user-admin', selectedSurfaceId: 'user-admin-user-list', surfacePlacement: 'inline' });
+  async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
+    const result = await workstreamClient.submitWorkstreamMessage({
+      ...request,
+      correlationId: `corr-composer-${Date.now().toString(36)}`
+    });
+
+    if (!result.ok) {
+      const errorItem: WorkstreamItem = {
+        itemId: `composer-error-${Date.now()}`,
+        functionalAgentId: request.functionalAgentId,
+        kind: 'system-notification',
+        createdAt: new Date().toISOString(),
+        correlationId: result.error.correlationId,
+        traceIds: [],
+        title: 'Message not submitted',
+        body: result.error.message,
+        status: result.error.code === 'forbidden' || result.error.code === 'unauthorized' ? 'blocked' : 'failed'
+      };
+      setBootstrap((current) => current.status === 'ready'
+        ? { ...current, items: pruneWorkstreamItems([...current.items, errorItem]) }
+        : current);
+      return;
     }
+
+    const { userItem, agentItem, surface } = result.value;
+    setBootstrap((current) => {
+      if (current.status !== 'ready') return current;
+      const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
+        ? current.surfaces.map((candidate) => candidate.surfaceId === surface.surfaceId ? surface : candidate)
+        : [...current.surfaces, surface];
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, userItem, agentItem]) };
+    });
+    updateSelection({
+      selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? request.functionalAgentId,
+      selectedSurfaceId: surface.surfaceId,
+      surfacePlacement: 'inline'
+    });
   }
 
   if (bootstrap.status === 'loading') {
