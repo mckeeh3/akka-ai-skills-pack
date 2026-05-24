@@ -39,7 +39,7 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
   assert.match(composerState, /Missing required capability/);
   assert.match(composer, /aria-label="Persistent workstream composer"/);
   assert.match(composer, /Ask \{selectedAgent\?\.label/);
-  assert.match(composer, /disabled=\{Boolean\(disabledReason\)\}/);
+  assert.match(composer, /disabled=\{isSubmitting \|\| Boolean\(disabledReason\)\}/);
   assert.match(composer, /disabled=\{submitDisabled\}/);
   assert.match(composer, /rows=\{1\}/);
   assert.match(composer, /useLayoutEffect/);
@@ -54,6 +54,7 @@ test('workstream shell composes left rail, continuous flow, and floating persist
   assert.doesNotMatch(shell, /<ContextAuthorityBar/);
   assert.match(shell, /<WorkstreamPanel/);
   assert.match(shell, /<WorkstreamComposer/);
+  assert.match(shell, /submittingFunctionalAgentId === selectedFunctionalAgentId/);
   assert.match(shell, /aria-label="Persistent composer region"/);
   assert.match(panel, /<main id="main-content" className="content workstream-panel"/);
   assert.match(panel, /workstream-flow/);

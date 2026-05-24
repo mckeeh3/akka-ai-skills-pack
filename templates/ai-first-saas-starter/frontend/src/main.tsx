@@ -5,7 +5,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, type TokenProvider, type WorkstreamClient, type WorkstreamRealtimeClient } from './api';
+import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, type ApiError, type TokenProvider, type WorkstreamClient, type WorkstreamRealtimeClient } from './api';
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
@@ -48,6 +48,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
+  const [submittingFunctionalAgentId, setSubmittingFunctionalAgentId] = React.useState<string>();
   const [realtimeConnection, setRealtimeConnection] = React.useState<RealtimeConnectionState>({ status: 'connecting' });
   const seenEventIds = React.useRef(new Set<string>());
   const realtimeLastEventId = React.useRef<string | undefined>(undefined);
@@ -239,12 +240,34 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
+    const submittedAt = Date.now();
+    const pendingItemId = `composer-submitting-${submittedAt}`;
+    const correlationId = `corr-composer-${submittedAt.toString(36)}`;
+    const submittingItem: WorkstreamItem = {
+      itemId: pendingItemId,
+      functionalAgentId: request.functionalAgentId,
+      kind: 'system-status',
+      createdAt: new Date(submittedAt).toISOString(),
+      correlationId,
+      traceIds: [],
+      title: 'Submitting to model-backed agent',
+      body: 'The governed runtime is assembling the prompt, checking model/provider configuration, and invoking the model. This selected workstream context is preserved for retry.',
+      status: 'working'
+    };
+    setSubmittingFunctionalAgentId(request.functionalAgentId);
+    setBootstrap((current) => current.status === 'ready'
+      ? { ...current, items: pruneWorkstreamItems([...current.items, submittingItem]) }
+      : current);
+
     const result = await workstreamClient.submitWorkstreamMessage({
       ...request,
-      correlationId: `corr-composer-${Date.now().toString(36)}`
+      correlationId
     });
 
+    setSubmittingFunctionalAgentId(undefined);
+
     if (!result.ok) {
+      const safeError = safeComposerErrorCopy(result.error);
       const errorItem: WorkstreamItem = {
         itemId: `composer-error-${Date.now()}`,
         functionalAgentId: request.functionalAgentId,
@@ -252,29 +275,34 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         createdAt: new Date().toISOString(),
         correlationId: result.error.correlationId,
         traceIds: [],
-        title: 'Message not submitted',
-        body: result.error.message,
-        status: result.error.code === 'forbidden' || result.error.code === 'unauthorized' ? 'blocked' : 'failed'
+        title: safeError.title,
+        body: `${safeError.body} Retry is safe: the prompt remains in the composer and will reuse the selected workstream context. Correlation ${result.error.correlationId}.`,
+        status: safeError.status
       };
       setBootstrap((current) => current.status === 'ready'
-        ? { ...current, items: pruneWorkstreamItems([...current.items, errorItem]) }
+        ? { ...current, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), errorItem]) }
         : current);
-      return;
+      return false;
     }
 
     const { userItem, agentItem, surface } = result.value;
+    const traceableAgentItem: WorkstreamItem = {
+      ...agentItem,
+      traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
+    };
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
         ? current.surfaces.map((candidate) => candidate.surfaceId === surface.surfaceId ? surface : candidate)
         : [...current.surfaces, surface];
-      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, userItem, agentItem]) };
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), userItem, traceableAgentItem]) };
     });
     updateSelection({
       selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? request.functionalAgentId,
       selectedSurfaceId: surface.surfaceId,
       surfacePlacement: 'inline'
     });
+    return true;
   }
 
   if (bootstrap.status === 'loading') {
@@ -295,6 +323,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       appName="AI-first SaaS"
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
+      submittingFunctionalAgentId={submittingFunctionalAgentId}
       onSignOut={onSignOut}
     >
       <WorkstreamStream items={withRuntimeNotification(selectedItems, realtimeConnection)} surfaces={ready.surfaces} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} onSurfaceAction={handleSurfaceAction} />
@@ -306,6 +335,28 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
 function readDeepLinkSelection(): Partial<WorkstreamSelection> {
   const hashQuery = window.location.hash.includes('?') ? window.location.hash.slice(window.location.hash.indexOf('?')) : '';
   return parseWorkstreamDeepLink(window.location.search || hashQuery);
+}
+
+function safeComposerErrorCopy(error: ApiError): { title: string; body: string; status: 'blocked' | 'failed' } {
+  if (error.code === 'forbidden' || error.code === 'unauthorized') {
+    return {
+      title: 'Message not submitted · forbidden',
+      body: 'The backend denied this workstream capability for the selected context. Select an authorized context or ask an administrator to grant the required capability.',
+      status: 'blocked'
+    };
+  }
+  if (/provider|model|openai|configuration|config|credential|api[_-]?key/i.test(`${error.code} ${error.message}`)) {
+    return {
+      title: 'Message not submitted · provider configuration required',
+      body: 'The model-backed agent is blocked because backend provider configuration is missing or invalid. Configure the backend provider variables and restart the API; secrets are not exposed in the browser.',
+      status: 'blocked'
+    };
+  }
+  return {
+    title: 'Message not submitted · retry available',
+    body: `The workstream message was not accepted by the backend: ${error.message}`,
+    status: 'failed'
+  };
 }
 
 function surfaceForAgent(surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string) {

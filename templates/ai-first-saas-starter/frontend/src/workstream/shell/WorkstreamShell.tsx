@@ -13,11 +13,12 @@ type WorkstreamShellProps = {
   children?: ReactNode;
   appName?: string;
   onSelectAgent?: (functionalAgentId: string) => void;
-  onComposerSubmit?: (request: ComposerRequest) => void;
+  onComposerSubmit?: (request: ComposerRequest) => void | Promise<boolean | void>;
+  submittingFunctionalAgentId?: string;
   onSignOut?: () => void;
 };
 
-export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, onSignOut }: WorkstreamShellProps) {
+export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, submittingFunctionalAgentId, onSignOut }: WorkstreamShellProps) {
   const initialAgentId = initialFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status) ?? me.functionalAgents[0]?.functionalAgentId;
   const [selectedFunctionalAgentId, setSelectedFunctionalAgentId] = useState(initialAgentId);
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -46,7 +47,7 @@ export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], chil
       <div className="main-column workstream-main-column">
         <WorkstreamPanel selectedAgent={selectedAgent} items={items}>{children}</WorkstreamPanel>
         <footer className="workstream-composer-region" aria-label="Persistent composer region">
-          <WorkstreamComposer me={me} authContext={me.selectedAuthContext} selectedAgent={selectedAgent} onSubmit={onComposerSubmit} />
+          <WorkstreamComposer me={me} authContext={me.selectedAuthContext} selectedAgent={selectedAgent} isSubmitting={submittingFunctionalAgentId === selectedFunctionalAgentId} onSubmit={onComposerSubmit} />
         </footer>
       </div>
     </div>

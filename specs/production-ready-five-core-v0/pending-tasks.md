@@ -240,7 +240,8 @@
 
 ### TASK-PRODV0-03-003: Update frontend runtime UX for real agent readiness, errors, and traces
 
-- status: pending
+- status: done
+- completion note: Added frontend in-flight workstream submission state, safe provider/configuration and forbidden system-notification errors with preserved retry context, trace-link enrichment for successful model responses, and contract coverage for in-flight, provider-missing, forbidden, retry, and trace rendering.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/04-frontend/01-real-agent-runtime-ux.md
 - depends on: [TASK-PRODV0-03-002]

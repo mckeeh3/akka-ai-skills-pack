@@ -9,6 +9,9 @@ const apiContract = read('./api/WorkstreamApiClient.ts');
 const httpClient = read('./api/HttpWorkstreamApiClient.ts');
 const fixtureClient = read('./api/FixtureWorkstreamApiClient.ts');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
+const composer = read('./workstream/composer/WorkstreamComposer.tsx');
+const markdownSurface = read('./workstream/surfaces/MarkdownResponseSurface.tsx');
+const itemCard = read('./workstream/stream/WorkstreamItem.tsx');
 
 test('composer submits normal prompts through backend workstream message API', () => {
   assert.match(apiContract, /submitWorkstreamMessage\(request: WorkstreamMessageRequest\): Promise<ApiResult<WorkstreamMessageResponse>>/);
@@ -22,12 +25,42 @@ test('composer submits normal prompts through backend workstream message API', (
 
 test('composer response appends returned items and markdown_response surface', () => {
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
-  assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items, userItem, agentItem\]\)/);
+  assert.match(main, /traceableAgentItem/);
+  assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId\), userItem, traceableAgentItem\]\)/);
   assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
   assert.match(stream, /item\.kind === 'markdown_response'/);
   assert.match(apiContract, /surface: SurfaceEnvelope<unknown>/);
   assert.match(apiContract, /userItem: WorkstreamItem/);
   assert.match(apiContract, /agentItem: WorkstreamItem/);
+});
+
+test('composer exposes in-flight model submission state and preserves safe retry context', () => {
+  assert.match(main, /submittingFunctionalAgentId/);
+  assert.match(main, /Submitting to model-backed agent/);
+  assert.match(main, /status: 'working'/);
+  assert.match(main, /selected workstream context is preserved for retry/);
+  assert.match(main, /return false/);
+  assert.match(composer, /isSubmitting/);
+  assert.match(composer, /Model-backed agent is responding/);
+  assert.match(composer, /accepted !== false/);
+});
+
+test('composer maps provider-missing and forbidden errors to safe system notifications', () => {
+  assert.match(main, /safeComposerErrorCopy/);
+  assert.match(main, /provider configuration required/);
+  assert.match(main, /Configure the backend provider variables/);
+  assert.match(main, /secrets are not exposed in the browser/);
+  assert.match(main, /Message not submitted · forbidden/);
+  assert.match(main, /kind: 'system-notification'/);
+  assert.match(main, /status: safeError\.status/);
+});
+
+test('successful model responses expose prompt, model, and work trace links', () => {
+  assert.match(main, /traceableAgentItem/);
+  assert.match(main, /traceLinks: agentItem\.traceLinks \?\? agentItem\.traceIds\.map/);
+  assert.match(itemCard, /<TraceLinkList traceIds=\{item\.traceIds\} traceLinks=\{item\.traceLinks\}/);
+  assert.match(markdownSurface, /Trace links:/);
+  assert.match(markdownSurface, /\/ui\?traceId=/);
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {

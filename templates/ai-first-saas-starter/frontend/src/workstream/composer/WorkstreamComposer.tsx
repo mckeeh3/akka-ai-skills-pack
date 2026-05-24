@@ -7,15 +7,16 @@ type WorkstreamComposerProps = {
   authContext: AuthContext;
   selectedAgent?: FunctionalAgentSummary;
   attachedSurfaceId?: string;
-  onSubmit?: (request: ComposerRequest) => void;
+  isSubmitting?: boolean;
+  onSubmit?: (request: ComposerRequest) => void | Promise<boolean | void>;
 };
 
-export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, onSubmit }: WorkstreamComposerProps) {
+export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, isSubmitting = false, onSubmit }: WorkstreamComposerProps) {
   const [draft, setDraft] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const availability = useMemo(() => composerAvailability(me, selectedAgent), [me, selectedAgent]);
   const disabledReason = availability.status === 'disabled' ? availability.reason : undefined;
-  const submitDisabled = !selectedAgent || !canSubmitComposer(draft, availability);
+  const submitDisabled = isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability);
   const helperId = 'workstream-composer-helper';
 
   useLayoutEffect(() => {
@@ -25,11 +26,11 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
     input.style.height = `${input.scrollHeight}px`;
   }, [draft]);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedAgent || !canSubmitComposer(draft, availability)) return;
-    onSubmit?.(buildComposerRequest(authContext, selectedAgent, draft, attachedSurfaceId));
-    setDraft('');
+    if (isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability)) return;
+    const accepted = await onSubmit?.(buildComposerRequest(authContext, selectedAgent, draft, attachedSurfaceId));
+    if (accepted !== false) setDraft('');
   }
 
   return (
@@ -44,14 +45,14 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
           value={draft}
           onChange={(event) => setDraft(event.currentTarget.value)}
           aria-describedby={helperId}
-          disabled={Boolean(disabledReason)}
-          placeholder={disabledReason ?? "What's next..."}
+          disabled={isSubmitting || Boolean(disabledReason)}
+          placeholder={isSubmitting ? 'Model-backed agent is responding…' : disabledReason ?? "What's next..."}
         />
         <p id={helperId} className="sr-only">
-          {disabledReason ?? `Selected context ${authContext.selectedContextId}; requests are scoped to ${selectedAgent?.label ?? 'the selected agent'}.`}
+          {isSubmitting ? 'Submitting prompt to the governed model-backed runtime; selected workstream context is preserved.' : disabledReason ?? `Selected context ${authContext.selectedContextId}; requests are scoped to ${selectedAgent?.label ?? 'the selected agent'}.`}
         </p>
       </div>
-      <button type="submit" className="ds-button primary icon-button send-prompt-button" disabled={submitDisabled} aria-label="Send prompt" title="Send prompt">
+      <button type="submit" className="ds-button primary icon-button send-prompt-button" disabled={submitDisabled} aria-label={isSubmitting ? 'Submitting prompt' : 'Send prompt'} title={isSubmitting ? 'Submitting prompt to model-backed agent' : 'Send prompt'}>
         <span aria-hidden="true">↑</span>
       </button>
     </form>
