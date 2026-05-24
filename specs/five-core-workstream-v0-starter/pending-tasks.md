@@ -198,7 +198,8 @@
 
 ### TASK-5WS-02-003: Seed or configure five core v0 functional-agent prompts, skills, and model refs
 
-- status: pending
+- status: done
+- completion note: Added governed seed configuration for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, including bounded prompts, starter guidance skills/references, manifests, tool boundaries, shared safe model refs, trace requirements, bootstrap `/api/me` visibility coverage, idempotency tests, and secret-boundary assertions.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/03-backend/02-seed-five-core-v0-agent-behavior.md
 - depends on: [TASK-5WS-02-002]
@@ -222,6 +223,8 @@
 - done criteria:
   - The five left-rail workstreams have explicit governed v0 behavior configuration rather than sharing an unnamed chatbot prompt.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: seed core agent behavior`
 
 ### TASK-5WS-02-004: Wire frontend composer to backend message submission
 

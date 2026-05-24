@@ -25,7 +25,12 @@ import java.util.List;
 public final class AgentBehaviorSeedLoader {
   public static final String SEED_BUNDLE_ID = "starter-agent-behavior-v1";
   public static final String CONTENT_VERSION = "1";
+  public static final String MY_ACCOUNT_AGENT_ID = "agent-my-account";
   public static final String USER_ADMIN_AGENT_ID = "agent-user-admin";
+  public static final String AGENT_ADMIN_AGENT_ID = "agent-agent-admin";
+  public static final String AUDIT_TRACE_AGENT_ID = "agent-audit-trace";
+  public static final String GOVERNANCE_POLICY_AGENT_ID = "agent-governance-policy";
+  public static final List<String> CORE_V0_AGENT_IDS = List.of(MY_ACCOUNT_AGENT_ID, USER_ADMIN_AGENT_ID, AGENT_ADMIN_AGENT_ID, AUDIT_TRACE_AGENT_ID, GOVERNANCE_POLICY_AGENT_ID);
   public static final String USER_ADMIN_PROMPT_ID = "prompt-user-admin-system";
   public static final String ACCESS_REVIEW_SKILL_DOC_ID = "skill-ua-access-review-triage";
   public static final String ADMIN_RISK_SKILL_DOC_ID = "skill-ua-admin-risk-scoring";
@@ -105,6 +110,9 @@ public final class AgentBehaviorSeedLoader {
     repository.agentDefinition(tenantId, USER_ADMIN_AGENT_ID)
         .map(existing -> skipExisting("AgentDefinition", existing.agentDefinitionId(), result, existing))
         .orElseGet(() -> createAgentDefinition(tenantId, prompt, manifest, referenceManifest, boundary, modelConfig, modelPolicy, importerActor, correlationId, now, result));
+    for (var seed : additionalCoreAgentSeeds()) {
+      importBasicCoreAgent(tenantId, seed, modelConfig, modelPolicy, importerActor, correlationId, now, result);
+    }
     return result;
   }
 
@@ -175,7 +183,7 @@ public final class AgentBehaviorSeedLoader {
   private ModelConfigRef createModelConfigRef(String tenantId, ModelPolicy policy, String actor, String correlationId, Instant now, SeedImportResult result) {
     var safeModelFacts = STARTER_DEFAULT_MODEL_CONFIG_ID + ":openai-low-temperature:" + policy.modelPolicyRefId();
     var checksum = checksum(safeModelFacts);
-    var model = new ModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", "openai-low-temperature", AgentLifecycleStatus.ACTIVE, List.of(USER_ADMIN_AGENT_ID), List.of(AgentRuntimeService.INVOKE_CAPABILITY), List.of("runtime", "test", "replay"), List.of(AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED), policy.modelPolicyRefId(), provenance("model-configs/starter-default-model", checksum, actor, correlationId, now, false), now, now);
+    var model = new ModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", "openai-low-temperature", AgentLifecycleStatus.ACTIVE, CORE_V0_AGENT_IDS, List.of(AgentRuntimeService.INVOKE_CAPABILITY), List.of("runtime", "test", "replay"), List.of(AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED), policy.modelPolicyRefId(), provenance("model-configs/starter-default-model", checksum, actor, correlationId, now, false), now, now);
     repository.saveModelConfigRef(model);
     result.created("ModelConfigRef", STARTER_DEFAULT_MODEL_CONFIG_ID);
     return model;
@@ -186,6 +194,94 @@ public final class AgentBehaviorSeedLoader {
     var definition = new AgentDefinition(tenantId, USER_ADMIN_AGENT_ID, "User Admin Agent", "Role-authorized functional agent for user, invitation, membership, and access-review administration.", AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, "user-admin", AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED, AgentLifecycleStatus.ACTIVE, prompt.promptDocumentId(), prompt.activeVersion(), manifest.manifestId(), manifest.manifestVersion(), referenceManifest.manifestId(), referenceManifest.manifestVersion(), boundary.boundaryId(), boundary.boundaryVersion(), modelConfig.modelConfigRefId(), modelPolicy.modelPolicyRefId(), "{{JAVA_BASE_PACKAGE}}.application.agent.UserAdminAgent", List.of("PromptAssemblyTrace", "SkillLoadTrace", "ReferenceLoadTrace", "AgentWorkTrace"), provenance("agents/user-admin-agent", checksum, actor, correlationId, now, false), now, now);
     repository.saveAgentDefinition(definition);
     result.created("AgentDefinition", USER_ADMIN_AGENT_ID);
+    return definition;
+  }
+
+  private void importBasicCoreAgent(String tenantId, BasicCoreAgentSeed seed, ModelConfigRef modelConfig, ModelPolicy modelPolicy, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var promptContent = readSeedResource(seed.promptResourcePath());
+    var skillContent = readSeedResource(seed.skillResourcePath());
+    var referenceContent = readSeedResource(seed.referenceResourcePath());
+    validateContent(promptContent, seed.promptDocumentId());
+    validateContent(skillContent, seed.skillDocumentId());
+    validateContent(referenceContent, seed.referenceDocumentId());
+    var prompt = repository.promptDocument(tenantId, seed.promptDocumentId())
+        .map(existing -> skipOrDraftPrompt(existing, checksum(promptContent), result))
+        .orElseGet(() -> createBasicPrompt(tenantId, seed, promptContent, checksum(promptContent), actor, correlationId, now, result));
+    var skill = repository.skillDocument(tenantId, seed.skillDocumentId())
+        .map(existing -> skipOrDraftSkill(existing, checksum(skillContent), result))
+        .orElseGet(() -> createBasicSkill(tenantId, seed, skillContent, checksum(skillContent), actor, correlationId, now, result));
+    var reference = repository.referenceDocument(tenantId, seed.referenceDocumentId())
+        .map(existing -> skipOrDraftReference(existing, checksum(referenceContent), result))
+        .orElseGet(() -> createBasicReference(tenantId, seed, referenceContent, checksum(referenceContent), actor, correlationId, now, result));
+    var manifest = repository.skillManifest(tenantId, seed.skillManifestId())
+        .map(existing -> skipExisting("AgentSkillManifest", existing.manifestId(), result, existing))
+        .orElseGet(() -> createBasicSkillManifest(tenantId, seed, skill, actor, correlationId, now, result));
+    var referenceManifest = repository.referenceManifest(tenantId, seed.referenceManifestId())
+        .map(existing -> skipExisting("AgentReferenceManifest", existing.manifestId(), result, existing))
+        .orElseGet(() -> createBasicReferenceManifest(tenantId, seed, reference, actor, correlationId, now, result));
+    var boundary = repository.toolBoundary(tenantId, seed.toolBoundaryId())
+        .map(existing -> skipExisting("ToolPermissionBoundary", existing.boundaryId(), result, existing))
+        .orElseGet(() -> createBasicBoundary(tenantId, seed, actor, correlationId, now, result));
+    repository.agentDefinition(tenantId, seed.agentDefinitionId())
+        .map(existing -> skipExisting("AgentDefinition", existing.agentDefinitionId(), result, existing))
+        .orElseGet(() -> createBasicAgentDefinition(tenantId, seed, prompt, manifest, referenceManifest, boundary, modelConfig, modelPolicy, actor, correlationId, now, result));
+  }
+
+  private PromptDocument createBasicPrompt(String tenantId, BasicCoreAgentSeed seed, String content, String checksum, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var prompt = new PromptDocument(tenantId, seed.promptDocumentId(), seed.agentDefinitionId(), seed.displayName() + " system prompt", "system", AgentLifecycleStatus.ACTIVE, 1, content, checksum, "Initial implementation-packaged prompt seed for " + seed.displayName() + ".", provenance("prompts/" + seed.slug() + "-system.md", checksum, actor, correlationId, now, false), now, now);
+    repository.savePromptDocument(prompt);
+    result.created("PromptDocument", seed.promptDocumentId());
+    return prompt;
+  }
+
+  private SkillDocument createBasicSkill(String tenantId, BasicCoreAgentSeed seed, String content, String checksum, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var skill = new SkillDocument(tenantId, seed.skillDocumentId(), seed.stableSkillId(), seed.skillTitle(), seed.skillPurpose(), seed.skillWhenToUse(), List.of("foundation", seed.functionalAreaId()), AgentLifecycleStatus.ACTIVE, 1, content, checksum, provenance("skills/" + seed.slug() + "/starter-scope.md", checksum, actor, correlationId, now, false), now, now);
+    repository.saveSkillDocument(skill);
+    result.created("SkillDocument", seed.skillDocumentId());
+    return skill;
+  }
+
+  private ReferenceDocument createBasicReference(String tenantId, BasicCoreAgentSeed seed, String content, String checksum, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var reference = new ReferenceDocument(tenantId, seed.referenceDocumentId(), seed.stableReferenceId(), seed.referenceTitle(), seed.referenceSummary(), seed.referenceWhenToConsult(), ReferenceDocument.ReferenceType.PROCESS, "internal", List.of("foundation", seed.functionalAreaId()), AgentLifecycleStatus.ACTIVE, 1, content, checksum, provenance("references/" + seed.slug() + "/starter-scope.md", checksum, actor, correlationId, now, false), now, now);
+    repository.saveReferenceDocument(reference);
+    result.created("ReferenceDocument", seed.referenceDocumentId());
+    return reference;
+  }
+
+  private AgentSkillManifest createBasicSkillManifest(String tenantId, BasicCoreAgentSeed seed, SkillDocument skill, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var entries = List.of(new AgentSkillManifest.Entry(skill.stableSkillId(), skill.skillDocumentId(), skill.activeVersion(), skill.title(), skill.purpose(), skill.whenToUse()));
+    var checksum = checksum(entries.toString());
+    var manifest = new AgentSkillManifest(tenantId, seed.skillManifestId(), seed.agentDefinitionId(), AgentLifecycleStatus.ACTIVE, 1, entries, checksum, provenance("manifests/" + seed.slug() + "-agent-skill-manifest", checksum, actor, correlationId, now, false), now, now);
+    repository.saveSkillManifest(manifest);
+    result.created("AgentSkillManifest", seed.skillManifestId());
+    return manifest;
+  }
+
+  private AgentReferenceManifest createBasicReferenceManifest(String tenantId, BasicCoreAgentSeed seed, ReferenceDocument reference, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var entries = List.of(new AgentReferenceManifest.Entry(reference.stableReferenceId(), reference.referenceDocumentId(), reference.activeVersion(), reference.title(), reference.summary(), reference.whenToConsult(), "consult", reference.accessLevel()));
+    var checksum = checksum(entries.toString());
+    var manifest = new AgentReferenceManifest(tenantId, seed.referenceManifestId(), seed.agentDefinitionId(), seed.slug() + "-agent.expertise", AgentLifecycleStatus.ACTIVE, 1, entries, checksum, provenance("manifests/" + seed.slug() + "-agent-reference-manifest", checksum, actor, correlationId, now, false), now, now);
+    repository.saveReferenceManifest(manifest);
+    result.created("AgentReferenceManifest", seed.referenceManifestId());
+    return manifest;
+  }
+
+  private ToolPermissionBoundary createBasicBoundary(String tenantId, BasicCoreAgentSeed seed, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var grants = List.of(
+        new ToolPermissionBoundary.ToolGrant("readSkill", ToolPermissionBoundary.Category.READ_SKILL, "agent.skills.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "SkillLoadTrace"),
+        new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_REFERENCE, "agent.references.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "ReferenceLoadTrace"));
+    var checksum = checksum(grants.toString());
+    var boundary = new ToolPermissionBoundary(tenantId, seed.toolBoundaryId(), seed.agentDefinitionId(), AgentLifecycleStatus.ACTIVE, 1, grants, checksum, provenance("tool-boundaries/" + seed.slug() + "-agent-tools", checksum, actor, correlationId, now, false), now, now);
+    repository.saveToolBoundary(boundary);
+    result.created("ToolPermissionBoundary", seed.toolBoundaryId());
+    return boundary;
+  }
+
+  private AgentDefinition createBasicAgentDefinition(String tenantId, BasicCoreAgentSeed seed, PromptDocument prompt, AgentSkillManifest manifest, AgentReferenceManifest referenceManifest, ToolPermissionBoundary boundary, ModelConfigRef modelConfig, ModelPolicy modelPolicy, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var checksum = checksum(prompt.contentChecksum() + manifest.compactManifestChecksum() + referenceManifest.compactManifestChecksum() + boundary.checksum() + modelConfig.modelConfigRefId() + modelPolicy.modelPolicyRefId());
+    var definition = new AgentDefinition(tenantId, seed.agentDefinitionId(), seed.displayName(), seed.description(), AgentDefinition.Placement.FUNCTIONAL_CONTEXT_AREA, seed.functionalAreaId(), AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED, AgentLifecycleStatus.ACTIVE, prompt.promptDocumentId(), prompt.activeVersion(), manifest.manifestId(), manifest.manifestVersion(), referenceManifest.manifestId(), referenceManifest.manifestVersion(), boundary.boundaryId(), boundary.boundaryVersion(), modelConfig.modelConfigRefId(), modelPolicy.modelPolicyRefId(), "{{JAVA_BASE_PACKAGE}}.application.agent." + seed.runtimeClassName(), List.of("PromptAssemblyTrace", "SkillLoadTrace", "ReferenceLoadTrace", "AgentWorkTrace"), provenance("agents/" + seed.slug() + "-agent", checksum, actor, correlationId, now, false), now, now);
+    repository.saveAgentDefinition(definition);
+    result.created("AgentDefinition", seed.agentDefinitionId());
     return definition;
   }
 
@@ -225,6 +321,14 @@ public final class AgentBehaviorSeedLoader {
     return new SeedProvenance(SEED_BUNDLE_ID, CONTENT_VERSION, resourceId, checksum, now, actor, correlationId, tenantCustomized);
   }
 
+  private List<BasicCoreAgentSeed> additionalCoreAgentSeeds() {
+    return List.of(
+        new BasicCoreAgentSeed(MY_ACCOUNT_AGENT_ID, "my-account", "My Account Agent", "Role-authorized functional agent for signed-in account, profile, settings, context, and safe self-service guidance.", "MyAccountAgent", "prompt-my-account-system", "skill-my-account-starter-guidance", "my-account.starter-guidance.v1", "My Account Starter Guidance", "Explain account, profile, settings, context, and sign-out boundaries in the v0 starter.", "Use for My Account bootstrap questions, profile/settings guidance, context selection, and safe self-service next steps.", "ref-my-account-starter-scope", "my-account.starter-scope.v1", "My Account Starter Scope", "Available and deferred My Account v0 capabilities.", "Consult before explaining profile, settings, AuthContext, sign-out, or deferred self-service behavior.", "manifest-my-account", "reference-manifest-my-account", "tool-boundary-my-account", "/agent-behavior-seeds/starter-v1/my-account-system.md", "/agent-behavior-seeds/starter-v1/my-account-starter-guidance.md", "/agent-behavior-seeds/starter-v1/my-account-starter-scope-reference.md"),
+        new BasicCoreAgentSeed(AGENT_ADMIN_AGENT_ID, "agent-admin", "Agent Admin Agent", "Role-authorized functional agent for governed agent definitions, prompts, skills, manifests, tool boundaries, model refs, tests, and traces.", "AgentAdminAgent", "prompt-agent-admin-system", "skill-agent-admin-starter-guidance", "agent-admin.starter-guidance.v1", "Agent Admin Starter Guidance", "Explain governed agent behavior records, approvals, tests, model refs, and safe deferrals in the v0 starter.", "Use for Agent Admin bootstrap questions about prompts, skills, manifests, tool boundaries, model refs, and traces.", "ref-agent-admin-starter-scope", "agent-admin.starter-scope.v1", "Agent Admin Starter Scope", "Available and deferred Agent Admin v0 capabilities.", "Consult before explaining seeded behavior records, provider-secret boundaries, approvals, or runtime tests.", "manifest-agent-admin", "reference-manifest-agent-admin", "tool-boundary-agent-admin", "/agent-behavior-seeds/starter-v1/agent-admin-system.md", "/agent-behavior-seeds/starter-v1/agent-admin-starter-guidance.md", "/agent-behavior-seeds/starter-v1/agent-admin-starter-scope-reference.md"),
+        new BasicCoreAgentSeed(AUDIT_TRACE_AGENT_ID, "audit-trace", "Audit/Trace Agent", "Role-authorized functional agent for browser-safe admin audit, authorization, prompt assembly, skill/reference load, and work trace explanations.", "AuditTraceAgent", "prompt-audit-trace-system", "skill-audit-trace-starter-guidance", "audit-trace.starter-guidance.v1", "Audit/Trace Starter Guidance", "Explain trace categories, redaction boundaries, correlation ids, and starter audit visibility.", "Use for audit/trace questions, correlation ids, denial explanations, and safe evidence summaries.", "ref-audit-trace-starter-scope", "audit-trace.starter-scope.v1", "Audit/Trace Starter Scope", "Available and deferred Audit/Trace v0 capabilities.", "Consult before explaining PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, AdminAuditEvent, or redaction boundaries.", "manifest-audit-trace", "reference-manifest-audit-trace", "tool-boundary-audit-trace", "/agent-behavior-seeds/starter-v1/audit-trace-system.md", "/agent-behavior-seeds/starter-v1/audit-trace-starter-guidance.md", "/agent-behavior-seeds/starter-v1/audit-trace-starter-scope-reference.md"),
+        new BasicCoreAgentSeed(GOVERNANCE_POLICY_AGENT_ID, "governance-policy", "Governance/Policy Agent", "Role-authorized functional agent for policy guardrails, approvals, improvement proposals, simulations, denials, and outcome evidence.", "GovernancePolicyAgent", "prompt-governance-policy-system", "skill-governance-policy-starter-guidance", "governance-policy.starter-guidance.v1", "Governance/Policy Starter Guidance", "Explain approval-required behavior, policy simulations, deferred commits, and safe governance next steps in v0.", "Use for governance, policy, approval, denied authority expansion, and improvement-review questions.", "ref-governance-policy-starter-scope", "governance-policy.starter-scope.v1", "Governance/Policy Starter Scope", "Available and deferred Governance/Policy v0 capabilities.", "Consult before explaining policy reads, simulations, commits, proposal approval, or deferred full-core governance behavior.", "manifest-governance-policy", "reference-manifest-governance-policy", "tool-boundary-governance-policy", "/agent-behavior-seeds/starter-v1/governance-policy-system.md", "/agent-behavior-seeds/starter-v1/governance-policy-starter-guidance.md", "/agent-behavior-seeds/starter-v1/governance-policy-starter-scope-reference.md"));
+  }
+
   private List<SkillSeed> userAdminSkillSeeds() {
     return List.of(
         new SkillSeed(ACCESS_REVIEW_SKILL_DOC_ID, "ua.access-review-triage.v1", "Access Review Triage", "Evaluate stale or risky memberships, roles, support access, and remediation paths.", "Use for stale memberships, risky roles, pending reviews, and proposed access remediation.", "/agent-behavior-seeds/starter-v1/access-review-triage.md", "skills/user-admin/access-review-triage.md"),
@@ -247,6 +351,7 @@ public final class AgentBehaviorSeedLoader {
 
   private record SkillSeed(String documentId, String stableSkillId, String title, String purpose, String whenToUse, String resourcePath, String resourceId) {}
   private record ReferenceSeed(String documentId, String stableReferenceId, String title, String summary, String whenToConsult, ReferenceDocument.ReferenceType referenceType, String accessLevel, String resourcePath, String resourceId) {}
+  private record BasicCoreAgentSeed(String agentDefinitionId, String slug, String displayName, String description, String runtimeClassName, String promptDocumentId, String skillDocumentId, String stableSkillId, String skillTitle, String skillPurpose, String skillWhenToUse, String referenceDocumentId, String stableReferenceId, String referenceTitle, String referenceSummary, String referenceWhenToConsult, String skillManifestId, String referenceManifestId, String toolBoundaryId, String promptResourcePath, String skillResourcePath, String referenceResourcePath) {}
 
   private void validateContent(String content, String artifactId) {
     if (content == null || content.isBlank()) throw new IllegalStateException("missing seed content: " + artifactId);

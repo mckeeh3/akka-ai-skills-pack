@@ -31,7 +31,7 @@ class AgentBehaviorSeedLoaderTest {
   void freshTenantImportCreatesApprovedActiveGovernedRecords() {
     var result = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
 
-    assertEquals(19, result.createdCount());
+    assertEquals(47, result.createdCount());
     var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
     var prompt = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
     var skill = repository.skillDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
@@ -67,7 +67,15 @@ class AgentBehaviorSeedLoaderTest {
     assertEquals(AgentLifecycleStatus.ACTIVE, modelConfig.status());
     assertEquals("openai-low-temperature", modelConfig.providerAlias());
     assertFalse(modelConfig.providerAlias().toLowerCase().contains("secret"));
-    assertTrue(modelConfig.allowedAgentDefinitionIds().contains(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID));
+    assertEquals(AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS, modelConfig.allowedAgentDefinitionIds());
+    for (var agentId : AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS) {
+      var seededAgent = repository.agentDefinition("tenant-1", agentId).orElseThrow();
+      assertEquals(AgentLifecycleStatus.ACTIVE, seededAgent.status());
+      assertTrue(seededAgent.traceRequirements().contains("PromptAssemblyTrace"));
+      assertTrue(repository.promptDocument("tenant-1", seededAgent.promptDocumentId()).orElseThrow().contentBody().contains("backend"));
+      assertFalse(repository.promptDocument("tenant-1", seededAgent.promptDocumentId()).orElseThrow().contentBody().toLowerCase().contains("api_key"));
+      assertFalse(repository.toolBoundary("tenant-1", seededAgent.toolBoundaryId()).orElseThrow().allowedToolGrants().isEmpty());
+    }
     assertEquals(AgentLifecycleStatus.ACTIVE, modelPolicy.status());
     assertTrue(modelPolicy.allowedProviderAliases().contains("openai-low-temperature"));
     assertTrue(modelPolicy.noFallback());
@@ -80,10 +88,10 @@ class AgentBehaviorSeedLoaderTest {
     var second = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-2");
 
     assertEquals(0, second.createdCount());
-    assertEquals(19, second.skippedCount());
-    assertEquals(1, repository.agentDefinitions("tenant-1").size());
-    assertEquals(6, repository.skillDocuments("tenant-1").size());
-    assertEquals(6, repository.referenceDocuments("tenant-1").size());
+    assertEquals(47, second.skippedCount());
+    assertEquals(5, repository.agentDefinitions("tenant-1").size());
+    assertEquals(10, repository.skillDocuments("tenant-1").size());
+    assertEquals(10, repository.referenceDocuments("tenant-1").size());
   }
 
   @Test
