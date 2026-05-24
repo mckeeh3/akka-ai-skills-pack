@@ -176,6 +176,48 @@ class AgentRuntimeServiceTest {
   }
 
   @Test
+  void runtimeInvocationAssemblesPromptInvokesModelAndEmitsWorkTraces() {
+    var fakeProvider = new FakeModelProviderClient("## Model-backed User Admin response");
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), fakeProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "corr-runtime-model", "Summarize current governed runtime readiness."));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertEquals("## Model-backed User Admin response", result.markdown());
+    assertNull(result.safeErrorCode());
+    assertEquals(3, result.traceIds().size());
+    assertNotNull(fakeProvider.lastRequest);
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("# Compact skill manifest"));
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("# Selected AuthContext"));
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("selectedContextId=membership-1"));
+    assertFalse(fakeProvider.lastRequest.systemPrompt().toLowerCase().contains("api_key="));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("MODEL_INVOCATION") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
+  }
+
+  @Test
+  void runtimeInvocationFailsClosedWhenProviderConfigurationIsMissing() {
+    var failingProvider = new ModelProviderClient() {
+      @Override
+      public ModelProviderClient.ModelProviderResponse invoke(ModelProviderClient.ModelProviderRequest request) {
+        throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
+      }
+    };
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), failingProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "corr-runtime-missing-provider", "Hello"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, result.decision());
+    assertNull(result.markdown());
+    assertEquals("model-provider-config-missing", result.safeErrorCode());
+    assertTrue(result.safeErrorSummary().contains("OPENAI_API_KEY"));
+    assertEquals(3, result.traceIds().size());
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("MODEL_INVOCATION") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("OPENAI_API_KEY")));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("model-provider-config-missing")));
+  }
+
+  @Test
   void readSkillRequiresManifestAndToolBoundaryAndEmitsTrace() {
     var allowed = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-1", "ua.access-review-triage.v1"));
     var denied = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-2", "unassigned-skill"));

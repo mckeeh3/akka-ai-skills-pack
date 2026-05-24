@@ -121,16 +121,20 @@ public final class WorkstreamService {
         .orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     if (!"visible".equals(functionalAgent.availability())) throw new AuthorizationException(403, "FUNCTIONAL_AGENT_FORBIDDEN");
 
+    var runtime = agentRuntimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
+        actor.selectedContext().tenantId(), request.functionalAgentId(), actor.selectedContext(), requestCorrelationId, request.prompt()));
     var responseSeed = firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId());
     var userItemId = "item-message-user-" + stableSuffix(responseSeed + ":user");
     var agentItemId = "item-message-agent-" + stableSuffix(responseSeed + ":agent");
     var surfaceId = "surface-message-" + stableSuffix(responseSeed + ":markdown_response");
     var now = Instant.now().toString();
-    var traceIds = List.of("trace-workstream-message-" + stableSuffix(responseSeed + ":trace"));
+    var traceIds = runtime.traceIds().isEmpty() ? List.of("trace-workstream-message-" + stableSuffix(responseSeed + ":trace")) : runtime.traceIds();
     var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-message", now, requestCorrelationId, traceIds, null, "User request", request.prompt(), "accepted");
-    var markdown = deterministicMarkdownResponse(functionalAgent, actor, request.prompt());
+    var markdown = runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED
+        ? runtime.markdown()
+        : "## " + functionalAgent.label() + " unavailable\n\nModel-backed workstream execution was blocked before a response was produced. " + runtime.safeErrorSummary() + "\n\nTrace ids: `" + String.join("`, `", traceIds) + "`.";
     var surface = markdownResponseSurface(surfaceId, agentItemId, functionalAgent, actor, requestCorrelationId, traceIds, markdown);
-    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "markdown_response", now, requestCorrelationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Deterministic starter response produced by backend-authorized workstream message seam.", "ready");
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "markdown_response", now, requestCorrelationId, traceIds, surface.surfaceId(), functionalAgent.label(), runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "Model-backed response produced by governed workstream agent runtime." : "Model-backed workstream response blocked by governed runtime/provider boundary.", runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "ready" : "blocked");
     return new WorkstreamMessageResponse(requestCorrelationId, request.idempotencyKey(), userItem, agentItem, surface);
   }
 
@@ -253,22 +257,6 @@ public final class WorkstreamService {
         correlationId, traceIds, Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawInvitationToken", "rawJwt", "rawProviderCredential", "providerSecret")),
         mapOf("markdown", markdown, "title", agent.label() + " response", "summary", "Backend-authorized starter response for " + agent.label() + ".", "workstreamEntryId", workstreamEntryId, "producingAgentId", agent.functionalAgentId(), "sourceRefs", List.of(mapOf("refType", "capability", "refId", agent.requiredCapabilityIds().isEmpty() ? "profile.read" : agent.requiredCapabilityIds().get(0), "label", "Backend capability boundary"), mapOf("refType", "trace", "refId", traceIds.get(0), "label", "Workstream message trace")), "sections", List.of(mapOf("anchor", "starter-scope", "title", "Starter scope"), mapOf("anchor", "safe-next-steps", "title", "Safe next steps")), "safety", mapOf("sanitized", false, "blockedUnsafeLinks", 0, "blockedRawHtml", false, "redactionNote", "Provider secrets, raw JWTs, invitation tokens, and hidden capabilities are never included."), "trace", mapOf("correlationId", correlationId, "traceIds", traceIds)),
         List.of(openAuditAction()), List.of(mapOf("label", "Open trace", "href", "/ui?traceId=" + traceIds.get(0), "rel", "trace")));
-  }
-
-  private String deterministicMarkdownResponse(MeResponse.FunctionalAgentSummary agent, AuthContextResolver.ResolvedMe actor, String prompt) {
-    var selected = actor.selectedContext();
-    var safePrompt = prompt.replace('<', ' ').replace('>', ' ').trim();
-    if (safePrompt.length() > 160) safePrompt = safePrompt.substring(0, 160) + "…";
-    return "## " + agent.label() + "\n\n"
-        + "### Starter scope\n"
-        + "You are using the five core workstream v0 starter for selected context `" + selected.membershipId() + "`. This backend response was authorized for tenant `" + selected.tenantId() + "` and functional agent `" + agent.functionalAgentId() + "`.\n\n"
-        + "Requested prompt: _" + safePrompt + "_\n\n"
-        + "### Available now\n"
-        + "- Backend AuthContext resolution and active membership checks.\n"
-        + "- Role/capability visibility for this workstream.\n"
-        + "- A `markdown_response` surface with correlation and trace metadata.\n\n"
-        + "### Safe next steps\n"
-        + "Ask for current capabilities, bootstrap readiness, or which full-core surfaces remain deferred. Actions that require richer full-core implementation must use backend capability endpoints, not prompt-only authority.";
   }
 
   private List<WorkstreamEvent> initialEvents(AuthContextResolver.ResolvedMe actor, String correlationId) {

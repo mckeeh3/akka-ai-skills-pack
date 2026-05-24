@@ -130,7 +130,8 @@
 
 ### TASK-PRODV0-02-002: Wire five core workstream agents through governed prompt assembly and real model invocation
 
-- status: pending
+- status: done
+- completion note: Replaced normal-runtime deterministic workstream message generation with governed runtime invocation that assembles active prompts/manifests/tool/model policy, invokes the configured model provider, emits PromptAssemblyTrace/MODEL_INVOCATION/AgentWorkTrace metadata, returns provider markdown, and uses injected fake providers only in tests.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/02-agent-runtime/02-wire-real-workstream-agents.md
 - depends on: [TASK-PRODV0-02-001]

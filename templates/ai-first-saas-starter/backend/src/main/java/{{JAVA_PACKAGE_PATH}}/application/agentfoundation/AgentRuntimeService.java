@@ -36,13 +36,19 @@ public final class AgentRuntimeService {
   private final AgentBehaviorRepository repository;
   private final AuthContextResolver authContextResolver;
   private final Clock clock;
+  private final ModelProviderClient modelProviderClient;
   private final List<AgentRuntimeTrace> traces = new ArrayList<>();
   private final List<BehaviorChangeProposal> proposals = new ArrayList<>();
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
+    this(repository, authContextResolver, clock, new OpenAiModelProviderClient());
+  }
+
+  public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock, ModelProviderClient modelProviderClient) {
     this.repository = repository;
     this.authContextResolver = authContextResolver;
     this.clock = clock;
+    this.modelProviderClient = modelProviderClient;
   }
 
   public PromptAssemblyResult assemblePrompt(PromptAssemblyRequest request) {
@@ -66,6 +72,7 @@ public final class AgentRuntimeService {
           "# Compact reference manifest\n" + compactReferenceManifest,
           "# Tool boundary summary\n" + boundarySummary,
           "# Governed model binding\n" + renderModelBindingSummary(modelBinding),
+          "# Selected AuthContext\n" + renderAuthContextSummary(request.authContext()),
           "# Runtime mode\nmode=" + request.mode() + "; side effects require backend policy and approval where configured.",
           "# Redacted user input\n" + safe(request.userInput()));
       var checksum = checksum(assembled);
@@ -74,6 +81,35 @@ public final class AgentRuntimeService {
     } catch (RuntimeException failure) {
       var trace = trace("PROMPT_ASSEMBLY", AgentRuntimeTrace.Decision.DENIED, request, request.agentDefinitionId(), safeReason(failure), null);
       return new PromptAssemblyResult(AgentRuntimeTrace.Decision.DENIED, null, null, null, trace.traceId(), safeReason(failure));
+    }
+  }
+
+  public RuntimeInvocationResult invokeWorkstreamAgent(RuntimeInvocationRequest request) {
+    var promptRequest = new PromptAssemblyRequest(request.tenantId(), request.agentDefinitionId(), request.authContext(), "runtime", INVOKE_CAPABILITY, request.correlationId(), request.userInput());
+    var prompt = assemblePrompt(promptRequest);
+    if (prompt.decision() != AgentRuntimeTrace.Decision.ALLOWED) {
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "workstream agent invocation blocked during PromptAssemblyTrace: " + prompt.safeDenialReason(), prompt.checksum());
+      return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "AGENT_RUNTIME_DENIED", prompt.safeDenialReason());
+    }
+    var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "runtime");
+    var modelBinding = activeModelBinding(request.tenantId(), agent, "runtime", INVOKE_CAPABILITY);
+    try {
+      var providerResponse = modelProviderClient.invoke(new ModelProviderClient.ModelProviderRequest(
+          modelBinding.model().providerAlias(),
+          modelBinding.model().modelConfigRefId(),
+          prompt.assembledSystemPrompt(),
+          safe(request.userInput()),
+          request.tenantId(),
+          request.agentDefinitionId(),
+          request.correlationId(),
+          List.of(prompt.traceId())));
+      var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, providerResponse.providerRequestId(), providerResponse.safeSummary(), checksum(providerResponse.markdown()));
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "model-backed markdown_response produced; finishReason=" + providerResponse.finishReason() + "; modelConfigRef=" + modelBinding.model().modelConfigRefId(), checksum(providerResponse.markdown() + prompt.checksum()));
+      return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.ALLOWED, providerResponse.markdown(), List.of(prompt.traceId(), modelTrace.traceId(), workTrace.traceId()), null, null);
+    } catch (ModelProviderClient.ModelProviderException failure) {
+      var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, modelBinding.model().modelConfigRefId(), failure.failure().safeSummary(), null);
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "model-backed workstream invocation failed closed: " + failure.failure().safeCode(), null);
+      return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), modelTrace.traceId(), workTrace.traceId()), failure.failure().safeCode(), failure.failure().safeSummary());
     }
   }
 
@@ -342,6 +378,10 @@ public final class AgentRuntimeService {
     return "modelConfigRef=" + modelBinding.model().modelConfigRefId() + "; providerAlias=" + modelBinding.model().providerAlias() + "; modelPolicyRef=" + modelBinding.policy().modelPolicyRefId() + "; fallback=" + (modelBinding.policy().noFallback() ? "noFallback" : "explicitPolicy") + "; traceLevel=" + modelBinding.policy().traceLevel();
   }
 
+  private String renderAuthContextSummary(AuthContext authContext) {
+    return "accountId=" + safe(authContext.accountId()) + "; selectedContextId=" + safe(authContext.membershipId()) + "; scope=" + authContext.scopeType() + "; tenantId=" + safe(authContext.tenantId()) + "; customerId=" + safe(authContext.customerId()) + "; roles=" + authContext.roles() + "; capabilityCount=" + authContext.capabilities().size();
+  }
+
   private AgentRuntimeTrace trace(String type, AgentRuntimeTrace.Decision decision, PromptAssemblyRequest request, String targetId, String summary, String checksum) {
     return trace(type, decision, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), request.capabilityId(), targetId, summary, checksum);
   }
@@ -409,6 +449,8 @@ public final class AgentRuntimeService {
 
   public record PromptAssemblyRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String userInput) {}
   public record PromptAssemblyResult(AgentRuntimeTrace.Decision decision, String assembledSystemPrompt, String checksum, String compactManifestText, String traceId, String safeDenialReason) {}
+  public record RuntimeInvocationRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String correlationId, String userInput) {}
+  public record RuntimeInvocationResult(AgentRuntimeTrace.Decision decision, String markdown, List<String> traceIds, String safeErrorCode, String safeErrorSummary) {}
   public record SkillReadRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String stableSkillId) {}
   public record SkillReadResult(AgentRuntimeTrace.Decision decision, String content, String checksum, String traceId, String safeDenialReason) {}
   public record ReferenceReadRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String stableReferenceId, String requestedUse) {}

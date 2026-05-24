@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
@@ -37,7 +38,7 @@ class WorkstreamServiceTest {
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
     var agentRepository = new InMemoryAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
-    var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC());
+    var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"));
     service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
@@ -146,7 +147,7 @@ class WorkstreamServiceTest {
     assertFalse(response.surface().traceIds().isEmpty());
     assertEquals("agent-user-admin", response.surface().data().get("producingAgentId"));
     assertEquals(response.agentItem().itemId(), response.surface().data().get("workstreamEntryId"));
-    assertTrue(response.surface().data().get("markdown").toString().contains("## User Admin"));
+    assertTrue(response.surface().data().get("markdown").toString().contains("## agent-user-admin model response"));
     assertNotNull(response.surface().data().get("safety"));
     assertNotNull(response.surface().data().get("trace"));
   }
@@ -160,7 +161,7 @@ class WorkstreamServiceTest {
       assertEquals(agentId, response.surface().ownerFunctionalAgentId());
       assertEquals("markdown_response", response.surface().surfaceType());
       assertEquals(agentId, response.surface().data().get("producingAgentId"));
-      assertTrue(response.surface().data().get("markdown").toString().contains("five core workstream v0 starter"));
+      assertTrue(response.surface().data().get("markdown").toString().contains(agentId + " model response"));
     }
   }
 
