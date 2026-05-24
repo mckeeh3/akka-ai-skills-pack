@@ -3,6 +3,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -138,6 +139,7 @@ class WorkstreamServiceTest {
     assertEquals("agent-user-admin", response.agentItem().functionalAgentId());
     assertEquals("markdown_response", response.agentItem().kind());
     assertEquals(response.surface().surfaceId(), response.agentItem().surfaceId());
+    assertNull(response.agentItem().body(), "Successful model response text belongs in the rendered markdown_response surface, not placeholder item copy");
     assertEquals("markdown_response", response.surface().surfaceType());
     assertEquals("agent-user-admin", response.surface().ownerFunctionalAgentId());
     assertEquals("membership-admin", response.surface().authContext().get("selectedContextId"));

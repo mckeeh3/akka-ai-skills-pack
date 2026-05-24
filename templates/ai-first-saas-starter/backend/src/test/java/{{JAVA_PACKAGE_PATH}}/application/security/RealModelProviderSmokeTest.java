@@ -3,6 +3,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -63,7 +64,7 @@ class RealModelProviderSmokeTest {
     assertEquals("markdown_response", response.surface().surfaceType());
     assertEquals("agent-user-admin", response.surface().ownerFunctionalAgentId());
     assertEquals("ready", response.agentItem().status());
-    assertEquals("Model-backed response produced by governed workstream agent runtime.", response.agentItem().body());
+    assertNull(response.agentItem().body(), "Successful model text must render from the markdown_response surface, not from placeholder item copy");
     assertFalse(markdown.isBlank());
     assertFalse(markdown.contains(apiKey), "Provider secret leaked into markdown response");
     assertFalse(response.toString().contains(apiKey), "Provider secret leaked into workstream response DTO");

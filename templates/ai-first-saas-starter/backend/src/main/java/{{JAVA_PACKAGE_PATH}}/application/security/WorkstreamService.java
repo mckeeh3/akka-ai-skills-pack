@@ -164,7 +164,8 @@ public final class WorkstreamService {
         ? runtime.markdown()
         : "## " + functionalAgent.label() + " unavailable\n\nModel-backed workstream execution was blocked before a response was produced. " + runtime.safeErrorSummary() + "\n\nTrace ids: `" + String.join("`, `", traceIds) + "`.";
     var surface = markdownResponseSurface(surfaceId, agentItemId, functionalAgent, actor, requestCorrelationId, traceIds, markdown);
-    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "markdown_response", now, requestCorrelationId, traceIds, surface.surfaceId(), functionalAgent.label(), runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "Model-backed response produced by governed workstream agent runtime." : "Model-backed workstream response blocked by governed runtime/provider boundary.", runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "ready" : "blocked");
+    var agentItemBody = runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? null : "Model-backed workstream response blocked by governed runtime/provider boundary.";
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "markdown_response", now, requestCorrelationId, traceIds, surface.surfaceId(), functionalAgent.label(), agentItemBody, runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "ready" : "blocked");
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), requestCorrelationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
