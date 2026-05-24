@@ -51,8 +51,8 @@ class DurableAgentBehaviorRepositoryStateTest {
     assertEquals("openai-low-temperature", modelConfig.providerAlias());
     assertTrue(modelPolicy.allowedProviderAliases().contains(modelConfig.providerAlias()));
     assertTrue(state.agentDefinition("tenant-2", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).isEmpty());
-    assertEquals(6, state.skillDocuments("tenant-1").size());
-    assertEquals(6, state.referenceDocuments("tenant-1").size());
+    assertEquals(10, state.skillDocuments("tenant-1").size());
+    assertEquals(10, state.referenceDocuments("tenant-1").size());
     assertEquals(0, state.skillDocuments("tenant-2").size());
     assertEquals(0, state.referenceDocuments("tenant-2").size());
   }

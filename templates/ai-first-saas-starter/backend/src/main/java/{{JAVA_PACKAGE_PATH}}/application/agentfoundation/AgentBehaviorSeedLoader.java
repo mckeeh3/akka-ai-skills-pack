@@ -351,7 +351,11 @@ public final class AgentBehaviorSeedLoader {
 
   private record SkillSeed(String documentId, String stableSkillId, String title, String purpose, String whenToUse, String resourcePath, String resourceId) {}
   private record ReferenceSeed(String documentId, String stableReferenceId, String title, String summary, String whenToConsult, ReferenceDocument.ReferenceType referenceType, String accessLevel, String resourcePath, String resourceId) {}
-  private record BasicCoreAgentSeed(String agentDefinitionId, String slug, String displayName, String description, String runtimeClassName, String promptDocumentId, String skillDocumentId, String stableSkillId, String skillTitle, String skillPurpose, String skillWhenToUse, String referenceDocumentId, String stableReferenceId, String referenceTitle, String referenceSummary, String referenceWhenToConsult, String skillManifestId, String referenceManifestId, String toolBoundaryId, String promptResourcePath, String skillResourcePath, String referenceResourcePath) {}
+  private record BasicCoreAgentSeed(String agentDefinitionId, String slug, String displayName, String description, String runtimeClassName, String promptDocumentId, String skillDocumentId, String stableSkillId, String skillTitle, String skillPurpose, String skillWhenToUse, String referenceDocumentId, String stableReferenceId, String referenceTitle, String referenceSummary, String referenceWhenToConsult, String skillManifestId, String referenceManifestId, String toolBoundaryId, String promptResourcePath, String skillResourcePath, String referenceResourcePath) {
+    String functionalAreaId() {
+      return slug;
+    }
+  }
 
   private void validateContent(String content, String artifactId) {
     if (content == null || content.isBlank()) throw new IllegalStateException("missing seed content: " + artifactId);

@@ -3,13 +3,23 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const readTemplateOrRenderedResource = (path) => {
+  for (const root of ['../../backend/src/main/resources', '../../src/main/resources']) {
+    try {
+      return read(`${root}/${path}`);
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+  }
+  return read(`../../backend/src/main/resources/${path}`);
+};
 
 const surfaces = read('./workstream/fixtures/surfaces.ts');
 const workstream = read('./workstream/fixtures/workstream.ts');
-const seedManifest = read('../../backend/src/main/resources/agent-behavior-seeds/starter-v1/manifest.properties');
-const expertiseBundle = read('../../backend/src/main/resources/agent-behavior-seeds/starter-v1/user-admin-agent-expertise.yaml');
-const accessReviewSkill = read('../../backend/src/main/resources/agent-behavior-seeds/starter-v1/access-review-triage.md');
-const lastAdminReference = read('../../backend/src/main/resources/agent-behavior-seeds/starter-v1/last-admin-protection-reference.md');
+const seedManifest = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/manifest.properties');
+const expertiseBundle = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/user-admin-agent-expertise.yaml');
+const accessReviewSkill = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/access-review-triage.md');
+const lastAdminReference = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/last-admin-protection-reference.md');
 
 const seedResources = `${seedManifest}\n${expertiseBundle}`;
 

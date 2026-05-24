@@ -292,7 +292,9 @@
 
 ### TASK-5WS-03-002: Validate scaffold fullstack and update final handoff guidance
 
-- status: pending
+- status: done
+- completion note: Fullstack scaffold validation passes for the five core v0 starter with `markdown_response`; fixed rendered-template compile/test issues in the seeded agent functional-area accessor, governed document count expectation, and frontend contract resource lookup.
+- final handoff note: Remaining full-core work stays outside this five-core-v0 migration: richer My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces; complete invitation/onboarding flows; support access; durable lifecycle histories/projections; searchable audit/trace; policy/governance workflows; tenant-isolation/forbidden-access hardening; and security review before app-specific domain workstreams.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/05-validation/02-validate-scaffold-and-handoff.md
 - depends on: [TASK-5WS-03-001]
@@ -316,3 +318,5 @@
   - Freshly scaffolded starter validation passes with the five-core-v0 shell target.
   - Remaining full-core work is explicit and not claimed as done.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: validate scaffold handoff`
