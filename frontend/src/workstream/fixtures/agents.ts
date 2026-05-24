@@ -2,11 +2,11 @@ import type { FunctionalAgentSummary } from '../types';
 
 export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
   {
-    functionalAgentId: 'agent-access-profile',
-    label: 'Access/Profile',
-    purpose: 'Review signed-in account, selected context, settings, and authority basis.',
-    icon: 'user-circle',
-    defaultSurfaceType: 'detail-edit',
+    functionalAgentId: 'agent-my-account',
+    label: 'My Account',
+    purpose: 'Review signed-in account, selected context, profile, settings, sign-out action, and authority basis.',
+    icon: 'my-account',
+    defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['profile.read'],
     availability: 'visible'
   },
@@ -15,7 +15,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     label: 'User Admin',
     purpose: 'Manage invitations, memberships, roles, and access review.',
     icon: 'users',
-    defaultSurfaceType: 'dashboard',
+    defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['secure-tenant-user-foundation', 'admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.audit.read'],
     attention: { count: 2, severity: 'warning' },
     availability: 'visible'
@@ -25,27 +25,17 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     label: 'Agent Admin',
     purpose: 'Govern agent definitions, prompts, skill manifests, and tool boundaries.',
     icon: 'bot',
-    defaultSurfaceType: 'dashboard',
+    defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['agent.definitions.manage', 'agent.prompts.govern', 'agent.skills.govern', 'agent.tool_boundaries.manage', 'agent.models.read', 'agent.runtime.test'],
     attention: { count: 4, severity: 'critical' },
     availability: 'visible'
-  },
-  {
-    functionalAgentId: 'agent-agent-admin-denied-example',
-    label: 'Agent Admin denied example',
-    purpose: 'Demonstrate safe denied rail state for agent governance when capability scope is absent.',
-    icon: 'bot-off',
-    defaultSurfaceType: 'governance-diff',
-    requiredCapabilityIds: ['agent.definitions.manage'],
-    availability: 'denied',
-    deniedReason: 'Agent governance requires tenant-scoped agent.definitions.manage capability.'
   },
   {
     functionalAgentId: 'agent-audit-trace',
     label: 'Audit/Trace',
     purpose: 'Inspect admin audit events, work traces, decisions, and evidence links.',
     icon: 'timeline',
-    defaultSurfaceType: 'audit-timeline',
+    defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['audit.trace.read'],
     availability: 'visible'
   },
@@ -54,7 +44,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     label: 'Governance/Policy',
     purpose: 'Review policy proposals, approval gates, simulations, and diffs.',
     icon: 'shield',
-    defaultSurfaceType: 'governance-diff',
+    defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['governance.policy.read'],
     attention: { count: 1, severity: 'critical' },
     availability: 'visible'
@@ -80,5 +70,14 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
   }
 ];
 
-export const deniedFunctionalAgentExample = foundationFunctionalAgents.find((agent) => agent.availability === 'denied')!;
+export const deniedFunctionalAgentExample: FunctionalAgentSummary = {
+  functionalAgentId: 'agent-agent-admin-denied-example',
+  label: 'Agent Admin denied example',
+  purpose: 'Demonstrate safe denied rail state for agent governance when capability scope is absent; not part of the default five core v0 rail.',
+  icon: 'bot-off',
+  defaultSurfaceType: 'governance-diff',
+  requiredCapabilityIds: ['agent.definitions.manage'],
+  availability: 'denied',
+  deniedReason: 'Agent governance requires tenant-scoped agent.definitions.manage capability.'
+};
 export const hiddenFunctionalAgentExample = foundationFunctionalAgents.find((agent) => agent.availability === 'hidden')!;

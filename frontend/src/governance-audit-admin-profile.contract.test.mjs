@@ -31,8 +31,8 @@ test('governance, audit, admin, and profile legacy screens are not primary app r
   assert.doesNotMatch(main, /route === 'governance'|route === 'audit'|route === 'admin'|route === 'profile'/);
 });
 
-test('functional agents represent admin, audit, governance, profile, billing, and support work areas', () => {
-  for (const agentId of ['agent-access-profile', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy', 'agent-billing', 'agent-support-access']) {
+test('functional agents represent My Account plus admin, audit, governance, billing, and support work areas', () => {
+  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy', 'agent-billing', 'agent-support-access']) {
     assert.match(agents, new RegExp(agentId));
   }
   assert.match(agents, /availability: 'denied'/);

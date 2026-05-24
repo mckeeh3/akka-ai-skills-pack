@@ -269,7 +269,8 @@
 
 ### TASK-PRODV0-04-001: Sync frontend reference and restore pack buildability
 
-- status: pending
+- status: done
+- completion note: Synced root `frontend/src` from the starter template frontend source, confirmed no frontend source differences remain, and restored pack build validation with `bash tools/build-pack.sh --clean --no-archive`.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/05-validation/01-sync-frontend-reference-build-pack.md
 - depends on: [TASK-PRODV0-03-003]

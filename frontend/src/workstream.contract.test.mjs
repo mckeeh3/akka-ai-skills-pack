@@ -40,25 +40,35 @@ test('me fixtures cover active admin, member, auditor/support, disabled, and for
   assert.match(meFixtures, /visibleCapabilityIds: \[\]/);
 });
 
-test('functional agent fixtures include foundation agents and visibility states', () => {
-  for (const label of ['Access/Profile', 'User Admin', 'Agent Admin', 'Audit/Trace', 'Governance/Policy', 'Billing', 'Support Access']) {
+test('functional agent fixtures expose the five core v0 workstreams as the visible starter rail set', () => {
+  for (const label of ['My Account', 'User Admin', 'Agent Admin', 'Audit/Trace', 'Governance/Policy']) {
     assert.match(agentFixtures, new RegExp(label.replace('/', '\\/')));
   }
-  for (const availability of ["availability: 'visible'", "availability: 'denied'", "availability: 'hidden'", "availability: 'disabled'"]) {
-    assert.match(agentFixtures, new RegExp(availability));
+  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
+    assert.match(agentFixtures, new RegExp(`functionalAgentId: '${agentId}'[\\s\\S]*?availability: 'visible'`));
   }
+  assert.doesNotMatch(agentFixtures, /agent-access-profile/);
+  assert.match(agentFixtures, /not part of the default five core v0 rail/);
+  assert.match(agentFixtures, /availability: 'hidden'/);
+  assert.match(agentFixtures, /availability: 'disabled'/);
   assert.match(agentFixtures, /attention: \{ count: 2, severity: 'warning' \}/);
 });
 
-test('workstream fixtures include every canonical item kind including action feedback', () => {
-  for (const kind of ['user-request', 'agent-response', 'surface', 'capability-result', 'workflow-status', 'decision', 'audit-trace', 'action-feedback', 'system-status']) {
-    assert.match(workstreamFixtures, new RegExp(`kind: '${kind}'`));
+test('workstream fixtures default to five core v0 markdown_response items', () => {
+  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
+    assert.match(workstreamFixtures, new RegExp(`functionalAgentId: '${agentId}'[\\s\\S]*?kind: 'markdown_response'`));
   }
+  assert.match(workstreamTypes, /'user-request'/);
+  assert.match(workstreamTypes, /'action-feedback'/);
+  assert.match(workstreamFixtures, /five core v0 starter/);
   assert.match(workstreamFixtures, /traceLinks/);
 });
 
-test('surface fixtures include canonical surface envelopes and all action intents', () => {
-  for (const surfaceType of ['dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
+test('surface fixtures include five core markdown_response plus explicit full-core demo envelopes and all action intents', () => {
+  assert.match(surfaceFixtures, /fiveCoreV0MarkdownSurfaces/);
+  assert.match(surfaceFixtures, /fullCoreDemoSurfaceEnvelopes/);
+  assert.match(surfaceFixtures, /Full-core follow-up/);
+  for (const surfaceType of ['markdown_response', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
     assert.match(surfaceFixtures, new RegExp(`'${surfaceType}'`));
   }
   for (const intent of ['read', 'command', 'proposal', 'approval', 'workflow', 'governance', 'trace']) {

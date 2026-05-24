@@ -1,6 +1,7 @@
 import type {
   CapabilityActionRequest,
   CapabilityActionResult,
+  ComposerRequest,
   FunctionalAgentSummary,
   MeResponse as WorkstreamMeResponse,
   SurfaceEnvelope,
@@ -15,6 +16,18 @@ export type WorkstreamBootstrapResponse = {
   surfaces: SurfaceEnvelope<unknown>[];
 };
 
+export type WorkstreamMessageRequest = ComposerRequest & {
+  correlationId?: string;
+};
+
+export type WorkstreamMessageResponse = {
+  correlationId: string;
+  idempotencyKey: string;
+  userItem: WorkstreamItem;
+  agentItem: WorkstreamItem;
+  surface: SurfaceEnvelope<unknown>;
+};
+
 export type WorkstreamClient = {
   bootstrap(): Promise<ApiResult<WorkstreamBootstrapResponse>>;
   getMe(): Promise<ApiResult<WorkstreamMeResponse>>;
@@ -22,4 +35,5 @@ export type WorkstreamClient = {
   listWorkstreamItems(functionalAgentId?: string): Promise<ApiResult<WorkstreamItem[]>>;
   getSurface(surfaceId: string): Promise<ApiResult<SurfaceEnvelope<unknown>>>;
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>>;
+  submitWorkstreamMessage(request: WorkstreamMessageRequest): Promise<ApiResult<WorkstreamMessageResponse>>;
 };

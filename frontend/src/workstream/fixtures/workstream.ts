@@ -1,24 +1,68 @@
 import type { WorkstreamItem } from '../types';
 
 const createdAt = '2026-05-19T12:00:00.000Z';
+// The real API bootstrap and fixture bootstrap both start with exactly five core v0 starter markdown_response items.
 
 export const initialWorkstreamItems: WorkstreamItem[] = [
-  { itemId: 'item-user-request', functionalAgentId: 'agent-user-admin', kind: 'user-request', createdAt, correlationId: 'corr-user-request', traceIds: ['trace-user-request'], title: 'Invite a reviewer', body: 'Invite robin@example.test as a reviewer.', status: 'ready' },
-  { itemId: 'item-agent-response', functionalAgentId: 'agent-user-admin', kind: 'agent-response', createdAt, correlationId: 'corr-agent-response', traceIds: ['trace-agent-response'], title: 'Invitation plan drafted', body: 'I can invite the reviewer after confirmation.', status: 'waiting-for-human' },
-  { itemId: 'item-user-admin-dashboard', functionalAgentId: 'agent-user-admin', kind: 'surface', createdAt, correlationId: 'corr-user-admin-dashboard', traceIds: ['trace-user-admin-dashboard'], surfaceId: 'user-admin-dashboard', title: 'User Admin dashboard', status: 'ready' },
-  { itemId: 'item-display-user-list', functionalAgentId: 'agent-user-admin', kind: 'action-feedback', createdAt, correlationId: 'corr-display-user-list', traceIds: ['trace-display-user-list'], surfaceId: 'user-admin-user-list', title: 'Display the user list view', body: 'Open the tenant-scoped user directory, invitation queue, membership rows, support grants, and admin audit excerpts as a structured surface.', status: 'ready' },
-  { itemId: 'item-surface', functionalAgentId: 'agent-user-admin', kind: 'surface', createdAt, correlationId: 'corr-surface', traceIds: ['trace-surface'], surfaceId: 'user-admin-user-list', title: 'Users, invitations, and memberships', status: 'ready' },
-  { itemId: 'item-display-user-detail', functionalAgentId: 'agent-user-admin', kind: 'action-feedback', createdAt, correlationId: 'corr-display-user-detail', traceIds: ['trace-display-user-detail', 'trace-user-admin-detail'], surfaceId: 'user-admin-user-account', title: 'Display user account detail', body: 'Open the tenant-scoped detail/edit surface for admin@example.test with backend-authoritative edit denials and trace links.', status: 'ready' },
-  { itemId: 'item-user-admin-detail', functionalAgentId: 'agent-user-admin', kind: 'surface', createdAt, correlationId: 'corr-user-admin-detail', traceIds: ['trace-user-admin-detail'], surfaceId: 'user-admin-user-account', title: 'Tenant Admin account detail', status: 'ready' },
-  { itemId: 'item-agent-admin-catalog', functionalAgentId: 'agent-agent-admin', kind: 'surface', createdAt, correlationId: 'corr-agent-admin-catalog', traceIds: ['trace-display-agent-catalog'], surfaceId: 'surface-agent-admin-catalog', title: 'Agent Admin command center', status: 'ready' },
-  { itemId: 'item-agent-admin-detail', functionalAgentId: 'agent-agent-admin', kind: 'surface', createdAt, correlationId: 'corr-agent-admin-detail', traceIds: ['trace-agent-work-88'], surfaceId: 'surface-agent-admin-detail', title: 'Procurement Assistant readiness', status: 'ready' },
-  { itemId: 'item-agent-prompt-review', functionalAgentId: 'agent-agent-admin', kind: 'decision', createdAt, correlationId: 'corr-agent-prompt-review', traceIds: ['trace-prompt-assembly-42'], surfaceId: 'surface-agent-prompt-governance', title: 'Prompt governance review requires validation fixes', status: 'waiting-for-human' },
-  { itemId: 'item-agent-tool-boundary', functionalAgentId: 'agent-agent-admin', kind: 'capability-result', createdAt, correlationId: 'corr-tool-boundary-simulation', traceIds: ['trace-tool-boundary-simulation'], surfaceId: 'surface-agent-tool-boundary-diff', title: 'Tool boundary simulation policy-blocked', status: 'blocked' },
-  { itemId: 'item-agent-test-console', functionalAgentId: 'agent-agent-admin', kind: 'workflow-status', createdAt, correlationId: 'corr-agent-test-console', traceIds: ['trace-skill-load-17'], surfaceId: 'surface-agent-test-console', title: 'No-side-effect test console waiting', status: 'waiting-for-human' },
-  { itemId: 'item-capability-result', functionalAgentId: 'agent-user-admin', kind: 'capability-result', createdAt, correlationId: 'corr-capability-result', traceIds: ['trace-capability-result'], title: 'Invitation accepted', body: 'Capability admin.users.invite accepted the request.', status: 'ready' },
-  { itemId: 'item-workflow-status', functionalAgentId: 'agent-user-admin', kind: 'workflow-status', createdAt, correlationId: 'corr-workflow', traceIds: ['trace-workflow'], surfaceId: 'surface-workflow-status', title: 'Invitation workflow waiting', status: 'waiting-for-human' },
-  { itemId: 'item-decision', functionalAgentId: 'agent-governance-policy', kind: 'decision', createdAt, correlationId: 'corr-decision', traceIds: ['trace-decision'], surfaceId: 'surface-decision-card', title: 'Approve bounded outreach plan', status: 'waiting-for-human' },
-  { itemId: 'item-audit-trace', functionalAgentId: 'agent-audit-trace', kind: 'audit-trace', createdAt, correlationId: 'corr-audit', traceIds: ['trace-invite'], surfaceId: 'surface-audit-timeline', title: 'Admin audit event recorded', status: 'ready', traceLinks: [{ traceId: 'trace-invite', label: 'Invitation trace', href: '/ui?surfaceId=surface-audit-timeline' }] },
-  { itemId: 'item-action-feedback', functionalAgentId: 'agent-user-admin', kind: 'action-feedback', createdAt, correlationId: 'corr-feedback', traceIds: ['trace-feedback'], title: 'Opened result surface', body: 'The workflow status surface was appended to the workstream.', surfaceId: 'surface-workflow-status', status: 'ready' },
-  { itemId: 'item-system-status', functionalAgentId: 'agent-access-profile', kind: 'system-status', createdAt, correlationId: 'corr-system', traceIds: [], title: 'Realtime reconnected', body: 'Events resumed from the last known event id.', status: 'ready' }
+  {
+    itemId: 'item-v0-my-account-markdown',
+    functionalAgentId: 'agent-my-account',
+    kind: 'markdown_response',
+    createdAt,
+    correlationId: 'corr-v0-my-account-markdown',
+    traceIds: ['trace-surface-v0-my-account-markdown'],
+    surfaceId: 'surface-v0-my-account-markdown',
+    title: 'My Account v0 response',
+    body: 'Five core v0 starter surface for account, profile, settings, selected context, and authority basis.',
+    status: 'ready'
+  },
+  {
+    itemId: 'item-v0-user-admin-markdown',
+    functionalAgentId: 'agent-user-admin',
+    kind: 'markdown_response',
+    createdAt,
+    correlationId: 'corr-v0-user-admin-markdown',
+    traceIds: ['trace-surface-v0-user-admin-markdown'],
+    surfaceId: 'surface-v0-user-admin-markdown',
+    title: 'User Admin v0 response',
+    body: 'Five core v0 starter surface for invitations, memberships, roles, and access review questions.',
+    status: 'ready'
+  },
+  {
+    itemId: 'item-v0-agent-admin-markdown',
+    functionalAgentId: 'agent-agent-admin',
+    kind: 'markdown_response',
+    createdAt,
+    correlationId: 'corr-v0-agent-admin-markdown',
+    traceIds: ['trace-surface-v0-agent-admin-markdown'],
+    surfaceId: 'surface-v0-agent-admin-markdown',
+    title: 'Agent Admin v0 response',
+    body: 'Five core v0 starter surface for governed agent definitions, prompts, skills, tool boundaries, models, and traces.',
+    status: 'ready'
+  },
+  {
+    itemId: 'item-v0-audit-trace-markdown',
+    functionalAgentId: 'agent-audit-trace',
+    kind: 'markdown_response',
+    createdAt,
+    correlationId: 'corr-v0-audit-trace-markdown',
+    traceIds: ['trace-surface-v0-audit-trace-markdown'],
+    surfaceId: 'surface-v0-audit-trace-markdown',
+    title: 'Audit/Trace v0 response',
+    body: 'Five core v0 starter surface for browser-safe audit and trace summaries.',
+    status: 'ready',
+    traceLinks: [{ traceId: 'trace-surface-v0-audit-trace-markdown', label: 'Audit/Trace fixture trace', href: '/ui?surfaceId=surface-v0-audit-trace-markdown' }]
+  },
+  {
+    itemId: 'item-v0-governance-policy-markdown',
+    functionalAgentId: 'agent-governance-policy',
+    kind: 'markdown_response',
+    createdAt,
+    correlationId: 'corr-v0-governance-policy-markdown',
+    traceIds: ['trace-surface-v0-governance-policy-markdown'],
+    surfaceId: 'surface-v0-governance-policy-markdown',
+    title: 'Governance/Policy v0 response',
+    body: 'Five core v0 starter surface for policy guardrails, approval boundaries, and deferred full-core behavior.',
+    status: 'ready'
+  }
 ];

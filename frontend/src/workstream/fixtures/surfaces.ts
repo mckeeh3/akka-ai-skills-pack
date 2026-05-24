@@ -498,6 +498,81 @@ function envelope<TData>(surfaceId: string, surfaceType: string, title: string, 
   };
 }
 
+function markdownResponseEnvelope(surfaceId: string, title: string, ownerFunctionalAgentId: string, markdown: string): SurfaceEnvelope<unknown> {
+  return envelope(
+    surfaceId,
+    'markdown_response',
+    title,
+    ownerFunctionalAgentId,
+    {
+      markdown,
+      title,
+      summary: 'Five core v0 starter markdown_response surface; richer full-core structured surfaces remain follow-up/demo surfaces.',
+      workstreamEntryId: `item-${surfaceId}`,
+      producingAgentId: ownerFunctionalAgentId,
+      sourceRefs: [
+        { refType: 'capability', refId: 'five-core-v0', label: 'Five core v0 starter scope' },
+        { refType: 'trace', refId: `trace-${surfaceId}`, label: 'Fixture workstream trace' }
+      ],
+      sections: [
+        { anchor: 'available-now', title: 'Available now' },
+        { anchor: 'full-core-follow-up', title: 'Full-core follow-up' }
+      ],
+      safety: {
+        sanitized: true,
+        blockedUnsafeLinks: 0,
+        blockedRawHtml: true,
+        redactionNote: 'Fixture markdown excludes provider secrets, raw JWTs, invitation tokens, and hidden capabilities.'
+      },
+      trace: { correlationId: `corr-${surfaceId}`, traceIds: [`trace-${surfaceId}`] }
+    },
+    [surfaceActionsByIntent.trace]
+  );
+}
+
+export const myAccountMarkdownSurface = markdownResponseEnvelope(
+  'surface-v0-my-account-markdown',
+  'My Account v0 response',
+  'agent-my-account',
+  '## My Account\n\n### Available now\n- Review signed-in profile, settings, selected context, and browser-safe capability basis.\n- Use backend-authorized profile/settings actions for changes.\n\n### Full-core follow-up\nRicher profile and settings edit surfaces remain explicit full-core follow-up/demo behavior.'
+);
+
+export const userAdminMarkdownSurface = markdownResponseEnvelope(
+  'surface-v0-user-admin-markdown',
+  'User Admin v0 response',
+  'agent-user-admin',
+  '## User Admin\n\n### Available now\n- Ask about invitations, memberships, roles, and tenant-scoped access review.\n- Message submission returns a backend-authorized `markdown_response`.\n\n### Full-core follow-up\nStructured user tables, invitation workflows, and access-review actions remain full-core follow-up/demo surfaces.'
+);
+
+export const agentAdminMarkdownSurface = markdownResponseEnvelope(
+  'surface-v0-agent-admin-markdown',
+  'Agent Admin v0 response',
+  'agent-agent-admin',
+  '## Agent Admin\n\n### Available now\n- Review seeded agent definitions, prompts, skills, tool boundaries, model refs, and trace obligations at starter scope.\n\n### Full-core follow-up\nPrompt editors, manifest diffs, model governance, and test consoles remain full-core follow-up/demo surfaces.'
+);
+
+export const auditTraceMarkdownSurface = markdownResponseEnvelope(
+  'surface-v0-audit-trace-markdown',
+  'Audit/Trace v0 response',
+  'agent-audit-trace',
+  '## Audit/Trace\n\n### Available now\n- Ask for browser-safe audit and trace summaries for the selected context.\n- Correlation and trace ids are preserved in the response envelope.\n\n### Full-core follow-up\nRich audit timelines and investigation views remain full-core follow-up/demo surfaces.'
+);
+
+export const governancePolicyMarkdownSurface = markdownResponseEnvelope(
+  'surface-v0-governance-policy-markdown',
+  'Governance/Policy v0 response',
+  'agent-governance-policy',
+  '## Governance/Policy\n\n### Available now\n- Ask about policy guardrails, approval boundaries, deferred decisions, and safe next steps.\n\n### Full-core follow-up\nPolicy simulations, proposal diffs, and approval cards remain full-core follow-up/demo surfaces.'
+);
+
+export const fiveCoreV0MarkdownSurfaces = [
+  myAccountMarkdownSurface,
+  userAdminMarkdownSurface,
+  agentAdminMarkdownSurface,
+  auditTraceMarkdownSurface,
+  governancePolicyMarkdownSurface
+];
+
 export const userAdminDashboardSurface = envelope(
   'user-admin-dashboard',
   'dashboard',
@@ -526,6 +601,33 @@ export const userAdminDashboardSurface = envelope(
       error: 'Error state shows correlationId without privileged counts.',
       forbidden: 'Forbidden state hides counts and row identities for cross-tenant, disabled actor, or missing capability denial.',
       stale: 'Stale state preserves trace-user-admin-dashboard and disables mutations until refresh.'
+    },
+    expertiseManifest: {
+      bundleId: 'user-admin-agent.expertise',
+      skillManifestId: 'manifest-user-admin',
+      referenceManifestId: 'reference-manifest-user-admin',
+      compactManifestOnly: true,
+      skills: [
+        { skillId: 'ua.access-review-triage.v1', title: 'Access Review Triage', whenToUse: 'Use for stale memberships, risky roles, pending reviews, and proposed access remediation.' },
+        { skillId: 'ua.invitation-drafting.v1', title: 'Invitation Drafting', whenToUse: 'Use when preparing invitation rationale or human-confirmed invitation actions.' },
+        { skillId: 'ua.audit-summary.v1', title: 'Admin Audit Summary', whenToUse: 'Use when explaining changes, denials, and trace evidence.' }
+      ],
+      references: [
+        { referenceId: 'ua.tenant-role-catalog.v1', title: 'Tenant Role and Capability Catalog', whenToConsult: 'Explain role meanings and capability ids.' },
+        { referenceId: 'ua.access-review-policy.v1', title: 'Access Review Policy', whenToConsult: 'Evaluate stale access, review cadence, and escalation triggers.' },
+        { referenceId: 'ua.last-admin-protection.v1', title: 'Last Admin Protection Rule', whenToConsult: 'Explain blocked removal, disable, or role downgrade.' }
+      ],
+      authorizedLoadExamples: [
+        { tool: 'readSkill(skillId)', targetId: 'ua.access-review-triage.v1', decision: 'allowed', trace: 'SkillLoadTrace' },
+        { tool: 'readReferenceDoc(referenceId)', targetId: 'ua.last-admin-protection.v1', decision: 'allowed', trace: 'ReferenceLoadTrace' }
+      ],
+      deniedLoadExamples: [
+        { targetId: 'unassigned-skill', decision: 'denied', reason: 'unassigned skill denied', trace: 'SkillLoadTrace' },
+        { targetId: 'unassigned-reference', decision: 'denied', reason: 'unassigned reference denied', trace: 'ReferenceLoadTrace' },
+        { targetId: 'readReferenceDoc(referenceId)', decision: 'denied', reason: 'missing read_reference tool-boundary grant returns TOOL_BOUNDARY_DENIED', trace: 'AgentWorkTrace' }
+      ],
+      authorityBoundary: 'SkillDocument and ReferenceDocument text cannot grant roles, tenant scope, tool access, approval rights, or backend capabilities.',
+      traceRequirements: ['PromptAssemblyTrace', 'SkillLoadTrace', 'ReferenceLoadTrace', 'AgentWorkTrace', 'AdminAuditEvent']
     }
   },
   [
@@ -839,7 +941,7 @@ export const agentAdminTraceSurface = envelope(
   [agentAdminSurfaceActions.openAgentTrace]
 );
 
-export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-access-profile', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }] }, [surfaceActionsByIntent.read]);
+export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-my-account', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }], scopeNote: 'Full-core/demo surface; the default five core v0 starter acceptance target is markdown_response.' }, [surfaceActionsByIntent.read]);
 export const listSearchSurface = userAdminListSearchSurface;
 export const detailEditSurface = userAdminDetailEditSurface;
 export const decisionSurface = envelope('surface-decision-card', 'decision', 'Approve bounded outreach plan', 'agent-governance-policy', { decisionId: 'decision-1', recommendation: 'Approve after evidence review.', riskScore: 72, confidenceScore: 84, evidence: [{ evidenceId: 'evidence-1', label: 'Trace summary', summary: 'Agent stayed within tool boundary.' }] }, [surfaceActionsByIntent.approval, surfaceActionsByIntent.trace]);
@@ -848,7 +950,7 @@ export const workflowStatusSurface = envelope('surface-workflow-status', 'workfl
 export const governanceDiffSurface = envelope('surface-governance-diff', 'governance-diff', 'Policy proposal diff', 'agent-governance-policy', { proposalId: 'proposal-1', beforeSummary: 'Manual approval over 75 risk.', afterSummary: 'Manual approval over 65 risk.', changes: [{ path: 'risk.approvalThreshold', before: '75', after: '65', impact: 'More decisions require human review.' }] }, [surfaceActionsByIntent.proposal, surfaceActionsByIntent.governance]);
 export const outcomeSurface = envelope('surface-outcome-review', 'outcome', 'Outcome review', 'agent-governance-policy', { outcomeId: 'outcome-1', metrics: [{ metricId: 'decision-cycle-time', label: 'Decision cycle time', current: 4, target: 2, unit: 'hours' }] }, [surfaceActionsByIntent.read]);
 
-export const canonicalSurfaceEnvelopes = [
+export const fullCoreDemoSurfaceEnvelopes = [
   userAdminDashboardSurface,
   userAdminListSearchSurface,
   agentAdminCatalogSurface,
@@ -867,6 +969,10 @@ export const canonicalSurfaceEnvelopes = [
   workflowStatusSurface,
   governanceDiffSurface,
   outcomeSurface
+];
+
+export const canonicalSurfaceEnvelopes = [
+  ...fiveCoreV0MarkdownSurfaces
 ];
 export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions)];
 

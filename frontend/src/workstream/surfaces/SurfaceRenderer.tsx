@@ -5,6 +5,7 @@ import { DecisionSurface } from './DecisionSurface';
 import { DetailEditSurface } from './DetailEditSurface';
 import { GovernanceDiffSurface } from './GovernanceDiffSurface';
 import { ListSearchSurface } from './ListSearchSurface';
+import { MarkdownResponseSurface } from './MarkdownResponseSurface';
 import { OutcomeSurface } from './OutcomeSurface';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
@@ -25,6 +26,8 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
   }
 
   switch (selectedEnvelope.surfaceType) {
+    case 'markdown_response':
+      return <MarkdownResponseSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'dashboard':
       return <DashboardSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'list-search':

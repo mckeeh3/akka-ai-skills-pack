@@ -12,9 +12,9 @@ const apiClient = read('./api/FixtureWorkstreamApiClient.ts');
 const httpApiClient = read('./api/HttpWorkstreamApiClient.ts');
 const main = read('./main.tsx');
 
-test('User Admin functional agent defaults to a dashboard and uses the governed foundation capability', () => {
+test('User Admin functional agent defaults to markdown_response and uses the governed foundation capability', () => {
   assert.match(agents, /label: 'User Admin'/);
-  assert.match(agents, /defaultSurfaceType: 'dashboard'/);
+  assert.match(agents, /defaultSurfaceType: 'markdown_response'/);
   assert.match(agents, /secure-tenant-user-foundation/);
   assert.match(me, /secure-tenant-user-foundation/);
 });
@@ -95,13 +95,12 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /displayUserDetailActionResult/);
 });
 
-test('workstream and API clients support dashboard-to-list-to-detail navigation feedback', () => {
-  assert.match(workstream, /item-display-user-list/);
-  assert.match(workstream, /Display the user list view/);
-  assert.match(workstream, /user-admin-user-list/);
-  assert.match(workstream, /item-display-user-detail/);
-  assert.match(workstream, /Display user account detail/);
-  assert.match(workstream, /user-admin-user-account/);
+test('workstream and API clients support five core markdown plus demo dashboard-to-list-to-detail navigation feedback', () => {
+  assert.match(workstream, /item-v0-user-admin-markdown/);
+  assert.match(workstream, /kind: 'markdown_response'/);
+  assert.match(surfaces, /user-admin-user-list/);
+  assert.match(surfaces, /Display user account detail/);
+  assert.match(surfaces, /user-admin-user-account/);
   assert.match(apiClient, /displayUserListActionResult/);
   assert.match(apiClient, /displayUserDetailActionResult/);
   assert.match(apiClient, /action-display-user-list/);
@@ -115,13 +114,11 @@ test('workstream and API clients support dashboard-to-list-to-detail navigation 
   assert.match(main, /selectedSurfaceId: targetSurface\.surfaceId/);
 });
 
-test('composer opens User Admin list/detail surfaces instead of page routes', () => {
+test('composer submits through backend workstream message API instead of page routes or frontend heuristics', () => {
   assert.match(main, /handleComposerSubmit/);
-  assert.match(main, /showUsers/);
-  assert.match(main, /showUserDetail/);
-  assert.match(main, /user-admin-user-list/);
-  assert.match(main, /user-admin-user-account/);
-  assert.match(main, /requestedSurface/);
-  assert.match(main, /kind: 'surface'/);
+  assert.match(main, /submitWorkstreamMessage/);
+  assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
+  assert.match(main, /userItem, agentItem/);
+  assert.doesNotMatch(main, /showUsers|showUserDetail|requestedSurface/);
   assert.doesNotMatch(main, /window\.location\.assign\('\/users/);
 });

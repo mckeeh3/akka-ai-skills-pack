@@ -28,7 +28,7 @@ export function WorkstreamStream({ items, selectedItemId, surfaces = [], onOpenS
       {items.map((item) => (
         <div key={item.itemId} className="workstream-flow-entry">
           {item.kind !== 'surface' && <WorkstreamItemCard item={item} onOpenSurface={onOpenSurface} />}
-          {item.surfaceId && item.kind === 'surface' && (
+          {item.surfaceId && (item.kind === 'surface' || item.kind === 'markdown_response') && (
             <SurfaceRenderer envelopes={surfaces} selectedSurfaceId={item.surfaceId} onAction={onSurfaceAction} />
           )}
         </div>
