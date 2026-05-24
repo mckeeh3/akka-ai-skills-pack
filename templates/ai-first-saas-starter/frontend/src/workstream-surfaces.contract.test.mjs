@@ -11,11 +11,14 @@ const traceLinks = read('./workstream/stream/TraceLinkList.tsx');
 const streamState = read('./workstream/stream/streamState.ts');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const actionBar = read('./workstream/surfaces/SurfaceActionBar.tsx');
+const markdownResponse = read('./workstream/surfaces/MarkdownResponseSurface.tsx');
+const surfaceTypes = read('./workstream/types/surfaces.ts');
 const stateFrame = read('./workstream/surfaces/SurfaceStateFrame.tsx');
 const surfaceIndex = read('./workstream/surfaces/index.ts');
 const workstreamIndex = read('./workstream/index.ts');
 
 const surfaceComponentFiles = [
+  './workstream/surfaces/MarkdownResponseSurface.tsx',
   './workstream/surfaces/DashboardSurface.tsx',
   './workstream/surfaces/ListSearchSurface.tsx',
   './workstream/surfaces/DetailEditSurface.tsx',
@@ -43,10 +46,31 @@ test('workstream stream components cover canonical item kinds and action feedbac
 
 test('structured surface renderer routes every canonical surface type', () => {
   assert.match(renderer, /StructuredSurfaceRenderer/);
-  for (const surfaceType of ['dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
+  for (const surfaceType of ['markdown_response', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
     assert.match(renderer, new RegExp(`case '${surfaceType}'`));
   }
+  assert.match(renderer, /MarkdownResponseSurface/);
   assert.match(renderer, /JSON\.stringify/);
+});
+
+test('markdown_response is typed, sanitized, traceable, and never routed to raw JSON fallback', () => {
+  assert.match(surfaceTypes, /MarkdownResponseData/);
+  assert.match(surfaceTypes, /surfaceType: CanonicalSurfaceType \| string/);
+  assert.match(surfaceTypes, /'markdown_response'/);
+  assert.match(surfaceTypes, /markdown: string/);
+  assert.match(surfaceTypes, /safety\?:/);
+  assert.match(markdownResponse, /function renderMarkdownToSanitizedElements/);
+  assert.match(markdownResponse, /sanitizedBlocks/);
+  assert.doesNotMatch(markdownResponse, /dangerouslySetInnerHTML|\.innerHTML\s*=/);
+  assert.match(markdownResponse, /unsafeSchemePattern/);
+  assert.match(markdownResponse, /javascript\|data\|vbscript/);
+  assert.match(markdownResponse, /rel="noopener noreferrer"/);
+  assert.match(markdownResponse, /blocked-link/);
+  assert.match(markdownResponse, /SurfaceStateFrame state=\{\{ status: 'empty'/);
+  assert.match(markdownResponse, /SurfaceStateFrame state=\{\{ status: 'forbidden'/);
+  assert.match(markdownResponse, /Trace links:/);
+  assert.match(markdownResponse, /data-correlation-id=\{envelope\.correlationId\}/);
+  assert.match(renderer, /case 'markdown_response':\n      return <MarkdownResponseSurface/);
 });
 
 test('base surface frame and action bar preserve envelope, stale, redaction, disabled, confirmation, approval, and trace affordances', () => {
@@ -62,7 +86,7 @@ test('base surface frame and action bar preserve envelope, stale, redaction, dis
 });
 
 test('canonical surface components include dashboard, list/search, detail/edit, decision, audit, workflow, governance diff, and outcome patterns', () => {
-  for (const componentName of ['DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface']) {
+  for (const componentName of ['MarkdownResponseSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface']) {
     assert.match(surfaceIndex, new RegExp(componentName));
     assert.match(allSurfaceComponents, new RegExp(`function ${componentName}`));
   }

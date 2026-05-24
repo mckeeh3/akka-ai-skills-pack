@@ -4,6 +4,7 @@ export * from './DecisionSurface';
 export * from './DetailEditSurface';
 export * from './GovernanceDiffSurface';
 export * from './ListSearchSurface';
+export * from './MarkdownResponseSurface';
 export * from './OutcomeSurface';
 export * from './SurfaceActionBar';
 export * from './SurfaceRenderer';

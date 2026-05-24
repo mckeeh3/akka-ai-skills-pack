@@ -134,7 +134,8 @@
 
 ### TASK-5WS-02-001: Implement frontend markdown_response surface renderer
 
-- status: pending
+- status: done
+- completion note: Added typed `markdown_response` frontend surface rendering with safe markdown element conversion, blocked unsafe link schemes, trace/correlation metadata, empty/redacted states, renderer wiring, exports, and contract coverage. Also corrected the User Admin expertise frontend contract test resource path so the required frontend test command can resolve backend seed resources.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/04-frontend/01-implement-markdown-response-renderer.md
 - depends on: [TASK-5WS-01-003]
@@ -160,6 +161,8 @@
   - `markdown_response` is a first-class rendered structured surface in the starter frontend.
   - Tests fail if unsafe markdown rendering is reintroduced.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: implement markdown response renderer`
 
 ### TASK-5WS-02-002: Add backend workstream message endpoint and markdown_response contract
 

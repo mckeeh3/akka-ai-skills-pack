@@ -2,7 +2,7 @@ import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
 export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op';
-export type CanonicalSurfaceType = 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome';
+export type CanonicalSurfaceType = 'markdown_response' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome';
 
 export type SurfaceLink = {
   label: string;
@@ -38,6 +38,38 @@ export type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction
   data: TData;
   actions: TAction[];
   links?: SurfaceLink[];
+};
+
+export type MarkdownResponseSourceRef = {
+  refType: 'capability' | 'trace' | 'document' | 'evidence';
+  refId: string;
+  label: string;
+};
+
+export type MarkdownResponseSection = {
+  anchor: string;
+  title: string;
+};
+
+export type MarkdownResponseData = {
+  markdown: string;
+  title?: string;
+  summary?: string;
+  workstreamEntryId: string;
+  producingAgentId: string;
+  codeBlockLanguageHints?: string[];
+  sourceRefs?: MarkdownResponseSourceRef[];
+  sections?: MarkdownResponseSection[];
+  safety?: {
+    sanitized: boolean;
+    blockedUnsafeLinks?: number;
+    blockedRawHtml?: boolean;
+    redactionNote?: string;
+  };
+  trace?: {
+    correlationId?: string;
+    traceIds?: string[];
+  };
 };
 
 export type DashboardSurfaceData = {
