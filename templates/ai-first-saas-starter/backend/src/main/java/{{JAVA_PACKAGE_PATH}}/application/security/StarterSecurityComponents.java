@@ -3,6 +3,8 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.OpenAiModelProviderClient;
 import java.time.Clock;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -16,6 +18,7 @@ public final class StarterSecurityComponents {
   private static final InMemoryAgentBehaviorRepository AGENT_BEHAVIOR_REPOSITORY = new InMemoryAgentBehaviorRepository();
   private static final AgentBehaviorSeedLoader AGENT_BEHAVIOR_SEED_LOADER = new AgentBehaviorSeedLoader(AGENT_BEHAVIOR_REPOSITORY, CLOCK);
   private static final AgentRuntimeService AGENT_RUNTIME_SERVICE = new AgentRuntimeService(AGENT_BEHAVIOR_REPOSITORY, AUTH_CONTEXT_RESOLVER, CLOCK);
+  private static final ModelProviderClient MODEL_PROVIDER_CLIENT = new OpenAiModelProviderClient();
   private static final MeService ME_SERVICE = new MeService(AUTH_CONTEXT_RESOLVER);
   private static final UserAdminService USER_ADMIN_SERVICE = new UserAdminService(IDENTITY_REPOSITORY, CLOCK);
   private static final InvitationService INVITATION_SERVICE = new InvitationService(IDENTITY_REPOSITORY, INVITATION_REPOSITORY, CLOCK);
@@ -71,6 +74,10 @@ public final class StarterSecurityComponents {
 
   public static AgentRuntimeService agentRuntimeService() {
     return AGENT_RUNTIME_SERVICE;
+  }
+
+  public static ModelProviderClient modelProviderClient() {
+    return MODEL_PROVIDER_CLIENT;
   }
 
   private static void seedDemoTenantAdmin() {

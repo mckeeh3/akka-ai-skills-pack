@@ -100,7 +100,8 @@
 
 ### TASK-PRODV0-02-001: Implement backend model provider client boundary
 
-- status: pending
+- status: done
+- completion note: Added a backend-only ModelProviderClient boundary, real OpenAI chat-completions adapter using OPENAI_API_KEY/model/endpoint/timeout environment configuration, fail-closed missing-provider validation, safe redacted summaries, and focused tests with a clearly named unit-test fake for request shaping, error mapping, redaction, and missing config.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/02-agent-runtime/01-implement-model-provider-client.md
 - depends on: [TASK-PRODV0-01-002]
