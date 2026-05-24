@@ -53,7 +53,7 @@ test('structured surface renderer routes every canonical surface type', () => {
   assert.match(renderer, /JSON\.stringify/);
 });
 
-test('markdown_response is typed, sanitized, traceable, and never routed to raw JSON fallback', () => {
+test('markdown_response is typed, sanitized, text-only, and never routed to raw JSON fallback', () => {
   assert.match(surfaceTypes, /MarkdownResponseData/);
   assert.match(surfaceTypes, /surfaceType: CanonicalSurfaceType \| string/);
   assert.match(surfaceTypes, /'markdown_response'/);
@@ -68,8 +68,9 @@ test('markdown_response is typed, sanitized, traceable, and never routed to raw 
   assert.match(markdownResponse, /blocked-link/);
   assert.match(markdownResponse, /SurfaceStateFrame state=\{\{ status: 'empty'/);
   assert.match(markdownResponse, /SurfaceStateFrame state=\{\{ status: 'forbidden'/);
-  assert.match(markdownResponse, /Trace links:/);
-  assert.match(markdownResponse, /data-correlation-id=\{envelope\.correlationId\}/);
+  assert.match(markdownResponse, /markdown-response-only/);
+  assert.match(markdownResponse, /<div className="markdown-response-content">\{sanitizedBlocks\}<\/div>/);
+  assert.doesNotMatch(markdownResponse, /Trace links:|surface-summary|data-correlation-id|SurfaceActionBar|SurfaceStateFrame envelope=\{envelope\}/);
   assert.match(renderer, /case 'markdown_response':\n      return <MarkdownResponseSurface/);
 });
 

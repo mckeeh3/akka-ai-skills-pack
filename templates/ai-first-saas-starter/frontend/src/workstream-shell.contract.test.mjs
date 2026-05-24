@@ -23,6 +23,9 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(railItem, /iconGlyph/);
   assert.match(toggle, /aria-expanded=\{!collapsed\}/);
   assert.match(toggle, /aria-controls="workstream-functional-agent-rail-list"/);
+  assert.match(toggle, /collapsed \? 'Expand sidebar' : 'Collapse sidebar'/);
+  assert.match(toggle, /workstream-rail-toggle-tooltip/);
+  assert.doesNotMatch(toggle, /title=/);
   assert.match(rail, /aria-label="Functional agents"/);
   assert.match(rail, /rail-user-button/);
   assert.match(rail, /Profile/);
@@ -46,6 +49,11 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
   assert.match(composer, /input\.style\.height = 'auto'/);
   assert.match(composer, /input\.scrollHeight/);
   assert.match(composer, /autoFocus/);
+  assert.match(composer, /onKeyDown=\{submitFromKeyboard\}/);
+  assert.match(composer, /event\.key !== 'Enter' \|\| event\.shiftKey/);
+  assert.match(composer, /event\.currentTarget\.form\?\.requestSubmit\(\)/);
+  assert.match(composer, /workstream-send-prompt-tooltip/);
+  assert.doesNotMatch(composer, /title=/);
   assert.match(composer, /buildComposerRequest/);
 });
 
@@ -55,6 +63,8 @@ test('workstream shell composes left rail, continuous flow, and floating persist
   assert.match(shell, /<WorkstreamPanel/);
   assert.match(shell, /<WorkstreamComposer/);
   assert.match(shell, /submittingFunctionalAgentId === selectedFunctionalAgentId/);
+  assert.match(shell, /useEffect\(\(\) => \{/);
+  assert.match(shell, /setSelectedFunctionalAgentId\(initialFunctionalAgentId \?\? initialAgentId\)/);
   assert.match(shell, /aria-label="Persistent composer region"/);
   assert.match(panel, /<main id="main-content" className="content workstream-panel"/);
   assert.match(panel, /workstream-flow/);

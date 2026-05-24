@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import type { MarkdownResponseData, SurfaceAction, SurfaceEnvelope } from '../types';
-import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type MarkdownResponseSurfaceProps = {
@@ -155,7 +154,7 @@ export function renderMarkdownToSanitizedElements(markdown: string) {
   return blocks;
 }
 
-export function MarkdownResponseSurface({ envelope, onAction }: MarkdownResponseSurfaceProps) {
+export function MarkdownResponseSurface({ envelope }: MarkdownResponseSurfaceProps) {
   if (envelope.redaction.omittedFieldKeys?.includes('markdown')) {
     return <SurfaceStateFrame state={{ status: 'forbidden', message: 'This response was redacted for the selected context.', recovery: 'Open an authorized context or ask for a safe summary.' }} />;
   }
@@ -168,29 +167,10 @@ export function MarkdownResponseSurface({ envelope, onAction }: MarkdownResponse
   const sanitizedBlocks = renderMarkdownToSanitizedElements(markdown);
 
   return (
-    <SurfaceStateFrame envelope={envelope}>
-      <article className="markdown-response-surface" data-correlation-id={envelope.correlationId} data-producing-agent-id={envelope.data.producingAgentId} data-workstream-entry-id={envelope.data.workstreamEntryId}>
-        {envelope.data.title && <h4>{envelope.data.title}</h4>}
-        {envelope.data.summary && <p className="surface-summary">{envelope.data.summary}</p>}
+    <section className="structured-surface surface-frame markdown_response markdown-response-only" data-surface-id={envelope.surfaceId} aria-label="Model response">
+      <article className="markdown-response-surface">
         <div className="markdown-response-content">{sanitizedBlocks}</div>
-        {(envelope.traceIds.length > 0 || envelope.data.sourceRefs?.length) && (
-          <aside className="markdown-response-trace" aria-label="Markdown response trace and source references">
-            {envelope.traceIds.length > 0 && (
-              <p>Trace links: {envelope.traceIds.map((traceId, index) => (
-                <a key={traceId} href={`/ui?traceId=${encodeURIComponent(traceId)}`} rel="noopener noreferrer">{index > 0 ? ', ' : ''}{traceId}</a>
-              ))}</p>
-            )}
-            {envelope.data.sourceRefs?.length ? (
-              <ul>
-                {envelope.data.sourceRefs.map((sourceRef) => (
-                  <li key={`${sourceRef.refType}:${sourceRef.refId}`}>{sourceRef.label} <span>({sourceRef.refType})</span></li>
-                ))}
-              </ul>
-            ) : null}
-          </aside>
-        )}
       </article>
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
-    </SurfaceStateFrame>
+    </section>
   );
 }

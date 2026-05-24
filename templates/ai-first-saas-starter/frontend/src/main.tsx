@@ -316,7 +316,6 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   return (
     <>
     <WorkstreamShell
-      key={selectedFunctionalAgentId}
       me={me}
       initialFunctionalAgentId={selectedFunctionalAgentId}
       items={selectedItems}

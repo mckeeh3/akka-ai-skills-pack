@@ -9,6 +9,14 @@ type WorkstreamItemCardProps = {
 };
 
 export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardProps) {
+  if (item.kind === 'user-request') {
+    return (
+      <article id={item.itemId} className="ds-card workstream-item user-request prompt-input-surface" tabIndex={-1} aria-label="Prompt input">
+        <p>{item.body ?? item.title ?? ''}</p>
+      </article>
+    );
+  }
+
   if (item.kind === 'action-feedback') {
     return <ActionFeedbackItem item={item} onOpenSurface={onOpenSurface} />;
   }

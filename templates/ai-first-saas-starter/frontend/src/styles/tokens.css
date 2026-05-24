@@ -18,6 +18,7 @@
 
   --shell-sidebar-width: 16rem;
   --content-max-width: 96rem;
+  --workstream-composer-scroll-clearance: 22rem;
   --card-padding: 1rem;
   --control-height: 2.5rem;
 }
