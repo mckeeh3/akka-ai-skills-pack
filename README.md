@@ -155,7 +155,7 @@ After scaffolding, ask the harness to inspect the generated project before chang
 
 ```text
 Review the scaffolded starter app for minimum AI-first SaaS starter readiness.
-Read specs/scaffold-report.md, app-description/, specs/, backend/, frontend/, .env.example,
+Read specs/scaffold-report.md, app-description/, specs/, pom.xml, src/, frontend/, .env.example,
 and frontend/.env.example if present.
 
 Do not implement changes yet. Do not give me a broad perfect-SaaS backlog.
@@ -202,7 +202,7 @@ and which values can remain as local/test placeholders for now.
 Do not commit real secrets.
 ```
 
-Typical later values include WorkOS/AuthKit, JWT configuration, Resend, bootstrap admin settings, and optional model-provider keys. Local/dev/test may use captured outbox behavior where supported.
+Typical values include WorkOS/AuthKit, JWT configuration, Resend, bootstrap admin settings, and backend-only model-provider keys such as `OPENAI_API_KEY` when validating real model-backed workstream agents. Local/dev/test may use captured outbox behavior for email where supported, but model-backed workstream message submission must be blocked with an actionable provider-configuration error when provider variables are missing; it must not silently return deterministic placeholder text.
 
 ### Step 5 — Run the app checks and fix scaffold-level issues first
 
@@ -217,18 +217,31 @@ Report every command run and its result.
 
 ### Step 6 — Make the five core v0 workstreams functional
 
-Once basic checks pass, continue with the first starter target rather than jumping to domain work:
+Once basic checks pass, continue with the first starter target rather than jumping to domain work. The five core v0 app is not functional until normal workstream message submission goes through real governed prompt assembly and a configured backend model provider. Missing provider configuration should produce a safe blocked/error response, not a canned deterministic answer.
 
 ```text
 Use the installed skills pack to continue the initial app rollout.
-Focus on making all five core v0 workstreams functional end to end:
+Focus on making all five core v0 workstreams functional end to end with real
+model-backed workstream-agent responses:
 My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 For each workstream, preserve bootstrap-authorized access, selected AuthContext,
 durable workstream entries, markdown_response rendering, backend capability checks,
-denials, and audit/work traces.
+denials, prompt/model/work traces, and frontend secret boundaries.
+Use backend-only provider variables such as OPENAI_API_KEY and configured model id/endpoint
+from .env. If provider configuration is missing, block message submission with an
+actionable error; do not use deterministic placeholder text as normal runtime behavior.
 Update app-description/specs/pending-tasks as needed before code changes.
 Implement one small task at a time and include tests.
 ```
+
+Manual model-backed smoke checklist after the workstream-agent runtime is implemented:
+
+1. Start the Akka app with backend-only provider variables loaded from `.env`; keep `OPENAI_API_KEY` out of `frontend/.env*` and static assets.
+2. Sign in through AuthKit as a configured `ADMIN_USERS` account.
+3. Select each core workstream: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+4. Submit a short prompt in each workstream and verify the response is a provider-backed `markdown_response`, not deterministic fixture copy.
+5. Check prompt/model/work trace surfaces or trace APIs for correlation ids and redacted provider metadata.
+6. Re-run once with provider variables absent and verify message submission is safely blocked with actionable recovery copy and no secret leakage.
 
 This phase teaches the repeatable app pattern: functional agent/workstream, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.
 

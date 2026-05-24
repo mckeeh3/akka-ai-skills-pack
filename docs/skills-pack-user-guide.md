@@ -94,7 +94,7 @@ source .env
 set +a
 ```
 
-Backend-only variables include `WORKOS_API_KEY`, `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `ADMIN_USERS`, `APP_PUBLIC_BASE_URL`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, `RESEND_API_BASE_URL`, and model-provider variables such as `OPENAI_API_KEY` when workstream agents are model-backed. The frontend build uses browser-public `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI`. Never put backend secrets in frontend env files or built assets. Generated Java config loaders should log each missing required backend env var as an error with the exact env var name and no secret value. Generated Akka apps should load `ADMIN_USERS` from the service's single `@Setup` `ServiceSetup.onStartup()` bootstrap path, with idempotent startup behavior for repeated service-instance starts. Missing provider configuration should block provider-backed message submission with an actionable error instead of silently returning deterministic placeholder text.
+Backend-only variables include `WORKOS_API_KEY`, `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `ADMIN_USERS`, `APP_PUBLIC_BASE_URL`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, `RESEND_API_BASE_URL`, and model-provider variables such as `OPENAI_API_KEY`, model id, endpoint, and timeout when workstream agents are model-backed. The frontend build uses browser-public `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI`. Never put backend secrets in frontend env files or built assets. Generated Java config loaders should log each missing required backend env var as an error with the exact env var name and no secret value. Generated Akka apps should load `ADMIN_USERS` from the service's single `@Setup` `ServiceSetup.onStartup()` bootstrap path, with idempotent startup behavior for repeated service-instance starts. Missing provider configuration should block provider-backed message submission with an actionable error instead of silently returning deterministic placeholder text.
 
 Initial scaffold validation commands:
 
@@ -109,13 +109,15 @@ cd ..
 mvn compile exec:java
 ```
 
+When the workstream-agent runtime is implemented, also run a manual real-model smoke before calling the five core v0 app functional: load backend-only provider variables from `.env`, sign in, select My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, submit one prompt in each workstream, verify provider-backed `markdown_response` output plus prompt/model/work traces, and confirm no provider secret appears in `/api/me`, workstream payloads, frontend env, built assets, or trace displays. Repeat once with provider variables unset and verify submission is blocked with an actionable provider-configuration error rather than deterministic fallback text.
+
 After `npm run build`, Akka serves the workstream UI from `/`, `/ui`, `/workstream`, and `/assets/**`; protected data and actions still go through JWT-secured `/api/...` endpoints.
 
 ### Choose skills-only vs starter scaffold
 
 Use **skills-only install** when you already have an application, want the harness to plan from PRDs before code exists, or only need pack guidance in a repository. In this mode `.agents/` is the support library and the harness creates or updates `app-description/`, `specs/`, source, and tests in your project workspace.
 
-Use **starter scaffold** for a new secure AI-first SaaS app when you want the packaged five core v0 shell as the first implementation baseline. Scaffold into an empty or bootstrap-only project, commit the scaffolded files, make My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional with `markdown_response`, then extend by adding product input under `docs/input/` and asking the harness to reconcile that input into the existing `app-description/`, `specs/`, and `specs/pending-tasks.md` queue. A scaffolded project is identifiable by `specs/scaffold-report.md`; the harness should treat the starter code and descriptions as the extension base rather than regenerating a separate app from scratch.
+Use **starter scaffold** for a new secure AI-first SaaS app when you want the packaged five core v0 shell as the first implementation baseline. Scaffold into an empty or bootstrap-only project, commit the scaffolded files, make My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional with real model-backed `markdown_response` behavior, then extend by adding product input under `docs/input/` and asking the harness to reconcile that input into the existing `app-description/`, `specs/`, and `specs/pending-tasks.md` queue. A scaffolded project is identifiable by `specs/scaffold-report.md`; the harness should treat the starter code and descriptions as the extension base rather than regenerating a separate app from scratch.
 
 ## Getting started: build the core app from PRD inputs
 
@@ -437,7 +439,7 @@ bash install.sh --location project --project /path/to/project
 /path/to/project/.agents/bin/scaffold-ai-first-saas-starter.sh --target /path/to/project --app-name "My App" --base-package ai.first
 ```
 
-Then commit the scaffolded baseline. First make the five core v0 workstreams functional for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response`, backend authorization, capability checks, and audit/work traces. To extend it, put feature PRDs, domain notes, bugs, or manual test results under `docs/input/` and ask the harness to update the existing app-description/specs before coding. The scaffold's `specs/scaffold-report.md` records the Java base package and rendered paths; the harness should preserve them and create new vertical capability tasks instead of replacing the starter foundation.
+Then commit the scaffolded baseline. First make the five core v0 workstreams functional for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with real model-backed `markdown_response`, backend authorization, capability checks, provider/configuration failure handling, and audit/work traces. To extend it, put feature PRDs, domain notes, bugs, or manual test results under `docs/input/` and ask the harness to update the existing app-description/specs before coding. The scaffold's `specs/scaffold-report.md` records the Java base package and rendered paths; the rendered backend is rooted at `pom.xml` and `src/` (not a `backend/` subdirectory), so the harness should preserve those paths and create new vertical capability tasks instead of replacing the starter foundation.
 
 Example extension prompt for a scaffolded app:
 

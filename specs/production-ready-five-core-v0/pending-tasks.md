@@ -75,7 +75,8 @@
 
 ### TASK-PRODV0-01-002: Update getting-started prompts for real model-backed workstream agents
 
-- status: pending
+- status: done
+- completion note: Updated getting-started and starter-template guidance to require real model-backed five-core workstream behavior, document backend-only provider config and fail-closed missing-provider handling, correct rendered backend paths to `pom.xml`/`src/`, and add manual smoke checks for sign-in, workstream prompts, traces, and secret boundaries.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/01-doctrine/02-update-real-agent-getting-started.md
 - depends on: [TASK-PRODV0-01-001]
