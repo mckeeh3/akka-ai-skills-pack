@@ -119,12 +119,15 @@ public final class AgentRuntimeService {
 
   public RuntimeInvocationResult failWorkstreamAgentInvocation(RuntimeInvocationRequest request, RuntimeInvocationPreparation preparation, RuntimeException failure) {
     var safeSummary = safeReason(failure);
+    var safeErrorCode = failure instanceof ModelProviderClient.ModelProviderException providerFailure
+        ? providerFailure.failure().safeCode()
+        : "AKKA_AGENT_INVOCATION_FAILED";
     var traceIds = new ArrayList<>(preparation.traceIds());
     var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, preparation.modelConfigRefId(), safeSummary, null);
-    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "Akka Agent component invocation failed closed: " + safeSummary, null);
+    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "Akka Agent component invocation failed closed: " + safeErrorCode + "; " + safeSummary, null);
     traceIds.add(modelTrace.traceId());
     traceIds.add(workTrace.traceId());
-    return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, traceIds, "AKKA_AGENT_INVOCATION_FAILED", safeSummary);
+    return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, traceIds, safeErrorCode, safeSummary);
   }
 
   /** Test-adapter helper only; production browser/API paths must invoke WorkstreamRuntimeAgent through ComponentClient. */

@@ -159,7 +159,8 @@
 
 ### TASK-WSAGENT-03-001: Add real provider smoke validation for Akka Agent path
 
-- status: pending
+- status: done
+- completion note: Added a real-provider smoke that routes through WorkstreamService and the ComponentClient-backed WorkstreamRuntimeAgent, scans smoke logs/frontend env/static assets for provider-secret leaks, reports skip state clearly when `OPENAI_API_KEY` is absent, and validated both skip/fullstack and real-provider modes.
 - source: specs/workstream-akka-agent-runtime/backlog/01-workstream-akka-agent-runtime-backlog.md
 - task brief: specs/workstream-akka-agent-runtime/tasks/02-validation/01-add-real-provider-smoke-for-akka-agent-path.md
 - depends on: [TASK-WSAGENT-02-002]
@@ -186,6 +187,10 @@
   - Maintainers can distinguish CI-safe tests from real local provider validation.
   - There is a documented command that proves the actual Akka Agent-backed workstream path with a real model provider.
   - A focused git commit exists with message `workstream-agent: add real provider smoke`.
+- notes:
+  - checks: `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh`; `env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh`; `tools/smoke-ai-first-saas-starter-real-model.sh`; `git diff --check`; `rg -n "Akka Agent smoke|provider smoke|OPENAI_API_KEY|skip|real provider|workstream message" tools templates/ai-first-saas-starter specs/workstream-akka-agent-runtime/pending-tasks.md`
+  - real-provider smoke result: passed with configured local `OPENAI_API_KEY`; script scanned smoke logs, frontend env files, and static assets for the exact provider secret.
+  - commit message: `workstream-agent: add real provider smoke`
 
 ### TASK-WSAGENT-04-001: Update docs and completion gates for Akka Agent-backed v0
 

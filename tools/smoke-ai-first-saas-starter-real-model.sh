@@ -29,11 +29,13 @@ Options:
   --help                  Show this help text
 
 Behavior:
-  - If OPENAI_API_KEY is absent or blank, the command exits 0 and reports a skip.
+  - If OPENAI_API_KEY is absent or blank, the command exits 0 and reports an
+    Akka Agent smoke skip that is safe for CI.
   - If provider env is present, it runs a targeted JUnit smoke that submits a
-    workstream message through backend WorkstreamService and verifies provider-
-    backed markdown_response plus prompt/model/work trace shape without exposing
-    provider secrets.
+    workstream message through backend WorkstreamService, invokes the
+    ComponentClient-backed WorkstreamRuntimeAgent, and verifies provider-backed
+    markdown_response plus prompt/model/work trace shape without exposing
+    provider secrets in DTOs, frontend env files, static assets, or smoke logs.
 EOF
 }
 
@@ -88,8 +90,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "${OPENAI_API_KEY:-}" || -z "${OPENAI_API_KEY//[[:space:]]/}" ]]; then
-  log "Provider smoke skipped: OPENAI_API_KEY is not set or is blank."
-  log "To enable: export OPENAI_API_KEY, optionally OPENAI_MODEL_ID/OPENAI_API_BASE_URL/OPENAI_REQUEST_TIMEOUT_SECONDS, then rerun this command."
+  log "Akka Agent smoke skipped: OPENAI_API_KEY is not set or is blank."
+  log "To enable real provider validation: export OPENAI_API_KEY, optionally OPENAI_MODEL_ID/OPENAI_API_BASE_URL/OPENAI_REQUEST_TIMEOUT_SECONDS, then rerun this command."
   exit 0
 fi
 
@@ -130,10 +132,48 @@ else
   log "Using existing scaffolded target: $TARGET_DIR"
 fi
 
-log "Running provider smoke through backend workstream message submission"
-(
-  cd "$TARGET_DIR"
-  mvn -DrealModelProviderSmoke=true -Dtest=RealModelProviderSmokeTest test
-)
+SMOKE_LOG="$(mktemp "${TMPDIR:-/tmp}/ai-first-saas-starter-real-model-smoke.XXXXXX.log")"
+cleanup_log() {
+  rm -f "$SMOKE_LOG"
+}
+trap 'cleanup; cleanup_log' EXIT
 
-log "Real model provider smoke passed"
+redact_smoke_log() {
+  python3 - "$SMOKE_LOG" "${OPENAI_API_KEY}" <<'PY'
+from pathlib import Path
+import sys
+path = Path(sys.argv[1])
+secret = sys.argv[2]
+text = path.read_text(errors="replace") if path.exists() else ""
+if secret:
+    text = text.replace(secret, "[REDACTED_OPENAI_API_KEY]")
+sys.stdout.write(text)
+PY
+}
+
+scan_path_for_provider_secret() {
+  local path="$1"
+  [[ -e "$path" ]] || return 0
+  if grep -RIF --line-number -- "${OPENAI_API_KEY}" "$path" >/dev/null 2>&1; then
+    fail "Provider secret was found in $path"
+  fi
+}
+
+log "Running real provider Akka Agent smoke through backend workstream message submission"
+if ! ( cd "$TARGET_DIR" && mvn -DrealModelProviderSmoke=true -Dtest=RealModelProviderSmokeTest test ) >"$SMOKE_LOG" 2>&1; then
+  log "Real provider Akka Agent smoke failed; sanitized Maven output follows."
+  redact_smoke_log >&2
+  exit 1
+fi
+
+if grep -F -- "${OPENAI_API_KEY}" "$SMOKE_LOG" >/dev/null 2>&1; then
+  fail "Provider secret was found in smoke logs; raw log suppressed."
+fi
+
+scan_path_for_provider_secret "$TARGET_DIR/frontend/.env"
+scan_path_for_provider_secret "$TARGET_DIR/frontend/.env.local"
+scan_path_for_provider_secret "$TARGET_DIR/frontend/.env.development"
+scan_path_for_provider_secret "$TARGET_DIR/frontend/.env.production"
+scan_path_for_provider_secret "$TARGET_DIR/src/main/resources/static-resources"
+
+log "Real provider Akka Agent smoke passed without provider-secret leaks in smoke logs, frontend env, or static assets"
