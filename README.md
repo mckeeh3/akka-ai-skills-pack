@@ -80,18 +80,18 @@ The scaffold writes `specs/scaffold-report.md`, backend source, `frontend/` Reac
 ## Quick install
 
 Current manifest version:
-- `0.2.7`
+- `0.2.8`
 
 Install the current GitHub release into the current directory as `<current-directory>/.agents`:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.7/install-akka-ai-skills-pack-0.2.7.sh | bash -s --
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.8/install-akka-ai-skills-pack-0.2.8.sh | bash -s --
 ```
 
 Install into a specific project directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.7/install-akka-ai-skills-pack-0.2.7.sh | bash -s -- --target-dir /path/to/project
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.8/install-akka-ai-skills-pack-0.2.8.sh | bash -s -- --target-dir /path/to/project
 ```
 
 For global installs, dry runs, archive installs, and detailed usage, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md).
@@ -115,7 +115,7 @@ akka code init
 # Project directory name: my-ai-first-app
 # Which AI assistant: None
 cd my-ai-first-app
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.7/install-akka-ai-skills-pack-0.2.7.sh | bash -s --
+curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.8/install-akka-ai-skills-pack-0.2.8.sh | bash -s --
 ```
 
 ### Step 2 — Ask the harness to scaffold the starter
