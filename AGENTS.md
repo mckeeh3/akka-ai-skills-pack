@@ -34,6 +34,12 @@ When asked to create or revise Akka components here, first interpret them as one
 Do **not** silently treat this repository as if it were the end-user's Akka application unless the user clearly says they want to work on an example app in this repo.
 If the user's real goal is to build a separate Akka app that merely **uses** this pack, make that distinction explicit.
 
+### Runtime completion doctrine for generated apps
+
+When this repository's guidance, templates, or tasks describe a generated Akka feature as implemented, complete, or ready, that claim must mean the real local runtime path works at the stated scope. Akka local execution is production-like validation for generated apps and should be used aggressively for runtime/API/UI features rather than avoided in favor of static or fixture-only checks.
+
+Do not teach downstream harnesses to accept deterministic/demo/mock/simulated/model-less normal runtime behavior for workstream agents, auth, durability, provider calls, protected capabilities, authorization denials, or audit/work traces. Missing provider or security configuration should fail closed with actionable errors. Fixtures, mocks, deterministic fakes, and test doubles belong in tests or explicitly named test adapters only; they must not be the user-facing runtime substitute used to mark features done.
+
 ---
 
 ## Core repo principle
@@ -49,6 +55,7 @@ The repository's skills, docs, examples, and routing structure exist primarily t
 - decompose work before coding
 - load only the smallest relevant guidance
 - generate consistent code and tests over time
+- refuse to count deterministic/demo/mock/simulated normal runtime paths as implemented generated-app features
 
 Implications:
 - skills are **internal routing assets**, not the user interface

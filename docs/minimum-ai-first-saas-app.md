@@ -38,7 +38,7 @@ The first functional agents are the **five core v0 workstream agents**, scoped t
 | Audit/Trace | Explain available audit/work trace substrate, trace links, correlation ids, denial traces, and deferred search/investigation surfaces. |
 | Governance/Policy | Explain policy/permission concepts, approval/governance boundaries, behavior-change controls, and deferred full-core governance surfaces. |
 
-In v0 each workstream may be intentionally narrow, but each must still be a real functional-agent workstream.
+In v0 each workstream may be intentionally narrow, but each must still be a real functional-agent workstream. If the workstream claims model-backed behavior, message submission must run through the governed prompt/runtime path and a configured provider boundary; missing provider configuration must produce a safe blocked/error surface and trace, not a deterministic canned reply. Deterministic/demo/mock/model-less workstream replies are acceptable only as explicitly named test doubles or fixture-mode development aids, never as the normal runtime path used to call the starter functional.
 
 Minimum responsibilities across the five core v0 agents:
 
@@ -87,6 +87,8 @@ Required from the first slice:
 - audit/work trace substrate for identity, authorization, agent prompt/skill/tool use, capability checks, data access, and denials;
 - capability-first backend modeling before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
 - tests for allowed bootstrap access, forbidden access, disabled or missing authority where modeled, trace creation, markdown sanitization, five-core workstream visibility, and frontend secret boundaries.
+
+Akka local execution is the production-like validation path for the starter. Minimum starter readiness requires local backend/API/UI smoke or manual validation that exercises the real runtime behavior, not only fixture rendering or mocked unit tests. Test fixtures and fakes should be named as such and isolated to tests.
 
 Prompt instructions, loaded skill text, hidden UI state, and route names cannot grant authority. The backend capability contract remains authoritative.
 

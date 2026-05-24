@@ -47,7 +47,8 @@
 
 ### TASK-PRODV0-01-001: Harden implementation completion doctrine against mock/demo runtime paths
 
-- status: pending
+- status: done
+- completion note: Hardened source and installed-pack guidance to require real local Akka runtime validation for named generated-app features, reject normal-runtime deterministic/demo/mock/simulated substitutes, fail closed on missing provider/security configuration, and keep fixtures/test doubles isolated to tests.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/01-doctrine/01-harden-completion-doctrine.md
 - depends on: [TASK-PRODV0-00-001]

@@ -123,6 +123,12 @@ Use those references when you need:
 - edge-case semantics
 - feature behavior not fully covered by the installed examples
 
+## Implementation completion standard
+
+A generated-app feature is complete only when the real local runtime path works at the stated scope. Treat Akka local execution as production-like validation: use it, plus endpoint/UI smoke checks where relevant, to prove that named behavior actually runs through the generated backend, authorization, durability, provider, trace, and frontend paths.
+
+Do not mark user auth, sign-in, invitation onboarding, User Admin, Agent Admin, workstream agents, protected capabilities, provider-backed model calls, audit/traces, or app-specific workstreams done when the normal runtime path is deterministic/demo/mock/simulated/model-less. Missing provider/configuration must fail closed with an actionable error, not silently fall back to a canned response. Test fixtures, mocks, deterministic fakes, and test doubles are valid only as tests or explicitly named test adapters; they are not user-facing runtime substitutes and do not by themselves satisfy feature readiness.
+
 ## Working style
 
 Prefer this pattern:

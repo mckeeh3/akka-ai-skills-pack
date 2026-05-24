@@ -8,6 +8,8 @@ This pack is **not** intended as a general-purpose generator for traditional CRU
 
 The pack is designed so users can speak naturally to the harness. You should not need to know the internal skill names, stages, or routing files.
 
+Generated-app features are considered complete only when the real local Akka runtime path works at the stated scope. Akka local execution is production-like validation for this pack: workstream agents, auth, durability, provider-backed model calls, protected capabilities, denials, traces, API responses, and frontend surfaces should be exercised through normal runtime paths before being called done. Deterministic/demo/mock/simulated/model-less behavior belongs only in tests or explicitly named fixture modes; it must not be the user-facing substitute for implemented runtime features.
+
 A primary benefit of the pack is that it can maintain a durable **application description** in addition to generating code. For non-trivial apps, the harness can capture the app's intent, behavior, goals, objectives, security posture, UI expectations, tests, observability, governance rules, open questions, and realization readiness in structured project documents. Those documents become an authoritative source of truth that developers can interrogate through their AI harness: asking what the app is supposed to do, why a behavior exists, what a change impacts, which decisions remain open, and whether generated code is still aligned with product intent.
 
 ## Who this is for
@@ -73,7 +75,7 @@ Default installs are skills/resource-only. To start a new app from the packaged 
   --base-package ai.first
 ```
 
-The scaffold writes `specs/scaffold-report.md`, backend source, `frontend/` React/Vite workstream UI source, and a project `.env.example` documenting local WorkOS/AuthKit, JWT, Resend, admin-bootstrap, frontend public AuthKit values, and optional model-provider variables. The `ai.first` package in the command above is the accepted/deferred default example; generated apps should use the selected Java base package and must not silently inherit `com.example` from reference examples. Backend secrets such as `WORKOS_API_KEY`, `RESEND_API_KEY`, JWT configuration, and `OPENAI_API_KEY` belong only in backend environment/deployment configuration; only `VITE_` variables are browser-public.
+The scaffold writes `specs/scaffold-report.md`, backend source, `frontend/` React/Vite workstream UI source, and a project `.env.example` documenting local WorkOS/AuthKit, JWT, Resend, admin-bootstrap, frontend public AuthKit values, and model-provider variables when workstream agents are model-backed. The `ai.first` package in the command above is the accepted/deferred default example; generated apps should use the selected Java base package and must not silently inherit `com.example` from reference examples. Backend secrets such as `WORKOS_API_KEY`, `RESEND_API_KEY`, JWT configuration, and `OPENAI_API_KEY` belong only in backend environment/deployment configuration; only `VITE_` variables are browser-public. Missing provider configuration should fail closed with an actionable runtime error instead of a deterministic canned response.
 
 ## Quick install
 

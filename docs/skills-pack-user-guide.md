@@ -94,7 +94,7 @@ source .env
 set +a
 ```
 
-Backend-only variables include `WORKOS_API_KEY`, `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `ADMIN_USERS`, `APP_PUBLIC_BASE_URL`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, `RESEND_API_BASE_URL`, and optional `OPENAI_API_KEY` for future model-backed agent calls. The frontend build uses browser-public `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI`. Never put backend secrets in frontend env files or built assets. Generated Java config loaders should log each missing required backend env var as an error with the exact env var name and no secret value. Generated Akka apps should load `ADMIN_USERS` from the service's single `@Setup` `ServiceSetup.onStartup()` bootstrap path, with idempotent startup behavior for repeated service-instance starts.
+Backend-only variables include `WORKOS_API_KEY`, `WORKOS_API_BASE_URL`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, `ADMIN_USERS`, `APP_PUBLIC_BASE_URL`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `INVITE_EMAIL_FROM`, `INVITE_EMAIL_SUBJECT`, `RESEND_API_BASE_URL`, and model-provider variables such as `OPENAI_API_KEY` when workstream agents are model-backed. The frontend build uses browser-public `VITE_WORKOS_CLIENT_ID` and `VITE_WORKOS_REDIRECT_URI`. Never put backend secrets in frontend env files or built assets. Generated Java config loaders should log each missing required backend env var as an error with the exact env var name and no secret value. Generated Akka apps should load `ADMIN_USERS` from the service's single `@Setup` `ServiceSetup.onStartup()` bootstrap path, with idempotent startup behavior for repeated service-instance starts. Missing provider configuration should block provider-backed message submission with an actionable error instead of silently returning deterministic placeholder text.
 
 Initial scaffold validation commands:
 
@@ -188,7 +188,7 @@ The full-core PRD input set is intentionally multi-module. The important orderin
 | Module | Purpose | Manual-test target |
 |---|---|---|
 | 1. Minimal Auth and App Access MVP | WorkOS/AuthKit seam, `/api/me`, selected AuthContext, shell, Access/Profile. | Sign in, enter shell, inspect context, see safe no-access/forbidden/disabled states. |
-| 2. Agent Workstream Runtime Bootstrap | Seeded AgentDefinitions, prompts, skills, manifests, tool boundaries, runtime resolver, composer invocation, traces. | Select Access/Profile or User Admin bootstrap agent and get deterministic backend-agent-runtime-backed workstream responses. |
+| 2. Agent Workstream Runtime Bootstrap | Seeded AgentDefinitions, prompts, skills, manifests, tool boundaries, runtime resolver, composer invocation, traces. | Select Access/Profile or User Admin bootstrap agent and get a governed backend-agent-runtime-backed workstream response; if model-backed, verify configured provider invocation or an actionable fail-closed provider error. |
 | 3. User Administration | Invitations, captured outbox/Resend boundary, memberships, roles, disable/reactivate, access review, admin audit. | Invite/resend/revoke/accept users and manage memberships through User Admin workstream surfaces. |
 | 4. Agent Definition Foundation | Durable AgentDefinition lifecycle and Agent Admin catalog/detail. | Create/view/update/activate/disable/archive agent definitions. |
 | 5. Prompt Governance | Prompt documents, versions, diff/review/activation, prompt assembly/test console. | Draft/review/activate a prompt and run a safe prompt-backed test. |
@@ -358,6 +358,8 @@ Task status changes are also harness-owned. During execution the harness should 
 
 Default rule: the harness executes one pending task per fresh harness session.
 
+Completion rule: the harness should mark a runtime task done only after the real local Akka path works at the task's stated scope. Akka local execution is production-like validation for generated apps. Normal user-facing behavior for auth, workstream agents, durability, provider-backed model calls, protected capabilities, denials, and audit/work traces must not be deterministic/demo/mock/simulated/model-less unless the task explicitly says it is adding a test double or fixture mode. Test doubles, mocks, and fixtures are useful for automated tests, but they must stay isolated from the default runtime path and cannot by themselves prove feature readiness.
+
 Use a fresh session prompt like:
 
 ```text
@@ -376,7 +378,7 @@ This is usually more efficient than doing an entire sprint in one long harness s
 
 After the runnable tasks for a sprint are complete, ask the harness to summarize what changed and how to test it. Then perform manual testing through the relevant surfaces: API, UI, integrations, or local app behavior.
 
-A sprint goal is complete only when the named app state works at the selected scope in the locally running Akka app or through the documented local test substitute. If a deferral prevents the named feature from working, treat the sprint as narrowed, blocked, or incomplete rather than completed.
+A sprint goal is complete only when the named app state works at the selected scope in the locally running Akka app through the intended runtime/API/UI surface. A documented local test substitute is acceptable only when the sprint explicitly narrows scope to a test adapter or non-runtime validation. If a deferral prevents the named feature from working, treat the sprint as narrowed, blocked, or incomplete rather than completed.
 
 Example prompts:
 

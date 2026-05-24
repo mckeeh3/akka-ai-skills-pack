@@ -47,6 +47,8 @@ Audit/work trace recording starts in this first slice for identity basis, AuthCo
 
 Full-core generated SaaS readiness remains stricter than this minimum starter. The five core workstream v0 set is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
 
+A workstream is not production-ready just because fixture items render or a deterministic placeholder response exists. Named workstream behavior must pass through the real local Akka runtime path: selected AuthContext, backend authorization, durable workstream entries, governed prompt/runtime assembly, configured model/provider invocation when model-backed, trace emission, API response, and frontend rendering. Provider/configuration failures should become safe system-message surfaces and traces. Mocks, fixtures, deterministic fakes, and test doubles are allowed only in tests or explicitly labeled fixture modes; they are not normal runtime substitutes.
+
 ## Core terms
 
 | Term | Meaning |
@@ -117,7 +119,7 @@ Common internal agents:
 - extraction, enrichment, or normalization agent;
 - escalation triage agent.
 
-Internal agents still require governed `AgentDefinition`, approved prompt/skill references, tool boundaries, model policy, AuthContext or service authority basis, trace emission, and deterministic tests where applicable.
+Internal agents still require governed `AgentDefinition`, approved prompt/skill references, tool boundaries, model policy, AuthContext or service authority basis, trace emission, and deterministic tests where applicable. Deterministic tests should use isolated test doubles; they do not replace the production-like local runtime path for model-backed or provider-backed behavior.
 
 ## Surfaces
 
