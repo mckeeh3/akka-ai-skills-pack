@@ -84,32 +84,68 @@ public final class AgentRuntimeService {
     }
   }
 
-  public RuntimeInvocationResult invokeWorkstreamAgent(RuntimeInvocationRequest request) {
+  public RuntimeInvocationPreparation prepareWorkstreamAgentInvocation(RuntimeInvocationRequest request) {
     var promptRequest = new PromptAssemblyRequest(request.tenantId(), request.agentDefinitionId(), request.authContext(), "runtime", INVOKE_CAPABILITY, request.correlationId(), request.userInput());
     var prompt = assemblePrompt(promptRequest);
     if (prompt.decision() != AgentRuntimeTrace.Decision.ALLOWED) {
       var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "workstream agent invocation blocked during PromptAssemblyTrace: " + prompt.safeDenialReason(), prompt.checksum());
-      return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "AGENT_RUNTIME_DENIED", prompt.safeDenialReason());
+      return new RuntimeInvocationPreparation(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "AGENT_RUNTIME_DENIED", prompt.safeDenialReason(), null, null);
     }
-    var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "runtime");
-    var modelBinding = activeModelBinding(request.tenantId(), agent, "runtime", INVOKE_CAPABILITY);
+    try {
+      var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "runtime");
+      var modelBinding = activeModelBinding(request.tenantId(), agent, "runtime", INVOKE_CAPABILITY);
+      var governedRequest = new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
+          prompt.assembledSystemPrompt(),
+          modelBinding.model().providerAlias(),
+          request.agentDefinitionId(),
+          request.correlationId(),
+          safe(request.userInput()),
+          List.of(prompt.traceId()));
+      return new RuntimeInvocationPreparation(AgentRuntimeTrace.Decision.ALLOWED, governedRequest, List.of(prompt.traceId()), null, null, prompt.checksum(), modelBinding.model().modelConfigRefId());
+    } catch (RuntimeException failure) {
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "workstream agent invocation blocked by governed runtime resolution: " + safeReason(failure), prompt.checksum());
+      return new RuntimeInvocationPreparation(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "AGENT_RUNTIME_DENIED", safeReason(failure), prompt.checksum(), null);
+    }
+  }
+
+  public RuntimeInvocationResult completeWorkstreamAgentInvocation(RuntimeInvocationRequest request, RuntimeInvocationPreparation preparation, WorkstreamRuntimeAgent.MarkdownResponse response) {
+    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, response.producingAgentId(), safe(response.trace()), checksum(response.markdown()));
+    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "Akka Agent component produced model-backed markdown_response; modelConfigRef=" + preparation.modelConfigRefId(), checksum(response.markdown() + preparation.promptChecksum()));
+    var traceIds = new ArrayList<>(preparation.traceIds());
+    traceIds.add(modelTrace.traceId());
+    traceIds.add(workTrace.traceId());
+    return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.ALLOWED, response.markdown(), traceIds, null, null);
+  }
+
+  public RuntimeInvocationResult failWorkstreamAgentInvocation(RuntimeInvocationRequest request, RuntimeInvocationPreparation preparation, RuntimeException failure) {
+    var safeSummary = safeReason(failure);
+    var traceIds = new ArrayList<>(preparation.traceIds());
+    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, preparation.modelConfigRefId(), safeSummary, null);
+    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "Akka Agent component invocation failed closed: " + safeSummary, null);
+    traceIds.add(modelTrace.traceId());
+    traceIds.add(workTrace.traceId());
+    return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, traceIds, "AKKA_AGENT_INVOCATION_FAILED", safeSummary);
+  }
+
+  /** Test-adapter helper only; production browser/API paths must invoke WorkstreamRuntimeAgent through ComponentClient. */
+  public RuntimeInvocationResult invokeWorkstreamAgent(RuntimeInvocationRequest request) {
+    var preparation = prepareWorkstreamAgentInvocation(request);
+    if (preparation.decision() != AgentRuntimeTrace.Decision.ALLOWED) {
+      return new RuntimeInvocationResult(preparation.decision(), null, preparation.traceIds(), preparation.safeErrorCode(), preparation.safeErrorSummary());
+    }
     try {
       var providerResponse = modelProviderClient.invoke(new ModelProviderClient.ModelProviderRequest(
-          modelBinding.model().providerAlias(),
-          modelBinding.model().modelConfigRefId(),
-          prompt.assembledSystemPrompt(),
-          safe(request.userInput()),
+          preparation.governedRequest().modelProviderAlias(),
+          preparation.modelConfigRefId(),
+          preparation.governedRequest().assembledSystemPrompt(),
+          preparation.governedRequest().redactedUserInput(),
           request.tenantId(),
           request.agentDefinitionId(),
           request.correlationId(),
-          List.of(prompt.traceId())));
-      var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, providerResponse.providerRequestId(), providerResponse.safeSummary(), checksum(providerResponse.markdown()));
-      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "model-backed markdown_response produced; finishReason=" + providerResponse.finishReason() + "; modelConfigRef=" + modelBinding.model().modelConfigRefId(), checksum(providerResponse.markdown() + prompt.checksum()));
-      return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.ALLOWED, providerResponse.markdown(), List.of(prompt.traceId(), modelTrace.traceId(), workTrace.traceId()), null, null);
+          preparation.traceIds()));
+      return completeWorkstreamAgentInvocation(request, preparation, new WorkstreamRuntimeAgent.MarkdownResponse(providerResponse.markdown(), request.agentDefinitionId(), request.correlationId(), "test adapter provider response", providerResponse.safeSummary()));
     } catch (ModelProviderClient.ModelProviderException failure) {
-      var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, modelBinding.model().modelConfigRefId(), failure.failure().safeSummary(), null);
-      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "model-backed workstream invocation failed closed: " + failure.failure().safeCode(), null);
-      return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), modelTrace.traceId(), workTrace.traceId()), failure.failure().safeCode(), failure.failure().safeSummary());
+      return failWorkstreamAgentInvocation(request, preparation, failure);
     }
   }
 
@@ -450,6 +486,11 @@ public final class AgentRuntimeService {
   public record PromptAssemblyRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String userInput) {}
   public record PromptAssemblyResult(AgentRuntimeTrace.Decision decision, String assembledSystemPrompt, String checksum, String compactManifestText, String traceId, String safeDenialReason) {}
   public record RuntimeInvocationRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String correlationId, String userInput) {}
+  public record RuntimeInvocationPreparation(AgentRuntimeTrace.Decision decision, WorkstreamRuntimeAgent.GovernedWorkstreamRequest governedRequest, List<String> traceIds, String safeErrorCode, String safeErrorSummary, String promptChecksum, String modelConfigRefId) {
+    public RuntimeInvocationPreparation {
+      traceIds = List.copyOf(traceIds == null ? List.of() : traceIds);
+    }
+  }
   public record RuntimeInvocationResult(AgentRuntimeTrace.Decision decision, String markdown, List<String> traceIds, String safeErrorCode, String safeErrorSummary) {}
   public record SkillReadRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String stableSkillId) {}
   public record SkillReadResult(AgentRuntimeTrace.Decision decision, String content, String checksum, String traceId, String safeDenialReason) {}

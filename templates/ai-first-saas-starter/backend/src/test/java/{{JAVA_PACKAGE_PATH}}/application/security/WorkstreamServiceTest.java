@@ -72,6 +72,14 @@ class WorkstreamServiceTest {
     var serviceText = Files.readString(findSource("WorkstreamService.java"));
     assertTrue(serviceText.contains("WorkstreamAgentRuntimeInvoker"), "WorkstreamService must depend on the Akka Agent runtime invoker seam");
     assertTrue(serviceText.contains("workstreamAgentRuntimeInvoker.invokeWorkstreamAgent"), "Successful message submission must go through the runtime invoker seam");
+
+    var defaultInvokerText = Files.readString(findSource("DefaultWorkstreamAgentRuntimeInvoker.java"));
+    assertTrue(defaultInvokerText.contains("ComponentClient"), "Production invoker must use ComponentClient to call the Akka Agent component");
+    assertTrue(defaultInvokerText.contains("forAgent()"), "Production invoker must call the Akka Agent runtime path");
+    assertTrue(defaultInvokerText.contains("WorkstreamRuntimeAgent::respond"), "Production invoker must target the workstream Akka Agent component");
+
+    var endpointText = Files.readString(findSource("WorkstreamEndpoint.java"));
+    assertTrue(endpointText.contains("workstreamService(componentClient"), "Browser/API message path must construct WorkstreamService with the ComponentClient-backed invoker");
   }
 
   @Test

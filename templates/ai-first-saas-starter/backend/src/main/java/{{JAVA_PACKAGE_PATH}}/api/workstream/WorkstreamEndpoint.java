@@ -32,7 +32,7 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
   private final WorkstreamService workstreamService;
 
   public WorkstreamEndpoint(ComponentClient componentClient) {
-    this.workstreamService = StarterSecurityComponents.workstreamService(new AkkaWorkstreamLogRepository(componentClient));
+    this.workstreamService = StarterSecurityComponents.workstreamService(componentClient, new AkkaWorkstreamLogRepository(componentClient));
   }
 
   @Get("/bootstrap")

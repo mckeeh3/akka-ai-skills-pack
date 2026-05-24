@@ -1,7 +1,9 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import akka.javasdk.client.ComponentClient;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.DefaultWorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.OpenAiModelProviderClient;
@@ -55,6 +57,10 @@ public final class StarterSecurityComponents {
 
   public static WorkstreamService workstreamService(WorkstreamLogRepository workstreamLogRepository) {
     return new WorkstreamService(ME_SERVICE, AUTH_CONTEXT_RESOLVER, USER_DIRECTORY_VIEW, INVITATION_VIEW, USER_ADMIN_SERVICE, INVITATION_SERVICE, AGENT_BEHAVIOR_REPOSITORY, AGENT_RUNTIME_SERVICE, workstreamLogRepository);
+  }
+
+  public static WorkstreamService workstreamService(ComponentClient componentClient, WorkstreamLogRepository workstreamLogRepository) {
+    return new WorkstreamService(ME_SERVICE, AUTH_CONTEXT_RESOLVER, USER_DIRECTORY_VIEW, INVITATION_VIEW, USER_ADMIN_SERVICE, INVITATION_SERVICE, AGENT_BEHAVIOR_REPOSITORY, AGENT_RUNTIME_SERVICE, new DefaultWorkstreamAgentRuntimeInvoker(AGENT_RUNTIME_SERVICE, componentClient), workstreamLogRepository);
   }
 
   public static InvitationService invitationService() {

@@ -121,7 +121,8 @@
 
 ### TASK-WSAGENT-02-002: Route workstream message submission through Akka Agent runtime
 
-- status: pending
+- status: done
+- completion note: Routed the browser/API workstream service construction through a ComponentClient-backed `DefaultWorkstreamAgentRuntimeInvoker`, split governance preparation/completion in `AgentRuntimeService`, added a fail-closed no-ComponentClient invoker, and strengthened regression guards for the Akka Agent component path.
 - source: specs/workstream-akka-agent-runtime/backlog/01-workstream-akka-agent-runtime-backlog.md
 - task brief: specs/workstream-akka-agent-runtime/tasks/01-runtime/03-route-submit-message-through-akka-agent.md
 - depends on: [TASK-WSAGENT-02-001]
@@ -153,6 +154,8 @@
   - Browser/API message submission cannot produce a successful model-backed `markdown_response` without invoking the Akka Agent runtime path.
   - Missing provider/configuration still fails closed with actionable surface/trace behavior.
   - A focused git commit exists with message `workstream-agent: route messages through Akka Agent`.
+- notes:
+  - commit message: `workstream-agent: route messages through Akka Agent`
 
 ### TASK-WSAGENT-03-001: Add real provider smoke validation for Akka Agent path
 
