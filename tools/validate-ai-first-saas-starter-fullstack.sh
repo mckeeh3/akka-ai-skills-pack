@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 TEMPLATE_DIR="$REPO_ROOT/templates/ai-first-saas-starter"
 SCAFFOLD_SCRIPT="$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh"
+MODEL_SMOKE_SCRIPT="$REPO_ROOT/tools/smoke-ai-first-saas-starter-real-model.sh"
 KEEP=false
 TARGET_DIR=""
 APP_NAME="Fullstack Smoke Starter"
@@ -31,7 +32,8 @@ Options:
 
 The validation scaffolds from templates/ai-first-saas-starter, runs backend
 Maven tests, installs/tests/typechecks/builds the React/Vite frontend, verifies
-Akka static resources, and scans built assets for obvious backend secret leaks.
+Akka static resources, scans built assets for obvious backend secret leaks, and
+runs the optional real provider smoke in skip mode unless OPENAI_API_KEY is set.
 EOF
 }
 
@@ -86,6 +88,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 [[ -x "$SCAFFOLD_SCRIPT" ]] || fail "Scaffold script is not executable: $SCAFFOLD_SCRIPT"
+[[ -x "$MODEL_SMOKE_SCRIPT" ]] || fail "Provider smoke script is not executable: $MODEL_SMOKE_SCRIPT"
 [[ -d "$TEMPLATE_DIR" ]] || fail "Template directory not found: $TEMPLATE_DIR"
 command -v mvn >/dev/null 2>&1 || fail "mvn is required"
 command -v npm >/dev/null 2>&1 || fail "npm is required"
@@ -167,6 +170,9 @@ SECRET_PATTERN='(WORKOS_API_KEY|WORKOS_CLIENT_SECRET|RESEND_API_KEY|OPENAI_API_K
 if grep -RIE --line-number "$SECRET_PATTERN" "$STATIC_DIR"; then
   fail "Potential backend secret marker found in built static assets"
 fi
+
+log "Running optional real model provider smoke or reporting provider-skip state"
+"$MODEL_SMOKE_SCRIPT" --target "$TARGET_DIR" --base-package "$BASE_PACKAGE" --maven-group-id "$MAVEN_GROUP_ID"
 
 log "Fullstack starter validation passed"
 log "Validated target: $TARGET_DIR"

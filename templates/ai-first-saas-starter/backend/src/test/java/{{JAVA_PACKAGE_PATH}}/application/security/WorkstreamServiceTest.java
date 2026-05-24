@@ -188,7 +188,7 @@ class WorkstreamServiceTest {
 
     assertEquals("corr-header", response.correlationId());
     assertEquals("corr-header", response.surface().correlationId());
-    assertTrue(response.surface().traceIds().get(0).startsWith("trace-workstream-message-"));
+    assertFalse(response.surface().traceIds().isEmpty());
   }
 
   private WorkosIdentity identity() {

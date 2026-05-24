@@ -84,7 +84,7 @@ From the skills-pack source repository, validate the rendered starter with one c
 tools/validate-ai-first-saas-starter-fullstack.sh
 ```
 
-The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test` including governed agent seed/runtime tests for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, and scans the built static assets for obvious backend secret markers. Use `--keep` to retain the generated target for inspection.
+The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test` including governed agent seed/runtime tests for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, scans the built static assets for obvious backend secret markers, and reports the optional provider smoke state. If `OPENAI_API_KEY` is absent, the provider smoke is skipped loudly and validation still passes; if backend model-provider env is present, it runs a targeted real model smoke through backend workstream message submission. Use `--keep` to retain the generated target for inspection.
 
 ## Local build and manual-test commands
 
@@ -99,6 +99,21 @@ npm run typecheck
 npm run build
 cd ..
 mvn compile exec:java
+```
+
+Optional provider smoke from the skills-pack source repository:
+
+```bash
+# Skip mode is safe for CI with no provider secrets:
+env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh
+
+# Real mode runs a targeted JUnit smoke in a rendered scaffold and submits one
+# User Admin workstream message through backend WorkstreamService:
+export OPENAI_API_KEY="sk-..."
+export OPENAI_MODEL_ID="gpt-4o-mini" # optional; defaults to gpt-4o-mini
+export OPENAI_API_BASE_URL="https://api.openai.com/v1" # optional default
+export OPENAI_REQUEST_TIMEOUT_SECONDS="30" # optional default
+tools/smoke-ai-first-saas-starter-real-model.sh
 ```
 
 Then open the Akka-hosted frontend at `http://localhost:9000/` or `http://localhost:9000/ui` depending on the local Akka port. Use `?fixtureWorkstream=1` only to inspect the frontend fixture mode; normal starter testing should exercise `/api/workstream/...` backend APIs.
@@ -143,7 +158,7 @@ Generated backend code that loads required environment values must treat missing
 
 ## Manual real-model smoke checklist
 
-Run this after the workstream-agent runtime is implemented and before calling the five core v0 starter functional:
+Run this after the workstream-agent runtime is implemented and before calling the five core v0 starter functional. The automated provider smoke is `tools/smoke-ai-first-saas-starter-real-model.sh`; it skips when `OPENAI_API_KEY` is absent and, when enabled, verifies a provider-backed `markdown_response` and PromptAssemblyTrace/MODEL_INVOCATION/AgentWorkTrace shape without exposing secrets:
 
 1. Load `.env` with backend-only WorkOS/AuthKit, JWT, admin-bootstrap, and model-provider variables such as `OPENAI_API_KEY`; keep provider secrets out of `frontend/.env*`.
 2. Run `mvn test`, frontend tests/typecheck/build, and `mvn compile exec:java` from the rendered project root where `pom.xml` and `src/` live.

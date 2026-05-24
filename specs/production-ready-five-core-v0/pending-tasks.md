@@ -161,7 +161,8 @@
 
 ### TASK-PRODV0-02-003: Add real model provider integration smoke test and manual validation guard
 
-- status: pending
+- status: done
+- completion note: Added an optional real model smoke script plus scaffolded JUnit smoke that submits a User Admin workstream message through backend WorkstreamService, verifies provider-backed markdown and prompt/model/work trace shape without secret leakage, wires fullstack validation to report/run the smoke based on provider env, and documents skip/real enablement.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/02-agent-runtime/03-add-real-model-smoke-validation.md
 - depends on: [TASK-PRODV0-02-002]
