@@ -2,6 +2,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -126,7 +127,61 @@ class WorkstreamServiceTest {
     assertEquals("surface-user-admin-detail-admin", result.resultSurface().surfaceId());
   }
 
+  @Test
+  void submitMessageReturnsAuthorizedMarkdownResponseEnvelope() {
+    var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-user-admin", "What can I do next?", "corr-message", "idem-message-1"), "corr-header");
+
+    assertEquals("corr-message", response.correlationId());
+    assertEquals("idem-message-1", response.idempotencyKey());
+    assertEquals("agent-user-admin", response.userItem().functionalAgentId());
+    assertEquals("user-message", response.userItem().kind());
+    assertEquals("agent-user-admin", response.agentItem().functionalAgentId());
+    assertEquals("markdown_response", response.agentItem().kind());
+    assertEquals(response.surface().surfaceId(), response.agentItem().surfaceId());
+    assertEquals("markdown_response", response.surface().surfaceType());
+    assertEquals("agent-user-admin", response.surface().ownerFunctionalAgentId());
+    assertEquals("membership-admin", response.surface().authContext().get("selectedContextId"));
+    assertEquals("corr-message", response.surface().correlationId());
+    assertFalse(response.surface().traceIds().isEmpty());
+    assertEquals("agent-user-admin", response.surface().data().get("producingAgentId"));
+    assertEquals(response.agentItem().itemId(), response.surface().data().get("workstreamEntryId"));
+    assertTrue(response.surface().data().get("markdown").toString().contains("## User Admin"));
+    assertNotNull(response.surface().data().get("safety"));
+    assertNotNull(response.surface().data().get("trace"));
+  }
+
+  @Test
+  void submitMessageRequiresSelectedContextMatch() {
+    var mismatch = assertThrows(AuthorizationException.class, () -> service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-other", "agent-user-admin", "Hello", "corr-message", "idem-message-2"), "corr-header"));
+
+    assertEquals("CONTEXT_FORBIDDEN", mismatch.reasonCode());
+  }
+
+  @Test
+  void submitMessageRejectsDeniedFunctionalAgentBeforeModelResponse() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.submitMessage(memberIdentity(), "membership-member", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-member", "agent-user-admin", "Invite someone", "corr-denied", "idem-message-3"), "corr-header"));
+
+    assertEquals("FUNCTIONAL_AGENT_FORBIDDEN", denied.reasonCode());
+  }
+
+  @Test
+  void submitMessagePropagatesFallbackCorrelationWhenBodyOmitsIt() {
+    var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-audit-trace", "Show trace status", null, "idem-message-4"), "corr-header");
+
+    assertEquals("corr-header", response.correlationId());
+    assertEquals("corr-header", response.surface().correlationId());
+    assertTrue(response.surface().traceIds().get(0).startsWith("trace-workstream-message-"));
+  }
+
   private WorkosIdentity identity() {
     return new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin");
+  }
+
+  private WorkosIdentity memberIdentity() {
+    return new WorkosIdentity("workos-member", "member@example.test", "Member User");
   }
 }

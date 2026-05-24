@@ -18,6 +18,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService.AcceptInvita
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.CapabilityActionRequest;
+import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.WorkstreamMessageRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 
 /** Workstream shell API endpoints for User Admin structured surfaces and capability actions. */
@@ -50,6 +51,11 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
   @Post("/actions")
   public HttpResponse action(CapabilityActionRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(StarterSecurityComponents.workstreamService().runAction(identity, selectedContextId, request)));
+  }
+
+  @Post("/messages")
+  public HttpResponse message(WorkstreamMessageRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(StarterSecurityComponents.workstreamService().submitMessage(identity, selectedContextId, request, correlationId)));
   }
 
   @Post("/invitations/accept")

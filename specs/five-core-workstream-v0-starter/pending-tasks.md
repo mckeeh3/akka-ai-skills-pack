@@ -166,7 +166,8 @@
 
 ### TASK-5WS-02-002: Add backend workstream message endpoint and markdown_response contract
 
-- status: pending
+- status: done
+- completion note: Added the backend `POST /api/workstream/messages` contract, service request/response records, selected-context and functional-agent authorization checks, deterministic local markdown_response seam, and backend tests for authorized, denied, mismatch, idempotency, correlation, and envelope behavior.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/03-backend/01-add-workstream-message-endpoint.md
 - depends on: [TASK-5WS-02-001]
@@ -192,6 +193,8 @@
   - Backend exposes a capability-backed message submission contract for the selected core v0 workstream.
   - Tests prove the endpoint does not rely on frontend/prompt-only authorization.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: add workstream message endpoint`
 
 ### TASK-5WS-02-003: Seed or configure five core v0 functional-agent prompts, skills, and model refs
 

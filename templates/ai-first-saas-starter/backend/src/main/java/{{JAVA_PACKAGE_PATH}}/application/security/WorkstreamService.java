@@ -109,6 +109,31 @@ public final class WorkstreamService {
     return new CapabilityActionResult("accepted", action.label() + " accepted by backend-authoritative starter capability.", request.correlationId(), List.of("trace-" + request.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
   }
 
+  public WorkstreamMessageResponse submitMessage(WorkosIdentity identity, String selectedContextId, WorkstreamMessageRequest request, String fallbackCorrelationId) {
+    var requestCorrelationId = firstNonBlank(request.correlationId(), fallbackCorrelationId, "workstream-message");
+    if (request.selectedContextId() == null || request.selectedContextId().isBlank() || !Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
+    if (request.functionalAgentId() == null || request.functionalAgentId().isBlank()) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
+    if (request.prompt() == null || request.prompt().isBlank()) throw new AuthorizationException(400, "PROMPT_REQUIRED");
+    var actor = authContextResolver.resolveMe(identity, selectedContextId, requestCorrelationId);
+    var functionalAgent = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
+        .filter(agent -> request.functionalAgentId().equals(agent.functionalAgentId()))
+        .findFirst()
+        .orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    if (!"visible".equals(functionalAgent.availability())) throw new AuthorizationException(403, "FUNCTIONAL_AGENT_FORBIDDEN");
+
+    var responseSeed = firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId());
+    var userItemId = "item-message-user-" + stableSuffix(responseSeed + ":user");
+    var agentItemId = "item-message-agent-" + stableSuffix(responseSeed + ":agent");
+    var surfaceId = "surface-message-" + stableSuffix(responseSeed + ":markdown_response");
+    var now = Instant.now().toString();
+    var traceIds = List.of("trace-workstream-message-" + stableSuffix(responseSeed + ":trace"));
+    var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-message", now, requestCorrelationId, traceIds, null, "User request", request.prompt(), "accepted");
+    var markdown = deterministicMarkdownResponse(functionalAgent, actor, request.prompt());
+    var surface = markdownResponseSurface(surfaceId, agentItemId, functionalAgent, actor, requestCorrelationId, traceIds, markdown);
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "markdown_response", now, requestCorrelationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Deterministic starter response produced by backend-authorized workstream message seam.", "ready");
+    return new WorkstreamMessageResponse(requestCorrelationId, request.idempotencyKey(), userItem, agentItem, surface);
+  }
+
   public List<WorkstreamEvent> events(WorkosIdentity identity, String selectedContextId, String functionalAgentId, String lastEventId, String correlationId) {
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
     var events = initialEvents(actor, correlationId).stream().filter(event -> functionalAgentId == null || functionalAgentId.isBlank() || functionalAgentId.equals(event.functionalAgentId())).toList();
@@ -222,6 +247,30 @@ public final class WorkstreamService {
     return envelope("surface-agent-admin-trace", "audit-timeline", "Agent Admin traces", actor, correlationId, mapOf("events", List.of(mapOf("eventId", "trace-prompt-assembly-42", "occurredAt", Instant.now().toString(), "actor", "AgentRuntimeService", "action", "PromptAssemblyTrace emitted for deterministic prompt assembly", "traceId", "trace-prompt-assembly-42"), mapOf("eventId", "trace-skill-load-17", "occurredAt", Instant.now().toString(), "actor", "readSkill(skillId)", "action", "SkillLoadTrace emitted for allowed or denied skill loads", "traceId", "trace-skill-load-17"), mapOf("eventId", "trace-agent-work-88", "occurredAt", Instant.now().toString(), "actor", "No-side-effect agent test console", "action", "AgentWorkTrace links test-mode output to governed prompt and skills", "traceId", "trace-agent-work-88"))), List.of(openAgentTraceAction()));
   }
 
+  private SurfaceEnvelope markdownResponseSurface(String surfaceId, String workstreamEntryId, MeResponse.FunctionalAgentSummary agent, AuthContextResolver.ResolvedMe actor, String correlationId, List<String> traceIds, String markdown) {
+    return new SurfaceEnvelope(surfaceId, "markdown_response", "v1", agent.label(), agent.functionalAgentId(), List.of("agent-audit-trace"),
+        mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()),
+        correlationId, traceIds, Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawInvitationToken", "rawJwt", "rawProviderCredential", "providerSecret")),
+        mapOf("markdown", markdown, "title", agent.label() + " response", "summary", "Backend-authorized starter response for " + agent.label() + ".", "workstreamEntryId", workstreamEntryId, "producingAgentId", agent.functionalAgentId(), "sourceRefs", List.of(mapOf("refType", "capability", "refId", agent.requiredCapabilityIds().isEmpty() ? "profile.read" : agent.requiredCapabilityIds().get(0), "label", "Backend capability boundary"), mapOf("refType", "trace", "refId", traceIds.get(0), "label", "Workstream message trace")), "sections", List.of(mapOf("anchor", "starter-scope", "title", "Starter scope"), mapOf("anchor", "safe-next-steps", "title", "Safe next steps")), "safety", mapOf("sanitized", false, "blockedUnsafeLinks", 0, "blockedRawHtml", false, "redactionNote", "Provider secrets, raw JWTs, invitation tokens, and hidden capabilities are never included."), "trace", mapOf("correlationId", correlationId, "traceIds", traceIds)),
+        List.of(openAuditAction()), List.of(mapOf("label", "Open trace", "href", "/ui?traceId=" + traceIds.get(0), "rel", "trace")));
+  }
+
+  private String deterministicMarkdownResponse(MeResponse.FunctionalAgentSummary agent, AuthContextResolver.ResolvedMe actor, String prompt) {
+    var selected = actor.selectedContext();
+    var safePrompt = prompt.replace('<', ' ').replace('>', ' ').trim();
+    if (safePrompt.length() > 160) safePrompt = safePrompt.substring(0, 160) + "…";
+    return "## " + agent.label() + "\n\n"
+        + "### Starter scope\n"
+        + "You are using the five core workstream v0 starter for selected context `" + selected.membershipId() + "`. This backend response was authorized for tenant `" + selected.tenantId() + "` and functional agent `" + agent.functionalAgentId() + "`.\n\n"
+        + "Requested prompt: _" + safePrompt + "_\n\n"
+        + "### Available now\n"
+        + "- Backend AuthContext resolution and active membership checks.\n"
+        + "- Role/capability visibility for this workstream.\n"
+        + "- A `markdown_response` surface with correlation and trace metadata.\n\n"
+        + "### Safe next steps\n"
+        + "Ask for current capabilities, bootstrap readiness, or which full-core surfaces remain deferred. Actions that require richer full-core implementation must use backend capability endpoints, not prompt-only authority.";
+  }
+
   private List<WorkstreamEvent> initialEvents(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var tenantId = actor.selectedContext().tenantId(); var customerId = actor.selectedContext().customerId(); var now = Instant.now().toString();
     return List.of(new WorkstreamEvent("evt-workstream-reconnected-001", "surface.reconnected", tenantId, customerId, MY_ACCOUNT_AGENT_ID, "surface-my-account-dashboard", "dashboard", "v1", correlationId, List.of("trace-sse-reconnected"), now, 1, mapOf("message", "Realtime stream connected for selected AuthContext.")), new WorkstreamEvent("evt-audit-appended-002", "workstream.item.appended", tenantId, customerId, AUDIT_TRACE_AGENT_ID, "surface-audit-timeline", "audit-timeline", "v1", correlationId, List.of("trace-sse-audit"), now, 2, mapOf("itemId", "item-audit-realtime", "kind", "audit-trace", "title", "Realtime trace available", "body", "SSE delivered a browser-safe audit trace update.", "surfaceId", "surface-audit-timeline", "status", "ready")), new WorkstreamEvent("evt-user-admin-stale-003", "surface.stale", tenantId, customerId, USER_ADMIN_AGENT_ID, "surface-user-admin-dashboard", "dashboard", "v1", correlationId, List.of("trace-sse-stale"), now, 3, mapOf("reason", "User Admin dashboard should refresh after invitation/user changes.")), new WorkstreamEvent("evt-agent-admin-reconnected-004", "surface.reconnected", tenantId, customerId, AGENT_ADMIN_AGENT_ID, "surface-agent-admin-catalog", "list-search", "v1", correlationId, List.of("trace-agent-admin-reconnected"), now, 4, mapOf("message", "Agent Admin surfaces are backed by governed records.")));
@@ -282,6 +331,8 @@ public final class WorkstreamService {
   private SurfaceAction openAgentTraceAction() { return new SurfaceAction("action-open-agent-trace", "Open agent work trace", "trace", "audit.trace.read", null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-trace", "deep-link"), new Audit("AgentWorkTraceOpened", true)); }
 
   private static String stringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return value; return fallback; }
+  private static String firstNonBlank(String... values) { for (var value : values) if (value != null && !value.isBlank()) return value; return null; }
+  private static String stableSuffix(String value) { return Integer.toUnsignedString(Objects.requireNonNullElse(value, "workstream-message").hashCode(), 36); }
   private static Map<String, Object> mapOf(Object... values) { var map = new LinkedHashMap<String, Object>(); for (int i = 0; i + 1 < values.length; i += 2) map.put(String.valueOf(values[i]), values[i + 1]); return map; }
 
   public record WorkstreamBootstrapResponse(MeResponse me, List<MeResponse.FunctionalAgentSummary> functionalAgents, List<WorkstreamItem> items, List<SurfaceEnvelope> surfaces) {}
@@ -294,5 +345,7 @@ public final class WorkstreamService {
   public record Audit(String eventType, boolean traceRequired) {}
   public record CapabilityActionRequest(String actionId, String capabilityId, Object input, String idempotencyKey, String selectedContextId, String surfaceId, String correlationId) {}
   public record CapabilityActionResult(String status, String message, String correlationId, List<String> traceIds, SurfaceEnvelope resultSurface) {}
+  public record WorkstreamMessageRequest(String selectedContextId, String functionalAgentId, String prompt, String correlationId, String idempotencyKey) {}
+  public record WorkstreamMessageResponse(String correlationId, String idempotencyKey, WorkstreamItem userItem, WorkstreamItem agentItem, SurfaceEnvelope surface) {}
   public record WorkstreamEvent(String eventId, String eventType, String tenantId, String customerId, String functionalAgentId, String surfaceId, String surfaceType, String surfaceVersion, String correlationId, List<String> traceIds, String occurredAt, Integer sequence, Map<String, Object> patch) {}
 }
