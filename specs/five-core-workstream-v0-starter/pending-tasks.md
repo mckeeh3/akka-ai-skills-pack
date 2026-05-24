@@ -77,7 +77,8 @@
 
 ### TASK-5WS-01-002: Update routing and getting-started prompts for five core v0
 
-- status: pending
+- status: done
+- completion note: Updated installed-pack routing and getting-started guidance so minimum/starter/basic/chatbot-like SaaS prompts and README/user-guide flows target the five core v0 workstreams with `markdown_response` before full-core expansion.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/01-doctrine/02-update-routing-and-getting-started.md
 - depends on: [TASK-5WS-01-001]
@@ -101,6 +102,8 @@
   - Installed-pack users following README prompts are guided toward making all five core v0 workstreams functional.
   - Routing still requires secure SaaS, workstream-first, capability-first, audit/trace semantics.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: update starter routing prompts`
 
 ### TASK-5WS-01-003: Align starter template docs and app-description placeholders
 

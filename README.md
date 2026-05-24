@@ -130,7 +130,8 @@ Java base package: <press Enter/use ai.first unless I provide another package>.
 
 Scaffold the starter into this project. Do not invent a different architecture.
 Preserve the skills-pack defaults: secure SaaS foundation, agent workstream shell,
-User Admin workstream v0, markdown_response surface, capability-first backend boundaries,
+five core v0 workstreams (My Account, User Admin, Agent Admin, Audit/Trace,
+and Governance/Policy), markdown_response surfaces, capability-first backend boundaries,
 audit/work trace substrate, backend authorization, and frontend secret boundaries.
 After scaffolding, summarize what was created and what I need to configure next.
 ```
@@ -162,6 +163,8 @@ Return the answer in this exact format:
    - Ready to build/test? yes/no, with one sentence why.
    - Ready to run locally? yes/no, with one sentence why.
    - Ready for app-specific domain features? yes/no, with one sentence why.
+   - Five core v0 workstream status: one line for My Account, User Admin, Agent Admin,
+     Audit/Trace, and Governance/Policy.
 
 2. Required local configuration
    - List only values I must set now.
@@ -210,20 +213,22 @@ minimum starter to run. Do not add domain-specific features yet.
 Report every command run and its result.
 ```
 
-### Step 6 — Make the initial User Admin workstream functional
+### Step 6 — Make the five core v0 workstreams functional
 
-Once basic checks pass, continue with the first vertical rather than jumping to domain work:
+Once basic checks pass, continue with the first starter target rather than jumping to domain work:
 
 ```text
 Use the installed skills pack to continue the initial app rollout.
-Focus on making the User Admin workstream v0 functional end to end:
-bootstrap-authorized access, selected AuthContext, durable workstream entries,
-markdown_response rendering, backend capability checks, denials, and audit/work traces.
+Focus on making all five core v0 workstreams functional end to end:
+My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+For each workstream, preserve bootstrap-authorized access, selected AuthContext,
+durable workstream entries, markdown_response rendering, backend capability checks,
+denials, and audit/work traces.
 Update app-description/specs/pending-tasks as needed before code changes.
 Implement one small task at a time and include tests.
 ```
 
-This phase teaches the repeatable app pattern: workstream action, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.
+This phase teaches the repeatable app pattern: functional agent/workstream, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.
 
 ### Step 7 — Advance from minimum starter to full core readiness
 
@@ -231,10 +236,13 @@ After the minimum starter works locally, ask the harness to plan and execute the
 
 ```text
 Assess this project against full core secure AI-first SaaS readiness.
-Create or update specs/pending-tasks.md with small implementation tasks for the missing core foundation:
-full User Admin, invitations/onboarding with Resend or captured outbox, Agent Admin,
-governed prompt/skill/tool-boundary documents, audit/trace search UI, support access,
-tenant-isolation tests, forbidden-access tests, frontend secret-boundary tests, and security review.
+Start from the five core v0 workstreams: My Account, User Admin, Agent Admin,
+Audit/Trace, and Governance/Policy. Create or update specs/pending-tasks.md with
+small implementation tasks for the missing core foundation: richer My Account,
+full User Admin, invitations/onboarding with Resend or captured outbox, full Agent Admin,
+governed prompt/skill/tool-boundary documents, audit/trace search UI, Governance/Policy
+surfaces, support access, tenant-isolation tests, forbidden-access tests, frontend
+secret-boundary tests, and security review.
 Do not add app-specific domain features until the core readiness gaps are explicit.
 ```
 

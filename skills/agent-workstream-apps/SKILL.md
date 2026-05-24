@@ -59,14 +59,14 @@ Do not make a conventional page tree, CRUD console, or chatbot-bolt-on design th
 
 For natural-language requests such as “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../../docs/minimum-ai-first-saas-app.md`.
 
-The correct first vertical is **User Admin workstream v0**:
+The correct first runnable target is the **five core workstream v0 set**:
 - bootstrap-authorized user and selected AuthContext;
-- role-authorized `UserAdminAgent` with bounded bootstrap authority;
-- durable request/response timeline and audit/work trace substrate;
+- role-authorized functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with bounded bootstrap authority;
+- durable request/response timeline and audit/work trace substrate for each visible core workstream;
 - first structured surface type `markdown_response`, rendered as sanitized HTML;
 - no public self-registration, autonomous privilege expansion, generic unauthenticated chatbot, or page-first CRUD admin app.
 
-Treat this as a narrower first-slice readiness state, not full-core SaaS readiness. Record follow-up work for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security completeness. Even in the minimum slice, route every backend action, surface action, browser API, and agent tool through capability-first modeling before selecting Akka components.
+Treat this as a narrower starter readiness state, not full-core SaaS readiness. Record follow-up work for richer My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed behavior documents, and security completeness. Even in the minimum slice, route every backend action, surface action, browser API, and agent tool through capability-first modeling before selecting Akka components.
 
 ## Interpretation workflow
 
@@ -74,7 +74,7 @@ Treat this as a narrower first-slice readiness state, not full-core SaaS readine
 
 For generated SaaS apps, keep `core-saas-foundation` mandatory: identity, AuthContext, tenant/customer scope, memberships, roles/capabilities, `/api/me`, invitations, admin audit, backend authorization, tenant isolation, and security tests.
 
-Full core app scope also requires User Admin and Agent Admin functional agents unless the user explicitly chooses a narrower deferred scope. The minimum starter is the accepted narrower scope: User Admin workstream v0 first, with full-core foundation items kept as explicit follow-up/readiness gates.
+Full core app scope also requires complete My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents unless the user explicitly chooses a narrower deferred scope. The minimum starter is the accepted narrower scope: the five core v0 workstream set first, each using `markdown_response`, with full-core foundation items kept as explicit follow-up/readiness gates.
 
 ### 2. Identify vertical functional agents
 
