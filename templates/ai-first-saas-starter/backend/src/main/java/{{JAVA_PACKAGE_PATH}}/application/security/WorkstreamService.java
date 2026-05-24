@@ -3,6 +3,8 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.DefaultWorkstreamAgentRuntimeInvoker;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.WorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.BehaviorChangeProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
@@ -38,6 +40,7 @@ public final class WorkstreamService {
   private final InvitationService invitationService;
   private final AgentBehaviorRepository agentBehaviorRepository;
   private final AgentRuntimeService agentRuntimeService;
+  private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
   private final WorkstreamLogRepository workstreamLogRepository;
 
   public WorkstreamService(
@@ -49,7 +52,7 @@ public final class WorkstreamService {
       InvitationService invitationService,
       AgentBehaviorRepository agentBehaviorRepository,
       AgentRuntimeService agentRuntimeService) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new InMemoryWorkstreamLogRepository());
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService), new InMemoryWorkstreamLogRepository());
   }
 
   public WorkstreamService(
@@ -62,6 +65,20 @@ public final class WorkstreamService {
       AgentBehaviorRepository agentBehaviorRepository,
       AgentRuntimeService agentRuntimeService,
       WorkstreamLogRepository workstreamLogRepository) {
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService), workstreamLogRepository);
+  }
+
+  public WorkstreamService(
+      MeService meService,
+      AuthContextResolver authContextResolver,
+      UserDirectoryView userDirectoryView,
+      InvitationView invitationView,
+      UserAdminService userAdminService,
+      InvitationService invitationService,
+      AgentBehaviorRepository agentBehaviorRepository,
+      AgentRuntimeService agentRuntimeService,
+      WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker,
+      WorkstreamLogRepository workstreamLogRepository) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.userDirectoryView = userDirectoryView;
@@ -69,6 +86,7 @@ public final class WorkstreamService {
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentRuntimeService = agentRuntimeService;
+    this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
     this.workstreamLogRepository = workstreamLogRepository;
   }
 
@@ -151,7 +169,7 @@ public final class WorkstreamService {
       return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
     }
 
-    var runtime = agentRuntimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
+    var runtime = workstreamAgentRuntimeInvoker.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
         actor.selectedContext().tenantId(), request.functionalAgentId(), actor.selectedContext(), requestCorrelationId, request.prompt()));
     var responseSeed = firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId());
     var userItemId = "item-message-user-" + stableSuffix(responseSeed + ":user");

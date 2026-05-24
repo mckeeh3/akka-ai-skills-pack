@@ -49,7 +49,8 @@
 
 ### TASK-WSAGENT-01-001: Add regression guard for missing Akka workstream Agent
 
-- status: pending
+- status: done
+- completion note: Added a concrete `WorkstreamRuntimeAgent` source guard, a `WorkstreamAgentRuntimeInvoker` seam, and service tests proving successful `submitMessage` markdown uses that seam with only explicitly named test adapters.
 - source: specs/workstream-akka-agent-runtime/backlog/01-workstream-akka-agent-runtime-backlog.md
 - task brief: specs/workstream-akka-agent-runtime/tasks/01-runtime/01-add-missing-akka-agent-regression-guard.md
 - depends on: [TASK-WSAGENT-00-001]
@@ -75,6 +76,8 @@
   - Tests fail on the pre-fix shape where the starter has no Akka Agent-backed workstream runtime.
   - Tests still allow isolated unit-test fakes only when explicitly named as test adapters.
   - A focused git commit exists with message `workstream-agent: guard Akka Agent runtime`.
+- notes:
+  - commit message: `workstream-agent: guard Akka Agent runtime`
 
 ### TASK-WSAGENT-02-001: Implement governed Akka workstream Agent component
 

@@ -11,6 +11,7 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.WorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
@@ -21,13 +22,18 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.Tenant;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class WorkstreamServiceTest {
   private WorkstreamService service;
+  private TrackingWorkstreamAgentRuntimeTestAdapter trackingRuntimeInvoker;
 
   @BeforeEach
   void setUp() {
@@ -40,7 +46,8 @@ class WorkstreamServiceTest {
     var agentRepository = new InMemoryAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"));
-    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService);
+    trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
+    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, new InMemoryWorkstreamLogRepository());
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
@@ -51,6 +58,20 @@ class WorkstreamServiceTest {
     identityRepository.putProfile(new UserProfile("member@example.test", "member@example.test", "Member User", "Member", "User", null));
     identityRepository.putSettings(new UserSettings("member@example.test", UserSettings.UiMode.LIGHT));
     identityRepository.putMembership(new Membership("membership-member", "member@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
+  }
+
+  @Test
+  void starterSourceContainsConcreteAkkaWorkstreamRuntimeAgentAndInvokerSeam() throws Exception {
+    var agentSource = findSource("WorkstreamRuntimeAgent.java");
+    var agentText = Files.readString(agentSource);
+    assertTrue(agentText.contains("import akka.javasdk.agent.Agent;"), "Workstream runtime must import the Akka Agent base class");
+    assertTrue(agentText.contains("extends Agent"), "Workstream runtime must be a concrete Akka Agent component");
+    assertTrue(agentText.contains("@Component"), "Workstream runtime must be discoverable as an Akka component");
+    assertFalse(agentText.matches("(?is).*class\\s+.*Fake.*"), "Production workstream agent must not be a fake runtime");
+
+    var serviceText = Files.readString(findSource("WorkstreamService.java"));
+    assertTrue(serviceText.contains("WorkstreamAgentRuntimeInvoker"), "WorkstreamService must depend on the Akka Agent runtime invoker seam");
+    assertTrue(serviceText.contains("workstreamAgentRuntimeInvoker.invokeWorkstreamAgent"), "Successful message submission must go through the runtime invoker seam");
   }
 
   @Test
@@ -148,6 +169,8 @@ class WorkstreamServiceTest {
     assertEquals("agent-user-admin", response.surface().data().get("producingAgentId"));
     assertEquals(response.agentItem().itemId(), response.surface().data().get("workstreamEntryId"));
     assertTrue(response.surface().data().get("markdown").toString().contains("## agent-user-admin model response"));
+    assertEquals(1, trackingRuntimeInvoker.invocationCount(), "Successful markdown_response must be produced through the workstream Akka Agent runtime invoker seam");
+    assertEquals("agent-user-admin", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
     assertNotNull(response.surface().data().get("safety"));
     assertNotNull(response.surface().data().get("trace"));
 
@@ -214,6 +237,40 @@ class WorkstreamServiceTest {
     assertEquals("corr-header", response.correlationId());
     assertEquals("corr-header", response.surface().correlationId());
     assertFalse(response.surface().traceIds().isEmpty());
+  }
+
+  private static Path findSource(String fileName) throws Exception {
+    try (Stream<Path> paths = Files.walk(Path.of("src/main/java"))) {
+      return paths
+          .filter(path -> path.getFileName().toString().equals(fileName))
+          .findFirst()
+          .orElseThrow(() -> new AssertionError("Missing source file: " + fileName));
+    }
+  }
+
+  private static final class TrackingWorkstreamAgentRuntimeTestAdapter implements WorkstreamAgentRuntimeInvoker {
+    private final AgentRuntimeService delegate;
+    private final AtomicInteger invocationCount = new AtomicInteger();
+    private AgentRuntimeService.RuntimeInvocationRequest lastRequest;
+
+    private TrackingWorkstreamAgentRuntimeTestAdapter(AgentRuntimeService delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public AgentRuntimeService.RuntimeInvocationResult invokeWorkstreamAgent(AgentRuntimeService.RuntimeInvocationRequest request) {
+      invocationCount.incrementAndGet();
+      lastRequest = request;
+      return delegate.invokeWorkstreamAgent(request);
+    }
+
+    private int invocationCount() {
+      return invocationCount.get();
+    }
+
+    private AgentRuntimeService.RuntimeInvocationRequest lastRequest() {
+      return lastRequest;
+    }
   }
 
   private WorkosIdentity identity() {
