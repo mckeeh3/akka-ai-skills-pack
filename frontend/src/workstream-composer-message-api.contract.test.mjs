@@ -55,12 +55,15 @@ test('composer maps provider-missing and forbidden errors to safe system notific
   assert.match(main, /status: safeError\.status/);
 });
 
-test('successful model responses expose prompt, model, and work trace links', () => {
+test('successful prompt and model response surfaces render only prompt and response text', () => {
   assert.match(main, /traceableAgentItem/);
   assert.match(main, /traceLinks: agentItem\.traceLinks \?\? agentItem\.traceIds\.map/);
-  assert.match(itemCard, /<TraceLinkList traceIds=\{item\.traceIds\} traceLinks=\{item\.traceLinks\}/);
-  assert.match(markdownSurface, /Trace links:/);
-  assert.match(markdownSurface, /\/ui\?traceId=/);
+  assert.match(itemCard, /item\.kind === 'user-request'/);
+  assert.match(itemCard, /prompt-input-surface/);
+  assert.match(itemCard, /\{item\.body \?\? item\.title \?\? ''\}/);
+  assert.match(itemCard, /return <ActionFeedbackItem/);
+  assert.match(markdownSurface, /markdown-response-only/);
+  assert.doesNotMatch(markdownSurface, /Trace links:|\/ui\?traceId=|surface-summary|SurfaceActionBar/);
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {

@@ -847,10 +847,28 @@
 .workstream-item.user-request,
 .workstream-item.surface-request {
   justify-self: end;
-  max-width: min(48rem, 78%);
-  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
-  background: var(--color-primary-soft);
+  max-width: 80%;
+  border-color: color-mix(in srgb, var(--color-ai) 58%, var(--color-border));
+  background: var(--color-ai-soft);
 }
+
+.prompt-input-surface p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.markdown-response-only {
+  background: var(--color-surface);
+}
+
+.markdown-response-only .markdown-response-surface,
+.markdown-response-only .markdown-response-content {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.markdown-response-only .markdown-response-content > :first-child { margin-top: 0; }
+.markdown-response-only .markdown-response-content > :last-child { margin-bottom: 0; }
 
 .workstream-item.system-notification,
 .workstream-item.workstream-notification,
