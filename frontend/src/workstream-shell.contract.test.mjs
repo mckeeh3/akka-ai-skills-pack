@@ -49,6 +49,11 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
   assert.match(composer, /input\.style\.height = 'auto'/);
   assert.match(composer, /input\.scrollHeight/);
   assert.match(composer, /autoFocus/);
+  assert.match(composer, /onKeyDown=\{submitFromKeyboard\}/);
+  assert.match(composer, /event\.key !== 'Enter' \|\| event\.shiftKey/);
+  assert.match(composer, /event\.currentTarget\.form\?\.requestSubmit\(\)/);
+  assert.match(composer, /workstream-send-prompt-tooltip/);
+  assert.doesNotMatch(composer, /title=/);
   assert.match(composer, /buildComposerRequest/);
 });
 

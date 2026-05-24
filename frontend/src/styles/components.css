@@ -421,11 +421,57 @@
 .workstream-composer textarea::placeholder { color: var(--color-muted); }
 
 .send-prompt-button {
+  position: relative;
+  overflow: visible;
   width: 3rem;
   min-width: 3rem;
   border-radius: var(--radius-pill);
   font-size: 1.25rem;
   line-height: 1;
+}
+
+.workstream-send-prompt-tooltip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-2));
+  z-index: 20;
+  display: block;
+  width: max-content;
+  max-width: 14rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface-raised) 96%, var(--color-primary-soft));
+  box-shadow: 0 12px 28px rgb(15 23 42 / 0.16);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.25rem);
+  transition: opacity 120ms ease, transform 120ms ease;
+  white-space: nowrap;
+}
+
+.workstream-send-prompt-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 1.15rem;
+  bottom: -0.35rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-right: 1px solid color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.send-prompt-button:hover .workstream-send-prompt-tooltip,
+.send-prompt-button:focus-visible .workstream-send-prompt-tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .prompt-row {

@@ -1,4 +1,4 @@
-import { FormEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FormEvent, KeyboardEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { AuthContext, ComposerRequest, FunctionalAgentSummary, MeResponse } from '../types';
 import { buildComposerRequest, canSubmitComposer, composerAvailability } from './composerState';
 
@@ -26,6 +26,12 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
     input.style.height = `${input.scrollHeight}px`;
   }, [draft]);
 
+  function submitFromKeyboard(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) return;
+    event.preventDefault();
+    event.currentTarget.form?.requestSubmit();
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability)) return;
@@ -44,6 +50,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
           autoFocus
           value={draft}
           onChange={(event) => setDraft(event.currentTarget.value)}
+          onKeyDown={submitFromKeyboard}
           aria-describedby={helperId}
           disabled={isSubmitting || Boolean(disabledReason)}
           placeholder={isSubmitting ? 'Model-backed agent is responding…' : disabledReason ?? "What's next..."}
@@ -52,8 +59,9 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
           {isSubmitting ? 'Submitting prompt to the governed model-backed runtime; selected workstream context is preserved.' : disabledReason ?? `Selected context ${authContext.selectedContextId}; requests are scoped to ${selectedAgent?.label ?? 'the selected agent'}.`}
         </p>
       </div>
-      <button type="submit" className="ds-button primary icon-button send-prompt-button" disabled={submitDisabled} aria-label={isSubmitting ? 'Submitting prompt' : 'Send prompt'} title={isSubmitting ? 'Submitting prompt to model-backed agent' : 'Send prompt'}>
+      <button type="submit" className="ds-button primary icon-button send-prompt-button" disabled={submitDisabled} aria-label={isSubmitting ? 'Submitting prompt' : 'Send prompt'}>
         <span aria-hidden="true">↑</span>
+        <span className="workstream-send-prompt-tooltip" role="tooltip">{isSubmitting ? 'Submitting prompt to model-backed agent' : 'Send prompt'}</span>
       </button>
     </form>
   );
