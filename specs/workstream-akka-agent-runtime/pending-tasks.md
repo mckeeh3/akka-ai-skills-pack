@@ -81,7 +81,8 @@
 
 ### TASK-WSAGENT-02-001: Implement governed Akka workstream Agent component
 
-- status: pending
+- status: done
+- completion note: Replaced the placeholder with a governed `WorkstreamRuntimeAgent` that uses `ModelProvider.fromConfig(...)`, validates non-secret governed request inputs, returns structured `markdown_response` payloads, added TestKit/TestModelProvider coverage, and configured the starter model alias.
 - source: specs/workstream-akka-agent-runtime/backlog/01-workstream-akka-agent-runtime-backlog.md
 - task brief: specs/workstream-akka-agent-runtime/tasks/01-runtime/02-implement-governed-workstream-akka-agent.md
 - depends on: [TASK-WSAGENT-01-001]
@@ -115,6 +116,8 @@
   - Starter template contains a real Akka Agent component for workstream responses.
   - The component can be tested without leaking secrets and without creating a production fake path.
   - A focused git commit exists with message `workstream-agent: add governed Akka Agent`.
+- notes:
+  - commit message: `workstream-agent: add governed Akka Agent`
 
 ### TASK-WSAGENT-02-002: Route workstream message submission through Akka Agent runtime
 
