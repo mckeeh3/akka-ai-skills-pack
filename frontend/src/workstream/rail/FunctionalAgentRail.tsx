@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { AccountStatus, FunctionalAgentSummary } from '../types';
 import { CollapsedRailToggle } from './CollapsedRailToggle';
 import { FunctionalAgentRailItem } from './FunctionalAgentRailItem';
@@ -17,6 +16,8 @@ type FunctionalAgentRailProps = {
   onSignOut?: () => void;
 };
 
+const myAccountFunctionalAgentId = 'agent-my-account';
+
 export function FunctionalAgentRail({
   agents,
   selectedFunctionalAgentId,
@@ -26,11 +27,16 @@ export function FunctionalAgentRail({
   appName = 'Workstream',
   userDisplayName,
   onSelectAgent,
-  onToggleCollapsed,
-  onSignOut
+  onToggleCollapsed
 }: FunctionalAgentRailProps) {
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const entries = visibleRailEntries(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus);
+  const visibleEntries = visibleRailEntries(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus);
+  const entries = visibleEntries.filter((entry) => entry.functionalAgentId !== myAccountFunctionalAgentId);
+  const myAccountEntry = visibleEntries.find((entry) => entry.functionalAgentId === myAccountFunctionalAgentId);
+  const myAccountSelected = selectedFunctionalAgentId === myAccountFunctionalAgentId;
+
+  function openMyAccount() {
+    if (myAccountEntry) onSelectAgent?.(myAccountFunctionalAgentId);
+  }
 
   return (
     <aside className={`sidebar workstream-functional-agent-rail ${collapsed ? 'collapsed' : 'expanded'}`} aria-label="Functional agents">
@@ -49,17 +55,17 @@ export function FunctionalAgentRail({
         </ul>
       </nav>
       <div className="sidebar-bottom rail-user-region">
-        <button type="button" className="rail-user-button" aria-haspopup="menu" aria-expanded={userMenuOpen} onClick={() => setUserMenuOpen((open) => !open)}>
+        <button
+          type="button"
+          className={`rail-user-button ${myAccountSelected ? 'active' : ''}`.trim()}
+          aria-current={myAccountSelected ? 'page' : undefined}
+          aria-label={`Open My Account workstream for ${userDisplayName}`}
+          disabled={!myAccountEntry}
+          onClick={openMyAccount}
+        >
           <span className="user-avatar" aria-hidden="true">{userDisplayName.slice(0, 1).toUpperCase()}</span>
           {!collapsed && <span>{userDisplayName}</span>}
         </button>
-        {userMenuOpen && (
-          <div className="rail-user-menu" role="menu">
-            <button type="button" role="menuitem">Profile</button>
-            <button type="button" role="menuitem">Settings</button>
-            <button type="button" role="menuitem" onClick={onSignOut}>Sign out</button>
-          </div>
-        )}
       </div>
     </aside>
   );

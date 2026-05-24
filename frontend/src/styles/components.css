@@ -197,42 +197,21 @@
   font-weight: 800;
 }
 
-.rail-user-button:hover {
+.rail-user-button:hover,
+.rail-user-button.active {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
+}
+
+.rail-user-button.active .user-avatar {
+  background: var(--color-primary);
+  color: var(--color-inverse-text);
 }
 
 .workstream-functional-agent-rail.collapsed .rail-user-button {
   justify-content: center;
   padding: 0;
 }
-
-.rail-user-menu {
-  position: absolute;
-  left: 0;
-  bottom: calc(100% + var(--space-2));
-  display: grid;
-  min-width: 12rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-2);
-  z-index: 10;
-}
-
-.rail-user-menu button {
-  justify-content: flex-start;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-text);
-  padding: var(--space-3);
-  text-align: left;
-  font-weight: 800;
-}
-
-.rail-user-menu button:hover { background: var(--color-primary-soft); }
 
 .notification-summary,
 .fixture-defer-note {

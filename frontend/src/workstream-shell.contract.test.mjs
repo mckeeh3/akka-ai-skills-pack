@@ -27,10 +27,14 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(toggle, /workstream-rail-toggle-tooltip/);
   assert.doesNotMatch(toggle, /title=/);
   assert.match(rail, /aria-label="Functional agents"/);
-  assert.match(rail, /rail-user-button/);
-  assert.match(rail, /Profile/);
-  assert.match(rail, /Settings/);
-  assert.match(rail, /Sign out/);
+  assert.match(rail, /const myAccountFunctionalAgentId = 'agent-my-account'/);
+  assert.match(rail, /entry\.functionalAgentId !== myAccountFunctionalAgentId/);
+  assert.match(rail, /className=\{`rail-user-button \$\{myAccountSelected \? 'active' : ''\}`\.trim\(\)\}/);
+  assert.match(rail, /aria-label=\{`Open My Account workstream for \$\{userDisplayName\}`\}/);
+  assert.match(rail, /onClick=\{openMyAccount\}/);
+  assert.doesNotMatch(rail, /aria-haspopup="menu"/);
+  assert.doesNotMatch(rail, /rail-user-menu/);
+  assert.doesNotMatch(rail, /role="menuitem"/);
   assert.match(rail, /onToggleCollapsed/);
 });
 

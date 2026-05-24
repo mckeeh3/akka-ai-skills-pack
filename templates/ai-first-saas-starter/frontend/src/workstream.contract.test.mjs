@@ -40,7 +40,7 @@ test('me fixtures cover active admin, member, auditor/support, disabled, and for
   assert.match(meFixtures, /visibleCapabilityIds: \[\]/);
 });
 
-test('functional agent fixtures expose the five core v0 workstreams as the visible starter rail set', () => {
+test('functional agent fixtures expose the five core v0 workstreams while My Account is opened from the user tile', () => {
   for (const label of ['My Account', 'User Admin', 'Agent Admin', 'Audit/Trace', 'Governance/Policy']) {
     assert.match(agentFixtures, new RegExp(label.replace('/', '\\/')));
   }
