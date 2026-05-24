@@ -98,7 +98,7 @@ For global installs, dry runs, archive installs, and detailed usage, see the [Sk
 
 ## Getting started: implement your initial AI-first app
 
-The recommended first-user path is incremental. Start with the packaged secure AI-first SaaS starter, make the starter functional, then use the same pattern to add domain-specific capabilities. The starter is not just boilerplate; it is a working training vertical for the app's future feature work:
+The recommended first-user path is incremental and production-oriented. Start with the packaged secure AI-first SaaS starter, make the five core v0 workstreams functional with real model-backed agents, then use the packaged core-app domain PRDs to implement the full core workstreams one at a time before adding product-specific capabilities. The starter is not just boilerplate; it is the working runtime shell and training vertical for the app's future feature work:
 
 ```text
 intent → functional agent/workstream → structured surface → governed backend capability
@@ -245,33 +245,66 @@ Manual model-backed smoke checklist after the workstream-agent runtime is implem
 
 This phase teaches the repeatable app pattern: functional agent/workstream, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.
 
-### Step 7 — Advance from minimum starter to full core readiness
+### Step 7 — Roll out the full core app workstreams from the packaged PRDs
 
-After the minimum starter works locally, ask the harness to plan and execute the remaining core foundation in small live-app increments:
-
-```text
-Assess this project against full core secure AI-first SaaS readiness.
-Start from the five core v0 workstreams: My Account, User Admin, Agent Admin,
-Audit/Trace, and Governance/Policy. Create or update specs/pending-tasks.md with
-small implementation tasks for the missing core foundation: richer My Account,
-full User Admin, invitations/onboarding with Resend or captured outbox, full Agent Admin,
-governed prompt/skill/tool-boundary documents, audit/trace search UI, Governance/Policy
-surfaces, support access, tenant-isolation tests, forbidden-access tests, frontend
-secret-boundary tests, and security review.
-Do not add app-specific domain features until the core readiness gaps are explicit.
-```
-
-Then execute tasks one at a time, preferably in fresh harness sessions:
+After the five core v0 workstreams work locally with real model-backed responses, use the packaged core-app domain PRDs as the implementation source for the full core foundation. These PRDs live in the installed pack at:
 
 ```text
-Read .agents/AGENTS.md, .agents/skills/README.md, specs/pending-tasks.md, and the files relevant to the next task.
-Select the next runnable pending task for the initial core app rollout.
-Implement only that task, update tests, run the relevant checks, and update specs/pending-tasks.md with the result.
+.agents/docs/examples/ai-first-saas-core-app-domain/
+  README.md
+  my-account-workstream/README.md
+  user-admin-workstream/README.md
+  agent-admin-workstream/README.md
+  audit-trace-workstream/README.md
+  governance-policy-workstream/README.md
 ```
 
-### Step 8 — Add domain-specific features after the foundation is usable
+Copy them into the project workspace so they become project input, not hidden pack internals:
 
-When the initial app is functional, use natural product prompts to extend it. The pack should make reasonable decisions, record assumptions, and ask only for blocking information.
+```bash
+mkdir -p docs/input/core-app-domain
+cp -R .agents/docs/examples/ai-first-saas-core-app-domain/* docs/input/core-app-domain/
+```
+
+Then ask the harness to create the rollout queue before coding:
+
+```text
+Read .agents/AGENTS.md, .agents/skills/README.md, specs/scaffold-report.md,
+app-description/, specs/, and docs/input/core-app-domain/.
+
+The five core v0 workstreams are now running locally with real model-backed
+markdown_response behavior. Use docs/input/core-app-domain/ as the source PRD
+for the full core app domain. Create or update specs/pending-tasks.md with a
+production-ready rollout plan that implements the core workstreams one at a time:
+1. My Account
+2. User Admin
+3. Agent Admin
+4. Audit/Trace
+5. Governance/Policy
+
+For each workstream, derive structured surfaces, surface actions, governed backend
+capabilities, Akka components, frontend integration, real workstream-agent skills/tools,
+authorization, tenant isolation, audit/work traces, tests, and manual local smoke checks.
+Do not add product-specific domain features until the full core workstream rollout
+queue exists and the current next core task is clear.
+```
+
+Execute the rollout one task at a time, preferably in fresh harness sessions:
+
+```text
+Read .agents/AGENTS.md, .agents/skills/README.md, specs/pending-tasks.md,
+docs/input/core-app-domain/, and the files relevant to the next task.
+Select the next runnable pending task for the full core app rollout.
+Implement only that task through the real local Akka runtime path, update tests,
+run the relevant checks, perform any required local smoke validation, and update
+specs/pending-tasks.md with the result.
+```
+
+Do not treat PRD processing as a paperwork step. Each core workstream is done only when it works through the authenticated shell, real backend capabilities, real governed agents where applicable, durable state/traces, React surfaces, tests, and local Akka smoke validation.
+
+### Step 8 — Add product-specific features after the core foundation is usable
+
+When the full core foundation is usable, use natural product prompts to extend it. The pack should make reasonable decisions, record assumptions, and ask only for blocking information.
 
 ```text
 Now extend this AI-first SaaS app with this domain feature:
