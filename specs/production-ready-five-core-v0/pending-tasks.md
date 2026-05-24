@@ -293,7 +293,8 @@
 
 ### TASK-PRODV0-04-002: Final production-ready v0 validation and release handoff
 
-- status: pending
+- status: done
+- completion note: Ran full starter validation, version consistency, pack build, source install smoke, installed scaffold dry-run, provider smoke skip mode, and real provider smoke mode; fixed a validation-discovered non-secret metadata marker in the starter surface redaction payload; added release handoff notes with the recommended local trial process and out-of-scope follow-up areas.
 - source: specs/production-ready-five-core-v0/backlog/01-production-ready-v0-build-backlog.md
 - task brief: specs/production-ready-five-core-v0/tasks/05-validation/02-final-validation-release-handoff.md
 - depends on: [TASK-PRODV0-04-001]

@@ -32,6 +32,10 @@ For this queue, `production-ready v0` means:
 - the five initial core workstreams all use the same real message path;
 - docs, prompts, and skills must aggressively route agents toward production-ready implementation instead of mock/simulate/defer defaults.
 
+## Release handoff
+
+Final validation results and the recommended local trial process are recorded in `release-handoff.md`.
+
 ## Non-goals
 
 - Do not complete every full-core SaaS surface in this queue.
