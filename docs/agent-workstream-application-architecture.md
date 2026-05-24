@@ -22,22 +22,30 @@ workstream
 
 The primary application model is not a conventional page tree, CRUD console, or traditional app with a chatbot attached. Authenticated consequential work areas should be modeled as workstreams, each backed by exactly one functional agent and implemented through structured surfaces. Traditional routes may still exist for implementation, deep linking, static/public pages, asset hosting, or direct surface URLs, but they are not the primary architecture.
 
-## Minimum initial workstream
+## Minimum initial core workstream set
 
-The smallest generated AI-first SaaS starter is a bootstrap-authorized **User Admin workstream v0**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "starter app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
+The smallest generated AI-first SaaS starter is a bootstrap-authorized **five core workstream v0 set**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "starter app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
 
-User Admin workstream v0 is intentionally narrow, but it must still use the same shell model:
+The minimum initial left rail contains these role-authorized functional agents for the bootstrap operator:
 
-- **Left rail** — exposes the role-authorized User Admin functional agent for the bootstrap operator, with placeholders or disabled entries for deferred full-core work only when their unavailable state is explicit.
-- **Main workstream panel** — renders a durable request/response timeline with capability results, denials, trace references, and the first structured surface type: `markdown_response`.
-- **Persistent composer** — accepts natural-language bootstrap user-administration requests for the selected User Admin functional agent; it is an input channel, not an authorization boundary.
+1. **My Account Agent**
+2. **User Admin Agent**
+3. **Agent Admin Agent**
+4. **Audit/Trace Agent**
+5. **Governance/Policy Agent**
+
+Each core v0 workstream is intentionally narrow, but each must still use the same shell model:
+
+- **Left rail** — exposes the five role-authorized core functional agents for the bootstrap operator; unavailable richer full-core actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
+- **Main workstream panel** — renders a durable request/response timeline for the selected core workstream with capability results, denials, trace references, and the first structured surface type: `markdown_response`.
+- **Persistent composer** — accepts natural-language bootstrap requests for the selected core functional agent; it is an input channel, not an authorization boundary.
 - **Context and authority indicators** — show selected AuthContext, bootstrap role/capability basis, available capabilities, denied/deferred actions, and trace links.
 
-The first renderable surface is `markdown_response`: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob; richer User Admin surfaces such as tables, settings cards, access-review queues, invitations, and audit timelines can be added after the v0 slice.
+The first renderable surface for each core workstream is `markdown_response`: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob; richer surfaces such as profile/settings cards, user tables, access-review queues, agent behavior diffs, audit timelines, and policy/approval cards can be added after the v0 slice.
 
-Audit/work trace recording starts in this first slice for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. A dedicated Audit/Trace functional agent and search UI may be delivered later, but the substrate and trace links must exist from User Admin workstream v0 so later investigation surfaces have durable facts to read.
+Audit/work trace recording starts in this first slice for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. The Audit/Trace workstream is present from the first runnable starter, but it may initially explain and link to the trace substrate through `markdown_response` before richer search and investigation surfaces are implemented.
 
-Full-core generated SaaS readiness remains stricter than this minimum starter. User Admin workstream v0 is a valid first vertical slice only when follow-up work remains explicit for complete User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
+Full-core generated SaaS readiness remains stricter than this minimum starter. The five core workstream v0 set is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
 
 ## Core terms
 
@@ -117,7 +125,7 @@ Surfaces are structured renderable results, not just text. They are associated w
 
 Canonical surface types:
 
-- `markdown_response` for sanitized model-authored markdown in the minimum User Admin workstream v0 and other intentionally text-first responses;
+- `markdown_response` for sanitized model-authored markdown in the minimum five core workstream v0 set and other intentionally text-first responses;
 - `system_message` for typed system feedback, denial, warning, success, validation, approval-required, deferred, stale, background-work, and recovery messages;
 - dashboard / attention surface;
 - form or guided intake;

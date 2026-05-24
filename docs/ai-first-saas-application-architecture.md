@@ -77,11 +77,11 @@ Use `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, a
 
 ## Minimum AI-first SaaS starter
 
-The smallest valid generated AI-first SaaS app is a bootstrap-authorized **User Admin workstream v0**, not a generic chatbot. See `minimum-ai-first-saas-app.md` for the canonical minimum-app doctrine.
+The smallest valid generated AI-first SaaS app is a bootstrap-authorized **five core workstream v0 set**, not a generic chatbot. See `minimum-ai-first-saas-app.md` for the canonical minimum-app doctrine.
 
-Minimum starter readiness means the User Admin workstream v0 works for bootstrap-authorized users with a selected `AuthContext`, backend role/capability checks, a durable workstream log, audit/work trace substrate, capability-first backend boundaries, and a `markdown_response` structured surface rendered as sanitized HTML. This starter may use a chat-like shell, but the application model remains workstream + surface + capability.
+Minimum starter readiness means the My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy workstreams v0 work for bootstrap-authorized users with a selected `AuthContext`, backend role/capability checks, a durable workstream log, audit/work trace substrate, capability-first backend boundaries, and a `markdown_response` structured surface rendered as sanitized HTML. This starter may use a chat-like shell, but the application model remains workstream + surface + capability.
 
-Full-core SaaS readiness remains stricter than minimum starter readiness. Complete generated-core readiness still requires the full secure foundation: WorkOS/AuthKit user auth, local authorization, tenant/customer boundaries, `/api/me`, invitations/onboarding with Resend/outbox, complete User Admin, Agent Admin, governed runtime agent artifacts, audit/trace search, support-access and billing boundaries where needed, security tests, and security review before app-specific work is considered ready.
+Full-core SaaS readiness remains stricter than minimum starter readiness. Complete generated-core readiness still requires the full secure foundation: WorkOS/AuthKit user auth, local authorization, tenant/customer boundaries, `/api/me`, invitations/onboarding with Resend/outbox, complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, governed runtime agent artifacts, audit/trace search, support-access and billing boundaries where needed, security tests, and security review before app-specific work is considered ready.
 
 ## Human operating roles
 

@@ -46,7 +46,8 @@
 
 ### TASK-5WS-01-001: Update minimum starter doctrine to five core v0 workstreams
 
-- status: pending
+- status: done
+- completion note: Updated minimum starter doctrine and architecture summaries so the first runnable starter is the five core v0 workstream set with `markdown_response`, while preserving stricter full-core readiness.
 - source: specs/five-core-workstream-v0-starter/backlog/01-five-core-v0-build-backlog.md
 - task brief: specs/five-core-workstream-v0-starter/tasks/01-doctrine/01-update-minimum-starter-doctrine.md
 - depends on: [TASK-5WS-00-001]
@@ -71,6 +72,8 @@
   - Doctrine clearly defines the first runnable starter as five core text-first v0 workstreams.
   - Full-core readiness remains stricter and follow-up work remains explicit.
   - A git commit exists for the changes.
+- notes:
+  - commit message: `five-core-v0: update minimum starter doctrine`
 
 ### TASK-5WS-01-002: Update routing and getting-started prompts for five core v0
 
