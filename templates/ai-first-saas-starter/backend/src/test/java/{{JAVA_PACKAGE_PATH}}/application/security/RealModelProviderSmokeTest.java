@@ -88,36 +88,39 @@ class RealModelProviderSmokeTest extends TestKitSupport {
     var me = meService.me(identity, "membership-admin", "corr-real-provider-me");
     assertFalse(me.toString().contains(apiKey), "Provider secret leaked into /api/me response");
 
-    var response = service.submitMessage(
-        identity,
-        "membership-admin",
-        new WorkstreamService.WorkstreamMessageRequest(
-            "membership-admin",
-            "agent-user-admin",
-            "Real provider smoke: reply with one short markdown sentence confirming the workstream runtime is reachable. Do not include secrets.",
-            "corr-real-provider-smoke",
-            "idem-real-provider-smoke"),
-        "corr-real-provider-header");
+    for (var agentId : List.of("agent-my-account", "agent-user-admin", "agent-agent-admin", "agent-audit-trace", "agent-governance-policy")) {
+      var response = service.submitMessage(
+          identity,
+          "membership-admin",
+          new WorkstreamService.WorkstreamMessageRequest(
+              "membership-admin",
+              agentId,
+              "Real provider smoke for " + agentId + ": reply with one short markdown sentence confirming the workstream runtime is reachable. Do not include secrets.",
+              "corr-real-provider-smoke-" + agentId,
+              "idem-real-provider-smoke-" + agentId),
+          "corr-real-provider-header");
 
-    var markdown = response.surface().data().get("markdown").toString();
-    assertEquals("markdown_response", response.surface().surfaceType());
-    assertEquals("agent-user-admin", response.surface().ownerFunctionalAgentId());
-    assertEquals("ready", response.agentItem().status());
-    assertNull(response.agentItem().body(), "Successful model text must render from the markdown_response surface, not from placeholder item copy");
-    assertFalse(markdown.isBlank());
-    assertFalse(markdown.contains(apiKey), "Provider secret leaked into markdown response");
-    assertFalse(response.toString().contains(apiKey), "Provider secret leaked into workstream response DTO");
-    assertTrue(response.surface().traceIds().size() >= 3, "Expected prompt/model/work trace ids");
+      var markdown = response.surface().data().get("markdown").toString();
+      assertEquals("markdown_response", response.surface().surfaceType());
+      assertEquals(agentId, response.surface().ownerFunctionalAgentId());
+      assertEquals("ready", response.agentItem().status());
+      assertNull(response.agentItem().body(), "Successful model text must render from the markdown_response surface, not from placeholder item copy");
+      assertFalse(markdown.isBlank());
+      assertFalse(markdown.contains(apiKey), "Provider secret leaked into markdown response for " + agentId);
+      assertFalse(response.toString().contains(apiKey), "Provider secret leaked into workstream response DTO for " + agentId);
+      assertTrue(response.surface().traceIds().size() >= 3, "Expected prompt/model/work trace ids for " + agentId);
+      assertNotNull(response.surface().data().get("trace"));
+
+      var persistedItems = service.items(identity, "membership-admin", agentId, "corr-real-provider-items-" + agentId);
+      var persistedSurface = service.surface(identity, "membership-admin", response.surface().surfaceId(), "corr-real-provider-surface-" + agentId);
+      assertFalse(persistedItems.toString().contains(apiKey), "Provider secret leaked into workstream items for " + agentId);
+      assertFalse(persistedSurface.toString().contains(apiKey), "Provider secret leaked into persisted workstream surface for " + agentId);
+    }
+
     assertTrue(agentRuntimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY")));
     assertTrue(agentRuntimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("MODEL_INVOCATION")));
     assertTrue(agentRuntimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace")));
     assertTrue(agentRuntimeService.traces().stream().noneMatch(trace -> trace.toString().contains(apiKey)), "Provider secret leaked into runtime traces");
-    assertNotNull(response.surface().data().get("trace"));
-
-    var persistedItems = service.items(identity, "membership-admin", "agent-user-admin", "corr-real-provider-items");
-    var persistedSurface = service.surface(identity, "membership-admin", response.surface().surfaceId(), "corr-real-provider-surface");
-    assertFalse(persistedItems.toString().contains(apiKey), "Provider secret leaked into workstream items");
-    assertFalse(persistedSurface.toString().contains(apiKey), "Provider secret leaked into persisted workstream surface");
   }
 
   private static String trimToNull(String value) {

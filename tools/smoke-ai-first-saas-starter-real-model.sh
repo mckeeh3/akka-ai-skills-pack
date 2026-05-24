@@ -32,10 +32,11 @@ Behavior:
   - If OPENAI_API_KEY is absent or blank, the command exits 0 and reports an
     Akka Agent smoke skip that is safe for CI.
   - If provider env is present, it runs a targeted JUnit smoke that submits a
-    workstream message through backend WorkstreamService, invokes the
-    ComponentClient-backed WorkstreamRuntimeAgent, and verifies provider-backed
-    markdown_response plus prompt/model/work trace shape without exposing
-    provider secrets in DTOs, frontend env files, static assets, or smoke logs.
+    workstream message through each of the five core v0 workstreams via backend
+    WorkstreamService, invokes the ComponentClient-backed WorkstreamRuntimeAgent,
+    and verifies provider-backed markdown_response plus prompt/model/work trace
+    shape without exposing provider secrets in DTOs, frontend env files, static
+    assets, or smoke logs.
 EOF
 }
 
