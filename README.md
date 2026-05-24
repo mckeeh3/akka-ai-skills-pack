@@ -219,14 +219,15 @@ Report every command run and its result.
 
 ### Step 6 — Make the five core v0 workstreams functional
 
-Once basic checks pass, continue with the first starter target rather than jumping to domain work. The five core v0 app is not functional until normal workstream message submission goes through real governed prompt assembly and a configured backend model provider. Missing provider configuration should produce a safe blocked/error response, not a canned deterministic answer.
+Once basic checks pass, continue with the first starter target rather than jumping to domain work. The five core v0 app is not functional until normal workstream message submission goes through real governed prompt assembly, a concrete Akka `Agent` component, and a configured backend model provider. A service-only provider call that bypasses the Akka Agent is not a completed workstream-agent runtime. Missing provider configuration should produce a safe blocked/error response, not a canned deterministic answer.
 
 ```text
 Use the installed skills pack to continue the initial app rollout.
 Focus on making all five core v0 workstreams functional end to end with real
-model-backed workstream-agent responses. My Account is opened by clicking the
-signed-in user tile at the bottom of the left rail; the primary left-rail
-workstream links are User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+model-backed workstream-agent responses through the Akka Agent component path.
+My Account is opened by clicking the signed-in user tile at the bottom of the
+left rail; the primary left-rail workstream links are User Admin, Agent Admin,
+Audit/Trace, and Governance/Policy.
 For each workstream, preserve bootstrap-authorized access, selected AuthContext,
 durable workstream entries, markdown_response rendering, backend capability checks,
 denials, prompt/model/work traces, and frontend secret boundaries.
@@ -242,8 +243,8 @@ Manual model-backed smoke checklist after the workstream-agent runtime is implem
 1. Start the Akka app with backend-only provider variables loaded from `.env`; keep `OPENAI_API_KEY` out of `frontend/.env*` and static assets.
 2. Sign in through AuthKit as a configured `ADMIN_USERS` account.
 3. Select each core workstream: open My Account from the signed-in user tile, then select User Admin, Agent Admin, Audit/Trace, and Governance/Policy from the left rail.
-4. Submit a short prompt in each workstream and verify the response is a provider-backed `markdown_response`, not deterministic fixture copy.
-5. Check prompt/model/work trace surfaces or trace APIs for correlation ids and redacted provider metadata.
+4. Submit a short prompt in each workstream and verify the response is an Akka Agent-backed, provider-backed `markdown_response`, not deterministic fixture copy or a service-only provider bypass.
+5. Check prompt/model/work trace surfaces or trace APIs for correlation ids, AgentWorkTrace shape, and redacted provider metadata.
 6. Re-run once with provider variables absent and verify message submission is safely blocked with actionable recovery copy and no secret leakage.
 
 This phase teaches the repeatable app pattern: functional agent/workstream, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.

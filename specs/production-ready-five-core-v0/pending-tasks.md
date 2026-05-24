@@ -9,6 +9,7 @@
 - Treat local Akka execution as production-like validation. Do not satisfy runtime tasks with fixture-only, deterministic, mocked, simulated, or frontend-only behavior unless the task explicitly says to add a test double.
 - Normal runtime behavior must use real backend implementation paths. Test doubles must be isolated to tests and named as such.
 - If a required provider/configuration is missing, implement fail-closed actionable errors rather than silent fallback.
+- Historical tasks in this queue that mention real model/provider behavior are supplemented by `specs/workstream-akka-agent-runtime/`: normal user-facing workstream replies must invoke the governed Akka Agent component path, not a service-only provider bypass.
 - Update this file before finishing the harness response: set completed tasks to `done`, add a completion note, and add discovered follow-up tasks rather than expanding the current task.
 - Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
 - Commit message format: `prod-v0: <short task title>`.

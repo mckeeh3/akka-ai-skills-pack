@@ -194,7 +194,8 @@
 
 ### TASK-WSAGENT-04-001: Update docs and completion gates for Akka Agent-backed v0
 
-- status: pending
+- status: done
+- completion note: Updated core doctrine, installed-pack guidance, starter README validation/smoke gates, user guide prompts, agent coverage, historical core PRD wording, and migration retrospective so five-core v0 completion requires the governed Akka Agent component path instead of service-only provider or deterministic runtime substitutes.
 - source: specs/workstream-akka-agent-runtime/backlog/01-workstream-akka-agent-runtime-backlog.md
 - task brief: specs/workstream-akka-agent-runtime/tasks/02-validation/02-update-docs-and-completion-gates.md
 - depends on: [TASK-WSAGENT-03-001]
@@ -223,3 +224,6 @@
   - Documentation and completion gates align with the implemented Akka Agent-backed runtime path.
   - The retrospective makes the root cause explicit enough for future agents.
   - A focused git commit exists with message `workstream-agent: update completion gates`.
+- notes:
+  - checks: `git diff --check`; `rg -n "Akka Agent|real model|model-backed|deterministic|mock|fixture|provider smoke|workstream agent" AGENTS.md pack/AGENTS.md skills/README.md docs README.md templates/ai-first-saas-starter specs/production-ready-five-core-v0 specs/workstream-akka-agent-runtime`
+  - commit message: `workstream-agent: update completion gates`

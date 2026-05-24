@@ -8,7 +8,7 @@ It is template source, not a runnable project until placeholders are rendered by
 
 Natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “smallest useful app,” or chatbot-like initial SaaS must start from the canonical minimum doctrine in `docs/minimum-ai-first-saas-app.md`: the **five core v0 workstream set**, not a generic chatbot or a single User Admin-only slice.
 
-The first runnable starter target is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded functional agents, durable workstream log entries, real model-backed `markdown_response` v1 surfaces, backend capability boundaries, provider/configuration failure handling, and audit/work trace substrate for these five core v0 workstreams:
+The first runnable starter target is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded functional agents, durable workstream log entries, real model-backed `markdown_response` v1 surfaces produced through a concrete Akka `Agent` component, backend capability boundaries, provider/configuration failure handling, and audit/work trace substrate for these five core v0 workstreams:
 
 1. My Account
 2. User Admin
@@ -18,7 +18,7 @@ The first runnable starter target is intentionally narrower than full-core readi
 
 The scaffold must record follow-up work that distinguishes five-core-v0 readiness from full-core readiness: richer structured surfaces, complete invitation onboarding, support access, full governed agent document lifecycle, searchable audit/trace views, policy/governance workflows, security hardening, and only then app-specific domain workstreams.
 
-This template may contain broader full-core scaffold assets, but generated-app guidance must not claim five-core-v0 readiness unless normal workstream message submission uses the governed runtime path and a configured backend model provider, and must not claim full-core readiness unless those follow-up gates are satisfied and tested.
+This template may contain broader full-core scaffold assets, but generated-app guidance must not claim five-core-v0 readiness unless normal workstream message submission uses the governed runtime path, invokes the `WorkstreamRuntimeAgent` Akka Agent component, and uses a configured backend model provider, and must not claim full-core readiness unless those follow-up gates are satisfied and tested. Direct `ModelProviderClient` or service-only provider calls are support seams, not a substitute for the user-facing Akka Agent runtime path.
 
 ## Base package policy
 
@@ -84,7 +84,7 @@ From the skills-pack source repository, validate the rendered starter with one c
 tools/validate-ai-first-saas-starter-fullstack.sh
 ```
 
-The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test` including governed agent seed/runtime tests for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, scans the built static assets for obvious backend secret markers, and reports the optional provider smoke state. If `OPENAI_API_KEY` is absent, the provider smoke is skipped loudly and validation still passes; if backend model-provider env is present, it runs a targeted real model smoke through backend workstream message submission. Use `--keep` to retain the generated target for inspection.
+The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, runs `mvn test` including governed agent seed/runtime tests and Akka Agent runtime guards for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, scans the built static assets for obvious backend secret markers, and reports the optional provider smoke state. If `OPENAI_API_KEY` is absent, the provider smoke is skipped loudly and validation still passes; if backend model-provider env is present, it runs a targeted real model smoke through backend workstream message submission, the `ComponentClient`-backed `WorkstreamRuntimeAgent`, trace ids, and secret-boundary checks. Use `--keep` to retain the generated target for inspection.
 
 ## Local build and manual-test commands
 
@@ -158,12 +158,12 @@ Generated backend code that loads required environment values must treat missing
 
 ## Manual real-model smoke checklist
 
-Run this after the workstream-agent runtime is implemented and before calling the five core v0 starter functional. The automated provider smoke is `tools/smoke-ai-first-saas-starter-real-model.sh`; it skips when `OPENAI_API_KEY` is absent and, when enabled, verifies a provider-backed `markdown_response` and PromptAssemblyTrace/MODEL_INVOCATION/AgentWorkTrace shape without exposing secrets:
+Run this after the workstream-agent runtime is implemented and before calling the five core v0 starter functional. The automated provider smoke is `tools/smoke-ai-first-saas-starter-real-model.sh`; it skips when `OPENAI_API_KEY` is absent and, when enabled, verifies a `ComponentClient` → `WorkstreamRuntimeAgent` Akka Agent invocation, provider-backed `markdown_response`, PromptAssemblyTrace/MODEL_INVOCATION/AgentWorkTrace shape, trace ids, and provider-secret redaction:
 
 1. Load `.env` with backend-only WorkOS/AuthKit, JWT, admin-bootstrap, and model-provider variables such as `OPENAI_API_KEY`; keep provider secrets out of `frontend/.env*`.
 2. Run `mvn test`, frontend tests/typecheck/build, and `mvn compile exec:java` from the rendered project root where `pom.xml` and `src/` live.
 3. Sign in through AuthKit as a configured `ADMIN_USERS` account.
 4. Open the workstream UI and submit one short prompt in each workstream: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
-5. Verify each response is a provider-backed `markdown_response` and that prompt/model/work trace metadata is present with secrets redacted.
+5. Verify each response is an Akka Agent-backed, provider-backed `markdown_response` and that prompt/model/work trace metadata is present with secrets redacted.
 6. Inspect `/api/me`, workstream payloads, trace surfaces, `frontend/.env*`, and built static resources for secret-boundary violations; no `OPENAI_API_KEY` value or backend secret should appear.
 7. Restart without model-provider variables and verify message submission is blocked with actionable provider-configuration copy instead of deterministic fallback output.

@@ -28,3 +28,16 @@ Test doubles are allowed only in tests or explicitly named test adapters. They m
 Primary files are under `templates/ai-first-saas-starter/`, with supporting source-repo regression tests and guidance updates as needed.
 
 This queue supersedes any earlier task wording that allowed a deterministic local/demo model-response seam for normal workstream runtime behavior.
+
+## Retrospective: service/provider path was not enough
+
+The production-ready v0 work made workstream replies governed and provider-backed, but the normal successful path still could be interpreted as a service invoking a provider client directly rather than a real Akka Agent component. That failure mode matters because this skills pack teaches Akka application structure: a user-facing functional-agent workstream is not complete unless the message path reaches the Akka `Agent` runtime, not merely a helper service that returns markdown.
+
+The regression guard added by this queue prevents the same drift:
+
+- `WorkstreamRuntimeAgent` must import `akka.javasdk.agent.Agent` and extend `Agent`.
+- `WorkstreamService.submitMessage(...)` must depend on the `WorkstreamAgentRuntimeInvoker` seam for successful `markdown_response` production.
+- The production invoker must use `ComponentClient.forAgent()` and target `WorkstreamRuntimeAgent::respond`.
+- Optional real-provider smoke validation exercises backend workstream message submission through the ComponentClient-backed Agent path, then checks trace shape and provider-secret boundaries.
+
+Older production-ready v0 task wording about real provider/model behavior should be read together with this migration queue: real provider configuration is required, but provider access must happen through the governed Akka Agent-backed runtime path for normal user-facing workstream responses.

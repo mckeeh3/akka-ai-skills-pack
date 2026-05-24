@@ -110,15 +110,16 @@ The authenticated shell becomes backed by a real protected agent-runtime path be
 
 ### Required visible outcome
 
-A seeded tenant admin can select Access/Profile or User Admin in the functional-agent rail, submit a composer request, and receive deterministic backend-agent-runtime-backed workstream responses and structured surfaces. Runtime invocation resolves AuthContext, active seeded AgentDefinition, active prompt, compact AgentSkillManifest, ToolPermissionBoundary, deterministic model/test provider, and trace facts before returning a response.
+A seeded tenant admin can select Access/Profile or User Admin in the functional-agent rail, submit a composer request, and receive Akka Agent-backed workstream responses and structured surfaces. Runtime invocation resolves AuthContext, active seeded AgentDefinition, active prompt, compact AgentSkillManifest, ToolPermissionBoundary, configured model/provider boundary, and trace facts before returning a response; missing provider configuration fails closed with actionable surfaces/traces.
 
 ### Core scope
 
 - Seeded `AgentDefinition` records for Access/Profile and User Admin bootstrap functional agents.
 - Seeded prompt versions, skill versions, compact manifests, and deny-by-default tool boundaries.
 - `AgentRuntimeResolver`-style backend boundary.
+- Concrete Akka `Agent` component invocation for normal workstream message submission.
 - Authorized `readSkill(skillId)` for assigned active skills.
-- Deterministic local/test invocation path; no production model provider required.
+- Deterministic `TestModelProvider` invocation only in tests or explicitly named test adapters.
 - Workstream composer endpoint/action that returns agent responses and structured surfaces.
 - PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace facts sufficient for diagnostics and later Audit/Trace normalization.
 - Tests for successful invocation, disabled/cross-tenant agent denial, non-admin User Admin denial, unassigned skill denial, missing tool grant denial, side-effect denial, and frontend rendering.

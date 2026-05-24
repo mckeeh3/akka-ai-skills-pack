@@ -28,7 +28,7 @@ At completion, a seeded tenant admin can:
 
 1. sign in through the Module 1 app shell;
 2. see Access/Profile and seeded bootstrap functional agents in the left rail;
-3. select a functional agent and see a continuous workstream backed by deterministic backend agent-runtime behavior;
+3. select a functional agent and see a continuous workstream backed by the governed Akka Agent runtime path;
 4. submit a simple composer request such as `show my access context`, `show user admin status`, or `explain what user admin can do`;
 5. receive a structured response and/or structured surface that is produced through the bootstrap agent runtime path, not hard-coded page navigation;
 6. inspect basic prompt assembly, skill/manifest, tool-boundary, and work trace facts through developer/test-visible endpoints or diagnostic surfaces;
@@ -40,11 +40,12 @@ At completion, a seeded tenant admin can:
 
 - Seeded functional-agent catalog entries for Access/Profile and User Admin bootstrap placement.
 - Minimal durable or seed-imported `AgentDefinition` records for bootstrap functional agents.
-- Minimal seed prompt document/version records for deterministic local/test behavior.
+- Minimal seed prompt document/version records for governed runtime behavior.
 - Minimal seed skill document/version records and compact `AgentSkillManifest` entries.
 - Minimal `ToolPermissionBoundary` that defaults deny and allows only safe read/context tools plus `readSkill(skillId)` where assigned.
-- `AgentRuntimeResolver`-style backend boundary that resolves AuthContext, active agent, active prompt, compact manifest, tool boundary, model/test provider ref, and traces.
-- Deterministic test/local model behavior; no production model provider is required for this module.
+- `AgentRuntimeResolver`-style backend boundary that resolves AuthContext, active agent, active prompt, compact manifest, tool boundary, model provider ref, and traces.
+- Concrete Akka `Agent` component invocation for normal workstream message submission; deterministic `TestModelProvider` behavior is allowed only in tests or explicitly named test adapters.
+- Fail-closed provider configuration behavior: missing model-provider settings produce actionable blocked surfaces/traces instead of fallback markdown.
 - Composer endpoint or workstream action endpoint that invokes the bootstrap runtime.
 - Workstream UI integration for selected functional agent, composer request, response item, and structured surface output.
 - Trace facts sufficient to prove prompt assembly, skill load allowed/denied, and agent work correlation.
@@ -68,7 +69,7 @@ At completion, a seeded tenant admin can:
 | Seeded Tenant Admin | Active tenant admin from Module 1 seed/bootstrap data. | Can invoke bootstrap functional agents in selected tenant context. |
 | Tenant Member | Active member without admin capabilities. | Can invoke Access/Profile; cannot invoke User Admin bootstrap agent if lacking capability. |
 | Disabled account/member | Signed-in identity with disabled account or membership. | Runtime invocation is denied before agent resolution/model invocation. |
-| Bootstrap runtime actor | Backend execution context for deterministic local/test agent behavior. | May execute only within selected AuthContext and explicit tool boundary. |
+| Bootstrap runtime actor | Backend execution context that prepares governed requests and invokes the Akka Agent runtime. | May execute only within selected AuthContext and explicit tool boundary. |
 | Future Agent Admin | Later module that replaces or extends bootstrap seed behavior with governed UI-managed records. | Consumes the same record shapes and runtime contract. |
 
 ## 5. Authorization and capability model
@@ -79,7 +80,7 @@ Required capabilities:
 - `profile.read` — may invoke Access/Profile context behavior.
 - `workstream.agent.invoke` — may invoke functional-agent runtime for allowed agents.
 - `admin.users.read` or `admin.bootstrap.preview` — may see/invoke the User Admin bootstrap functional agent.
-- `agents.runtime.test` — may run deterministic test-mode invocations where exposed.
+- `agents.runtime.test` — may run explicitly named test-mode invocations where exposed; it must not replace normal workstream runtime.
 
 Rules:
 
@@ -188,10 +189,11 @@ Required behavior:
 4. resolve active AgentDefinition;
 5. assemble active prompt plus compact manifest;
 6. emit PromptAssemblyTrace;
-7. invoke deterministic/test-safe agent path;
-8. authorize any `readSkill(skillId)` request;
-9. emit SkillLoadTrace and AgentWorkTrace;
-10. return a workstream item and optional structured surface payload.
+7. invoke the concrete Akka `Agent` component through the governed runtime path;
+8. use the configured model/provider boundary from that Agent path, or fail closed with an actionable provider-configuration surface/trace;
+9. authorize any `readSkill(skillId)` request;
+10. emit SkillLoadTrace and AgentWorkTrace;
+11. return a workstream item and optional structured surface payload.
 
 ### 7.3 Access/Profile bootstrap behavior
 
@@ -225,7 +227,7 @@ Required surfaces:
 - Access/Profile context summary surface;
 - User Admin bootstrap/status surface;
 - denied/unavailable action state for not-yet-implemented mutations;
-- trace/correlation indicator for test/demo runtime calls.
+- trace/correlation indicator for Akka Agent runtime calls and explicit test-adapter calls.
 
 Routes may deep-link to selected functional agents or surfaces, but the workstream shell remains the primary UI model.
 
@@ -265,7 +267,7 @@ This module is complete when:
 
 - the authenticated shell is workstream-backed by a real protected backend invocation path;
 - Access/Profile and User Admin bootstrap functional agents are visible only when authorized;
-- composer requests produce deterministic agent-runtime-backed workstream responses;
+- composer requests produce Akka Agent-backed workstream responses through the governed runtime path; deterministic model behavior is limited to tests or explicitly named test adapters;
 - bootstrap prompts, skills, manifests, tool boundaries, and agent definitions are seeded or durable records compatible with later Agent Admin;
 - denied runtime paths fail before model invocation and are traceable;
 - no user-admin mutation is faked in the UI before the real User Admin module exists;

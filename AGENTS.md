@@ -38,7 +38,7 @@ If the user's real goal is to build a separate Akka app that merely **uses** thi
 
 When this repository's guidance, templates, or tasks describe a generated Akka feature as implemented, complete, or ready, that claim must mean the real local runtime path works at the stated scope. Akka local execution is production-like validation for generated apps and should be used aggressively for runtime/API/UI features rather than avoided in favor of static or fixture-only checks.
 
-Do not teach downstream harnesses to accept deterministic/demo/mock/simulated/model-less normal runtime behavior for workstream agents, auth, durability, provider calls, protected capabilities, authorization denials, or audit/work traces. Missing provider or security configuration should fail closed with actionable errors. Fixtures, mocks, deterministic fakes, and test doubles belong in tests or explicitly named test adapters only; they must not be the user-facing runtime substitute used to mark features done.
+Do not teach downstream harnesses to accept deterministic/demo/mock/simulated/model-less normal runtime behavior for workstream agents, auth, durability, provider calls, protected capabilities, authorization denials, or audit/work traces. Model-backed workstream agents must invoke a concrete Akka `Agent` component through the governed runtime path; direct service/provider calls that bypass the Agent are not a completed user-facing runtime. Missing provider or security configuration should fail closed with actionable errors. Fixtures, mocks, deterministic fakes, and test doubles belong in tests or explicitly named test adapters only; they must not be the user-facing runtime substitute used to mark features done.
 
 ---
 
