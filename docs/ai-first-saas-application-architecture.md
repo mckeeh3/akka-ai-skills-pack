@@ -122,7 +122,7 @@ Required shell regions:
 
 | Shell region | Purpose |
 |---|---|
-| Left rail functional agents | Show role-authorized functional/context-area agents for the selected `AuthContext`, such as My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Approval Queue, Risk & Exceptions, or Outcome Metrics. The signed-in user tile at the bottom of the rail opens the My Account workstream instead of a special profile/settings menu. |
+| Left rail functional agents | Show role-authorized functional/context-area agents for the selected `AuthContext`, such as User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Approval Queue, Risk & Exceptions, or Outcome Metrics. My Account is a required core workstream, but it is launched only from the signed-in user tile/email at the bottom of the rail instead of being duplicated in the top workstream list or replaced by a special profile/settings menu. |
 | Main workstream panel | Show the continuous timeline for the selected functional agent: user intent, agent responses, capability results, workflow progress, decisions, traces, and structured surfaces. |
 | Persistent composer | Accept natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent. |
 | Context and authority indicators | Show selected tenant/customer context, role/capability basis, pending approvals, trace links, and safe denial/recovery states. |

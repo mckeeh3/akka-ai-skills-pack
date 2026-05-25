@@ -191,6 +191,20 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void regularMemberCanOpenOnlyMyAccountFromSignedInUserTile() {
+    var response = service.submitMessage(new WorkosIdentity("workos-member", "member@example.test", "Member User"), "membership-member", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-member", "agent-my-account", "What can I do in My Account?", "corr-member-my-account", "idem-member-my-account"), "corr-header");
+
+    assertEquals("agent-my-account", response.surface().ownerFunctionalAgentId());
+    assertEquals("markdown_response", response.surface().surfaceType());
+    assertEquals("agent-my-account", response.surface().data().get("producingAgentId"));
+
+    var denied = assertThrows(AuthorizationException.class, () -> service.submitMessage(new WorkosIdentity("workos-member", "member@example.test", "Member User"), "membership-member", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-member", "agent-user-admin", "Can I administer users?", "corr-member-user-admin", "idem-member-user-admin"), "corr-header"));
+    assertEquals("FUNCTIONAL_AGENT_FORBIDDEN", denied.reasonCode());
+  }
+
+  @Test
   void submitMessageSupportsEveryFiveCoreV0FunctionalAgent() {
     for (var agentId : List.of("agent-my-account", "agent-user-admin", "agent-agent-admin", "agent-audit-trace", "agent-governance-policy")) {
       var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(

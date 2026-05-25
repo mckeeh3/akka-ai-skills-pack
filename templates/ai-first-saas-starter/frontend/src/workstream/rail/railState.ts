@@ -41,6 +41,10 @@ export function agentDisabledReason(entry: FunctionalAgentRailEntry): string | u
   return 'Unavailable in the selected context.';
 }
 
+const myAccountFunctionalAgentId = 'agent-my-account';
+
 export function defaultSelectableAgentId(agents: FunctionalAgentSummary[], visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active'): string | undefined {
-  return visibleRailEntries(agents, undefined, visibleCapabilityIds, accountStatus).find(isAgentSelectable)?.functionalAgentId;
+  const selectableEntries = visibleRailEntries(agents, undefined, visibleCapabilityIds, accountStatus).filter(isAgentSelectable);
+  return selectableEntries.find((entry) => entry.functionalAgentId !== myAccountFunctionalAgentId)?.functionalAgentId
+    ?? selectableEntries.find((entry) => entry.functionalAgentId === myAccountFunctionalAgentId)?.functionalAgentId;
 }

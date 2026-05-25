@@ -7,6 +7,8 @@ public enum FoundationRole {
   SAAS_OWNER_ADMIN(
       ScopeType.SAAS_OWNER,
       List.of(
+          "profile.read",
+          "profile.update",
           "saas_owner.user.manage",
           "saas_owner.tenant.read",
           "saas_owner.tenant.manage",
@@ -15,6 +17,8 @@ public enum FoundationRole {
   TENANT_ADMIN(
       ScopeType.TENANT,
       List.of(
+          "profile.read",
+          "profile.update",
           "secure-tenant-user-foundation",
           "tenant.user.read",
           "tenant.user.manage",
@@ -40,10 +44,12 @@ public enum FoundationRole {
           "agent.models.read",
           "agent.models.manage",
           "agent.runtime.test")),
-  TENANT_EMPLOYEE(ScopeType.TENANT, List.of("tenant.app.use", "agent.workstream.use")),
+  TENANT_EMPLOYEE(ScopeType.TENANT, List.of("profile.read", "profile.update", "tenant.app.use", "agent.workstream.use")),
   CUSTOMER_ADMIN(
       ScopeType.CUSTOMER,
       List.of(
+          "profile.read",
+          "profile.update",
           "secure-tenant-user-foundation",
           "customer.user.read",
           "customer.user.manage",
@@ -67,10 +73,10 @@ public enum FoundationRole {
           "agent.models.read",
           "agent.models.manage",
           "agent.runtime.test")),
-  CUSTOMER_USER(ScopeType.CUSTOMER, List.of("customer.app.use", "agent.workstream.use")),
+  CUSTOMER_USER(ScopeType.CUSTOMER, List.of("profile.read", "profile.update", "customer.app.use", "agent.workstream.use")),
   AUDITOR(
       ScopeType.TENANT,
-      List.of("tenant.audit.read", "tenant.access_review.read", "customer.audit.read", "customer.access_review.read"));
+      List.of("profile.read", "profile.update", "tenant.audit.read", "tenant.access_review.read", "customer.audit.read", "customer.access_review.read"));
 
   private final ScopeType defaultScopeType;
   private final List<String> capabilities;

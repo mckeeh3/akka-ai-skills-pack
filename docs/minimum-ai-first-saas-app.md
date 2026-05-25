@@ -24,7 +24,7 @@ bootstrap-authorized human user
 + audit/work trace substrate
 ```
 
-The app shell may look chat-like: a left rail, main workstream timeline, and persistent composer. That visual shape does not make the app a chatbot. The left rail exposes role-authorized workstreams; the main panel renders durable requests, responses, capability results, traces, and structured surfaces; the composer is an input channel for the selected functional agent.
+The app shell may look chat-like: a left rail, main workstream timeline, and persistent composer. That visual shape does not make the app a chatbot. The left rail exposes role-authorized workstreams; the main panel renders durable requests, responses, capability results, traces, and structured surfaces; the composer is an input channel for the selected functional agent. My Account is one of the five required workstreams, but its launcher is the signed-in user tile/email at the bottom of the left rail; it must not be duplicated in the top workstream list.
 
 ## First workstreams: five core v0 set
 
@@ -86,7 +86,7 @@ Required from the first slice:
 - durable workstream log for requests, responses, tool/capability results, denials, and trace references;
 - audit/work trace substrate for identity, authorization, agent prompt/skill/tool use, capability checks, data access, and denials;
 - capability-first backend modeling before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
-- tests for allowed bootstrap access, forbidden access, disabled or missing authority where modeled, trace creation, markdown sanitization, five-core workstream visibility, and frontend secret boundaries.
+- tests for allowed bootstrap access, forbidden access, disabled or missing authority where modeled, trace creation, markdown sanitization, five-core workstream availability, My Account bottom-user-tile launch behavior with no duplicate top-rail entry, and frontend secret boundaries.
 
 Akka local execution is the production-like validation path for the starter. Minimum starter readiness requires local backend/API/UI smoke or manual validation that exercises the real runtime behavior, not only fixture rendering or mocked unit tests. Test fixtures and fakes should be named as such and isolated to tests.
 

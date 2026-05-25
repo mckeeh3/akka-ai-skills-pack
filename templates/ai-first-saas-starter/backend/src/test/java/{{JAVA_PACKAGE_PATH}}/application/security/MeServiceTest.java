@@ -42,6 +42,8 @@ class MeServiceTest {
     assertEquals("active", response.account().status());
     assertEquals("tenant-1", response.selectedAuthContext().tenantId());
     assertEquals(List.of("tenant-admin"), response.selectedAuthContext().roleIds());
+    assertTrue(response.visibleCapabilityIds().contains("profile.read"));
+    assertTrue(response.visibleCapabilityIds().contains("profile.update"));
     assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
     assertTrue(response.visibleCapabilityIds().contains("secure-tenant-user-foundation"));
     assertEquals(
@@ -54,6 +56,21 @@ class MeServiceTest {
     assertEquals("Audit/Trace", response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-audit-trace")).findFirst().orElseThrow().label());
     assertFalse(response.visibleCapabilityIds().contains("WORKOS_API_KEY"));
     assertEquals("corr-1", response.auditCorrelationId());
+  }
+
+  @Test
+  void activeMemberKeepsMyAccountAvailableWithoutAdminWorkstreams() {
+    inviteTenantMember("member@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, "tenant-1");
+
+    var response = meService.me(identity("workos-member", "member@example.com"), null, "corr-member");
+
+    assertTrue(response.visibleCapabilityIds().contains("profile.read"));
+    assertTrue(response.visibleCapabilityIds().contains("profile.update"));
+    var myAccount = response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-my-account")).findFirst().orElseThrow();
+    assertEquals("visible", myAccount.availability());
+    assertTrue(response.visibleCapabilityIds().containsAll(myAccount.requiredCapabilityIds()));
+    var userAdmin = response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-user-admin")).findFirst().orElseThrow();
+    assertEquals("denied", userAdmin.availability());
   }
 
   @Test
@@ -139,9 +156,19 @@ class MeServiceTest {
 
   private void inviteTenantAdmin(
       String email, AccountStatus accountStatus, MembershipStatus membershipStatus, String tenantId) {
+    inviteTenantMemberWithRoles(email, accountStatus, membershipStatus, tenantId, List.of(FoundationRole.TENANT_ADMIN));
+  }
+
+  private void inviteTenantMember(
+      String email, AccountStatus accountStatus, MembershipStatus membershipStatus, String tenantId) {
+    inviteTenantMemberWithRoles(email, accountStatus, membershipStatus, tenantId, List.of(FoundationRole.TENANT_EMPLOYEE));
+  }
+
+  private void inviteTenantMemberWithRoles(
+      String email, AccountStatus accountStatus, MembershipStatus membershipStatus, String tenantId, List<FoundationRole> roles) {
     repository.saveAccount(
         new Account(email, null, email, email, accountStatus, accountStatus == AccountStatus.ACTIVE ? "LINKED" : "UNLINKED"));
-    repository.putProfile(new UserProfile(email, email, "Starter Admin", "Starter", "Admin", null));
+    repository.putProfile(new UserProfile(email, email, "Starter User", "Starter", "User", null));
     repository.putSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
     repository.putMembership(
         new Membership(
@@ -150,7 +177,7 @@ class MeServiceTest {
             ScopeType.TENANT,
             tenantId,
             null,
-            List.of(FoundationRole.TENANT_ADMIN),
+            roles,
             membershipStatus,
             false,
             null));

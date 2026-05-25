@@ -19,6 +19,9 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(railState, /hasRequiredCapabilities/);
   assert.match(railState, /visibleCapabilityIds/);
   assert.match(railState, /entry\.availability === 'visible' && entry\.visibilityReason === 'has-capability'/);
+  assert.match(railState, /const myAccountFunctionalAgentId = 'agent-my-account'/);
+  assert.match(railState, /entry\.functionalAgentId !== myAccountFunctionalAgentId/);
+  assert.match(railState, /entry\.functionalAgentId === myAccountFunctionalAgentId/);
   assert.match(railItem, /aria-current=\{entry\.isSelected \? 'page'/);
   assert.match(railItem, /iconGlyph/);
   assert.match(toggle, /aria-expanded=\{!collapsed\}/);

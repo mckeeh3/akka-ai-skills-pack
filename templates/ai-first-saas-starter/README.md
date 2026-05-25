@@ -8,7 +8,7 @@ It is template source, not a runnable project until placeholders are rendered by
 
 Natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “smallest useful app,” or chatbot-like initial SaaS must start from the canonical minimum doctrine in `docs/minimum-ai-first-saas-app.md`: the **five core v0 workstream set**, not a generic chatbot or a single User Admin-only slice.
 
-The first runnable starter target is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded functional agents, durable workstream log entries, real model-backed `markdown_response` v1 surfaces produced through a concrete Akka `Agent` component, backend capability boundaries, provider/configuration failure handling, and audit/work trace substrate for these five core v0 workstreams:
+The first runnable starter target is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded functional agents, durable workstream log entries, real model-backed `markdown_response` v1 surfaces produced through a concrete Akka `Agent` component, backend capability boundaries, provider/configuration failure handling, and audit/work trace substrate for these five core v0 workstreams. My Account is launched only by clicking the signed-in user tile/email at the bottom of the left rail; it is not listed with the other top-rail workstreams:
 
 1. My Account
 2. User Admin
@@ -163,7 +163,7 @@ Run this after the workstream-agent runtime is implemented and before calling th
 1. Load `.env` with backend-only WorkOS/AuthKit, JWT, admin-bootstrap, and model-provider variables such as `OPENAI_API_KEY`; keep provider secrets out of `frontend/.env*`.
 2. Run `mvn test`, frontend tests/typecheck/build, and `mvn compile exec:java` from the rendered project root where `pom.xml` and `src/` live.
 3. Sign in through AuthKit as a configured `ADMIN_USERS` account.
-4. Open the workstream UI and submit one short prompt in each workstream: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+4. Open the workstream UI and submit one short prompt in each workstream: open My Account from the signed-in user tile/email at the bottom of the left rail, then use the top-rail entries for User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 5. Verify each response is an Akka Agent-backed, provider-backed `markdown_response` and that prompt/model/work trace metadata is present with secrets redacted.
 6. Inspect `/api/me`, workstream payloads, trace surfaces, `frontend/.env*`, and built static resources for secret-boundary violations; no `OPENAI_API_KEY` value or backend secret should appear.
 7. Restart without model-provider variables and verify message submission is blocked with actionable provider-configuration copy instead of deterministic fallback output.

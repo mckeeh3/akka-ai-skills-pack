@@ -26,9 +26,9 @@ The primary application model is not a conventional page tree, CRUD console, or 
 
 The smallest generated AI-first SaaS starter is a bootstrap-authorized **five core workstream v0 set**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "starter app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
 
-The minimum initial left rail contains these role-authorized functional agents for the bootstrap operator:
+The minimum initial shell contains these role-authorized functional agents for the bootstrap operator:
 
-1. **My Account Agent**
+1. **My Account Agent** — opened only from the signed-in user tile/email at the bottom of the left rail, not listed with the top workstream buttons.
 2. **User Admin Agent**
 3. **Agent Admin Agent**
 4. **Audit/Trace Agent**
@@ -36,7 +36,7 @@ The minimum initial left rail contains these role-authorized functional agents f
 
 Each core v0 workstream is intentionally narrow, but each must still use the same shell model:
 
-- **Left rail** — exposes the five role-authorized core functional agents for the bootstrap operator; unavailable richer full-core actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
+- **Left rail** — exposes role-authorized core functional agents for the bootstrap operator. User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the top workstream rail when allowed. My Account is still one of the five core workstreams, but its only launcher is the signed-in user tile/email in the bottom rail user region. Unavailable richer full-core actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
 - **Main workstream panel** — renders a durable request/response timeline for the selected core workstream with capability results, denials, trace references, and the first structured surface type: `markdown_response`.
 - **Persistent composer** — accepts natural-language bootstrap requests for the selected core functional agent; it is an input channel, not an authorization boundary.
 - **Context and authority indicators** — show selected AuthContext, bootstrap role/capability basis, available capabilities, denied/deferred actions, and trace links.
@@ -68,7 +68,7 @@ The default authenticated app shell uses a familiar AI chat layout, but the left
 
 Required shell regions:
 
-1. **Left rail functional agents** — show only agents the selected `AuthContext` may use. Examples: My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Sales Pipeline, Approval Queue, Risk & Exceptions. The signed-in user tile at the bottom of the rail should open the My Account workstream rather than a separate profile/settings menu.
+1. **Left rail functional agents** — show only agents the selected `AuthContext` may use. Examples: User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Sales Pipeline, Approval Queue, Risk & Exceptions. The signed-in user tile/email at the bottom of the rail is the My Account launcher; do not also list My Account among the top rail workstream buttons, and do not replace it with a separate profile/settings menu.
 2. **Main workstream panel** — shows a continuous vertical stream of user intent, agent responses, structured surfaces, capability results, workflow status, decision cards, traces, and links.
 3. **Persistent composer** — accepts natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent.
 4. **Context and authority indicators** — show selected tenant/customer context, active role/capability basis, pending approvals, trace links, and safe denial/recovery states.
