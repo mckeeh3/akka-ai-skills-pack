@@ -46,6 +46,7 @@
   --color-primary-soft: #eef4ff;
   --color-ai: #4f46e5;
   --color-ai-soft: #f1f0ff;
+  --color-request-surface: #ecfeff;
 
   --color-success: #16a34a;
   --color-success-soft: #dcfce7;
@@ -90,6 +91,7 @@
   --color-primary-soft: #1e3a8a;
   --color-ai: #a855f7;
   --color-ai-soft: #2e185c;
+  --color-request-surface: #083344;
 
   --color-success: #4ade80;
   --color-success-soft: #123524;

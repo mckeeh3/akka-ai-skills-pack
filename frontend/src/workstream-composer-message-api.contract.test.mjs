@@ -12,6 +12,8 @@ const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const composer = read('./workstream/composer/WorkstreamComposer.tsx');
 const markdownSurface = read('./workstream/surfaces/MarkdownResponseSurface.tsx');
 const itemCard = read('./workstream/stream/WorkstreamItem.tsx');
+const componentStyles = read('./styles/components.css');
+const tokens = read('./styles/tokens.css');
 
 test('composer submits normal prompts through backend workstream message API', () => {
   assert.match(apiContract, /submitWorkstreamMessage\(request: WorkstreamMessageRequest\): Promise<ApiResult<WorkstreamMessageResponse>>/);
@@ -70,12 +72,22 @@ test('composer maps provider-missing and forbidden errors to safe system notific
 test('successful prompt and model response surfaces render only prompt and response text', () => {
   assert.match(main, /traceableAgentItem/);
   assert.match(main, /traceLinks: agentItem\.traceLinks \?\? agentItem\.traceIds\.map/);
-  assert.match(itemCard, /item\.kind === 'user-request'/);
+  assert.match(itemCard, /item\.kind === 'user-request' \|\| item\.kind === 'user-message'/);
   assert.match(itemCard, /prompt-input-surface/);
+  assert.match(itemCard, /aria-label="Request received"/);
   assert.match(itemCard, /\{item\.body \?\? item\.title \?\? ''\}/);
   assert.match(itemCard, /return <ActionFeedbackItem/);
   assert.match(markdownSurface, /markdown-response-only/);
   assert.doesNotMatch(markdownSurface, /Trace links:|\/ui\?traceId=|surface-summary|SurfaceActionBar/);
+});
+
+test('user request acknowledgement surface is right-justified, compact, and visually distinct from response surfaces', () => {
+  assert.match(componentStyles, /\.workstream-item\.user-request\.prompt-input-surface/);
+  assert.match(componentStyles, /justify-self: end/);
+  assert.match(componentStyles, /max-width: min\(46rem, 62%\)/);
+  assert.match(componentStyles, /background: var\(--color-request-surface\)/);
+  assert.match(tokens, /--color-request-surface:/);
+  assert.doesNotMatch(componentStyles, /\.workstream-item\.user-request\.prompt-input-surface[^}]*background: var\(--color-surface\)/);
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {

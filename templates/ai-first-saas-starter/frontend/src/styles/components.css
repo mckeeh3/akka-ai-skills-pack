@@ -826,9 +826,20 @@
 .workstream-item.user-request,
 .workstream-item.surface-request {
   justify-self: end;
-  max-width: 80%;
   border-color: color-mix(in srgb, var(--color-ai) 58%, var(--color-border));
+}
+
+.workstream-item.surface-request {
+  max-width: 80%;
   background: var(--color-ai-soft);
+}
+
+.workstream-item.user-request.prompt-input-surface {
+  width: fit-content;
+  max-width: min(46rem, 62%);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-request-surface);
+  box-shadow: 0 4px 14px rgb(15 23 42 / 0.035);
 }
 
 .prompt-input-surface p {

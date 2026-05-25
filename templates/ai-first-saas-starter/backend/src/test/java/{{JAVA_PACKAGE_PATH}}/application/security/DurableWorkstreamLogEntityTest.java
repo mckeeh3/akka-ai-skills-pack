@@ -88,7 +88,7 @@ class DurableWorkstreamLogEntityTest {
   }
 
   private static WorkstreamLogRepository.WorkstreamMessageLogEntry entry(String tenantId, String selectedContextId, String agentId, String idempotencyKey, String correlationId) {
-    var user = new WorkstreamService.WorkstreamItem("item-user-" + correlationId, agentId, "user-message", Instant.parse("2026-05-24T10:15:30Z").toString(), correlationId, List.of("trace-user"), null, "User request", "Prompt", "accepted");
+    var user = new WorkstreamService.WorkstreamItem("item-user-" + correlationId, agentId, "user-request", Instant.parse("2026-05-24T10:15:30Z").toString(), correlationId, List.of("trace-user"), null, null, "Prompt", "ready");
     var agent = new WorkstreamService.WorkstreamItem("item-agent-" + correlationId, agentId, "markdown_response", Instant.parse("2026-05-24T10:15:31Z").toString(), correlationId, List.of("trace-agent"), "surface-" + correlationId, "Agent response", "Model-backed response produced.", "ready");
     var surface = new WorkstreamService.SurfaceEnvelope("surface-" + correlationId, "markdown_response", "v1", "Response", agentId, List.of("agent-audit-trace"), Map.of("tenantId", tenantId, "selectedContextId", selectedContextId, "customerId", "customer-1"), correlationId, List.of("trace-agent"), Instant.parse("2026-05-24T10:15:31Z").toString(), null, Map.of("profile", "tenant-admin"), Map.of("markdown", "## Provider-backed response", "workstreamEntryId", agent.itemId()), List.of(), List.of());
     return new WorkstreamLogRepository.WorkstreamMessageLogEntry(tenantId, selectedContextId, agentId, idempotencyKey, correlationId, user, agent, surface);

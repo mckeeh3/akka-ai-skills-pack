@@ -164,7 +164,9 @@ class WorkstreamServiceTest {
     assertEquals("corr-message", response.correlationId());
     assertEquals("idem-message-1", response.idempotencyKey());
     assertEquals("agent-user-admin", response.userItem().functionalAgentId());
-    assertEquals("user-message", response.userItem().kind());
+    assertEquals("user-request", response.userItem().kind());
+    assertNull(response.userItem().title(), "Request acknowledgement surfaces render only the submitted prompt text.");
+    assertEquals("ready", response.userItem().status());
     assertEquals("agent-user-admin", response.agentItem().functionalAgentId());
     assertEquals("markdown_response", response.agentItem().kind());
     assertEquals(response.surface().surfaceId(), response.agentItem().surfaceId());

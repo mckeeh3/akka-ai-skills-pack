@@ -1,5 +1,6 @@
 export type WorkstreamItemKind =
   | 'user-request'
+  | 'user-message'
   | 'agent-response'
   | 'markdown_response'
   | 'surface'

@@ -177,7 +177,7 @@ public final class WorkstreamService {
     var surfaceId = "surface-message-" + stableSuffix(responseSeed + ":markdown_response");
     var now = Instant.now().toString();
     var traceIds = runtime.traceIds().isEmpty() ? List.of("trace-workstream-message-" + stableSuffix(responseSeed + ":trace")) : runtime.traceIds();
-    var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-message", now, requestCorrelationId, traceIds, null, "User request", request.prompt(), "accepted");
+    var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-request", now, requestCorrelationId, traceIds, null, null, request.prompt(), "ready");
     var markdown = runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED
         ? runtime.markdown()
         : "## " + functionalAgent.label() + " unavailable\n\nModel-backed workstream execution was blocked before a response was produced. " + runtime.safeErrorSummary() + "\n\nTrace ids: `" + String.join("`, `", traceIds) + "`.";
