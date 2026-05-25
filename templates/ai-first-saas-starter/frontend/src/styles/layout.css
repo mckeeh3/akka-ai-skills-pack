@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: var(--shell-sidebar-width) minmax(0, 1fr);
   min-height: 100vh;
+  isolation: isolate;
 }
 
 .workstream-shell:has(.workstream-functional-agent-rail.collapsed) {
@@ -12,8 +13,12 @@
   position: sticky;
   top: 0;
   height: 100vh;
-  background: color-mix(in srgb, var(--color-sidebar) 94%, transparent);
-  border-right: 1px solid var(--color-border);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-sidebar) 96%, transparent), color-mix(in srgb, var(--color-sidebar) 88%, var(--color-bg-subtle))),
+    var(--color-sidebar);
+  border-right: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--color-border));
+  box-shadow: 1px 0 0 rgb(255 255 255 / 0.05) inset;
+  backdrop-filter: blur(18px);
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
@@ -26,6 +31,20 @@
 .workstream-main-column {
   position: relative;
   min-height: 100vh;
+}
+
+.workstream-main-column::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto var(--shell-sidebar-width);
+  z-index: -1;
+  height: 18rem;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-ai) 9%, transparent), transparent);
+  pointer-events: none;
+}
+
+.workstream-shell:has(.workstream-functional-agent-rail.collapsed) .workstream-main-column::before {
+  left: 5rem;
 }
 
 .workstream-panel {
@@ -44,9 +63,10 @@
   gap: var(--space-4);
   min-height: 4.75rem;
   padding: var(--space-4) var(--space-8);
-  border-bottom: 1px solid var(--color-border);
-  background: color-mix(in srgb, var(--color-bg) 88%, var(--color-surface));
-  backdrop-filter: blur(18px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--color-border));
+  background: color-mix(in srgb, var(--color-surface-glass) 88%, var(--color-bg));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.06) inset;
+  backdrop-filter: blur(18px) saturate(1.15);
 }
 
 .topbar-actions {
@@ -97,6 +117,9 @@
 @media (max-width: 960px) {
   .app-shell,
   .workstream-shell:has(.workstream-functional-agent-rail.collapsed) { grid-template-columns: 1fr; }
+
+  .workstream-main-column::before,
+  .workstream-shell:has(.workstream-functional-agent-rail.collapsed) .workstream-main-column::before { left: 0; }
 
   .sidebar {
     position: fixed;

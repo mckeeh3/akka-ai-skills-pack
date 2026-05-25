@@ -8,6 +8,13 @@
 - mode policy: system with explicit light and dark token sets
 - status: selected for seed app validation
 
+## Visual direction
+
+- aesthetic point of view: operational mission-control console with crisp monospace typography, layered glass-like panels, restrained glow, and audit-grade information density
+- tone: calm, precise, supervisory, and trust-oriented rather than decorative or playful
+- memorable motif: "signal over noise" — subtle grid/scanline atmosphere, compact command surfaces, and semantic accent rails for work needing human attention
+- forbidden generic patterns: purple-gradient chatbot shells, undifferentiated white-card dashboards, decorative chat bubbles for consequential work, and equal visual weight across FYI, blocked, autonomous, and approval-needed states
+
 ## Brand adaptation
 
 - app/product name: AI-First SaaS Seed
@@ -19,6 +26,7 @@
 
 - calm operational SaaS interface for supervising delegated agent work
 - prioritizes decisions, exceptions, policy boundaries, auditability, and outcome visibility over decorative chrome
+- feels intentionally designed rather than like a generic admin dashboard, CRM, or chat app
 - makes autonomous activity visible without hiding consequential work in chat transcripts
 - supports light, dark, and system mode with equivalent hierarchy and contrast
 
@@ -30,9 +38,9 @@
   - tabular numerals for KPIs, counts, percentages, money, time, and queue metrics
 - spacing: stable 4px-based scale from `--space-1` through `--space-8`
 - radius: 8px controls, 12px standard cards, 16px prominent panels, pill badges
-- elevation: light mode may use subtle card shadows; dark mode relies primarily on borders and restrained glow
+- elevation: light mode uses layered card/panel shadows plus hairline borders; dark mode relies on borders, restrained glow, and depth from surface contrast
 - colors:
-  - surfaces, text, borders, primary, AI accent, status, chart, focus, and shadows are defined by the `atlas-ops-supervisory-console` tokens in `docs/web-ui-style-guide.md`
+  - surfaces, text, borders, primary, AI accent, status, chart, focus, shadows, texture, and motion tokens are defined by the `atlas-ops-supervisory-console` tokens in `docs/web-ui-style-guide.md`
   - lightweight style overrides may change only color and font tokens
 
 ## Component style rules
@@ -67,6 +75,12 @@
   - empty states explain what is absent and what the user can do next
   - errors include recovery action and retry where appropriate
   - success messages name the completed action
+- motion/transition rules:
+  - state-driven transitions may polish surface append/update, composer focus, hover, stale/reconnect, approval result, and denial/recovery feedback
+  - reduced-motion mode disables decorative transform/animation while preserving visible state changes
+- background/texture/elevation rules:
+  - use tokenized radial glow, subtle grid/scanline texture, hairline borders, and panel shadows to create depth
+  - never let texture, glow, or blur reduce text contrast, focus visibility, or structured-surface readability
 
 ## Accessibility and responsive constraints
 
