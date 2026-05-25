@@ -187,7 +187,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       title: surface.title,
       status: 'ready'
     };
-    setRequestScrollTargetId(requestItem.itemId);
+    setRequestScrollTargetId(surface.surfaceId);
     setBootstrap((current) => current.status === 'ready'
       ? { ...current, items: pruneWorkstreamItems([...current.items, requestItem, responseItem]) }
       : current);
@@ -234,6 +234,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
     if (targetSurface) {
+      setRequestScrollTargetId(targetSurface.surfaceId);
       updateSelection({
         selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId,
         selectedSurfaceId: targetSurface.surfaceId,
@@ -294,6 +295,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         body: `${safeError.body} Retry is safe: the prompt remains in the composer and will reuse the selected workstream context. Correlation ${result.error.correlationId}.`,
         status: safeError.status
       };
+      setRequestScrollTargetId(errorItem.itemId);
       setBootstrap((current) => current.status === 'ready'
         ? { ...current, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), errorItem]) }
         : current);
@@ -305,6 +307,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ...agentItem,
       traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
     };
+    setRequestScrollTargetId(surface.surfaceId);
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)

@@ -863,22 +863,34 @@
   border-color: color-mix(in srgb, var(--color-ai) 58%, var(--color-border));
 }
 
-.workstream-item.surface-request {
-  max-width: 80%;
-  background: var(--color-ai-soft);
-}
-
-.workstream-item.user-request.prompt-input-surface {
+.workstream-item.user-request.prompt-input-surface,
+.workstream-item.surface-request.request-surface {
   width: fit-content;
   max-width: min(46rem, 62%);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-request-surface);
   box-shadow: 0 4px 14px rgb(15 23 42 / 0.035);
 }
 
-.prompt-input-surface p {
+.workstream-item.user-request.prompt-input-surface,
+.workstream-item.surface-request.surface-request-surface {
+  background: var(--color-request-surface);
+}
+
+.workstream-item.surface-request.action-request-surface {
+  background: color-mix(in srgb, var(--color-request-surface) 70%, var(--color-ai-soft));
+}
+
+.prompt-input-surface p,
+.request-surface p {
   margin: 0;
   white-space: pre-wrap;
+}
+
+.request-surface small {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+  font-weight: 650;
 }
 
 .markdown-response-only {

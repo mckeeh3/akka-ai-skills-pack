@@ -11,6 +11,7 @@ const fixtureClient = read('./api/FixtureWorkstreamApiClient.ts');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const composer = read('./workstream/composer/WorkstreamComposer.tsx');
 const markdownSurface = read('./workstream/surfaces/MarkdownResponseSurface.tsx');
+const surfaceFrame = read('./workstream/surfaces/SurfaceStateFrame.tsx');
 const itemCard = read('./workstream/stream/WorkstreamItem.tsx');
 const componentStyles = read('./styles/components.css');
 const tokens = read('./styles/tokens.css');
@@ -29,8 +30,11 @@ test('composer response appends returned items and markdown_response surface', (
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
   assert.match(main, /traceableAgentItem/);
   assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
+  assert.match(main, /setRequestScrollTargetId\(surface\.surfaceId\)/);
   assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
   assert.match(stream, /item\.kind === 'markdown_response'/);
+  assert.match(surfaceFrame, /id=\{visibleEnvelope\.surfaceId\}/);
+  assert.match(surfaceFrame, /tabIndex=\{-1\}/);
   assert.match(apiContract, /surface: SurfaceEnvelope<unknown>/);
   assert.match(apiContract, /userItem: WorkstreamItem/);
   assert.match(apiContract, /agentItem: WorkstreamItem/);
@@ -44,7 +48,11 @@ test('composer acknowledges prompts immediately as request surfaces and scrolls 
   assert.match(main, /setRequestScrollTargetId\(userRequestItem\.itemId\)/);
   assert.match(main, /requestScrollTargetId=\{requestScrollTargetId\}/);
   assert.match(stream, /requestScrollTargetId\?: string/);
+  assert.match(stream, /useLayoutEffect/);
+  assert.match(stream, /document\.getElementById\(requestScrollTargetId\) \?\? document\.querySelector/);
+  assert.match(stream, /data-surface-id/);
   assert.match(stream, /scrollIntoView\(\{ block: 'start'/);
+  assert.match(stream, /requestSurface instanceof HTMLElement/);
   assert.match(stream, /focus\(\{ preventScroll: true \}\)/);
 });
 
@@ -88,6 +96,19 @@ test('user request acknowledgement surface is right-justified, compact, and visu
   assert.match(componentStyles, /background: var\(--color-request-surface\)/);
   assert.match(tokens, /--color-request-surface:/);
   assert.doesNotMatch(componentStyles, /\.workstream-item\.user-request\.prompt-input-surface[^}]*background: var\(--color-surface\)/);
+});
+
+test('surface and action request acknowledgement surfaces match compact request treatment', () => {
+  assert.match(itemCard, /item\.kind === 'surface-request'/);
+  assert.match(itemCard, /request-surface/);
+  assert.match(itemCard, /action-request-surface/);
+  assert.match(itemCard, /Surface request received/);
+  assert.match(itemCard, /Action request received/);
+  assert.match(itemCard, /item\.title \?\? item\.body/);
+  assert.match(componentStyles, /\.workstream-item\.surface-request\.request-surface/);
+  assert.match(componentStyles, /max-width: min\(46rem, 62%\)/);
+  assert.match(componentStyles, /\.workstream-item\.surface-request\.action-request-surface/);
+  assert.match(componentStyles, /\.request-surface small/);
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {

@@ -36,6 +36,8 @@ test('workstream shell uses fixture contracts and capability action feedback', (
   assert.match(main, /runCapabilityAction/);
   assert.match(main, /kind: 'surface-request'/);
   assert.match(main, /kind: 'surface'/);
+  assert.match(main, /setRequestScrollTargetId\(surface\.surfaceId\)/);
+  assert.match(main, /setRequestScrollTargetId\(targetSurface\.surfaceId\)/);
   assert.match(main, /buildCapabilityActionRequest/);
 });
 
@@ -83,9 +85,10 @@ test('focus, skip link, reduced motion, and responsive shell rules are present',
 test('prompt and markdown response surfaces stay text-only and visually distinct', () => {
   assert.match(components, /\.prompt-input-surface p/);
   assert.match(components, /white-space: pre-wrap/);
-  assert.match(components, /max-width: 80%/);
+  assert.match(components, /max-width: min\(46rem, 62%\)/);
   assert.match(components, /justify-self: end/);
-  assert.match(components, /background: var\(--color-ai-soft\)/);
+  assert.match(components, /background: var\(--color-request-surface\)/);
+  assert.match(components, /action-request-surface/);
   assert.match(components, /\.markdown-response-only/);
   assert.match(components, /background: var\(--color-surface\)/);
 });

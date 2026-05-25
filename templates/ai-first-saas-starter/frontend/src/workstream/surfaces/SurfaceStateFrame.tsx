@@ -27,7 +27,7 @@ export function SurfaceStateFrame<T>({ state, envelope, children }: SurfaceState
   }
 
   return (
-    <section className={`structured-surface surface-frame ${visibleEnvelope.surfaceType}${visibleEnvelope.stale?.isStale || state?.status === 'stale' ? ' stale' : ''}`} aria-labelledby={`${visibleEnvelope.surfaceId}-title`} data-surface-id={visibleEnvelope.surfaceId} data-surface-version={visibleEnvelope.surfaceVersion}>
+    <section id={visibleEnvelope.surfaceId} className={`structured-surface surface-frame ${visibleEnvelope.surfaceType}${visibleEnvelope.stale?.isStale || state?.status === 'stale' ? ' stale' : ''}`} aria-labelledby={`${visibleEnvelope.surfaceId}-title`} data-surface-id={visibleEnvelope.surfaceId} data-surface-version={visibleEnvelope.surfaceVersion} tabIndex={-1}>
       <header className="surface-header">
         <p className="eyebrow">{visibleEnvelope.surfaceType} · {visibleEnvelope.surfaceVersion}</p>
         <h3 id={`${visibleEnvelope.surfaceId}-title`}>{visibleEnvelope.title}</h3>

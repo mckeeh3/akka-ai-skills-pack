@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import type { SurfaceAction, SurfaceEnvelope, WorkstreamItem as WorkstreamItemContract } from '../types';
 import { SurfaceRenderer } from '../surfaces';
 import { WorkstreamItemCard } from './WorkstreamItem';
@@ -13,13 +13,13 @@ type WorkstreamStreamProps = {
 };
 
 export function WorkstreamStream({ items, selectedItemId, requestScrollTargetId, surfaces = [], onOpenSurface, onSurfaceAction }: WorkstreamStreamProps) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!requestScrollTargetId) return;
-    const requestSurface = document.getElementById(requestScrollTargetId);
+    const requestSurface = document.getElementById(requestScrollTargetId) ?? document.querySelector(`[data-surface-id="${CSS.escape(requestScrollTargetId)}"]`);
     const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
     requestSurface?.scrollIntoView({ block: 'start', inline: 'nearest', behavior });
-    requestSurface?.focus({ preventScroll: true });
-  }, [requestScrollTargetId, items.length]);
+    if (requestSurface instanceof HTMLElement) requestSurface.focus({ preventScroll: true });
+  }, [requestScrollTargetId, items.length, surfaces.length]);
 
   if (items.length === 0) {
     return (

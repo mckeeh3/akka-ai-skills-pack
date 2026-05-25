@@ -21,6 +21,16 @@ export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardPr
     return <ActionFeedbackItem item={item} onOpenSurface={onOpenSurface} />;
   }
 
+  if (item.kind === 'surface-request') {
+    const requestVariant = item.itemId.startsWith('surface-action-request-') ? 'action-request-surface' : 'surface-request-surface';
+    return (
+      <article id={item.itemId} className={`ds-card workstream-item surface-request request-surface ${requestVariant}`} tabIndex={-1} aria-label={requestVariant === 'action-request-surface' ? 'Action request received' : 'Surface request received'}>
+        <p>{item.title ?? item.body ?? ''}</p>
+        {item.body && item.body !== item.title && <small>{item.body}</small>}
+      </article>
+    );
+  }
+
   if (item.kind === 'workflow-status' || item.kind === 'system-status' || item.status === 'stale') {
     return <StreamStatusItem item={item} />;
   }
