@@ -7,6 +7,7 @@
 - Shows capability result cards with status, denial reason, audit/work-trace link, and follow-up actions.
 - Supports stale/reconnect indicators for live workstream and surface updates.
 - Compresses routine activity into digest entries only when trace links remain available.
+- On every new request, whether submitted from the persistent composer or from an existing structured surface action, appends a request surface that acknowledges the exact prompt/action text and scrolls that request surface to the top of the visible panel. Agent-selected response surfaces append below that request surface.
 
 ## Composer
 
@@ -21,3 +22,4 @@
 - composer side-effect requests require backend confirmation and idempotency key.
 - forbidden request creates safe denial rather than hidden failure.
 - stale stream state preserves last known surfaces without implying completion.
+- request-scroll behavior verifies direct prompt requests and indirect surface-action requests land at the top with response surfaces below.

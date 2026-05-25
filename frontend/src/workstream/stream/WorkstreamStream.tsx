@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { SurfaceAction, SurfaceEnvelope, WorkstreamItem as WorkstreamItemContract } from '../types';
 import { SurfaceRenderer } from '../surfaces';
 import { WorkstreamItemCard } from './WorkstreamItem';
@@ -5,12 +6,21 @@ import { WorkstreamItemCard } from './WorkstreamItem';
 type WorkstreamStreamProps = {
   items: WorkstreamItemContract[];
   selectedItemId?: string;
+  requestScrollTargetId?: string;
   surfaces?: SurfaceEnvelope<unknown>[];
   onOpenSurface?: (surfaceId: string) => void;
   onSurfaceAction?: (action: SurfaceAction, surfaceId: string) => void;
 };
 
-export function WorkstreamStream({ items, selectedItemId, surfaces = [], onOpenSurface, onSurfaceAction }: WorkstreamStreamProps) {
+export function WorkstreamStream({ items, selectedItemId, requestScrollTargetId, surfaces = [], onOpenSurface, onSurfaceAction }: WorkstreamStreamProps) {
+  useEffect(() => {
+    if (!requestScrollTargetId) return;
+    const requestSurface = document.getElementById(requestScrollTargetId);
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    requestSurface?.scrollIntoView({ block: 'start', inline: 'nearest', behavior });
+    requestSurface?.focus({ preventScroll: true });
+  }, [requestScrollTargetId, items.length]);
+
   if (items.length === 0) {
     return (
       <section className="flow-stack workstream-stream workstream-flow empty" aria-label="Workstream interaction flow">

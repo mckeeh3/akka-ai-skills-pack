@@ -49,6 +49,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
   const [submittingFunctionalAgentId, setSubmittingFunctionalAgentId] = React.useState<string>();
+  const [requestScrollTargetId, setRequestScrollTargetId] = React.useState<string>();
   const [realtimeConnection, setRealtimeConnection] = React.useState<RealtimeConnectionState>({ status: 'connecting' });
   const seenEventIds = React.useRef(new Set<string>());
   const realtimeLastEventId = React.useRef<string | undefined>(undefined);
@@ -186,6 +187,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       title: surface.title,
       status: 'ready'
     };
+    setRequestScrollTargetId(requestItem.itemId);
     setBootstrap((current) => current.status === 'ready'
       ? { ...current, items: pruneWorkstreamItems([...current.items, requestItem, responseItem]) }
       : current);
@@ -223,6 +225,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       title: targetSurface.title,
       status: 'ready'
     } : undefined;
+    setRequestScrollTargetId(actionRequestItem.itemId);
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = result.ok && result.value.resultSurface && !current.surfaces.some((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId)
@@ -243,6 +246,17 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     const submittedAt = Date.now();
     const pendingItemId = `composer-submitting-${submittedAt}`;
     const correlationId = `corr-composer-${submittedAt.toString(36)}`;
+    const userRequestItem: WorkstreamItem = {
+      itemId: `composer-request-${submittedAt}`,
+      functionalAgentId: request.functionalAgentId,
+      kind: 'user-request',
+      createdAt: new Date(submittedAt).toISOString(),
+      correlationId,
+      traceIds: [],
+      title: request.prompt,
+      body: request.prompt,
+      status: 'ready'
+    };
     const submittingItem: WorkstreamItem = {
       itemId: pendingItemId,
       functionalAgentId: request.functionalAgentId,
@@ -255,8 +269,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       status: 'working'
     };
     setSubmittingFunctionalAgentId(request.functionalAgentId);
+    setRequestScrollTargetId(userRequestItem.itemId);
     setBootstrap((current) => current.status === 'ready'
-      ? { ...current, items: pruneWorkstreamItems([...current.items, submittingItem]) }
+      ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, submittingItem]) }
       : current);
 
     const result = await workstreamClient.submitWorkstreamMessage({
@@ -295,7 +310,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
         ? current.surfaces.map((candidate) => candidate.surfaceId === surface.surfaceId ? surface : candidate)
         : [...current.surfaces, surface];
-      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), userItem, traceableAgentItem]) };
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId && item.itemId !== userRequestItem.itemId), userItem, traceableAgentItem]) };
     });
     updateSelection({
       selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? request.functionalAgentId,
@@ -325,7 +340,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       submittingFunctionalAgentId={submittingFunctionalAgentId}
       onSignOut={onSignOut}
     >
-      <WorkstreamStream items={withRuntimeNotification(selectedItems, realtimeConnection)} surfaces={ready.surfaces} selectedItemId={selection.selectedItemId} onOpenSurface={openSurface} onSurfaceAction={handleSurfaceAction} />
+      <WorkstreamStream items={withRuntimeNotification(selectedItems, realtimeConnection)} surfaces={ready.surfaces} selectedItemId={selection.selectedItemId} requestScrollTargetId={requestScrollTargetId} onOpenSurface={openSurface} onSurfaceAction={handleSurfaceAction} />
     </WorkstreamShell>
     </>
   );

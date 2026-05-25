@@ -26,12 +26,24 @@ test('composer submits normal prompts through backend workstream message API', (
 test('composer response appends returned items and markdown_response surface', () => {
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
   assert.match(main, /traceableAgentItem/);
-  assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId\), userItem, traceableAgentItem\]\)/);
+  assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
   assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
   assert.match(stream, /item\.kind === 'markdown_response'/);
   assert.match(apiContract, /surface: SurfaceEnvelope<unknown>/);
   assert.match(apiContract, /userItem: WorkstreamItem/);
   assert.match(apiContract, /agentItem: WorkstreamItem/);
+});
+
+test('composer acknowledges prompts immediately as request surfaces and scrolls them to the top', () => {
+  assert.match(main, /const \[requestScrollTargetId, setRequestScrollTargetId\] = React\.useState<string>\(\)/);
+  assert.match(main, /const userRequestItem: WorkstreamItem = \{/);
+  assert.match(main, /kind: 'user-request'/);
+  assert.match(main, /body: request\.prompt/);
+  assert.match(main, /setRequestScrollTargetId\(userRequestItem\.itemId\)/);
+  assert.match(main, /requestScrollTargetId=\{requestScrollTargetId\}/);
+  assert.match(stream, /requestScrollTargetId\?: string/);
+  assert.match(stream, /scrollIntoView\(\{ block: 'start'/);
+  assert.match(stream, /focus\(\{ preventScroll: true \}\)/);
 });
 
 test('composer exposes in-flight model submission state and preserves safe retry context', () => {
