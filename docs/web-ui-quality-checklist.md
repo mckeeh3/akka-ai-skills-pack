@@ -63,6 +63,16 @@ For generated AI-first SaaS work in this source repository, compare end-to-end s
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration.
 
+## Visual craft
+
+- [ ] The UI has an intentional aesthetic direction recorded in the style guide rather than improvised generic SaaS styling.
+- [ ] Typography, spacing, and density make the shell and structured surfaces feel production-grade and readable.
+- [ ] Human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity have distinct hierarchy without relying on color alone.
+- [ ] Decision cards, audit timelines, governance diffs, denials, empty states, and errors feel deliberately designed, not default or placeholder.
+- [ ] Motion and transitions clarify state changes and respect reduced-motion preferences.
+- [ ] Cosmetic effects such as gradients, grain, glow, shadows, or patterns preserve contrast, focus visibility, and surface readability.
+- [ ] Visual changes do not alter functional agents, workstreams, surface contracts, capability mappings, authorization, API behavior, tests, or readiness claims.
+
 ## Accessibility
 
 - [ ] The workstream shell has a clear title/heading and main landmark.

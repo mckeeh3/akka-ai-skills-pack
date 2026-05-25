@@ -6,6 +6,8 @@ Use this document whenever an app includes a browser UI. The visual style is par
 
 Generated full-stack SaaS apps must use an AI-first supervision-oriented UI system by default. Do not select older dashboard/CRM/project-management visual styles for new generated AI-first SaaS apps; those patterns overfit conventional CRUD/analytics pages and do not make delegated work, authority, policy, evidence, decisions, traces, and outcomes prominent enough.
 
+Visual design is a cosmetic realization layer only. It must make the existing workstream shell, structured surfaces, capability-backed actions, authority state, audit/trace links, accessibility, and responsive behavior clearer and more polished; it must not add, remove, rename, or reinterpret functional agents, surfaces, capabilities, authorization rules, routes, API contracts, tests, or readiness semantics.
+
 Style selection is intentionally narrow:
 
 1. **Use the canonical AI-first style system** unless the user provides a custom brand brief or design system.
@@ -27,13 +29,15 @@ Every app UI style guide should define:
 
 - selected AI-first style id and name, or `unselected`
 - source reference: this document, a custom design reference, or a user-provided brand brief
+- visual direction: concise aesthetic point of view, tone, memorable motif, and forbidden generic patterns
 - light/dark/system mode policy
 - brand adaptations: app name, logo/icon treatment, product-specific accent allowances, forbidden copied demo names/logos
 - layout shell: sidebar/topbar/footer presence, max width, grid density, card density, navigation style
-- typography: font family, scale, weights, line heights, numeric/table conventions
+- typography: font family, scale, weights, line heights, numeric/table conventions, and fallback strategy
 - color tokens: CSS variables for surfaces, text, borders, primary/accent colors, status colors, chart colors, focus rings, and shadows
 - spacing/radius/elevation tokens
 - component rules: command strip, decision cards, cards, buttons, forms, tables/lists, charts, badges, empty/error/loading states, toasts/modals where applicable
+- motion and texture: purposeful transition rules, reduced-motion behavior, background depth, borders, shadows, and decorative texture limits
 - accessibility constraints: contrast, focus visibility, color-not-alone status semantics, reduced motion expectations
 - generated asset expectations: `index.html` uses semantic landmarks, `app.css` defines tokens as CSS variables, TypeScript toggles only documented state/classes rather than hard-coded styling decisions
 
@@ -48,6 +52,12 @@ Every app UI style guide should define:
 - source reference: <docs/web-ui-style-guide.md | custom brief path | user answer>
 - mode policy: <system with light/dark tokens | light-only | dark-only>
 - status: <selected | pending-question | deferred-with-default>
+
+## Visual direction
+- aesthetic point of view:
+- tone:
+- memorable motif:
+- forbidden generic patterns:
 
 ## Brand adaptation
 - app/product name:
@@ -82,6 +92,8 @@ Every app UI style guide should define:
 - tables/lists:
 - charts/data visualization:
 - loading/empty/error/success states:
+- motion/transition rules:
+- background/texture/elevation rules:
 
 ## Accessibility and responsive constraints
 - contrast:
@@ -137,8 +149,20 @@ Use this as the default choice for generated AI-first SaaS apps. It is an operat
 
 - calm operational SaaS interface for supervising delegated agent work
 - prioritizes decisions, exceptions, policy boundaries, auditability, and outcome visibility over decorative chrome
+- feels intentionally designed rather than like a generic admin dashboard, CRM, or chat app
 - makes autonomous activity visible without hiding consequential work in chat transcripts
 - supports light, dark, and system mode with equivalent hierarchy and contrast
+
+### Cosmetic craft rules
+
+Use these rules to improve visual quality without changing product behavior:
+
+- Choose a clear aesthetic direction for the app or brand adaptation, such as operational mission control, editorial command desk, industrial trust console, or refined governance cockpit.
+- Avoid generic AI UI clichés: purple gradients on white, undifferentiated cards, equal visual weight everywhere, decorative chat bubbles for consequential work, and styling that could belong to any SaaS dashboard.
+- Typography should feel intentional. Custom styles may replace the default font tokens when the app records accessible fallbacks, readable line heights, and tabular/numeric conventions for dense operational data.
+- Use color, borders, shadows, texture, and depth to clarify hierarchy: human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity should not look interchangeable.
+- Motion should be purposeful and state-driven: surface append/update, agent-working, approval result, stale/reconnect, expansion, and denial/recovery transitions may be polished, but must preserve reduced-motion support and never obscure state or audit evidence.
+- Background treatments, grain, gradients, patterns, and glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact.
 
 ### Style customization scope
 

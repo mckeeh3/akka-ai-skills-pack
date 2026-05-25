@@ -155,6 +155,7 @@ Route to:
 - Compress routine activity, but always preserve drill-down to audit facts.
 - Do not make chat the primary control surface for consequential actions.
 - Do not choose visual styling implicitly; for generated full-stack AI-first SaaS, the web UI is mandatory, so if no style guide is selected, use the existing UI style-selection guidance before implementation.
+- Use visual craft only as a cosmetic layer that clarifies existing surfaces, states, authority, and attention hierarchy; it must not change functional agents, surface contracts, capability mappings, authorization, APIs, tests, or readiness semantics.
 - Keep routes, pages, and deep links as browser realization details for reopening a functional agent, workstream item, or structured surface; never use them as the primary decomposition.
 
 ## Output expectations
@@ -165,7 +166,7 @@ Produce a compact UI-surface plan with:
 - payload/query source expectations, backing durable objects, read models, redaction, and trace requirements
 - capability-backed actions per surface, including idempotency, approval/denial/result surfaces, and audit links
 - API/realtime needs tied to the surface contract rather than page navigation
-- frontend state, form, loading/error/empty, accessibility, and responsive requirements
+- frontend state, form, loading/error/empty, accessibility, responsive, visual hierarchy, and reduced-motion requirements
 - downstream Akka and web UI skills to load next
 - unresolved questions only where authority, evidence, realtime, access, or style semantics would otherwise be guessed
 

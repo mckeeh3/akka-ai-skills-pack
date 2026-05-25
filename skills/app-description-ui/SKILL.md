@@ -131,10 +131,12 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 
 ### Style guide selection
 - selected AI-first style id/name from `../../docs/web-ui-style-guide.md`, custom style reference, or `unselected`
+- visual direction: aesthetic point of view, tone, memorable motif, and forbidden generic patterns
 - source image/reference and light/dark/system mode policy
 - typography, spacing, radius, elevation, color, chart, status, and focus tokens
 - layout shell/density and navigation treatment
 - component rules for cards, buttons, forms, tables/lists, charts, and feedback states
+- motion, texture, background, and elevation rules with reduced-motion and contrast constraints
 - brand adaptations and forbidden copied demo content from reference images
 - CSS variable/token expectations for frontend styling
 - frontend implementation shape: standard frontend project
@@ -142,6 +144,8 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - static asset output and Akka hosting route expectations
 
 If no UI style is selected for a generated AI-first SaaS app, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks web UI implementation/generation tasks until style is selected.
+
+Cosmetic style work may improve visual quality only within already-authoritative UI meaning. Do not use style-guide updates to add, remove, rename, or reinterpret functional agents, workstreams, structured surfaces, capability-backed actions, authorization, API contracts, tests, or readiness semantics.
 
 ## Change handling
 
