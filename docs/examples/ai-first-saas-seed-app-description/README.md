@@ -1,14 +1,16 @@
 # AI-First SaaS Seed App Description Example
 
-This directory is the **preferred current generated-SaaS app-description reference** for a runnable **Akka Java + React/Vite/TypeScript AI-first SaaS seed app**.
+This directory is the **preferred current generated-SaaS app-description reference** for a secure AI-first SaaS app. It is an authoritative description/reference asset for the skills pack, not the primary runnable starter implementation.
+
+Use the runnable starter template under `../../../templates/ai-first-saas-starter/` when the goal is to scaffold and execute a local Akka Java + React/Vite/TypeScript application. Use this seed app-description when the goal is to understand, review, or maintain the canonical description-layer shape before realization.
 
 Purpose:
-- define the canonical seed app before implementation
+- define the canonical description-layer seed shape before implementation
 - provide a reusable source asset for the skills pack
 - describe secure multi-tenant SaaS foundations shared by generated apps
 - describe the agent workstream application model: role-authorized functional agents, durable workstreams, structured surfaces, governed capabilities, and horizontal Akka implementation maps
 - describe a functional AI-first operating-model baseline: goals, plans, governed runtime agents, managed prompts/skills/manifests/tool boundaries, decisions, policy gates, traces, and outcomes
-- map the seed app to Akka Java components and frontend/backend integration patterns
+- map the seed app description to Akka Java components and frontend/backend integration patterns without replacing the runnable starter template
 
 Example root:
 
@@ -19,11 +21,17 @@ docs/examples/ai-first-saas-seed-app-description/app-description/
 Repository/use distinction:
 - in this repository, this is a reference example and future seed-generation source asset for the skills pack
 - in a target project, the equivalent `app-description/` tree would be maintained in that project workspace
+- for runnable local execution, scaffold from `templates/ai-first-saas-starter/` rather than treating this docs example as an executable project
 
-Primary implementation target:
+Primary realization target described by this reference:
 - backend: Akka Java SDK
 - frontend: React + Vite + TypeScript
 - app class: secure multi-tenant AI-first SaaS agent workstream shell with modular functional-agent extension points
+
+Runnable baseline:
+- canonical runnable scaffold source: `../../../templates/ai-first-saas-starter/README.md`
+- scaffold output owns executable backend/frontend files after placeholders are rendered
+- this seed app-description remains a description/reference contract for structure, semantics, style guide, and readiness review
 
 Frontend implementation reference:
 - canonical architecture: `../../workstream-ui-reference-architecture.md`
@@ -33,15 +41,16 @@ Frontend implementation reference:
 
 ## Minimum-first growth path
 
-For “minimum app”, “starter app”, “basic app”, or chatbot-like generated SaaS requests, use `../../minimum-ai-first-saas-app.md` before treating this seed as full-core ready. The first implementation slice is **User Admin workstream v0**: bootstrap-authorized user, selected `AuthContext`, bounded `UserAdminAgent`, durable request/response timeline, `markdown_response`, backend capability boundary, and audit/work trace substrate.
+For “minimum app”, “starter app”, “basic app”, or chatbot-like generated SaaS requests, use `../../minimum-ai-first-saas-app.md` and the runnable starter template before treating this seed as full-core ready. The first runnable implementation target is the **five core workstream v0 set**: bootstrap-authorized user, selected `AuthContext`, bounded My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, durable request/response timelines, `markdown_response`, backend capability boundaries, and audit/work trace substrate.
 
-That first slice is intentionally narrower than this full-core seed. It must record explicit follow-up work in this order:
+That first runnable target is intentionally narrower than this full-core seed description. It must record explicit follow-up work in this order:
 
 ```text
-User Admin workstream v0
+five core workstream v0 starter
 → fuller User Admin structured capabilities
-→ Agent Admin and governed behavior documents
+→ fuller Agent Admin and governed behavior document lifecycle
 → Audit/Trace search and investigation UI
+→ Governance/Policy workflows and review surfaces
 → invitations/onboarding, support access, and security completeness
 → app-specific functional agents, surfaces, capabilities, and outcomes
 ```

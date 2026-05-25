@@ -2,7 +2,12 @@
 
 This template is the isolated scaffold source for a secure AI-first SaaS application generated with the skills pack.
 
-It is template source, not a runnable project until placeholders are rendered by the scaffold command.
+It is the canonical runnable implementation baseline after placeholders are rendered by the scaffold command. Before rendering, it is template source rather than a directly runnable project.
+
+Reference distinction:
+- `docs/examples/ai-first-saas-seed-app-description/` is the canonical description-layer/reference asset for structure, semantics, UI style guide, readiness review, and future generation input.
+- this template is the scaffold source for local executable backend/frontend behavior.
+- when docs and template both describe the same concept, preserve the seed app-description as the meaning contract and this template as its runnable starter realization.
 
 ## Minimum-first scaffold path
 

@@ -2,11 +2,15 @@
 
 - app-id: ai-first-saas-seed
 - working-name: AI-First SaaS Seed
-- status: reference-app-description-bootstrap
-- app-class: secure multi-tenant AI-first SaaS seed/reference app
-- generation-targets:
-  - runnable Akka Java SDK backend
-  - runnable React + Vite + TypeScript frontend
+- status: canonical-reference-app-description
+- app-class: secure multi-tenant AI-first SaaS seed/reference description
+- realization-distinction:
+  - this tree is a description/reference contract for skills-pack guidance, review, and future generation
+  - executable local starter behavior is provided by `templates/ai-first-saas-starter/` after scaffold placeholder rendering
+  - do not treat this docs example as the primary runnable project source
+- generation-targets-described:
+  - Akka Java SDK backend
+  - React + Vite + TypeScript frontend
   - backend and frontend tests
   - reference code examples for skills-pack component guidance
   - bootstrap base for downstream generated SaaS apps

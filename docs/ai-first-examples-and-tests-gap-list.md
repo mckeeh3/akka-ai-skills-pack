@@ -58,6 +58,8 @@ Status: **canonical app-description seed reference**.
 
 Reference: `docs/examples/ai-first-saas-seed-app-description/`.
 
+Distinction: this seed is a description/reference contract for generated-app meaning, structure, UI style, readiness, and review. The canonical runnable implementation baseline is the scaffold template under `templates/ai-first-saas-starter/` after placeholders are rendered.
+
 Covered coverage:
 
 - secure SaaS foundation and generated-app structure;
