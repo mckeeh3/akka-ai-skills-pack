@@ -338,7 +338,8 @@
 
 ### TASK-MAGENT-04-001: Update docs, skills, and validation gates for AI-first managed agents
 
-- status: pending
+- status: done
+- completion note: Updated repo and installed-pack guidance to make AI-first managed agents a first-class generated-app pillar, documented configuration-driven runtime tool registration expectations, and added a starter validation gate for WorkstreamRuntimeAgent runtime tool registration.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/04-docs-validation/01-update-managed-agents-docs-and-gates.md
 - depends on: [TASK-MAGENT-01-004, TASK-MAGENT-03-001]
@@ -366,4 +367,35 @@
 - done criteria:
   - Pack guidance and starter validation enforce configuration-driven managed agents as a core generated-app feature.
   - A focused git commit exists with message `managed-agents-core: update docs and gates`.
+- notes:
+  - commit message: `managed-agents-core: update docs and gates`
+  - validation note: `tools/validate-ai-first-saas-starter-fullstack.sh` passes in provider-skip mode (`OPENAI_API_KEY` unset). With an inherited `OPENAI_API_KEY`, the optional real-provider smoke exposed an existing follow-up gap recorded as `TASK-MAGENT-04-002`.
+
+### TASK-MAGENT-04-002: Repair optional real-provider smoke for managed runtime tools
+
+- status: pending
+- source: discovered while running `tools/validate-ai-first-saas-starter-fullstack.sh` with `OPENAI_API_KEY` present during TASK-MAGENT-04-001
+- task brief: specs/ai-first-managed-agents-core/tasks/04-docs-validation/02-repair-real-provider-managed-agent-smoke.md
+- depends on: [TASK-MAGENT-04-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/agent-runtime-invocation-pattern.md
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/RealModelProviderSmokeTest.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/WorkstreamRuntimeAgent.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/StarterSecurityComponents.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoader.java
+- expected outputs:
+  - Ensure optional real-provider smoke seeds or resolves the same managed-agent repository/tool resolver context used by `WorkstreamRuntimeAgent` when invoked through `ComponentClient.forAgent()`.
+  - Preserve fail-closed behavior for missing provider configuration, tenant mismatch, and missing agent definitions.
+  - Avoid weakening the validation gate added in TASK-MAGENT-04-001.
+- required checks:
+  - `OPENAI_API_KEY=<real key> tools/validate-ai-first-saas-starter-fullstack.sh` or an equivalent documented real-provider smoke run with secrets redacted from logs
+  - `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+  - `rg -n "RealModelProviderSmokeTest|StarterSecurityComponents|AgentBehaviorSeedLoader|WorkstreamRuntimeAgent|runtimeTools|agent-not-found|ToolPermissionBoundary" templates/ai-first-saas-starter/backend/src/test/java templates/ai-first-saas-starter/backend/src/main/java`
+- done criteria:
+  - The optional real-provider smoke no longer fails with `agent-not-found` when provider configuration is present and real provider access is available.
+  - Provider-skip validation still passes without provider secrets.
+  - A focused git commit exists with message `managed-agents-core: repair real-provider managed-agent smoke`.
 - notes: []

@@ -16,7 +16,8 @@ The minimum starter must include these parts together:
 bootstrap-authorized human user
 + selected AuthContext
 + role-authorized five core workstream v0 set
-+ bounded functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
++ bounded AI-first managed functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
++ configuration-driven runtime resolution, governed loader tools, ToolPermissionBoundary, and runtimeTools registration
 + request/response timeline for each visible core workstream
 + markdown_response structured surface
 + durable workstream log
@@ -38,7 +39,7 @@ The first functional agents are the **five core v0 workstream agents**, scoped t
 | Audit/Trace | Explain available audit/work trace substrate, trace links, correlation ids, denial traces, and deferred search/investigation surfaces. |
 | Governance/Policy | Explain policy/permission concepts, approval/governance boundaries, behavior-change controls, and deferred full-core governance surfaces. |
 
-In v0 each workstream may be intentionally narrow, but each must still be a real functional-agent workstream. If the workstream claims model-backed behavior, message submission must run through the governed prompt/runtime path, invoke a concrete Akka `Agent` component for the selected workstream, and use a configured provider boundary; service-only provider calls that bypass the Akka Agent component are not complete workstream-agent runtime. Missing provider configuration must produce a safe blocked/error surface and trace, not a deterministic canned reply. Deterministic/demo/mock/model-less workstream replies are acceptable only as explicitly named test doubles or fixture-mode development aids, never as the normal runtime path used to call the starter functional.
+In v0 each workstream may be intentionally narrow, but each must still be a real functional-agent workstream backed by an AI-first managed agent. If the workstream claims model-backed behavior, message submission must run through the governed prompt/runtime path, resolve active `AgentDefinition`/prompt/manifest/`ToolPermissionBoundary` configuration, expose governed `readSkill` and `readReferenceDoc` loader tools where assigned, register resolved tool objects with `effects().tools(runtimeTools)`, invoke a concrete Akka `Agent` component for the selected workstream, and use a configured provider boundary; service-only provider calls that bypass the Akka Agent component are not complete workstream-agent runtime. Missing provider configuration must produce a safe blocked/error surface and trace, not a deterministic canned reply. Deterministic/demo/mock/model-less workstream replies are acceptable only as explicitly named test doubles or fixture-mode development aids, never as the normal runtime path used to call the starter functional.
 
 Minimum responsibilities across the five core v0 agents:
 

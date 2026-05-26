@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this reference when implementing a managed runtime Akka agent whose behavior is selected from tenant-scoped governed records rather than only from static Java code. For generated AI-first SaaS apps, this is **the required managed-agent invocation pattern**: do not invoke User Admin, Agent Admin, Governance, Audit/Trace, or app-specific managed agents through ad hoc static prompts that bypass `AgentDefinition`, compact expertise manifests, `readSkill(skillId)`, `readReferenceDoc(referenceId)`, tool boundaries, and traces.
+Use this reference when implementing a managed runtime Akka agent whose behavior is selected from tenant-scoped governed records rather than only from static Java code. For generated AI-first SaaS apps, this is **the required AI-first managed-agent invocation pattern**: do not invoke User Admin, Agent Admin, Governance, Audit/Trace, or app-specific managed agents through ad hoc static prompts or static tool registration that bypass `AgentDefinition`, compact expertise manifests, `readSkill(skillId)`, `readReferenceDoc(referenceId)`, tool boundaries, `effects().tools(runtimeTools)`, and traces.
 
 This pattern is the implementation handoff between:
 - secure SaaS `AuthContext` and capability authorization;
@@ -41,7 +41,8 @@ request from HTTP/workflow/timer/consumer/test console
 → resolve ToolPermissionBoundary and model config reference
 → assemble effective system prompt with active prompt plus compact expertise manifest only; do not preload full skill/reference bodies
 → emit PromptAssemblyTrace for allowed or denied assembly, including manifest ids/checksums
-→ invoke Java Agent with assembled prompt/profile context and registered Akka tools, including `readSkill(skillId)` and `readReferenceDoc(referenceId)` when assigned
+→ resolve approved backend-owned Java tool bindings into `runtimeTools`
+→ invoke Java Agent with assembled prompt/profile context and `effects().tools(runtimeTools)`, including `readSkill(skillId)` and `readReferenceDoc(referenceId)` when assigned
 → let Akka inject the registered tool list into the model context
 → enforce ToolPermissionBoundary for every tool/data/readSkill/readReferenceDoc request
 → authorize readSkill(skillId) against the skill manifest and skill version
@@ -138,9 +139,10 @@ Before invoking the Java `Agent`, verify:
 7. Compact expertise manifest is rendered with only skills and references assigned to that agent; full skill/reference text is not preloaded.
 8. `readSkill(skillId)` and, when references are assigned, `readReferenceDoc(referenceId)` are registered as normal Akka `@FunctionTool` loaders, and Akka injects them with the rest of the allowed tool list.
 9. `ToolPermissionBoundary` is present, includes explicit `read_skill` and `read_reference` grants as applicable, and defaults to deny.
-10. `ModelConfigRef` is allowed by tenant/agent/model policy and exposes no provider secrets.
-11. Correlation/work trace ids are available.
-12. `PromptAssemblyTrace` has been recorded or scheduled for durable recording with expert-bundle and manifest references.
+10. Runtime tool availability is resolved from active managed configuration to backend-owned Java bindings and passed to the Agent with `effects().tools(runtimeTools)`; tenant-managed records store stable tool ids/capability ids, not arbitrary Java class names.
+11. `ModelConfigRef` is allowed by tenant/agent/model policy and exposes no provider secrets.
+12. Correlation/work trace ids are available.
+13. `PromptAssemblyTrace` has been recorded or scheduled for durable recording with expert-bundle and manifest references.
 
 If any check fails, deny before model invocation and emit an audit/work trace event.
 
@@ -177,7 +179,7 @@ Allowed and denied reads must emit `ReferenceLoadTrace` or a generalized `Docume
 
 ## Tool boundary enforcement
 
-Every registered local tool, component tool, MCP tool, data access helper, or guidance-loading tool must be checked against `ToolPermissionBoundary` before execution.
+Every registered local tool, component tool, MCP tool, data access helper, or guidance-loading tool must be checked against `ToolPermissionBoundary` before execution. For generated SaaS managed agents, tool registration is part of runtime resolution: construct request-scoped tool objects from backend-owned registry bindings and pass them to the Java Agent with `effects().tools(runtimeTools)`.
 
 At minimum enforce:
 - tool id and category allowlist;

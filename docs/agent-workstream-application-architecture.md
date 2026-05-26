@@ -16,6 +16,7 @@ workstream
 → exactly one backing functional/context-area agent
 → continuous request/result flow
 → structured renderable surfaces, including system-message surfaces
+→ AI-first managed agents with configuration-driven prompts, tools, and traces
 → governed backend capabilities
 → horizontal Akka implementation
 ```
@@ -47,7 +48,7 @@ Audit/work trace recording starts in this first slice for identity basis, AuthCo
 
 Full-core generated SaaS readiness remains stricter than this minimum starter. The five core workstream v0 set is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
 
-A workstream is not production-ready just because fixture items render, a deterministic placeholder response exists, or a service directly calls a provider without the workstream Akka Agent. Named model-backed workstream behavior must pass through the real local Akka runtime path: selected AuthContext, backend authorization, durable workstream entries, governed prompt/runtime assembly, invocation of a concrete Akka `Agent` component for the functional agent, configured model/provider invocation from that Agent path, trace emission, API response, and frontend rendering. Provider/configuration failures should become safe system-message surfaces and traces. Mocks, fixtures, deterministic fakes, service-only provider bypasses, and test doubles are allowed only in tests or explicitly labeled fixture modes; they are not normal runtime substitutes.
+A workstream is not production-ready just because fixture items render, a deterministic placeholder response exists, or a service directly calls a provider without the workstream Akka Agent. Named model-backed workstream behavior must pass through the real local Akka runtime path: selected AuthContext, backend authorization, durable workstream entries, governed prompt/runtime assembly, active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, invocation of a concrete Akka `Agent` component for the functional agent with resolved tools registered through `effects().tools(runtimeTools)`, configured model/provider invocation from that Agent path, trace emission, API response, and frontend rendering. Provider/configuration failures should become safe system-message surfaces and traces. Mocks, fixtures, deterministic fakes, service-only provider bypasses, and test doubles are allowed only in tests or explicitly labeled fixture modes; they are not normal runtime substitutes.
 
 ## Core terms
 
@@ -84,7 +85,7 @@ A generated app grows by adding vertical workstreams. Each workstream is backed 
 - default dashboard, attention, or briefing surface;
 - durable workstream semantics and retention expectations;
 - user intents the workstream agent must understand, including help/how-to prompts, shorthand surface requests, read requests, proposals, approvals, and allowed commands;
-- prompt intent and a workstream expert bundle where LLM behavior is involved: governed prompt refs, skills, reference documents, compact expertise manifest, loader rules, and tool boundaries;
+- prompt intent and a workstream expert bundle where LLM behavior is involved: governed prompt refs, skills, reference documents, compact expertise manifest, loader rules, tool boundaries, runtime tool bindings, and trace requirements;
 - surfaces the workstream can render or reuse;
 - surface actions, including command actions and query/surface-request actions;
 - capabilities it can call directly or through tools/workflows;
@@ -240,7 +241,7 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Authenticated consequential work areas are modeled as workstreams backed by exactly one functional agent, not primarily as pages.
 - [ ] Left rail entries select role-authorized workstreams/functional agents from backend capabilities and selected AuthContext.
 - [ ] Each workstream/functional agent has purpose, authority, supported user intents, surfaces, capability mappings, traces, and tests.
-- [ ] Each LLM-backed functional agent has a workstream expert bundle or explicit deferral covering skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests.
+- [ ] Each LLM-backed functional agent is an AI-first managed agent with a workstream expert bundle or explicit deferral covering skills, reference documents, manifests, loader authorization, `ToolPermissionBoundary`, `effects().tools(runtimeTools)` registration, traces, and tests.
 - [ ] User Admin and Agent Admin functional agents are present for full core SaaS scope, or the narrower scope explicitly defers them.
 - [ ] Internal agents are distinguished from functional agents and have governed behavior, tool boundaries, and traces.
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.

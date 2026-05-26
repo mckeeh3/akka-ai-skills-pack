@@ -119,6 +119,15 @@ require_path() {
   [[ -e "$TARGET_DIR/$path" ]] || fail "Expected rendered path missing: $path"
 }
 
+require_grep() {
+  local pattern="$1"
+  local file="$2"
+  local description="$3"
+  if ! grep -Eq "$pattern" "$file"; then
+    fail "Missing validation marker for $description in $file"
+  fi
+}
+
 log "Scaffolding starter into $TARGET_DIR"
 "$SCAFFOLD_SCRIPT" \
   --target "$TARGET_DIR" \
@@ -137,6 +146,13 @@ require_path "frontend/package.json"
 require_path "frontend/src/main.tsx"
 require_path "app-description/README.md"
 require_path "specs/scaffold-report.md"
+
+log "Verifying managed-agent runtime tool registration gates"
+WORKSTREAM_AGENT_PATH="src/main/java/${BASE_PACKAGE//.//}/application/agentfoundation/WorkstreamRuntimeAgent.java"
+require_path "$WORKSTREAM_AGENT_PATH"
+require_grep '\.tools\(runtimeTools\.runtimeTools\(\)\)' "$TARGET_DIR/$WORKSTREAM_AGENT_PATH" "WorkstreamRuntimeAgent effects().tools(runtimeTools) registration"
+require_grep 'AgentRuntimeToolResolver' "$TARGET_DIR/$WORKSTREAM_AGENT_PATH" "governed runtime tool resolver use"
+require_grep 'readSkill|readReferenceDoc' "$TARGET_DIR/src/main/java/${BASE_PACKAGE//.//}/application/agentfoundation/AgentRuntimeLoaderTools.java" "governed loader tool methods"
 
 log "Running scaffolded backend tests"
 ( cd "$TARGET_DIR" && mvn test )
