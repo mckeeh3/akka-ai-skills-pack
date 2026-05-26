@@ -83,6 +83,7 @@
 .workstream-panel.content {
   width: 100%;
   max-width: none;
+  padding-bottom: calc(var(--workstream-composer-scroll-clearance) + env(safe-area-inset-bottom, 0px));
 }
 
 .page-header {
