@@ -150,7 +150,7 @@
 
 ### TASK-WVS-01-004: Sync phase 1 visual sessions into the starter template
 
-- status: pending
+- status: done
 - source: starter template is the canonical generated-app implementation baseline
 - task brief: specs/workstream-visual-sessions/tasks/01-phase-1-frontend/04-sync-visual-sessions-to-starter-template.md
 - depends on: [TASK-WVS-01-003]
@@ -175,7 +175,9 @@
 - done criteria:
   - starter template remains canonical for generated apps with phase 1 visual sessions
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Sync visual sessions to starter template`
+  - completed: synced phase 1 in-memory visual-session helpers, request anchoring/manual-scroll pause, per-workstream restore, and starter contract coverage.
 
 ### TASK-WVS-01-005: Close phase 1 docs and readiness notes
 

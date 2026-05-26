@@ -10,6 +10,7 @@ import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
 import { buildCapabilityActionRequest } from './workstream/actions';
+import { createWorkstreamVisualSessionKey, restoreOrCreateVisualSession, saveVisualSession, updateVisualSessionViewState, type WorkstreamVisualSession, type WorkstreamVisualSessionStore } from './workstream/visual-session';
 import { defaultSelectableAgentId } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
@@ -49,7 +50,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
   const [submittingFunctionalAgentId, setSubmittingFunctionalAgentId] = React.useState<string>();
-  const [requestScrollTargetId, setRequestScrollTargetId] = React.useState<string>();
+  const [requestScrollTargetBySessionKey, setRequestScrollTargetBySessionKey] = React.useState<Record<string, string | undefined>>({});
+  const [visualSessionsByKey, setVisualSessionsByKey] = React.useState<WorkstreamVisualSessionStore>({});
   const [realtimeConnection, setRealtimeConnection] = React.useState<RealtimeConnectionState>({ status: 'connecting' });
   const seenEventIds = React.useRef(new Set<string>());
   const realtimeLastEventId = React.useRef<string | undefined>(undefined);
@@ -98,11 +100,26 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
   const me = ready.me;
   const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status);
+  const selectedSessionKey = selectedFunctionalAgentId ? createWorkstreamVisualSessionKey({
+    accountId: me.account.accountId,
+    selectedContextId: me.selectedAuthContext.selectedContextId,
+    functionalAgentId: selectedFunctionalAgentId,
+    workstreamId: selectedFunctionalAgentId
+  }) : undefined;
+  const currentVisualSession = selectedFunctionalAgentId ? restoreOrCreateVisualSession({
+    store: visualSessionsByKey,
+    accountId: me.account.accountId,
+    selectedContextId: me.selectedAuthContext.selectedContextId,
+    functionalAgentId: selectedFunctionalAgentId,
+    workstreamId: selectedFunctionalAgentId,
+    items: ready.items.filter((item) => item.functionalAgentId === selectedFunctionalAgentId)
+  }) : undefined;
+  const selectedSurfaceId = selection.selectedSurfaceId ?? currentVisualSession?.selectedSurfaceId;
   const selectedItems = buildVisibleWorkstreamItems(
     ready.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId),
     ready.surfaces,
     selectedFunctionalAgentId,
-    selection.selectedSurfaceId
+    selectedSurfaceId
   );
 
   React.useEffect(() => {
@@ -145,9 +162,39 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     window.history.pushState(null, '', serializeWorkstreamDeepLink(merged));
   }
 
+  function rememberVisualSession(session: WorkstreamVisualSession, viewState: Parameters<typeof updateVisualSessionViewState>[1]) {
+    const nextSession = updateVisualSessionViewState(session, viewState);
+    setVisualSessionsByKey((store) => saveVisualSession(store, nextSession));
+    return nextSession;
+  }
+
+  function sessionForAgent(functionalAgentId: string): WorkstreamVisualSession {
+    return restoreOrCreateVisualSession({
+      store: visualSessionsByKey,
+      accountId: me.account.accountId,
+      selectedContextId: me.selectedAuthContext.selectedContextId,
+      functionalAgentId,
+      workstreamId: functionalAgentId,
+      items: ready.items.filter((item) => item.functionalAgentId === functionalAgentId)
+    });
+  }
+
+  function setRequestScrollTargetForCurrentSession(targetId: string, functionalAgentId = selectedFunctionalAgentId) {
+    if (!functionalAgentId) return;
+    const sessionKey = createWorkstreamVisualSessionKey({
+      accountId: me.account.accountId,
+      selectedContextId: me.selectedAuthContext.selectedContextId,
+      functionalAgentId,
+      workstreamId: functionalAgentId
+    });
+    setRequestScrollTargetBySessionKey((targets) => ({ ...targets, [sessionKey]: targetId }));
+  }
+
   function selectAgent(functionalAgentId: string) {
-    const defaultSurface = surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
-    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: defaultSurface });
+    const restoredSession = sessionForAgent(functionalAgentId);
+    const restoredSurface = restoredSession.selectedSurfaceId ?? surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
+    setVisualSessionsByKey((store) => saveVisualSession(store, restoredSession));
+    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: restoredSurface });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
   }
 
@@ -187,7 +234,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       title: surface.title,
       status: 'ready'
     };
-    setRequestScrollTargetId(surface.surfaceId);
+    setRequestScrollTargetForCurrentSession(surface.surfaceId, functionalAgentId);
+    if (currentVisualSession) rememberVisualSession(currentVisualSession, { anchorSurfaceId: surface.surfaceId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => current.status === 'ready'
       ? { ...current, items: pruneWorkstreamItems([...current.items, requestItem, responseItem]) }
       : current);
@@ -225,7 +273,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       title: targetSurface.title,
       status: 'ready'
     } : undefined;
-    setRequestScrollTargetId(actionRequestItem.itemId);
+    setRequestScrollTargetForCurrentSession(actionRequestItem.itemId, actionRequestItem.functionalAgentId);
+    if (currentVisualSession) rememberVisualSession(currentVisualSession, { anchorSurfaceId: actionRequestItem.itemId, userHasManualScroll: false });
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = result.ok && result.value.resultSurface && !current.surfaces.some((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId)
@@ -234,7 +283,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
     if (targetSurface) {
-      setRequestScrollTargetId(targetSurface.surfaceId);
+      setRequestScrollTargetForCurrentSession(targetSurface.surfaceId, targetSurface.ownerFunctionalAgentId);
+      if (currentVisualSession) rememberVisualSession(currentVisualSession, { anchorSurfaceId: targetSurface.surfaceId, selectedSurfaceId: targetSurface.surfaceId, userHasManualScroll: false });
       updateSelection({
         selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId,
         selectedSurfaceId: targetSurface.surfaceId,
@@ -270,7 +320,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       status: 'working'
     };
     setSubmittingFunctionalAgentId(request.functionalAgentId);
-    setRequestScrollTargetId(userRequestItem.itemId);
+    setRequestScrollTargetForCurrentSession(userRequestItem.itemId, request.functionalAgentId);
+    rememberVisualSession(sessionForAgent(request.functionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userRequestItem.itemId, userHasManualScroll: false });
     setBootstrap((current) => current.status === 'ready'
       ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, submittingItem]) }
       : current);
@@ -295,7 +346,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         body: `${safeError.body} Retry is safe: the prompt remains in the composer and will reuse the selected workstream context. Correlation ${result.error.correlationId}.`,
         status: safeError.status
       };
-      setRequestScrollTargetId(errorItem.itemId);
+      setRequestScrollTargetForCurrentSession(errorItem.itemId, request.functionalAgentId);
+      rememberVisualSession(sessionForAgent(request.functionalAgentId), { anchorSurfaceId: errorItem.itemId, userHasManualScroll: false });
       setBootstrap((current) => current.status === 'ready'
         ? { ...current, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), errorItem]) }
         : current);
@@ -307,7 +359,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ...agentItem,
       traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
     };
-    setRequestScrollTargetId(surface.surfaceId);
+    setRequestScrollTargetForCurrentSession(surface.surfaceId, surface.ownerFunctionalAgentId ?? request.functionalAgentId);
+    rememberVisualSession(sessionForAgent(surface.ownerFunctionalAgentId ?? request.functionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: surface.surfaceId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
@@ -331,6 +384,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     return <main className="content workstream-panel"><p className="eyebrow">Real API client error</p><h1>Could not load workstream shell</h1><p>{bootstrap.message}</p></main>;
   }
 
+  const currentRequestScrollTargetId = selectedSessionKey ? requestScrollTargetBySessionKey[selectedSessionKey] : undefined;
+
   return (
     <>
     <WorkstreamShell
@@ -343,7 +398,18 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       submittingFunctionalAgentId={submittingFunctionalAgentId}
       onSignOut={onSignOut}
     >
-      <WorkstreamStream items={withRuntimeNotification(selectedItems, realtimeConnection)} surfaces={ready.surfaces} selectedItemId={selection.selectedItemId} requestScrollTargetId={requestScrollTargetId} onOpenSurface={openSurface} onSurfaceAction={handleSurfaceAction} />
+      <WorkstreamStream
+        items={withRuntimeNotification(selectedItems, realtimeConnection)}
+        surfaces={ready.surfaces}
+        selectedItemId={selection.selectedItemId}
+        requestScrollTargetId={currentRequestScrollTargetId}
+        autoAnchorPaused={currentVisualSession?.userHasManualScroll}
+        onOpenSurface={openSurface}
+        onSurfaceAction={handleSurfaceAction}
+        onAutoAnchorPaused={() => {
+          if (currentVisualSession) rememberVisualSession(currentVisualSession, { userHasManualScroll: true });
+        }}
+      />
     </WorkstreamShell>
     </>
   );
