@@ -561,7 +561,7 @@
 
 ### TASK-WVS-04-003: Sync runtime remediation to starter template
 
-- status: pending
+- status: done
 - source: starter template must remain canonical generated-app baseline
 - task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/03-sync-runtime-remediation-to-starter.md
 - depends on: [TASK-WVS-04-002]
@@ -586,7 +586,10 @@
 - done criteria:
   - starter template matches source remediation behavior
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Sync runtime remediation to starter template`
+  - completed: synced source runtime remediation into the starter template, including synchronously refreshed selected-workstream refs for async response guards, originating-workstream response ownership, background surface-action no-focus-steal behavior, and reusable rail attention helpers for unseen-response indicators that clear on selection.
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && npm test`.
 
 ### TASK-WVS-04-004: Reverify runtime UX with manual steps
 
