@@ -283,7 +283,7 @@
 
 ### TASK-WVS-02-003: Reverify phase 1 readiness
 
-- status: pending
+- status: done
 - source: remediation closure after request-anchor fix
 - task brief: specs/workstream-visual-sessions/tasks/02-phase-1-remediation/03-reverify-phase-1-readiness.md
 - depends on: [TASK-WVS-02-002]
@@ -308,4 +308,7 @@
 - done criteria:
   - phase 1 request-anchor objective is independently verified in source and starter
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Reverify workstream visual session phase 1`
+  - completed: reverified source and starter phase 1 request anchoring after remediation and updated readiness notes to state that composer success/error, surface-open, and surface-action flows keep request items anchored while responses append below.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`.

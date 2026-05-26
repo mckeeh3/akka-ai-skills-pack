@@ -149,6 +149,7 @@ Out of scope for phase 1:
 Readiness notes:
 - State helpers live under `frontend/src/workstream/visual-session/**` and are exported through `frontend/src/workstream/index.ts`; the starter template mirrors this layout.
 - The stream preserves traditional chat order and anchors the latest request item with reduced-motion-safe scrolling while response surfaces append below it.
+- Request anchoring was reverified after remediation in both the source frontend and starter template: composer success/error, surface-open, and surface-action flows keep the request item as the scroll target while correlated response/result surfaces append below it.
 - Manual wheel, touch, and keyboard scroll input pauses automatic anchoring for the active request.
 - In-memory restore is keyed by account, selected auth context, functional agent, and workstream id where available.
 - The snapshot helper is semantic and in-memory only; it intentionally does not call `localStorage`, `sessionStorage`, IndexedDB, fetch, or beacon APIs.
