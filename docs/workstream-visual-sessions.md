@@ -13,7 +13,8 @@ A workstream visual session is browser/UI state for how a user is currently view
 
 Current repository readiness:
 - Phase 1 in-memory visual sessions are implemented in the source frontend reference and synced into the AI-first SaaS starter template.
-- Contract coverage exists in `frontend/src/workstream-visual-session.contract.test.mjs` and `templates/ai-first-saas-starter/frontend/src/workstream-visual-session.contract.test.mjs` for turn grouping, ordering, turn/surface caps, semantic snapshots, request anchoring, manual-scroll pause, and per-workstream in-memory restore.
+- Phase 1.1 runtime UX remediation is verified in both source and starter: request anchoring targets the actual visible workstream scroll container, background responses do not switch the selected workstream, and the left rail shows accessible unseen-response indicators that clear on workstream selection.
+- Contract coverage exists in `frontend/src/workstream-visual-session.contract.test.mjs`, `frontend/src/workstream-shell.contract.test.mjs`, `templates/ai-first-saas-starter/frontend/src/workstream-visual-session.contract.test.mjs`, and `templates/ai-first-saas-starter/frontend/src/workstream-shell.contract.test.mjs` for turn grouping, ordering, turn/surface caps, semantic snapshots, request anchoring, manual-scroll pause, per-workstream in-memory restore, no background selection steal, and rail unseen-response indicators.
 - Phase 2 browser-local persistence and phase 3 backend-persisted visual sessions remain future work and must not be claimed by generated apps until implemented.
 
 ## User experience goal
@@ -153,6 +154,7 @@ Readiness notes:
 - Manual wheel, touch, and keyboard scroll input pauses automatic anchoring for the active request.
 - In-memory restore is keyed by account, selected auth context, functional agent, and workstream id where available.
 - The snapshot helper is semantic and in-memory only; it intentionally does not call `localStorage`, `sessionStorage`, IndexedDB, fetch, or beacon APIs.
+- Phase 1.1 runtime UX checks are verified in the source frontend and starter template: the actual workstream panel is the explicit scroll container for request top anchoring, async responses for non-selected workstreams update background state without stealing focus, and role-authorized left-rail workstream entries show visual-only accessible unseen-response indicators that clear when selected.
 
 ### Phase 2: browser-local persistence
 
@@ -238,4 +240,4 @@ These events should be privacy-conscious and should reference stable workstream/
 - [x] Visual session limits are based primarily on turn groups, with a secondary surface cap.
 - [x] Tests cover append order, scroll target, anchor pause on manual scroll, and per-workstream state restoration.
 
-Phase 1 is documentation-ready for generated app guidance at in-memory scope only. Browser-local refresh persistence and backend/cross-device resume behavior remain future phases.
+Phase 1 plus phase 1.1 runtime UX remediation are documentation-ready for generated app guidance at in-memory scope only. Browser-local refresh persistence and backend/cross-device resume behavior remain future phases.

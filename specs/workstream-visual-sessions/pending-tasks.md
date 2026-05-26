@@ -454,7 +454,7 @@
 
 ### TASK-WVS-03-005: Reverify phase 1.1 readiness
 
-- status: pending
+- status: done
 - source: phase 1.1 runtime UX closure
 - task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/05-reverify-phase-1-1-readiness.md
 - depends on: [TASK-WVS-03-004]
@@ -483,4 +483,7 @@
 - done criteria:
   - phase 1.1 objectives are independently verified in source and starter
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Reverify workstream visual session phase 1.1`
+  - completed: reverified source and starter phase 1.1 runtime UX after template sync and updated readiness notes to state that request anchoring targets the actual workstream panel, background responses do not steal selected workstream focus, and accessible left-rail unseen-response indicators clear on selection.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd frontend && node --test src/workstream-shell.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`.
