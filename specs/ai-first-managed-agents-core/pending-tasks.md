@@ -176,7 +176,8 @@
 
 ### TASK-MAGENT-02-001: Add first-class AgentDefinition component and views
 
-- status: pending
+- status: done
+- completion note: Added first-class AgentDefinition Event Sourced Entity, tenant-scoped runtime/admin views, Akka repository adapter compatibility for definition reads/writes, and entity/view tests for active lookup, disabled/archived denial, tenant isolation, and projection shape.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/02-durable-state/01-add-agent-definition-component-and-views.md
 - depends on: [TASK-MAGENT-01-004]
@@ -200,7 +201,8 @@
 - done criteria:
   - Agent definitions are no longer represented only as fields in a single catch-all repository seam.
   - A focused git commit exists with message `managed-agents-core: add agent definition component`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: add agent definition component`
 
 ### TASK-MAGENT-02-002: Add prompt, skill, and reference document/version components
 
