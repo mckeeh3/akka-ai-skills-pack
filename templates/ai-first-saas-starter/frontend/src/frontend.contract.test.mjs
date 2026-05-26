@@ -36,8 +36,8 @@ test('workstream shell uses fixture contracts and capability action feedback', (
   assert.match(main, /runCapabilityAction/);
   assert.match(main, /kind: 'surface-request'/);
   assert.match(main, /kind: 'surface'/);
-  assert.match(main, /setRequestScrollTargetForCurrentSession\(surface\.surfaceId, functionalAgentId\)/);
-  assert.match(main, /setRequestScrollTargetForCurrentSession\(targetSurface\.surfaceId, targetSurface\.ownerFunctionalAgentId\)/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(requestItem\.itemId, functionalAgentId\)/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(actionRequestItem\.itemId, actionRequestItem\.functionalAgentId\)/);
   assert.match(main, /buildCapabilityActionRequest/);
 });
 

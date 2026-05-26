@@ -88,6 +88,31 @@ test('workstream stream anchors new request surfaces at the top while responses 
   assert.match(workstreamStream, /\[requestScrollTargetId, shouldAutoAnchor, items\.length, surfaces\.length\]/);
 });
 
+test('composer submission keeps request items anchored while success and error responses append below', () => {
+  assert.match(main, /const userRequestItem: WorkstreamItem = \{/);
+  assert.match(main, /const correlationId = `corr-composer-/);
+  assert.match(main, /submitWorkstreamMessage\(\{\s*\.\.\.request,\s*correlationId\s*\}\)/s);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userRequestItem\.itemId, request\.functionalAgentId\)/);
+  assert.match(main, /rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ activeTurnGroupId: correlationId, anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\)/);
+  assert.match(main, /correlationId,\s*traceIds: \[\],\s*title: safeError\.title/s);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userRequestItem\.itemId, request\.functionalAgentId\);\s*rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\);/s);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
+  assert.match(main, /anchorSurfaceId: userItem\.itemId, selectedSurfaceId: surface\.surfaceId/);
+  assert.doesNotMatch(main, /setRequestScrollTargetForCurrentSession\(surface\.surfaceId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
+});
+
+test('surface open and surface action requests keep request anchors while response surfaces append below', () => {
+  assert.match(main, /itemId: `surface-request-\$\{now\}`/);
+  assert.match(main, /correlationId: requestItem\.correlationId,\s*traceIds: surface\.traceIds/s);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(requestItem\.itemId, functionalAgentId\)/);
+  assert.match(main, /anchorSurfaceId: requestItem\.itemId, selectedSurfaceId: surface\.surfaceId/);
+  assert.match(main, /itemId: `surface-action-request-\$\{now\}`/);
+  assert.match(main, /correlationId: actionRequestItem\.correlationId,\s*traceIds: targetSurface\.traceIds/s);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(actionRequestItem\.itemId, actionRequestItem\.functionalAgentId\)/);
+  assert.match(main, /anchorSurfaceId: actionRequestItem\.itemId, userHasManualScroll: false/);
+  assert.doesNotMatch(main, /setRequestScrollTargetForCurrentSession\(targetSurface\.surfaceId, targetSurface\.ownerFunctionalAgentId\)/);
+});
+
 test('workstream stream pauses automatic request anchoring after manual scroll input', () => {
   assert.match(workstreamStream, /autoAnchorPaused\?: boolean/);
   assert.match(workstreamStream, /onAutoAnchorPaused\?: \(requestScrollTargetId: string\) => void/);

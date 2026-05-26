@@ -247,7 +247,7 @@
 
 ### TASK-WVS-02-002: Sync request anchor fix to starter template
 
-- status: pending
+- status: done
 - source: starter template must remain the canonical generated-app baseline
 - task brief: specs/workstream-visual-sessions/tasks/02-phase-1-remediation/02-sync-request-anchor-fix-to-starter-template.md
 - depends on: [TASK-WVS-02-001]
@@ -277,7 +277,9 @@
 - done criteria:
   - starter template satisfies the request-anchor UX objective
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Sync request anchor fix to starter template`
+  - completed: synced the corrected request-anchor behavior into the starter template for composer success/error, surface-open, and surface-action flows; updated related starter contract tests so full starter frontend checks pass.
 
 ### TASK-WVS-02-003: Reverify phase 1 readiness
 
