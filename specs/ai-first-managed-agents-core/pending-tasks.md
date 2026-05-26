@@ -373,7 +373,8 @@
 
 ### TASK-MAGENT-04-002: Repair optional real-provider smoke for managed runtime tools
 
-- status: pending
+- status: done
+- completion note: Updated the optional real-provider smoke to use the shared StarterSecurityComponents managed-agent repository, runtime service, ComponentClient-backed workstream invoker, seeded starter tenant/admin context, and the same WorkstreamRuntimeAgent tool resolver path.
 - source: discovered while running `tools/validate-ai-first-saas-starter-fullstack.sh` with `OPENAI_API_KEY` present during TASK-MAGENT-04-001
 - task brief: specs/ai-first-managed-agents-core/tasks/04-docs-validation/02-repair-real-provider-managed-agent-smoke.md
 - depends on: [TASK-MAGENT-04-001]
@@ -398,4 +399,6 @@
   - The optional real-provider smoke no longer fails with `agent-not-found` when provider configuration is present and real provider access is available.
   - Provider-skip validation still passes without provider secrets.
   - A focused git commit exists with message `managed-agents-core: repair real-provider managed-agent smoke`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: repair real-provider managed-agent smoke`
+  - validation note: `tools/validate-ai-first-saas-starter-fullstack.sh` passed with inherited `OPENAI_API_KEY` redacted from logs; `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh` also passed in provider-skip mode.
