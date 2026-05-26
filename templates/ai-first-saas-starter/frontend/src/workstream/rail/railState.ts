@@ -1,10 +1,10 @@
-import type { AccountStatus, FunctionalAgentRailEntry, FunctionalAgentSummary } from '../types';
+import type { AccountStatus, FunctionalAgentRailAttentionStore, FunctionalAgentRailEntry, FunctionalAgentSummary } from '../types';
 
 export function hasRequiredCapabilities(agent: FunctionalAgentSummary, visibleCapabilityIds: string[]): boolean {
   return agent.requiredCapabilityIds.every((capabilityId) => visibleCapabilityIds.includes(capabilityId));
 }
 
-export function toRailEntry(agent: FunctionalAgentSummary, selectedFunctionalAgentId: string | undefined, visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active'): FunctionalAgentRailEntry {
+export function toRailEntry(agent: FunctionalAgentSummary, selectedFunctionalAgentId: string | undefined, visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active', railAttentionByAgentId: FunctionalAgentRailAttentionStore = {}): FunctionalAgentRailEntry {
   const hasCapabilities = hasRequiredCapabilities(agent, visibleCapabilityIds);
   const visibilityReason: FunctionalAgentRailEntry['visibilityReason'] =
     accountStatus === 'disabled'
@@ -18,13 +18,14 @@ export function toRailEntry(agent: FunctionalAgentSummary, selectedFunctionalAge
   return {
     ...agent,
     isSelected: agent.functionalAgentId === selectedFunctionalAgentId,
-    visibilityReason
+    visibilityReason,
+    railAttention: railAttentionByAgentId[agent.functionalAgentId]
   };
 }
 
-export function visibleRailEntries(agents: FunctionalAgentSummary[], selectedFunctionalAgentId: string | undefined, visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active'): FunctionalAgentRailEntry[] {
+export function visibleRailEntries(agents: FunctionalAgentSummary[], selectedFunctionalAgentId: string | undefined, visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active', railAttentionByAgentId: FunctionalAgentRailAttentionStore = {}): FunctionalAgentRailEntry[] {
   return agents
-    .map((agent) => toRailEntry(agent, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus))
+    .map((agent) => toRailEntry(agent, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus, railAttentionByAgentId))
     .filter((entry) => entry.availability === 'visible' && entry.visibilityReason === 'has-capability');
 }
 
@@ -41,10 +42,6 @@ export function agentDisabledReason(entry: FunctionalAgentRailEntry): string | u
   return 'Unavailable in the selected context.';
 }
 
-const myAccountFunctionalAgentId = 'agent-my-account';
-
 export function defaultSelectableAgentId(agents: FunctionalAgentSummary[], visibleCapabilityIds: string[], accountStatus: AccountStatus = 'active'): string | undefined {
-  const selectableEntries = visibleRailEntries(agents, undefined, visibleCapabilityIds, accountStatus).filter(isAgentSelectable);
-  return selectableEntries.find((entry) => entry.functionalAgentId !== myAccountFunctionalAgentId)?.functionalAgentId
-    ?? selectableEntries.find((entry) => entry.functionalAgentId === myAccountFunctionalAgentId)?.functionalAgentId;
+  return visibleRailEntries(agents, undefined, visibleCapabilityIds, accountStatus).find(isAgentSelectable)?.functionalAgentId;
 }

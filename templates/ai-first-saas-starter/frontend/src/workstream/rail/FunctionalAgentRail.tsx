@@ -1,4 +1,4 @@
-import type { AccountStatus, FunctionalAgentSummary } from '../types';
+import type { AccountStatus, FunctionalAgentRailAttentionStore, FunctionalAgentSummary } from '../types';
 import { CollapsedRailToggle } from './CollapsedRailToggle';
 import { FunctionalAgentRailItem } from './FunctionalAgentRailItem';
 import { visibleRailEntries } from './railState';
@@ -11,6 +11,7 @@ type FunctionalAgentRailProps = {
   collapsed?: boolean;
   appName?: string;
   userDisplayName: string;
+  railAttentionByAgentId?: FunctionalAgentRailAttentionStore;
   onSelectAgent?: (functionalAgentId: string) => void;
   onToggleCollapsed?: (collapsed: boolean) => void;
   onSignOut?: () => void;
@@ -26,10 +27,11 @@ export function FunctionalAgentRail({
   collapsed = false,
   appName = 'Workstream',
   userDisplayName,
+  railAttentionByAgentId = {},
   onSelectAgent,
   onToggleCollapsed
 }: FunctionalAgentRailProps) {
-  const visibleEntries = visibleRailEntries(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus);
+  const visibleEntries = visibleRailEntries(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus, railAttentionByAgentId);
   const entries = visibleEntries.filter((entry) => entry.functionalAgentId !== myAccountFunctionalAgentId);
   const myAccountEntry = visibleEntries.find((entry) => entry.functionalAgentId === myAccountFunctionalAgentId);
   const myAccountSelected = selectedFunctionalAgentId === myAccountFunctionalAgentId;

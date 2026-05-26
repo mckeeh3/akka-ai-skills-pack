@@ -130,6 +130,7 @@
 .ds-button.danger { background: var(--color-danger); color: var(--color-inverse-text); border-color: var(--color-danger); }
 
 .nav-item {
+  position: relative;
   justify-content: flex-start;
   gap: var(--space-3);
   width: 100%;
@@ -243,6 +244,31 @@
   color: var(--color-inverse-text);
   font-size: 0.75rem;
   font-weight: 900;
+}
+
+.rail-unseen-response-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  margin-left: auto;
+  border-radius: var(--radius-pill);
+  background: var(--color-ai);
+  color: var(--color-inverse-text);
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--color-surface-raised);
+}
+
+.rail-unseen-response-badge.warning { background: var(--color-warning); color: var(--color-text); }
+.rail-unseen-response-badge.danger { background: var(--color-danger); }
+
+.workstream-functional-agent-rail.collapsed .rail-unseen-response-badge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.2rem;
+  margin-left: 0;
 }
 
 .collapse-button,

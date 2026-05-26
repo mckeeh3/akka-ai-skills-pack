@@ -419,7 +419,7 @@
 
 ### TASK-WVS-03-004: Sync phase 1.1 runtime UX to starter template
 
-- status: pending
+- status: done
 - source: starter template must remain canonical generated-app baseline
 - task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/04-sync-phase-1-1-to-starter-template.md
 - depends on: [TASK-WVS-03-003]
@@ -447,7 +447,10 @@
 - done criteria:
   - starter template matches source phase 1.1 behavior
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Sync phase 1.1 runtime UX to starter template`
+  - completed: synced request top-scroll container anchoring, background response no-focus-steal behavior, and accessible left-rail unseen response indicators into the starter template with matching contract coverage.
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && npm test`.
 
 ### TASK-WVS-03-005: Reverify phase 1.1 readiness
 

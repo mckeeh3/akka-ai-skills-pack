@@ -8,6 +8,8 @@ const visualSessionState = read('./workstream/visual-session/visualSessionState.
 const visualSessionIndex = read('./workstream/visual-session/index.ts');
 const workstreamIndex = read('./workstream/index.ts');
 const workstreamStream = read('./workstream/stream/WorkstreamStream.tsx');
+const workstreamPanel = read('./workstream/shell/WorkstreamPanel.tsx');
+const layoutCss = read('./styles/layout.css');
 const main = read('./main.tsx');
 
 test('visual-session helpers expose reusable turn-group and session contracts', () => {
@@ -78,10 +80,29 @@ test('workstream shell restores per-workstream in-memory visual state on agent s
   assert.doesNotMatch(main, /visualSessionsByKey[\s\S]{0,200}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
 });
 
-test('workstream stream anchors new request surfaces at the top while responses append below', () => {
+test('background responses create in-memory rail unseen indicators that clear on selection', () => {
+  assert.match(main, /useState<FunctionalAgentRailAttentionStore>\(\{\}\)/);
+  assert.match(main, /markUnseenResponse\(functionalAgentId: string, lastItemId\?: string/);
+  assert.match(main, /if \(isCurrentlySelectedFunctionalAgent\(functionalAgentId\)\) return/);
+  assert.match(main, /kind: 'background-response'/);
+  assert.match(main, /markUnseenBackgroundActivity\(event: WorkstreamEvent\)/);
+  assert.match(main, /kind: event\.eventType === 'workstream\.item\.appended' \|\| event\.eventType === 'surface\.created' \? 'background-response' : 'background-activity'/);
+  assert.match(main, /clearRailAttention\(functionalAgentId\)/);
+  assert.match(main, /railAttentionByAgentId=\{railAttentionByAgentId\}/);
+  assert.match(main, /markUnseenResponse\(responseFunctionalAgentId, traceableAgentItem\.itemId, 'info'\)/);
+  assert.match(main, /markUnseenResponse\(request\.functionalAgentId, errorItem\.itemId, 'warning'\)/);
+  assert.doesNotMatch(main, /railAttentionByAgentId[\s\S]{0,240}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
+});
+
+test('workstream stream anchors new request surfaces at the top of the actual scroll container while responses append below', () => {
   assert.match(workstreamStream, /requestScrollTargetId\?: string/);
-  assert.match(workstreamStream, /scrollIntoView\(\{ block: 'start', inline: 'nearest', behavior \}\)/);
+  assert.match(workstreamPanel, /data-workstream-scroll-container="true"/);
+  assert.match(layoutCss, /\.workstream-panel \{[\s\S]*height: 100vh;[\s\S]*overflow-y: auto;[\s\S]*scroll-padding-top: var\(--space-8\);/);
+  assert.match(workstreamStream, /findRequestScrollTarget\(requestScrollTargetId, streamRef\.current\)/);
+  assert.match(workstreamStream, /target\.closest<HTMLElement>\('\[data-workstream-scroll-container="true"\]'\)/);
+  assert.match(workstreamStream, /scrollContainer\.scrollTo\(\{\s*top: targetRect\.top - containerRect\.top \+ scrollContainer\.scrollTop - scrollPaddingTop,\s*behavior\s*\}\)/s);
   assert.match(workstreamStream, /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)\.matches \? 'auto' : 'smooth'/);
+  assert.doesNotMatch(workstreamStream, /scrollIntoView\(/);
   assert.match(workstreamStream, /items\.map\(\(item\) =>/);
   assert.match(workstreamStream, /<WorkstreamItemCard item=\{item\}/);
   assert.match(workstreamStream, /<SurfaceRenderer envelopes=\{surfaces\} selectedSurfaceId=\{item\.surfaceId\}/);
@@ -96,7 +117,8 @@ test('composer submission keeps request items anchored while success and error r
   assert.match(main, /rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ activeTurnGroupId: correlationId, anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\)/);
   assert.match(main, /correlationId,\s*traceIds: \[\],\s*title: safeError\.title/s);
   assert.match(main, /setRequestScrollTargetForCurrentSession\(userRequestItem\.itemId, request\.functionalAgentId\);\s*rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\);/s);
-  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
+  assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, responseFunctionalAgentId\)/);
   assert.match(main, /anchorSurfaceId: userItem\.itemId, selectedSurfaceId: surface\.surfaceId/);
   assert.doesNotMatch(main, /setRequestScrollTargetForCurrentSession\(surface\.surfaceId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
 });

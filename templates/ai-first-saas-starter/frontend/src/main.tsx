@@ -17,10 +17,13 @@ import {
   canonicalSurfaceEnvelopes,
   initialWorkstreamItems,
   meTenantAdmin,
+  type FunctionalAgentRailAttention,
+  type FunctionalAgentRailAttentionStore,
   type MeResponse,
   type RealtimeConnectionState,
   type SurfaceAction,
   type SurfaceEnvelope,
+  type WorkstreamEvent,
   type WorkstreamItem,
   type WorkstreamSelection
 } from './workstream';
@@ -52,6 +55,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const [submittingFunctionalAgentId, setSubmittingFunctionalAgentId] = React.useState<string>();
   const [requestScrollTargetBySessionKey, setRequestScrollTargetBySessionKey] = React.useState<Record<string, string | undefined>>({});
   const [visualSessionsByKey, setVisualSessionsByKey] = React.useState<WorkstreamVisualSessionStore>({});
+  const [railAttentionByAgentId, setRailAttentionByAgentId] = React.useState<FunctionalAgentRailAttentionStore>({});
   const [realtimeConnection, setRealtimeConnection] = React.useState<RealtimeConnectionState>({ status: 'connecting' });
   const seenEventIds = React.useRef(new Set<string>());
   const realtimeLastEventId = React.useRef<string | undefined>(undefined);
@@ -100,6 +104,12 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
   const me = ready.me;
   const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status);
+  const selectedFunctionalAgentIdRef = React.useRef<string | undefined>(selectedFunctionalAgentId);
+
+  React.useEffect(() => {
+    selectedFunctionalAgentIdRef.current = selectedFunctionalAgentId;
+  }, [selectedFunctionalAgentId]);
+
   const selectedSessionKey = selectedFunctionalAgentId ? createWorkstreamVisualSessionKey({
     accountId: me.account.accountId,
     selectedContextId: me.selectedAuthContext.selectedContextId,
@@ -126,6 +136,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     if (bootstrap.status !== 'ready') return;
     const stateSubscription = realtimeClient.onState((state) => setRealtimeConnection(state));
     const eventSubscription = realtimeClient.onEvent((event) => {
+      markUnseenBackgroundActivity(event);
       setBootstrap((current) => {
         if (current.status !== 'ready') return current;
         const merged = applyWorkstreamRealtimeEvent(
@@ -190,9 +201,57 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     setRequestScrollTargetBySessionKey((targets) => ({ ...targets, [sessionKey]: targetId }));
   }
 
+  function isCurrentlySelectedFunctionalAgent(functionalAgentId: string) {
+    return selectedFunctionalAgentIdRef.current === functionalAgentId;
+  }
+
+  function markUnseenResponse(functionalAgentId: string, lastItemId?: string, severity: FunctionalAgentRailAttention['severity'] = 'info') {
+    if (isCurrentlySelectedFunctionalAgent(functionalAgentId)) return;
+    setRailAttentionByAgentId((store) => {
+      const previous = store[functionalAgentId];
+      return {
+        ...store,
+        [functionalAgentId]: {
+          unseenResponseCount: (previous?.unseenResponseCount ?? 0) + 1,
+          severity: strongerAttentionSeverity(previous?.severity, severity),
+          kind: 'background-response',
+          lastItemId,
+          lastUpdatedAt: new Date().toISOString()
+        }
+      };
+    });
+  }
+
+  function markUnseenBackgroundActivity(event: WorkstreamEvent) {
+    if (isCurrentlySelectedFunctionalAgent(event.functionalAgentId)) return;
+    if (!isMaterialBackgroundEvent(event.eventType)) return;
+    setRailAttentionByAgentId((store) => {
+      const previous = store[event.functionalAgentId];
+      return {
+        ...store,
+        [event.functionalAgentId]: {
+          unseenResponseCount: (previous?.unseenResponseCount ?? 0) + 1,
+          severity: strongerAttentionSeverity(previous?.severity, event.eventType.includes('denied') ? 'warning' : 'info'),
+          kind: event.eventType === 'workstream.item.appended' || event.eventType === 'surface.created' ? 'background-response' : 'background-activity',
+          lastItemId: event.surfaceId,
+          lastUpdatedAt: event.occurredAt
+        }
+      };
+    });
+  }
+
+  function clearRailAttention(functionalAgentId: string) {
+    setRailAttentionByAgentId((store) => {
+      if (!store[functionalAgentId]) return store;
+      const { [functionalAgentId]: _cleared, ...remaining } = store;
+      return remaining;
+    });
+  }
+
   function selectAgent(functionalAgentId: string) {
     const restoredSession = sessionForAgent(functionalAgentId);
     const restoredSurface = restoredSession.selectedSurfaceId ?? surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
+    clearRailAttention(functionalAgentId);
     setVisualSessionsByKey((store) => saveVisualSession(store, restoredSession));
     updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: restoredSurface });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
@@ -346,6 +405,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       };
       setRequestScrollTargetForCurrentSession(userRequestItem.itemId, request.functionalAgentId);
       rememberVisualSession(sessionForAgent(request.functionalAgentId), { anchorSurfaceId: userRequestItem.itemId, userHasManualScroll: false });
+      if (!isCurrentlySelectedFunctionalAgent(request.functionalAgentId)) markUnseenResponse(request.functionalAgentId, errorItem.itemId, 'warning');
       setBootstrap((current) => current.status === 'ready'
         ? { ...current, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), errorItem]) }
         : current);
@@ -357,8 +417,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ...agentItem,
       traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
     };
-    setRequestScrollTargetForCurrentSession(userItem.itemId, surface.ownerFunctionalAgentId ?? request.functionalAgentId);
-    rememberVisualSession(sessionForAgent(surface.ownerFunctionalAgentId ?? request.functionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
+    const responseFunctionalAgentId = surface.ownerFunctionalAgentId ?? request.functionalAgentId;
+    setRequestScrollTargetForCurrentSession(userItem.itemId, responseFunctionalAgentId);
+    rememberVisualSession(sessionForAgent(responseFunctionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
@@ -366,11 +427,15 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         : [...current.surfaces, surface];
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId && item.itemId !== userRequestItem.itemId), userItem, traceableAgentItem]) };
     });
-    updateSelection({
-      selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? request.functionalAgentId,
-      selectedSurfaceId: surface.surfaceId,
-      surfacePlacement: 'inline'
-    });
+    if (isCurrentlySelectedFunctionalAgent(responseFunctionalAgentId)) {
+      updateSelection({
+        selectedFunctionalAgentId: responseFunctionalAgentId,
+        selectedSurfaceId: surface.surfaceId,
+        surfacePlacement: 'inline'
+      });
+    } else {
+      markUnseenResponse(responseFunctionalAgentId, traceableAgentItem.itemId, 'info');
+    }
     return true;
   }
 
@@ -394,6 +459,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
       submittingFunctionalAgentId={submittingFunctionalAgentId}
+      railAttentionByAgentId={railAttentionByAgentId}
       onSignOut={onSignOut}
     >
       <WorkstreamStream
@@ -416,6 +482,21 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
 function readDeepLinkSelection(): Partial<WorkstreamSelection> {
   const hashQuery = window.location.hash.includes('?') ? window.location.hash.slice(window.location.hash.indexOf('?')) : '';
   return parseWorkstreamDeepLink(window.location.search || hashQuery);
+}
+
+function strongerAttentionSeverity(current: FunctionalAgentRailAttention['severity'] | undefined, next: FunctionalAgentRailAttention['severity']): FunctionalAgentRailAttention['severity'] {
+  const rank: Record<FunctionalAgentRailAttention['severity'], number> = { info: 1, warning: 2, critical: 3 };
+  return !current || rank[next] > rank[current] ? next : current;
+}
+
+function isMaterialBackgroundEvent(eventType: WorkstreamEvent['eventType']): boolean {
+  return eventType === 'workstream.item.appended'
+    || eventType === 'surface.created'
+    || eventType === 'surface.updated'
+    || eventType === 'surface.action.denied'
+    || eventType === 'surface.workflow.progressed'
+    || eventType === 'surface.stale'
+    || eventType === 'surface.reconnected';
 }
 
 function safeComposerErrorCopy(error: ApiError): { title: string; body: string; status: 'blocked' | 'failed' } {

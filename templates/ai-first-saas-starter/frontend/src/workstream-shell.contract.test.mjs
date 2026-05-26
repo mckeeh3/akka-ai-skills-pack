@@ -14,16 +14,19 @@ const panel = read('./workstream/shell/WorkstreamPanel.tsx');
 const shell = read('./workstream/shell/WorkstreamShell.tsx');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
+const agentTypes = read('./workstream/types/agents.ts');
+const componentsCss = read('./styles/components.css');
 
 test('functional agent rail is collapsible and lists only allowed workstreams', () => {
   assert.match(railState, /hasRequiredCapabilities/);
   assert.match(railState, /visibleCapabilityIds/);
+  assert.match(railState, /railAttentionByAgentId: FunctionalAgentRailAttentionStore = \{\}/);
   assert.match(railState, /entry\.availability === 'visible' && entry\.visibilityReason === 'has-capability'/);
-  assert.match(railState, /const myAccountFunctionalAgentId = 'agent-my-account'/);
-  assert.match(railState, /entry\.functionalAgentId !== myAccountFunctionalAgentId/);
-  assert.match(railState, /entry\.functionalAgentId === myAccountFunctionalAgentId/);
   assert.match(railItem, /aria-current=\{entry\.isSelected \? 'page'/);
   assert.match(railItem, /iconGlyph/);
+  assert.match(railItem, /rail-unseen-response-badge/);
+  assert.match(railItem, /aria-label=\{unseenResponseLabel\}/);
+  assert.match(railItem, /data-attention-kind=\{entry\.railAttention\.kind\}/);
   assert.match(toggle, /aria-expanded=\{!collapsed\}/);
   assert.match(toggle, /aria-controls="workstream-functional-agent-rail-list"/);
   assert.match(toggle, /collapsed \? 'Expand sidebar' : 'Collapse sidebar'/);
@@ -38,7 +41,18 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.doesNotMatch(rail, /aria-haspopup="menu"/);
   assert.doesNotMatch(rail, /rail-user-menu/);
   assert.doesNotMatch(rail, /role="menuitem"/);
+  assert.match(rail, /railAttentionByAgentId\?: FunctionalAgentRailAttentionStore/);
+  assert.match(rail, /visibleRailEntries\(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus, railAttentionByAgentId\)/);
   assert.match(rail, /onToggleCollapsed/);
+});
+
+test('left rail unseen response indicators are accessible, extensible, and visual-only', () => {
+  assert.match(agentTypes, /FunctionalAgentRailAttentionKind = 'background-response' \| 'background-activity'/);
+  assert.match(agentTypes, /unseenResponseCount: number/);
+  assert.match(agentTypes, /railAttention\?: FunctionalAgentRailAttention/);
+  assert.match(componentsCss, /\.rail-unseen-response-badge/);
+  assert.match(componentsCss, /workstream-functional-agent-rail\.collapsed \.rail-unseen-response-badge/);
+  assert.match(railState, /filter\(\(entry\) => entry\.availability === 'visible' && entry\.visibilityReason === 'has-capability'\)/);
 });
 
 test('persistent composer is selected-agent aware and exposes disabled states', () => {

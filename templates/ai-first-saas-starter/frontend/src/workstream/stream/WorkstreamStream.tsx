@@ -25,10 +25,11 @@ export function WorkstreamStream({ items, selectedItemId, requestScrollTargetId,
 
   useLayoutEffect(() => {
     if (!requestScrollTargetId || !shouldAutoAnchor) return;
-    const requestSurface = document.getElementById(requestScrollTargetId) ?? document.querySelector(`[data-surface-id="${escapeCssIdentifier(requestScrollTargetId)}"]`);
+    const requestSurface = findRequestScrollTarget(requestScrollTargetId, streamRef.current);
+    if (!requestSurface) return;
     const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
-    requestSurface?.scrollIntoView({ block: 'start', inline: 'nearest', behavior });
-    if (requestSurface instanceof HTMLElement) requestSurface.focus({ preventScroll: true });
+    scrollTargetToContainerTop(requestSurface, streamRef.current, behavior);
+    requestSurface.focus({ preventScroll: true });
   }, [requestScrollTargetId, shouldAutoAnchor, items.length, surfaces.length]);
 
   function pauseAutoAnchorForManualScroll() {
@@ -77,6 +78,29 @@ export function WorkstreamStream({ items, selectedItemId, requestScrollTargetId,
 
 function isManualScrollKey(key: string): boolean {
   return ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(key);
+}
+
+function findRequestScrollTarget(requestScrollTargetId: string, stream: HTMLElement | null): HTMLElement | null {
+  const escapedTargetId = escapeCssIdentifier(requestScrollTargetId);
+  const scopedTarget = stream?.querySelector<HTMLElement>(`#${escapedTargetId}, [data-surface-id="${escapedTargetId}"]`);
+  return scopedTarget ?? document.getElementById(requestScrollTargetId) ?? document.querySelector<HTMLElement>(`[data-surface-id="${escapedTargetId}"]`);
+}
+
+function scrollTargetToContainerTop(target: HTMLElement, stream: HTMLElement | null, behavior: ScrollBehavior) {
+  const scrollContainer = target.closest<HTMLElement>('[data-workstream-scroll-container="true"]') ?? stream?.closest<HTMLElement>('[data-workstream-scroll-container="true"]');
+  if (!scrollContainer) {
+    const targetTop = target.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: targetTop, behavior });
+    return;
+  }
+
+  const containerRect = scrollContainer.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+  const scrollPaddingTop = Number.parseFloat(window.getComputedStyle(scrollContainer).scrollPaddingTop || '0') || 0;
+  scrollContainer.scrollTo({
+    top: targetRect.top - containerRect.top + scrollContainer.scrollTop - scrollPaddingTop,
+    behavior
+  });
 }
 
 function escapeCssIdentifier(value: string): string {

@@ -30,7 +30,8 @@ test('composer response appends returned items and markdown_response surface', (
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
   assert.match(main, /traceableAgentItem/);
   assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
-  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
+  assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, responseFunctionalAgentId\)/);
   assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
   assert.match(stream, /item\.kind === 'markdown_response'/);
   assert.match(surfaceFrame, /id=\{visibleEnvelope\.surfaceId\}/);
@@ -49,11 +50,11 @@ test('composer acknowledges prompts immediately as request surfaces and scrolls 
   assert.match(main, /requestScrollTargetId=\{currentRequestScrollTargetId\}/);
   assert.match(stream, /requestScrollTargetId\?: string/);
   assert.match(stream, /useLayoutEffect/);
-  assert.match(stream, /document\.getElementById\(requestScrollTargetId\) \?\? document\.querySelector/);
+  assert.match(stream, /findRequestScrollTarget\(requestScrollTargetId, streamRef\.current\)/);
   assert.match(stream, /data-surface-id/);
-  assert.match(stream, /scrollIntoView\(\{ block: 'start'/);
-  assert.match(stream, /requestSurface instanceof HTMLElement/);
-  assert.match(stream, /focus\(\{ preventScroll: true \}\)/);
+  assert.match(stream, /scrollTargetToContainerTop\(requestSurface, streamRef\.current, behavior\)/);
+  assert.match(stream, /scrollContainer\.scrollTo\(\{/);
+  assert.match(stream, /requestSurface\.focus\(\{ preventScroll: true \}\)/);
 });
 
 test('composer exposes in-flight model submission state and preserves safe retry context', () => {
@@ -109,6 +110,16 @@ test('surface and action request acknowledgement surfaces match compact request 
   assert.match(componentStyles, /max-width: min\(46rem, 62%\)/);
   assert.match(componentStyles, /\.workstream-item\.surface-request\.action-request-surface/);
   assert.match(componentStyles, /\.request-surface small/);
+});
+
+test('background composer responses update their originating workstream without stealing selected workstream focus', () => {
+  assert.match(main, /const selectedFunctionalAgentIdRef = React\.useRef<string \| undefined>\(selectedFunctionalAgentId\)/);
+  assert.match(main, /selectedFunctionalAgentIdRef\.current = selectedFunctionalAgentId/);
+  assert.match(main, /function isCurrentlySelectedFunctionalAgent\(functionalAgentId: string\) \{\s*return selectedFunctionalAgentIdRef\.current === functionalAgentId;\s*\}/s);
+  assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
+  assert.match(main, /setBootstrap\(\(current\) => \{[\s\S]*items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)[\s\S]*\}\);/);
+  assert.match(main, /if \(isCurrentlySelectedFunctionalAgent\(responseFunctionalAgentId\)\) \{\s*updateSelection\(\{\s*selectedFunctionalAgentId: responseFunctionalAgentId,/s);
+  assert.doesNotMatch(main, /updateSelection\(\{\s*selectedFunctionalAgentId: surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId,/s);
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {
