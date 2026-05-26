@@ -34,6 +34,7 @@ The skill must:
 - generate or update the requested outputs
 - run the task's required checks and local/runtime validation path when the task implements app behavior
 - update the queue status before finishing
+- commit the task changes only when the selected task is marked `done`
 - report any blocking pending question or the next runnable pending task
 
 ## Required reading
@@ -233,7 +234,21 @@ Add a note with the exact blocker and needed user/project action.
 
 If partially implemented but not complete, keep or set status to `blocked` rather than `done`.
 
-### 7. Report result and next task
+### 7. Commit completed task changes
+
+If the selected task is marked `done`, create a git commit that includes:
+- implementation changes for the selected task
+- tests/docs produced by the task
+- the `specs/pending-tasks.md` status update
+
+Before committing:
+- inspect `git status`
+- avoid including unrelated pre-existing changes
+- if unrelated changes are present and cannot be safely separated, do not commit; report the blocker
+
+Do not commit when the task is `blocked`, partially complete, or checks failed unless the user explicitly asks.
+
+### 8. Report result and next task
 
 Final response shape:
 
@@ -303,4 +318,5 @@ Before finishing, verify:
 - required reads and skills were loaded narrowly
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
+- if the task was marked `done`, changes were committed or the reason not to commit was reported
 - the next runnable pending task was identified, or the absence of one was reported
