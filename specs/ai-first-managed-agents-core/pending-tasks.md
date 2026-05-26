@@ -51,7 +51,8 @@
 
 ### TASK-MAGENT-01-001: Add starter tool catalog and runtime resolver
 
-- status: pending
+- status: done
+- completion note: Added backend-owned tool catalog metadata, starter registry entries, deny-by-default runtime tool resolver, and resolver tests for governed readSkill/readReferenceDoc bindings.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/01-runtime-tools/01-add-tool-catalog-and-runtime-resolver.md
 - depends on: [TASK-MAGENT-00-001]
@@ -77,7 +78,8 @@
 - done criteria:
   - Runtime tool resolution is deterministic, deny-by-default, and maps governed stable ids to hardcoded/backend-owned Java bindings.
   - A focused git commit exists with message `managed-agents-core: add runtime tool resolver`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: add runtime tool resolver`
 
 ### TASK-MAGENT-01-002: Add governed Akka function tools for skill and reference loading
 
