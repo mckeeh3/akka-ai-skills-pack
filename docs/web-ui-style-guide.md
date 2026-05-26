@@ -148,7 +148,7 @@ Use this as the default choice for generated AI-first SaaS apps. It is an operat
 ### Visual intent
 
 - calm operational SaaS interface for supervising delegated agent work
-- warm dark-console foundation by default: near-black green/charcoal backgrounds, layered low-contrast panels, orange primary controls/icons, muted coral AI/highlight accents, and semantic status colors
+- warm dark-console foundation by default: near-black green/charcoal backgrounds, layered low-contrast panels, orange primary controls/icons, muted coral AI/highlight accents, no page-corner gradient washes, and semantic status colors
 - prioritizes decisions, exceptions, policy boundaries, auditability, and outcome visibility over decorative chrome
 - feels intentionally designed rather than like a generic admin dashboard, CRM, or chat app
 - makes autonomous activity visible without hiding consequential work in chat transcripts
@@ -163,8 +163,8 @@ Use these rules to improve visual quality without changing product behavior:
 - Typography should feel intentional. Use a readable warm sans for most UI copy and reserve monospace for code, trace ids, dense metrics, and technical labels. Custom styles may replace the default font tokens when the app records accessible fallbacks, readable line heights, and tabular/numeric conventions for dense operational data.
 - Use color, borders, shadows, texture, and depth to clarify hierarchy: human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity should not look interchangeable.
 - Motion should be purposeful and state-driven: surface append/update, agent-working, approval result, stale/reconnect, expansion, and denial/recovery transitions may be polished, but must preserve reduced-motion support and never obscure state or audit evidence.
-- Background treatments, grain, gradients, dotted textures, patterns, and glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact. Prefer a very subtle dotted field over visible diagonal striping.
-- Dark mode should avoid pure black and avoid default cool blue-black dashboard styling; prefer warm near-black/charcoal surfaces with subtle orange/coral glow and hairline borders.
+- Background treatments, grain, dotted textures, patterns, and component-level glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact. Prefer a very subtle dotted field over visible diagonal striping or large page-corner gradients.
+- Dark mode should avoid pure black and avoid default cool blue-black dashboard styling; prefer warm near-black/charcoal surfaces with subtle component-level orange/coral glow and hairline borders.
 
 ### Style customization scope
 

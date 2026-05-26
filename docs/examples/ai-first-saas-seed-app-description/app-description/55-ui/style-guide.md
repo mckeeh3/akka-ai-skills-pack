@@ -10,7 +10,7 @@
 
 ## Visual direction
 
-- aesthetic point of view: operational mission-control console with readable sans UI typography plus monospace technical accents, warm near-black charcoal backgrounds, layered glass-like panels, orange primary controls/icons, muted coral AI/highlight accents, restrained localized glow, and audit-grade information density
+- aesthetic point of view: operational mission-control console with readable sans UI typography plus monospace technical accents, warm near-black charcoal backgrounds, layered glass-like panels, orange primary controls/icons, muted coral AI/highlight accents, no page-corner gradient washes, restrained component-level glow, and audit-grade information density
 - tone: calm, precise, supervisory, and trust-oriented rather than decorative or playful
 - memorable motif: "signal over noise" — subtle grid/scanline atmosphere, compact command surfaces, and semantic accent rails for work needing human attention
 - forbidden generic patterns: purple-gradient chatbot shells, undifferentiated white-card dashboards, decorative chat bubbles for consequential work, and equal visual weight across FYI, blocked, autonomous, and approval-needed states
@@ -41,7 +41,7 @@
 - radius: 8px controls, 12px standard cards, 16px prominent panels, pill badges
 - elevation: light mode uses layered card/panel shadows plus hairline borders; dark mode relies on borders, restrained warm glow, and depth from subtle surface contrast
 - colors:
-  - dark mode uses a warm green-black/charcoal foundation rather than a cool blue-black foundation; page, sidebar, and card surfaces should remain close in value but still have enough surface/border separation to read as premium cards
+  - dark mode uses a warm green-black/charcoal foundation rather than a cool blue-black foundation; page, sidebar, and card surfaces should remain close in value but still have enough surface/border separation to read as premium cards; do not add large top-left/top-right page gradient washes
   - primary controls, icon chips, active rail states, focus accents, and major call-to-action buttons use warm orange tokens similar to the operations-dashboard reference
   - AI/highlight accents use muted coral/pink, while status and chart colors remain semantic and tokenized
   - surfaces, text, borders, primary, AI accent, status, chart, focus, shadows, texture, and motion tokens are defined by the `atlas-ops-supervisory-console` tokens in `docs/web-ui-style-guide.md`
@@ -83,8 +83,8 @@
   - state-driven transitions may polish surface append/update, composer focus, hover, stale/reconnect, approval result, and denial/recovery feedback
   - reduced-motion mode disables decorative transform/animation while preserving visible state changes
 - background/texture/elevation rules:
-  - use tokenized localized radial glow, very subtle dotted texture or near-invisible texture, hairline borders, and panel shadows to create depth
-  - avoid prominent diagonal striping; texture should recede behind cards rather than become a visible wallpaper
+  - use very subtle dotted texture or near-invisible texture, hairline borders, panel shadows, and component-local glow to create depth
+  - avoid prominent diagonal striping and large page-corner gradients; texture should recede behind cards rather than become a visible wallpaper
   - never let texture, glow, or blur reduce text contrast, focus visibility, or structured-surface readability
 
 ## Accessibility and responsive constraints

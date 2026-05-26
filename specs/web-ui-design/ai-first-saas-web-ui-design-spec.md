@@ -81,7 +81,7 @@ Themes and lightweight style variants must not change:
 
 ## Seed theme: Atlas Ops supervisory console
 
-This is the initial AI-first theme to test against the seed app. It is the default theme and must be implemented as one named theme with both light and dark token sets. The visual tuning should use a warm near-black operational console in dark mode: green-black/charcoal page background, slightly separated layered cards, subtle warm borders/glow, orange primary action/icon treatments, and muted coral AI/highlight accents. Keep the Atlas Ops information architecture and component anatomy, but prefer the warmer dashboard atmosphere shown in `dashboard-example.png` over the cooler blue-black reference image. Background texture should be a very subtle dotted field or near-invisible texture, not prominent diagonal striping; glow should be soft and localized.
+This is the initial AI-first theme to test against the seed app. It is the default theme and must be implemented as one named theme with both light and dark token sets. The visual tuning should use a warm near-black operational console in dark mode: green-black/charcoal page background, slightly separated layered cards, subtle warm borders/component glow, orange primary action/icon treatments, and muted coral AI/highlight accents. Keep the Atlas Ops information architecture and component anatomy, but prefer the warmer dashboard atmosphere shown in `dashboard-example.png` over the cooler blue-black reference image. Background texture should be a very subtle dotted field or near-invisible texture, not prominent diagonal striping or page-corner gradient washes; glow should stay component-local.
 
 ### Font tokens
 
