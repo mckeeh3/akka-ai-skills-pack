@@ -30,7 +30,7 @@ test('composer response appends returned items and markdown_response surface', (
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
   assert.match(main, /traceableAgentItem/);
   assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
-  assert.match(main, /setRequestScrollTargetId\(surface\.surfaceId\)/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(surface\.surfaceId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
   assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
   assert.match(stream, /item\.kind === 'markdown_response'/);
   assert.match(surfaceFrame, /id=\{visibleEnvelope\.surfaceId\}/);
@@ -41,12 +41,12 @@ test('composer response appends returned items and markdown_response surface', (
 });
 
 test('composer acknowledges prompts immediately as request surfaces and scrolls them to the top', () => {
-  assert.match(main, /const \[requestScrollTargetId, setRequestScrollTargetId\] = React\.useState<string>\(\)/);
+  assert.match(main, /const \[requestScrollTargetBySessionKey, setRequestScrollTargetBySessionKey\] = React\.useState<Record<string, string \| undefined>>\(\{\}\)/);
   assert.match(main, /const userRequestItem: WorkstreamItem = \{/);
   assert.match(main, /kind: 'user-request'/);
   assert.match(main, /body: request\.prompt/);
-  assert.match(main, /setRequestScrollTargetId\(userRequestItem\.itemId\)/);
-  assert.match(main, /requestScrollTargetId=\{requestScrollTargetId\}/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userRequestItem\.itemId, request\.functionalAgentId\)/);
+  assert.match(main, /requestScrollTargetId=\{currentRequestScrollTargetId\}/);
   assert.match(stream, /requestScrollTargetId\?: string/);
   assert.match(stream, /useLayoutEffect/);
   assert.match(stream, /document\.getElementById\(requestScrollTargetId\) \?\? document\.querySelector/);

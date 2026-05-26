@@ -116,7 +116,7 @@
 
 ### TASK-WVS-01-003: Restore in-memory visual sessions when switching workstreams
 
-- status: pending
+- status: done
 - source: docs/workstream-visual-sessions.md phase 1
 - task brief: specs/workstream-visual-sessions/tasks/01-phase-1-frontend/03-restore-in-memory-sessions-on-workstream-switch.md
 - depends on: [TASK-WVS-01-002]
@@ -144,7 +144,9 @@
   - users can switch workstreams and return to the previous in-memory visual position/state
   - frontend tests/checks relevant to changed files pass
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Restore in-memory workstream visual sessions`
+  - completed: added auth-context/functional-agent keyed in-memory visual-session restore, preserved selected surface and manual-scroll pause state across workstream switches, and kept request anchoring per session without browser-local or backend persistence.
 
 ### TASK-WVS-01-004: Sync phase 1 visual sessions into the starter template
 

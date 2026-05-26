@@ -8,6 +8,7 @@ const visualSessionState = read('./workstream/visual-session/visualSessionState.
 const visualSessionIndex = read('./workstream/visual-session/index.ts');
 const workstreamIndex = read('./workstream/index.ts');
 const workstreamStream = read('./workstream/stream/WorkstreamStream.tsx');
+const main = read('./main.tsx');
 
 test('visual-session helpers expose reusable turn-group and session contracts', () => {
   assert.match(visualSessionState, /export type WorkstreamTurnGroup/);
@@ -47,6 +48,34 @@ test('snapshot semantics stay in-memory and semantic rather than browser-local o
   assert.match(visualSessionState, /userHasManualScroll: session\.userHasManualScroll/);
   assert.match(visualSessionState, /lastViewedAt: session\.lastViewedAt/);
   assert.doesNotMatch(visualSessionState, /localStorage|sessionStorage|indexedDB|fetch\(|navigator\.sendBeacon/i);
+});
+
+test('visual sessions are keyed by account, selected auth context, functional agent, and workstream id', () => {
+  assert.match(visualSessionState, /export type WorkstreamVisualSessionStore = Record<string, WorkstreamVisualSession>/);
+  assert.match(visualSessionState, /createWorkstreamVisualSessionKey/);
+  assert.match(visualSessionState, /input\.accountId \?\? 'anonymous-account'/);
+  assert.match(visualSessionState, /input\.selectedContextId/);
+  assert.match(visualSessionState, /input\.functionalAgentId/);
+  assert.match(visualSessionState, /input\.workstreamId/);
+  assert.match(visualSessionState, /restoreOrCreateVisualSession/);
+  assert.match(visualSessionState, /saveVisualSession/);
+  assert.match(visualSessionState, /updateVisualSessionViewState/);
+});
+
+test('workstream shell restores per-workstream in-memory visual state on agent switch without browser or backend persistence', () => {
+  assert.match(main, /useState<WorkstreamVisualSessionStore>\(\{\}\)/);
+  assert.match(main, /requestScrollTargetBySessionKey/);
+  assert.match(main, /createWorkstreamVisualSessionKey\(\{\s*accountId: me\.account\.accountId,\s*selectedContextId: me\.selectedAuthContext\.selectedContextId,/s);
+  assert.match(main, /restoreOrCreateVisualSession\(\{\s*store: visualSessionsByKey,/s);
+  assert.match(main, /const restoredSession = sessionForAgent\(functionalAgentId\)/);
+  assert.match(main, /const restoredSurface = restoredSession\.selectedSurfaceId \?\? surfaceForAgent/);
+  assert.match(main, /saveVisualSession\(store, restoredSession\)/);
+  assert.match(main, /selectedSurfaceId: restoredSurface/);
+  assert.match(main, /const currentRequestScrollTargetId = selectedSessionKey \? requestScrollTargetBySessionKey\[selectedSessionKey\] : undefined/);
+  assert.match(main, /requestScrollTargetId=\{currentRequestScrollTargetId\}/);
+  assert.match(main, /autoAnchorPaused=\{currentVisualSession\?\.userHasManualScroll\}/);
+  assert.match(main, /onAutoAnchorPaused=\{\(\) => \{\s*if \(currentVisualSession\) rememberVisualSession\(currentVisualSession, \{ userHasManualScroll: true \}\);\s*\}\}/s);
+  assert.doesNotMatch(main, /visualSessionsByKey[\s\S]{0,200}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
 });
 
 test('workstream stream anchors new request surfaces at the top while responses append below', () => {

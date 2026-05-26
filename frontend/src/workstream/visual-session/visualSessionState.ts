@@ -32,10 +32,23 @@ export type WorkstreamVisualSession = WorkstreamVisualSessionSnapshot & {
   turnGroups: WorkstreamTurnGroup[];
 };
 
+export type WorkstreamVisualSessionKeyInput = {
+  accountId?: string;
+  selectedContextId: string;
+  workstreamId: string;
+  functionalAgentId: string;
+};
+
+export type WorkstreamVisualSessionStore = Record<string, WorkstreamVisualSession>;
+
 export const defaultVisualSessionLimits: WorkstreamVisualSessionLimits = {
   maxTurnGroups: 20,
   maxRenderedSurfaces: 200
 };
+
+export function createWorkstreamVisualSessionKey(input: WorkstreamVisualSessionKeyInput): string {
+  return [input.accountId ?? 'anonymous-account', input.selectedContextId, input.functionalAgentId, input.workstreamId].join('::');
+}
 
 export function createVisualSession(input: {
   accountId?: string;
@@ -170,6 +183,41 @@ export function enforceVisualSessionLimits(session: WorkstreamVisualSession): Wo
   return refreshLoadedTurnGroupIds(nextSession);
 }
 
+export function restoreOrCreateVisualSession(input: {
+  store: WorkstreamVisualSessionStore;
+  accountId?: string;
+  selectedContextId: string;
+  workstreamId: string;
+  functionalAgentId: string;
+  items?: WorkstreamItem[];
+  now?: string;
+  limits?: Partial<WorkstreamVisualSessionLimits>;
+}): WorkstreamVisualSession {
+  const key = createWorkstreamVisualSessionKey(input);
+  const existing = input.store[key];
+  if (existing) return existing;
+  const session = createVisualSession(input);
+  const turnGroups = input.items ? buildTurnGroupsFromItems({ workstreamId: input.workstreamId, items: input.items }) : [];
+  return enforceVisualSessionLimits(refreshLoadedTurnGroupIds({
+    ...session,
+    activeTurnGroupId: turnGroups[turnGroups.length - 1]?.turnGroupId,
+    anchorSurfaceId: turnGroups[turnGroups.length - 1]?.requestItem.surfaceId ?? turnGroups[turnGroups.length - 1]?.requestItem.itemId,
+    turnGroups
+  }));
+}
+
+export function saveVisualSession(store: WorkstreamVisualSessionStore, session: WorkstreamVisualSession): WorkstreamVisualSessionStore {
+  return { ...store, [createWorkstreamVisualSessionKey(session)]: session };
+}
+
+export function updateVisualSessionViewState(
+  session: WorkstreamVisualSession,
+  viewState: Partial<Pick<WorkstreamVisualSession, 'activeTurnGroupId' | 'anchorSurfaceId' | 'selectedSurfaceId' | 'collapsedSurfaceIds' | 'userHasManualScroll'>>,
+  options: { now?: string } = {}
+): WorkstreamVisualSession {
+  return { ...session, ...viewState, lastViewedAt: options.now ?? new Date().toISOString() };
+}
+
 export function toVisualSessionSnapshot(session: WorkstreamVisualSession): WorkstreamVisualSessionSnapshot {
   return {
     accountId: session.accountId,
@@ -187,7 +235,7 @@ export function toVisualSessionSnapshot(session: WorkstreamVisualSession): Works
 }
 
 export function recordManualScroll(session: WorkstreamVisualSession, options: { now?: string } = {}): WorkstreamVisualSession {
-  return { ...session, userHasManualScroll: true, lastViewedAt: options.now ?? new Date().toISOString() };
+  return updateVisualSessionViewState(session, { userHasManualScroll: true }, options);
 }
 
 export function countRenderedSurfaces(turnGroups: WorkstreamTurnGroup[]): number {
