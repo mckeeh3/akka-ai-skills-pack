@@ -274,7 +274,8 @@
 
 ### TASK-MAGENT-02-004: Add durable agent runtime trace storage and views
 
-- status: pending
+- status: done
+- completion note: Added AgentRuntimeTrace Event Sourced Entity, tenant-scoped trace search/detail view, injectable trace sink with Akka-backed storage, service trace persistence wiring, and tests for allowed/denied persistence, redaction, immutability, tenant isolation, and query row filtering fields.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/02-durable-state/04-add-runtime-trace-storage-and-views.md
 - depends on: [TASK-MAGENT-02-003]
@@ -299,7 +300,8 @@
 - done criteria:
   - Agent runtime traces are durable/queryable core app facts for Audit/Trace and Agent Admin surfaces.
   - A focused git commit exists with message `managed-agents-core: add runtime trace storage`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: add runtime trace storage`
 
 ### TASK-MAGENT-03-001: Seed configuration-driven profiles for all five core agents
 

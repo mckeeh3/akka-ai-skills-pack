@@ -37,18 +37,23 @@ public final class AgentRuntimeService {
   private final AuthContextResolver authContextResolver;
   private final Clock clock;
   private final ModelProviderClient modelProviderClient;
-  private final List<AgentRuntimeTrace> traces = new ArrayList<>();
+  private final AgentRuntimeTraceSink traceSink;
   private final List<BehaviorChangeProposal> proposals = new ArrayList<>();
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
-    this(repository, authContextResolver, clock, new OpenAiModelProviderClient());
+    this(repository, authContextResolver, clock, new OpenAiModelProviderClient(), new InMemoryAgentRuntimeTraceSink());
   }
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock, ModelProviderClient modelProviderClient) {
+    this(repository, authContextResolver, clock, modelProviderClient, new InMemoryAgentRuntimeTraceSink());
+  }
+
+  public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock, ModelProviderClient modelProviderClient, AgentRuntimeTraceSink traceSink) {
     this.repository = repository;
     this.authContextResolver = authContextResolver;
     this.clock = clock;
     this.modelProviderClient = modelProviderClient;
+    this.traceSink = traceSink;
   }
 
   public PromptAssemblyResult assemblePrompt(PromptAssemblyRequest request) {
@@ -262,7 +267,7 @@ public final class AgentRuntimeService {
   }
 
   public List<AgentRuntimeTrace> traces() {
-    return List.copyOf(traces);
+    return traceSink.traces();
   }
 
   public List<BehaviorChangeProposal> proposals() {
@@ -442,9 +447,8 @@ public final class AgentRuntimeService {
   }
 
   private AgentRuntimeTrace trace(String type, AgentRuntimeTrace.Decision decision, String tenantId, String agentDefinitionId, String correlationId, String actorId, String capabilityId, String targetId, String summary, String checksum) {
-    var trace = new AgentRuntimeTrace(UUID.randomUUID().toString(), Instant.now(clock), tenantId, agentDefinitionId, correlationId, correlationId, type, decision, actorId, capabilityId, targetId, summary, checksum);
-    traces.add(trace);
-    return trace;
+    var trace = new AgentRuntimeTrace(UUID.randomUUID().toString(), Instant.now(clock), tenantId, agentDefinitionId, correlationId, correlationId, type, decision, actorId, capabilityId, targetId, safe(summary), checksum);
+    return traceSink.record(trace);
   }
 
   private String riskClassification(BehaviorChangeRequest request) {
