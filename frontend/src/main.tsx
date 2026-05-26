@@ -228,14 +228,14 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       functionalAgentId,
       kind: 'surface',
       createdAt: new Date().toISOString(),
-      correlationId: surface.correlationId,
+      correlationId: requestItem.correlationId,
       traceIds: surface.traceIds,
       surfaceId: surface.surfaceId,
       title: surface.title,
       status: 'ready'
     };
-    setRequestScrollTargetForCurrentSession(surface.surfaceId, functionalAgentId);
-    if (currentVisualSession) rememberVisualSession(currentVisualSession, { anchorSurfaceId: surface.surfaceId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
+    setRequestScrollTargetForCurrentSession(requestItem.itemId, functionalAgentId);
+    if (currentVisualSession) rememberVisualSession(currentVisualSession, { anchorSurfaceId: requestItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => current.status === 'ready'
       ? { ...current, items: pruneWorkstreamItems([...current.items, requestItem, responseItem]) }
       : current);
@@ -267,7 +267,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       functionalAgentId: targetSurface.ownerFunctionalAgentId,
       kind: 'surface',
       createdAt: new Date().toISOString(),
-      correlationId: targetSurface.correlationId,
+      correlationId: actionRequestItem.correlationId,
       traceIds: targetSurface.traceIds,
       surfaceId: targetSurface.surfaceId,
       title: targetSurface.title,
@@ -283,8 +283,6 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
     if (targetSurface) {
-      setRequestScrollTargetForCurrentSession(targetSurface.surfaceId, targetSurface.ownerFunctionalAgentId);
-      if (currentVisualSession) rememberVisualSession(currentVisualSession, { anchorSurfaceId: targetSurface.surfaceId, selectedSurfaceId: targetSurface.surfaceId, userHasManualScroll: false });
       updateSelection({
         selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId,
         selectedSurfaceId: targetSurface.surfaceId,
@@ -340,14 +338,14 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         functionalAgentId: request.functionalAgentId,
         kind: 'system-notification',
         createdAt: new Date().toISOString(),
-        correlationId: result.error.correlationId,
+        correlationId,
         traceIds: [],
         title: safeError.title,
         body: `${safeError.body} Retry is safe: the prompt remains in the composer and will reuse the selected workstream context. Correlation ${result.error.correlationId}.`,
         status: safeError.status
       };
-      setRequestScrollTargetForCurrentSession(errorItem.itemId, request.functionalAgentId);
-      rememberVisualSession(sessionForAgent(request.functionalAgentId), { anchorSurfaceId: errorItem.itemId, userHasManualScroll: false });
+      setRequestScrollTargetForCurrentSession(userRequestItem.itemId, request.functionalAgentId);
+      rememberVisualSession(sessionForAgent(request.functionalAgentId), { anchorSurfaceId: userRequestItem.itemId, userHasManualScroll: false });
       setBootstrap((current) => current.status === 'ready'
         ? { ...current, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), errorItem]) }
         : current);
@@ -359,8 +357,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ...agentItem,
       traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
     };
-    setRequestScrollTargetForCurrentSession(surface.surfaceId, surface.ownerFunctionalAgentId ?? request.functionalAgentId);
-    rememberVisualSession(sessionForAgent(surface.ownerFunctionalAgentId ?? request.functionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: surface.surfaceId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
+    setRequestScrollTargetForCurrentSession(userItem.itemId, surface.ownerFunctionalAgentId ?? request.functionalAgentId);
+    rememberVisualSession(sessionForAgent(surface.ownerFunctionalAgentId ?? request.functionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)

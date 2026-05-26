@@ -210,7 +210,7 @@
 
 ### TASK-WVS-02-001: Keep request anchor through response append
 
-- status: pending
+- status: done
 - source: verification after phase 1 found response surfaces retargeting the active anchor
 - task brief: specs/workstream-visual-sessions/tasks/02-phase-1-remediation/01-keep-request-anchor-through-response-append.md
 - depends on: [TASK-WVS-01-005]
@@ -239,7 +239,11 @@
 - done criteria:
   - source frontend satisfies the request-anchor UX objective
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Keep workstream request anchors through responses`
+  - completed: source frontend now keeps composer, surface-open, and surface-action request items as scroll anchors while response/error/result surfaces append below with aligned turn correlation ids.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; targeted related source tests passed for `src/frontend.contract.test.mjs` and `src/workstream-composer-message-api.contract.test.mjs`.
+  - broader check: `cd frontend && npm test` still fails on the pre-existing missing `backend/src/main/resources/agent-behavior-seeds/starter-v1/manifest.properties` path in `src/workstream-user-admin-expertise.contract.test.mjs`; all other reported frontend tests passed.
 
 ### TASK-WVS-02-002: Sync request anchor fix to starter template
 

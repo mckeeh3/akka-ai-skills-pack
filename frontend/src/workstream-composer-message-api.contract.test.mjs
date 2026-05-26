@@ -30,7 +30,7 @@ test('composer response appends returned items and markdown_response surface', (
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
   assert.match(main, /traceableAgentItem/);
   assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
-  assert.match(main, /setRequestScrollTargetForCurrentSession\(surface\.surfaceId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
   assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
   assert.match(stream, /item\.kind === 'markdown_response'/);
   assert.match(surfaceFrame, /id=\{visibleEnvelope\.surfaceId\}/);
