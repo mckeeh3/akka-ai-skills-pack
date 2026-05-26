@@ -103,7 +103,8 @@ test('composer submission keeps request items anchored while success and error r
   assert.match(main, /rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ activeTurnGroupId: correlationId, anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\)/);
   assert.match(main, /correlationId,\s*traceIds: \[\],\s*title: safeError\.title/s);
   assert.match(main, /setRequestScrollTargetForCurrentSession\(userRequestItem\.itemId, request\.functionalAgentId\);\s*rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\);/s);
-  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
+  assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
+  assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, responseFunctionalAgentId\)/);
   assert.match(main, /anchorSurfaceId: userItem\.itemId, selectedSurfaceId: surface\.surfaceId/);
   assert.doesNotMatch(main, /setRequestScrollTargetForCurrentSession\(surface\.surfaceId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);
 });

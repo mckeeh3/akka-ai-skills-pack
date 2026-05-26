@@ -100,6 +100,12 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
   const me = ready.me;
   const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status);
+  const selectedFunctionalAgentIdRef = React.useRef<string | undefined>(selectedFunctionalAgentId);
+
+  React.useEffect(() => {
+    selectedFunctionalAgentIdRef.current = selectedFunctionalAgentId;
+  }, [selectedFunctionalAgentId]);
+
   const selectedSessionKey = selectedFunctionalAgentId ? createWorkstreamVisualSessionKey({
     accountId: me.account.accountId,
     selectedContextId: me.selectedAuthContext.selectedContextId,
@@ -188,6 +194,10 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       workstreamId: functionalAgentId
     });
     setRequestScrollTargetBySessionKey((targets) => ({ ...targets, [sessionKey]: targetId }));
+  }
+
+  function isCurrentlySelectedFunctionalAgent(functionalAgentId: string) {
+    return selectedFunctionalAgentIdRef.current === functionalAgentId;
   }
 
   function selectAgent(functionalAgentId: string) {
@@ -357,8 +367,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ...agentItem,
       traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
     };
-    setRequestScrollTargetForCurrentSession(userItem.itemId, surface.ownerFunctionalAgentId ?? request.functionalAgentId);
-    rememberVisualSession(sessionForAgent(surface.ownerFunctionalAgentId ?? request.functionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
+    const responseFunctionalAgentId = surface.ownerFunctionalAgentId ?? request.functionalAgentId;
+    setRequestScrollTargetForCurrentSession(userItem.itemId, responseFunctionalAgentId);
+    rememberVisualSession(sessionForAgent(responseFunctionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
@@ -366,11 +377,13 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         : [...current.surfaces, surface];
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId && item.itemId !== userRequestItem.itemId), userItem, traceableAgentItem]) };
     });
-    updateSelection({
-      selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? request.functionalAgentId,
-      selectedSurfaceId: surface.surfaceId,
-      surfacePlacement: 'inline'
-    });
+    if (isCurrentlySelectedFunctionalAgent(responseFunctionalAgentId)) {
+      updateSelection({
+        selectedFunctionalAgentId: responseFunctionalAgentId,
+        selectedSurfaceId: surface.surfaceId,
+        surfacePlacement: 'inline'
+      });
+    }
     return true;
   }
 

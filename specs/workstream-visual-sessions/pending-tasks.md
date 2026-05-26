@@ -349,7 +349,7 @@
 
 ### TASK-WVS-03-002: Prevent background response selection steal
 
-- status: pending
+- status: done
 - source: user runtime observation that a response in another workstream switches focus back to that workstream
 - task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/02-prevent-background-response-selection-steal.md
 - depends on: [TASK-WVS-03-001]
@@ -374,7 +374,10 @@
 - done criteria:
   - source frontend no longer steals workstream focus on background response
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Prevent background workstream response focus steal`
+  - completed: composer responses now update the originating workstream's items, surfaces, request anchor, and visual-session snapshot while only changing selected surface/workstream when that originating workstream is still selected.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd frontend && node --test src/workstream-composer-message-api.contract.test.mjs`.
 
 ### TASK-WVS-03-003: Add left rail unseen response indicator
 
