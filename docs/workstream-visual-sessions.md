@@ -11,6 +11,11 @@ Canonical related docs:
 
 A workstream visual session is browser/UI state for how a user is currently viewing a durable workstream. It does not replace durable workstream history, audit/work traces, authorization, or backend capability semantics.
 
+Current repository readiness:
+- Phase 1 in-memory visual sessions are implemented in the source frontend reference and synced into the AI-first SaaS starter template.
+- Contract coverage exists in `frontend/src/workstream-visual-session.contract.test.mjs` and `templates/ai-first-saas-starter/frontend/src/workstream-visual-session.contract.test.mjs` for turn grouping, ordering, turn/surface caps, semantic snapshots, request anchoring, manual-scroll pause, and per-workstream in-memory restore.
+- Phase 2 browser-local persistence and phase 3 backend-persisted visual sessions remain future work and must not be claimed by generated apps until implemented.
+
 ## User experience goal
 
 The workstream should feel like the familiar modern chat experience from ChatGPT, Claude, Gemini, and similar tools, while preserving the workstream model: typed surfaces, governed capabilities, trace links, role-authorized functional agents, and persistent context.
@@ -118,9 +123,11 @@ When limits are reached:
 
 ### Phase 1: basic in-memory visual sessions
 
+Status: implemented for the source frontend reference and starter template.
+
 Goal: get the basic UX correct without overbuilding persistence.
 
-Scope:
+Implemented scope:
 - maintain per-workstream visual session state in frontend memory;
 - use traditional chat ordering: older above, newer below;
 - group request and response surfaces into turn groups;
@@ -132,11 +139,19 @@ Scope:
 - add focused UI/state tests for the above behavior.
 
 Out of scope for phase 1:
+- browser-local persistence across reloads;
 - cross-tab synchronization;
 - cross-device persistence;
 - backend-persisted visual sessions;
 - exact pixel-perfect restoration after reload;
 - history compaction/summarization beyond simple turn/surface caps.
+
+Readiness notes:
+- State helpers live under `frontend/src/workstream/visual-session/**` and are exported through `frontend/src/workstream/index.ts`; the starter template mirrors this layout.
+- The stream preserves traditional chat order and anchors the latest request item with reduced-motion-safe scrolling while response surfaces append below it.
+- Manual wheel, touch, and keyboard scroll input pauses automatic anchoring for the active request.
+- In-memory restore is keyed by account, selected auth context, functional agent, and workstream id where available.
+- The snapshot helper is semantic and in-memory only; it intentionally does not call `localStorage`, `sessionStorage`, IndexedDB, fetch, or beacon APIs.
 
 ### Phase 2: browser-local persistence
 
@@ -189,6 +204,13 @@ Concerns to design before implementation:
 - exact scroll positions are viewport-dependent and should not be treated as authoritative;
 - backend session state must not become a substitute for audit/work trace history.
 
+## Future backlog stubs
+
+These are not implemented by phase 1. Materialize them as bounded pending tasks with task briefs before execution:
+
+1. Phase 2 browser-local persistence: persist and restore semantic `WorkstreamVisualSessionSnapshot` records for same-browser continuity, with auth-context invalidation, safe fallback, and contract tests that prove no backend persistence is introduced.
+2. Phase 3 backend-persisted visual sessions: design and implement authorized server-side semantic resume state for cross-device continuity, including tenant/customer scope, role-change invalidation, retention/compaction behavior, audit/privacy constraints, API/realtime contracts, and local runtime validation.
+
 ## Observability notes
 
 Because the target user is a SaaS app user, visual session behavior is product-relevant observability. However, phase 1 should stay lightweight.
@@ -207,10 +229,12 @@ These events should be privacy-conscious and should reference stable workstream/
 
 ## Acceptance checklist for phase 1
 
-- [ ] New requests append after existing turn groups; older content remains above newer content.
-- [ ] The request surface for the new turn group scrolls to the top of the visible workstream panel.
-- [ ] Response surfaces append below the request surface.
-- [ ] The request surface remains anchored while response surfaces append, unless the user manually scrolls.
-- [ ] Switching workstreams preserves and restores in-memory visual state per workstream.
-- [ ] Visual session limits are based primarily on turn groups, with a secondary surface cap.
-- [ ] Tests cover append order, scroll target, anchor pause on manual scroll, and per-workstream state restoration.
+- [x] New requests append after existing turn groups; older content remains above newer content.
+- [x] The request surface for the new turn group scrolls to the top of the visible workstream panel.
+- [x] Response surfaces append below the request surface.
+- [x] The request surface remains anchored while response surfaces append, unless the user manually scrolls.
+- [x] Switching workstreams preserves and restores in-memory visual state per workstream.
+- [x] Visual session limits are based primarily on turn groups, with a secondary surface cap.
+- [x] Tests cover append order, scroll target, anchor pause on manual scroll, and per-workstream state restoration.
+
+Phase 1 is documentation-ready for generated app guidance at in-memory scope only. Browser-local refresh persistence and backend/cross-device resume behavior remain future phases.

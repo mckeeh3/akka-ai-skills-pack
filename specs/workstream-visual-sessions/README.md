@@ -24,20 +24,23 @@ The goal is to preserve the familiar modern chat timeline experience while suppo
 
 ### Phase 1: in-memory visual sessions
 
-Implement the basic frontend behavior without backend or browser persistence:
+Status: complete for the source frontend reference and starter template.
+
+Implemented the basic frontend behavior without backend or browser persistence:
 
 1. turn-group/session state helpers;
 2. request-surface anchoring and manual-scroll pause;
 3. per-workstream in-memory restore when switching workstreams;
-4. template sync and contract coverage.
+4. template sync and contract coverage;
+5. phase 1 readiness documentation.
 
 ### Phase 2: browser-local persistence
 
-Persist semantic visual-session snapshots in the browser for refresh/day-to-day same-device continuity.
+Future work. Persist semantic visual-session snapshots in the browser for refresh/day-to-day same-device continuity.
 
 ### Phase 3: backend-persisted visual sessions
 
-Persist semantic resume state server-side for cross-device continuity and observability-friendly SaaS behavior.
+Future work. Persist semantic resume state server-side for cross-device continuity and observability-friendly SaaS behavior.
 
 ## Execution
 

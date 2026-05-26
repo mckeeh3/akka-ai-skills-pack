@@ -181,7 +181,7 @@
 
 ### TASK-WVS-01-005: Close phase 1 docs and readiness notes
 
-- status: pending
+- status: done
 - source: docs/workstream-visual-sessions.md phase 1 acceptance checklist
 - task brief: specs/workstream-visual-sessions/tasks/01-phase-1-frontend/05-close-phase-1-docs-and-readiness.md
 - depends on: [TASK-WVS-01-004]
@@ -204,4 +204,6 @@
 - done criteria:
   - documentation accurately reflects implemented phase 1 scope and remaining persistence work
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Close workstream visual session phase 1 docs`
+  - completed: marked phase 1 acceptance as implemented at in-memory scope, recorded source/starter contract coverage, and added phase 2/3 future backlog stubs without claiming persistence is implemented.
