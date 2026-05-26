@@ -207,3 +207,99 @@
 - notes:
   - commit message: `Close workstream visual session phase 1 docs`
   - completed: marked phase 1 acceptance as implemented at in-memory scope, recorded source/starter contract coverage, and added phase 2/3 future backlog stubs without claiming persistence is implemented.
+
+### TASK-WVS-02-001: Keep request anchor through response append
+
+- status: pending
+- source: verification after phase 1 found response surfaces retargeting the active anchor
+- task brief: specs/workstream-visual-sessions/tasks/02-phase-1-remediation/01-keep-request-anchor-through-response-append.md
+- depends on: [TASK-WVS-01-005]
+- required reads:
+  - AGENTS.md
+  - specs/workstream-visual-sessions/README.md
+  - specs/workstream-visual-sessions/conversation-capture.md
+  - docs/workstream-visual-sessions.md
+  - docs/workstream-ui-reference-architecture.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/stream/WorkstreamStream.tsx
+  - frontend/src/workstream/visual-session/visualSessionState.ts
+  - frontend/src/workstream-visual-session.contract.test.mjs
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-testing
+- expected outputs:
+  - source frontend keeps user/surface/action request items as active anchors while responses append below
+  - source contract tests cover composer success/error, surface-open, and surface-action request anchoring
+- required checks:
+  - composer success does not retarget anchor from request item to returned response surface
+  - surface-open and surface-action flows do not retarget anchor to result surfaces
+  - correlated request/response items remain groupable as a turn group
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+- done criteria:
+  - source frontend satisfies the request-anchor UX objective
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-02-002: Sync request anchor fix to starter template
+
+- status: pending
+- source: starter template must remain the canonical generated-app baseline
+- task brief: specs/workstream-visual-sessions/tasks/02-phase-1-remediation/02-sync-request-anchor-fix-to-starter-template.md
+- depends on: [TASK-WVS-02-001]
+- required reads:
+  - AGENTS.md
+  - specs/workstream-visual-sessions/README.md
+  - docs/workstream-visual-sessions.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/stream/WorkstreamStream.tsx
+  - frontend/src/workstream/visual-session/visualSessionState.ts
+  - frontend/src/workstream-visual-session.contract.test.mjs
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/stream/WorkstreamStream.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/visual-session/visualSessionState.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream-visual-session.contract.test.mjs
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-testing
+- expected outputs:
+  - starter template matches source frontend request-anchor behavior
+  - starter template contract tests cover the corrected behavior
+- required checks:
+  - generated template placeholders remain intact
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && npm test`
+- done criteria:
+  - starter template satisfies the request-anchor UX objective
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-02-003: Reverify phase 1 readiness
+
+- status: pending
+- source: remediation closure after request-anchor fix
+- task brief: specs/workstream-visual-sessions/tasks/02-phase-1-remediation/03-reverify-phase-1-readiness.md
+- depends on: [TASK-WVS-02-002]
+- required reads:
+  - AGENTS.md
+  - specs/workstream-visual-sessions/pending-tasks.md
+  - docs/workstream-visual-sessions.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream-visual-session.contract.test.mjs
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream-visual-session.contract.test.mjs
+- skills:
+  - none; repository verification/docs task
+- expected outputs:
+  - phase 1 readiness notes reflect actual corrected implementation
+  - remaining limitations documented without claiming phase 2/3 persistence
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
+- done criteria:
+  - phase 1 request-anchor objective is independently verified in source and starter
+  - task changes and queue update are committed
+- notes: []
