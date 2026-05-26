@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import ts from 'typescript';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 const railState = read('./workstream/rail/railState.ts');
+const railAttentionState = read('./workstream/rail/railAttentionState.ts');
 const rail = read('./workstream/rail/FunctionalAgentRail.tsx');
 const railItem = read('./workstream/rail/FunctionalAgentRailItem.tsx');
 const toggle = read('./workstream/rail/CollapsedRailToggle.tsx');
@@ -16,6 +18,15 @@ const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
 const agentTypes = read('./workstream/types/agents.ts');
 const componentsCss = read('./styles/components.css');
+
+function loadTypeScriptExports(source) {
+  const transpiled = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 }
+  }).outputText;
+  const module = { exports: {} };
+  new Function('module', 'exports', transpiled)(module, module.exports);
+  return module.exports;
+}
 
 test('functional agent rail is collapsible and lists only allowed workstreams', () => {
   assert.match(railState, /hasRequiredCapabilities/);
@@ -52,7 +63,47 @@ test('left rail unseen response indicators are accessible, extensible, and visua
   assert.match(agentTypes, /railAttention\?: FunctionalAgentRailAttention/);
   assert.match(componentsCss, /\.rail-unseen-response-badge/);
   assert.match(componentsCss, /workstream-functional-agent-rail\.collapsed \.rail-unseen-response-badge/);
+  assert.match(componentsCss, /position: absolute;\s*top: 0\.25rem;\s*right: 0\.2rem;/);
   assert.match(railState, /filter\(\(entry\) => entry\.availability === 'visible' && entry\.visibilityReason === 'has-capability'\)/);
+  assert.match(railAttentionState, /recordUnseenRailResponse/);
+  assert.match(railAttentionState, /clearRailAttentionForAgent/);
+});
+
+test('rail attention state records background responses and clears on selection', () => {
+  const { recordUnseenRailResponse, clearRailAttentionForAgent } = loadTypeScriptExports(railAttentionState);
+  const selectedStore = recordUnseenRailResponse({}, {
+    functionalAgentId: 'agent-user-admin',
+    selectedFunctionalAgentId: 'agent-user-admin',
+    lastItemId: 'response-current'
+  });
+  assert.deepEqual(selectedStore, {}, 'selected workstream responses must not create unseen indicators');
+
+  const first = recordUnseenRailResponse({}, {
+    functionalAgentId: 'agent-user-admin',
+    selectedFunctionalAgentId: 'agent-agent-admin',
+    lastItemId: 'response-1',
+    severity: 'info',
+    kind: 'background-response',
+    lastUpdatedAt: '2026-05-26T00:00:00.000Z'
+  });
+  assert.equal(first['agent-user-admin'].unseenResponseCount, 1);
+  assert.equal(first['agent-user-admin'].lastItemId, 'response-1');
+  assert.equal(first['agent-user-admin'].kind, 'background-response');
+
+  const second = recordUnseenRailResponse(first, {
+    functionalAgentId: 'agent-user-admin',
+    selectedFunctionalAgentId: 'agent-agent-admin',
+    lastItemId: 'response-2',
+    severity: 'warning',
+    kind: 'background-activity',
+    lastUpdatedAt: '2026-05-26T00:01:00.000Z'
+  });
+  assert.equal(second['agent-user-admin'].unseenResponseCount, 2);
+  assert.equal(second['agent-user-admin'].severity, 'warning');
+  assert.equal(second['agent-user-admin'].lastItemId, 'response-2');
+
+  const cleared = clearRailAttentionForAgent(second, 'agent-user-admin');
+  assert.equal(cleared['agent-user-admin'], undefined);
 });
 
 test('persistent composer is selected-agent aware and exposes disabled states', () => {

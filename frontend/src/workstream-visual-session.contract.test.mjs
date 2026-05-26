@@ -84,11 +84,13 @@ test('background responses create in-memory rail unseen indicators that clear on
   assert.match(main, /useState<FunctionalAgentRailAttentionStore>\(\{\}\)/);
   assert.match(main, /markUnseenResponse\(functionalAgentId: string, lastItemId\?: string/);
   assert.match(main, /if \(isCurrentlySelectedFunctionalAgent\(functionalAgentId\)\) return/);
+  assert.match(main, /recordUnseenRailResponse\(store, \{/);
   assert.match(main, /kind: 'background-response'/);
   assert.match(main, /markUnseenBackgroundActivity\(event: WorkstreamEvent\)/);
   assert.match(main, /kind: event\.eventType === 'workstream\.item\.appended' \|\| event\.eventType === 'surface\.created' \? 'background-response' : 'background-activity'/);
-  assert.match(main, /clearRailAttention\(functionalAgentId\)/);
+  assert.match(main, /clearRailAttentionForAgent\(store, functionalAgentId\)/);
   assert.match(main, /railAttentionByAgentId=\{railAttentionByAgentId\}/);
+  assert.match(main, /const responseFunctionalAgentId = agentItem\.functionalAgentId \?\? userItem\.functionalAgentId \?\? request\.functionalAgentId/);
   assert.match(main, /markUnseenResponse\(responseFunctionalAgentId, traceableAgentItem\.itemId, 'info'\)/);
   assert.match(main, /markUnseenResponse\(request\.functionalAgentId, errorItem\.itemId, 'warning'\)/);
   assert.doesNotMatch(main, /railAttentionByAgentId[\s\S]{0,240}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
@@ -117,7 +119,7 @@ test('composer submission keeps request items anchored while success and error r
   assert.match(main, /rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ activeTurnGroupId: correlationId, anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\)/);
   assert.match(main, /correlationId,\s*traceIds: \[\],\s*title: safeError\.title/s);
   assert.match(main, /setRequestScrollTargetForCurrentSession\(userRequestItem\.itemId, request\.functionalAgentId\);\s*rememberVisualSession\(sessionForAgent\(request\.functionalAgentId\), \{ anchorSurfaceId: userRequestItem\.itemId, userHasManualScroll: false \}\);/s);
-  assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
+  assert.match(main, /const responseFunctionalAgentId = agentItem\.functionalAgentId \?\? userItem\.functionalAgentId \?\? request\.functionalAgentId/);
   assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, responseFunctionalAgentId\)/);
   assert.match(main, /anchorSurfaceId: userItem\.itemId, selectedSurfaceId: surface\.surfaceId/);
   assert.doesNotMatch(main, /setRequestScrollTargetForCurrentSession\(surface\.surfaceId, surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId\)/);

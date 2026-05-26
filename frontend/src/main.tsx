@@ -11,7 +11,7 @@ import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstre
 import { WorkstreamStream } from './workstream/stream';
 import { buildCapabilityActionRequest } from './workstream/actions';
 import { createWorkstreamVisualSessionKey, restoreOrCreateVisualSession, saveVisualSession, updateVisualSessionViewState, type WorkstreamVisualSession, type WorkstreamVisualSessionStore } from './workstream/visual-session';
-import { defaultSelectableAgentId } from './workstream/rail';
+import { clearRailAttentionForAgent, defaultSelectableAgentId, recordUnseenRailResponse } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
   canonicalSurfaceEnvelopes,
@@ -208,45 +208,30 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
 
   function markUnseenResponse(functionalAgentId: string, lastItemId?: string, severity: FunctionalAgentRailAttention['severity'] = 'info') {
     if (isCurrentlySelectedFunctionalAgent(functionalAgentId)) return;
-    setRailAttentionByAgentId((store) => {
-      const previous = store[functionalAgentId];
-      return {
-        ...store,
-        [functionalAgentId]: {
-          unseenResponseCount: (previous?.unseenResponseCount ?? 0) + 1,
-          severity: strongerAttentionSeverity(previous?.severity, severity),
-          kind: 'background-response',
-          lastItemId,
-          lastUpdatedAt: new Date().toISOString()
-        }
-      };
-    });
+    setRailAttentionByAgentId((store) => recordUnseenRailResponse(store, {
+      functionalAgentId,
+      selectedFunctionalAgentId: selectedFunctionalAgentIdRef.current,
+      lastItemId,
+      severity,
+      kind: 'background-response'
+    }));
   }
 
   function markUnseenBackgroundActivity(event: WorkstreamEvent) {
     if (isCurrentlySelectedFunctionalAgent(event.functionalAgentId)) return;
     if (!isMaterialBackgroundEvent(event.eventType)) return;
-    setRailAttentionByAgentId((store) => {
-      const previous = store[event.functionalAgentId];
-      return {
-        ...store,
-        [event.functionalAgentId]: {
-          unseenResponseCount: (previous?.unseenResponseCount ?? 0) + 1,
-          severity: strongerAttentionSeverity(previous?.severity, event.eventType.includes('denied') ? 'warning' : 'info'),
-          kind: event.eventType === 'workstream.item.appended' || event.eventType === 'surface.created' ? 'background-response' : 'background-activity',
-          lastItemId: event.surfaceId,
-          lastUpdatedAt: event.occurredAt
-        }
-      };
-    });
+    setRailAttentionByAgentId((store) => recordUnseenRailResponse(store, {
+      functionalAgentId: event.functionalAgentId,
+      selectedFunctionalAgentId: selectedFunctionalAgentIdRef.current,
+      severity: event.eventType.includes('denied') ? 'warning' : 'info',
+      kind: event.eventType === 'workstream.item.appended' || event.eventType === 'surface.created' ? 'background-response' : 'background-activity',
+      lastItemId: event.surfaceId,
+      lastUpdatedAt: event.occurredAt
+    }));
   }
 
   function clearRailAttention(functionalAgentId: string) {
-    setRailAttentionByAgentId((store) => {
-      if (!store[functionalAgentId]) return store;
-      const { [functionalAgentId]: _cleared, ...remaining } = store;
-      return remaining;
-    });
+    setRailAttentionByAgentId((store) => clearRailAttentionForAgent(store, functionalAgentId));
   }
 
   function selectAgent(functionalAgentId: string) {
@@ -420,7 +405,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ...agentItem,
       traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
     };
-    const responseFunctionalAgentId = surface.ownerFunctionalAgentId ?? request.functionalAgentId;
+    const responseFunctionalAgentId = agentItem.functionalAgentId ?? userItem.functionalAgentId ?? request.functionalAgentId;
     setRequestScrollTargetForCurrentSession(userItem.itemId, responseFunctionalAgentId);
     rememberVisualSession(sessionForAgent(responseFunctionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => {
@@ -485,11 +470,6 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
 function readDeepLinkSelection(): Partial<WorkstreamSelection> {
   const hashQuery = window.location.hash.includes('?') ? window.location.hash.slice(window.location.hash.indexOf('?')) : '';
   return parseWorkstreamDeepLink(window.location.search || hashQuery);
-}
-
-function strongerAttentionSeverity(current: FunctionalAgentRailAttention['severity'] | undefined, next: FunctionalAgentRailAttention['severity']): FunctionalAgentRailAttention['severity'] {
-  const rank: Record<FunctionalAgentRailAttention['severity'], number> = { info: 1, warning: 2, critical: 3 };
-  return !current || rank[next] > rank[current] ? next : current;
 }
 
 function isMaterialBackgroundEvent(eventType: WorkstreamEvent['eventType']): boolean {

@@ -523,7 +523,7 @@
 
 ### TASK-WVS-04-002: Fix runtime unseen response indicator
 
-- status: pending
+- status: done
 - source: user runtime report that no response indicator appears after phase 1.1 tasks
 - task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/02-fix-runtime-unseen-response-indicator.md
 - depends on: [TASK-WVS-04-001]
@@ -554,7 +554,10 @@
 - done criteria:
   - source frontend shows unseen response indicators in the reported runtime scenario
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Fix runtime unseen response indicators`
+  - completed: added a reusable rail-attention state helper, keyed composer response indicators to the originating workstream item/agent instead of the returned surface owner, kept indicators in memory only, and covered record/increment/clear behavior plus expanded/collapsed badge visibility.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-shell.contract.test.mjs`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`.
 
 ### TASK-WVS-04-003: Sync runtime remediation to starter template
 
