@@ -148,6 +148,7 @@ Use this as the default choice for generated AI-first SaaS apps. It is an operat
 ### Visual intent
 
 - calm operational SaaS interface for supervising delegated agent work
+- warm dark-console foundation by default: near-black green/charcoal backgrounds, layered low-contrast panels, orange primary controls/icons, muted coral AI/highlight accents, and semantic status colors
 - prioritizes decisions, exceptions, policy boundaries, auditability, and outcome visibility over decorative chrome
 - feels intentionally designed rather than like a generic admin dashboard, CRM, or chat app
 - makes autonomous activity visible without hiding consequential work in chat transcripts
@@ -163,6 +164,7 @@ Use these rules to improve visual quality without changing product behavior:
 - Use color, borders, shadows, texture, and depth to clarify hierarchy: human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity should not look interchangeable.
 - Motion should be purposeful and state-driven: surface append/update, agent-working, approval result, stale/reconnect, expansion, and denial/recovery transitions may be polished, but must preserve reduced-motion support and never obscure state or audit evidence.
 - Background treatments, grain, gradients, patterns, and glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact.
+- Dark mode should avoid pure black and avoid default cool blue-black dashboard styling; prefer warm near-black/charcoal surfaces with subtle orange/coral glow and hairline borders.
 
 ### Style customization scope
 
@@ -224,27 +226,27 @@ It must not change:
 ```css
 :root,
 [data-mode="light"] {
-  --color-bg: #f8fafc;
-  --color-bg-subtle: #f1f5f9;
-  --color-sidebar: #ffffff;
-  --color-surface: #ffffff;
+  --color-bg: #fbf7ef;
+  --color-bg-subtle: #f4ecdf;
+  --color-sidebar: #fffaf2;
+  --color-surface: #fffdf8;
   --color-surface-raised: #ffffff;
-  --color-surface-soft: #f8fafc;
-  --color-surface-accent: #f5f3ff;
+  --color-surface-soft: #fbf5eb;
+  --color-surface-accent: #fff0d6;
 
-  --color-text: #0f172a;
-  --color-text-soft: #334155;
-  --color-muted: #64748b;
-  --color-inverse-text: #ffffff;
+  --color-text: #1f1712;
+  --color-text-soft: #4b3a31;
+  --color-muted: #7a6a60;
+  --color-inverse-text: #120f0b;
 
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
+  --color-border: #eadfce;
+  --color-border-strong: #d7c4aa;
 
-  --color-primary: #2563eb;
-  --color-primary-strong: #1d4ed8;
-  --color-primary-soft: #dbeafe;
-  --color-ai: #7c3aed;
-  --color-ai-soft: #ede9fe;
+  --color-primary: #ff9f1c;
+  --color-primary-strong: #d97706;
+  --color-primary-soft: #fff0d6;
+  --color-ai: #c75a6f;
+  --color-ai-soft: #fde8ee;
 
   --color-success: #16a34a;
   --color-success-soft: #dcfce7;
@@ -258,13 +260,13 @@ It must not change:
   --color-chart-blue: #2563eb;
   --color-chart-violet: #8b5cf6;
   --color-chart-green: #22c55e;
-  --color-chart-amber: #f59e0b;
+  --color-chart-amber: #ff9f1c;
   --color-chart-red: #ef4444;
   --color-chart-cyan: #06b6d4;
 
-  --color-focus: #2563eb;
-  --shadow-card: 0 16px 40px rgb(15 23 42 / 0.08);
-  --shadow-glow-ai: 0 0 0 1px rgb(124 58 237 / 0.18), 0 20px 60px rgb(124 58 237 / 0.10);
+  --color-focus: #d97706;
+  --shadow-card: 0 16px 40px rgb(50 32 12 / 0.08);
+  --shadow-glow-ai: 0 0 0 1px rgb(199 90 111 / 0.16), 0 18px 50px rgb(199 90 111 / 0.12);
 }
 ```
 
@@ -272,27 +274,27 @@ It must not change:
 
 ```css
 [data-mode="dark"] {
-  --color-bg: #07111f;
-  --color-bg-subtle: #0b1626;
-  --color-sidebar: #070d18;
-  --color-surface: #101a28;
-  --color-surface-raised: #142033;
-  --color-surface-soft: #0d1826;
-  --color-surface-accent: #17152d;
+  --color-bg: #050a08;
+  --color-bg-subtle: #0a100d;
+  --color-sidebar: #070c0a;
+  --color-surface: #101713;
+  --color-surface-raised: #151e19;
+  --color-surface-soft: #0c1410;
+  --color-surface-accent: #241c12;
 
-  --color-text: #f8fafc;
-  --color-text-soft: #cbd5e1;
-  --color-muted: #94a3b8;
-  --color-inverse-text: #ffffff;
+  --color-text: #f4eee6;
+  --color-text-soft: #d4c7ba;
+  --color-muted: #8d9a91;
+  --color-inverse-text: #120f0b;
 
-  --color-border: #243247;
-  --color-border-strong: #38506d;
+  --color-border: #223029;
+  --color-border-strong: #3d4d43;
 
-  --color-primary: #3b82f6;
-  --color-primary-strong: #60a5fa;
-  --color-primary-soft: #1e3a8a;
-  --color-ai: #a855f7;
-  --color-ai-soft: #2e185c;
+  --color-primary: #ff9f1c;
+  --color-primary-strong: #ffb547;
+  --color-primary-soft: #3a2710;
+  --color-ai: #d65f73;
+  --color-ai-soft: #341820;
 
   --color-success: #4ade80;
   --color-success-soft: #123524;
@@ -303,16 +305,16 @@ It must not change:
   --color-info: #38bdf8;
   --color-info-soft: #0b3145;
 
-  --color-chart-blue: #3b82f6;
-  --color-chart-violet: #a855f7;
+  --color-chart-blue: #60a5fa;
+  --color-chart-violet: #b47cff;
   --color-chart-green: #4ade80;
-  --color-chart-amber: #fbbf24;
+  --color-chart-amber: #ff9f1c;
   --color-chart-red: #f87171;
   --color-chart-cyan: #22d3ee;
 
-  --color-focus: #93c5fd;
-  --shadow-card: 0 18px 50px rgb(0 0 0 / 0.28);
-  --shadow-glow-ai: 0 0 0 1px rgb(168 85 247 / 0.30), 0 20px 70px rgb(76 29 149 / 0.30);
+  --color-focus: #ffb547;
+  --shadow-card: 0 18px 50px rgb(0 0 0 / 0.34);
+  --shadow-glow-ai: 0 0 0 1px rgb(214 95 115 / 0.28), 0 22px 76px rgb(83 30 38 / 0.30);
 }
 ```
 

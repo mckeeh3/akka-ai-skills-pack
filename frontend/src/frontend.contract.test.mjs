@@ -57,15 +57,15 @@ test('mode switching uses root data attributes and persists preference', () => {
   assert.match(main, /window\.localStorage\.setItem\(modeStorageKey, mode\)/);
 });
 
-test('atlas ops supervisory console tokens include clean mono fonts and light and dark palettes', () => {
+test('atlas ops supervisory console tokens include clean mono fonts and warm light and dark palettes', () => {
   assert.match(tokens, /--font-sans: "JetBrains Mono"/);
   assert.match(tokens, /--font-mono: "JetBrains Mono"/);
   assert.match(tokens, /\[data-mode="light"\]/);
   assert.match(tokens, /\[data-mode="dark"\]/);
-  assert.match(tokens, /--color-primary: #2563eb/);
-  assert.match(tokens, /--color-ai: #4f46e5/);
-  assert.match(tokens, /--color-bg: #07111f/);
-  assert.match(tokens, /--color-ai: #a855f7/);
+  assert.match(tokens, /--color-primary: #ff9f1c/);
+  assert.match(tokens, /--color-ai: #c75a6f/);
+  assert.match(tokens, /--color-bg: #050a08/);
+  assert.match(tokens, /--color-ai: #d65f73/);
 });
 
 test('focus, skip link, reduced motion, and responsive shell rules are present', () => {

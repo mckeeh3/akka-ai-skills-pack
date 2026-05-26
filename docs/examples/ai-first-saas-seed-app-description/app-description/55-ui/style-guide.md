@@ -10,7 +10,7 @@
 
 ## Visual direction
 
-- aesthetic point of view: operational mission-control console with crisp monospace typography, layered glass-like panels, restrained glow, and audit-grade information density
+- aesthetic point of view: operational mission-control console with crisp monospace typography, warm near-black charcoal backgrounds, layered glass-like panels, orange primary controls/icons, muted coral AI/highlight accents, restrained glow, and audit-grade information density
 - tone: calm, precise, supervisory, and trust-oriented rather than decorative or playful
 - memorable motif: "signal over noise" — subtle grid/scanline atmosphere, compact command surfaces, and semantic accent rails for work needing human attention
 - forbidden generic patterns: purple-gradient chatbot shells, undifferentiated white-card dashboards, decorative chat bubbles for consequential work, and equal visual weight across FYI, blocked, autonomous, and approval-needed states
@@ -38,8 +38,11 @@
   - tabular numerals for KPIs, counts, percentages, money, time, and queue metrics
 - spacing: stable 4px-based scale from `--space-1` through `--space-8`
 - radius: 8px controls, 12px standard cards, 16px prominent panels, pill badges
-- elevation: light mode uses layered card/panel shadows plus hairline borders; dark mode relies on borders, restrained glow, and depth from surface contrast
+- elevation: light mode uses layered card/panel shadows plus hairline borders; dark mode relies on borders, restrained warm glow, and depth from subtle surface contrast
 - colors:
+  - dark mode uses a warm green-black/charcoal foundation rather than a cool blue-black foundation; page, sidebar, and card surfaces should remain close in value with subtle borders and glow
+  - primary controls, icon chips, active rail states, focus accents, and major call-to-action buttons use warm orange tokens similar to the operations-dashboard reference
+  - AI/highlight accents use muted coral/pink, while status and chart colors remain semantic and tokenized
   - surfaces, text, borders, primary, AI accent, status, chart, focus, shadows, texture, and motion tokens are defined by the `atlas-ops-supervisory-console` tokens in `docs/web-ui-style-guide.md`
   - lightweight style overrides may change only color and font tokens
 
