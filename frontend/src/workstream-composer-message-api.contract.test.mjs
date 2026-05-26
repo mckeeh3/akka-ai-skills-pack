@@ -115,11 +115,25 @@ test('surface and action request acknowledgement surfaces match compact request 
 test('background composer responses update their originating workstream without stealing selected workstream focus', () => {
   assert.match(main, /const selectedFunctionalAgentIdRef = React\.useRef<string \| undefined>\(selectedFunctionalAgentId\)/);
   assert.match(main, /selectedFunctionalAgentIdRef\.current = selectedFunctionalAgentId/);
+  assert.match(main, /function updateSelection\(nextSelection: Partial<WorkstreamSelection>\) \{\s*const merged = \{ \.\.\.selection, \.\.\.nextSelection \};\s*selectedFunctionalAgentIdRef\.current = merged\.selectedFunctionalAgentId;\s*setSelection\(merged\);/s);
   assert.match(main, /function isCurrentlySelectedFunctionalAgent\(functionalAgentId: string\) \{\s*return selectedFunctionalAgentIdRef\.current === functionalAgentId;\s*\}/s);
   assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
   assert.match(main, /setBootstrap\(\(current\) => \{[\s\S]*items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)[\s\S]*\}\);/);
   assert.match(main, /if \(isCurrentlySelectedFunctionalAgent\(responseFunctionalAgentId\)\) \{\s*updateSelection\(\{\s*selectedFunctionalAgentId: responseFunctionalAgentId,/s);
+  assert.match(main, /\} else \{\s*markUnseenResponse\(responseFunctionalAgentId, traceableAgentItem\.itemId, 'info'\);\s*\}/s);
   assert.doesNotMatch(main, /updateSelection\(\{\s*selectedFunctionalAgentId: surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId,/s);
+});
+
+const updateSelectionBlock = main.match(/function updateSelection[\s\S]*?\n  \}/)?.[0] ?? '';
+const composerSuccessBlock = main.match(/const \{ userItem, agentItem, surface \} = result\.value;[\s\S]*?return true;/)?.[0] ?? '';
+const surfaceActionBlock = main.match(/async function handleSurfaceAction[\s\S]*?\n  async function handleComposerSubmit/)?.[0] ?? '';
+
+test('async response selection guards use a synchronously updated selected-workstream ref', () => {
+  assert.ok(updateSelectionBlock.indexOf('selectedFunctionalAgentIdRef.current = merged.selectedFunctionalAgentId') < updateSelectionBlock.indexOf('setSelection(merged)'));
+  assert.ok(updateSelectionBlock.indexOf('selectedFunctionalAgentIdRef.current = merged.selectedFunctionalAgentId') < updateSelectionBlock.indexOf('window.history.pushState'));
+  assert.ok(composerSuccessBlock.indexOf('if (isCurrentlySelectedFunctionalAgent(responseFunctionalAgentId))') < composerSuccessBlock.indexOf('updateSelection({'));
+  assert.ok(surfaceActionBlock.indexOf('if (targetSurface && isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId))') < surfaceActionBlock.indexOf('updateSelection({'));
+  assert.doesNotMatch(surfaceActionBlock, /if \(targetSurface\) \{\s*updateSelection\(/);
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {

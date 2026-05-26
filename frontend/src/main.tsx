@@ -169,6 +169,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
 
   function updateSelection(nextSelection: Partial<WorkstreamSelection>) {
     const merged = { ...selection, ...nextSelection };
+    selectedFunctionalAgentIdRef.current = merged.selectedFunctionalAgentId;
     setSelection(merged);
     window.history.pushState(null, '', serializeWorkstreamDeepLink(merged));
   }
@@ -333,7 +334,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       status: 'ready'
     } : undefined;
     setRequestScrollTargetForCurrentSession(actionRequestItem.itemId, actionRequestItem.functionalAgentId);
-    if (currentVisualSession) rememberVisualSession(currentVisualSession, { anchorSurfaceId: actionRequestItem.itemId, userHasManualScroll: false });
+    rememberVisualSession(sessionForAgent(actionRequestItem.functionalAgentId), { anchorSurfaceId: actionRequestItem.itemId, userHasManualScroll: false });
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = result.ok && result.value.resultSurface && !current.surfaces.some((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId)
@@ -341,12 +342,14 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
         : current.surfaces;
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
-    if (targetSurface) {
+    if (targetSurface && isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
       updateSelection({
         selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId,
         selectedSurfaceId: targetSurface.surfaceId,
         surfacePlacement: 'inline'
       });
+    } else if (targetSurface) {
+      markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem?.itemId ?? actionRequestItem.itemId, 'info');
     }
   }
 

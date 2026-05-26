@@ -490,7 +490,7 @@
 
 ### TASK-WVS-04-001: Fix runtime background response focus steal
 
-- status: pending
+- status: done
 - source: user runtime report that response focus steal still happens after phase 1.1 tasks
 - task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/01-fix-runtime-background-response-focus-steal.md
 - depends on: [TASK-WVS-03-005]
@@ -516,7 +516,10 @@
 - done criteria:
   - source frontend no longer steals focus in the reported runtime scenario
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Fix runtime background response focus steal`
+  - completed: selection updates now synchronously refresh the selected-workstream ref before React state/history updates, so async composer and surface-action responses use the current selected workstream when deciding whether to update selection; background surface-action responses update their originating workstream and mark unseen activity instead of stealing focus.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd frontend && node --test src/workstream-composer-message-api.contract.test.mjs`.
 
 ### TASK-WVS-04-002: Fix runtime unseen response indicator
 
