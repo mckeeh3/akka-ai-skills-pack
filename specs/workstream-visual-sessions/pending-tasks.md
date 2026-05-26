@@ -381,7 +381,7 @@
 
 ### TASK-WVS-03-003: Add left rail unseen response indicator
 
-- status: pending
+- status: done
 - source: user request for a left-rail indicator when another workstream has an unseen response
 - task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/03-add-left-rail-unseen-response-indicator.md
 - depends on: [TASK-WVS-03-002]
@@ -412,7 +412,10 @@
 - done criteria:
   - source frontend shows unseen response indicators in the left rail
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add left rail unseen response indicators`
+  - completed: added in-memory per-functional-agent unseen response/background activity state, accessible rail badges with extensible attention kinds, and clearing on workstream selection.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-shell.contract.test.mjs`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`.
 
 ### TASK-WVS-03-004: Sync phase 1.1 runtime UX to starter template
 

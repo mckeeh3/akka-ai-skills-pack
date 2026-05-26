@@ -27,6 +27,8 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
   const disabledReason = agentDisabledReason(entry);
   const labelId = `rail-agent-${entry.functionalAgentId}-label`;
   const reasonId = `rail-agent-${entry.functionalAgentId}-reason`;
+  const unseenResponseCount = entry.railAttention?.unseenResponseCount ?? 0;
+  const unseenResponseLabel = unseenResponseCount === 1 ? '1 unseen response' : `${unseenResponseCount} unseen responses`;
 
   return (
     <li className={`workstream-rail-item ${entry.isSelected ? 'selected' : ''} ${entry.availability}`}>
@@ -46,6 +48,11 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
         {entry.attention && (
           <span className={`status-pill ${entry.attention.severity === 'critical' ? 'danger' : entry.attention.severity}`} aria-label={`${entry.attention.count} ${severityLabel(entry.attention.severity)}`}>
             {entry.attention.count}
+          </span>
+        )}
+        {entry.railAttention && unseenResponseCount > 0 && (
+          <span className={`rail-unseen-response-badge ${entry.railAttention.severity === 'critical' ? 'danger' : entry.railAttention.severity}`} aria-label={unseenResponseLabel} data-attention-kind={entry.railAttention.kind}>
+            {unseenResponseCount > 9 ? '9+' : unseenResponseCount}
           </span>
         )}
       </button>

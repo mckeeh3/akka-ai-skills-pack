@@ -80,6 +80,20 @@ test('workstream shell restores per-workstream in-memory visual state on agent s
   assert.doesNotMatch(main, /visualSessionsByKey[\s\S]{0,200}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
 });
 
+test('background responses create in-memory rail unseen indicators that clear on selection', () => {
+  assert.match(main, /useState<FunctionalAgentRailAttentionStore>\(\{\}\)/);
+  assert.match(main, /markUnseenResponse\(functionalAgentId: string, lastItemId\?: string/);
+  assert.match(main, /if \(isCurrentlySelectedFunctionalAgent\(functionalAgentId\)\) return/);
+  assert.match(main, /kind: 'background-response'/);
+  assert.match(main, /markUnseenBackgroundActivity\(event: WorkstreamEvent\)/);
+  assert.match(main, /kind: event\.eventType === 'workstream\.item\.appended' \|\| event\.eventType === 'surface\.created' \? 'background-response' : 'background-activity'/);
+  assert.match(main, /clearRailAttention\(functionalAgentId\)/);
+  assert.match(main, /railAttentionByAgentId=\{railAttentionByAgentId\}/);
+  assert.match(main, /markUnseenResponse\(responseFunctionalAgentId, traceableAgentItem\.itemId, 'info'\)/);
+  assert.match(main, /markUnseenResponse\(request\.functionalAgentId, errorItem\.itemId, 'warning'\)/);
+  assert.doesNotMatch(main, /railAttentionByAgentId[\s\S]{0,240}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
+});
+
 test('workstream stream anchors new request surfaces at the top of the actual scroll container while responses append below', () => {
   assert.match(workstreamStream, /requestScrollTargetId\?: string/);
   assert.match(workstreamPanel, /data-workstream-scroll-container="true"/);

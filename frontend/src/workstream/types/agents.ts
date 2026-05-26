@@ -6,6 +6,18 @@ export type FunctionalAgentAttention = {
   severity: AttentionSeverity;
 };
 
+export type FunctionalAgentRailAttentionKind = 'background-response' | 'background-activity';
+
+export type FunctionalAgentRailAttention = {
+  unseenResponseCount: number;
+  severity: AttentionSeverity;
+  kind: FunctionalAgentRailAttentionKind;
+  lastItemId?: string;
+  lastUpdatedAt?: string;
+};
+
+export type FunctionalAgentRailAttentionStore = Record<string, FunctionalAgentRailAttention | undefined>;
+
 export type FunctionalAgentSummary = {
   functionalAgentId: string;
   label: string;
@@ -21,4 +33,5 @@ export type FunctionalAgentSummary = {
 export type FunctionalAgentRailEntry = FunctionalAgentSummary & {
   isSelected: boolean;
   visibilityReason: 'has-capability' | 'missing-capability' | 'hidden-by-policy' | 'disabled-account';
+  railAttention?: FunctionalAgentRailAttention;
 };

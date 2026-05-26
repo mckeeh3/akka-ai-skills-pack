@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
-import type { ComposerRequest, MeResponse, WorkstreamItem } from '../types';
+import type { ComposerRequest, FunctionalAgentRailAttentionStore, MeResponse, WorkstreamItem } from '../types';
 import { WorkstreamComposer } from '../composer';
 import { FunctionalAgentRail } from '../rail';
 import { defaultSelectableAgentId } from '../rail';
@@ -15,10 +15,11 @@ type WorkstreamShellProps = {
   onSelectAgent?: (functionalAgentId: string) => void;
   onComposerSubmit?: (request: ComposerRequest) => void | Promise<boolean | void>;
   submittingFunctionalAgentId?: string;
+  railAttentionByAgentId?: FunctionalAgentRailAttentionStore;
   onSignOut?: () => void;
 };
 
-export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, submittingFunctionalAgentId, onSignOut }: WorkstreamShellProps) {
+export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, submittingFunctionalAgentId, railAttentionByAgentId, onSignOut }: WorkstreamShellProps) {
   const initialAgentId = initialFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status) ?? me.functionalAgents[0]?.functionalAgentId;
   const [selectedFunctionalAgentId, setSelectedFunctionalAgentId] = useState(initialAgentId);
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -44,6 +45,7 @@ export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], chil
         collapsed={railCollapsed}
         appName={appName}
         userDisplayName={me.account.displayName}
+        railAttentionByAgentId={railAttentionByAgentId}
         onSelectAgent={selectAgent}
         onToggleCollapsed={setRailCollapsed}
         onSignOut={onSignOut}
