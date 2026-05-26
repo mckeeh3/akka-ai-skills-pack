@@ -80,7 +80,7 @@
 
 ### TASK-WVS-01-002: Implement request-surface anchoring and manual-scroll pause
 
-- status: pending
+- status: done
 - source: docs/workstream-visual-sessions.md phase 1
 - task brief: specs/workstream-visual-sessions/tasks/01-phase-1-frontend/02-implement-request-anchor-and-scroll-pause.md
 - depends on: [TASK-WVS-01-001]
@@ -110,7 +110,9 @@
   - request-surface anchoring works for appended responses
   - frontend tests/checks relevant to changed files pass
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Implement workstream request anchoring`
+  - completed: added reduced-motion-safe request-surface top anchoring, preserved the active request anchor while responses append, and paused automatic anchoring after wheel, touch, or keyboard scroll input.
 
 ### TASK-WVS-01-003: Restore in-memory visual sessions when switching workstreams
 

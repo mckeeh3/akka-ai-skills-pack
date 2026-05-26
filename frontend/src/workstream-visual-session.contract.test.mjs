@@ -7,6 +7,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const visualSessionState = read('./workstream/visual-session/visualSessionState.ts');
 const visualSessionIndex = read('./workstream/visual-session/index.ts');
 const workstreamIndex = read('./workstream/index.ts');
+const workstreamStream = read('./workstream/stream/WorkstreamStream.tsx');
 
 test('visual-session helpers expose reusable turn-group and session contracts', () => {
   assert.match(visualSessionState, /export type WorkstreamTurnGroup/);
@@ -46,4 +47,26 @@ test('snapshot semantics stay in-memory and semantic rather than browser-local o
   assert.match(visualSessionState, /userHasManualScroll: session\.userHasManualScroll/);
   assert.match(visualSessionState, /lastViewedAt: session\.lastViewedAt/);
   assert.doesNotMatch(visualSessionState, /localStorage|sessionStorage|indexedDB|fetch\(|navigator\.sendBeacon/i);
+});
+
+test('workstream stream anchors new request surfaces at the top while responses append below', () => {
+  assert.match(workstreamStream, /requestScrollTargetId\?: string/);
+  assert.match(workstreamStream, /scrollIntoView\(\{ block: 'start', inline: 'nearest', behavior \}\)/);
+  assert.match(workstreamStream, /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)\.matches \? 'auto' : 'smooth'/);
+  assert.match(workstreamStream, /items\.map\(\(item\) =>/);
+  assert.match(workstreamStream, /<WorkstreamItemCard item=\{item\}/);
+  assert.match(workstreamStream, /<SurfaceRenderer envelopes=\{surfaces\} selectedSurfaceId=\{item\.surfaceId\}/);
+  assert.match(workstreamStream, /\[requestScrollTargetId, shouldAutoAnchor, items\.length, surfaces\.length\]/);
+});
+
+test('workstream stream pauses automatic request anchoring after manual scroll input', () => {
+  assert.match(workstreamStream, /autoAnchorPaused\?: boolean/);
+  assert.match(workstreamStream, /onAutoAnchorPaused\?: \(requestScrollTargetId: string\) => void/);
+  assert.match(workstreamStream, /pausedAnchorTargetId !== requestScrollTargetId/);
+  assert.match(workstreamStream, /setPausedAnchorTargetId\(requestScrollTargetId\)/);
+  assert.match(workstreamStream, /onAutoAnchorPaused\?\.\(requestScrollTargetId\)/);
+  assert.match(workstreamStream, /onWheel=\{pauseAutoAnchorForManualScroll\}/);
+  assert.match(workstreamStream, /onTouchMove=\{pauseAutoAnchorForManualScroll\}/);
+  assert.match(workstreamStream, /isManualScrollKey\(event\.key\)/);
+  assert.match(workstreamStream, /data-auto-anchor-paused=\{autoAnchorPaused \|\| pausedAnchorTargetId === requestScrollTargetId \? 'true' : 'false'\}/);
 });
