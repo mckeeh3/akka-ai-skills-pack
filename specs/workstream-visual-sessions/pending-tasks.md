@@ -46,7 +46,7 @@
 
 ### TASK-WVS-01-001: Add visual session and turn-group state helpers
 
-- status: pending
+- status: done
 - source: docs/workstream-visual-sessions.md phase 1
 - task brief: specs/workstream-visual-sessions/tasks/01-phase-1-frontend/01-add-visual-session-state-helpers.md
 - depends on: [TASK-WVS-00-001]
@@ -74,7 +74,9 @@
   - state helpers are reusable by stream/shell components
   - frontend tests/checks relevant to changed files pass
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Add workstream visual session state helpers`
+  - completed: added reusable in-memory visual-session and turn-group helpers, contract tests for grouping/order/limits/snapshots, and no browser-local/backend persistence.
 
 ### TASK-WVS-01-002: Implement request-surface anchoring and manual-scroll pause
 
