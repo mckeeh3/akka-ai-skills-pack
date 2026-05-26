@@ -4,6 +4,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolCatalogEntry;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,14 +12,16 @@ import java.util.List;
 /** Resolves active governed ToolPermissionBoundary grants into Java objects for effects().tools(runtimeTools). */
 public final class AgentRuntimeToolResolver {
   private final AgentBehaviorRepository repository;
+  private final AgentRuntimeService runtimeService;
   private final ToolRegistry toolRegistry;
 
-  public AgentRuntimeToolResolver(AgentBehaviorRepository repository) {
-    this(repository, ToolRegistry.starterDefault());
+  public AgentRuntimeToolResolver(AgentBehaviorRepository repository, AgentRuntimeService runtimeService) {
+    this(repository, runtimeService, ToolRegistry.starterDefault());
   }
 
-  public AgentRuntimeToolResolver(AgentBehaviorRepository repository, ToolRegistry toolRegistry) {
+  public AgentRuntimeToolResolver(AgentBehaviorRepository repository, AgentRuntimeService runtimeService, ToolRegistry toolRegistry) {
     this.repository = repository;
+    this.runtimeService = runtimeService;
     this.toolRegistry = toolRegistry;
   }
 
@@ -41,6 +44,7 @@ public final class AgentRuntimeToolResolver {
     var deniedToolIds = new ArrayList<String>();
     var entries = new ArrayList<ToolCatalogEntry>();
     var runtimeTools = new ArrayList<Object>();
+    var registeredBindingGroups = new ArrayList<String>();
     var sortedGrants = boundary.allowedToolGrants().stream()
         .sorted(Comparator.comparing(ToolPermissionBoundary.ToolGrant::toolId))
         .toList();
@@ -57,9 +61,17 @@ public final class AgentRuntimeToolResolver {
       }
       grantedToolIds.add(grant.toolId());
       entries.add(entry);
-      runtimeTools.add(registered.get().createBinding(new ToolRegistry.BindingContext(request.tenantId(), request.agentDefinitionId(), request.mode(), request.correlationId())));
+      var bindingGroup = bindingGroup(entry);
+      if (!registeredBindingGroups.contains(bindingGroup)) {
+        registeredBindingGroups.add(bindingGroup);
+        runtimeTools.add(registered.get().createBinding(new ToolRegistry.BindingContext(runtimeService, request.tenantId(), request.agentDefinitionId(), request.authContext(), request.mode(), request.capabilityId(), request.correlationId())));
+      }
     }
     return new ResolvedRuntimeTools(List.copyOf(runtimeTools), List.copyOf(entries), List.copyOf(grantedToolIds), List.copyOf(deniedToolIds));
+  }
+
+  private String bindingGroup(ToolCatalogEntry entry) {
+    return entry.implementationBindingKey().startsWith("governed-loader.") ? "governed-loader" : entry.implementationBindingKey();
   }
 
   private boolean grantMatchesEntry(ToolPermissionBoundary.ToolGrant grant, ToolCatalogEntry entry) {
@@ -74,7 +86,11 @@ public final class AgentRuntimeToolResolver {
     return grant.allowedOperations().stream().anyMatch(operation -> operation.equalsIgnoreCase("read"));
   }
 
-  public record ResolveRuntimeToolsRequest(String tenantId, String agentDefinitionId, String mode, String correlationId) {}
+  public record ResolveRuntimeToolsRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId) {
+    public ResolveRuntimeToolsRequest(String tenantId, String agentDefinitionId, String mode, String correlationId) {
+      this(tenantId, agentDefinitionId, null, mode, AgentRuntimeService.INVOKE_CAPABILITY, correlationId);
+    }
+  }
   public record ResolvedRuntimeTools(List<Object> runtimeTools, List<ToolCatalogEntry> entries, List<String> grantedToolIds, List<String> deniedToolIds) {
     public ResolvedRuntimeTools {
       runtimeTools = List.copyOf(runtimeTools == null ? List.of() : runtimeTools);

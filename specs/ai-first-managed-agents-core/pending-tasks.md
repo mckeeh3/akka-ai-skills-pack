@@ -83,7 +83,8 @@
 
 ### TASK-MAGENT-01-002: Add governed Akka function tools for skill and reference loading
 
-- status: pending
+- status: done
+- completion note: Added request-scoped AgentRuntimeLoaderTools with governed @FunctionTool readSkill/readReferenceDoc methods, wired the tool registry/resolver to produce loader tool instances, and added annotation plus allowed/denied delegation tests.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/01-runtime-tools/02-add-governed-loader-function-tools.md
 - depends on: [TASK-MAGENT-01-001]
@@ -108,7 +109,8 @@
 - done criteria:
   - `readSkill` and `readReferenceDoc` are real Akka function tools available to the runtime tool resolver.
   - A focused git commit exists with message `managed-agents-core: add governed loader tools`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: add governed loader tools`
 
 ### TASK-MAGENT-01-003: Wire WorkstreamRuntimeAgent to effects().tools(runtimeTools)
 

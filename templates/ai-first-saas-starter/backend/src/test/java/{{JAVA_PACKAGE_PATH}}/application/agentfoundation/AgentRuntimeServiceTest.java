@@ -23,6 +23,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
+import akka.javasdk.annotations.FunctionTool;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -215,6 +216,38 @@ class AgentRuntimeServiceTest {
     assertEquals(3, result.traceIds().size());
     assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("MODEL_INVOCATION") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("OPENAI_API_KEY")));
     assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("model-provider-config-missing")));
+  }
+
+  @Test
+  void loaderToolsExposeGovernedFunctionToolAnnotations() throws NoSuchMethodException {
+    var skillTool = AgentRuntimeLoaderTools.class.getMethod("readSkill", String.class);
+    var referenceTool = AgentRuntimeLoaderTools.class.getMethod("readReferenceDoc", String.class);
+
+    assertNotNull(skillTool.getAnnotation(FunctionTool.class));
+    assertNotNull(referenceTool.getAnnotation(FunctionTool.class));
+    assertTrue(skillTool.getAnnotation(FunctionTool.class).description().contains("SkillLoadTrace"));
+    assertTrue(referenceTool.getAnnotation(FunctionTool.class).description().contains("ReferenceLoadTrace"));
+  }
+
+  @Test
+  void loaderToolsDelegateAllowedAndDeniedCallsThroughGovernedRuntimeService() {
+    var tools = new AgentRuntimeLoaderTools(service, "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-loader-tools");
+
+    var allowedSkill = tools.readSkill("ua.access-review-triage.v1");
+    var deniedSkill = tools.readSkill("unassigned-skill");
+    var allowedReference = tools.readReferenceDoc("ua.access-review-policy.v1");
+    var deniedReference = tools.readReferenceDoc("unassigned-reference");
+
+    assertTrue(allowedSkill.contains("skill_id=ua.access-review-triage.v1"));
+    assertTrue(allowedSkill.contains("authority_note=Skill content is internal guidance only"));
+    assertTrue(deniedSkill.startsWith("skill_unavailable:"));
+    assertFalse(deniedSkill.contains("unassigned-skill"));
+    assertTrue(allowedReference.contains("reference_id=ua.access-review-policy.v1"));
+    assertTrue(allowedReference.contains("authority_note=Reference content is governed evidence only"));
+    assertTrue(deniedReference.startsWith("reference_unavailable:"));
+    assertFalse(deniedReference.contains("unassigned-reference"));
+    assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("SKILL_LOAD") && trace.correlationId().equals("corr-loader-tools")).count());
+    assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("REFERENCE_LOAD") && trace.correlationId().equals("corr-loader-tools")).count());
   }
 
   @Test

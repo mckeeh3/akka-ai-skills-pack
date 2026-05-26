@@ -2,6 +2,7 @@ package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolCatalogEntry;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public final class ToolRegistry {
                 "Loads assigned procedural guidance through governed readSkill(skillId) authorization.",
                 ToolCatalogEntry.SideEffectLevel.NONE,
                 READ_SKILL_BINDING),
-            context -> new RuntimeToolBinding(READ_SKILL_TOOL_ID, READ_SKILL_BINDING, context.tenantId(), context.agentDefinitionId(), context.mode(), context.correlationId())),
+            context -> context.loaderTools()),
         new RegisteredTool(
             new ToolCatalogEntry(
                 READ_REFERENCE_DOC_TOOL_ID,
@@ -47,7 +48,7 @@ public final class ToolRegistry {
                 "Loads assigned factual/process reference evidence through governed readReferenceDoc(referenceId) authorization.",
                 ToolCatalogEntry.SideEffectLevel.NONE,
                 READ_REFERENCE_DOC_BINDING),
-            context -> new RuntimeToolBinding(READ_REFERENCE_DOC_TOOL_ID, READ_REFERENCE_DOC_BINDING, context.tenantId(), context.agentDefinitionId(), context.mode(), context.correlationId()))));
+            context -> context.loaderTools())));
   }
 
   public Optional<RegisteredTool> find(String toolId) {
@@ -68,11 +69,9 @@ public final class ToolRegistry {
     }
   }
 
-  public record BindingContext(String tenantId, String agentDefinitionId, String mode, String correlationId) {}
-
-  /**
-   * Placeholder backend-owned binding marker for starter task 01-001.
-   * Follow-on tasks replace these markers with request-scoped @FunctionTool objects.
-   */
-  public record RuntimeToolBinding(String toolId, String implementationBindingKey, String tenantId, String agentDefinitionId, String mode, String correlationId) {}
+  public record BindingContext(AgentRuntimeService runtimeService, String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId) {
+    public AgentRuntimeLoaderTools loaderTools() {
+      return new AgentRuntimeLoaderTools(runtimeService, tenantId, agentDefinitionId, authContext, mode, capabilityId, correlationId);
+    }
+  }
 }
