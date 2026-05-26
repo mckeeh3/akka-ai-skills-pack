@@ -487,3 +487,127 @@
   - commit message: `Reverify workstream visual session phase 1.1`
   - completed: reverified source and starter phase 1.1 runtime UX after template sync and updated readiness notes to state that request anchoring targets the actual workstream panel, background responses do not steal selected workstream focus, and accessible left-rail unseen-response indicators clear on selection.
   - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd frontend && node --test src/workstream-shell.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`.
+
+### TASK-WVS-04-001: Fix runtime background response focus steal
+
+- status: pending
+- source: user runtime report that response focus steal still happens after phase 1.1 tasks
+- task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/01-fix-runtime-background-response-focus-steal.md
+- depends on: [TASK-WVS-03-005]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - specs/workstream-visual-sessions/pending-tasks.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/shell/WorkstreamShell.tsx
+  - frontend/src/workstream/rail/**
+  - frontend/src/workstream-visual-session.contract.test.mjs
+  - frontend/src/workstream-composer-message-api.contract.test.mjs
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-testing
+- expected outputs:
+  - async composer/action responses for non-current workstreams do not call selection update or otherwise switch the visible workstream
+  - behavior-oriented tests stronger than regex-only coverage where practical
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd frontend && node --test src/workstream-composer-message-api.contract.test.mjs`
+- done criteria:
+  - source frontend no longer steals focus in the reported runtime scenario
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-04-002: Fix runtime unseen response indicator
+
+- status: pending
+- source: user runtime report that no response indicator appears after phase 1.1 tasks
+- task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/02-fix-runtime-unseen-response-indicator.md
+- depends on: [TASK-WVS-04-001]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - docs/workstream-ui-reference-architecture.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/rail/FunctionalAgentRail.tsx
+  - frontend/src/workstream/rail/FunctionalAgentRailItem.tsx
+  - frontend/src/workstream/rail/railState.ts
+  - frontend/src/workstream/types/agents.ts
+  - frontend/src/styles/components.css
+  - frontend/src/workstream-shell.contract.test.mjs
+  - frontend/src/workstream-visual-session.contract.test.mjs
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - background responses increment in-memory unseen state
+  - left rail shows accessible visible badge/dot/count in expanded and collapsed modes
+  - indicator clears on selection
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-shell.contract.test.mjs`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+- done criteria:
+  - source frontend shows unseen response indicators in the reported runtime scenario
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-04-003: Sync runtime remediation to starter template
+
+- status: pending
+- source: starter template must remain canonical generated-app baseline
+- task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/03-sync-runtime-remediation-to-starter.md
+- depends on: [TASK-WVS-04-002]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - source files changed by TASK-WVS-04-001 and TASK-WVS-04-002
+  - matching files under templates/ai-first-saas-starter/frontend/src/**
+  - starter template contract tests
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - starter template no longer steals focus on background response
+  - starter template shows and clears left-rail unseen-response indicators
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && npm test`
+- done criteria:
+  - starter template matches source remediation behavior
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-04-004: Reverify runtime UX with manual steps
+
+- status: pending
+- source: phase 1.1 runtime remediation closure after user-reported failure
+- task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/04-reverify-runtime-ux-with-manual-steps.md
+- depends on: [TASK-WVS-04-003]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - specs/workstream-visual-sessions/pending-tasks.md
+  - frontend/README.md
+  - templates/ai-first-saas-starter/frontend/README.md
+  - changed source and starter frontend files from this remediation
+- skills:
+  - none; repository verification/docs task
+- expected outputs:
+  - explicit manual/smoke verification steps and results recorded
+  - phase 1.1 readiness notes updated only if runtime scenario is verified
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd frontend && node --test src/workstream-shell.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`
+- done criteria:
+  - reported runtime scenario is verified fixed in source and starter or remaining limitation is explicitly documented
+  - task changes and queue update are committed
+- notes: []
