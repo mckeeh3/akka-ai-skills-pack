@@ -66,45 +66,74 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
 
   @Override
   public Optional<PromptDocument> promptDocument(String tenantId, String promptDocumentId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::promptDocument)
-        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, promptDocumentId));
+    return componentClient
+        .forEventSourcedEntity(PromptDocumentEntity.entityId(tenantId, promptDocumentId))
+        .method(PromptDocumentEntity::detail)
+        .invoke(new PromptDocumentEntity.DocumentQuery(tenantId, promptDocumentId));
   }
 
   @Override
   public PromptDocument savePromptDocument(PromptDocument prompt) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::savePromptDocument).invoke(prompt);
+    return componentClient
+        .forEventSourcedEntity(PromptDocumentEntity.entityId(prompt.tenantId(), prompt.promptDocumentId()))
+        .method(PromptDocumentEntity::save)
+        .invoke(prompt);
   }
 
   @Override
   public Optional<SkillDocument> skillDocument(String tenantId, String skillDocumentId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::skillDocument)
-        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, skillDocumentId));
+    return componentClient
+        .forEventSourcedEntity(SkillDocumentEntity.entityId(tenantId, skillDocumentId))
+        .method(SkillDocumentEntity::detail)
+        .invoke(new SkillDocumentEntity.DocumentQuery(tenantId, skillDocumentId));
   }
 
   @Override
   public SkillDocument saveSkillDocument(SkillDocument skill) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::saveSkillDocument).invoke(skill);
+    return componentClient
+        .forEventSourcedEntity(SkillDocumentEntity.entityId(skill.tenantId(), skill.skillDocumentId()))
+        .method(SkillDocumentEntity::save)
+        .invoke(skill);
   }
 
   @Override
   public List<SkillDocument> skillDocuments(String tenantId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::skillDocuments).invoke(tenantId);
+    return componentClient
+        .forView()
+        .method(SkillDocumentView::catalog)
+        .invoke(new SkillDocumentView.CatalogQuery(tenantId))
+        .documents()
+        .stream()
+        .map(AkkaAgentBehaviorRepository::toSkillDocument)
+        .toList();
   }
 
   @Override
   public Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::referenceDocument)
-        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, referenceDocumentId));
+    return componentClient
+        .forEventSourcedEntity(ReferenceDocumentEntity.entityId(tenantId, referenceDocumentId))
+        .method(ReferenceDocumentEntity::detail)
+        .invoke(new ReferenceDocumentEntity.DocumentQuery(tenantId, referenceDocumentId));
   }
 
   @Override
   public ReferenceDocument saveReferenceDocument(ReferenceDocument reference) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::saveReferenceDocument).invoke(reference);
+    return componentClient
+        .forEventSourcedEntity(ReferenceDocumentEntity.entityId(reference.tenantId(), reference.referenceDocumentId()))
+        .method(ReferenceDocumentEntity::save)
+        .invoke(reference);
   }
 
   @Override
   public List<ReferenceDocument> referenceDocuments(String tenantId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::referenceDocuments).invoke(tenantId);
+    return componentClient
+        .forView()
+        .method(ReferenceDocumentView::catalog)
+        .invoke(new ReferenceDocumentView.CatalogQuery(tenantId))
+        .documents()
+        .stream()
+        .map(AkkaAgentBehaviorRepository::toReferenceDocument)
+        .toList();
   }
 
   @Override
@@ -160,6 +189,44 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
   @Override
   public ModelPolicy saveModelPolicy(ModelPolicy modelPolicy) {
     return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::saveModelPolicy).invoke(modelPolicy);
+  }
+
+  private static SkillDocument toSkillDocument(SkillDocumentView.SkillDocumentRow row) {
+    return new SkillDocument(
+        row.tenantId(),
+        row.skillDocumentId(),
+        row.stableSkillId(),
+        row.title(),
+        row.purpose(),
+        row.whenToUse(),
+        row.tags(),
+        AgentLifecycleStatus.valueOf(row.lifecycleStatus()),
+        row.activeVersion(),
+        null,
+        row.contentChecksum(),
+        null,
+        row.createdAt(),
+        row.updatedAt());
+  }
+
+  private static ReferenceDocument toReferenceDocument(ReferenceDocumentView.ReferenceDocumentRow row) {
+    return new ReferenceDocument(
+        row.tenantId(),
+        row.referenceDocumentId(),
+        row.stableReferenceId(),
+        row.title(),
+        row.summary(),
+        row.whenToConsult(),
+        ReferenceDocument.ReferenceType.valueOf(row.referenceType()),
+        row.accessLevel(),
+        row.tags(),
+        AgentLifecycleStatus.valueOf(row.lifecycleStatus()),
+        row.activeVersion(),
+        null,
+        row.contentChecksum(),
+        null,
+        row.createdAt(),
+        row.updatedAt());
   }
 
   private static AgentDefinition toAgentDefinition(AgentDefinitionView.AgentDefinitionRow row) {

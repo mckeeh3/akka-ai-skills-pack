@@ -206,7 +206,8 @@
 
 ### TASK-MAGENT-02-002: Add prompt, skill, and reference document/version components
 
-- status: pending
+- status: done
+- completion note: Added first-class prompt, skill, and reference document entities, immutable version snapshot records, scoped catalog/runtime lookup views, Akka repository adapter wiring, and unit tests for activation, version reads, cross-tenant denial, inactive runtime denial, secret-like content rejection, and projection shape.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/02-durable-state/02-add-governed-document-components.md
 - depends on: [TASK-MAGENT-02-001]
@@ -235,7 +236,8 @@
 - done criteria:
   - Prompt/skill/reference runtime records have first-class Akka-owned carriers suitable for Agent Admin governance.
   - A focused git commit exists with message `managed-agents-core: add governed document components`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: add governed document components`
 
 ### TASK-MAGENT-02-003: Add manifest and tool-boundary components and views
 
