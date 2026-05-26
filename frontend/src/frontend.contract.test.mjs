@@ -57,8 +57,8 @@ test('mode switching uses root data attributes and persists preference', () => {
   assert.match(main, /window\.localStorage\.setItem\(modeStorageKey, mode\)/);
 });
 
-test('atlas ops supervisory console tokens include clean mono fonts and warm light and dark palettes', () => {
-  assert.match(tokens, /--font-sans: "JetBrains Mono"/);
+test('atlas ops supervisory console tokens include sans UI fonts, mono technical fonts, and warm palettes', () => {
+  assert.match(tokens, /--font-sans: Inter/);
   assert.match(tokens, /--font-mono: "JetBrains Mono"/);
   assert.match(tokens, /\[data-mode="light"\]/);
   assert.match(tokens, /\[data-mode="dark"\]/);

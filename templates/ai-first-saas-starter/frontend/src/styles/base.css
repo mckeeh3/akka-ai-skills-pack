@@ -13,11 +13,11 @@ body {
   font-family: var(--font-sans);
   color: var(--color-text);
   background:
-    radial-gradient(circle at 18% 12%, var(--color-glow-primary), transparent 28rem),
-    radial-gradient(circle at 88% 8%, var(--color-glow-ai), transparent 24rem),
-    linear-gradient(135deg, transparent 0 48%, var(--color-grid-line) 48% 49%, transparent 49% 100%),
+    radial-gradient(circle at 16% 8%, var(--color-glow-primary), transparent 18rem),
+    radial-gradient(circle at 86% 6%, var(--color-glow-ai), transparent 16rem),
+    radial-gradient(circle, var(--color-grid-line) 0 1px, transparent 1.2px),
     var(--color-bg);
-  background-size: auto, auto, 32px 32px, auto;
+  background-size: auto, auto, 28px 28px, auto;
 }
 
 body, button, input, textarea, select { font-family: var(--font-sans); }

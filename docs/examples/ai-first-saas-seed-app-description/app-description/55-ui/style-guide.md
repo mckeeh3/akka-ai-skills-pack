@@ -10,7 +10,7 @@
 
 ## Visual direction
 
-- aesthetic point of view: operational mission-control console with crisp monospace typography, warm near-black charcoal backgrounds, layered glass-like panels, orange primary controls/icons, muted coral AI/highlight accents, restrained glow, and audit-grade information density
+- aesthetic point of view: operational mission-control console with readable sans UI typography plus monospace technical accents, warm near-black charcoal backgrounds, layered glass-like panels, orange primary controls/icons, muted coral AI/highlight accents, restrained localized glow, and audit-grade information density
 - tone: calm, precise, supervisory, and trust-oriented rather than decorative or playful
 - memorable motif: "signal over noise" — subtle grid/scanline atmosphere, compact command surfaces, and semantic accent rails for work needing human attention
 - forbidden generic patterns: purple-gradient chatbot shells, undifferentiated white-card dashboards, decorative chat bubbles for consequential work, and equal visual weight across FYI, blocked, autonomous, and approval-needed states
@@ -33,14 +33,15 @@
 ## Design tokens
 
 - typography:
-  - `--font-sans: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace`
+  - `--font-sans: Inter, "Instrument Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
   - `--font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace`
+  - use sans for general UI copy and monospace for trace ids, code-like labels, technical metadata, and dense numeric/queue metrics
   - tabular numerals for KPIs, counts, percentages, money, time, and queue metrics
 - spacing: stable 4px-based scale from `--space-1` through `--space-8`
 - radius: 8px controls, 12px standard cards, 16px prominent panels, pill badges
 - elevation: light mode uses layered card/panel shadows plus hairline borders; dark mode relies on borders, restrained warm glow, and depth from subtle surface contrast
 - colors:
-  - dark mode uses a warm green-black/charcoal foundation rather than a cool blue-black foundation; page, sidebar, and card surfaces should remain close in value with subtle borders and glow
+  - dark mode uses a warm green-black/charcoal foundation rather than a cool blue-black foundation; page, sidebar, and card surfaces should remain close in value but still have enough surface/border separation to read as premium cards
   - primary controls, icon chips, active rail states, focus accents, and major call-to-action buttons use warm orange tokens similar to the operations-dashboard reference
   - AI/highlight accents use muted coral/pink, while status and chart colors remain semantic and tokenized
   - surfaces, text, borders, primary, AI accent, status, chart, focus, shadows, texture, and motion tokens are defined by the `atlas-ops-supervisory-console` tokens in `docs/web-ui-style-guide.md`
@@ -82,7 +83,8 @@
   - state-driven transitions may polish surface append/update, composer focus, hover, stale/reconnect, approval result, and denial/recovery feedback
   - reduced-motion mode disables decorative transform/animation while preserving visible state changes
 - background/texture/elevation rules:
-  - use tokenized radial glow, subtle grid/scanline texture, hairline borders, and panel shadows to create depth
+  - use tokenized localized radial glow, very subtle dotted texture or near-invisible texture, hairline borders, and panel shadows to create depth
+  - avoid prominent diagonal striping; texture should recede behind cards rather than become a visible wallpaper
   - never let texture, glow, or blur reduce text contrast, focus visibility, or structured-surface readability
 
 ## Accessibility and responsive constraints

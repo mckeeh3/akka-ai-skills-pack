@@ -81,13 +81,13 @@ Themes and lightweight style variants must not change:
 
 ## Seed theme: Atlas Ops supervisory console
 
-This is the initial AI-first theme to test against the seed app. It is the default theme and must be implemented as one named theme with both light and dark token sets. The visual tuning should use a warm near-black operational console in dark mode: green-black/charcoal page background, only-slightly-lighter layered cards, subtle warm borders/glow, orange primary action/icon treatments, and muted coral AI/highlight accents. Keep the Atlas Ops information architecture and component anatomy, but prefer the warmer dashboard atmosphere shown in `dashboard-example.png` over the cooler blue-black reference image.
+This is the initial AI-first theme to test against the seed app. It is the default theme and must be implemented as one named theme with both light and dark token sets. The visual tuning should use a warm near-black operational console in dark mode: green-black/charcoal page background, slightly separated layered cards, subtle warm borders/glow, orange primary action/icon treatments, and muted coral AI/highlight accents. Keep the Atlas Ops information architecture and component anatomy, but prefer the warmer dashboard atmosphere shown in `dashboard-example.png` over the cooler blue-black reference image. Background texture should be a very subtle dotted field or near-invisible texture, not prominent diagonal striping; glow should be soft and localized.
 
 ### Font tokens
 
 ```css
 :root {
-  --font-sans: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace;
+  --font-sans: Inter, "Instrument Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace;
 }
 ```
@@ -175,8 +175,8 @@ These tokens are stable across lightweight style overrides.
   --color-bg: #050a08;
   --color-bg-subtle: #0a100d;
   --color-sidebar: #070c0a;
-  --color-surface: #101713;
-  --color-surface-raised: #151e19;
+  --color-surface: #111914;
+  --color-surface-raised: #17211b;
   --color-surface-soft: #0c1410;
   --color-surface-accent: #241c12;
 
@@ -185,8 +185,8 @@ These tokens are stable across lightweight style overrides.
   --color-muted: #8d9a91;
   --color-inverse-text: #120f0b;
 
-  --color-border: #223029;
-  --color-border-strong: #3d4d43;
+  --color-border: #2a3930;
+  --color-border-strong: #46584c;
 
   --color-primary: #ff9f1c;
   --color-primary-strong: #ffb547;

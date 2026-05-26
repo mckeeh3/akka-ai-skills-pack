@@ -160,10 +160,10 @@ Use these rules to improve visual quality without changing product behavior:
 
 - Choose a clear aesthetic direction for the app or brand adaptation, such as operational mission control, editorial command desk, industrial trust console, or refined governance cockpit.
 - Avoid generic AI UI clichés: purple gradients on white, undifferentiated cards, equal visual weight everywhere, decorative chat bubbles for consequential work, and styling that could belong to any SaaS dashboard.
-- Typography should feel intentional. Custom styles may replace the default font tokens when the app records accessible fallbacks, readable line heights, and tabular/numeric conventions for dense operational data.
+- Typography should feel intentional. Use a readable warm sans for most UI copy and reserve monospace for code, trace ids, dense metrics, and technical labels. Custom styles may replace the default font tokens when the app records accessible fallbacks, readable line heights, and tabular/numeric conventions for dense operational data.
 - Use color, borders, shadows, texture, and depth to clarify hierarchy: human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity should not look interchangeable.
 - Motion should be purposeful and state-driven: surface append/update, agent-working, approval result, stale/reconnect, expansion, and denial/recovery transitions may be polished, but must preserve reduced-motion support and never obscure state or audit evidence.
-- Background treatments, grain, gradients, patterns, and glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact.
+- Background treatments, grain, gradients, dotted textures, patterns, and glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact. Prefer a very subtle dotted field over visible diagonal striping.
 - Dark mode should avoid pure black and avoid default cool blue-black dashboard styling; prefer warm near-black/charcoal surfaces with subtle orange/coral glow and hairline borders.
 
 ### Style customization scope
@@ -191,8 +191,8 @@ It must not change:
 
 ```css
 :root {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "Roboto Mono", "SFMono-Regular", Consolas, monospace;
+  --font-sans: Inter, "Instrument Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace;
 }
 ```
 
@@ -277,8 +277,8 @@ It must not change:
   --color-bg: #050a08;
   --color-bg-subtle: #0a100d;
   --color-sidebar: #070c0a;
-  --color-surface: #101713;
-  --color-surface-raised: #151e19;
+  --color-surface: #111914;
+  --color-surface-raised: #17211b;
   --color-surface-soft: #0c1410;
   --color-surface-accent: #241c12;
 
@@ -287,8 +287,8 @@ It must not change:
   --color-muted: #8d9a91;
   --color-inverse-text: #120f0b;
 
-  --color-border: #223029;
-  --color-border-strong: #3d4d43;
+  --color-border: #2a3930;
+  --color-border-strong: #46584c;
 
   --color-primary: #ff9f1c;
   --color-primary-strong: #ffb547;

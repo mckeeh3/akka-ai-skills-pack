@@ -1,5 +1,5 @@
 :root {
-  --font-sans: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace;
+  --font-sans: Inter, "Instrument Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "SF Mono", Consolas, ui-monospace, monospace;
 
   --space-1: 0.25rem;
@@ -37,9 +37,9 @@
   --color-surface-soft: #fbf5eb;
   --color-surface-accent: #fff0d6;
   --color-surface-glass: rgb(255 250 242 / 0.80);
-  --color-grid-line: rgb(234 132 22 / 0.060);
-  --color-glow-primary: rgb(255 158 31 / 0.18);
-  --color-glow-ai: rgb(199 87 107 / 0.14);
+  --color-grid-line: rgb(234 132 22 / 0.040);
+  --color-glow-primary: rgb(255 158 31 / 0.12);
+  --color-glow-ai: rgb(199 87 107 / 0.09);
 
   --color-text: #1f1712;
   --color-text-soft: #4b3a31;
@@ -84,22 +84,22 @@
   --color-bg: #050a08;
   --color-bg-subtle: #0a100d;
   --color-sidebar: #070c0a;
-  --color-surface: #101713;
-  --color-surface-raised: #151e19;
+  --color-surface: #111914;
+  --color-surface-raised: #17211b;
   --color-surface-soft: #0c1410;
   --color-surface-accent: #241c12;
   --color-surface-glass: rgb(16 23 19 / 0.82);
-  --color-grid-line: rgb(255 159 28 / 0.060);
-  --color-glow-primary: rgb(255 159 28 / 0.22);
-  --color-glow-ai: rgb(213 95 115 / 0.18);
+  --color-grid-line: rgb(255 159 28 / 0.035);
+  --color-glow-primary: rgb(255 159 28 / 0.13);
+  --color-glow-ai: rgb(213 95 115 / 0.10);
 
   --color-text: #f4eee6;
   --color-text-soft: #d4c7ba;
   --color-muted: #8d9a91;
   --color-inverse-text: #120f0b;
 
-  --color-border: #223029;
-  --color-border-strong: #3d4d43;
+  --color-border: #2a3930;
+  --color-border-strong: #46584c;
 
   --color-primary: #ff9f1c;
   --color-primary-strong: #ffb547;
