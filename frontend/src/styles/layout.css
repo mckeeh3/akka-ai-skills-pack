@@ -48,8 +48,12 @@
 }
 
 .workstream-panel {
+  height: 100vh;
   min-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding-bottom: calc(var(--workstream-composer-scroll-clearance) + env(safe-area-inset-bottom, 0px));
+  scroll-padding-top: var(--space-8);
   scroll-padding-bottom: calc(var(--workstream-composer-scroll-clearance) + env(safe-area-inset-bottom, 0px));
 }
 
@@ -152,6 +156,7 @@
 
 @media (max-width: 640px) {
   .content { padding: var(--space-4); }
+  .workstream-panel { scroll-padding-top: var(--space-4); }
   .topbar-actions { width: 100%; }
   .tenant-switcher, .user-menu { width: 100%; justify-content: flex-start; }
   .command-strip { grid-template-columns: 1fr; }

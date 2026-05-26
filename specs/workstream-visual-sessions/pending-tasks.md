@@ -315,7 +315,7 @@
 
 ### TASK-WVS-03-001: Fix request scroll container anchoring
 
-- status: pending
+- status: done
 - source: user runtime observation that request surfaces are selected but not scrolling to top of visible panel
 - task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/01-fix-request-scroll-container-anchoring.md
 - depends on: [TASK-WVS-02-003]
@@ -342,7 +342,10 @@
 - done criteria:
   - source frontend request anchoring works against the actual scroll container
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `Fix workstream request scroll container anchoring`
+  - completed: made the workstream panel the explicit scroll container and changed request anchoring to scroll that container to the request item using reduced-motion-safe behavior and scroll-padding-aware top alignment.
+  - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; targeted related source test `cd frontend && node --test src/workstream-shell.contract.test.mjs`.
 
 ### TASK-WVS-03-002: Prevent background response selection steal
 

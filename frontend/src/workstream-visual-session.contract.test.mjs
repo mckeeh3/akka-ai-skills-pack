@@ -8,6 +8,8 @@ const visualSessionState = read('./workstream/visual-session/visualSessionState.
 const visualSessionIndex = read('./workstream/visual-session/index.ts');
 const workstreamIndex = read('./workstream/index.ts');
 const workstreamStream = read('./workstream/stream/WorkstreamStream.tsx');
+const workstreamPanel = read('./workstream/shell/WorkstreamPanel.tsx');
+const layoutCss = read('./styles/layout.css');
 const main = read('./main.tsx');
 
 test('visual-session helpers expose reusable turn-group and session contracts', () => {
@@ -78,10 +80,15 @@ test('workstream shell restores per-workstream in-memory visual state on agent s
   assert.doesNotMatch(main, /visualSessionsByKey[\s\S]{0,200}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
 });
 
-test('workstream stream anchors new request surfaces at the top while responses append below', () => {
+test('workstream stream anchors new request surfaces at the top of the actual scroll container while responses append below', () => {
   assert.match(workstreamStream, /requestScrollTargetId\?: string/);
-  assert.match(workstreamStream, /scrollIntoView\(\{ block: 'start', inline: 'nearest', behavior \}\)/);
+  assert.match(workstreamPanel, /data-workstream-scroll-container="true"/);
+  assert.match(layoutCss, /\.workstream-panel \{[\s\S]*height: 100vh;[\s\S]*overflow-y: auto;[\s\S]*scroll-padding-top: var\(--space-8\);/);
+  assert.match(workstreamStream, /findRequestScrollTarget\(requestScrollTargetId, streamRef\.current\)/);
+  assert.match(workstreamStream, /target\.closest<HTMLElement>\('\[data-workstream-scroll-container="true"\]'\)/);
+  assert.match(workstreamStream, /scrollContainer\.scrollTo\(\{\s*top: targetRect\.top - containerRect\.top \+ scrollContainer\.scrollTop - scrollPaddingTop,\s*behavior\s*\}\)/s);
   assert.match(workstreamStream, /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)\.matches \? 'auto' : 'smooth'/);
+  assert.doesNotMatch(workstreamStream, /scrollIntoView\(/);
   assert.match(workstreamStream, /items\.map\(\(item\) =>/);
   assert.match(workstreamStream, /<WorkstreamItemCard item=\{item\}/);
   assert.match(workstreamStream, /<SurfaceRenderer envelopes=\{surfaces\} selectedSurfaceId=\{item\.surfaceId\}/);
