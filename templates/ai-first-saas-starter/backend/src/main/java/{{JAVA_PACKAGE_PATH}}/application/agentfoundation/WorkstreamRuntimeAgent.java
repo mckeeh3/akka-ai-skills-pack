@@ -21,16 +21,7 @@ import java.util.List;
     name = "Workstream Runtime Agent",
     description = "Produces governed markdown_response content for role-authorized workstreams.")
 public final class WorkstreamRuntimeAgent extends Agent {
-  private final AgentRuntimeToolResolver runtimeToolResolver;
-
-  public WorkstreamRuntimeAgent() {
-    this(StarterSecurityComponents.agentRuntimeToolResolver());
-  }
-
-  public WorkstreamRuntimeAgent(AgentRuntimeToolResolver runtimeToolResolver) {
-    if (runtimeToolResolver == null) throw new IllegalArgumentException("runtimeToolResolver is required");
-    this.runtimeToolResolver = runtimeToolResolver;
-  }
+  private final AgentRuntimeToolResolver runtimeToolResolver = StarterSecurityComponents.agentRuntimeToolResolver();
 
   public record GovernedWorkstreamRequest(
       @Description("The fully assembled governed system prompt and safe runtime context")

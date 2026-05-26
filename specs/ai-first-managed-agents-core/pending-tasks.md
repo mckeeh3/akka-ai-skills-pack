@@ -145,7 +145,8 @@
 
 ### TASK-MAGENT-01-004: Prove model-invoked governed tool calls through Akka Agent path
 
-- status: pending
+- status: done
+- completion note: Added TestModelProvider tool-loop coverage for model-invoked readSkill/readReferenceDoc calls through WorkstreamRuntimeAgent, safe unassigned-skill denial tracing, compact-manifest prompt assertions, and fixed the agent component constructor shape required by Akka runtime discovery.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/01-runtime-tools/04-test-model-invoked-governed-tools.md
 - depends on: [TASK-MAGENT-01-003]
@@ -170,7 +171,8 @@
 - done criteria:
   - Tests prove the real Akka Agent tool loop, not only direct service method calls.
   - A focused git commit exists with message `managed-agents-core: test governed tool calls`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: test governed tool calls`
 
 ### TASK-MAGENT-02-001: Add first-class AgentDefinition component and views
 
