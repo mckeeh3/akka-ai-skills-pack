@@ -9,6 +9,7 @@ It is a source-repository reference asset. It defines how future tasks should bu
 Canonical doctrine:
 - `docs/agent-workstream-application-architecture.md`
 - `docs/structured-surface-contracts.md`
+- `docs/workstream-visual-sessions.md`
 - `docs/web-ui-frontend-decomposition.md`
 - `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
 
@@ -216,7 +217,7 @@ type WorkstreamItem = {
 
 The stream supports grouped history, stable item ids, append/update semantics, trace links, and action-feedback items for non-chat navigation/actions.
 
-Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts and indirect requests raised by existing surface actions. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order.
+Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts and indirect requests raised by existing surface actions. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. Use `docs/workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
 
 ### Surface envelopes
 
