@@ -323,6 +323,21 @@ class AgentRuntimeServiceTest {
   }
 
   @Test
+  void readSkillRequiresSeparateBoundaryGrant() {
+    var existing = repository.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
+    var grantsWithoutSkills = existing.allowedToolGrants().stream()
+        .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_SKILL)
+        .toList();
+    repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), existing.status(), existing.boundaryVersion() + 1, grantsWithoutSkills, "without-skill", existing.seedProvenance(), existing.createdAt(), existing.updatedAt()));
+
+    var denied = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-boundary", "ua.access-review-triage.v1"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, denied.decision());
+    assertEquals("Skill is not available in this governed runtime context.", denied.safeDenialReason());
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("SKILL_LOAD") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("read-skill-not-granted")));
+  }
+
+  @Test
   void readReferenceRequiresSeparateBoundaryGrant() {
     var existing = repository.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
     var grantsWithoutReferences = existing.allowedToolGrants().stream()

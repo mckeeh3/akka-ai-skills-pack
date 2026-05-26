@@ -138,35 +138,50 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
 
   @Override
   public Optional<AgentSkillManifest> skillManifest(String tenantId, String manifestId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::skillManifest)
-        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, manifestId));
+    return componentClient
+        .forEventSourcedEntity(AgentSkillManifestEntity.entityId(tenantId, manifestId))
+        .method(AgentSkillManifestEntity::detail)
+        .invoke(new AgentSkillManifestEntity.ManifestQuery(tenantId, manifestId));
   }
 
   @Override
   public AgentSkillManifest saveSkillManifest(AgentSkillManifest manifest) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::saveSkillManifest).invoke(manifest);
+    return componentClient
+        .forEventSourcedEntity(AgentSkillManifestEntity.entityId(manifest.tenantId(), manifest.manifestId()))
+        .method(AgentSkillManifestEntity::save)
+        .invoke(manifest);
   }
 
   @Override
   public Optional<AgentReferenceManifest> referenceManifest(String tenantId, String manifestId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::referenceManifest)
-        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, manifestId));
+    return componentClient
+        .forEventSourcedEntity(AgentReferenceManifestEntity.entityId(tenantId, manifestId))
+        .method(AgentReferenceManifestEntity::detail)
+        .invoke(new AgentReferenceManifestEntity.ManifestQuery(tenantId, manifestId));
   }
 
   @Override
   public AgentReferenceManifest saveReferenceManifest(AgentReferenceManifest manifest) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::saveReferenceManifest).invoke(manifest);
+    return componentClient
+        .forEventSourcedEntity(AgentReferenceManifestEntity.entityId(manifest.tenantId(), manifest.manifestId()))
+        .method(AgentReferenceManifestEntity::save)
+        .invoke(manifest);
   }
 
   @Override
   public Optional<ToolPermissionBoundary> toolBoundary(String tenantId, String boundaryId) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::toolBoundary)
-        .invoke(new DurableAgentBehaviorRepositoryEntity.RecordQuery(tenantId, boundaryId));
+    return componentClient
+        .forEventSourcedEntity(ToolPermissionBoundaryEntity.entityId(tenantId, boundaryId))
+        .method(ToolPermissionBoundaryEntity::detail)
+        .invoke(new ToolPermissionBoundaryEntity.BoundaryQuery(tenantId, boundaryId));
   }
 
   @Override
   public ToolPermissionBoundary saveToolBoundary(ToolPermissionBoundary boundary) {
-    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::saveToolBoundary).invoke(boundary);
+    return componentClient
+        .forEventSourcedEntity(ToolPermissionBoundaryEntity.entityId(boundary.tenantId(), boundary.boundaryId()))
+        .method(ToolPermissionBoundaryEntity::save)
+        .invoke(boundary);
   }
 
   @Override

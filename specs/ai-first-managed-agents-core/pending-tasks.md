@@ -241,7 +241,8 @@
 
 ### TASK-MAGENT-02-003: Add manifest and tool-boundary components and views
 
-- status: pending
+- status: done
+- completion note: Added first-class AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary Event Sourced Entities, compact manifest and boundary/grant inspection views, Akka repository adapter routing, and tests for active/tenant-scoped lookup, missing loader grants, distinct read_skill/read_reference authority, compact rendering inputs, and approval-required boundary inspection.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/02-durable-state/03-add-manifest-tool-boundary-components.md
 - depends on: [TASK-MAGENT-02-002]
@@ -268,7 +269,8 @@
 - done criteria:
   - Manifest and tool-boundary records are first-class core runtime configuration, not Agent Admin-only concepts.
   - A focused git commit exists with message `managed-agents-core: add manifest and boundary components`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: add manifest and boundary components`
 
 ### TASK-MAGENT-02-004: Add durable agent runtime trace storage and views
 
