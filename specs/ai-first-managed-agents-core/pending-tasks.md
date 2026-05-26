@@ -305,7 +305,8 @@
 
 ### TASK-MAGENT-03-001: Seed configuration-driven profiles for all five core agents
 
-- status: pending
+- status: done
+- completion note: Added regression coverage proving all five core v0 functional-agent seed profiles resolve through the same managed runtime preparation path, with distinct prompts, skill/reference manifests, tool boundaries, and runtime bindings rather than a shared generic profile.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/03-core-agents/01-seed-five-core-agent-profiles.md
 - depends on: [TASK-MAGENT-01-004]
@@ -332,7 +333,8 @@
 - done criteria:
   - The five core workstream agents are all seeded as configuration-driven managed agents.
   - A focused git commit exists with message `managed-agents-core: seed five core agents`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: seed five core agents`
 
 ### TASK-MAGENT-04-001: Update docs, skills, and validation gates for AI-first managed agents
 

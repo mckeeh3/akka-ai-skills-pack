@@ -2,18 +2,27 @@ package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
+import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SeedProvenance;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
+import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
+import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.HashSet;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -79,6 +88,61 @@ class AgentBehaviorSeedLoaderTest {
     assertEquals(AgentLifecycleStatus.ACTIVE, modelPolicy.status());
     assertTrue(modelPolicy.allowedProviderAliases().contains("openai-low-temperature"));
     assertTrue(modelPolicy.noFallback());
+  }
+
+  @Test
+  void allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles() {
+    loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
+    var tenantAdmin = new AuthContext(
+        "admin-1",
+        "workos-admin-1",
+        "membership-1",
+        ScopeType.TENANT,
+        "tenant-1",
+        null,
+        List.of(FoundationRole.TENANT_ADMIN),
+        List.of(AgentRuntimeService.INVOKE_CAPABILITY, "agent.skills.read", "agent.references.read"));
+    var promptIds = new HashSet<String>();
+    var skillManifestIds = new HashSet<String>();
+    var referenceManifestIds = new HashSet<String>();
+    var boundaryIds = new HashSet<String>();
+    var runtimeClassRefs = new HashSet<String>();
+
+    for (var agentId : AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS) {
+      var agent = repository.agentDefinition("tenant-1", agentId).orElseThrow();
+      var preparation = runtimeService.prepareWorkstreamAgentInvocation(new AgentRuntimeService.RuntimeInvocationRequest(
+          "tenant-1",
+          agentId,
+          tenantAdmin,
+          "corr-managed-" + agentId,
+          "Explain this workstream's starter scope."));
+
+      assertEquals(AgentRuntimeTrace.Decision.ALLOWED, preparation.decision(), agentId);
+      assertNotNull(preparation.governedRequest(), agentId);
+      assertEquals(agentId, preparation.governedRequest().functionalAgentId());
+      assertEquals("openai-low-temperature", preparation.governedRequest().modelProviderAlias());
+      assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("# Compact skill manifest"), agentId);
+      assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("# Compact reference manifest"), agentId);
+      assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("# Tool boundary summary"), agentId);
+      assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("# Governed model binding"), agentId);
+      assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("Prompt text cannot grant authority"), agentId);
+
+      promptIds.add(agent.promptDocumentId());
+      skillManifestIds.add(agent.skillManifestId());
+      referenceManifestIds.add(agent.referenceManifestId());
+      boundaryIds.add(agent.toolBoundaryId());
+      runtimeClassRefs.add(agent.runtimeClassRef());
+      assertEquals(agentId, repository.skillManifest("tenant-1", agent.skillManifestId()).orElseThrow().agentDefinitionId());
+      assertEquals(agentId, repository.referenceManifest("tenant-1", agent.referenceManifestId()).orElseThrow().agentDefinitionId());
+      assertEquals(agentId, repository.toolBoundary("tenant-1", agent.toolBoundaryId()).orElseThrow().agentDefinitionId());
+    }
+
+    assertEquals(5, promptIds.size(), "each core agent must have a distinct prompt seed");
+    assertEquals(5, skillManifestIds.size(), "shared generic skill manifests are not allowed for the five core agents");
+    assertEquals(5, referenceManifestIds.size(), "shared generic reference manifests are not allowed for the five core agents");
+    assertEquals(5, boundaryIds.size(), "shared generic tool boundaries are not allowed for the five core agents");
+    assertEquals(5, runtimeClassRefs.size(), "each core agent profile must name its own functional-agent runtime binding");
   }
 
   @Test
