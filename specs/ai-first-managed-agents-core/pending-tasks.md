@@ -114,7 +114,8 @@
 
 ### TASK-MAGENT-01-003: Wire WorkstreamRuntimeAgent to effects().tools(runtimeTools)
 
-- status: pending
+- status: done
+- completion note: Wired WorkstreamRuntimeAgent to resolve request-scoped runtime tools from governed context, register them with effects().tools(runtimeTools), and fail closed for missing or inconsistent tool context before model invocation.
 - source: specs/ai-first-managed-agents-core/backlog/01-managed-agents-core-backlog.md
 - task brief: specs/ai-first-managed-agents-core/tasks/01-runtime-tools/03-wire-workstream-agent-runtime-tools.md
 - depends on: [TASK-MAGENT-01-002]
@@ -139,7 +140,8 @@
 - done criteria:
   - Workstream runtime agents use active managed configuration for both prompt assembly and Akka tool registration.
   - A focused git commit exists with message `managed-agents-core: wire runtime tools into agent`.
-- notes: []
+- notes:
+  - commit message: `managed-agents-core: wire runtime tools into agent`
 
 ### TASK-MAGENT-01-004: Prove model-invoked governed tool calls through Akka Agent path
 

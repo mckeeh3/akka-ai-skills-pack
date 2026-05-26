@@ -26,6 +26,18 @@ public final class AgentRuntimeToolResolver {
   }
 
   public ResolvedRuntimeTools resolve(ResolveRuntimeToolsRequest request) {
+    if (request == null) {
+      throw new AuthorizationException(400, "runtime-tool-context-required");
+    }
+    if (request.authContext() == null) {
+      throw new AuthorizationException(403, "runtime-tool-auth-context-required");
+    }
+    if (isBlank(request.tenantId()) || isBlank(request.agentDefinitionId()) || isBlank(request.mode()) || isBlank(request.capabilityId()) || isBlank(request.correlationId())) {
+      throw new AuthorizationException(403, "runtime-tool-context-incomplete");
+    }
+    if (!request.tenantId().equals(request.authContext().tenantId())) {
+      throw new AuthorizationException(403, "runtime-tool-tenant-mismatch");
+    }
     var agent = repository.agentDefinition(request.tenantId(), request.agentDefinitionId())
         .orElseThrow(() -> new AuthorizationException(404, "agent-not-found"));
     if (agent.status() != AgentLifecycleStatus.ACTIVE && "runtime".equalsIgnoreCase(request.mode())) {
@@ -84,6 +96,10 @@ public final class AgentRuntimeToolResolver {
 
   private boolean readOperationAllowed(ToolPermissionBoundary.ToolGrant grant) {
     return grant.allowedOperations().stream().anyMatch(operation -> operation.equalsIgnoreCase("read"));
+  }
+
+  private boolean isBlank(String value) {
+    return value == null || value.isBlank();
   }
 
   public record ResolveRuntimeToolsRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId) {

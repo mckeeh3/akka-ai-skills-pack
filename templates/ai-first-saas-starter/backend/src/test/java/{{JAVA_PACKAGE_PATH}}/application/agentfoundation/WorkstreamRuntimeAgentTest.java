@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
+import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
+import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import akka.javasdk.JsonSupport;
 import akka.javasdk.testkit.TestKit;
 import akka.javasdk.testkit.TestKitSupport;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 class WorkstreamRuntimeAgentTest extends TestKitSupport {
   private static final String MODEL_ALIAS = "openai-low-temperature";
+  private static final String TENANT_ID = "tenant-starter";
   private final TestModelProvider workstreamRuntimeModelTestProvider = new TestModelProvider();
 
   @Override
@@ -48,7 +52,11 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
                 new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
                     "# Governed prompt\nUse backend capabilities only. OPENAI_API_KEY is never visible.",
                     MODEL_ALIAS,
-                    "agent-user-admin",
+                    TENANT_ID,
+                    AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+                    tenantAdmin(),
+                    "runtime",
+                    AgentRuntimeService.INVOKE_CAPABILITY,
                     "corr-agent-runtime",
                     "What can I do next?",
                     List.of("trace-prompt-1")));
@@ -74,7 +82,11 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
                         new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
                             "# Governed prompt",
                             " ",
-                            "agent-user-admin",
+                            TENANT_ID,
+                            AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+                            tenantAdmin(),
+                            "runtime",
+                            AgentRuntimeService.INVOKE_CAPABILITY,
                             "corr-missing-model",
                             "Hello",
                             List.of("trace-prompt-2"))));
@@ -96,11 +108,80 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
                         new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
                             "# Governed prompt",
                             "openai-low-temperature api_key=hidden",
-                            "agent-user-admin",
+                            TENANT_ID,
+                            AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+                            tenantAdmin(),
+                            "runtime",
+                            AgentRuntimeService.INVOKE_CAPABILITY,
                             "corr-secret-model",
                             "Hello",
                             List.of("trace-prompt-3"))));
 
     assertTrue(failure.getMessage().contains("model provider alias must not contain secrets"));
+  }
+
+  @Test
+  void rejectsMissingRuntimeToolContextBeforeModelInvocation() {
+    var failure =
+        assertThrows(
+            RuntimeException.class,
+            () ->
+                componentClient
+                    .forAgent()
+                    .inSession("workstream-runtime-missing-tools-session")
+                    .method(WorkstreamRuntimeAgent::respond)
+                    .invoke(
+                        new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
+                            "# Governed prompt",
+                            MODEL_ALIAS,
+                            " ",
+                            AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+                            tenantAdmin(),
+                            "runtime",
+                            AgentRuntimeService.INVOKE_CAPABILITY,
+                            "corr-missing-tools",
+                            "Hello",
+                            List.of("trace-prompt-4"))));
+
+    assertTrue(failure.getMessage().contains("tenant id is required for governed runtime tools"));
+  }
+
+  @Test
+  void rejectsInconsistentRuntimeToolContextBeforeModelInvocation() {
+    var failure =
+        assertThrows(
+            RuntimeException.class,
+            () ->
+                componentClient
+                    .forAgent()
+                    .inSession("workstream-runtime-tool-mismatch-session")
+                    .method(WorkstreamRuntimeAgent::respond)
+                    .invoke(
+                        new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
+                            "# Governed prompt",
+                            MODEL_ALIAS,
+                            "tenant-other",
+                            AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+                            tenantAdmin(),
+                            "runtime",
+                            AgentRuntimeService.INVOKE_CAPABILITY,
+                            "corr-tool-mismatch",
+                            "Hello",
+                            List.of("trace-prompt-5"))));
+
+    assertTrue(failure.getMessage().contains("governed runtime tool context denied before model invocation"));
+    assertTrue(failure.getMessage().contains("runtime-tool-tenant-mismatch"));
+  }
+
+  private static AuthContext tenantAdmin() {
+    return new AuthContext(
+        "starter-admin",
+        "workos-starter-admin",
+        "membership-starter-admin",
+        ScopeType.TENANT,
+        TENANT_ID,
+        null,
+        List.of(FoundationRole.TENANT_ADMIN),
+        List.of("agent.user_admin.use", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read"));
   }
 }

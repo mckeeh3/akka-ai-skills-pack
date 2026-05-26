@@ -97,7 +97,11 @@ public final class AgentRuntimeService {
       var governedRequest = new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
           prompt.assembledSystemPrompt(),
           modelBinding.model().providerAlias(),
+          request.tenantId(),
           request.agentDefinitionId(),
+          request.authContext(),
+          "runtime",
+          INVOKE_CAPABILITY,
           request.correlationId(),
           safe(request.userInput()),
           List.of(prompt.traceId()));
