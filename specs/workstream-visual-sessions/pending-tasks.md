@@ -312,3 +312,163 @@
   - commit message: `Reverify workstream visual session phase 1`
   - completed: reverified source and starter phase 1 request anchoring after remediation and updated readiness notes to state that composer success/error, surface-open, and surface-action flows keep request items anchored while responses append below.
   - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`.
+
+### TASK-WVS-03-001: Fix request scroll container anchoring
+
+- status: pending
+- source: user runtime observation that request surfaces are selected but not scrolling to top of visible panel
+- task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/01-fix-request-scroll-container-anchoring.md
+- depends on: [TASK-WVS-02-003]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - docs/workstream-ui-reference-architecture.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/stream/WorkstreamStream.tsx
+  - frontend/src/workstream/shell/WorkstreamPanel.tsx
+  - frontend/src/styles/layout.css
+  - frontend/src/styles/components.css
+  - frontend/src/workstream-visual-session.contract.test.mjs
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - request surfaces scroll to the top of the actual visible workstream panel
+  - reduced-motion-safe container scroll behavior is tested
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+- done criteria:
+  - source frontend request anchoring works against the actual scroll container
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-03-002: Prevent background response selection steal
+
+- status: pending
+- source: user runtime observation that a response in another workstream switches focus back to that workstream
+- task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/02-prevent-background-response-selection-steal.md
+- depends on: [TASK-WVS-03-001]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/shell/**
+  - frontend/src/workstream/rail/**
+  - frontend/src/workstream-visual-session.contract.test.mjs
+  - frontend/src/workstream-composer-message-api.contract.test.mjs
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-testing
+- expected outputs:
+  - async responses for non-selected workstreams update background state without switching selected workstream
+  - tests cover submit in one workstream, switch to another, response arrives, selection remains unchanged
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd frontend && node --test src/workstream-composer-message-api.contract.test.mjs`
+- done criteria:
+  - source frontend no longer steals workstream focus on background response
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-03-003: Add left rail unseen response indicator
+
+- status: pending
+- source: user request for a left-rail indicator when another workstream has an unseen response
+- task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/03-add-left-rail-unseen-response-indicator.md
+- depends on: [TASK-WVS-03-002]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/workstream-ui-reference-architecture.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/rail/**
+  - frontend/src/workstream/types/agents.ts
+  - frontend/src/workstream/fixtures/agents.ts
+  - frontend/src/styles/components.css
+  - frontend/src/workstream-shell.contract.test.mjs
+  - frontend/src/workstream-visual-session.contract.test.mjs
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - in-memory unseen response state for non-selected workstreams
+  - accessible rail badge/dot/count indicator
+  - indicator clears on workstream selection
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-shell.contract.test.mjs`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+- done criteria:
+  - source frontend shows unseen response indicators in the left rail
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-03-004: Sync phase 1.1 runtime UX to starter template
+
+- status: pending
+- source: starter template must remain canonical generated-app baseline
+- task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/04-sync-phase-1-1-to-starter-template.md
+- depends on: [TASK-WVS-03-003]
+- required reads:
+  - AGENTS.md
+  - docs/workstream-visual-sessions.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/stream/WorkstreamStream.tsx
+  - frontend/src/workstream/rail/**
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/stream/WorkstreamStream.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/rail/**
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - starter template includes request top-scroll fix, no background selection steal, and rail unseen indicators
+  - starter template tests cover synced behavior
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && npm test`
+- done criteria:
+  - starter template matches source phase 1.1 behavior
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WVS-03-005: Reverify phase 1.1 readiness
+
+- status: pending
+- source: phase 1.1 runtime UX closure
+- task brief: specs/workstream-visual-sessions/tasks/03-phase-1-1-runtime-ux/05-reverify-phase-1-1-readiness.md
+- depends on: [TASK-WVS-03-004]
+- required reads:
+  - AGENTS.md
+  - specs/workstream-visual-sessions/pending-tasks.md
+  - docs/workstream-visual-sessions.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/stream/WorkstreamStream.tsx
+  - frontend/src/workstream/rail/**
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/stream/WorkstreamStream.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/rail/**
+- skills:
+  - none; repository verification/docs task
+- expected outputs:
+  - phase 1.1 runtime UX readiness documented accurately
+  - queue notes capture checks and remaining limitations
+- required checks:
+  - `cd frontend && npm run typecheck`
+  - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd frontend && node --test src/workstream-shell.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`
+- done criteria:
+  - phase 1.1 objectives are independently verified in source and starter
+  - task changes and queue update are committed
+- notes: []
