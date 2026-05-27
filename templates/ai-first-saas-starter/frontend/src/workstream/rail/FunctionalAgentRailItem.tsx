@@ -1,5 +1,6 @@
 import type { FunctionalAgentRailEntry, WorkstreamIconDescriptor } from '../types';
 import { agentDisabledReason, isAgentSelectable } from './railState';
+import { WorkstreamIcon } from './WorkstreamIcon';
 
 type FunctionalAgentRailItemProps = {
   entry: FunctionalAgentRailEntry;
@@ -8,28 +9,6 @@ type FunctionalAgentRailItemProps = {
 };
 
 const severityLabel = (severity: string) => `${severity} attention`;
-const iconGlyph = (descriptor?: WorkstreamIconDescriptor, legacyIcon?: string, label?: string) => {
-  const iconId = descriptor?.iconId ?? legacyIcon;
-  const icons: Record<string, string> = {
-    'my-account': 'P',
-    'users-admin': 'U',
-    'bot-spark': 'B',
-    'bot-off-denied': 'B',
-    'timeline-search': 'T',
-    'shield-checklist': 'G',
-    'credit-card-hidden': '$',
-    'life-ring-disabled': 'S',
-    'user-circle': 'P',
-    users: 'U',
-    bot: 'B',
-    'bot-off': 'B',
-    timeline: 'T',
-    shield: 'G',
-    'credit-card': '$',
-    'life-ring': 'S'
-  };
-  return iconId ? icons[iconId] ?? iconId.slice(0, 1).toUpperCase() : label?.slice(0, 1).toUpperCase() ?? 'W';
-};
 
 export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: FunctionalAgentRailItemProps) {
   const selectable = isAgentSelectable(entry);
@@ -68,7 +47,7 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
           data-workstream-icon-id={workstreamIcon.iconId}
           data-accent-color-token={workstreamIcon.accentColorToken}
         >
-          {iconGlyph(workstreamIcon, entry.icon, entry.label)}
+          <WorkstreamIcon descriptor={workstreamIcon} />
         </span>
         <span id={tooltipId} className="workstream-icon-tooltip" role="tooltip">{workstreamIcon.tooltip}</span>
         <span className="workstream-rail-copy">

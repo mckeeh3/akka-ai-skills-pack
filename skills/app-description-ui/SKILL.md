@@ -101,7 +101,7 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - reminder: primary/secondary actions, loading/error states, and authorization semantics belong first in structured surface contracts and governed capability contracts
 
 ### Shell navigation and workstream icons
-- render workstream icon descriptors from `12-workstreams/` using stable icon ids, visual hints, theme accent color tokens, tooltips, accessible labels, and optional approved asset references
+- render workstream icon descriptors from `12-workstreams/` using stable icon ids, visual hints, theme accent color tokens, tooltips, accessible labels, and optional approved asset references; realization must use an approved SVG/icon-library registry or semantic SVG fallback derived from the workstream name/responsibility, never letter initials as the normal icon
 - show My Account only through the lower-left signed-in user tile/email; do not duplicate it as a top-rail workstream button
 - treat buttons, links, icons, cards, rows, and status panels that open protected surfaces or workstreams as governed surface-request actions such as `open_workstream`, backed by capabilities and denial/system-message behavior
 - keep browser interaction details, tooltip/focus behavior, responsive rail collapse, and visual treatment in `55-ui/`; do not assign domain icon meaning here

@@ -94,7 +94,7 @@ type WorkstreamIconDescriptor = {
 };
 ```
 
-When a new workstream is added, generate or select an icon from the workstream's actual domain name and responsibility. Keep icons semantically simple and consistent: Procurement may use a cart/purchase-order glyph, Inventory a package/warehouse glyph, Finance an invoice/currency glyph, Sales Pipeline a rising-chart glyph, Customer Success a health/heart glyph, Field Service a wrench/truck glyph, Governance a shield/checklist glyph. Do not encode authorization or sensitive state only through color; expose names and status through labels/tooltips and text.
+When a new workstream is added, generate or select an icon from the workstream's actual domain name and responsibility. The shell must render the descriptor through an approved SVG/icon-library registry, not through text initials or arbitrary emoji. Keep icons semantically simple and consistent: Procurement may use a cart/purchase-order glyph, Inventory a package/warehouse glyph, Finance an invoice/currency glyph, Sales Pipeline a rising-chart glyph, Customer Success a health/heart glyph, Field Service a wrench/truck glyph, Governance a shield/checklist glyph. Unknown domain workstreams must still use the registry's semantic derivation/fallback SVG icon; letter-only fallback is not acceptable except as an explicitly failing development diagnostic. Do not encode authorization or sensitive state only through color; expose names and status through labels/tooltips and text.
 
 ## Workstreams and functional agents as verticals
 

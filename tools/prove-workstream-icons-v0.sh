@@ -79,16 +79,18 @@ frontend = root / "frontend" / "src"
 fixtures_path = frontend / "workstream" / "fixtures" / "agents.ts"
 rail_path = frontend / "workstream" / "rail" / "FunctionalAgentRail.tsx"
 rail_item_path = frontend / "workstream" / "rail" / "FunctionalAgentRailItem.tsx"
+icon_component_path = frontend / "workstream" / "rail" / "WorkstreamIcon.tsx"
 css_path = frontend / "styles" / "components.css"
 backend_me_path = root / "src" / "main" / "java" / "ai" / "first" / "application" / "security" / "MeResponse.java"
 
-for path in [fixtures_path, rail_path, rail_item_path, css_path, backend_me_path]:
+for path in [fixtures_path, rail_path, rail_item_path, icon_component_path, css_path, backend_me_path]:
     if not path.exists():
         raise SystemExit(f"[proof][error] Missing rendered file: {path.relative_to(root)}")
 
 fixtures = fixtures_path.read_text()
 rail = rail_path.read_text()
 rail_item = rail_item_path.read_text()
+icon_component = icon_component_path.read_text()
 css = css_path.read_text()
 backend_me = backend_me_path.read_text()
 
@@ -126,7 +128,7 @@ for label, agent_id, workstream_id, icon_id, token, tooltip in required:
 
 rail_item_checks = {
     "fallback descriptor": r"const workstreamIcon = entry\.workstreamIcon \?\? fallbackIcon",
-    "descriptor-backed glyph": r"iconGlyph\(workstreamIcon, entry\.icon, entry\.label\)",
+    "descriptor-backed svg component": r"<WorkstreamIcon descriptor=\{workstreamIcon\}",
     "icon id data attribute": r"data-workstream-icon-id=\{workstreamIcon\.iconId\}",
     "accent token data attribute": r"data-accent-color-token=\{workstreamIcon\.accentColorToken\}",
     "accessible icon button label": r"aria-label=\{workstreamIcon\.ariaLabel\}",
@@ -136,6 +138,22 @@ rail_item_checks = {
 for description, pattern in rail_item_checks.items():
     if not re.search(pattern, rail_item):
         raise SystemExit(f"[proof][error] Missing rail item proof for {description}")
+
+icon_component_checks = {
+    "svg renderer": r"<svg viewBox=\"0 0 24 24\"",
+    "artwork data attribute": r"data-icon-artwork=\{artwork\}",
+    "derivation function": r"deriveWorkstreamIconArtwork",
+    "keyword derivation": r"keywordArtwork",
+    "user admin artwork": r"'users-admin': 'users'",
+    "agent admin artwork": r"'bot-spark': 'bot'",
+    "audit artwork": r"'timeline-search': 'timeline'",
+    "governance artwork": r"'shield-checklist': 'shield'",
+}
+for description, pattern in icon_component_checks.items():
+    if not re.search(pattern, icon_component):
+        raise SystemExit(f"[proof][error] Missing icon component proof for {description}")
+if re.search(r"slice\(0, 1\)|toUpperCase\(\)", icon_component):
+    raise SystemExit("[proof][error] Workstream icon component still contains letter-initial fallback logic")
 
 for token in ["accent-users", "accent-agents", "accent-audit", "accent-governance"]:
     if f'.workstream-icon[data-accent-color-token="{token}"]' not in css:

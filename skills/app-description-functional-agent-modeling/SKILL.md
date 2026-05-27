@@ -69,7 +69,7 @@ For each functional agent, capture:
 
 - stable agent id and display name;
 - purpose and business responsibility;
-- workstream icon metadata for the shell launcher/status affordance: stable icon id, visual hint, accent color token, tooltip, aria label, and optional approved asset reference (`WorkstreamIconDescriptor` semantics);
+- workstream icon metadata for the shell launcher/status affordance: stable icon id, visual hint derived from the workstream name/responsibility, accent color token, tooltip, aria label, and optional approved asset reference (`WorkstreamIconDescriptor` semantics); the eventual shell rendering must use approved SVG/icon-library artwork or semantic SVG fallback, not letter initials;
 - whether it is required foundation scope or app-specific domain scope;
 - tenant/customer scope and selected `AuthContext` assumptions;
 - authorized roles, permissions, scopes, or named capability grants;

@@ -15,7 +15,7 @@ My Account remains launched from the signed-in user tile in the lower-left rail 
 
 ## Target architecture
 
-Workstream icons are not cosmetic-only frontend constants. They are workstream metadata exposed through the shell/bootstrap contract and reusable anywhere the universal shell links to workstreams:
+Workstream icons are essential universal shell visual affordances, even though they are cosmetic rather than authorization-bearing. They are not frontend letter initials. They are workstream metadata exposed through the shell/bootstrap contract and rendered through an approved SVG/icon-library registry or semantic SVG fallback anywhere the universal shell links to workstreams:
 
 - left rail launchers;
 - My Account dashboard workstream status panels;
@@ -44,7 +44,7 @@ Implement in layers:
 
 1. **Initial core app / v0 contract** — require and seed icon metadata for the core workstreams.
 2. **Starter/template code** — expose icon descriptors in `/api/me`/fixture/bootstrap data and render them in the left rail.
-3. **Domain workstream additions** — require each new domain workstream to choose or generate an icon when the workstream is first defined.
+3. **Domain workstream additions** — require each new domain workstream to choose or generate an icon descriptor when the workstream is first defined, and render it through the shared SVG registry/semantic fallback.
 4. **Proof** — scaffold/use the v0 starter and verify User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the rail with icons and accessible names/tooltips.
 
 ## Proof command
@@ -67,6 +67,7 @@ Use `--keep` to retain the scaffold target for inspection.
 ## Non-goals
 
 - Do not build a complex image-generation pipeline for icons in v0.
++- Do not render normal workstream icons as letters or initials; unknown workstreams use the generic/derived SVG registry fallback.
 - Do not make icons the authorization mechanism; backend visibility/capability checks remain authoritative.
 - Do not move My Account into the normal top rail.
 - Do not allow icon color alone to communicate status or authority.

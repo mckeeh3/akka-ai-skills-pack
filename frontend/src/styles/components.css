@@ -158,9 +158,18 @@
   border-radius: var(--radius-md);
   background: var(--color-surface-raised);
   color: var(--color-primary);
-  font-size: 0.8rem;
-  font-weight: 900;
 }
+
+.workstream-icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 
 .workstream-functional-agent-rail.collapsed .nav-item {
   justify-content: center;
@@ -176,10 +185,15 @@
   left: calc(100% + var(--space-2));
 }
 
+.workstream-icon[data-accent-color-token="accent-account"] { color: var(--color-primary); }
 .workstream-icon[data-accent-color-token="accent-users"] { color: var(--color-info); }
 .workstream-icon[data-accent-color-token="accent-agents"] { color: var(--color-ai); }
 .workstream-icon[data-accent-color-token="accent-audit"] { color: var(--color-warning); }
 .workstream-icon[data-accent-color-token="accent-governance"] { color: var(--color-success); }
+.workstream-icon[data-accent-color-token="accent-billing"] { color: var(--color-warning); }
+.workstream-icon[data-accent-color-token="accent-support"] { color: var(--color-info); }
+.workstream-icon[data-accent-color-token="accent-denied"] { color: var(--color-danger); }
+.workstream-icon[data-accent-color-token="accent-workstream"] { color: var(--color-primary); }
 
 .workstream-agent-button.active .nav-icon {
   background: var(--color-primary);

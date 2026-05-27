@@ -81,7 +81,7 @@ Before implementing generated AI-first SaaS UI, verify that a selected style exi
 
 Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and produce a frontend plan with:
 1. User goals and personas
-2. Functional-agent left rail: visible agents, hidden/denied agents, default selected agent, unread/attention indicators, workstream icon descriptors, My Account lower-left signed-in user tile behavior, and role/capability basis
+2. Functional-agent left rail: visible agents, hidden/denied agents, default selected agent, unread/attention indicators, workstream icon descriptors rendered through an approved SVG/icon-library registry or semantic SVG fallback (not letters), My Account lower-left signed-in user tile behavior, and role/capability basis
 3. Main workstream panel: stream item types, grouping, history/retention behavior, status/progress items, trace links, and stale/reconnect states
 4. Persistent composer: accepted natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden states, and selected-agent context
 5. Structured surfaces: type/version, payload schema, information hierarchy, states, actions, and rendering tests for dashboards, forms, tables, charts, decisions, diffs, approvals, audit timelines, details, workflow status, and outcome panels

@@ -82,7 +82,7 @@ Full core app scope also requires complete My Account, User Admin, Agent Admin, 
 For each user-facing work area, define:
 - purpose and business responsibility;
 - authorized roles/capabilities and tenant/customer scope;
-- workstream icon metadata owned by the workstream definition: stable icon id, visual hint, accent color token, tooltip, aria label, and optional approved asset reference;
+- workstream icon metadata owned by the workstream definition: stable icon id, visual hint derived from the workstream name/responsibility, accent color token, tooltip, aria label, and optional approved asset reference; shell realization must render approved SVG/icon-library artwork or semantic SVG fallback, not letter initials;
 - default dashboard, attention, or briefing surface;
 - workstream semantics and retention expectations;
 - prompt intent, governed documents, skills, reference documents, skill/reference manifests, tools, and tool boundaries when LLM behavior is involved;

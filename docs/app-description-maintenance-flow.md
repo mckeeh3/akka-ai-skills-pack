@@ -82,7 +82,7 @@ Use `app-description-intake-router` to determine:
 Use `app-description-functional-agent-modeling` and `app-description-surface-modeling` when the request changes a dashboard, portal, work queue, admin console, command center, agent/chat area, browser action, approval, decision, audit timeline, workflow status, form, table, or other user-facing work area.
 
 Capture or verify:
-- source `12-workstreams/functional-agents.md` ownership, including workstream icon metadata (`WorkstreamIconDescriptor` semantics: stable icon id, visual hint, accent color token, tooltip, aria label, optional asset reference);
+- source `12-workstreams/functional-agents.md` ownership, including workstream icon metadata (`WorkstreamIconDescriptor` semantics: stable icon id, visual hint derived from workstream responsibility, accent color token, tooltip, aria label, optional asset reference; rendered by the shell as approved SVG/icon-library artwork or semantic SVG fallback, not letters);
 - workstream expertise ownership under `12-workstreams/workstream-expertise/<functional-agent-id>.md` for each LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, capability map, tool boundary, surfaces, traces, governance owner, seed/upgrade policy, and tests;
 - structured surface ids, payload/action candidates, states, traces, and tests;
 - surface action-to-capability candidates, including governed surface-request actions such as `open_workstream` for buttons, links, icons, cards, rows, and status panels that open protected surfaces/workstreams;
