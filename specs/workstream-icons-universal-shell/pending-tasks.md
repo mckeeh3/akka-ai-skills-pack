@@ -149,7 +149,8 @@
 
 ### TASK-WSI-04-001: Add scaffold proof for v0 left rail icons
 
-- status: pending
+- status: done
+- completion note: Added `tools/prove-workstream-icons-v0.sh`, a deterministic scaffold proof that checks descriptor-backed left rail icon affordances for User Admin, Agent Admin, Audit/Trace, and Governance/Policy and verifies My Account remains on the lower-left signed-in user tile. Proof command passed locally.
 - source: user-specified proof test
 - task brief: specs/workstream-icons-universal-shell/tasks/04-proof/01-add-scaffold-proof.md
 - depends on: [TASK-WSI-03-001]
@@ -170,4 +171,7 @@
 - done criteria:
   - A fresh harness can prove the generated/starter v0 app includes left rail icons for the four required core workstreams.
   - A git commit exists for the changes.
-- notes: []
+- notes:
+  - proof command: `tools/prove-workstream-icons-v0.sh`
+  - local result: passed
+  - commit message: `workstream-icons: add v0 rail icon proof`

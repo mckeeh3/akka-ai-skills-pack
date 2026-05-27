@@ -47,6 +47,23 @@ Implement in layers:
 3. **Domain workstream additions** — require each new domain workstream to choose or generate an icon when the workstream is first defined.
 4. **Proof** — scaffold/use the v0 starter and verify User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the rail with icons and accessible names/tooltips.
 
+## Proof command
+
+Run the deterministic scaffold proof from the skills-pack source repository:
+
+```bash
+tools/prove-workstream-icons-v0.sh
+```
+
+Expected result:
+
+- the script scaffolds `templates/ai-first-saas-starter` into a temporary target;
+- User Admin, Agent Admin, Audit/Trace, and Governance/Policy each have `WorkstreamIconDescriptor` metadata and rendered rail icon affordance wiring;
+- the rendered rail item code uses descriptor-backed icon data attributes, tooltip markup, and accessible labels;
+- My Account remains available from the lower-left signed-in user tile and is filtered out of the normal top rail.
+
+Use `--keep` to retain the scaffold target for inspection.
+
 ## Non-goals
 
 - Do not build a complex image-generation pipeline for icons in v0.

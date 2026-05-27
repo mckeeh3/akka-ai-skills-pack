@@ -91,6 +91,14 @@ tools/validate-ai-first-saas-starter-fullstack.sh
 
 The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, checks that `WorkstreamRuntimeAgent` still registers runtime tools with `effects().tools(runtimeTools)`, runs `mvn test` including governed agent seed/runtime tests and Akka Agent runtime guards for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, scans the built static assets for obvious backend secret markers, and reports the optional provider smoke state. If `OPENAI_API_KEY` is absent, the provider smoke is skipped loudly and validation still passes; if backend model-provider env is present, it runs a targeted real model smoke through one message in each five-core v0 workstream, backend workstream message submission, the `ComponentClient`-backed `WorkstreamRuntimeAgent`, runtime tool registration, trace ids, and secret-boundary checks. Use `--keep` to retain the generated target for inspection.
 
+Focused workstream icon proof from the skills-pack source repository:
+
+```bash
+tools/prove-workstream-icons-v0.sh
+```
+
+This scaffolds the starter into a temporary target without network access and verifies that User Admin, Agent Admin, Audit/Trace, and Governance/Policy expose descriptor-backed left rail icon affordances while My Account remains launched only from the lower-left signed-in user tile.
+
 ## Local build and manual-test commands
 
 From a scaffolded project:
