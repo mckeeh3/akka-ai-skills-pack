@@ -37,7 +37,17 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
   const labelId = `rail-agent-${entry.functionalAgentId}-label`;
   const reasonId = `rail-agent-${entry.functionalAgentId}-reason`;
   const tooltipId = `rail-agent-${entry.functionalAgentId}-tooltip`;
-  const describedBy = [entry.workstreamIcon.tooltip ? tooltipId : undefined, disabledReason ? reasonId : undefined].filter(Boolean).join(' ') || undefined;
+  const fallbackIcon: WorkstreamIconDescriptor = {
+    workstreamId: entry.functionalAgentId,
+    displayName: entry.label,
+    iconId: entry.icon ?? 'workstream',
+    visualHint: entry.icon ?? 'workstream',
+    accentColorToken: 'accent-workstream',
+    tooltip: `Open ${entry.label} workstream`,
+    ariaLabel: `Open ${entry.label} workstream`
+  };
+  const workstreamIcon = entry.workstreamIcon ?? fallbackIcon;
+  const describedBy = [workstreamIcon.tooltip ? tooltipId : undefined, disabledReason ? reasonId : undefined].filter(Boolean).join(' ') || undefined;
   const unseenResponseCount = entry.railAttention?.unseenResponseCount ?? 0;
   const unseenResponseLabel = unseenResponseCount === 1 ? '1 unseen response' : `${unseenResponseCount} unseen responses`;
 
@@ -47,7 +57,7 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
         type="button"
         className={`nav-item workstream-agent-button ${entry.isSelected ? 'active' : ''}`.trim()}
         aria-current={entry.isSelected ? 'page' : undefined}
-        aria-label={entry.workstreamIcon.ariaLabel}
+        aria-label={workstreamIcon.ariaLabel}
         aria-describedby={describedBy}
         disabled={!selectable}
         onClick={() => selectable && onSelect?.(entry.functionalAgentId)}
@@ -55,12 +65,12 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
         <span
           className="nav-icon workstream-icon"
           aria-hidden="true"
-          data-workstream-icon-id={entry.workstreamIcon.iconId}
-          data-accent-color-token={entry.workstreamIcon.accentColorToken}
+          data-workstream-icon-id={workstreamIcon.iconId}
+          data-accent-color-token={workstreamIcon.accentColorToken}
         >
-          {iconGlyph(entry.workstreamIcon, entry.icon, entry.label)}
+          {iconGlyph(workstreamIcon, entry.icon, entry.label)}
         </span>
-        <span id={tooltipId} className="workstream-icon-tooltip" role="tooltip">{entry.workstreamIcon.tooltip}</span>
+        <span id={tooltipId} className="workstream-icon-tooltip" role="tooltip">{workstreamIcon.tooltip}</span>
         <span className="workstream-rail-copy">
           <span id={labelId}>{entry.label}</span>
         </span>

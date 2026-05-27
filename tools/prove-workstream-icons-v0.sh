@@ -19,7 +19,9 @@ access or npm install. It verifies:
   - User Admin, Agent Admin, Audit/Trace, and Governance/Policy each carry
     WorkstreamIconDescriptor metadata used by rendered rail icon affordances.
   - FunctionalAgentRailItem renders descriptor-backed icon data attributes,
-    tooltip markup, and accessible labels.
+    tooltip markup, accessible labels, and a safe fallback for older payloads.
+  - The backend /api/me functional-agent DTO includes WorkstreamIconDescriptor
+    metadata for the same core v0 workstreams.
   - My Account remains opened from the lower-left signed-in user tile and is
     filtered out of the normal top rail.
 EOF
@@ -78,8 +80,9 @@ fixtures_path = frontend / "workstream" / "fixtures" / "agents.ts"
 rail_path = frontend / "workstream" / "rail" / "FunctionalAgentRail.tsx"
 rail_item_path = frontend / "workstream" / "rail" / "FunctionalAgentRailItem.tsx"
 css_path = frontend / "styles" / "components.css"
+backend_me_path = root / "src" / "main" / "java" / "ai" / "first" / "application" / "security" / "MeResponse.java"
 
-for path in [fixtures_path, rail_path, rail_item_path, css_path]:
+for path in [fixtures_path, rail_path, rail_item_path, css_path, backend_me_path]:
     if not path.exists():
         raise SystemExit(f"[proof][error] Missing rendered file: {path.relative_to(root)}")
 
@@ -87,6 +90,7 @@ fixtures = fixtures_path.read_text()
 rail = rail_path.read_text()
 rail_item = rail_item_path.read_text()
 css = css_path.read_text()
+backend_me = backend_me_path.read_text()
 
 required = [
     ("User Admin", "agent-user-admin", "workstream-user-admin", "users-admin", "accent-users", "Open User Admin workstream"),
@@ -94,6 +98,9 @@ required = [
     ("Audit/Trace", "agent-audit-trace", "workstream-audit-trace", "timeline-search", "accent-audit", "Open Audit/Trace workstream"),
     ("Governance/Policy", "agent-governance-policy", "workstream-governance-policy", "shield-checklist", "accent-governance", "Open Governance/Policy workstream"),
 ]
+
+if "record WorkstreamIconDescriptor" not in backend_me or "WorkstreamIconDescriptor workstreamIcon" not in backend_me:
+    raise SystemExit("[proof][error] Backend /api/me DTO does not expose WorkstreamIconDescriptor metadata")
 
 for label, agent_id, workstream_id, icon_id, token, tooltip in required:
     checks = {
@@ -108,13 +115,22 @@ for label, agent_id, workstream_id, icon_id, token, tooltip in required:
     for description, pattern in checks.items():
         if not re.search(pattern, fixtures):
             raise SystemExit(f"[proof][error] Missing {description} in {fixtures_path.relative_to(root)}")
+    for description, pattern in {
+        f"backend label {label}": rf'"{re.escape(label)}"',
+        f"backend icon id {icon_id}": rf'"{re.escape(icon_id)}"',
+        f"backend accent token {token}": rf'"{re.escape(token)}"',
+        f"backend aria label {tooltip}": rf'"{re.escape(tooltip)}"',
+    }.items():
+        if not re.search(pattern, backend_me):
+            raise SystemExit(f"[proof][error] Missing {description} in {backend_me_path.relative_to(root)}")
 
 rail_item_checks = {
-    "descriptor-backed glyph": r"iconGlyph\(entry\.workstreamIcon, entry\.icon, entry\.label\)",
-    "icon id data attribute": r"data-workstream-icon-id=\{entry\.workstreamIcon\.iconId\}",
-    "accent token data attribute": r"data-accent-color-token=\{entry\.workstreamIcon\.accentColorToken\}",
-    "accessible icon button label": r"aria-label=\{entry\.workstreamIcon\.ariaLabel\}",
-    "tooltip description wiring": r"entry\.workstreamIcon\.tooltip \? tooltipId",
+    "fallback descriptor": r"const workstreamIcon = entry\.workstreamIcon \?\? fallbackIcon",
+    "descriptor-backed glyph": r"iconGlyph\(workstreamIcon, entry\.icon, entry\.label\)",
+    "icon id data attribute": r"data-workstream-icon-id=\{workstreamIcon\.iconId\}",
+    "accent token data attribute": r"data-accent-color-token=\{workstreamIcon\.accentColorToken\}",
+    "accessible icon button label": r"aria-label=\{workstreamIcon\.ariaLabel\}",
+    "tooltip description wiring": r"workstreamIcon\.tooltip \? tooltipId",
     "tooltip role": r"className=\"workstream-icon-tooltip\" role=\"tooltip\"",
 }
 for description, pattern in rail_item_checks.items():

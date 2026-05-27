@@ -35,11 +35,12 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(railState, /railAttentionByAgentId: FunctionalAgentRailAttentionStore = \{\}/);
   assert.match(railState, /entry\.availability === 'visible' && entry\.visibilityReason === 'has-capability'/);
   assert.match(railItem, /aria-current=\{entry\.isSelected \? 'page'/);
-  assert.match(railItem, /iconGlyph\(entry\.workstreamIcon, entry\.icon, entry\.label\)/);
-  assert.match(railItem, /aria-label=\{entry\.workstreamIcon\.ariaLabel\}/);
+  assert.match(railItem, /const workstreamIcon = entry\.workstreamIcon \?\? fallbackIcon/);
+  assert.match(railItem, /iconGlyph\(workstreamIcon, entry\.icon, entry\.label\)/);
+  assert.match(railItem, /aria-label=\{workstreamIcon\.ariaLabel\}/);
   assert.match(railItem, /aria-describedby=\{describedBy\}/);
-  assert.match(railItem, /data-workstream-icon-id=\{entry\.workstreamIcon\.iconId\}/);
-  assert.match(railItem, /data-accent-color-token=\{entry\.workstreamIcon\.accentColorToken\}/);
+  assert.match(railItem, /data-workstream-icon-id=\{workstreamIcon\.iconId\}/);
+  assert.match(railItem, /data-accent-color-token=\{workstreamIcon\.accentColorToken\}/);
   assert.match(railItem, /className="workstream-icon-tooltip" role="tooltip"/);
   assert.match(railItem, /rail-unseen-response-badge/);
   assert.match(railItem, /aria-label=\{unseenResponseLabel\}/);
@@ -77,7 +78,8 @@ test('left rail renders descriptor-backed workstream icons for core v0 workstrea
     assert.match(agentFixtures, new RegExp(`ariaLabel: '${tooltip.replace('/', '\\/')}'`));
   }
   assert.match(railItem, /workstreamIcon\.tooltip \? tooltipId/);
-  assert.match(railItem, /role="tooltip">\{entry\.workstreamIcon\.tooltip\}/);
+  assert.match(railItem, /role="tooltip">\{workstreamIcon\.tooltip\}/);
+  assert.match(railItem, /fallbackIcon: WorkstreamIconDescriptor/);
   assert.match(componentsCss, /\.workstream-icon\[data-accent-color-token="accent-users"\]/);
   assert.match(componentsCss, /\.workstream-agent-button:focus-visible \.workstream-icon-tooltip/);
   assert.doesNotMatch(railItem, /title=/);

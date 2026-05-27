@@ -236,7 +236,7 @@ public final class WorkstreamService {
     var agent = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
         .filter(summary -> functionalAgentId.equals(summary.functionalAgentId()))
         .findFirst()
-        .orElse(new MeResponse.FunctionalAgentSummary(functionalAgentId, title.replace(" v0 response", ""), "Five core v0 starter workstream.", "workstream", "markdown_response", List.of(), "visible", null));
+        .orElse(new MeResponse.FunctionalAgentSummary(functionalAgentId, title.replace(" v0 response", ""), "Five core v0 starter workstream.", "workstream", new MeResponse.WorkstreamIconDescriptor(functionalAgentId, title.replace(" v0 response", ""), "workstream", "workstream", "accent-workstream", "Open " + title.replace(" v0 response", "") + " workstream", "Open " + title.replace(" v0 response", "") + " workstream", null), "markdown_response", List.of(), "visible", null));
     return markdownResponseSurface(surfaceId, workstreamEntryId, agent, actor, correlationId, List.of("trace-" + surfaceId), markdown);
   }
 

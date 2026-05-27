@@ -120,11 +120,22 @@ public record MeResponse(
 
   public record SupportAccessSummary(boolean active, String reason, String expiresAt) {}
 
+  public record WorkstreamIconDescriptor(
+      String workstreamId,
+      String displayName,
+      String iconId,
+      String visualHint,
+      String accentColorToken,
+      String tooltip,
+      String ariaLabel,
+      String assetRef) {}
+
   public record FunctionalAgentSummary(
       String functionalAgentId,
       String label,
       String purpose,
       String icon,
+      WorkstreamIconDescriptor workstreamIcon,
       String defaultSurfaceType,
       List<String> requiredCapabilityIds,
       String availability,
@@ -147,6 +158,7 @@ public record MeResponse(
               "My Account",
               "Review the signed-in account, profile, settings, selected AuthContext, sign-out action, and browser-safe capability basis.",
               "my-account",
+              icon("workstream-my-account", "My Account", "my-account", "user account avatar", "accent-account", "Open My Account workstream from the signed-in user tile"),
               "markdown_response",
               List.of("profile.read"),
               profileVisible ? "visible" : "denied",
@@ -156,6 +168,7 @@ public record MeResponse(
               "User Admin",
               "Administer users, invitations, roles, memberships, support access, and access review with backend-authoritative policy checks.",
               "users",
+              icon("workstream-user-admin", "User Admin", "users-admin", "users and roles", "accent-users", "Open User Admin workstream"),
               "markdown_response",
               List.of("secure-tenant-user-foundation"),
               userAdminVisible ? "visible" : "denied",
@@ -165,6 +178,7 @@ public record MeResponse(
               "Agent Admin",
               "Govern agent definitions, prompts, skills, tool boundaries, model refs, test runs, approvals, denials, and runtime traces.",
               "bot",
+              icon("workstream-agent-admin", "Agent Admin", "bot-spark", "agent bot sparkle", "accent-agents", "Open Agent Admin workstream"),
               "markdown_response",
               List.of("agent.definitions.manage", "agent.prompts.govern", "agent.skills.govern", "agent.tool_boundaries.manage", "agent.models.read", "agent.runtime.test"),
               agentAdminVisible ? "visible" : "denied",
@@ -174,6 +188,7 @@ public record MeResponse(
               "Audit/Trace",
               "Review admin audit events and work traces for selected tenant/customer context.",
               "audit",
+              icon("workstream-audit-trace", "Audit/Trace", "timeline-search", "audit timeline search", "accent-audit", "Open Audit/Trace workstream"),
               "markdown_response",
               List.of("audit.trace.read"),
               auditVisible ? "visible" : "hidden",
@@ -183,10 +198,15 @@ public record MeResponse(
               "Governance/Policy",
               "Review policy guardrails, improvement proposals, approval requirements, activation denials, traces, and outcome evidence.",
               "shield",
+              icon("workstream-governance-policy", "Governance/Policy", "shield-checklist", "shield checklist", "accent-governance", "Open Governance/Policy workstream"),
               "markdown_response",
               List.of("governance.policy.read", "improvements.review"),
               governanceVisible ? "visible" : "denied",
               governanceVisible ? null : "Governance policy capabilities are not assigned in this context."));
+    }
+
+    private static WorkstreamIconDescriptor icon(String workstreamId, String displayName, String iconId, String visualHint, String accentColorToken, String label) {
+      return new WorkstreamIconDescriptor(workstreamId, displayName, iconId, visualHint, accentColorToken, label, label, null);
     }
   }
 
