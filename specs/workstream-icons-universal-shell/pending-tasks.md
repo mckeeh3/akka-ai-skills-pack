@@ -78,7 +78,8 @@
 
 ### TASK-WSI-02-001: Add icon metadata contracts and fixtures to starter/reference frontend
 
-- status: pending
+- status: done
+- completion note: Added `WorkstreamIconDescriptor` and `workstreamIcon` metadata to reference and starter frontend functional-agent contracts, seeded core top-rail, My Account, hidden, disabled, and denied descriptors, and updated contract tests for descriptor fields.
 - source: specs/workstream-icons-universal-shell/README.md
 - task brief: specs/workstream-icons-universal-shell/tasks/02-contracts-fixtures/01-add-icon-contracts-fixtures.md
 - depends on: [TASK-WSI-01-001]
@@ -108,7 +109,9 @@
 - done criteria:
   - Type and fixture contracts expose icon metadata for the four top-rail core v0 workstreams.
   - A git commit exists for the changes.
-- notes: []
+- notes:
+  - commit message: `workstream-icons: add icon contracts and fixtures`
+  - Exact frontend npm test command currently invokes the full `src/*.test.mjs` suite and is blocked by unrelated pre-existing failures/missing backend seed resource; targeted `node --test` commands for the required contract files passed.
 
 ### TASK-WSI-03-001: Render workstream icons in left rail
 

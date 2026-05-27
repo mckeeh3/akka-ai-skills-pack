@@ -18,11 +18,24 @@ export type FunctionalAgentRailAttention = {
 
 export type FunctionalAgentRailAttentionStore = Record<string, FunctionalAgentRailAttention | undefined>;
 
+export type WorkstreamIconDescriptor = {
+  workstreamId: string;
+  displayName: string;
+  iconId: string;
+  visualHint: string;
+  accentColorToken: string;
+  tooltip: string;
+  ariaLabel: string;
+  assetRef?: string;
+};
+
 export type FunctionalAgentSummary = {
   functionalAgentId: string;
   label: string;
   purpose: string;
+  /** @deprecated Use workstreamIcon.iconId plus descriptor metadata for shell rendering. */
   icon?: string;
+  workstreamIcon: WorkstreamIconDescriptor;
   defaultSurfaceType: string;
   requiredCapabilityIds: string[];
   attention?: FunctionalAgentAttention;

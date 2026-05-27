@@ -22,6 +22,8 @@ test('workstream types define /api/me, AuthContext, functional agents, workstrea
   assert.match(authTypes, /export type MeResponse/);
   assert.match(authTypes, /export type AuthContext/);
   assert.match(agentTypes, /export type FunctionalAgentSummary/);
+  assert.match(agentTypes, /export type WorkstreamIconDescriptor/);
+  assert.match(agentTypes, /workstreamIcon: WorkstreamIconDescriptor/);
   assert.match(workstreamTypes, /export type WorkstreamItem/);
   assert.match(surfaceTypes, /export type SurfaceEnvelope/);
   assert.match(actionTypes, /export type CapabilityActionRequest/);
@@ -52,6 +54,24 @@ test('functional agent fixtures expose the five core v0 workstreams while My Acc
   assert.match(agentFixtures, /availability: 'hidden'/);
   assert.match(agentFixtures, /availability: 'disabled'/);
   assert.match(agentFixtures, /attention: \{ count: 2, severity: 'warning' \}/);
+});
+
+test('functional agent fixtures carry typed workstream icon descriptors for core and fallback states', () => {
+  for (const field of ['workstreamIcon', 'workstreamId', 'displayName', 'iconId', 'visualHint', 'accentColorToken', 'tooltip', 'ariaLabel']) {
+    assert.match(agentFixtures, new RegExp(field));
+  }
+  for (const [label, iconId] of [
+    ['User Admin', 'users-admin'],
+    ['Agent Admin', 'bot-spark'],
+    ['Audit\/Trace', 'timeline-search'],
+    ['Governance\/Policy', 'shield-checklist']
+  ]) {
+    assert.match(agentFixtures, new RegExp(`displayName: '${label}'[\\s\\S]*?iconId: '${iconId}'[\\s\\S]*?accentColorToken: '[^']+'[\\s\\S]*?ariaLabel: 'Open`));
+  }
+  for (const iconId of ['credit-card-hidden', 'life-ring-disabled', 'bot-off-denied']) {
+    assert.match(agentFixtures, new RegExp(`iconId: '${iconId}'`));
+  }
+  assert.match(meFixtures, /functionalAgents: foundationFunctionalAgents/);
 });
 
 test('workstream fixtures default to five core v0 markdown_response items', () => {
