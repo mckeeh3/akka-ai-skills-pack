@@ -6,7 +6,7 @@
 - **Backing functional agent:** `functional_agent.my_account`
 - **Domain:** `ai_first_saas_core_app`
 - **Entry point:** signed-in user tile at bottom of left rail, showing user icon plus email/name
-- **Purpose:** self-service signed-in user account, selected context, profile, settings, sign out, and browser-safe capability visibility
+- **Purpose:** personal operating hub plus self-service signed-in user account, selected context, profile, settings, sign out, cross-workstream attention, and browser-safe capability visibility
 - **Primary users:** every authenticated user with at least one valid or recoverable account state
 
 ## Invariants
@@ -20,6 +20,8 @@ The workstream agent may request surfaces and guide users, but backend capabilit
 ```
 
 The signed-in user tile opens this workstream. Profile/settings/sign-out are not a separate shell menu.
+
+The default My Account landing surface is a dashboard that answers: **what do I need to do next?** It should remain a lightweight personal operating hub, not a duplicate of every workstream's own dashboard.
 
 ## User intents
 
@@ -39,7 +41,7 @@ Side effects require explicit surface actions; the agent may guide but not silen
 
 | Surface id | File candidate | Type | Purpose | Producing capability | Primary actions |
 |---|---|---|---|---|---|
-| `surface.my_account.dashboard.v1` | `surfaces/dashboard.md` | dashboard/detail | account overview, active AuthContext, profile/settings shortcuts, capabilities summary | `my_account.dashboard.view` | open profile, open settings, open context selector, sign out |
+| `surface.my_account.dashboard.v1` | `surfaces/dashboard.md` | dashboard/detail | personal next-action hub with account overview, active AuthContext, profile/settings shortcuts, personal queue, accessible workstream attention counts, and capabilities summary | `my_account.dashboard.view` | open profile, open settings, open context selector, open personal queue item, open workstream, sign out |
 | `surface.my_account.profile.v1` | `surfaces/profile.md` | detail/form | view/edit allowed profile fields | `my_account.profile.view` | save profile, cancel, open audit trace |
 | `surface.my_account.settings.v1` | `surfaces/settings.md` | form | preferences, locale/timezone/theme/notifications | `my_account.settings.view` | save settings, reset defaults |
 | `surface.my_account.context_selector.v1` | `surfaces/context-selector.md` | data_table/form | choose tenant/customer AuthContext from memberships | `my_account.contexts.list` | select context, refresh contexts |
@@ -54,7 +56,10 @@ For this workstream, read/evidence capabilities may be exposed to the My Account
 
 | Capability id | Class | Purpose | Actors | Side effects | Result surface |
 |---|---|---|---|---|---|
-| `my_account.dashboard.view` | read/evidence | show current account/context summary | signed-in user, My Account agent | sensitive-read audit optional | dashboard |
+| `my_account.dashboard.view` | read/evidence | show current account/context summary, personal queue, and accessible workstream attention counts | signed-in user, My Account agent | sensitive-read audit optional | dashboard |
+| `my_account.personal_queue.view` | read/evidence | show consolidated user-specific items needing action across accessible workstreams | signed-in user, My Account agent | read trace | dashboard or queue section |
+| `my_account.workstream_attention.list` | read/evidence | show one attention count per accessible workstream with icon metadata and open-workstream action affordance | signed-in user, My Account agent | read trace | dashboard |
+| `my_account.workstream.open` | read/surface-request | open an allowed workstream from the dashboard while preserving selected AuthContext and recording navigation feedback | signed-in user | workstream navigation trace optional | target workstream default surface |
 | `my_account.profile.view` | read/evidence | fetch profile | signed-in user, My Account agent | sensitive-read audit optional | profile |
 | `my_account.profile.update` | command | update allowed profile fields | signed-in user | profile update, audit | profile or system_message |
 | `my_account.settings.view` | read/evidence | fetch settings | signed-in user, My Account agent | none or read trace | settings |
@@ -72,6 +77,52 @@ For this workstream, read/evidence capabilities may be exposed to the My Account
 - Context selection limited to active memberships and allowed support-access context.
 - Disabled users receive safe recovery/denial system-message surfaces and cannot perform protected actions except allowed recovery flows.
 - `/api/me` remains authoritative for visible workstreams and capabilities.
+
+## Dashboard surface details
+
+The dashboard is the default surface for `dashboard`, `my account`, `show my account`, and signed-in user tile selection. It should include:
+
+- **Profile and Settings actions** as prominent shortcuts. These request the Profile or Settings surface in the My Account workstream rather than navigating to a separate shell menu.
+- **Personal queue**: a concise cross-workstream list of the signed-in user's actionable items, such as approvals, decisions, exceptions, reviews, assigned tasks, or overdue items. Each item includes enough context to choose the next action: title, source workstream, item type, priority/due state, and an action that opens the relevant workstream surface or detail.
+- **Workstream status panels**: one compact panel for each workstream visible to the current `/api/me` AuthContext. Each panel shows only a large `itemsNeedingAttention` number, a short `needs attention` label, and an icon button/open affordance for the workstream. The panel does not list detailed items; detailed investigation belongs in that workstream's own dashboard.
+- **Workstream icons**: use the universal shell workstream icon metadata. The icon is generated or selected from the workstream name/domain, appears on the panel button, and exposes the full workstream name through tooltip/accessible label text.
+- **Context and authority summary**: selected tenant/customer, role/capability basis, and safe links to capabilities/context selector where useful.
+
+Dashboard payload guidance:
+
+```ts
+type MyAccountDashboardData = {
+  profileSummary: {
+    displayName: string;
+    email: string;
+    roleLabel?: string;
+  };
+  selectedAuthContext: {
+    tenantLabel: string;
+    customerLabel?: string;
+    selectedContextId: string;
+  };
+  personalQueue: Array<{
+    itemId: string;
+    title: string;
+    sourceWorkstreamId: string;
+    sourceWorkstreamName: string;
+    itemType: "decision" | "approval" | "exception" | "review" | "task";
+    priorityLabel?: string;
+    dueLabel?: string;
+    openActionId: string;
+  }>;
+  workstreamStatus: Array<{
+    workstreamId: string;
+    displayName: string;
+    icon: WorkstreamIconDescriptor;
+    itemsNeedingAttention: number;
+    openActionId: string;
+  }>;
+};
+```
+
+The dashboard should answer **where should I go next?** Workstream-specific dashboards answer **what exactly is happening here and what should I do inside this workstream?**
 
 ## Workstream-agent prompt requirements
 
@@ -98,8 +149,12 @@ Runtime skills should cover profile/settings guidance, context selection, capabi
 
 Required:
 
-- `/api/me` returns browser-safe account/profile/settings/memberships/capabilities.
-- User tile opens My Account workstream.
+- `/api/me` returns browser-safe account/profile/settings/memberships/capabilities and visible workstream metadata.
+- User tile opens My Account workstream dashboard.
+- Dashboard renders profile/settings shortcuts, personal queue, and one attention count per accessible workstream.
+- Workstream status panels do not expose inaccessible workstreams or hidden item details.
+- Workstream icon buttons expose accessible labels/tooltips with full workstream names.
+- Opening a queue item or workstream panel selects the target workstream/surface through a governed surface-request action.
 - Profile/settings read and update success.
 - Invalid profile/settings validation produces `system_message`.
 - Context selector excludes unauthorized tenant/customer contexts.

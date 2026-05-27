@@ -59,6 +59,7 @@ A workstream is not production-ready just because fixture items render, a determ
 | Workstream agent | The functional agent in its role as the selected workstream user's assistant. It can answer workstream-specific “how do I...” questions, interpret shorthand requests such as “dashboard” or “show users”, request or refresh surfaces, invoke allowed capability-backed actions, explain denials/errors, and guide users through tasks. It is not the root app abstraction and does not grant authority. |
 | Internal agent | Non-left-rail agent invoked by workflows, tools, consumers, timers, functional agents, or backend services for bounded work such as classification, summarization, evaluation, routing, replay, proposal drafting, or governance review. |
 | Workstream | Root app unit for authenticated consequential work: a durable conversational and operational timeline backed by exactly one functional agent. It contains user requests, agent responses, tool/capability results, structured surfaces, system-message surfaces, decisions, workflow progress, traces, and follow-up actions. |
+| Workstream icon | Universal shell metadata for a workstream launcher/status button: a compact icon chosen from the workstream name/domain, with stable id, accessible label, tooltip text, accent color, and optional glyph/vector asset. Icons keep rails and status panels compact while preserving full workstream names for hover, focus, and screen readers. |
 | Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, system message, or outcome metric panel. |
 | Capability | Governed backend contract behind actions, queries, tools, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure channels, and tests. |
 | Horizontal implementation | Akka entities, workflows, views, consumers, timed actions, agents, endpoints, web UI code, auth/security, audit, and tests that implement capabilities for vertical functional agents and surfaces. |
@@ -69,12 +70,31 @@ The default authenticated app shell uses a familiar AI chat layout, but the left
 
 Required shell regions:
 
-1. **Left rail functional agents** — show only agents the selected `AuthContext` may use. Examples: User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Sales Pipeline, Approval Queue, Risk & Exceptions. The signed-in user tile/email at the bottom of the rail is the My Account launcher; do not also list My Account among the top rail workstream buttons, and do not replace it with a separate profile/settings menu.
+1. **Left rail functional agents** — show only agents the selected `AuthContext` may use. Examples: User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Sales Pipeline, Approval Queue, Risk & Exceptions. The signed-in user tile/email at the bottom of the rail is the My Account launcher; do not also list My Account among the top rail workstream buttons, and do not replace it with a separate profile/settings menu. Each visible rail workstream has universal workstream icon metadata for compact launchers, tooltips, accessible labels, and cross-surface reuse.
 2. **Main workstream panel** — shows a continuous vertical stream of user intent, agent responses, structured surfaces, capability results, workflow status, decision cards, traces, and links.
 3. **Persistent composer** — accepts natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent.
 4. **Context and authority indicators** — show selected tenant/customer context, active role/capability basis, pending approvals, trace links, and safe denial/recovery states.
 
-Selecting a functional agent selects its workstream and should normally produce an initial dashboard, attention, or briefing surface for that work area. The selected workstream agent may also request surfaces in response to natural language: “dashboard”, “show the access review queue”, “find Alex”, or “how do I add a new user?” should resolve to guidance, surface requests, or capability-backed actions within that workstream. Clicking actions should append or update workstream surfaces rather than forcing users through a page-first navigation hierarchy.
+Selecting a functional agent selects its workstream and should normally produce an initial dashboard, attention, or briefing surface for that work area. The selected workstream agent may also request surfaces in response to natural language: “dashboard”, “show the access review queue”, “find Alex”, or “how do I add a new user?” should resolve to guidance, surface requests, or capability-backed actions within that workstream. Clicking buttons, links, cards, rows, icons, and other controls should append or update workstream surfaces rather than forcing users through a page-first navigation hierarchy.
+
+Universal shell navigation is still capability-aware. Controls that open a specific surface or another workstream are surface-request actions with typed result behavior, not ad hoc frontend-only jumps when protected data, selected context, or authorization is involved. Examples: Profile button opens the My Account Profile surface; Settings button opens the Settings surface; a User Admin dashboard button opens the User List surface; a My Account workstream status panel opens the target workstream dashboard. The backend or authorized bootstrap state remains authoritative for whether the target workstream/surface is visible and what denial/system-message surface appears when it is not.
+
+Workstream icon guidance:
+
+```ts
+type WorkstreamIconDescriptor = {
+  workstreamId: string;
+  displayName: string;
+  iconId: string;              // stable generated/selected icon id
+  visualHint: string;          // e.g. cart, invoice, chart, shield, user, wrench
+  accentColorToken: string;    // shell theme token, not arbitrary user input
+  tooltip: string;             // usually full workstream display name
+  ariaLabel: string;           // accessible launcher/status label
+  assetRef?: string;           // optional approved SVG/vector asset reference
+};
+```
+
+When a new workstream is added, generate or select an icon from the workstream's actual domain name and responsibility. Keep icons semantically simple and consistent: Procurement may use a cart/purchase-order glyph, Inventory a package/warehouse glyph, Finance an invoice/currency glyph, Sales Pipeline a rising-chart glyph, Customer Success a health/heart glyph, Field Service a wrench/truck glyph, Governance a shield/checklist glyph. Do not encode authorization or sensitive state only through color; expose names and status through labels/tooltips and text.
 
 ## Workstreams and functional agents as verticals
 
@@ -95,7 +115,7 @@ A generated app grows by adding vertical workstreams. Each workstream is backed 
 
 Foundation generated SaaS apps must include user-facing functional agents for secure operation, especially:
 
-- **My Account Agent** for current account, context selection, profile, settings, sign out, and safe self-service. Its default dashboard should be a simple workstream surface with Profile, Settings, and Sign out actions; selecting Profile or Settings appends the corresponding request and response surface in the My Account flow.
+- **My Account Agent** for current account, context selection, profile, settings, sign out, personal queue, cross-workstream attention counts, and safe self-service. Its default dashboard should answer “what do I need to do next?” with Profile and Settings shortcuts, a personal queue, and compact status panels for accessible workstreams. Selecting Profile or Settings appends the corresponding request and response surface in the My Account flow; selecting a queue item or workstream status panel opens the relevant target workstream/surface through a governed surface-request action.
 - **User Admin Agent** for invitations, users, memberships, roles/capabilities, disabled access, access review, support access visibility, and admin audit.
 - **Agent Admin Agent** for agent definitions, prompts, skills, manifests, tool boundaries, lifecycle, proposals, approvals, behavior tests, and traces.
 - **Audit/Trace Agent** for security, authorization, data access, tool use, decision, workflow, and outcome investigation.
@@ -159,7 +179,7 @@ A surface action is not authorization. The backend capability remains authoritat
 
 Surface actions include both state-changing actions and surface-request actions:
 
-- **Read/query or surface-request actions** request another surface or refresh/update the current surface, such as `show_dashboard`, `search_users`, `view_user`, `open_audit_timeline`, or row-click-to-open-detail.
+- **Read/query or surface-request actions** request another surface, another allowed workstream, or refresh/update the current surface, such as `show_dashboard`, `open_profile`, `open_settings`, `open_workstream`, `search_users`, `view_user`, `open_audit_timeline`, or row-click-to-open-detail.
 - **Command actions** submit changes through classic forms or action controls, such as invite, revoke, disable, save, resend, or update settings.
 - **Proposal/approval/workflow actions** draft changes, request approval, approve/reject, start long-running work, or show progress.
 - **Governance/trace actions** open diffs, simulations, trace details, audit timelines, or behavior-change review surfaces.
