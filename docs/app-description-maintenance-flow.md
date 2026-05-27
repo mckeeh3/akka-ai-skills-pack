@@ -47,7 +47,7 @@ Prefer this default sequence:
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers
-5. for generated full-stack SaaS user-facing changes, update or verify `12-workstreams/` ownership first: functional agents, internal-agent support where relevant, durable workstreams, workstream expert bundles under `workstream-expertise/**`, structured surfaces, surface actions, and action-to-capability candidates
+5. for generated full-stack SaaS user-facing changes, update or verify `12-workstreams/` ownership first: functional agents, internal-agent support where relevant, durable workstreams, workstream icon descriptors, workstream expert bundles under `workstream-expertise/**`, structured surfaces, surface actions, and action-to-capability candidates
 6. update `10-capabilities/` with governed capability contracts before implementation choices: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, tests, and links back to source functional agents/surfaces/actions for user-facing exposure
 7. update `12-workstreams/` again if capability modeling changes surface payloads, actions, authority, or traceability; capability and surface modeling may iterate, but neither layer is complete without the other for user-facing actions
 8. update `15-operating-model/` for generated AI-first SaaS operating semantics
@@ -55,7 +55,7 @@ Prefer this default sequence:
 10. update verification expectations
 11. update auth/security, preserving explicit default-deny semantics for every route, tool, data access path, workflow action, view query, stream, consumer, timer, and generated UI action
 12. update observability, preserving AdminAuditEvent and trace requirements for identity, Membership/role, support-access, billing-boundary, data-access, policy, approval, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, and consequential AI/tool activity
-13. update mandatory UI descriptions in `55-ui/`, including agent catalog/detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, trace surfaces, and `style-guide.md`, as browser realization of `12-workstreams/` and `10-capabilities/` for generated full-stack AI-first SaaS
+13. update mandatory UI descriptions in `55-ui/`, including agent catalog/detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, trace surfaces, workstream icon rendering/interactions, and `style-guide.md`, as browser realization of `12-workstreams/` and `10-capabilities/` for generated full-stack AI-first SaaS
 14. update traceability and impact understanding
 15. assess readiness
 16. when realization planning artifacts already exist, reconcile affected specs/backlogs/pending tasks before more coding
@@ -82,11 +82,11 @@ Use `app-description-intake-router` to determine:
 Use `app-description-functional-agent-modeling` and `app-description-surface-modeling` when the request changes a dashboard, portal, work queue, admin console, command center, agent/chat area, browser action, approval, decision, audit timeline, workflow status, form, table, or other user-facing work area.
 
 Capture or verify:
-- source `12-workstreams/functional-agents.md` ownership;
+- source `12-workstreams/functional-agents.md` ownership, including workstream icon metadata (`WorkstreamIconDescriptor` semantics: stable icon id, visual hint, accent color token, tooltip, aria label, optional asset reference);
 - workstream expertise ownership under `12-workstreams/workstream-expertise/<functional-agent-id>.md` for each LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, capability map, tool boundary, surfaces, traces, governance owner, seed/upgrade policy, and tests;
 - structured surface ids, payload/action candidates, states, traces, and tests;
-- surface action-to-capability candidates;
-- which changes are browser realization details for `55-ui/` rather than application meaning.
+- surface action-to-capability candidates, including governed surface-request actions such as `open_workstream` for buttons, links, icons, cards, rows, and status panels that open protected surfaces/workstreams;
+- which changes are browser realization details for `55-ui/` rather than application meaning, including icon rendering while `12-workstreams/` owns icon semantics.
 
 ### Step 4. Update capabilities when scope changed
 Use `app-description-capability-modeling` when the request changes business scope, actors, intended outcomes, protected operations, queries, or exposure surfaces.
@@ -146,7 +146,7 @@ They are part of the app definition. Missing secure SaaS foundation semantics mu
 
 ### Step 10. Update mandatory UI
 
-For generated full-stack AI-first SaaS, update `55-ui/` after `12-workstreams/` owns the relevant functional agents, surfaces, surface actions, and surface-to-capability traceability, and after capability contracts are clear enough to describe browser action authority.
+For generated full-stack AI-first SaaS, update `55-ui/` after `12-workstreams/` owns the relevant functional agents, workstream icon descriptors, surfaces, surface actions, and surface-to-capability traceability, and after capability contracts are clear enough to describe browser action authority. Preserve the My Account lower-left signed-in user tile launcher; do not duplicate My Account in the top rail.
 Prefer goal-to-execution, command center, decision-card, governance/learning, digest, and audit/trace surfaces over record-management navigation. Conventional list/form routes can exist as implementation details, but structured workstream surfaces remain primary for generated AI-first SaaS.
 Keep the style-selection rule below in force.
 
@@ -190,7 +190,7 @@ Use generation and readiness summaries to explain what happened.
 
 When multiple layers are affected, prefer this order:
 
-1. `12-workstreams/` first for generated full-stack SaaS user-facing changes: functional agents, structured surfaces, surface actions, and action-to-capability candidates
+1. `12-workstreams/` first for generated full-stack SaaS user-facing changes: functional agents, workstream icon descriptors, structured surfaces, surface actions, and action-to-capability candidates
 2. `10-capabilities/` for governed backend contracts, including source functional agent/surface/action links or explicit internal-only declarations
 3. `12-workstreams/` again when capability contract details alter payloads, actions, authority, traces, or tests
 4. `15-operating-model/` for generated AI-first SaaS apps
@@ -211,7 +211,7 @@ This keeps workstream/surface ownership and governed capability contracts ahead 
 Every description change should trigger a mental or explicit change-impact pass.
 
 The harness should ask:
-- which `12-workstreams/` functional agents, workstream expert bundles, internal agents, structured surfaces, surface actions, and surface-to-capability maps changed?
+- which `12-workstreams/` functional agents, workstream icon descriptors, workstream expert bundles, internal agents, structured surfaces, surface actions, and surface-to-capability maps changed?
 - which capabilities changed?
 - did any capability contract fields change: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, or tests?
 - which behavior artifacts changed?

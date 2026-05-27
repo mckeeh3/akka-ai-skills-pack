@@ -37,7 +37,7 @@ Mandatory secure SaaS, agent workstream, AI-first managed agents, and web UI fou
 - complete email-invite onboarding with Resend (resend.com) as the supported production email service, explicit local/dev/test captured outbox behavior, and the same Resend email service reusable for other app email features and governed agent `@FunctionTool` email tools
 - backend authorization checks for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action
 - AdminAuditEvent and audit/work traces for identity, authorization, policy, approval, data access, and consequential AI/tool activity
-- mandatory agent workstream shell with role-authorized functional agents, continuous main workstream, persistent composer, context/authority indicators, and structured surfaces for sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, supervision, decisions, governance, audit/traces, and outcome review
+- mandatory agent workstream shell with role-authorized functional agents, universal workstream icon metadata for visible shell launchers/status panels, continuous main workstream, persistent composer, context/authority indicators, and structured surfaces for sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, supervision, decisions, governance, audit/traces, and outcome review
 - tenant-isolation, forbidden-access, disabled-user, role/scope denial, audit, frontend secret-boundary, UI, and security-review tests
 
 Canonical doctrine:
@@ -109,7 +109,7 @@ Initial app-description skills:
 - `app-description-bootstrap` — create the initial internal app-description tree for a new app or sparse early app idea
 - `app-description-input-normalization` — convert flexible user input into a structured app-description delta envelope
 - `app-description-intake-router` — classify flexible user input and choose the next description-maintenance or realization path
-- `app-description-functional-agent-modeling` — update the authoritative `12-workstreams/functional-agents.md` layer for role-authorized user-facing context-area agents, prompt intent, skills, tools, surfaces, capabilities, traces, and tests
+- `app-description-functional-agent-modeling` — update the authoritative `12-workstreams/functional-agents.md` layer for role-authorized user-facing context-area agents, workstream icon metadata (`WorkstreamIconDescriptor` semantics: stable icon id, visual hint, accent color token, tooltip, aria label, optional asset reference), prompt intent, skills, tools, surfaces, capabilities, traces, and tests
 - `app-description-surface-modeling` — update the authoritative `12-workstreams/surfaces-index.md` and `surface-contracts/**` layer for structured workstream surfaces, typed payloads, reusable functional-agent placement, capability-backed actions, states, traces, and tests
 - `app-description-capability-modeling` — update the authoritative capability layer of the app description
 - `app-description-behavior-specification` — update the authoritative behavior layer of the app description
@@ -127,15 +127,15 @@ Default description-first flow:
 1. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet
 2. normalize the input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 3. route the user input with `app-description-intake-router`
-4. update functional agents with `app-description-functional-agent-modeling` when ordinary user language asks for a workstream, dashboard, admin console, portal, workspace, work queue, workflow view, command center, agent/chat area, user-facing work area, left-rail agent, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests; every workstream is backed by exactly one functional/context-area agent
-5. update structured surfaces with `app-description-surface-modeling` when the request changes dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, system messages, surface payloads, reusable functional-agent placement, allowed actions, surface-request actions, states, traces, or rendering tests
+4. update functional agents with `app-description-functional-agent-modeling` when ordinary user language asks for a workstream, dashboard, admin console, portal, workspace, work queue, workflow view, command center, agent/chat area, user-facing work area, left-rail agent, workstream icon, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests; every workstream is backed by exactly one functional/context-area agent and gets icon metadata when first defined
+5. update structured surfaces with `app-description-surface-modeling` when the request changes dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, system messages, surface payloads, reusable functional-agent placement, allowed actions, surface-request actions such as `open_workstream`, states, traces, or rendering tests
 6. update capabilities with `app-description-capability-modeling` when the request changes scope, actors, business outcomes, backend operation/query contracts, protected operations/queries, action authority, side effects, approval, audit, or capability exposure surfaces
 7. update behavior with `app-description-behavior-specification` when the request changes what the app should do
 8. update tests with `app-description-test-specification` when the request needs acceptance, regression, edge-case, or verification definition
 9. run `app-description-change-impact` to identify cross-layer and realization implications
 10. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, frontend/backend JWT security, WorkOS authentication, basic administration, or data protection
 11. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
-12. update UI with `app-description-ui` when the request changes agent workstream shell regions, functional-agent rail behavior, workstream interactions, structured surfaces, deep-link routes, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
+12. update UI with `app-description-ui` when the request changes agent workstream shell regions, functional-agent rail behavior, workstream icon rendering/interactions, workstream interactions, structured surfaces, deep-link routes, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
 13. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
 14. realize outputs with `app-generate-app` only when generation is requested or accepted
 15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`

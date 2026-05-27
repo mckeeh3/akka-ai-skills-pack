@@ -69,6 +69,7 @@ For each functional agent, capture:
 
 - stable agent id and display name;
 - purpose and business responsibility;
+- workstream icon metadata for the shell launcher/status affordance: stable icon id, visual hint, accent color token, tooltip, aria label, and optional approved asset reference (`WorkstreamIconDescriptor` semantics);
 - whether it is required foundation scope or app-specific domain scope;
 - tenant/customer scope and selected `AuthContext` assumptions;
 - authorized roles, permissions, scopes, or named capability grants;
@@ -100,6 +101,7 @@ Use this shape when adding or revising a functional agent:
 - type: foundation | domain
 - purpose / responsibility:
 - user-facing shell placement:
+- workstream icon descriptor:
 
 ## Authority
 - AuthContext / tenant/customer scope:
@@ -155,10 +157,10 @@ Use this shape when adding or revising a functional agent:
 
 ## Modeling rules
 
-1. **Functional agents are verticals.** Model each as a role-authorized work area with surfaces and capabilities. Do not model it as an Akka `Agent` class first.
+1. **Functional agents are verticals.** Model each as a role-authorized work area with surfaces, capabilities, and workstream icon semantics. Do not model it as an Akka `Agent` class first.
 2. **Backend capabilities remain authoritative.** A functional agent can call or expose capabilities, but prompt text, rail visibility, and tool descriptions never authorize work.
 3. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, version cards, and outcome panels over free-text-only responses.
-4. **Foundation agents are scope-sensitive.** Minimum starter scope must include User Admin workstream v0 as a real role-authorized functional agent with bootstrap authority, `markdown_response`, a durable workstream log, trace links, capability/tool boundaries, denial behavior, and follow-up gaps to full core. Full generated core apps must include full User Admin and Agent Admin functional agents, plus access/profile, audit/trace, and governance/policy coverage as justified by scope. If deferred, record the narrower scope explicitly and never label it full-core ready.
+4. **Foundation agents are scope-sensitive.** Minimum starter scope must include User Admin workstream v0 as a real role-authorized functional agent with bootstrap authority, `markdown_response`, a durable workstream log, trace links, capability/tool boundaries, denial behavior, and follow-up gaps to full core. Full generated core apps must include full User Admin and Agent Admin functional agents, plus access/profile, audit/trace, and governance/policy coverage as justified by scope. My Account remains launched from the lower-left signed-in user tile, not duplicated as a top-rail workstream icon. If deferred, record the narrower scope explicitly and never label it full-core ready.
 5. **Keep internal agents separate.** Classifiers, summarizers, evaluators, proposal drafters, and governance reviewers may support a functional agent, but they do not become left-rail work areas unless they represent a user-facing responsibility boundary.
 6. **Record tool boundaries as governed behavior.** Side-effecting tools should default to proposal or approval flows unless accepted policy grants bounded autonomous authority.
 7. **Link tests immediately.** A functional agent is incomplete without authorization, surface, capability, prompt/tool-boundary, and trace tests.
@@ -168,7 +170,7 @@ Use this shape when adding or revising a functional agent:
 When a functional-agent change adds or changes:
 
 - a callable operation/query, update `10-capabilities/` via `app-description-capability-modeling`;
-- surfaces or browser actions, update `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling`, plus `55-ui/**` and surface-to-capability traceability;
+- surfaces, browser actions, or controls that open surfaces/workstreams, update `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling`, plus `55-ui/**` and surface-to-capability traceability; treat buttons, links, rows, cards, and icons that open protected workstreams/surfaces as surface-request actions such as `open_workstream`;
 - model binding, provider alias, fallback, or model policy, update `15-operating-model/governed-runtime-agents.md`, model-governance artifacts, readiness state, tests, and trace expectations;
 - prompt intent, skills, tools, or behavior documents, update `15-operating-model/governed-runtime-agents.md` and relevant agent governance artifacts;
 - approval, policy, escalation, or autonomy, update operating-model, behavior, auth/security, tests, and observability layers;
@@ -204,7 +206,7 @@ Avoid:
 
 Before finishing a functional-agent update, verify:
 
-- [ ] each user-facing functional agent has purpose, authority, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
+- [ ] each user-facing functional agent has purpose, authority, workstream icon metadata, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
 - [ ] functional agents are distinguished from internal agents;
 - [ ] every side-effecting action maps to a governed capability and backend authorization rule;
 - [ ] surfaces are typed and linked to capability-backed actions;

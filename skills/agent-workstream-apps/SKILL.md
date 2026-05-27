@@ -62,6 +62,7 @@ For natural-language requests such as “minimum AI-first app,” “starter app
 The correct first runnable target is the **five core workstream v0 set**:
 - bootstrap-authorized user and selected AuthContext;
 - role-authorized functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with bounded bootstrap authority;
+- universal workstream icon metadata for visible shell workstreams, with My Account launched from the lower-left signed-in user tile rather than duplicated in the top rail;
 - durable request/response timeline and audit/work trace substrate for each visible core workstream;
 - first structured surface type `markdown_response`, rendered as sanitized HTML;
 - no public self-registration, autonomous privilege expansion, generic unauthenticated chatbot, or page-first CRUD admin app.
@@ -81,6 +82,7 @@ Full core app scope also requires complete My Account, User Admin, Agent Admin, 
 For each user-facing work area, define:
 - purpose and business responsibility;
 - authorized roles/capabilities and tenant/customer scope;
+- workstream icon metadata owned by the workstream definition: stable icon id, visual hint, accent color token, tooltip, aria label, and optional approved asset reference;
 - default dashboard, attention, or briefing surface;
 - workstream semantics and retention expectations;
 - prompt intent, governed documents, skills, reference documents, skill/reference manifests, tools, and tool boundaries when LLM behavior is involved;
@@ -108,7 +110,7 @@ Canonical surface types include dashboards, forms, tables, charts, detail cards,
 
 ### 5. Route through capabilities before components
 
-For every workstream action, surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call, load `capability-first-backend` and define actors, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests.
+For every workstream action, surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call, load `capability-first-backend` and define actors, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests. Buttons, links, cards, rows, and workstream icons that open protected surfaces or workstreams are governed surface-request actions such as `open_workstream`, not ad hoc frontend jumps.
 
 Frontend gating, prompt text, and tool descriptions are never authorization controls. Backend capabilities remain authoritative.
 
@@ -151,7 +153,7 @@ When revising existing docs, specs, examples, or skills:
 When this skill is used for planning, hand downstream work a concise model containing:
 - selected functional agents and their roles/capabilities;
 - internal agents when applicable, clearly separated from left-rail functional agents;
-- initial workstreams and default surfaces;
+- initial workstreams, universal workstream icon descriptors, and default surfaces;
 - structured surface contracts or required follow-up to create them;
 - surface action-to-capability mappings;
 - retained human authority, approval, escalation, and denial behavior;

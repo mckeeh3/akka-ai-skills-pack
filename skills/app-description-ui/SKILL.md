@@ -9,7 +9,7 @@ Use this skill for the mandatory browser frontend of generated full-stack AI-fir
 
 This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, and structured surfaces. Preserve supervision, decision, governance, digest, audit, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
 
-High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, structured surfaces, surface actions, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, surfaces, or actions must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
+High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, workstream icon descriptors, structured surfaces, surface actions, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, workstream icon assignments, surfaces, or actions must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
 
 ## Required reading
 
@@ -65,7 +65,7 @@ This is the canonical generated SaaS `55-ui/` file set and should remain consist
 
 Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For `full core` scope, do not omit the managed-agent UI files: `agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`. They may be omitted or explicitly marked deferred only when `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` label a narrower scope such as `Module 1-only / not full core`. For a very small full-core app, one `ui-index.md`, `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `routes-and-deep-links.md`, those managed-agent UI files, and `style-guide.md` may be enough.
 
-Use `screens-and-navigation.md` only as a legacy compatibility note when maintaining older app descriptions; new generated SaaS descriptions should use `routes-and-deep-links.md`. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata. Keep application meaning in `12-workstreams/`: functional agents, internal agents, durable workstreams, surface contracts, reusable placement, action-to-capability mappings, traces, and tests. `55-ui/` owns browser realization and links back to `12-workstreams/`, `10-capabilities/`, security, observability, and test artifacts instead of redefining them.
+Use `screens-and-navigation.md` only as a legacy compatibility note when maintaining older app descriptions; new generated SaaS descriptions should use `routes-and-deep-links.md`. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata. Keep application meaning in `12-workstreams/`: functional agents, internal agents, durable workstreams, workstream icon descriptors (`WorkstreamIconDescriptor` semantics), surface contracts, reusable placement, action-to-capability mappings, traces, and tests. `55-ui/` owns browser realization and links back to `12-workstreams/`, `10-capabilities/`, security, observability, and test artifacts instead of redefining them.
 
 ## What to capture
 
@@ -99,6 +99,12 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - navigation entry/exit points as shell behavior, not as the primary application decomposition
 - empty/not-found/forbidden route states and recovery actions
 - reminder: primary/secondary actions, loading/error states, and authorization semantics belong first in structured surface contracts and governed capability contracts
+
+### Shell navigation and workstream icons
+- render workstream icon descriptors from `12-workstreams/` using stable icon ids, visual hints, theme accent color tokens, tooltips, accessible labels, and optional approved asset references
+- show My Account only through the lower-left signed-in user tile/email; do not duplicate it as a top-rail workstream button
+- treat buttons, links, icons, cards, rows, and status panels that open protected surfaces or workstreams as governed surface-request actions such as `open_workstream`, backed by capabilities and denial/system-message behavior
+- keep browser interaction details, tooltip/focus behavior, responsive rail collapse, and visual treatment in `55-ui/`; do not assign domain icon meaning here
 
 ### Interactions and forms
 - forms and fields
@@ -145,13 +151,13 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 
 If no UI style is selected for a generated AI-first SaaS app, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks web UI implementation/generation tasks until style is selected.
 
-Cosmetic style work may improve visual quality only within already-authoritative UI meaning. Do not use style-guide updates to add, remove, rename, or reinterpret functional agents, workstreams, structured surfaces, capability-backed actions, authorization, API contracts, tests, or readiness semantics.
+Cosmetic style work may improve visual quality only within already-authoritative UI meaning. Do not use style-guide updates to add, remove, rename, or reinterpret functional agents, workstreams, workstream icon semantics, structured surfaces, capability-backed actions, authorization, API contracts, tests, or readiness semantics.
 
 ## Change handling
 
 For any UI change, update:
-1. affected UI description files, including `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `ai-first-surfaces.md` when delegated work surfaces change, the managed-agent UI files when full-core agent behavior governance changes, and `style-guide.md` when style system, branding, density, tokens, or component styling change
-2. `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling` when a UI change adds, removes, or changes a user-facing functional agent, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
+1. affected UI description files, including `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `ai-first-surfaces.md` when delegated work surfaces change, the managed-agent UI files when full-core agent behavior governance changes, and `style-guide.md` when style system, branding, density, tokens, icon rendering, or component styling change
+2. `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling` when a UI change adds, removes, or changes a user-facing functional agent, workstream icon assignment/meaning, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
 3. `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling` when a UI change adds, removes, or changes structured surfaces, payload schemas, reusable placement, allowed actions, states, trace links, or rendering tests
 4. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, or idempotency semantics
 5. behavior flows if user-visible behavior changes

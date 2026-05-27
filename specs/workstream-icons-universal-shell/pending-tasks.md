@@ -46,7 +46,8 @@
 
 ### TASK-WSI-01-001: Align skills and app-description guidance for workstream icons
 
-- status: pending
+- status: done
+- completion note: Aligned routing, app-description, surface, UI, and web UI guidance so workstream definitions capture icon metadata, `12-workstreams/` owns icon semantics, `55-ui/` owns rendering, shell navigation uses governed surface-request actions, and My Account remains a lower-left launcher.
 - source: specs/workstream-icons-universal-shell/README.md
 - task brief: specs/workstream-icons-universal-shell/tasks/01-doctrine-skills/01-align-skills-app-description-guidance.md
 - depends on: [TASK-WSI-00-001]
@@ -72,7 +73,8 @@
 - done criteria:
   - Skills route future generated SaaS work through icon metadata and governed shell navigation.
   - A git commit exists for the changes.
-- notes: []
+- notes:
+  - commit message: `workstream-icons: align skills and app descriptions`
 
 ### TASK-WSI-02-001: Add icon metadata contracts and fixtures to starter/reference frontend
 

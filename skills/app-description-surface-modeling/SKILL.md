@@ -38,7 +38,7 @@ The task asks to:
 - capture surface payload schemas, redaction, loading/error/forbidden/stale states, accessibility, responsive behavior, realtime updates, or rendering tests;
 - update app-description artifacts before workstream UI implementation.
 
-Use `app-description-functional-agent-modeling` first when the change primarily adds or changes a left-rail functional agent. Use `app-description-ui` for shell layout, rail behavior, composer behavior, visual style, route/deep-link details, and frontend project handoff after the surface contract is clear.
+Use `app-description-functional-agent-modeling` first when the change primarily adds or changes a left-rail functional agent or its workstream icon semantics. Use `app-description-ui` for shell layout, rail behavior, icon rendering/interaction, composer behavior, visual style, route/deep-link details, and frontend project handoff after the surface contract is clear.
 
 ## Artifact targets
 
@@ -60,7 +60,7 @@ app-description/70-traceability/
   surface-to-capability-map.md
 ```
 
-Create or update only the smallest files needed. Keep `12-workstreams/surface-contracts/**` authoritative for what a surface means; keep `55-ui/**` focused on rendering, interaction, route/deep-link, style, and frontend API realization details.
+Create or update only the smallest files needed. Keep `12-workstreams/surface-contracts/**` authoritative for what a surface means; keep `12-workstreams/functional-agents.md` authoritative for workstream icon assignment and meaning; keep `55-ui/**` focused on rendering, interaction, route/deep-link, style, and frontend API realization details.
 
 ## Canonical surface types
 
@@ -93,7 +93,7 @@ For each surface, capture the fields below. Use `../../docs/structured-surface-c
 - payload schema: required fields, optional fields, lists, nested records, field formats, correlation ids, trace ids, pagination, sorting, and realtime event ids;
 - redaction and safe fields for user roles, support roles, auditors, functional agents, and internal agents;
 - data sources and read/evidence capabilities behind the payload;
-- allowed actions with labels, input payloads, confirmation requirements, idempotency keys, and linked backend capability ids;
+- allowed actions with labels, input payloads, confirmation requirements, idempotency keys, and linked backend capability ids, including surface-request actions such as `open_workstream` for buttons, links, cards, rows, or icons that open another protected surface/workstream;
 - action authority: AuthContext, tenant/customer scope, role/capability requirements, approval/policy gates, and denial behavior;
 - action side-effect visibility: success, pending, approval-needed, queued, workflow-started, no-op, and failed states;
 - loading, empty, error, forbidden, stale, reconnecting, conflict, and partial-data states;
@@ -168,7 +168,7 @@ Use this shape when adding or revising a surface:
 
 1. **Surfaces are structured artifacts.** Prefer typed payloads and explicit actions over free-text responses or page descriptions.
 2. **Surfaces may be reused.** A surface can be owned by one functional agent and rendered by others when the same payload, action, auth, and trace contracts hold.
-3. **Surface actions are not authorization.** Every action maps to a governed backend capability; backend authorization remains authoritative even when an action is hidden or disabled in the UI.
+3. **Surface actions are not authorization.** Every action maps to a governed backend capability; backend authorization remains authoritative even when an action is hidden or disabled in the UI. Controls that open protected surfaces or workstreams are governed surface-request actions, not frontend-only navigation.
 4. **Payloads are safe by contract.** Record redaction, role-dependent fields, support/auditor visibility, secret boundaries, and tenant/customer scoping.
 5. **Actions preserve capability semantics.** Carry AuthContext, validation, idempotency, side effects, policy/approval, audit, and denial semantics from the capability layer.
 6. **Routes are subordinate.** Pages and deep links may address a surface, but they do not replace the functional-agent/workstream/surface model.
@@ -181,7 +181,7 @@ When a surface change adds or changes:
 
 - owning or reusable functional agents, update `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling`;
 - an action, query, command, approval, workflow launch, or side effect, update `10-capabilities/` via `app-description-capability-modeling`;
-- shell rendering, layout, route/deep-link, frontend API, state, realtime, accessibility, responsive behavior, or style, update `55-ui/**` via `app-description-ui`;
+- shell rendering, layout, route/deep-link, frontend API, state, realtime, accessibility, responsive behavior, icon rendering, tooltip/focus behavior, or style, update `55-ui/**` via `app-description-ui`;
 - authorization, visibility, redaction, or denial behavior, update auth/security and `/api/me` capability exposure expectations;
 - audit, trace links, correlation ids, or diagnostic evidence, update observability;
 - acceptance, rendering, or security expectations, update tests and traceability maps.
@@ -190,7 +190,7 @@ When a surface change adds or changes:
 
 Route onward as needed:
 
-- to `app-description-functional-agent-modeling` for functional-agent ownership, reuse, rail visibility, workstream entry behavior, prompt/tool boundary, and tests;
+- to `app-description-functional-agent-modeling` for functional-agent ownership, reuse, rail visibility, workstream icon metadata, workstream entry behavior, prompt/tool boundary, and tests;
 - to `app-description-capability-modeling` for any surface action or payload capability contract;
 - to `app-description-ui` for rendering, layout, frontend API contracts, state/realtime, accessibility, responsive behavior, style, routes, and deep links;
 - to `app-description-auth-security` for role visibility, action authority, redaction, forbidden states, and tenant/customer isolation;
