@@ -1,4 +1,4 @@
-import type { FunctionalAgentRailEntry } from '../types';
+import type { FunctionalAgentRailEntry, WorkstreamIconDescriptor } from '../types';
 import { agentDisabledReason, isAgentSelectable } from './railState';
 
 type FunctionalAgentRailItemProps = {
@@ -8,8 +8,17 @@ type FunctionalAgentRailItemProps = {
 };
 
 const severityLabel = (severity: string) => `${severity} attention`;
-const iconGlyph = (icon?: string, label?: string) => {
+const iconGlyph = (descriptor?: WorkstreamIconDescriptor, legacyIcon?: string, label?: string) => {
+  const iconId = descriptor?.iconId ?? legacyIcon;
   const icons: Record<string, string> = {
+    'my-account': 'P',
+    'users-admin': 'U',
+    'bot-spark': 'B',
+    'bot-off-denied': 'B',
+    'timeline-search': 'T',
+    'shield-checklist': 'G',
+    'credit-card-hidden': '$',
+    'life-ring-disabled': 'S',
     'user-circle': 'P',
     users: 'U',
     bot: 'B',
@@ -19,7 +28,7 @@ const iconGlyph = (icon?: string, label?: string) => {
     'credit-card': '$',
     'life-ring': 'S'
   };
-  return icon ? icons[icon] ?? icon.slice(0, 1).toUpperCase() : label?.slice(0, 1).toUpperCase() ?? 'W';
+  return iconId ? icons[iconId] ?? iconId.slice(0, 1).toUpperCase() : label?.slice(0, 1).toUpperCase() ?? 'W';
 };
 
 export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: FunctionalAgentRailItemProps) {
@@ -27,6 +36,8 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
   const disabledReason = agentDisabledReason(entry);
   const labelId = `rail-agent-${entry.functionalAgentId}-label`;
   const reasonId = `rail-agent-${entry.functionalAgentId}-reason`;
+  const tooltipId = `rail-agent-${entry.functionalAgentId}-tooltip`;
+  const describedBy = [entry.workstreamIcon.tooltip ? tooltipId : undefined, disabledReason ? reasonId : undefined].filter(Boolean).join(' ') || undefined;
   const unseenResponseCount = entry.railAttention?.unseenResponseCount ?? 0;
   const unseenResponseLabel = unseenResponseCount === 1 ? '1 unseen response' : `${unseenResponseCount} unseen responses`;
 
@@ -36,12 +47,20 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
         type="button"
         className={`nav-item workstream-agent-button ${entry.isSelected ? 'active' : ''}`.trim()}
         aria-current={entry.isSelected ? 'page' : undefined}
-        aria-labelledby={labelId}
-        aria-describedby={disabledReason ? reasonId : undefined}
+        aria-label={entry.workstreamIcon.ariaLabel}
+        aria-describedby={describedBy}
         disabled={!selectable}
         onClick={() => selectable && onSelect?.(entry.functionalAgentId)}
       >
-        <span className="nav-icon" aria-hidden="true">{iconGlyph(entry.icon, entry.label)}</span>
+        <span
+          className="nav-icon workstream-icon"
+          aria-hidden="true"
+          data-workstream-icon-id={entry.workstreamIcon.iconId}
+          data-accent-color-token={entry.workstreamIcon.accentColorToken}
+        >
+          {iconGlyph(entry.workstreamIcon, entry.icon, entry.label)}
+        </span>
+        <span id={tooltipId} className="workstream-icon-tooltip" role="tooltip">{entry.workstreamIcon.tooltip}</span>
         <span className="workstream-rail-copy">
           <span id={labelId}>{entry.label}</span>
         </span>

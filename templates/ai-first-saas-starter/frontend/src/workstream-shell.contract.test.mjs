@@ -17,6 +17,7 @@ const shell = read('./workstream/shell/WorkstreamShell.tsx');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
 const agentTypes = read('./workstream/types/agents.ts');
+const agentFixtures = read('./workstream/fixtures/agents.ts');
 const componentsCss = read('./styles/components.css');
 
 function loadTypeScriptExports(source) {
@@ -34,7 +35,12 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(railState, /railAttentionByAgentId: FunctionalAgentRailAttentionStore = \{\}/);
   assert.match(railState, /entry\.availability === 'visible' && entry\.visibilityReason === 'has-capability'/);
   assert.match(railItem, /aria-current=\{entry\.isSelected \? 'page'/);
-  assert.match(railItem, /iconGlyph/);
+  assert.match(railItem, /iconGlyph\(entry\.workstreamIcon, entry\.icon, entry\.label\)/);
+  assert.match(railItem, /aria-label=\{entry\.workstreamIcon\.ariaLabel\}/);
+  assert.match(railItem, /aria-describedby=\{describedBy\}/);
+  assert.match(railItem, /data-workstream-icon-id=\{entry\.workstreamIcon\.iconId\}/);
+  assert.match(railItem, /data-accent-color-token=\{entry\.workstreamIcon\.accentColorToken\}/);
+  assert.match(railItem, /className="workstream-icon-tooltip" role="tooltip"/);
   assert.match(railItem, /rail-unseen-response-badge/);
   assert.match(railItem, /aria-label=\{unseenResponseLabel\}/);
   assert.match(railItem, /data-attention-kind=\{entry\.railAttention\.kind\}/);
@@ -55,6 +61,26 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(rail, /railAttentionByAgentId\?: FunctionalAgentRailAttentionStore/);
   assert.match(rail, /visibleRailEntries\(agents, selectedFunctionalAgentId, visibleCapabilityIds, accountStatus, railAttentionByAgentId\)/);
   assert.match(rail, /onToggleCollapsed/);
+});
+
+test('left rail renders descriptor-backed workstream icons for core v0 workstreams', () => {
+  for (const [label, iconId, token, tooltip] of [
+    ['User Admin', 'users-admin', 'accent-users', 'Open User Admin workstream'],
+    ['Agent Admin', 'bot-spark', 'accent-agents', 'Open Agent Admin workstream'],
+    ['Audit/Trace', 'timeline-search', 'accent-audit', 'Open Audit/Trace workstream'],
+    ['Governance/Policy', 'shield-checklist', 'accent-governance', 'Open Governance/Policy workstream']
+  ]) {
+    assert.match(agentFixtures, new RegExp(`label: '${label.replace('/', '\\/')}'`));
+    assert.match(agentFixtures, new RegExp(`iconId: '${iconId}'`));
+    assert.match(agentFixtures, new RegExp(`accentColorToken: '${token}'`));
+    assert.match(agentFixtures, new RegExp(`tooltip: '${tooltip.replace('/', '\\/')}'`));
+    assert.match(agentFixtures, new RegExp(`ariaLabel: '${tooltip.replace('/', '\\/')}'`));
+  }
+  assert.match(railItem, /workstreamIcon\.tooltip \? tooltipId/);
+  assert.match(railItem, /role="tooltip">\{entry\.workstreamIcon\.tooltip\}/);
+  assert.match(componentsCss, /\.workstream-icon\[data-accent-color-token="accent-users"\]/);
+  assert.match(componentsCss, /\.workstream-agent-button:focus-visible \.workstream-icon-tooltip/);
+  assert.doesNotMatch(railItem, /title=/);
 });
 
 test('left rail unseen response indicators are accessible, extensible, and visual-only', () => {

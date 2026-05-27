@@ -115,7 +115,8 @@
 
 ### TASK-WSI-03-001: Render workstream icons in left rail
 
-- status: pending
+- status: done
+- completion note: Rendered descriptor-backed left-rail icons with accessible button labels, tooltip markup, accent-token styling, and contract coverage in both the reference frontend and starter template. Required starter checks passed; reference `npm test -- --run src/workstream-shell.contract.test.mjs` is still blocked by unrelated pre-existing full-suite failures/missing backend seed resource, while targeted `node --test src/workstream-shell.contract.test.mjs` and reference typecheck passed.
 - source: specs/workstream-icons-universal-shell/README.md
 - task brief: specs/workstream-icons-universal-shell/tasks/03-rail-rendering/01-render-left-rail-icons.md
 - depends on: [TASK-WSI-02-001]
@@ -143,7 +144,8 @@
 - done criteria:
   - Reference and starter frontend rail code renders accessible icons for the four top-rail core v0 workstreams.
   - A git commit exists for the changes.
-- notes: []
+- notes:
+  - commit message: `workstream-icons: render left rail icons`
 
 ### TASK-WSI-04-001: Add scaffold proof for v0 left rail icons
 
