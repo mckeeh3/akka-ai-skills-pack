@@ -58,7 +58,7 @@ Pattern:
 - assert downstream entity state and/or outgoing topic messages
 
 ### 3. Mocked incoming workflow or entity updates
-Use when the consumer source is workflow or entity change streams.
+Use when isolating the consumer from workflow or entity change streams. If the upstream workflow/entity exists in the same generated service and the named feature depends on that reaction, also include an end-to-end local/TestKit path that triggers the real upstream component and observes the downstream result before calling the feature complete.
 
 Repository example:
 - `ReviewWorkflowTopicConsumerIntegrationTest`
@@ -95,6 +95,7 @@ For generated SaaS reactive capabilities, require:
 ## Review checklist
 
 Before finishing, verify:
+- mocked incoming messages are treated as test isolation only, not proof of user-facing/runtime completion when a real upstream path exists
 - TestKit settings include every mocked topic or incoming component source required by the test
 - messages include `ce-subject` metadata when the consumer logic depends on it
 - tests assert observable behavior, not implementation details

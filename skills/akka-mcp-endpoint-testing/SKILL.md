@@ -68,10 +68,11 @@ Prefer these categories:
 4. component-backed state lookup when relevant
 5. request-header or JWT-claim behavior when relevant
 
-## Advanced transport testing
+## Advanced transport and completion testing
 
-If the transport layer itself matters, use the Akka HTTP test client with handcrafted MCP JSON-RPC payloads.
-Do this only when you need to verify protocol-level behavior rather than endpoint business logic.
+Direct method and stubbed-context tests are unit-style coverage. For protected, side-effecting, or named generated-app MCP features, also exercise the local Akka endpoint transport with MCP-over-HTTP/JSON-RPC or an equivalent local smoke path before calling the feature complete. That smoke must cover caller identity/ACL or JWT handling, request serialization, allowed-tool/resource filtering where relevant, denial shape, and audit/work-trace effects.
+
+Use handcrafted MCP JSON-RPC payloads when protocol-level behavior matters; for generated SaaS MCP surfaces, protected transport behavior normally matters.
 
 ## Generated SaaS test set
 
@@ -97,4 +98,5 @@ Before finishing, verify:
 - component-backed MCP tests use `TestKitSupport` only when needed
 - structured tool output is parsed and asserted
 - request-context behavior is covered with a stubbed `McpRequestContext`
+- protected or side-effecting generated-app MCP surfaces have local transport smoke/integration coverage or are reported blocked/not complete
 - prompt tests assert the context that should appear in the generated prompt

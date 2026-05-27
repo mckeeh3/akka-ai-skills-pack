@@ -94,8 +94,8 @@ Focus on the missing or sufficient semantics, not on internal processing steps.
 
 ### 3. Distinguish blockers from assumptions
 If the state is `not-ready`, identify blocking gaps.
-If the state is `ready-with-assumptions`, identify the acceptable assumptions explicitly.
-For AI-first apps, do not summarize missing authority, approval, policy, evidence, trace, outcome, or supervision semantics as harmless assumptions if generation would have to invent them.
+If the state is `ready-with-assumptions`, identify the acceptable assumptions explicitly and state the narrowed scope.
+For AI-first apps, do not summarize missing authority, approval, policy, evidence, trace, outcome, supervision, auth/security, API/UI wiring, agent/provider configuration, audit/work-trace, tests, or local validation semantics as harmless assumptions if generation would have to invent them or if a named runtime feature depends on them.
 
 ### 4. Keep the next step actionable
 The user should know whether to keep refining behavior, tests, security, or observability, or whether to move to generation.
@@ -106,7 +106,7 @@ If the description is mature enough, say so clearly.
 ## Handoff rules
 
 Route onward as needed:
-- to `app-generate-app` if the state is `ready` or accepted `ready-with-assumptions` and the user wants realization
+- to `app-generate-app` if the state is `ready` or accepted `ready-with-assumptions` for a named narrowed scope with no runtime-critical assumptions and the user wants realization
 - to `ai-first-saas` or focused AI-first companion skills when the missing area is operating-model interpretation
 - to `app-description-behavior-specification`, `app-description-test-specification`, `app-description-auth-security`, `app-description-observability`, or `app-description-ui` if the summary reveals the next missing area
 - to `app-description-change-summary` if the user asks what changed since the last revision

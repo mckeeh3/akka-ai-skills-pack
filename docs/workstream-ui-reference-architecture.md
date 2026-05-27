@@ -21,7 +21,7 @@ Current implementation references:
 - canonical User Admin UI vertical pattern: fixtures in `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
 
-Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Older `frontend/src/screens/**` files and static examples under `src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` are mechanics or legacy references only; do not promote them as canonical generated-app structure.
+Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Fixture files and fixture clients are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime/local-adapter paths rather than fixture-only or simulated data. Older `frontend/src/screens/**` files and static examples under `src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` are mechanics or legacy references only; do not promote them as canonical generated-app structure.
 
 ## Core rule
 
@@ -358,6 +358,8 @@ Supported deep links:
 Deep links must render not-found, forbidden, unavailable-agent, stale, and recovery states. They must not bypass `/api/me`, backend authorization, selected AuthContext checks, or capability denial behavior.
 
 ## Fixture requirements for next implementation task
+
+Fixtures are required to prove contracts and edge cases during UI implementation, but they are not a generated-app completion target. Any named feature shown to users must also be wired to the real local backend/API/realtime path with authorization, denial, audit/trace, and validation behavior before it is called implemented.
 
 The first implementation slice must include fixtures for:
 - `/api/me` active tenant admin, regular member, auditor/support-like viewer, disabled user, and no-membership/forbidden states

@@ -198,8 +198,8 @@ Should include:
 - when generation is allowed
 - selected Java base package and the rule that `com.example` reference examples are not a generation default
 - default full vs localized regeneration preference
-- acceptable assumption policy
-- required validation after generation
+- acceptable assumption policy that allows assumptions only for non-runtime or explicitly out-of-scope details
+- required local Akka/API/UI validation after generation; generated-app features are complete only when the real local runtime path works at the stated scope with auth, durability, provider/config handling, audit/work traces, and tests
 
 ## `10-capabilities/`
 Business capability inventory and governed backend capability contracts.
@@ -473,7 +473,7 @@ The harness should maintain these invariants:
 
 1. Every generated SaaS app must include the secure tenant/user foundation capability, agent workstream model, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
 2. Every generated full-stack AI-first SaaS app must model authenticated consequential work as role-authorized functional agents, governed internal agents where needed, durable workstreams, and structured surfaces rather than as a primary page/screen hierarchy.
-3. Every LLM-enabled functional agent must have a `12-workstreams/workstream-expertise/<functional-agent-id>.md` expert bundle or an explicit readiness deferral; the bundle owns prompt intent, skill/reference assignments, compact expertise manifest, tool boundary, capability map, trace obligations, governance owner, seed/upgrade policy, and tests for that workstream.
+3. Every LLM-enabled functional agent must have a `12-workstreams/workstream-expertise/<functional-agent-id>.md` expert bundle or an explicit readiness deferral that prevents that agent/workstream from being reported implemented; the bundle owns prompt intent, skill/reference assignments, compact expertise manifest, tool boundary, capability map, trace obligations, governance owner, seed/upgrade policy, and tests for that workstream.
 4. Every surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call must map to a governed capability.
 5. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
 6. Every in-scope capability must link to at least one behavior artifact.
@@ -485,7 +485,8 @@ The harness should maintain these invariants:
 12. Horizontal Akka components must be selected from capability semantics and recorded as downstream implementation maps, not used as the app-description root.
 13. Readiness must be based on the actual state of workstream model, operating model, capability contracts, behavior, tests, security, observability, mandatory secure foundation, and in-scope UI layers.
 14. Generation policy must never override description correctness.
-15. Review summaries must be derivable from authoritative layers.
+15. Readiness deferrals, assumptions, fixtures, mocks, deterministic responses, frontend-only behavior, or service/provider bypasses must never be wired as normal generated-app runtime or used to claim a named feature is complete.
+16. Review summaries must be derivable from authoritative layers.
 
 ## File sizing rules
 

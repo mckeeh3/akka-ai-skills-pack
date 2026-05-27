@@ -225,15 +225,16 @@ Why not necessarily `ready`?
 - the rejection path may still need clarification if the same manager-only rule must apply there
 
 Why not `not-ready`?
+- only if the remaining assumptions are non-runtime and the generated scope is explicitly narrowed
 - core behavior is already mature in the example
 - the new change is localized
-- the description may still be good enough for useful realization, as long as assumptions are surfaced
+- the description may still be good enough for a useful narrowed realization step, as long as assumptions are surfaced and no named runtime feature depends on them
 
 A good readiness result here would say:
-- behavior completeness: acceptable
-- test completeness: acceptable if negative and operational cases were updated
-- auth/security completeness: mostly acceptable, with any role-scope assumptions surfaced
-- observability completeness: acceptable for evaluation if exact audit schema is not yet critical
+- behavior completeness: acceptable only for the named scope
+- test completeness: acceptable if negative, operational, and local runtime/manual validation cases were updated
+- auth/security completeness: acceptable only when role-scope rules are explicit enough for backend enforcement and denial tests
+- observability completeness: acceptable only when audit/work-trace behavior needed to prove the feature is specified; exact field refinements may remain non-runtime follow-up
 
 ## Step 8. `app-description-readiness-summary`
 
@@ -257,8 +258,8 @@ Example summary shape:
 - confirm whether manager-only restriction applies equally to rejection
 
 ## Recommendation
-- continue description work only if you want stricter approval-audit specificity
-- otherwise the description is sufficient for a useful generated evaluation build
+- continue description work if any approval auth, rejection auth, audit/work-trace, denial, API/UI action, or local validation behavior is still needed to prove the named feature
+- otherwise the description is sufficient for a narrowed generated evaluation build whose completed features must run through the real local Akka/API/UI path
 
 ## Suggested next step
 - if you want, explicitly ask to generate the app from the current description

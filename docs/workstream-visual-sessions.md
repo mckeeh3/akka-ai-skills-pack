@@ -240,4 +240,4 @@ These events should be privacy-conscious and should reference stable workstream/
 - [x] Visual session limits are based primarily on turn groups, with a secondary surface cap.
 - [x] Tests cover append order, scroll target, anchor pause on manual scroll, and per-workstream state restoration.
 
-Phase 1 plus phase 1.1 runtime UX remediation are documentation-ready for generated app guidance at in-memory scope only. Browser-local refresh persistence and backend/cross-device resume behavior remain future phases.
+Phase 1 plus phase 1.1 runtime UX remediation are documentation-ready for generated app guidance at in-memory scope only. This is a UI-only slice, not persistence or resume completion. Any generated feature that claims durable workstream/session continuity must use backend persistence and be validated through the local Akka runtime path. Browser-local refresh persistence and backend/cross-device resume behavior remain future phases until explicitly implemented and tested.

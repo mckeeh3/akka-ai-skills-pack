@@ -202,11 +202,10 @@ Return exactly one of these states:
 Use when important semantics are still too incomplete or ambiguous for responsible generation.
 
 ### `ready-with-assumptions`
-Use when the description is mostly sufficient, but some limited assumptions remain.
-These assumptions must be listed explicitly and judged acceptable for a useful realization step.
+Use only for a narrowed realization step when the remaining assumptions are non-runtime, explicitly listed, low-risk, and do not affect backend behavior, API contracts, auth/security, tenant isolation, agent/provider binding, governed tools, audit/work traces, UI action wiring, tests, or local validation.
 
 ### `ready`
-Use when the description is sufficiently complete for reliable generation and downstream evaluation.
+Use when the description is sufficiently complete for reliable generation, local runtime validation, and downstream manual evaluation.
 
 ## Standard readiness output shape
 
@@ -279,12 +278,15 @@ Do not mark the description ready just because generation is technically possibl
 ### 2. Weight missing production concerns appropriately
 Missing secure SaaS foundation, agent workstream model, capability contracts, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, functional agents, internal agents, structured surfaces, workstream shell behavior, actors/callers, AuthContext/scope, schemas, side effects, idempotency, exposure surfaces, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
-### 3. Allow limited assumptions only when localized
+### 3. Allow limited assumptions only when localized and non-runtime
 `ready-with-assumptions` is valid only when the remaining assumptions are:
 - few
 - explicit
 - low-risk
 - unlikely to distort the app's core behavior
+- unrelated to runtime completion of named features, protected capabilities, agent/provider calls, UI action wiring, audit/work traces, tests, or local validation
+
+If an assumption would change whether a user-visible/API/workstream feature works through the real local Akka runtime path, the description is `not-ready` for that feature or must be labeled as a narrower scope with executable follow-up tasks.
 
 For browser UI generation, a missing style guide is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
 
@@ -292,8 +294,8 @@ For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functiona
 
 For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
-### 4. Consider manual evaluation intent
-If the user mainly wants a rough generated app for early evaluation, readiness may tolerate more assumptions than a production-grade generation step, but those assumptions must still be surfaced.
+### 4. Treat manual evaluation as a runtime target, not a lower bar
+If the user wants an early evaluation build, narrow the scope aggressively but still require the selected scope to run through real local Akka/API/UI paths with fail-closed provider/security handling. Do not use mock, fixture, deterministic, simulated, frontend-only, or provider-bypass behavior as the normal runtime substitute for a named generated-app feature. Missing runtime behavior remains `not-ready`, blocked, or explicitly outside the narrowed scope.
 
 ### 5. Recommend generation proactively when justified
 If the description is sufficiently mature, this skill may recommend moving on to generation even when the user has not yet explicitly asked.

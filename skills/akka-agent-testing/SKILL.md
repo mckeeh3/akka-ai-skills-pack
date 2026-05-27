@@ -34,6 +34,8 @@ Read these first if present:
 - endpoints expose agents directly
 - structured replies must be asserted without real model calls
 
+`TestModelProvider`, fixed responses, and mocked model behavior are test-only. They prove contracts, orchestration, denials, traces, and DTO handling; they do not prove a named user-facing/workstream agent feature is complete in normal runtime.
+
 ## Core pattern
 
 1. Extend `TestKitSupport`.
@@ -130,12 +132,17 @@ For consequential governed-agent behavior, assert trace facts rather than logs o
 - sensitive prompt, skill, reference, input, output, and tool payload fields are summarized or redacted for normal readers;
 - forbidden, disabled-user, disabled-agent, unassigned skill, unassigned reference, missing `read_skill` or `read_reference` tool-boundary grant, tool-boundary denial, and cross-tenant tests include both denial response and trace emission assertions.
 
+## Runtime completion rule
+
+For a named generated-app agent feature, completion also requires a local Akka invocation through the intended governed runtime path: active `AgentDefinition` resolution, approved prompt/skill/reference manifest assembly, `ToolPermissionBoundary` enforcement, `readSkill`/`readReferenceDoc` loader tools where assigned, `effects().tools(runtimeTools)` registration, provider/model configuration checks, trace emission, and the endpoint/workstream surface that users exercise. If a real provider/security configuration is unavailable, the runtime path must fail closed with an actionable error and the feature remains blocked/not complete; do not substitute `TestModelProvider` or canned responses as user-facing behavior.
+
 ## Review checklist
 
 Before finishing, verify:
-- each tested agent has a registered `TestModelProvider`
+- each test-only agent has a registered `TestModelProvider`
 - session ids are supplied in agent calls
 - structured responses are serialized with `JsonSupport.encodeToString(...)`
 - workflow tests use `Awaitility` when completion is asynchronous
 - endpoint tests use `httpClient`, not `componentClient`
 - governed runtime tests cover active profile resolution, disabled/archived denial, draft-only test/replay behavior, unapproved activation denial, unassigned-skill denial, unassigned-reference denial, cross-tenant and wrong-customer denial, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `ToolPermissionBoundary` denial for `read_skill` and `read_reference`, `AgentBehaviorEditorAgent` proposal flow, and authority expansion approval/denial
+- feature-bearing agent work has a recorded local runtime smoke/manual path or is explicitly blocked/not complete

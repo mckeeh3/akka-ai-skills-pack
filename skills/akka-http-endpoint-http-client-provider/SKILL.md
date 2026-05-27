@@ -27,7 +27,7 @@ Read these first if present:
 ## Use this pattern when
 
 - the endpoint delegates part of its work to another HTTP service
-- the target may be another Akka service or an arbitrary base URL
+- the target is a configured Akka service name or allowlisted external base URL; caller-supplied arbitrary base URLs are test/example-only unless an explicit, secured proxy capability requires them
 - the endpoint must translate upstream responses into its own API contract
 
 ## Core pattern
@@ -42,14 +42,14 @@ Read these first if present:
 
 - `ProxyGreetingEndpoint`
   - uses `HttpClientProvider`
-  - reads a base URL from a request header for a self-contained local example
+  - reads a base URL from a request header for a self-contained local example only
   - delegates to another HTTP route and remaps the response
 
 ## Note on deployed services
 
 In deployed Akka projects, prefer `httpClientFor("service-name")` when calling another Akka service in the same project.
 
-Use absolute URLs only for arbitrary external services or for specialized local examples.
+Use absolute URLs only for configured/allowlisted external services or for specialized local examples. Generated app runtime must not accept arbitrary caller-supplied upstream URLs by default; missing upstream configuration should fail closed with an actionable error.
 
 ## Review checklist
 

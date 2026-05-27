@@ -29,7 +29,7 @@ The starter scaffold is the canonical end-to-end implementation baseline. Former
 
 ### Full-core secure AI-first SaaS starter scaffold
 
-Status: **canonical starter implementation baseline, with frontend embedding qualification**.
+Status: **canonical starter implementation baseline, not full-core complete by itself until the target project renders/adapts the frontend and validates the local runtime path**.
 
 Reference:
 - source repository: `templates/ai-first-saas-starter/**`
@@ -37,7 +37,7 @@ Reference:
 - scaffold command: `.agents/bin/scaffold-ai-first-saas-starter.sh`
 - final acceptance: `specs/ai-first-saas-starter-app-template/final-acceptance-review.md`
 
-Qualification: the scaffold currently renders the backend starter foundation plus `app-description/` and `specs/` seeds. The validated React/Vite workstream UI remains under `frontend/**` as the repository/installed-pack frontend reference and must be copied/adapted during extension until a rendered `templates/ai-first-saas-starter/frontend/**` template is added.
+Qualification: the scaffold currently renders the backend starter foundation plus `app-description/` and `specs/` seeds. The validated React/Vite workstream UI remains under `frontend/**` as the repository/installed-pack frontend reference and must be copied/adapted during extension until a rendered `templates/ai-first-saas-starter/frontend/**` template is added. A generated target project is not full-core complete until the adapted UI is wired to real backend APIs/workstream endpoints, provider/security gaps fail closed, tests pass, and the local Akka/API/UI smoke path is recorded.
 
 Covered starter scope:
 

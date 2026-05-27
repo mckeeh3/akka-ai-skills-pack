@@ -7,7 +7,7 @@
   - phase-1 scaffold design
   - UI design validation against `docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` AI-first style system
   - localized frontend implementation planning for the seed app shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
-  - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
+  - first frontend execution slice planning: React/Vite/TypeScript foundation with tokenized light/dark/system mode, provided the slice is wired to real or fail-closed local backend contracts before any feature is called runtime-complete
 - not yet fully ready for:
   - complete code generation of all phases at once
   - production WorkOS authentication setup values and Resend invite-email setup values
@@ -19,12 +19,12 @@
 - blocking gaps before full code generation:
   - choose concrete WorkOS/JWT mode for runnable local development and cloud deployment
   - provide required Resend production invite-email settings
-  - choose first implementation slice boundary
+  - choose first implementation slice boundary and its local Akka/API/UI validation path
   - confirm persistence model expectations for local test execution
   - confirm whether MCP and gRPC are in v1 or deferred examples
   - decide whether the first generated frontend slice should include only phase-1 My Account, User Admin, and Agent Admin workstreams or also phase-2 Mission Control, Governance/Policy, and Audit/Trace surfaces
 - accepted assumptions:
-  - v1 may use WorkOS-compatible local test tokens for developer execution while preserving production WorkOS/AuthKit semantics
+  - v1 may use WorkOS-compatible local test tokens for developer execution while preserving production WorkOS/AuthKit semantics and fail-closed behavior when required provider configuration is absent
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules
   - tenant isolation is mandatory even in local/demo mode
   - UI design validation uses the `atlas-ops-supervisory-console` style system with no copied mockup content

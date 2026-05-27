@@ -36,8 +36,10 @@ Runnable baseline:
 Frontend implementation reference:
 - canonical architecture: `../../workstream-ui-reference-architecture.md`
 - reusable source modules in this repository: `../../../frontend/src/workstream/**`
-- fixture API/realtime seams: `../../../frontend/src/api/WorkstreamApiClient.ts` and `../../../frontend/src/api/WorkstreamRealtimeClient.ts`
-- User Admin reference vertical: `../../../frontend/src/workstream/fixtures/**` and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- API/realtime seams to bind to real generated backend endpoints: `../../../frontend/src/api/WorkstreamApiClient.ts` and `../../../frontend/src/api/WorkstreamRealtimeClient.ts`
+- User Admin contract/test reference vertical: `../../../frontend/src/workstream/fixtures/**` and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+
+Fixture-backed frontend paths are reference/test assets only. Generated user-facing runtime must use real or fail-closed local backend contracts and cannot count fixture-only behavior as implemented.
 
 ## Minimum-first growth path
 

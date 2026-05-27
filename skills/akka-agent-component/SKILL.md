@@ -41,9 +41,10 @@ Read these first if present:
 3. Keep exactly one public command handler.
 4. Use a stable system message constant or a small request-to-system-message builder.
 5. Add `.memory(...)` only when the memory behavior is intentional.
-6. Add `.onFailure(...)` when a fallback value or graceful error is needed.
+6. Add `.onFailure(...)` only for explicit graceful error/degraded-status DTOs or bounded fallback behavior that does not pretend model-backed work succeeded.
 7. Keep the agent class stateless.
 8. Keep tool calls aligned to named capability contracts; tool availability does not define the agent's responsibility or authorization boundary.
+9. For generated app runtime, missing provider/model config, disabled/unknown managed agent state, missing `AuthContext`, denied tool boundary, or policy denial must fail closed with audit/work trace and actionable error; do not return canned, deterministic, or simulated successful work as the normal user-facing response.
 
 ## Repository example
 
@@ -66,6 +67,6 @@ Before finishing, verify:
 - there is only one public command handler
 - the handler returns `Effect<T>` or `StreamEffect`
 - prompt text matches the task exactly
-- fallback handling is explicit when the reply must stay well-formed
+- fallback handling is explicit, fail-closed for provider/security/policy gaps, and never masks missing model-backed runtime behavior as success
 - no mutable request-specific state is stored on the agent instance
 - configured model aliases are safe references only; provider secrets are not embedded in prompts, code examples, frontend responses, traces, or agent-visible context

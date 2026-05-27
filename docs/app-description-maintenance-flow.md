@@ -171,7 +171,7 @@ Do not skip this step just because generation was requested.
 
 ### Step 3. Decide outcome
 - if `not-ready`, explain blockers and continue description work; missing Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, disabled-user, forbidden-access, role/scope-denial, or foundation test semantics are blocking gaps for generated SaaS apps
-- if `ready-with-assumptions`, surface assumptions explicitly and proceed only if acceptable
+- if `ready-with-assumptions`, proceed only for a named narrowed scope whose assumptions are explicit, accepted, non-runtime, and do not affect protected capabilities, API/UI action wiring, agent/provider calls, audit/work traces, tests, or local validation
 - if `ready`, proceed
 
 When the current readiness scope is `minimum starter / not full core`, generation may proceed only for the starter slice and the generated planning output must preserve follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security coverage. Do not summarize this state as full-core ready.
@@ -180,8 +180,8 @@ When the current readiness scope is `minimum starter / not full core`, generatio
 Use `app-generate-app`.
 Generation must remain subordinate to the current description.
 
-### Step 5. Run and evaluate if requested
-Run tests, run the app, or prepare manual evaluation artifacts as requested and supported.
+### Step 5. Run and evaluate
+For feature-bearing generated app work, run tests and the local Akka/API/UI/manual-smoke path needed to prove the named scope works. If validation cannot run, record it as incomplete and keep affected runtime features blocked or outside the completion claim. Manual evaluation artifacts supplement, not replace, real local runtime behavior.
 
 ### Step 6. Summarize results
 Use generation and readiness summaries to explain what happened.

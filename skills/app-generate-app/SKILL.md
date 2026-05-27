@@ -54,7 +54,7 @@ The input sounds like:
 
 Use it only after the harness has either:
 - determined the description is `ready`, or
-- determined it is `ready-with-assumptions` and those assumptions are accepted or tolerable for the requested evaluation step
+- determined it is `ready-with-assumptions` for a named narrower scope whose assumptions are accepted, non-runtime, and do not affect backend behavior, API contracts, auth/security, tenant isolation, agent/provider binding, UI action wiring, audit/work traces, tests, or local validation
 
 ## Core operating rule
 
@@ -87,6 +87,7 @@ When generating, this skill must:
 - identify whether generation is full or localized
 - identify which outputs are in scope
 - identify the local run, endpoint smoke, browser/workstream smoke, or manual-test path expected to prove the generated scope works
+- realize the generated scope as working runtime code, not as a mock/demo/simulated substitute; any provider/security gap must fail closed with actionable configuration errors and any omitted runtime behavior must become a blocked/deferred task outside the completion claim
 - realize outputs from the description
 - keep generated outputs consistent with the current description
 - avoid treating generated code as authoritative
@@ -181,8 +182,8 @@ Ask only the smallest questions needed to avoid an obviously wrong realization s
 Examples:
 - "What Java base package should I use for generated code? Press Enter to use `ai.first`."
 - "Do you want full regeneration or should I localize regeneration to the changed description area if possible?"
-- "Should I stop after generation, or also run tests and start the app if available?"
-- "Is this generation mainly for early evaluation, or do you want the strictest production-oriented realization possible from the current description?"
+- "Should I also run the available tests and start/smoke the local app path needed to prove this generated scope works?"
+- "Which named narrower scope should I generate now, and which missing runtime features should remain blocked outside that completion claim?"
 
 ## Anti-patterns
 

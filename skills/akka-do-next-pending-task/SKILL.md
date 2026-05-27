@@ -73,14 +73,14 @@ Do **not** use this skill when:
 
 Each queue task is intended to be performed in a fresh harness context.
 
-If this skill is invoked in a session that already contains substantial unrelated planning or coding context, and the harness cannot spawn an isolated fresh context, prefer to stop and give the user this handoff prompt:
+If this skill is invoked in a session that already contains substantial unrelated planning or coding context, and the harness cannot spawn an isolated fresh context, prefer a fresh handoff only when the contamination creates a concrete risk to scope or correctness. Otherwise, if the selected task is bounded, required reads are clear, and the user wants execution, proceed in the current session and execute exactly one queue item. When stopping is necessary, give the user this handoff prompt:
 
 ```text
 Use the Akka skills pack to do the next pending task from specs/pending-tasks.md.
 Execute only that one task, load only its required reads and listed skills, update its status when finished, and report the next runnable pending task.
 ```
 
-If the user explicitly asks to proceed in the current session anyway, continue only when the selected task is bounded and its required reads are clear.
+If the user explicitly asks to proceed in the current session anyway, continue when the selected task is bounded and its required reads are clear.
 Still execute only one queue item.
 
 ## Queue file contract
@@ -285,8 +285,8 @@ Block instead of guessing when:
 - required architecture choices or blocking pending questions are unresolved
 - AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
 - the task conflicts with current code or specs
-- a required external credential/service is unavailable and no mock/test substitute is specified
-- required local app-run, endpoint, browser, or manual-smoke validation cannot be performed and no accepted non-runtime limitation applies
+- a required external credential/service is unavailable for normal runtime; implement fail-closed configuration errors and test/local adapters where appropriate, but do not mark provider-backed user-facing behavior done through mocks
+- required local app-run, endpoint, browser, or manual-smoke validation cannot be performed for a feature-bearing task; record incomplete validation and keep the task blocked unless the task is explicitly non-runtime/docs-only or the affected runtime feature is outside the named scope
 - completing the named feature would require widening into another queue item
 
 ## Queue update discipline

@@ -95,7 +95,7 @@ Load the companion skill that matches the current task:
 7. Put business state changes in entities or workflows, not in mutable consumer fields.
 8. For per-entity broker ordering, include `ce-subject` metadata when producing.
 9. For service streams, add `@Acl` so other Akka services can subscribe.
-10. Test topic flows with `TestKitSupport` and mocked incoming/outgoing messages.
+10. Test topic flows with `TestKitSupport` and mocked incoming/outgoing messages; when the upstream component exists in the same generated service and the named feature depends on the reaction, also exercise the real upstream-to-consumer path before marking the feature complete.
 11. For generated SaaS flows, include tenant/customer ids and actor/audit metadata in consumed messages or load them from the authoritative source before side effects.
 12. Recheck authorization, use a system/service principal with an explicit capability grant, or consume an explicit prior authorization/approval decision before consequential side effects.
 13. Prevent cross-tenant/customer fanout by preserving `ce-subject`, tenant/customer metadata, and scoped downstream command payloads.

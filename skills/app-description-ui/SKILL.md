@@ -168,11 +168,13 @@ For any UI change, update:
 
 ## Realization routing
 
-When realization is requested, preserve the description-level functional-agent and structured-surface contracts, then use the source-repository reference implementation as a concrete realization target:
+When realization is requested, preserve the description-level functional-agent and structured-surface contracts, then use the source-repository reference implementation as a concrete mechanics reference:
 - reusable workstream components and types: `frontend/src/workstream/**`
-- fixture API/realtime seams: `frontend/src/api/WorkstreamApiClient.ts` and `frontend/src/api/WorkstreamRealtimeClient.ts`
+- API/realtime client seams to bind to real generated backend endpoints: `frontend/src/api/WorkstreamApiClient.ts` and `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell/deep-link example: `frontend/src/main.tsx`
-- User Admin dashboard → list/search → detail/edit vertical: `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- User Admin dashboard → list/search → detail/edit contract references: `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+
+Fixtures are contract/test references only. Generated user-facing SaaS UI must connect to real backend API/realtime endpoints and governed capabilities with authorization, audit/trace, failure, and local smoke/manual validation paths. Fixture-backed, frontend-only, or simulated data paths must not satisfy runtime completion for a named feature.
 
 Do not realize new generated SaaS UI as a primary `screens/**` or page-route tree. If older app descriptions contain `screens-and-navigation.md`, treat it as legacy compatibility and migrate meaning into `workstream-shell.md`, `functional-agent-rail.md`, `structured-surface-rendering.md`, and `routes-and-deep-links.md`.
 

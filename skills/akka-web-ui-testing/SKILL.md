@@ -67,8 +67,8 @@ Do not add a new heavy frontend test framework unless the user explicitly wants 
 For feature-bearing generated SaaS UI work, the sprint/task must have a smoke path even if the project does not yet have a browser automation framework. Prefer an existing cheap/stable automated browser or DOM smoke test when available. If adding Playwright/Cypress/etc. would be heavy or unstable, record an explicit manual smoke checklist/result instead.
 
 Cover:
-- page loads in the locally running Akka-hosted app or equivalent test route
-- primary action works through the intended API/client path
+- page loads in the locally running Akka-hosted app for feature-bearing generated SaaS UI; an equivalent test route is acceptable only for non-feature mechanics or an explicitly recorded limitation
+- primary action works through the intended real API/client path, not fixture-only or frontend-only data
 - validation or forbidden error appears when expected
 - keyboard focus path for a key form or dialog
 
@@ -80,7 +80,7 @@ A complete UI should have tests or explicit manual review notes for:
 - packaged asset delivery, including the stylesheet implementing the selected style guide
 - API contract shape
 - realtime route references when used
-- protected-route behavior when a security task has put it in scope
+- protected-route behavior for generated SaaS UI, including forbidden/disabled/wrong-context cases for protected surfaces
 - local Akka-hosted app smoke path for the visible feature before marking the UI feature complete
 - CSS style-guide output staying aligned with the authoritative selected style
 - frontend build output staying in sync with source

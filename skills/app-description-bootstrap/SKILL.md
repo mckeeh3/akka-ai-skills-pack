@@ -222,10 +222,10 @@ Create `00-system/app-manifest.md` with:
 Create `00-system/readiness-status.md` with an initial state.
 For most fresh bootstraps, prefer:
 - `not-ready`
-- or `ready-with-assumptions` only if the input is already unusually complete
+- or `ready-with-assumptions` only if the input is already unusually complete and remaining assumptions are non-runtime or explicitly outside the named scope
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, and forbids using `com.example` for generated application code unless explicitly requested. For `minimum starter / not full core`, require follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior/reference documents, and security coverage.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, forbids using `com.example` for generated application code unless explicitly requested, and states that generated runtime features are complete only after real local Akka/API/UI validation with no mock/fixture/simulated normal-runtime substitute. For `minimum starter / not full core`, require follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior/reference documents, and security coverage.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.
