@@ -481,7 +481,7 @@
 
 ### TASK-AUTO-06-004: Add Autonomous Agent handoff triage example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/04-add-handoff-triage-example.md
 - depends on: [TASK-AUTO-06-003]
@@ -513,6 +513,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add handoff example`
+  - completed with `SupportTriageAutonomousAgent`, `BillingSupportSpecialistAutonomousAgent`, `HandoffTriageTasks`, `AutonomousSupportTriageEndpoint`, and endpoint-driven same-task handoff integration test
+  - updated `docs/agent-coverage-matrix.md` for handoff executable coverage
+  - checks: `mvn test`; `git diff --check`; `rg -n "canHandoffTo|handoffTo|handoff|AutonomousAgentTools|TaskAcceptance" src/main/java src/test/java docs/agent-coverage-matrix.md`
 
 ### TASK-AUTO-06-005: Add Autonomous Agent team or moderation example
 
