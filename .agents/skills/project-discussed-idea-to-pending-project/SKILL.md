@@ -120,7 +120,7 @@ Write fresh-session task briefs with exact objective, required reads, in-scope/o
 
 ## `pending-tasks.md` contract
 
-Use this queue shape inside the mini-project directory:
+Use this queue shape inside the mini-project directory. Every generated queue must include a terminal verification work task after the planned implementation/review tasks. If verification finds gaps, append new bounded tasks before a new terminal verification task so the queue repeats the task-group loop until the mini-project is complete.
 
 ```md
 # Pending Tasks: <Initiative Name>
@@ -171,6 +171,65 @@ If the planning scaffold is created in the current session but not committed, ma
 
 For implementation tasks, each queue entry must include status, source, task brief, dependencies, minimal reads, exact skills, bounded outputs, checks, done criteria, and notes for commit message/blockers/supersession.
 
+Every initial queue must end with a verification task, for example:
+
+```md
+### TASK-<PREFIX>-99-001: Verify <initiative> completion
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/<initiative>/tasks/99-verification/01-verify-<initiative>-completion.md
+- depends on:
+  - <all planned implementation/review task ids>
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/<initiative>/README.md
+  - specs/<initiative>/conversation-capture.md
+  - specs/<initiative>/pending-tasks.md
+  - specs/<initiative>/sprints/*.md
+  - specs/<initiative>/backlog/*.md
+  - specs/<initiative>/tasks/**/*.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/<initiative>/pending-tasks.md
+  - completion summary, verification notes, or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - any checks needed to validate the mini-project done state
+- done criteria:
+  - task group/sprint goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - unresolved questions/blockers have been reviewed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+- notes:
+  - commit message: `<prefix>: verify <initiative> completion`
+```
+
+## Verification loop
+
+The task queue must implement a repeatable task-group loop:
+
+1. plan bounded tasks;
+2. execute queued work one task per fresh harness context;
+3. run a verification work task at the end of the current task group;
+4. verify both the current task group/sprint goals and the overall mini-project done state;
+5. when gaps remain, append more bounded tasks and then append a new terminal verification task;
+6. repeat until the mini-project is complete.
+
+A verification task must:
+- assess whether the current task group or sprint goals are complete;
+- assess whether the overall mini-project done state in `README.md` has been achieved;
+- compare completed work against sprint/backlog goals, task done criteria, conversation-capture decisions, unresolved questions, and blockers;
+- run or require appropriate validation checks for the stated scope;
+- append new bounded tasks when material gaps remain;
+- append a new terminal verification task after any newly added work;
+- record completion only when no material gaps remain.
+
+Keep verification bounded to the mini-project's stated scope and done state. Do not turn the verification task into a whole-repository review unless the mini-project is explicitly a whole-repository review. If unrelated issues are discovered, record them as recommendations or propose a separate mini-project rather than silently expanding scope.
+
 ## Task sizing rules
 
 Each task must be executable in one fresh harness context.
@@ -207,18 +266,19 @@ Do not mark a task `done` without a commit unless the queue explicitly says the 
 3. Define done state and non-goals in `README.md`.
 4. Split work into ordered sprints only as much as needed.
 5. Write backlog files with suggested harness task breakdowns.
-6. Write task briefs for non-trivial queue items.
-7. Create `pending-tasks.md` with the scaffold task plus implementation/review tasks.
+6. Write task briefs for non-trivial queue items, including the terminal verification task brief.
+7. Create `pending-tasks.md` with the scaffold task, implementation/review tasks, and a final verification task.
 8. Validate that the first non-done task is runnable without guessing.
-9. Run `git diff --check`.
-10. If committing the scaffold now, commit only the mini-project files and queue-status update.
+9. Validate that the final verification task can determine whether task-group and mini-project goals are complete, and can append follow-up tasks plus a new terminal verification task when needed.
+10. Run `git diff --check`.
+11. If committing the scaffold now, commit only the mini-project files and queue-status update.
 
 ## Final response
 
 Report:
 - created mini-project path;
 - supporting docs created;
-- number of tasks and first runnable task;
+- number of tasks, including the terminal verification task, and first runnable task;
 - whether the planning scaffold was committed;
 - questions, concerns, or recommendations.
 
