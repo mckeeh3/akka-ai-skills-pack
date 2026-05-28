@@ -519,7 +519,7 @@
 
 ### TASK-AUTO-06-005: Add Autonomous Agent team or moderation example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/05-add-team-moderation-example.md
 - depends on: [TASK-AUTO-06-004]
@@ -552,6 +552,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add team moderation example`
+  - completed with `ReviewModeratorAutonomousAgent`, `TechnicalReviewPanelistAutonomousAgent`, `PolicyReviewPanelistAutonomousAgent`, `ReviewModerationTasks`, `AutonomousReviewModerationEndpoint`, and an endpoint-driven scripted Moderation integration test
+  - recorded TeamLeadership as the remaining coordination coverage gap in `docs/agent-coverage-matrix.md`
+  - checks: `mvn test`; `git diff --check`; `rg -n "TeamLeadership|TeamMember|Moderation|createTeam|startScriptedConversation|submitTurn|AutonomousAgentTools" src/main/java src/test/java docs/agent-coverage-matrix.md`
 
 ### TASK-AUTO-06-006: Plan governed Autonomous Agent tool-boundary example
 
