@@ -118,7 +118,7 @@
 
 ### TASK-REQWS-01-099: Verify audit and target model sprint
 
-- status: pending
+- status: done
 - source: progressive verification loop for Sprint 01
 - task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
 - depends on: [TASK-REQWS-01-001, TASK-REQWS-01-002]
@@ -146,7 +146,11 @@
   - target process contract is prescriptive enough to guide downstream source edits
   - if gaps remain, bounded follow-up tasks are appended before a new Sprint 01 verification task
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/sprint-01-verification.md`
+  - verified Sprint 01 complete for planning scope; no new Sprint 01 follow-up tasks required
+  - downstream bounded source-edit work remains covered by Sprints 02-06
+  - commit message: `requirements-workstream: verify sprint 01 target model`
 
 ### TASK-REQWS-02-001: Promote canonical process doctrine
 
