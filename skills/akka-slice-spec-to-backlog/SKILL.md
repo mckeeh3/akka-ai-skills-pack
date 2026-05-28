@@ -13,6 +13,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 
 Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and is detailed enough to drive focused coding sessions.
 The backlog should end in bounded harness-sized task items, not just class lists and prose.
+For generated secure AI-first SaaS, each backlog item must preserve the vertical requirements-to-workstream chain: workstream → attention/dashboard → structured surface action or workstream event → capability id/class → selected Akka substrate → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
 
 ## Use this skill when
@@ -51,6 +52,7 @@ Read these first if present:
 - `../../specs/pending-tasks.md` if it already exists
 - `../../docs/pending-task-queue.md`
 - `../../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../../docs/requirements-to-workstream-development-process.md` when the source increment includes generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent candidates, notifications/projections, or task queues
 - `../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
 - `../../specs/templates/build-backlog-template.md`
 - `../../specs/templates/implementation-task-template.md`
@@ -89,17 +91,20 @@ This skill is a one-increment expansion step. Do not reinterpret the whole PRD o
 The backlog file must include:
 1. Purpose
 2. Delivery goal
-3. Recommended package layout additions
-4. Class-by-class file list
-5. Concrete endpoint list
-6. Write-model design decisions
-7. View/workflow/consumer/timer/integration design as relevant
-8. Web UI style-guide dependency and selected AI-first style when the slice includes browser UI work
-9. Test plan by file/class
-10. Implementation order
-11. Suggested harness task breakdown
-12. Done criteria, including the working local app/API/UI state for the slice or sprint goal
-13. Explicit defer list, including whether each deferral narrows the goal or blocks calling the feature implemented
+3. Workstream/attention/dashboard contract: workstream id, functional agent, attention categories, dashboard summaries, left-rail/My Account contribution, and notification/projection expectations when in scope
+4. Structured surface/action and capability map: surface states/actions, capability ids/classes, AuthContext, approval/policy, audit/work trace, and exposure channel
+5. Autonomous task candidates: durable internal/background work that should use AutonomousAgent, plus task lifecycle/result/notification surfaces when applicable
+6. Recommended package layout additions
+7. Class-by-class file list
+8. Concrete endpoint list
+9. Write-model design decisions
+10. View/workflow/consumer/timer/integration design as relevant
+11. Web UI style-guide dependency and selected AI-first style when the slice includes browser UI work
+12. Test plan by file/class
+13. Implementation order
+14. Suggested harness task breakdown
+15. Done criteria, including the working local app/API/UI state for the slice or sprint goal
+16. Explicit defer list, including whether each deferral narrows the goal or blocks calling the feature implemented
 
 The suggested harness task breakdown is the default leaf layer for implementation.
 Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
@@ -108,7 +113,7 @@ When the target slice or sprint is the SaaS foundation, split the breakdown into
 
 Also split governed runtime agent foundation work into separate backlog and pending-task items by component/UI/test family: `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance with prompt assembly and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `AgentSkillManifest`, authorized `readSkill(skillId)` and `SkillLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents and proposed-diff approval, prompt/skill/manifest/tool-boundary UI, trace UI, and security/admin/agent-governance tests. Do not produce one broad managed-agent or `agent governance` item that spans all of these.
 
-For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant source capability ids, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
+For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant workstream id, attention category/dashboard or surface action, source capability ids, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, selected Akka substrate, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
 If the slice or sprint goal names a feature such as sign-in, user auth, invitation onboarding, User Admin, Agent Admin, or an app-specific workflow, the backlog must include the backend, endpoint/API, frontend/workstream surface, authorization, audit/trace, tests, and local smoke/manual verification needed for that named feature to work at the stated scope. Deferrals that prevent that working state must narrow/rename the goal or block completion; they must not be counted as done.
 If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
 Preserve existing task IDs and statuses when updating an existing queue.
@@ -123,7 +128,7 @@ Preserve existing task IDs and statuses when updating an existing queue.
 
 ### AI-first context preservation
 
-When the source slice or sprint includes AI-first operating-model content, the backlog must carry that context into implementation tasks instead of reducing the work to generic CRUD/component tickets.
+When the source slice or sprint includes AI-first operating-model content, the backlog must carry that context into implementation tasks instead of reducing the work to generic CRUD/component tickets. Workstream attention, dashboard, surface action, capability, AutonomousAgent task, notification/projection, and trace context is required vertical context, not optional prose.
 
 Preserve, when present:
 - delegated work and retained human authority

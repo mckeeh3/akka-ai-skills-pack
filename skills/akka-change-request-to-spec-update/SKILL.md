@@ -7,13 +7,14 @@ description: Convert an iterative feature request, bug report, issue, or impleme
 
 Use this skill when an Akka project already has app-description and/or `specs/` planning artifacts and the user introduces an incremental change.
 
-This is an **evolution skill**. It keeps the app meaning and implementation plan current before new code is written.
+This is an **evolution skill**. It keeps the app meaning and implementation plan current before new code is written. For generated secure AI-first SaaS changes, keep the requirements-to-workstream chain intact: workstream → attention/dashboard → structured surface and surface action → governed capability/API → selected Akka substrate → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 
 ## Goal
 
 Turn a change request into a controlled planning delta that:
 - preserves the current app-description/spec structure
 - preserves AI-first operating-model meaning when delegated work, governance, decisions, audit, or outcomes are in scope
+- preserves workstream identity, attention categories, dashboard contracts, surface actions, capability ids, AutonomousAgent task candidates, notifications/projections, and audit/work traces when the change affects generated SaaS planning
 - preserves workstream expertise meaning when a functional agent's prompt intent, governed skills, references, expertise manifest, loaders, tool boundary, traces, or tests change
 - updates only the affected authoritative description/spec artifacts
 - adds or revises verification expectations
@@ -43,6 +44,7 @@ Keep this skill local-delta oriented. It may update affected app-description/spe
 Read these first if present:
 - `../README.md`
 - `../../docs/ai-first-saas-application-architecture.md` when the change involves delegated work, agents, governance, approvals, exceptions, audit, or outcomes
+- `../../docs/requirements-to-workstream-development-process.md` when the change touches workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or planning queues
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/workstream-expertise-model.md` when the change adds or revises a functional agent, expert bundle, governed skills, references, manifests, loader authorization, tool boundaries, traces, seed content, or expertise tests
@@ -74,6 +76,7 @@ Classify the input as one or more of:
 - workstream expertise change: functional-agent prompt intent, `SkillDocument`/`ReferenceDocument` content, `AgentSkillManifest`/`AgentReferenceManifest` entries, `readSkill`/`readReferenceDoc` loader access, `ToolPermissionBoundary`, authority profile, seed/upgrade policy, governance owner, `PromptAssemblyTrace`/`SkillLoadTrace`/`ReferenceLoadTrace`/`AgentWorkTrace`, or expertise tests
 - integration contract change
 - UI/API surface change, including web UI style-guide selection or token changes
+- requirements-to-workstream change: workstream responsibility, attention category, dashboard summary, surface action, capability exposure, autonomous task candidate, notification/projection, or audit/work trace linkage
 - implementation discovery
 - de-scope/removal
 - unclear change requiring clarification
@@ -86,6 +89,7 @@ Ask the smallest clarifying question only when necessary to avoid changing the w
 
 Summarize:
 - change basis
+- affected workstreams, attention categories, dashboards, structured surfaces, and surface actions
 - affected capabilities
 - affected behavior
 - affected tests
@@ -96,7 +100,7 @@ Summarize:
 
 If the change is broad enough to invalidate the current architecture or authority model, stop and recommend `akka-revised-prd-reconciliation` or `akka-prd-to-specs-backlog` instead of patching locally.
 
-When the input changes delegated work or automation authority, apply `ai-first-saas` before selecting implementation artifacts. Do not treat the change as a simple CRUD field or endpoint update if it changes who/what may act, approve, decide, learn, or be audited.
+When the input changes delegated work or automation authority, apply `ai-first-saas` before selecting implementation artifacts. Do not treat the change as a simple CRUD field or endpoint update if it changes who/what may act, approve, decide, learn, or be audited. When the input changes durable background investigation, review, evaluation, monitoring, or remediation, evaluate whether it changes an AutonomousAgent task lifecycle and preserve task notifications/results as governed surfaces rather than loose background jobs.
 
 When the input says to make an agent more capable, more expert, more knowledgeable, or better at a workstream, do not collapse the request into prompt text. Route it as a workstream expertise change and identify impacted expert bundle artifacts, governed documents, manifests, loaders, tool boundaries, capabilities, auth/security, observability, UI/governance surfaces, generation assets, and tests.
 
@@ -118,7 +122,7 @@ Do not bury new governance, audit, policy, approval, or outcome semantics only i
 ### 3. Update realization specs
 
 Update the smallest relevant `specs/` artifacts:
-- `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, workstream expertise foundation, authority boundaries, or global implementation order changed
+- `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, requirements-to-workstream contract, workstream expertise foundation, authority boundaries, or global implementation order changed
 - `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, expert bundle governance, prompt/skill/reference document governance, manifest/loader/boundary rules, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI style-guide decisions
 - `specs/slices/*.md` for business slice meaning, including workstream expertise responsibilities when a slice introduces or materially changes a functional agent
 - `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for expert bundle description, seed documents, skill/reference manifests, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task
@@ -136,7 +140,7 @@ Rules:
 - append new tasks for new work
 - mark obsolete pending/deferred/blocked tasks as `superseded` when a later spec change replaces them
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
-- update required reads and skills for affected pending tasks, adding `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI
+- update required reads and skills for affected pending tasks, preserving workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `akka-autonomous-agents` or focused governance/testing skills when the task changes durable AutonomousAgent task lifecycle, notifications, results, or tool authority; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI
 - block or decompose vague pending tasks such as `make the agent expert` or `agent governance` unless they have a self-contained scope for exactly which expert bundle, governed documents, manifests, loaders, boundaries, surfaces, traces, and tests are in or out
 - block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, workstream expertise, or outcome semantics are now ambiguous
 - block web UI tasks whose source spec has no selected style guide and add or update the pending style-selection question

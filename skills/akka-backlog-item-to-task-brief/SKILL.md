@@ -59,6 +59,7 @@ Read these first if present:
 - `../../specs/pending-tasks.md` if it already exists
 - `../../docs/pending-task-queue.md`
 - `../../docs/ai-first-saas-application-architecture.md` when the backlog item includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../../docs/requirements-to-workstream-development-process.md` when the backlog item touches generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queue execution
 - `../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
 - `../../specs/templates/implementation-task-template.md`
 - `../../specs/akka-solution-plan.md`
@@ -84,25 +85,28 @@ The brief should normally correspond to:
 - one item from `Suggested harness task breakdown`
 - or one smaller child task split from an oversized backlog item
 
+For generated secure AI-first SaaS, the brief must preserve the vertical requirements-to-workstream chain for the focused work: workstream → attention/dashboard → structured surface action or workstream event → governed capability/API → selected Akka substrate → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
+
 ## Required task brief content
 
 Each task brief must include:
 1. Purpose
 2. Reads
-3. Scope
-4. Non-goals
-5. Akka components involved
-6. Skills to load
-7. Expected outputs
-8. Required tests
-9. Local/runtime validation path when the task implements app behavior
-10. Done criteria
+3. Vertical context for generated SaaS: workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, audit/work trace, and AutonomousAgent task lifecycle/result semantics when applicable
+4. Scope
+5. Non-goals
+6. Akka components involved
+7. Skills to load
+8. Expected outputs
+9. Required tests
+10. Local/runtime validation path when the task implements app behavior
+11. Done criteria
 
-The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
+The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant workstream id, attention category/dashboard or surface action, source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, selected Akka substrate, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
 
 ## AI-first context preservation
 
-When the backlog item includes AI-first operating-model semantics, the task brief must preserve only the context needed for this focused implementation run.
+When the backlog item includes AI-first operating-model semantics, the task brief must preserve only the context needed for this focused implementation run. Do not reduce attention/dashboard/surface-action/capability/autonomous-task context to a generic component task.
 
 Carry forward, when applicable:
 - delegated work and retained human authority for the component boundary

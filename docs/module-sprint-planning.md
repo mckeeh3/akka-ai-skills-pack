@@ -4,7 +4,7 @@ Use this pattern when a large PRD, revised PRD, app-description realization, or 
 
 Goal: decompose work into **vertical module sprints** that can be implemented and tested full stack, one module at a time.
 
-For generated full-stack AI-first SaaS, `vertical` means each sprint, backlog item, task brief, and pending task is anchored to functional agent ownership, a structured surface/action or workstream event, a governed capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests. When a functional agent has LLM behavior, the vertical contract must also preserve its workstream expert bundle requirements: prompt intent, procedural skills, reference documents, compact manifests, tool boundaries, authorized skill/reference loaders, traces, governance surfaces, seed/import behavior, and tests. Do not treat component family, page, dashboard, generic module names, or vague `agent expertise` labels as sufficient implementation boundaries.
+For generated full-stack AI-first SaaS, `vertical` means each sprint, backlog item, task brief, and pending task is anchored to functional agent ownership, the workstream attention category and dashboard contract, a structured surface/action or workstream event, a governed capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, notifications/projections, audit/work traces, and required tests. When durable internal/background model-driven work is part of the increment, preserve the AutonomousAgent task lifecycle, result surface, notification, dependency/failure/cancellation, and tool-authority contract. When a functional agent has LLM behavior, the vertical contract must also preserve its workstream expert bundle requirements: prompt intent, procedural skills, reference documents, compact manifests, tool boundaries, authorized skill/reference loaders, traces, governance surfaces, seed/import behavior, and tests. Do not treat component family, page, dashboard, generic module names, or vague `agent expertise` labels as sufficient implementation boundaries.
 
 Before splitting modules, classify the generated product as full-stack secure AI-first SaaS by default: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision UI, audit traces, and outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
@@ -85,7 +85,7 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - sprint goal
 - parent module or modules
 - dependencies and prerequisite decisions
-- vertical workstream increment: functional agent(s), workstream event or structured surface/action, mapped capability id(s)/class(es), AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
+- vertical workstream increment: functional agent(s), attention categories, dashboard summaries, workstream event or structured surface/action, mapped capability id(s)/class(es), AuthContext and role/capability rules, selected Akka substrate, AutonomousAgent task semantics where applicable, notification/projection behavior, frontend/API/realtime work, audit/work traces, and required tests
 - backend scope: entities, workflows, views, consumers, timers, endpoints as implementation of those capabilities
 - frontend scope: functional-agent workstream shell changes, structured surfaces, forms/surface actions, route/deep-link details, API client calls, realtime behavior
 - AI-first increment for generated SaaS: goals/plans, agent/team responsibilities, authority limits, approval gates, policy clauses, evidence/risk/confidence/impact surfaces, trace records, evaluations, and outcome metrics
@@ -111,10 +111,11 @@ specs/backlog/02-purchase-request-core-build-backlog.md
 The backlog should break the sprint into harness-sized vertical tasks. Each implementation task should carry:
 
 - functional agent(s), or explicit internal-only/foundation scope;
-- structured surface/action or workstream event, or explicit non-UI trigger;
+- attention category/dashboard, structured surface/action or workstream event, or explicit non-UI trigger;
 - capability id(s)/class(es);
 - AuthContext, tenant/customer scope, and role/capability rules;
-- side effects, idempotency, approval, audit, and trace obligations;
+- side effects, idempotency, approval, notification/projection behavior, audit, and trace obligations;
+- AutonomousAgent task lifecycle/result/notification semantics when durable internal/background work is in scope;
 - selected Akka substrate and endpoint/tool/workflow/timer/consumer exposure;
 - frontend/API/realtime work where user-facing;
 - required success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, and smoke tests;

@@ -11,7 +11,7 @@ Use this skill when a project already has planning artifacts under `specs/`, esp
 specs/pending-tasks.md
 ```
 
-This is a queue repair/materialization skill. It does not redo PRD decomposition, does not revise app meaning, and does not implement application code. It translates already-accepted backlog/task-brief work into the durable execution queue while preserving source semantics.
+This is a queue repair/materialization skill. It does not redo PRD decomposition, does not revise app meaning, and does not implement application code. It translates already-accepted backlog/task-brief work into the durable execution queue while preserving source semantics. For generated secure AI-first SaaS, source semantics include the vertical requirements-to-workstream chain: workstream → attention/dashboard → surface action or workstream event → governed capability/API → selected Akka substrate → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
 
 ## Goal
 
@@ -48,6 +48,7 @@ Read these first if present:
 - `../README.md`
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and first-slice implementation order
 - `../../docs/ai-first-saas-application-architecture.md` when backlog work involves delegated operations, agents, governance, decisions, supervision, audit, or outcomes
+- `../../docs/requirements-to-workstream-development-process.md` when materializing generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queues
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
@@ -79,7 +80,7 @@ Use the contract in `../../docs/pending-task-queue.md`.
 
 ### Source of tasks
 
-Derive queue tasks from each backlog file's `Suggested harness task breakdown` section.
+Derive queue tasks from each backlog file's `Suggested harness task breakdown` section. A runnable generated-SaaS task must inherit its workstream id, attention category or dashboard/surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, and audit/work trace obligations. If the backlog item only says `build dashboard`, `CRUD`, `page`, `component`, or `agent work` without that vertical context, repair the backlog first or create a blocked task for `akka-backlog-item-to-task-brief` instead of materializing it as runnable.
 
 Security and web UI baseline tasks must never be omitted as cross-cutting polish. For SaaS app queues, ensure the first runnable tasks implement or verify the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, governed runtime agent foundation, AI admin agents including AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, admin UI surfaces, frontend shell/context selection, and security/admin/frontend tests. If the source backlogs lack those tasks, repair the queue only after adding or flagging the missing foundation backlog coverage instead of silently proceeding to domain work.
 
@@ -93,6 +94,7 @@ When source artifacts classify work as AI-first or include delegated operations,
 - include `docs/ai-first-saas-application-architecture.md` in required reads unless a more focused AI-first task brief already contains the needed context
 - include the smallest relevant AI-first companion skill alongside component skills, such as `ai-first-saas-agent-team-design`, `ai-first-saas-policy-governance`, `ai-first-saas-decision-cards`, `ai-first-saas-audit-trace`, `ai-first-saas-ui-surfaces`, or `ai-first-saas-outcomes-metrics`
 - preserve authority, approval, policy, evidence, trace, and outcome constraints in task notes or done criteria when those constraints affect implementation
+- preserve workstream attention, dashboard, surface action, AutonomousAgent task lifecycle, notification/projection, and audit/work trace context so the next harness run does not replan component-first
 - keep implementation tasks bounded to the Akka substrate component being built; do not create broad doctrine-reading tasks unless the backlog explicitly asks for planning or docs
 
 ### Question gate
@@ -154,7 +156,7 @@ Avoid over-serializing independent work.
 
 ### Required reads and preserved task context
 
-Each generated task must preserve the source capability ids when available, the selected Java base package for Java source tasks, the actor/caller and `AuthContext`, required role/scope or permission checks, approval gates, audit/trace obligations, UI surfaces affected, and concrete checks. For governed runtime agent foundation tasks, record which foundation scope is in the task (`AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing, tool-boundary UI, or tests) so later runs do not merge adjacent agent-governance work. Do not create Java implementation tasks that would require guessing the package root; queue or depend on the base-package question, whose default is `ai.first` if deferred.
+Each generated task must preserve the source capability ids when available, the workstream id, attention category/dashboard or surface action, selected Java base package for Java source tasks, the actor/caller and `AuthContext`, required role/scope or permission checks, approval gates, selected Akka substrate, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces affected, and concrete checks. For governed runtime agent foundation tasks, record which foundation scope is in the task (`AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `readSkill`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing, tool-boundary UI, or tests) so later runs do not merge adjacent agent-governance work. Do not create Java implementation tasks that would require guessing the package root; queue or depend on the base-package question, whose default is `ai.first` if deferred.
 
 Each task should list the smallest useful reads, usually:
 - `specs/akka-solution-plan.md`

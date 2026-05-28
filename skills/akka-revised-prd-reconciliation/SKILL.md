@@ -24,7 +24,7 @@ Reconcile a revised PRD with the current project plan by identifying:
 - pending tasks that must be updated, blocked, deferred, or superseded
 - new queue tasks to append
 
-The output should preserve useful planning history and produce a trustworthy next implementation queue.
+The output should preserve useful planning history and produce a trustworthy next implementation queue. For generated secure AI-first SaaS, reconciliation must preserve the requirements-to-workstream chain: workstreams → attention categories and dashboard contracts → structured surfaces and surface actions → governed capabilities/APIs → Akka substrate → request-based workstream Agent turns or durable AutonomousAgent task candidates → notifications/projections → audit/work traces.
 
 ## Use this skill when
 
@@ -46,6 +46,7 @@ Use this skill as a reconciliation layer, not as a fresh planning generator: pre
 Read these first if present:
 - `../README.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/requirements-to-workstream-development-process.md` when reconciling generated SaaS requirements, PRDs, workstreams, dashboards, attention, surface actions, capabilities, or task queues
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../../docs/internal-app-description-architecture.md`
@@ -73,6 +74,8 @@ If an original PRD is available, read it only when needed for diff confidence. P
 
 Summarize the current baseline from maintained artifacts:
 - app identity and goals
+- workstream inventory, owner functional agents, attention categories, dashboard contracts, and left-rail/My Account attention summaries
+- structured surfaces, surface actions, and capability mappings
 - capabilities
 - major behavior flows
 - current AI-first interpretation if present: delegated work, durable goals/plans, agent/team authority, approval/exception model, policies, traces, supervision surfaces, and outcome loops
@@ -90,6 +93,7 @@ From the revised PRD, extract:
 - commands/write operations
 - queries/views/reporting needs
 - workflows and timers
+- durable internal/background worker candidates, including AutonomousAgent task lifecycle, notification, dependency, failure/cancellation, and result-surface needs when applicable
 - integrations
 - AI-first operating-model facts: human objectives, delegated work, retained authority, agent/team responsibilities, policies, approval gates, exception paths, evidence/risk thresholds, audit/trace needs, UI supervision surfaces, learning loops, and outcome metrics
 - workstream expertise facts: which functional agents need expert bundles, prompt intent changes, procedural skills, reference documents, `AgentSkillManifest`/`AgentReferenceManifest` entries, `readSkill`/`readReferenceDoc` behavior, denied-load rules, tool-boundary grants, seed/upgrade needs, governance owner, trace surfaces, and expertise tests
@@ -113,6 +117,7 @@ For each delta, identify likely affected:
 - `specs/akka-solution-plan.md`
 - cross-cutting specs
 - slice specs
+- sprint/module vertical contracts
 - backlog files
 - task briefs
 - pending tasks
@@ -142,7 +147,7 @@ If the revised PRD conflicts with current app-description meaning, do not silent
 Update existing files rather than replacing the whole tree:
 - modify existing slice specs when a slice remains valid
 - add new numbered slice specs for new capability areas
-- preserve or update AI-first sections in solution plans, cross-cutting specs, slices, and backlogs when authority, policy, approval, audit, UI supervision, or outcome semantics changed
+- preserve or update requirements-to-workstream sections in solution plans, cross-cutting specs, slices, sprints, and backlogs when workstream identity, attention categories, dashboard contracts, surface actions, capability mappings, notifications/projections, AutonomousAgent task candidates, authority, policy, approval, audit, UI supervision, or outcome semantics changed
 - preserve or update workstream expertise sections/tasks when functional-agent competence changes, keeping prompt/skill/reference documents, manifests, loaders, tool boundaries, UI/governance surfaces, generation/seed assets, and tests as separate bounded work rather than one vague `agent governance` task
 - mark de-scoped behavior in specs explicitly rather than deleting context when useful
 - update matching backlog files
@@ -158,7 +163,7 @@ Apply queue reconciliation rules:
 - do not delete completed tasks
 - do not reset `done` tasks to `pending`
 - append new tasks for new work
-- update pending tasks whose scope/read list/skills changed but still represent the same work, adding `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior; add `docs/workstream-expertise-model.md` and focused agent governance/testing skills when expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI are in scope
+- update pending tasks whose scope/read list/skills changed but still represent the same work, preserving workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior; add `akka-autonomous-agents` or governance/testing companions when durable AutonomousAgent task lifecycle is in scope; add `docs/workstream-expertise-model.md` and focused agent governance/testing skills when expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI are in scope
 - block or decompose vague pending tasks such as `make the agent expert` or `agent governance` unless they have a self-contained fresh-session scope for exactly which expert bundle, governed documents, manifests, loaders, boundaries, surfaces, traces, and tests are included
 - mark obsolete non-done tasks as `superseded`
 - add follow-up tasks for completed work that must change

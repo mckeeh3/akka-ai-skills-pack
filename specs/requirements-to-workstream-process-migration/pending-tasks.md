@@ -412,7 +412,7 @@
 
 ### TASK-REQWS-04-002: Update change/backlog planning skills and docs
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/04-prd-spec-backlog-realignment-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/04-planning/02-update-change-backlog-planning-docs.md
 - depends on: [TASK-REQWS-04-001]
@@ -446,7 +446,11 @@
 - done criteria:
   - iterative planning and backlog materialization preserve the vertical process chain
   - focused git commit exists
-- notes: []
+- notes:
+  - updated revised-PRD and change-request skills to preserve requirements-to-workstream context during iterative reconciliation
+  - updated slice/backlog/task-brief/question planning skills to carry workstream, attention/dashboard, surface action, capability, AutonomousAgent task, notification/projection, and trace context into queues
+  - updated planning docs to stop treating conventional module/component/page labels as sufficient implementation boundaries
+  - commit message: `requirements-workstream: update change backlog planning`
 
 ### TASK-REQWS-04-099: Verify PRD/spec/backlog planning realignment sprint
 
