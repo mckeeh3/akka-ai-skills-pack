@@ -95,7 +95,7 @@ Use this structure:
 
 - status: pending
 - priority: blocking
-- category: <capability|behavior|state-model|workflow|integration|security|authorization|policy-governance|approval|risk-evidence|audit-trace|outcomes|observability|testing|ui|api|data-retention|failure-handling|deployment>
+- category: <workstream|attention|dashboard|surface-action|capability|api|autonomous-task-lifecycle|notification-visibility|task-result-surface|human-agent-worker-assignment|behavior|state-model|workflow|integration|security|authorization|policy-governance|approval|risk-evidence|audit-trace|outcomes|observability|testing|ui|data-retention|failure-handling|deployment>
 - depends on: []
 - blocks:
   - <artifact, decision, slice, backlog, or task generation area>
@@ -149,7 +149,7 @@ A pending task may reference a question in notes, for example:
   - depends on decision from Q-003
 ```
 
-If an implementation task discovers a missing decision, block the task and add or update a pending question instead of guessing. For AI-first work, missing authority, approval, policy, evidence, trace, supervision UI, evaluation, or outcome semantics are blockers for the affected work, not implementation details to invent.
+If an implementation task discovers a missing decision, block the task and add or update a pending question instead of guessing. For AI-first work, missing authority, approval, policy, evidence, trace, supervision UI, evaluation, or outcome semantics are blockers for the affected work, not implementation details to invent. For generated full-stack AI-first SaaS, also create focused blocking questions when implementation would otherwise guess workstream responsibility, attention category lifecycle, dashboard scope, surface action authority, capability id/API exposure, AutonomousAgent lifecycle/result handling, notification visibility, task result/progress surfaces, or human-vs-agent worker assignment.
 
 ## End-of-response reminder
 

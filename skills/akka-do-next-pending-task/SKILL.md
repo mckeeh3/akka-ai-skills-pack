@@ -31,6 +31,7 @@ The skill must:
 - prefer fresh-context execution
 - load only the task's required reads and listed skills
 - preserve any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
+- require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, dashboard/surface/action, capability id/API exposure, selected Akka substrate, autonomous task/result/notification mapping when applicable, auth, traces, and tests
 - generate or update the requested outputs
 - run the task's required checks and local/runtime validation path when the task implements app behavior
 - update the queue status before finishing
@@ -284,6 +285,8 @@ Block instead of guessing when:
 - the task has unsatisfied dependencies
 - required architecture choices or blocking pending questions are unresolved
 - AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
+- a generated full-stack SaaS task is component-only, CRUD-only, page-only, or dashboard-only and lacks a vertical contract naming or inheriting workstream, attention category, surface action, capability id, API/exposure channel, selected Akka substrate, AuthContext, audit/work trace, and local validation path
+- an AutonomousAgent or autonomous task is in scope but start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and lifecycle tests are missing
 - the task conflicts with current code or specs
 - a required external credential/service is unavailable for normal runtime; implement fail-closed configuration errors and test/local adapters where appropriate, but do not mark provider-backed user-facing behavior done through mocks
 - required local app-run, endpoint, browser, or manual-smoke validation cannot be performed for a feature-bearing task; record incomplete validation and keep the task blocked unless the task is explicitly non-runtime/docs-only or the affected runtime feature is outside the named scope
@@ -318,5 +321,7 @@ Before finishing, verify:
 - required reads and skills were loaded narrowly
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
+- generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-action-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting
+- autonomous task work carried AutonomousAgent lifecycle, notification, result/progress surface, failure/cancellation attention, and test requirements when applicable
 - if the task was marked `done`, changes were committed or the reason not to commit was reported
 - the next runnable pending task was identified, or the absence of one was reported

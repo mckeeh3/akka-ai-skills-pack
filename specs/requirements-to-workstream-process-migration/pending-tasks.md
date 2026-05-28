@@ -499,7 +499,7 @@
 
 ### TASK-REQWS-05-001: Update pending queue contracts
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/05-queue-task-contract-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/05-queues/01-update-pending-queue-contracts.md
 - depends on: [TASK-REQWS-04-099]
@@ -530,7 +530,10 @@
 - done criteria:
   - queue execution rules reinforce the new process and prevent unsafe guessing
   - focused git commit exists
-- notes: []
+- notes:
+  - updated pending task/question queue docs and do-next/maintenance skills to require or preserve the vertical workstream-attention-dashboard-surface-action-capability-substrate contract
+  - added blocking/repair guidance for component-only, CRUD-only, page-only, dashboard-only, and underspecified autonomous task queue entries
+  - commit message: `requirements-workstream: update pending queue contracts`
 
 ### TASK-REQWS-05-099: Verify queue and task contract sprint
 

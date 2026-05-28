@@ -23,6 +23,7 @@ The skill should:
 - mark obsolete questions as `superseded` when justified
 - ensure `blocking` questions accurately identify what they block
 - preserve AI-first decisions about delegated authority, policies, decision cards, traces, UI surfaces, evaluation, and outcomes while repairing the queue
+- preserve requirements-to-workstream decisions about workstream responsibility, attention category lifecycle, dashboard scope, surface action authority, capability id/API exposure, AutonomousAgent lifecycle/result handling, notification visibility, task result/progress surfaces, and human/agent worker assignment while repairing the queue
 - report whether pending task generation is safe
 
 ## Use this skill when
@@ -115,6 +116,7 @@ For questions sourced from AI-first app-description, solution-plan, slice, backl
 - decision-card evidence, risk, confidence, impact, alternatives, or actions
 - audit/work/decision traces, tool/data-access records, evaluation, replay, simulation, or outcome metrics
 - supervision, governance, digest, audit, decision, or outcome UI surfaces
+- workstream attention semantics, dashboard scope, surface action authority, capability id/API exposure, autonomous task lifecycle/results, notification visibility, task progress/result surfaces, or human/agent worker assignment
 
 Do not downgrade these to optional cosmetic questions when implementation would otherwise guess consequential behavior.
 
@@ -195,6 +197,7 @@ Before finishing, verify:
 - answered questions are reconciled or explicitly still awaiting reconciliation
 - blocking questions name the exact blocked area
 - AI-first authority, approval, policy, risk, trace, UI-surface, evaluation, and outcome questions remain blocking when implementation would otherwise guess
+- requirements-to-workstream questions about attention, dashboards, surface actions, capability ids, AutonomousAgent lifecycle/notification/result surfaces, and human/agent worker assignment remain blocking when implementation would otherwise guess
 - stale/duplicate questions are resolved, deferred, or superseded
 - question history is preserved
 - no implementation code was changed

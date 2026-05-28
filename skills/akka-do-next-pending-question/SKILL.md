@@ -95,14 +95,15 @@ When the selected question is `pending` or `asked` and the user has not already 
 When the user provides an answer:
 1. identify the matching question from the prompt or conversation
 2. preserve AI-first meaning in the normalized answer when present: delegated work, retained authority, policies, approvals, risk thresholds, evidence, traces, UI surfaces, evaluations, and outcomes
-3. update:
+3. preserve requirements-to-workstream meaning when present: workstream responsibility, attention category lifecycle, dashboard scope, surface action authority, capability id/API exposure, AutonomousAgent lifecycle/result behavior, notification visibility, task result/progress surfaces, and human/agent worker assignment
+4. update:
    - `status: answered`
    - `answer: >` with the user's answer
    - `decision:` with the normalized decision if clear
    - `decision impact:` with the expected planning impact
    - `notes:` with provenance if useful
-4. if the affected artifacts can be updated safely in this run, reconcile immediately and mark `resolved`
-5. if reconciliation needs a separate planning pass, leave status `answered` and report what must be reconciled
+5. if the affected artifacts can be updated safely in this run, reconcile immediately and mark `resolved`
+6. if reconciliation needs a separate planning pass, leave status `answered` and report what must be reconciled
 
 ## Reconciliation workflow
 
@@ -116,13 +117,14 @@ For an `answered` question:
    - `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when reconciling a web UI style-guide answer
    - `specs/pending-tasks.md` only if it already exists and the decision changes tasks
 3. when the answer resolves an AI-first blocker, carry the decision into affected backlog/task metadata so delegated authority, policy, decision-card, trace, UI-surface, evaluation, and outcome constraints remain visible to future implementation runs
-4. for web UI style-guide answers, write the selected AI-first style id/name, source reference, mode policy, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
-5. update the question:
+4. when the answer resolves a requirements-to-workstream blocker, carry the decision into affected backlog/task metadata so workstream, attention, dashboard, surface action, capability id, API/exposure, Akka substrate, autonomous task lifecycle/notification/result surface, auth, trace, and test constraints remain visible to future implementation runs
+5. for web UI style-guide answers, write the selected AI-first style id/name, source reference, mode policy, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
+6. update the question:
    - `status: resolved`
    - `decision:` final concise decision
    - `decision impact:` concrete artifact/component impact
    - `reconciled into:` list exact files updated
-6. if the answer creates new dependent questions, append them or recommend `akka-pending-question-generation`
+7. if the answer creates new dependent questions, append them or recommend `akka-pending-question-generation`
 
 ## Deferral and supersession
 
@@ -168,6 +170,7 @@ Before finishing, verify:
 - the queue status was updated
 - answers were not treated as resolved until reconciled
 - AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome semantics from the answer were preserved in reconciliation targets when relevant
+- requirements-to-workstream semantics from the answer were preserved in reconciliation targets when relevant, including attention/dashboard/surface-action/capability-id/autonomous-task notification context
 - only relevant planning artifacts were edited
 - no application implementation was started
 - the next actionable question or next planning step was reported
