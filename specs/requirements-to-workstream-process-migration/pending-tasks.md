@@ -25,7 +25,7 @@
 
 ### TASK-REQWS-00-001: Create requirements-to-workstream process migration queue
 
-- status: in-progress
+- status: done
 - source: user discussion about realigning app-development input processing around workstreams, attention, dashboards, surfaces, capabilities, APIs, Akka components, and Autonomous Agent workers
 - task brief: specs/requirements-to-workstream-process-migration/tasks/00-planning/00-create-requirements-to-workstream-process-queue.md
 - depends on: []
@@ -53,12 +53,13 @@
   - future tasks require one focused git commit before being marked done
   - planning scaffold is committed or explicitly left in-progress for the current session
 - notes:
-  - planning scaffold created in current session; not committed by default
+  - planning scaffold committed as `a8fa19a requirements-workstream: add process migration queue`
   - queue revised to include progressive sprint verification tasks that root out non-prescriptive guidance before downstream task groups proceed
+  - status corrected to done during TASK-REQWS-01-001 because the planning scaffold commit already existed
 
 ### TASK-REQWS-01-001: Audit input-processing artifacts
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/01-audit-and-target-model-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/01-audit/01-audit-input-processing-artifacts.md
 - depends on: [TASK-REQWS-00-001]
@@ -82,7 +83,9 @@
 - done criteria:
   - audit is specific enough to drive doctrine, intake, planning, queue, and example tasks
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/audit-input-processing-artifacts.md`
+  - commit message: `requirements-workstream: audit input processing`
 
 ### TASK-REQWS-01-002: Draft target process contract
 
