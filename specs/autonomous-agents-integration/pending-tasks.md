@@ -52,7 +52,7 @@
 
 ### TASK-AUTO-01-001: Create deep Autonomous Agents research notes
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/01-research/01-deep-autonomous-agents-research-notes.md
 - depends on: [TASK-AUTO-00-001]
@@ -85,6 +85,7 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add research notes`
+  - completed with research notes in `specs/autonomous-agents-integration/research-notes.md`
 
 ### TASK-AUTO-02-001: Update doctrine and routing for Autonomous Agents
 
