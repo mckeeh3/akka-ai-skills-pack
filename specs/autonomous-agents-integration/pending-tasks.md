@@ -335,7 +335,7 @@
 
 ### TASK-AUTO-05-002: Define additional Autonomous Agent example tasks
 
-- status: pending
+- status: done
 - source: user request to add a final task after verification that defines necessary tasks for additional examples
 - task brief: specs/autonomous-agents-integration/tasks/05-review/02-define-additional-example-tasks.md
 - depends on: [TASK-AUTO-05-001]
@@ -363,3 +363,247 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: plan additional examples`
+  - completed with `specs/autonomous-agents-integration/additional-examples-plan.md`, six follow-up task briefs, and a final verification task
+  - checks: `git diff --check`; `rg -n "handoff|task dependencies|approval|notification|TaskRule|TeamLeadership|Moderation|ToolPermissionBoundary" specs/autonomous-agents-integration docs/agent-coverage-matrix.md`
+
+### TASK-AUTO-06-001: Add Autonomous Agent TaskRule retry example
+
+- status: pending
+- source: specs/autonomous-agents-integration/additional-examples-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/01-add-task-rule-retry-example.md
+- depends on: [TASK-AUTO-05-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - skills/akka-autonomous-agents/SKILL.md
+  - skills/akka-autonomous-agent-tasks/SKILL.md
+  - skills/akka-autonomous-agent-testing/SKILL.md
+  - akka-context/sdk/autonomous-agents/tasks.html.md
+  - akka-context/sdk/autonomous-agents/testing.html.md
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-tasks
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - src/main/java/com/example/... TaskRule retry example files
+  - src/test/java/com/example/... TaskRule retry tests
+  - docs/agent-coverage-matrix.md update if status changes
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - `rg -n "TaskRule|RESULT_REJECTED|AutonomousAgentTools|completeTask" src/main/java src/test/java docs/agent-coverage-matrix.md`
+- done criteria:
+  - test proves task-rule rejection and retry through Akka Autonomous Agent infrastructure
+  - no normal-runtime fake is introduced
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: add task rule example`
+
+### TASK-AUTO-06-002: Add Autonomous Agent dependencies and approval example
+
+- status: pending
+- source: specs/autonomous-agents-integration/additional-examples-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/02-add-dependencies-approval-example.md
+- depends on: [TASK-AUTO-06-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - skills/akka-autonomous-agents/SKILL.md
+  - skills/akka-autonomous-agent-coordination/SKILL.md
+  - skills/akka-autonomous-agent-testing/SKILL.md
+  - akka-context/sdk/autonomous-agents/tasks.html.md
+  - akka-context/sdk/autonomous-agents/client.html.md
+  - akka-context/sdk/autonomous-agents/coordination.html.md
+  - akka-context/sdk/autonomous-agents/testing.html.md
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-coordination
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - src/main/java/com/example/... dependencies/approval example files
+  - src/test/java/com/example/... dependencies/approval tests
+  - docs/agent-coverage-matrix.md update if status changes
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - `rg -n "dependsOn|approval|complete\(|fail\(|CANCELLED|AutonomousAgent" src/main/java src/test/java docs/agent-coverage-matrix.md`
+- done criteria:
+  - test proves dependency-gated autonomous task behavior and external approval completion/failure
+  - example states when Workflow pause/resume would be preferred
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: add dependencies approval example`
+
+### TASK-AUTO-06-003: Add Autonomous Agent notification stream example
+
+- status: pending
+- source: specs/autonomous-agents-integration/additional-examples-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/03-add-notification-stream-example.md
+- depends on: [TASK-AUTO-06-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - skills/akka-autonomous-agents/SKILL.md
+  - skills/akka-autonomous-agent-coordination/SKILL.md
+  - skills/akka-autonomous-agent-testing/SKILL.md
+  - akka-context/sdk/autonomous-agents/notifications.html.md
+  - akka-context/sdk/autonomous-agents/client.html.md
+  - akka-context/sdk/autonomous-agents/testing.html.md
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-coordination
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - src/main/java/com/example/... notification stream endpoint/example files
+  - src/test/java/com/example/... notification tests
+  - docs/agent-coverage-matrix.md update if status changes
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - `rg -n "notificationStream|Notification|serverSentEvents|SSE|TaskNotification|snapshot" src/main/java src/test/java docs/agent-coverage-matrix.md`
+- done criteria:
+  - test proves notification exposure and independently verifies task result/snapshot
+  - guidance does not treat notifications as source of truth
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: add notification example`
+
+### TASK-AUTO-06-004: Add Autonomous Agent handoff triage example
+
+- status: pending
+- source: specs/autonomous-agents-integration/additional-examples-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/04-add-handoff-triage-example.md
+- depends on: [TASK-AUTO-06-003]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - skills/akka-autonomous-agents/SKILL.md
+  - skills/akka-autonomous-agent-coordination/SKILL.md
+  - skills/akka-autonomous-agent-testing/SKILL.md
+  - akka-context/sdk/autonomous-agents/coordination.html.md
+  - akka-context/sdk/autonomous-agents/capabilities.html.md
+  - akka-context/sdk/autonomous-agents/testing.html.md
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-coordination
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - src/main/java/com/example/... handoff triage example files
+  - src/test/java/com/example/... handoff tests
+  - docs/agent-coverage-matrix.md update if status changes
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - `rg -n "canHandoffTo|handoffTo|handoff|AutonomousAgentTools|TaskAcceptance" src/main/java src/test/java docs/agent-coverage-matrix.md`
+- done criteria:
+  - test proves handoff ownership transfer and typed completion by the specialist path
+  - example notes approval/authority constraints for higher-authority handoff
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: add handoff example`
+
+### TASK-AUTO-06-005: Add Autonomous Agent team or moderation example
+
+- status: pending
+- source: specs/autonomous-agents-integration/additional-examples-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/05-add-team-moderation-example.md
+- depends on: [TASK-AUTO-06-004]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - skills/akka-autonomous-agents/SKILL.md
+  - skills/akka-autonomous-agent-coordination/SKILL.md
+  - skills/akka-autonomous-agent-testing/SKILL.md
+  - akka-context/sdk/autonomous-agents/coordination.html.md
+  - akka-context/sdk/autonomous-agents/capabilities.html.md
+  - akka-context/sdk/autonomous-agents/notifications.html.md
+  - akka-context/sdk/autonomous-agents/testing.html.md
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-coordination
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - src/main/java/com/example/... team or moderation example files
+  - src/test/java/com/example/... team or moderation tests
+  - docs/agent-coverage-matrix.md update if status changes
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - `rg -n "TeamLeadership|TeamMember|Moderation|createTeam|startScriptedConversation|submitTurn|AutonomousAgentTools" src/main/java src/test/java docs/agent-coverage-matrix.md`
+- done criteria:
+  - test proves the selected team/moderation coordination path
+  - any unimplemented paired pattern is recorded as a follow-up or coverage gap
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: add team moderation example`
+
+### TASK-AUTO-06-006: Plan governed Autonomous Agent tool-boundary example
+
+- status: pending
+- source: specs/autonomous-agents-integration/additional-examples-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/06-plan-governed-tool-boundary-example.md
+- depends on: [TASK-AUTO-06-005]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - skills/akka-autonomous-agents/SKILL.md
+  - skills/akka-autonomous-agent-governance/SKILL.md
+  - skills/akka-autonomous-agent-testing/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - docs/agent-coverage-matrix.md
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-governance
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - focused governance-heavy implementation task brief or mini-plan
+  - pending-tasks.md update with one implementation task if warranted
+- required checks:
+  - `git diff --check`
+  - `rg -n "ToolPermissionBoundary|tenant|approval|trace|fail-closed|AutonomousAgent" specs/autonomous-agents-integration docs/agent-coverage-matrix.md`
+- done criteria:
+  - future governance-heavy Autonomous Agent example work is executable without guessing, or explicitly deferred with rationale
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: plan tool boundary example`
+
+### TASK-AUTO-07-001: Verify additional Autonomous Agent examples
+
+- status: pending
+- source: specs/autonomous-agents-integration/additional-examples-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/07-verification/01-verify-additional-examples.md
+- depends on: [TASK-AUTO-06-006]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/README.md
+  - specs/autonomous-agents-integration/pending-tasks.md
+  - specs/autonomous-agents-integration/additional-examples-plan.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - docs/agent-coverage-matrix.md
+  - changed files from TASK-AUTO-06-* entries
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-coordination
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - specs/autonomous-agents-integration/additional-examples-verification-notes.md
+  - docs/agent-coverage-matrix.md updates if needed
+  - pending-tasks.md follow-up updates if gaps remain
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - `rg -n "TaskRule|handoff|dependsOn|approval|notificationStream|TeamLeadership|Moderation|ToolPermissionBoundary" docs specs/autonomous-agents-integration src/main/java src/test/java`
+- done criteria:
+  - verification notes are recorded
+  - coverage matrix reflects the examples that exist after TASK-AUTO-06-*
+  - any remaining gaps are accepted or appended as future tasks
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: verify additional examples`
