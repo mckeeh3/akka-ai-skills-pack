@@ -1,7 +1,9 @@
 package com.example.api;
 
 import akka.http.javadsl.model.HttpResponse;
+import akka.javasdk.agent.task.TaskNotification;
 import akka.javasdk.annotations.Acl;
+import akka.javasdk.annotations.http.Get;
 import akka.javasdk.annotations.http.HttpEndpoint;
 import akka.javasdk.annotations.http.Post;
 import akka.javasdk.client.ComponentClient;
@@ -18,6 +20,8 @@ public class AutonomousQuestionEndpoint {
   public record AskQuestion(String question) {}
 
   public record QuestionTaskResponse(String taskId, String agentInstanceId, String agentComponentId) {}
+
+  public record TaskNotificationEvent(String taskId, String taskName, String status, String detail) {}
 
   private final ComponentClient componentClient;
 
@@ -39,5 +43,37 @@ public class AutonomousQuestionEndpoint {
 
     return HttpResponses.ok(
         new QuestionTaskResponse(taskId, agentInstanceId, "answer-question-autonomous-agent"));
+  }
+
+  /**
+   * Streams terminal task notifications for progress UIs.
+   *
+   * <p>Reference-only authorization note: generated apps must protect this route with tenant-scoped
+   * task lookup, backend authorization, and notification exposure audit. Notifications are not the
+   * source of truth; callers must query the task snapshot/result before making business decisions.
+   */
+  @Get("/tasks/{taskId}/notifications")
+  public HttpResponse taskNotifications(String taskId) {
+    var source = componentClient.forTask(taskId).notificationStream().map(AutonomousQuestionEndpoint::toApi);
+    return HttpResponses.serverSentEvents(source, event -> event.taskId(), __ -> "task-notification");
+  }
+
+  private static TaskNotificationEvent toApi(TaskNotification notification) {
+    return switch (notification) {
+      case TaskNotification.Completed completed ->
+          new TaskNotificationEvent(
+              completed.taskId(), completed.taskName(), "COMPLETED", completed.result());
+      case TaskNotification.Failed failed ->
+          new TaskNotificationEvent(failed.taskId(), failed.taskName(), "FAILED", failed.reason());
+      case TaskNotification.Cancelled cancelled ->
+          new TaskNotificationEvent(
+              cancelled.taskId(), cancelled.taskName(), "CANCELLED", cancelled.reason());
+      case TaskNotification.ResultRejected rejected ->
+          new TaskNotificationEvent(
+              rejected.taskId(),
+              rejected.taskName(),
+              "RESULT_REJECTED",
+              rejected.ruleClassName() + ": " + rejected.reason());
+    };
   }
 }

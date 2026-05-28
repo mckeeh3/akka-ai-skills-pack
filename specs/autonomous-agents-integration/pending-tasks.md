@@ -443,7 +443,7 @@
 
 ### TASK-AUTO-06-003: Add Autonomous Agent notification stream example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/03-add-notification-stream-example.md
 - depends on: [TASK-AUTO-06-002]
@@ -475,6 +475,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add notification example`
+  - completed with `AutonomousQuestionEndpoint` task notification SSE exposure and `AnswerQuestionAutonomousAgentIntegrationTest` notification/snapshot assertions
+  - updated `docs/agent-coverage-matrix.md` for notificationStream executable coverage
+  - checks: `mvn test`; `git diff --check`; `rg -n "notificationStream|Notification|serverSentEvents|SSE|TaskNotification|snapshot" src/main/java src/test/java docs/agent-coverage-matrix.md`
 
 ### TASK-AUTO-06-004: Add Autonomous Agent handoff triage example
 
