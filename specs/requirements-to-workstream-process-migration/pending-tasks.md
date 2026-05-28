@@ -1,0 +1,632 @@
+# Pending Tasks: Requirements-to-Workstream Process Migration
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, conversation capture, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Treat this repository as the skills-pack source; most changes target `docs/`, `skills/`, `pack/`, `templates/`, examples, and supporting `specs/` files.
+- Preserve the target process: input/PRD → workstreams → attention breakdown → dashboards → surfaces/actions → governed capabilities/APIs → Akka components → request-based workstream agents and internal/background Autonomous Agent tasks where appropriate → events/notifications → attention projections → audit/work traces.
+- Preserve request-based Akka `Agent` as the default for immediate user-facing workstream turns.
+- Preserve Akka `AutonomousAgent` as the default candidate for durable internal/background model-driven worker tasks when typed lifecycle, snapshots/results, notifications, dependencies, failure/cancellation, delegation, handoff, teams, or moderation fit.
+- Preserve governed runtime requirements: tenant isolation, backend authorization, model policy, provider-secret boundary, ToolPermissionBoundary, approval gates, and audit/work traces.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes.
+- Commit message format: `requirements-workstream: <short task title>`.
+- Use a progressive verification loop: each task group/sprint ends with a verification task that compares completed work against that sprint's objective and the overall mini-project done state.
+- Verification tasks must append bounded follow-up tasks, then append a new terminal verification task, whenever they find process drift, incomplete prescriptiveness, stale CRUD/page/component-first paths, missing attention/dashboard/surface/capability/autonomous-task fields, or weak checks.
+- Do not wait for final verification to root out inconsistency. Each sprint verification should progressively tighten the next task group before downstream edits depend on it.
+- Treat "consistently prescriptive" as a pass/fail standard: guidance should tell future agents what to do by default, not merely mention the concept as an optional consideration.
+
+## Tasks
+
+### TASK-REQWS-00-001: Create requirements-to-workstream process migration queue
+
+- status: in-progress
+- source: user discussion about realigning app-development input processing around workstreams, attention, dashboards, surfaces, capabilities, APIs, Akka components, and Autonomous Agent workers
+- task brief: specs/requirements-to-workstream-process-migration/tasks/00-planning/00-create-requirements-to-workstream-process-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/pending-task-queue.md
+  - docs/pending-question-queue.md
+  - docs/workstream-dashboard-attention-event-backbone-wip.md
+  - .agents/skills/project-discussed-idea-to-pending-project/SKILL.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/*.md
+  - specs/requirements-to-workstream-process-migration/backlog/*.md
+  - specs/requirements-to-workstream-process-migration/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "REQWS|requirements-to-workstream|attention|dashboard|AutonomousAgent" specs/requirements-to-workstream-process-migration`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - future tasks require one focused git commit before being marked done
+  - planning scaffold is committed or explicitly left in-progress for the current session
+- notes:
+  - planning scaffold created in current session; not committed by default
+  - queue revised to include progressive sprint verification tasks that root out non-prescriptive guidance before downstream task groups proceed
+
+### TASK-REQWS-01-001: Audit input-processing artifacts
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/01-audit-and-target-model-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/01-audit/01-audit-input-processing-artifacts.md
+- depends on: [TASK-REQWS-00-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/workstream-dashboard-attention-event-backbone-wip.md
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/sprints/01-audit-and-target-model-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/01-audit-and-target-model-backlog.md
+  - specs/requirements-to-workstream-process-migration/tasks/01-audit/01-audit-input-processing-artifacts.md
+- skills:
+  - none; repository audit task
+- expected outputs:
+  - specs/requirements-to-workstream-process-migration/audit-input-processing-artifacts.md
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "aligned|partially aligned|drift risk|CRUD|page-first|component-first|AutonomousAgent|attention|dashboard" specs/requirements-to-workstream-process-migration/audit-input-processing-artifacts.md`
+- done criteria:
+  - audit is specific enough to drive doctrine, intake, planning, queue, and example tasks
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-01-002: Draft target process contract
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/01-audit-and-target-model-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/01-audit/02-draft-target-process-contract.md
+- depends on: [TASK-REQWS-01-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/workstream-dashboard-attention-event-backbone-wip.md
+  - specs/requirements-to-workstream-process-migration/audit-input-processing-artifacts.md
+  - specs/requirements-to-workstream-process-migration/sprints/01-audit-and-target-model-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/01-audit-and-target-model-backlog.md
+  - specs/requirements-to-workstream-process-migration/tasks/01-audit/02-draft-target-process-contract.md
+- skills:
+  - none; repository doctrine-prep task
+- expected outputs:
+  - specs/requirements-to-workstream-process-migration/target-process-contract.md
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "workstream|attention|dashboard|surface|capability|AutonomousAgent|Workflow|request-based" specs/requirements-to-workstream-process-migration/target-process-contract.md`
+- done criteria:
+  - contract is concise and implementable by later skill/doc edit tasks
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-01-099: Verify audit and target model sprint
+
+- status: pending
+- source: progressive verification loop for Sprint 01
+- task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
+- depends on: [TASK-REQWS-01-001, TASK-REQWS-01-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/workstream-dashboard-attention-event-backbone-wip.md
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/01-audit-and-target-model-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/01-audit-and-target-model-backlog.md
+  - specs/requirements-to-workstream-process-migration/audit-input-processing-artifacts.md
+  - specs/requirements-to-workstream-process-migration/target-process-contract.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - optional updates to audit/target-process notes, or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `rg -n "workstream|attention|dashboard|surface|capability|AutonomousAgent|Workflow|request-based|prescriptive" specs/requirements-to-workstream-process-migration/audit-input-processing-artifacts.md specs/requirements-to-workstream-process-migration/target-process-contract.md`
+- done criteria:
+  - audit covers all input-processing paths likely to affect app requirements, PRDs, app descriptions, plans, backlogs, queues, examples, and packaging
+  - target process contract is prescriptive enough to guide downstream source edits
+  - if gaps remain, bounded follow-up tasks are appended before a new Sprint 01 verification task
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-02-001: Promote canonical process doctrine
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/02-doctrine-consolidation-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/02-doctrine/01-promote-canonical-process-doctrine.md
+- depends on: [TASK-REQWS-01-099]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/workstream-dashboard-attention-event-backbone-wip.md
+  - specs/requirements-to-workstream-process-migration/target-process-contract.md
+  - specs/requirements-to-workstream-process-migration/sprints/02-doctrine-consolidation-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/02-doctrine-consolidation-backlog.md
+  - specs/requirements-to-workstream-process-migration/tasks/02-doctrine/01-promote-canonical-process-doctrine.md
+- skills:
+  - ai-first-saas
+  - agent-workstream-apps
+  - capability-first-backend
+- expected outputs:
+  - likely docs/requirements-to-workstream-development-process.md or equivalent
+  - possible small update to docs/workstream-dashboard-attention-event-backbone-wip.md
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "requirements-to-workstream|what needs my attention|dashboard|attention|AutonomousAgent" docs skills/README.md`
+- done criteria:
+  - canonical process source exists for later skills to reference
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-02-002: Update core doctrine crosslinks
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/02-doctrine-consolidation-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/02-doctrine/02-update-core-doctrine-crosslinks.md
+- depends on: [TASK-REQWS-02-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - docs/ai-first-saas-application-architecture.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+  - docs/agent-component-selection-guide.md
+  - specs/requirements-to-workstream-process-migration/tasks/02-doctrine/02-update-core-doctrine-crosslinks.md
+- skills:
+  - ai-first-saas
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-autonomous-agent-governance
+- expected outputs:
+  - targeted updates in core docs
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "requirements-to-workstream|attention|dashboard|AutonomousAgent|task progress|My Account" docs/ai-first-saas-application-architecture.md docs/agent-workstream-application-architecture.md docs/structured-surface-contracts.md docs/capability-first-backend-architecture.md docs/agent-component-selection-guide.md`
+- done criteria:
+  - core doctrine consistently points to the canonical process without duplicating excessive prose
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-02-099: Verify doctrine consolidation sprint
+
+- status: pending
+- source: progressive verification loop for Sprint 02
+- task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
+- depends on: [TASK-REQWS-02-001, TASK-REQWS-02-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/02-doctrine-consolidation-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/02-doctrine-consolidation-backlog.md
+  - canonical process doc from TASK-REQWS-02-001
+  - docs/ai-first-saas-application-architecture.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+  - docs/agent-component-selection-guide.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - optional doctrine verification notes or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `rg -n "requirements-to-workstream|what needs my attention|attention|dashboard|surface|AutonomousAgent|autonomous task|notification|prescriptive" docs skills/README.md`
+- done criteria:
+  - canonical doctrine makes the new process hard to bypass for downstream intake/planning skills
+  - core docs consistently link the process without contradiction or optional-only wording
+  - if gaps remain, bounded follow-up tasks are appended before a new Sprint 02 verification task
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-03-001: Update input normalization and intake router
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/03-intake-description-realignment-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/03-intake/01-update-input-normalization-and-router.md
+- depends on: [TASK-REQWS-02-099]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - skills/app-description-input-normalization/SKILL.md
+  - skills/app-description-intake-router/SKILL.md
+  - skills/ai-first-saas/SKILL.md
+  - skills/agent-workstream-apps/SKILL.md
+  - specs/requirements-to-workstream-process-migration/sprints/03-intake-description-realignment-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/03-intake-description-realignment-backlog.md
+  - specs/requirements-to-workstream-process-migration/tasks/03-intake/01-update-input-normalization-and-router.md
+- skills:
+  - app-description-input-normalization
+  - app-description-intake-router
+  - ai-first-saas
+  - agent-workstream-apps
+- expected outputs:
+  - updates to input normalization and intake router skills
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|workstream|surface action" skills/app-description-input-normalization/SKILL.md skills/app-description-intake-router/SKILL.md skills/ai-first-saas/SKILL.md skills/agent-workstream-apps/SKILL.md`
+- done criteria:
+  - broad or mixed input normalization can represent the new process contract
+  - router selects workstream/surface/capability paths in the correct order
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-03-002: Update app-description modeling and readiness skills
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/03-intake-description-realignment-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/03-intake/02-update-app-description-modeling-readiness.md
+- depends on: [TASK-REQWS-03-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - skills/app-description-bootstrap/SKILL.md
+  - skills/app-description-functional-agent-modeling/SKILL.md
+  - skills/app-description-surface-modeling/SKILL.md
+  - skills/app-description-capability-modeling/SKILL.md
+  - skills/app-description-ui/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - specs/requirements-to-workstream-process-migration/tasks/03-intake/02-update-app-description-modeling-readiness.md
+- skills:
+  - app-description-bootstrap
+  - app-description-functional-agent-modeling
+  - app-description-surface-modeling
+  - app-description-capability-modeling
+  - app-description-ui
+  - app-description-readiness-assessment
+- expected outputs:
+  - updates to focused app-description skills
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|notification|surface action" skills/app-description-bootstrap/SKILL.md skills/app-description-functional-agent-modeling/SKILL.md skills/app-description-surface-modeling/SKILL.md skills/app-description-capability-modeling/SKILL.md skills/app-description-ui/SKILL.md skills/app-description-readiness-assessment/SKILL.md`
+- done criteria:
+  - app-description maintenance can store and assess the new process concepts
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-03-099: Verify intake and description-first realignment sprint
+
+- status: pending
+- source: progressive verification loop for Sprint 03
+- task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
+- depends on: [TASK-REQWS-03-001, TASK-REQWS-03-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/03-intake-description-realignment-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/03-intake-description-realignment-backlog.md
+  - skills/app-description-input-normalization/SKILL.md
+  - skills/app-description-intake-router/SKILL.md
+  - skills/app-description-bootstrap/SKILL.md
+  - skills/app-description-functional-agent-modeling/SKILL.md
+  - skills/app-description-surface-modeling/SKILL.md
+  - skills/app-description-capability-modeling/SKILL.md
+  - skills/app-description-ui/SKILL.md
+  - skills/app-description-readiness-assessment/SKILL.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - optional intake/description verification notes or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|notification|workstream|surface action|prescriptive" skills/app-description-* skills/app-descriptions/SKILL.md skills/ai-first-saas/SKILL.md skills/agent-workstream-apps/SKILL.md`
+- done criteria:
+  - description-first input cannot silently degrade into CRUD/page/component-first planning
+  - normalized envelopes and app-description modeling/readiness preserve attention, dashboard, surface/action, capability, autonomous task, notification, trace, auth, and test context
+  - if gaps remain, bounded follow-up tasks are appended before a new Sprint 03 verification task
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-04-001: Update solution and PRD planning skills
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/04-prd-spec-backlog-realignment-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/04-planning/01-update-solution-and-prd-planning.md
+- depends on: [TASK-REQWS-02-099]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - docs/agent-component-selection-guide.md
+  - specs/requirements-to-workstream-process-migration/sprints/04-prd-spec-backlog-realignment-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/04-prd-spec-backlog-realignment-backlog.md
+  - specs/requirements-to-workstream-process-migration/tasks/04-planning/01-update-solution-and-prd-planning.md
+- skills:
+  - akka-solution-decomposition
+  - akka-prd-to-specs-backlog
+  - agent-workstream-apps
+  - capability-first-backend
+- expected outputs:
+  - updates to solution decomposition and PRD-to-specs skills
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|notification|workstream|surface action" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md`
+- done criteria:
+  - direct planning paths produce the new vertical process model before Akka component selection
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-04-002: Update change/backlog planning skills and docs
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/04-prd-spec-backlog-realignment-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/04-planning/02-update-change-backlog-planning-docs.md
+- depends on: [TASK-REQWS-04-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - skills/akka-revised-prd-reconciliation/SKILL.md
+  - skills/akka-change-request-to-spec-update/SKILL.md
+  - skills/akka-slice-spec-to-backlog/SKILL.md
+  - skills/akka-backlog-to-pending-tasks/SKILL.md
+  - skills/akka-backlog-item-to-task-brief/SKILL.md
+  - skills/akka-pending-question-generation/SKILL.md
+  - docs/prd-to-akka-flow.md
+  - docs/module-sprint-planning.md
+  - docs/solution-plan-to-implementation-queue.md
+  - specs/requirements-to-workstream-process-migration/tasks/04-planning/02-update-change-backlog-planning-docs.md
+- skills:
+  - akka-revised-prd-reconciliation
+  - akka-change-request-to-spec-update
+  - akka-slice-spec-to-backlog
+  - akka-backlog-to-pending-tasks
+  - akka-backlog-item-to-task-brief
+  - akka-pending-question-generation
+- expected outputs:
+  - updates to relevant planning skills/docs
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|notification|workstream|surface action" skills/akka-revised-prd-reconciliation/SKILL.md skills/akka-change-request-to-spec-update/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md skills/akka-pending-question-generation/SKILL.md docs/prd-to-akka-flow.md docs/module-sprint-planning.md docs/solution-plan-to-implementation-queue.md`
+- done criteria:
+  - iterative planning and backlog materialization preserve the vertical process chain
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-04-099: Verify PRD/spec/backlog planning realignment sprint
+
+- status: pending
+- source: progressive verification loop for Sprint 04
+- task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
+- depends on: [TASK-REQWS-04-001, TASK-REQWS-04-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/04-prd-spec-backlog-realignment-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/04-prd-spec-backlog-realignment-backlog.md
+  - skills/akka-solution-decomposition/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/akka-revised-prd-reconciliation/SKILL.md
+  - skills/akka-change-request-to-spec-update/SKILL.md
+  - skills/akka-slice-spec-to-backlog/SKILL.md
+  - skills/akka-backlog-to-pending-tasks/SKILL.md
+  - skills/akka-backlog-item-to-task-brief/SKILL.md
+  - skills/akka-pending-question-generation/SKILL.md
+  - docs/prd-to-akka-flow.md
+  - docs/module-sprint-planning.md
+  - docs/solution-plan-to-implementation-queue.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - optional planning verification notes or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|notification|workstream|surface action|prescriptive" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-revised-prd-reconciliation/SKILL.md skills/akka-change-request-to-spec-update/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md skills/akka-pending-question-generation/SKILL.md docs/prd-to-akka-flow.md docs/module-sprint-planning.md docs/solution-plan-to-implementation-queue.md`
+- done criteria:
+  - PRD/spec/backlog planning splits input into workstreams and vertical attention/dashboard/surface/capability/autonomous-task increments
+  - iterative change/revised-PRD flows preserve existing workstream/attention/dashboard/surface/capability/task identity rather than replan component-first
+  - if gaps remain, bounded follow-up tasks are appended before a new Sprint 04 verification task
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-05-001: Update pending queue contracts
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/05-queue-task-contract-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/05-queues/01-update-pending-queue-contracts.md
+- depends on: [TASK-REQWS-04-099]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - docs/pending-task-queue.md
+  - docs/pending-question-queue.md
+  - skills/akka-do-next-pending-task/SKILL.md
+  - skills/akka-pending-task-queue-maintenance/SKILL.md
+  - skills/akka-do-next-pending-question/SKILL.md
+  - skills/akka-pending-question-queue-maintenance/SKILL.md
+  - specs/requirements-to-workstream-process-migration/sprints/05-queue-task-contract-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/05-queue-task-contract-backlog.md
+  - specs/requirements-to-workstream-process-migration/tasks/05-queues/01-update-pending-queue-contracts.md
+- skills:
+  - akka-do-next-pending-task
+  - akka-pending-task-queue-maintenance
+  - akka-do-next-pending-question
+  - akka-pending-question-queue-maintenance
+- expected outputs:
+  - updates to queue docs and do-next/maintenance skills
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|notification|workstream|surface action|capability id" docs/pending-task-queue.md docs/pending-question-queue.md skills/akka-do-next-pending-task/SKILL.md skills/akka-pending-task-queue-maintenance/SKILL.md skills/akka-do-next-pending-question/SKILL.md skills/akka-pending-question-queue-maintenance/SKILL.md`
+- done criteria:
+  - queue execution rules reinforce the new process and prevent unsafe guessing
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-05-099: Verify queue and task contract sprint
+
+- status: pending
+- source: progressive verification loop for Sprint 05
+- task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
+- depends on: [TASK-REQWS-05-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/05-queue-task-contract-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/05-queue-task-contract-backlog.md
+  - docs/pending-task-queue.md
+  - docs/pending-question-queue.md
+  - skills/akka-do-next-pending-task/SKILL.md
+  - skills/akka-pending-task-queue-maintenance/SKILL.md
+  - skills/akka-do-next-pending-question/SKILL.md
+  - skills/akka-pending-question-queue-maintenance/SKILL.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - optional queue-contract verification notes or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `rg -n "attention|dashboard|autonomous task|AutonomousAgent|notification|workstream|surface action|capability id|prescriptive" docs/pending-task-queue.md docs/pending-question-queue.md skills/akka-do-next-pending-task/SKILL.md skills/akka-pending-task-queue-maintenance/SKILL.md skills/akka-do-next-pending-question/SKILL.md skills/akka-pending-question-queue-maintenance/SKILL.md`
+- done criteria:
+  - generated task queues require or inherit enough vertical context to execute one fresh-session implementation increment safely
+  - queue maintenance and do-next guidance block or repair stale component-only/page-only/CRUD-only tasks
+  - if gaps remain, bounded follow-up tasks are appended before a new Sprint 05 verification task
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-06-001: Update examples, seed, and packaging alignment
+
+- status: pending
+- source: specs/requirements-to-workstream-process-migration/backlog/06-examples-packaging-backlog.md
+- task brief: specs/requirements-to-workstream-process-migration/tasks/06-examples/01-update-examples-and-packaging.md
+- depends on: [TASK-REQWS-03-099, TASK-REQWS-05-099]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - docs/prd-to-akka-flow.md
+  - pack/AGENTS.md
+  - pack/README.md
+  - pack/manifest.yaml
+  - specs/requirements-to-workstream-process-migration/sprints/06-examples-packaging-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/06-examples-packaging-backlog.md
+  - specs/requirements-to-workstream-process-migration/tasks/06-examples/01-update-examples-and-packaging.md
+- skills:
+  - none; repository examples/packaging task
+- expected outputs:
+  - updated examples/docs/pack references
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "requirements-to-workstream|attention|dashboard|AutonomousAgent|mechanics reference|target architecture" docs/examples docs/prd-to-akka-flow.md pack/manifest.yaml pack/README.md pack/AGENTS.md`
+- done criteria:
+  - installed-pack examples and exports reinforce the new process
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-06-099: Verify examples, seed, and packaging sprint
+
+- status: pending
+- source: progressive verification loop for Sprint 06
+- task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
+- depends on: [TASK-REQWS-06-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - canonical process doc from TASK-REQWS-02-001
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/06-examples-packaging-sprint.md
+  - specs/requirements-to-workstream-process-migration/backlog/06-examples-packaging-backlog.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - docs/prd-to-akka-flow.md
+  - pack/AGENTS.md
+  - pack/README.md
+  - pack/manifest.yaml
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - optional examples/packaging verification notes or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `rg -n "requirements-to-workstream|attention|dashboard|AutonomousAgent|mechanics reference|target architecture|prescriptive" docs/examples docs/prd-to-akka-flow.md pack/manifest.yaml pack/README.md pack/AGENTS.md`
+- done criteria:
+  - installed-pack-facing examples and package references reinforce the requirements-to-workstream process
+  - legacy examples are clearly mechanics references when not aligned with target architecture
+  - if gaps remain, bounded follow-up tasks are appended before a new Sprint 06 verification task
+  - focused git commit exists
+- notes: []
+
+### TASK-REQWS-99-001: Verify requirements-to-workstream process migration
+
+- status: pending
+- source: final mini-project verification loop
+- task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/01-verify-requirements-to-workstream-process-migration.md
+- depends on:
+  - TASK-REQWS-01-099
+  - TASK-REQWS-02-099
+  - TASK-REQWS-03-099
+  - TASK-REQWS-04-099
+  - TASK-REQWS-05-099
+  - TASK-REQWS-06-099
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/requirements-to-workstream-process-migration/README.md
+  - specs/requirements-to-workstream-process-migration/conversation-capture.md
+  - specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - specs/requirements-to-workstream-process-migration/sprints/*.md
+  - specs/requirements-to-workstream-process-migration/backlog/*.md
+  - specs/requirements-to-workstream-process-migration/tasks/**/*.md
+  - canonical process doc from TASK-REQWS-02-001
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-to-workstream-process-migration/pending-tasks.md
+  - optional verification notes under specs/requirements-to-workstream-process-migration/
+  - optional appended follow-up tasks if gaps remain
+- required checks:
+  - `git diff --check`
+  - `rg -n "CRUD-first|page-first|component-first|chatbot-bolt-on|generic Akka|requirements-to-workstream|what needs my attention|AutonomousAgent" AGENTS.md pack/AGENTS.md skills docs pack/manifest.yaml`
+- done criteria:
+  - verification either confirms completion or appends specific follow-up tasks before a new verification task
+  - focused git commit exists
+- notes: []
