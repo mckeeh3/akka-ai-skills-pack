@@ -650,7 +650,7 @@
 
 ### TASK-REQWS-99-001: Verify requirements-to-workstream process migration
 
-- status: pending
+- status: done
 - source: final mini-project verification loop
 - task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/01-verify-requirements-to-workstream-process-migration.md
 - depends on:
@@ -682,4 +682,8 @@
 - done criteria:
   - verification either confirms completion or appends specific follow-up tasks before a new verification task
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/final-verification.md`
+  - verified canonical doctrine, intake/description-first paths, PRD/spec/backlog planning, queue contracts, examples, installed-pack packaging, and drift grep output
+  - no follow-up tasks required; mini-project done state satisfied
+  - commit message: `requirements-workstream: verify process migration`
