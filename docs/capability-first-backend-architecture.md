@@ -99,9 +99,10 @@ Choose Akka components from the capability shape, not from CRUD intuition.
 |---|---|
 | Audit-grade decisions, policies, approvals, goals, traces, or records where event history matters | Event Sourced Entity |
 | Current-state profile, preference, configuration, or cache-like state without audit-grade event history | Key Value Entity |
-| Multi-step execution, approval waits, retries, compensation, agent/team orchestration, or long-running work | Workflow |
+| Deterministic multi-step execution, approval waits, retries, compensation, or process orchestration | Workflow |
+| Durable model-driven internal/background task with task lifecycle, dependencies, snapshots, notifications, delegation, handoff, teams, moderation, or independent cancellation/failure | AutonomousAgent |
 | Curated read/evidence/search/reporting capability | View |
-| Bounded classification, planning, summarization, recommendation, evaluation, or explanation | Agent |
+| Bounded request/response classification, planning, summarization, recommendation, evaluation, explanation, or user-facing workstream turn | request-based Agent |
 | Event reaction, trace enrichment, publication, integration, or downstream side effect | Consumer |
 | Deadlines, reminders, expiry, periodic digest/replay/recheck | Timed Action / Timer |
 | Browser or service request boundary | HTTP or gRPC endpoint |
@@ -118,7 +119,7 @@ For broad product input or implementation planning:
 4. Build a capability inventory before selecting Akka components.
 5. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
 6. Decide which exposure channels expose the capability, if any.
-7. Select Akka components that realize the capability semantics.
+7. Select Akka components that realize the capability semantics. Use `agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
 8. Generate code/tests component by component while preserving the capability contract.
 
 Do not jump from a product request directly to an entity, endpoint, or agent tool unless the capability contract is already clear enough.
@@ -131,7 +132,8 @@ Use these classes to decompose a product safely:
 - **Command capability:** state-changing action with validation, auth, idempotency, audit, and denial semantics.
 - **Proposal capability:** agent or human drafts a change or recommendation without committing the side effect.
 - **Approval capability:** human or policy-governed decision commits, rejects, delegates, or asks for more evidence.
-- **Workflow capability:** starts or advances long-running, retryable, approval-gated, or compensating work.
+- **Workflow capability:** starts or advances deterministic long-running, retryable, approval-gated, or compensating work.
+- **Autonomous task capability:** starts, assigns, reads, completes/fails, suspends/resumes, or observes a durable model-driven task owned by an Akka `AutonomousAgent`.
 - **Policy/governance capability:** creates, reviews, simulates, activates, deprecates, or rolls back behavior-changing rules/prompts/skills/thresholds.
 - **Trace/audit capability:** records, searches, explains, redacts, or exports what happened and why.
 - **Scheduled capability:** timer-backed expiry, reminder, digest, replay, recheck, or retention work.
@@ -143,7 +145,7 @@ Use conservative defaults unless accepted product specs say otherwise:
 
 - Read-only scoped evidence may be agent-accessible when it is redacted and audited appropriately.
 - Side-effecting agent tools require explicit permission and should prefer proposal/approval flows.
-- `readSkill(skillId)` is a governed guidance-loading capability, not an authorization grant; it must check tenant, active AgentDefinition, AgentSkillManifest assignment, skill version/status, mode, AuthContext, and trace allowed or denied loads.
+- `readSkill(skillId)` is a governed guidance-loading capability, not an authorization grant; it must check tenant, active governed managed-agent `AgentDefinition`, AgentSkillManifest assignment, skill version/status, mode, AuthContext, and trace allowed or denied loads. Do not confuse that managed-agent domain record with Akka autonomous `AgentDefinition`, the SDK definition returned by `AutonomousAgent.definition()` or dynamic `AgentSetup`.
 - High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, email-send, or external-side-effect capabilities require human approval or a documented autonomous policy boundary. Generated app email capabilities use Resend through the shared email service; agent access must be a governed `@FunctionTool` or equivalent capability exposure channel with tool-boundary enforcement and traces.
 - Agents may recommend governance changes; humans approve activation unless a narrow safe boundary is explicitly defined.
 - Support access and SaaS owner operations require separate authority, audit, and tenant/customer context rules.

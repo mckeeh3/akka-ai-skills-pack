@@ -15,7 +15,9 @@ Legend:
 
 | Official topic | Official source | Local skill(s) | Canonical local examples | Test/reference coverage | Status |
 |---|---|---|---|---|---|
-| Basic agent structure, single command handler, explicit responsibility | `akka-context/sdk/agents.html.md`, `akka-context/sdk/agents/prompt.html.md` | `akka-agents`, `akka-agent-component` | `src/main/java/com/example/application/ActivityAgent.java`, `TemplateBackedActivityAgent.java` | `src/test/java/com/example/application/ActivityAgentTest.java` | ✅ |
+| Basic request-based Agent structure, single command handler, explicit responsibility | `akka-context/sdk/agents.html.md`, `akka-context/sdk/agents/prompt.html.md` | `akka-agents`, `akka-agent-component` | `src/main/java/com/example/application/ActivityAgent.java`, `TemplateBackedActivityAgent.java` | `src/test/java/com/example/application/ActivityAgentTest.java` | ✅ |
+| Autonomous Agents for durable internal/background typed tasks | `akka-context/sdk/autonomous-agents.html.md`, `akka-context/sdk/autonomous-agents/defining.html.md`, `akka-context/sdk/autonomous-agents/tasks.html.md`, `akka-context/sdk/autonomous-agents/testing.html.md` | planned: `akka-autonomous-agents`, `akka-autonomous-agent-tasks`, `akka-autonomous-agent-testing`; interim guide: `docs/agent-component-selection-guide.md` | planned in `specs/autonomous-agents-integration/pending-tasks.md` | research notes and doctrine/routing only; executable example and tests are queued | △ |
+| Autonomous Agent coordination: delegation, handoff, teams, moderation | `akka-context/sdk/autonomous-agents/coordination.html.md`, `akka-context/sdk/autonomous-agents/capabilities.html.md`, `akka-context/sdk/autonomous-agents/notifications.html.md` | planned: `akka-autonomous-agent-coordination`, `akka-autonomous-agent-governance` | planned in `specs/autonomous-agents-integration/pending-tasks.md` | research notes and doctrine/routing only; coordination example and tests are queued | △ |
 | Prompt design and runtime-managed prompts | `akka-context/sdk/agents/prompt.html.md` | `akka-agent-component`, `akka-agent-runtime-state` | `TemplateBackedActivityAgent.java`, `src/main/java/com/example/api/ActivityPromptEndpoint.java`, `PromptTemplateHistoryView.java` | `ActivityPromptEndpointIntegrationTest.java`, `PromptTemplateHistoryViewIntegrationTest.java`, `PromptTemplateHistoryEndpointIntegrationTest.java` | ✅ |
 | Governed runtime prompt documents, version snapshots, diff/review/activation, and prompt assembly traces | `akka-context/sdk/agents/prompt.html.md`, core seed Module 4 PRD | `akka-agent-prompt-governance`, `akka-agent-governed-documents`, `akka-agent-behavior-profiles` | `ReferencePromptDocument`, `ReferencePromptVersion`, `ReferenceAgentRuntimeResolver`, `ReferencePromptAssembler` | `ReferenceAgentRuntimeResolverTest` covers active prompt assembly, compact manifest-only prompt context, disabled-agent denial, cross-tenant prompt/manifest denial, and `PromptAssemblyTrace` creation; full lifecycle diff/review/activation remains documented guidance | ◑ |
 | Calling agents from workflows or other components | `akka-context/sdk/agents/calling.html.md` | `akka-agent-orchestration`, `akka-agents` | `AgentTeamWorkflow.java`, `DynamicAgentTeamWorkflow.java`, `src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java` | `AgentTeamWorkflowIntegrationTest.java`, `DynamicAgentTeamWorkflowIntegrationTest.java`, `DynamicAgentTeamWorkflowEndpointIntegrationTest.java` | ✅ |
@@ -71,12 +73,13 @@ Use this addendum when checking whether agent-facing examples preserve governed 
 
 Small, high-value follow-ups for the next sprint:
 
-1. Add a minimal event-reactive capability example when consumer authority, provenance, idempotency, and audit semantics need a small standalone reference.
-2. Add focused coverage for `SessionMemoryCompactionStreamEndpoint`; current compaction coverage stops at agent + consumer + audit-view path.
-3. Add a minimal custom-model-provider reference only if the repository decides that hosted/local built-ins are no longer enough.
-4. Add a governed non-component facade test that covers ToolPermissionBoundary denial, tenant/customer isolation, redaction, and trace summaries for underlying component/data access.
-5. Add a small classpath-backed skill-tool example if harness-like runtime skill loading becomes a common application pattern.
-6. Consider a direct stream-agent test if endpoint-level streaming coverage becomes too indirect for future agents.
+1. Complete the queued Autonomous Agent skill family, single-agent executable example, coordination example, and testing coverage in `specs/autonomous-agents-integration/pending-tasks.md`.
+2. Add a minimal event-reactive capability example when consumer authority, provenance, idempotency, and audit semantics need a small standalone reference.
+3. Add focused coverage for `SessionMemoryCompactionStreamEndpoint`; current compaction coverage stops at agent + consumer + audit-view path.
+4. Add a minimal custom-model-provider reference only if the repository decides that hosted/local built-ins are no longer enough.
+5. Add a governed non-component facade test that covers ToolPermissionBoundary denial, tenant/customer isolation, redaction, and trace summaries for underlying component/data access.
+6. Add a small classpath-backed skill-tool example if harness-like runtime skill loading becomes a common application pattern.
+7. Consider a direct stream-agent test if endpoint-level streaming coverage becomes too indirect for future agents.
 
 ## Fast routing guide
 
@@ -89,7 +92,9 @@ Small, high-value follow-ups for the next sprint:
 - Need governed workstream references, AgentReferenceManifest, readReferenceDoc, reference-load denials, or ReferenceLoadTrace: read `skills/akka-agent-reference-governance/SKILL.md`
 - Need behavior-editing proposals, proposed diffs, draft versions, decision cards, or authority-expansion denial: read `skills/akka-agent-behavior-editing/SKILL.md`
 - Need agent work traces, prompt/skill/reference/model/tool/data references, redaction, or timelines: read `skills/akka-agent-work-trace/SKILL.md`
-- Need a plain agent class: start with `skills/akka-agent-component/SKILL.md`
+- Need to choose between request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent: read `docs/agent-component-selection-guide.md`
+- Need durable task-oriented internal/background agent work: use `docs/agent-component-selection-guide.md` and `specs/autonomous-agents-integration/research-notes.md` until the queued `akka-autonomous-agents` skill family lands
+- Need a plain request-based agent class: start with `skills/akka-agent-component/SKILL.md`
 - Need tools: read `skills/akka-agent-tools/SKILL.md`
 - Need backend-enforced ToolPermissionBoundary grants, tool registry/catalog, denied tool semantics, approval-required expansion, or tool invocation traces: read `skills/akka-agent-tool-boundaries/SKILL.md`
 - Need governed ModelConfigRef records, model policy, tenant/agent/task model selection, fallback model policy, provider secret boundary, or model config/use traces: read `skills/akka-agent-model-governance/SKILL.md`

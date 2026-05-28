@@ -158,8 +158,9 @@ Map capability shapes onto Akka components deliberately:
 
 - **Event Sourced Entities:** audit-grade state, decisions, policies, goals, traces, or domain records where event history and temporal reasoning matter.
 - **Key Value Entities:** current-state objects where event history is not required.
-- **Workflows:** long-running plans, approval gates, retries, compensations, pause/resume, and multi-step agent orchestration.
-- **Agents:** bounded LLM responsibilities such as planning, classification, recommendation, summarization, tool use, evaluation, and explanation.
+- **Workflows:** deterministic long-running plans, approval gates, retries, compensations, pause/resume, and product processes where fixed order matters.
+- **Request-based Agents:** bounded LLM responsibilities such as user-facing workstream turns, planning, classification, recommendation, summarization, tool use, evaluation, and explanation where the caller expects one immediate or streamed response.
+- **Autonomous Agents:** durable task-oriented internal/background agent work where model-driven iteration, typed task lifecycle, dependencies, snapshots, notifications, delegation, handoff, teams, moderation, or independent failure/cancellation semantics are needed.
 - **Views:** CQRS read models for workstream dashboards, attention surfaces, tables, command centers, decision queues, digests, policy lists, audit searches, and outcome dashboards.
 - **Consumers:** event reactions, trace enrichment, notifications, downstream publication, and asynchronous integrations.
 - **Timed Actions:** deadlines, reminders, periodic digests, expiry, rechecks, and scheduled governance/replay work.
@@ -168,9 +169,9 @@ Map capability shapes onto Akka components deliberately:
 
 ## Governance and authority rules
 
-Treat prompts, skills, policies, rules, thresholds, approval gates, and permissions as runtime business logic. Generated AI-first SaaS foundations must include managed runtime agent behavior from the start:
+Treat prompts, skills, policies, rules, thresholds, approval gates, and permissions as runtime business logic. Generated AI-first SaaS foundations must include managed runtime agent behavior from the start. When choosing the Akka agent substrate, use `agent-component-selection-guide.md`: keep request-based Akka `Agent` as the default for model-backed user-facing workstream request/response turns, and use Akka `AutonomousAgent` as the default for durable task-oriented internal/background agent work when its semantics fit.
 
-- `AgentDefinition` controls lifecycle, owner/steward, authority level, model references, prompt references, skill manifest references, and tool permission boundaries;
+- governed managed-agent `AgentDefinition` controls lifecycle, owner/steward, authority level, model references, prompt references, skill manifest references, and tool permission boundaries; Akka autonomous `AgentDefinition` is the SDK definition returned by `AutonomousAgent.definition()` or supplied via `AgentSetup` and must be qualified when both meanings are in scope;
 - `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, and `ReferenceDocument`/`ReferenceVersion` are tenant-scoped governed artifacts with review, approval, activation, rollback, checksums, diff/history, and audit;
 - implementation-developed default `AgentDefinition`, prompt, skill, reference, manifest, workstream expert bundle, and tool-boundary content is packaged with the app as a seed bundle and imported into governed storage on first install or tenant bootstrap as versioned records with seed provenance, checksums, idempotency, and audit; later app upgrades create draft/proposed changes when tenant content has diverged rather than overwriting active tenant customizations;
 - `AgentSkillManifest` exposes only compact skill ids, titles, purposes, and when-to-use hints in prompt assembly;
@@ -273,4 +274,4 @@ Use the existing AI-first companion skills only for concerns that are actually i
 - `../skills/ai-first-saas-ui-surfaces/SKILL.md` for supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces.
 - `../skills/ai-first-saas-outcomes-metrics/SKILL.md` for outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces.
 
-These skills route to the existing Akka substrate implementation skills; they do not replace component-specific guidance for agents, workflows, entities, views, consumers, timed actions, endpoints, or web UI delivery.
+These skills route to the existing Akka substrate implementation skills; they do not replace component-specific guidance for request-based Agents, Autonomous Agents, workflows, entities, views, consumers, timed actions, endpoints, or web UI delivery. Use `agent-component-selection-guide.md` before selecting between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.

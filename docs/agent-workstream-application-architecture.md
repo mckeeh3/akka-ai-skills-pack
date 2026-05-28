@@ -127,7 +127,7 @@ Domain-specific intent should decompose into fully functional domain-specific wo
 
 ## Internal agents
 
-Internal agents are horizontal or supporting workers, not primary application navigation units. Use them when responsibility boundaries justify bounded backend AI behavior that should not appear as a left-rail work area.
+Internal agents are horizontal or supporting workers, not primary application navigation units. Use them when responsibility boundaries justify bounded backend AI behavior that should not appear as a left-rail work area. For generated apps, durable task-oriented internal/background agents should default to Akka `AutonomousAgent` when model-driven iteration, typed task lifecycle, dependencies, snapshots, notifications, delegation, handoff, teams, moderation, or independent failure/cancellation semantics are needed. Keep request-based Akka `Agent` for one-shot internal helper calls and for user-facing workstream request/response turns.
 
 Common internal agents:
 
@@ -140,7 +140,7 @@ Common internal agents:
 - extraction, enrichment, or normalization agent;
 - escalation triage agent.
 
-Internal agents still require governed `AgentDefinition`, approved prompt/skill references, tool boundaries, model policy, AuthContext or service authority basis, trace emission, and deterministic tests where applicable. Deterministic tests should use isolated test doubles; they do not replace the production-like local runtime path for model-backed or provider-backed behavior.
+Internal agents still require governed managed-agent `AgentDefinition`, approved prompt/skill references, tool boundaries, model policy, AuthContext or service authority basis, trace emission, and deterministic tests where applicable. Akka autonomous `AgentDefinition` means the SDK definition returned by `AutonomousAgent.definition()` or supplied through `AgentSetup`; qualify that term whenever both meanings are in scope. Deterministic tests should use isolated test doubles; they do not replace the production-like local runtime path for model-backed or provider-backed behavior.
 
 ## Surfaces
 
@@ -212,9 +212,10 @@ After vertical functional agents, surfaces, and capability contracts are clear, 
 |---|---|
 | Audit-grade decisions, policies, approvals, goals, traces, or lifecycle records | Event Sourced Entities |
 | Current-state profiles, settings, or configuration | Key Value Entities |
-| Long-running plans, approvals, retries, compensation, handoffs, or agent orchestration | Workflows |
+| Deterministic long-running plans, approvals, retries, compensation, or product orchestration | Workflows |
+| Durable model-driven internal/background tasks, handoffs, delegation, teams, moderation, task dependencies, snapshots, or notification-backed agent work | Autonomous Agents |
 | Curated dashboard, table, search, evidence, or audit read models | Views |
-| Bounded planning, recommendation, summarization, classification, evaluation, or explanation | Agents |
+| Bounded request/response planning, recommendation, summarization, classification, evaluation, explanation, or user-facing workstream turns | request-based Agents |
 | Event reactions, trace enrichment, notification, publication, or integration side effects | Consumers |
 | Expiry, reminders, digests, rechecks, replay, or retention | Timed Actions / timers |
 | Browser/service APIs, streaming, and static/frontend hosting | HTTP/gRPC endpoints |
@@ -293,7 +294,7 @@ For high-level product input, apply this sequence:
 6. Use web UI and agent skills to implement the workstream shell and governed agents.
 7. Use Akka component skills to implement the horizontal substrate from accepted capability contracts.
 
-Use `workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream.
+Use `workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
 
 Use `domain-workstream-prd-structure.md` when capturing domain-level and workstream-level PRDs for the core SaaS app domain or app-specific domains. It defines the directory structure for domains, workstreams, workstream-agent prompts/skills, surfaces, capabilities, and tests.
 

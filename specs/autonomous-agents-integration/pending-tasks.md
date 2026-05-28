@@ -89,7 +89,7 @@
 
 ### TASK-AUTO-02-001: Update doctrine and routing for Autonomous Agents
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/02-doctrine/01-update-autonomous-agent-doctrine-routing.md
 - depends on: [TASK-AUTO-01-001]
@@ -116,6 +116,7 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: update doctrine routing`
+  - added `docs/agent-component-selection-guide.md` and routed core doctrine to request-based Agent vs AutonomousAgent vs Workflow selection
 
 ### TASK-AUTO-02-002: Align starter and generated-app background-agent guidance
 

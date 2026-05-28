@@ -55,7 +55,7 @@ Top-level AI-first entry skill:
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model, identify mandatory foundation/security requirements, delegated work, and retained human authority, then route to app-description, decomposition, PRD planning, or focused implementation skills
 
 Top-level agent workstream entry skill:
-- `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications, identify functional agents, internal agents, workstreams, and structured surfaces, then route to app-description, capability-first backend, web UI, agent, decomposition, PRD/backlog, or focused implementation skills
+- `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications, identify functional agents, internal agents, workstreams, and structured surfaces, then route to app-description, capability-first backend, web UI, agent, decomposition, PRD/backlog, or focused implementation skills. Keep request-based Akka `Agent` as the default for user-facing workstream request/response turns; route durable task-oriented internal/background agent work to Akka `AutonomousAgent` when its lifecycle and coordination semantics fit.
 
 Mandatory foundation skill:
 - `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material; define SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, per-agent `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, authorized Akka `@FunctionTool` `readSkill(skillId)`/`readReferenceDoc(referenceId)`), support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests before app-specific features
@@ -222,7 +222,8 @@ Primary flow:
 5. use Stage 3 to load only the implementation skills needed for the chosen components and exposure surfaces
 
 Current local Stage 3 suites:
-- Agents
+- request-based Agents
+- Autonomous Agents
 - Workflows
 - Views
 - Consumers
@@ -245,6 +246,7 @@ You can also consult the comparison/reference files:
 - `../docs/agent-coverage-matrix.md`
 - `../docs/agent-runtime-state-reference.md`
 - `../docs/agent-runtime-invocation-pattern.md` — managed runtime invocation sequence from AuthContext through AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
+- `../docs/agent-component-selection-guide.md` — choose between request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, and Workflow + AutonomousAgent; includes the Akka autonomous `AgentDefinition` vs governed managed-agent `AgentDefinition` terminology guardrail
 - `../docs/workflow-endpoint-pattern.md`
 - `../docs/timer-pattern-selection.md`
 
@@ -419,7 +421,10 @@ For the durable queue contract, see `../docs/pending-task-queue.md`.
 ## Agent skills
 
 Start with:
-- `akka-agents`
+- `akka-agents` for request-based Akka Agent work such as user-facing workstream turns, bounded request/response reasoning, streaming responses, model-backed tools, session memory, and workflow steps with one model round trip.
+- future `akka-autonomous-agents` for durable task-oriented internal/background agent work such as long-running investigations, autonomous monitoring/remediation, batch review, escalation processing, evaluator loops, handoff/delegation/team coordination, task dependencies, snapshots, cancellation/failure, and notification streams.
+
+If the substrate is not clear, read `../docs/agent-component-selection-guide.md` before choosing between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`. Do not replace workstream request/response agents with Autonomous Agents by default.
 
 Then load the focused skill that matches the current task:
 
@@ -935,12 +940,26 @@ Load:
 - `akka-http-endpoints`
 - `akka-web-ui-apps`
 
-### New single-purpose agent
+### New single-purpose request-based Agent
+Use for bounded request/response behavior, including user-facing workstream turns and one-shot internal helpers.
+
 Load:
 - `akka-agents`
 - `akka-agent-component`
 - `akka-agent-structured-responses`
 - `akka-agent-testing`
+
+### New durable internal/background Autonomous Agent
+Use for task-oriented model-driven work with typed task lifecycle, dependencies, snapshots, notification streams, handoff/delegation/team coordination, or independent cancellation/failure. Until the installable skill family is added, use `../docs/agent-component-selection-guide.md` and `../specs/autonomous-agents-integration/research-notes.md` as the local routing sources; do not fake normal runtime behavior.
+
+Load after skill-family task lands:
+- `akka-autonomous-agents`
+- `akka-autonomous-agent-tasks`
+- `akka-autonomous-agent-testing`
+
+Add when needed:
+- `akka-autonomous-agent-coordination`
+- `akka-autonomous-agent-governance`
 
 ### New tool-using agent
 Load:
