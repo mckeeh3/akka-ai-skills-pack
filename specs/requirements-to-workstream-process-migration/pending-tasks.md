@@ -611,7 +611,7 @@
 
 ### TASK-REQWS-06-099: Verify examples, seed, and packaging sprint
 
-- status: pending
+- status: done
 - source: progressive verification loop for Sprint 06
 - task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
 - depends on: [TASK-REQWS-06-001]
@@ -642,7 +642,11 @@
   - legacy examples are clearly mechanics references when not aligned with target architecture
   - if gaps remain, bounded follow-up tasks are appended before a new Sprint 06 verification task
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/sprint-06-verification.md`
+  - verified Sprint 06 complete for examples, seed, and packaging alignment scope; no new Sprint 06 follow-up tasks required
+  - final mini-project verification remains as TASK-REQWS-99-001
+  - commit message: `requirements-workstream: verify sprint 06 packaging`
 
 ### TASK-REQWS-99-001: Verify requirements-to-workstream process migration
 
