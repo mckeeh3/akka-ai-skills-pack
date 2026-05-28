@@ -21,7 +21,7 @@ Prioritize examples that teach distinct Akka mechanics and generated-app governa
 3. **Notification stream endpoint** — demonstrate task/agent notification exposure for progress UI while keeping snapshots/results as source of truth.
 4. **Handoff triage** — demonstrate ownership transfer from triage to specialist for the same task type.
 5. **Team/moderation coordination** — demonstrate `TeamLeadership` or `Moderation` with a small collaborative review scenario.
-6. **Governed tool-boundary reference** — demonstrate a generated-app-style planning/test slice for `ToolPermissionBoundary`, tenant isolation, approval gates, and traces around Autonomous Agent tools.
+6. **Governed tool-boundary reference** — demonstrate a generated-app-style planning/test slice for `ToolPermissionBoundary`, tenant isolation, approval gates, and traces around Autonomous Agent tools. Detailed implementation plan: `specs/autonomous-agents-integration/governed-tool-boundary-example-plan.md`; queued implementation task: `TASK-AUTO-06-007`.
 
 ## Verification
 

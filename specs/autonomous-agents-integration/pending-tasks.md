@@ -558,7 +558,7 @@
 
 ### TASK-AUTO-06-006: Plan governed Autonomous Agent tool-boundary example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/06-plan-governed-tool-boundary-example.md
 - depends on: [TASK-AUTO-06-005]
@@ -586,13 +586,51 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: plan tool boundary example`
+  - completed with `specs/autonomous-agents-integration/governed-tool-boundary-example-plan.md` and follow-up implementation task `TASK-AUTO-06-007`
+
+### TASK-AUTO-06-007: Add governed Autonomous Agent tool-boundary example
+
+- status: pending
+- source: specs/autonomous-agents-integration/governed-tool-boundary-example-plan.md
+- task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/07-add-governed-tool-boundary-example.md
+- depends on: [TASK-AUTO-06-006]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/autonomous-agents-integration/research-notes.md
+  - specs/autonomous-agents-integration/governed-tool-boundary-example-plan.md
+  - skills/akka-autonomous-agents/SKILL.md
+  - skills/akka-autonomous-agent-governance/SKILL.md
+  - skills/akka-autonomous-agent-testing/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - docs/agent-coverage-matrix.md
+- skills:
+  - akka-autonomous-agents
+  - akka-autonomous-agent-governance
+  - akka-autonomous-agent-testing
+- expected outputs:
+  - src/main/java/com/example/... governed Autonomous Agent tool-boundary reference files
+  - src/test/java/com/example/... governed tool-boundary integration tests
+  - docs/agent-coverage-matrix.md update for proven coverage
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - `rg -n "ToolPermissionBoundary|tenant|approval_required|trace|fail-closed|AutonomousAgent|FunctionTool" src/main/java src/test/java docs/agent-coverage-matrix.md`
+- done criteria:
+  - tests prove allowed read-only tool invocation with trace and typed task completion
+  - tests prove ungranted and cross-tenant/wrong-customer denial without evidence leakage
+  - tests prove side-effecting follow-up returns `approval_required` and no side effect before approval
+  - tests prove missing provider/security/boundary configuration fails closed
+  - focused git commit exists
+- notes:
+  - commit message: `autonomous-agents: add governed tool boundary example`
 
 ### TASK-AUTO-07-001: Verify additional Autonomous Agent examples
 
 - status: pending
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/07-verification/01-verify-additional-examples.md
-- depends on: [TASK-AUTO-06-006]
+- depends on: [TASK-AUTO-06-007]
 - required reads:
   - AGENTS.md
   - skills/README.md
