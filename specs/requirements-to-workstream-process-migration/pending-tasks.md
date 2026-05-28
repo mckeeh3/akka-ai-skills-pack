@@ -454,7 +454,7 @@
 
 ### TASK-REQWS-04-099: Verify PRD/spec/backlog planning realignment sprint
 
-- status: pending
+- status: done
 - source: progressive verification loop for Sprint 04
 - task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
 - depends on: [TASK-REQWS-04-001, TASK-REQWS-04-002]
@@ -491,7 +491,11 @@
   - iterative change/revised-PRD flows preserve existing workstream/attention/dashboard/surface/capability/task identity rather than replan component-first
   - if gaps remain, bounded follow-up tasks are appended before a new Sprint 04 verification task
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/sprint-04-verification.md`
+  - verified Sprint 04 complete for PRD/spec/backlog planning realignment scope; no new Sprint 04 follow-up tasks required
+  - downstream queue/task-contract work remains covered by Sprint 05 and example/packaging alignment remains covered by Sprint 06
+  - commit message: `requirements-workstream: verify sprint 04 planning`
 
 ### TASK-REQWS-05-001: Update pending queue contracts
 
