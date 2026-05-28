@@ -30,6 +30,7 @@ Read these first if present:
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/requirements-to-workstream-development-process.md` for workstream attention/dashboard/surface-action/autonomous task provenance before component selection
 - `../../docs/capability-first-backend-architecture.md`
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../app-descriptions/SKILL.md`
@@ -74,7 +75,9 @@ A capability should be:
 
 ## Generated SaaS exposure rule
 
-For generated full-stack SaaS, a user-facing capability change must record the source functional agent, workstream action, structured surface, and surface action that expose or consume the capability. If no human workstream or browser surface should expose it, state `internal-only` explicitly and name the internal caller class. This prevents capability modeling from bypassing `12-workstreams/`, `55-ui`, and surface-to-capability traceability.
+For generated full-stack SaaS, a user-facing capability change must record the source functional agent, attention category or dashboard context, workstream action, structured surface, and surface action that expose or consume the capability. If no human workstream or browser surface should expose it, state `internal-only` explicitly and name the internal caller class. This prevents capability modeling from bypassing `12-workstreams/`, `55-ui`, and surface-to-capability traceability.
+
+For durable internal/background model-driven work, record the autonomous task exposure explicitly: start/query/cancel/result-read/external-complete/external-fail capabilities, task lifecycle state, snapshot/result schemas, notification/projection updates, and whether Akka `AutonomousAgent` is the intended substrate. AutonomousAgent tasks do not grant authority; every lifecycle action and tool call still inherits this capability contract.
 
 ## What this skill must capture
 
@@ -82,17 +85,20 @@ For each capability, identify and describe as applicable:
 - stable capability id/name in product language
 - capability class: `read/evidence`, `command`, `proposal`, `approval`, `workflow`, `policy/governance`, `trace/audit`, `scheduled`, or `reactive`
 - business goal and purpose
-- primary actors or caller classes, including humans, agents, workflows, services, timers, consumers, support roles, or internal callers
+- primary actors or caller classes, including humans, request-based workstream Agents, AutonomousAgent tasks, workflows, services, timers, consumers, support roles, or internal callers
+- source workstream, attention category, dashboard/surface context, and whether the capability opens, resolves, dismisses, escalates, or updates an attention item
 - AuthContext, tenant/customer scope, role, permission, scope, and named capability grants
 - typed input schema, validation, safe defaults, idempotency key, and correlation id expectations
 - typed output schema, redaction rules, user/agent-safe fields, safe denial/error shape, and evidence boundaries
 - data access boundaries, tenant/customer filters, PII/secret handling, and raw-state exposure limitations
-- side effects such as state changes, external calls, publications, timers, emails, notifications, workflow starts, or no side effects for read-only capabilities
+- side effects such as state changes, external calls, publications, timers, emails, notifications, workflow starts, attention projection changes, AutonomousAgent task starts/results, or no side effects for read-only capabilities
+- autonomous task lifecycle contract when applicable: task type, start criteria, progress/result surface, notification stream, dependency/timeout/failure/cancellation semantics, and result authority
 - delegated operational work, if any
 - retained human authority, approvals, exceptions, or supervision needs, if any
 - policy, permission, risk/confidence threshold, evidence, trace, learning, or outcome-accountability needs, if any
 - source functional agents, workstream actions, structured surfaces, surface actions, and action-to-capability map entries for user-facing exposure, or an explicit `internal-only` declaration
-- selected exposure surfaces: workstream surface action, browser UI/API action, HTTP/gRPC API, agent tool, MCP tool/resource/prompt, workflow step, view/query, timer, consumer, or internal-only method
+- selected exposure surfaces: workstream surface action, browser UI/API action, HTTP/gRPC API, request-based Agent tool, AutonomousAgent tool/task action, MCP tool/resource/prompt, workflow step, view/query, timer, consumer, or internal-only method
+- notification and projection outputs for dashboards, My Account aggregate attention, left rail summaries, surface stale/reconnect behavior, and audit/work traces
 - in-scope outcomes
 - out-of-scope outcomes
 - major constraints or assumptions
@@ -118,6 +124,7 @@ Use this response shape when updating or summarizing capability work:
 - class:
 - business goal:
 - actors / callers:
+- source workstream / attention / dashboard context:
 
 ## Authority and contract
 - AuthContext / scope:
@@ -129,6 +136,8 @@ Use this response shape when updating or summarizing capability work:
 - source functional agents / workstream actions:
 - source surfaces / surface actions:
 - exposure surfaces:
+- autonomous task lifecycle / AutonomousAgent fit, if applicable:
+- notification / dashboard / attention projection outputs:
 - internal-only declaration, if applicable:
 
 ## AI-first operating semantics
@@ -171,7 +180,7 @@ Do not create one giant capability for the whole app.
 Do not create tiny pseudo-capabilities that are really just implementation details.
 
 ### 4. Link forward deliberately
-A capability is incomplete if it cannot be linked to behavior, verification, security, observability, UI when exposed to humans, and traceability artifacts.
+A capability is incomplete if it cannot be linked to behavior, verification, security, observability, UI when exposed to humans, traceability artifacts, and any attention/dashboard/autonomous task notification projections it changes.
 
 ### 5. Separate capability change from behavior detail
 A new capability may require later behavior work, but capability modeling should first establish the business boundary, authority model, contract shape, side-effect boundaries, audit/approval obligations, and intended outcomes.
@@ -224,7 +233,7 @@ Avoid:
 - collapsing multiple unrelated outcomes into one vague capability
 - omitting out-of-scope boundaries
 - treating implementation tasks as capabilities
-- treating endpoints, agent tools, workflows, or entities as the capability inventory root
+- treating endpoints, agent tools, workflows, autonomous task methods, notifications, or entities as the capability inventory root
 - treating delegated operational work as generic CRUD plus a chatbot
 - hiding approval, policy, exception, or audit needs inside later implementation
 - leaving capability files unlinked to downstream behavior and tests

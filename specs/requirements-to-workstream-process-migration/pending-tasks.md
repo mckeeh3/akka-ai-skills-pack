@@ -298,7 +298,7 @@
 
 ### TASK-REQWS-03-002: Update app-description modeling and readiness skills
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/03-intake-description-realignment-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/03-intake/02-update-app-description-modeling-readiness.md
 - depends on: [TASK-REQWS-03-001]
@@ -329,7 +329,9 @@
 - done criteria:
   - app-description maintenance can store and assess the new process concepts
   - focused git commit exists
-- notes: []
+- notes:
+  - updated bootstrap/modeling/readiness app-description skills to preserve workstream attention, dashboards, surface actions, autonomous task candidates, notifications/projections, and readiness gates
+  - commit message: `requirements-workstream: update app description modeling readiness`
 
 ### TASK-REQWS-03-099: Verify intake and description-first realignment sprint
 

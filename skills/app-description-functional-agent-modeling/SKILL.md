@@ -15,6 +15,7 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/agent-workstream-application-architecture.md`
+- `../../docs/requirements-to-workstream-development-process.md` for workstream → attention → dashboard → surfaces/actions → capabilities → autonomous task/notification/projection/trace semantics
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/ai-first-saas-application-architecture.md`
@@ -45,7 +46,9 @@ Prefer these app-description artifacts:
 ```text
 app-description/12-workstreams/
   functional-agents.md
+  attention-and-dashboards.md
   workstreams-and-retention.md
+  internal-agents.md
   surfaces-index.md
   workstream-expertise/
     README.md
@@ -74,7 +77,9 @@ For each functional agent, capture:
 - tenant/customer scope and selected `AuthContext` assumptions;
 - authorized roles, permissions, scopes, or named capability grants;
 - default workstream entry behavior: briefing, dashboard, attention queue, recent activity, or empty state;
-- durable workstream semantics: retention, replay, summarization, attachments, follow-ups, and trace links;
+- attention model: categories, target audiences, severity, lifecycle (`open`, `acknowledged`, `resolved`, `dismissed`, `expired`, `escalated`), My Account aggregation, and left-rail count/highest-severity contribution;
+- dashboard contract: summary cards, attention item surfaces, blocked/overdue/risky/failed/paused states, active workflows/autonomous tasks/users/systems, pending decisions/approvals/exceptions, recent changes, and authorized next actions;
+- durable workstream semantics: retention, replay, summarization, attachments, follow-ups, notification/projection updates, and trace links;
 - prompt intent when LLM behavior is involved: what the agent should help with, what it must refuse, and when it must ask for confirmation;
 - workstream expert bundle reference under `workstream-expertise/<functional-agent-id>.md` or an explicit readiness deferral;
 - governed behavior artifacts: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `ModelConfigRef`/`ModelPolicy` or an explicit inherited governed default model binding, `SkillDocument`/`SkillVersion`, reference documents or constrained reference records, compact `AgentSkillManifest`/expertise manifest entries, and `ToolPermissionBoundary` references when applicable;
@@ -82,6 +87,7 @@ For each functional agent, capture:
 - allowed tools and tool-boundary notes, including authorized `readSkill(skillId)` and reference loaders, expressed as capability exposure surfaces rather than primary backend objects;
 - owned and reusable structured surfaces;
 - callable backend capabilities and whether each is read-only, proposal-only, approval-gated, or bounded autonomous;
+- autonomous task candidates and internal-agent handoffs when durable background model-driven work fits Akka `AutonomousAgent`, including task start/query/result/progress/notification capabilities and result surfaces;
 - approval, escalation, denial, exception, and safe recovery behavior;
 - audit and work-trace obligations, including `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, data-access traces, decision traces, and AdminAuditEvent links where relevant;
 - tests for authorization, tenant isolation, disabled users, surface rendering, capability invocation, denial behavior, approval/escalation, prompt/tool boundaries, and audit/trace emission.
@@ -110,9 +116,12 @@ Use this shape when adding or revising a functional agent:
 
 ## Workstream behavior
 - default entry surface:
+- attention categories / lifecycle:
+- default dashboard contract:
+- My Account / left-rail attention summary:
 - workstream retention / replay / summary:
 - composer intent and accepted inputs:
-- follow-up and handoff behavior:
+- follow-up, autonomous task, and notification behavior:
 
 ## Workstream expertise
 - expert bundle artifact:
@@ -126,10 +135,12 @@ Use this shape when adding or revising a functional agent:
 - autonomous vs proposal vs approval-gated actions:
 
 ## Surfaces and capabilities
+- owned dashboard / attention surfaces:
 - owned surfaces:
 - reusable surfaces:
 - callable capabilities:
 - surface action-to-capability links:
+- autonomous task start/result/progress surfaces:
 
 ## Supervision, audit, and traces
 - approval / escalation / exception behavior:
@@ -157,13 +168,15 @@ Use this shape when adding or revising a functional agent:
 
 ## Modeling rules
 
-1. **Functional agents are verticals.** Model each as a role-authorized work area with surfaces, capabilities, and workstream icon semantics. Do not model it as an Akka `Agent` class first.
-2. **Backend capabilities remain authoritative.** A functional agent can call or expose capabilities, but prompt text, rail visibility, and tool descriptions never authorize work.
-3. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, version cards, and outcome panels over free-text-only responses.
-4. **Foundation agents are scope-sensitive.** Minimum starter scope must include User Admin workstream v0 as a real role-authorized functional agent with bootstrap authority, `markdown_response`, a durable workstream log, trace links, capability/tool boundaries, denial behavior, and follow-up gaps to full core. Full generated core apps must include full User Admin and Agent Admin functional agents, plus access/profile, audit/trace, and governance/policy coverage as justified by scope. My Account remains launched from the lower-left signed-in user tile, not duplicated as a top-rail workstream icon. If deferred, record the narrower scope explicitly and never label it full-core ready.
-5. **Keep internal agents separate.** Classifiers, summarizers, evaluators, proposal drafters, and governance reviewers may support a functional agent, but they do not become left-rail work areas unless they represent a user-facing responsibility boundary.
-6. **Record tool boundaries as governed behavior.** Side-effecting tools should default to proposal or approval flows unless accepted policy grants bounded autonomous authority.
-7. **Link tests immediately.** A functional agent is incomplete without authorization, surface, capability, prompt/tool-boundary, and trace tests.
+1. **Functional agents are verticals.** Model each as a role-authorized work area with attention needs, a default dashboard, surfaces, capabilities, and workstream icon semantics. Do not model it as an Akka `Agent` class first.
+2. **Attention is first-class.** Each workstream must answer `what needs my attention?` for authorized users and define how counts/projections feed the dashboard, left rail, and My Account before UI badges or routes are described.
+3. **Backend capabilities remain authoritative.** A functional agent can call or expose capabilities, but prompt text, rail visibility, and tool descriptions never authorize work.
+4. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, autonomous task progress/result cards, version cards, and outcome panels over free-text-only responses.
+5. **Autonomous task candidates stay governed.** Durable model-driven investigation, review, summary, monitoring/remediation, or specialist follow-up should be modeled as internal-agent/autonomous task candidates with lifecycle notifications and capability boundaries; request-based Akka `Agent` remains the default for immediate user-facing turns.
+6. **Foundation agents are scope-sensitive.** Minimum starter scope must include User Admin workstream v0 as a real role-authorized functional agent with bootstrap authority, `markdown_response`, a durable workstream log, trace links, capability/tool boundaries, denial behavior, and follow-up gaps to full core. Full generated core apps must include full User Admin and Agent Admin functional agents, plus access/profile, audit/trace, and governance/policy coverage as justified by scope. My Account remains launched from the lower-left signed-in user tile, not duplicated as a top-rail workstream icon. If deferred, record the narrower scope explicitly and never label it full-core ready.
+7. **Keep internal agents separate.** Classifiers, summarizers, evaluators, proposal drafters, and governance reviewers may support a functional agent, but they do not become left-rail work areas unless they represent a user-facing responsibility boundary.
+8. **Record tool boundaries as governed behavior.** Side-effecting tools should default to proposal or approval flows unless accepted policy grants bounded autonomous authority.
+9. **Link tests immediately.** A functional agent is incomplete without authorization, surface, capability, prompt/tool-boundary, and trace tests.
 
 ## Change handling
 

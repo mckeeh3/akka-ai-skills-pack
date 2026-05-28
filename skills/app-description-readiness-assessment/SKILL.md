@@ -30,6 +30,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/requirements-to-workstream-development-process.md` for readiness gates across workstreams, attention, dashboards, surface actions, autonomous tasks, notifications/projections, and traces
 - `../../docs/capability-first-backend-architecture.md` for capability contract completeness criteria
 - `../../docs/agent-workstream-application-architecture.md` for functional-agent, workstream shell, and structured-surface readiness gates
 - `../../docs/workstream-expertise-model.md` for per-functional-agent workstream expert bundle readiness gates
@@ -68,7 +69,7 @@ Readiness is about **semantic completeness**, not about whether code could be gu
 
 A description is ready only when it is clear enough that generation is likely to preserve intended behavior without hiding major unresolved decisions.
 
-This skill should resist premature generation when important agent workstream, capability contract, behavior, test, security, observability, in-scope frontend/UI, mandatory secure SaaS foundation, or AI-first operating-model semantics are still undefined.
+This skill should resist premature generation when important agent workstream, attention/dashboard, structured surface action, autonomous task, notification/projection, capability contract, behavior, test, security, observability, in-scope frontend/UI, mandatory secure SaaS foundation, or AI-first operating-model semantics are still undefined.
 
 ## Readiness dimensions
 
@@ -105,7 +106,7 @@ For every generated SaaS app, this is blocking readiness. Check that the descrip
 ### 2. Agent workstream application completeness
 Check this for generated full-stack AI-first SaaS apps and for any existing `12-workstreams/`:
 - authenticated consequential work areas are modeled as role-authorized functional/context-area agents, not primarily as pages, screens, CRUD consoles, or a chatbot bolted onto a traditional app
-- each functional agent defines purpose, business responsibility, authorized roles/capabilities, tenant/customer scope, default dashboard/attention surface, durable workstream semantics, callable capabilities, approval/escalation/denial behavior, audit/work traces, tests, and a linked workstream expert bundle under `12-workstreams/workstream-expertise/` or an explicit readiness-blocking deferral
+- each functional agent defines purpose, business responsibility, authorized roles/capabilities, tenant/customer scope, default dashboard/attention surface, attention categories/lifecycle, My Account/left-rail attention contribution, durable workstream semantics, callable capabilities, approval/escalation/denial behavior, notification/projection behavior, audit/work traces, tests, and a linked workstream expert bundle under `12-workstreams/workstream-expertise/` or an explicit readiness-blocking deferral
 - full core SaaS scope includes at least My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, or the app description explicitly records a narrower scope that defers User Admin or Agent Admin and identifies the replacement/temporary operational boundary
 - User Admin full-core readiness requires the canonical three-surface vertical: `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account`; all three must have typed payloads, scoped API routes, backend capability mappings, Akka view/component realization, UserAdminAgent behavior, rendering/action tests, and trace/audit expectations for SaaS Owner Admin, Tenant Admin, and Customer Admin variants
 - User Admin is not ready when the dashboard/list/detail flow is fixture-only, API-only, or UI-only; at least one safe mutation or decision-card-producing action must be specified end to end with idempotency, authorization, audit/trace output, and denial behavior
@@ -113,13 +114,13 @@ Check this for generated full-stack AI-first SaaS apps and for any existing `12-
 - functional-agent readiness is blocked when expertise artifacts are absent, vague, prompt-only, or missing model binding for LLM-backed behavior; missing bundles or model bindings may be accepted only as explicit deferrals that narrow scope and prevent the affected agent/workstream from being reported ready
 - expert bundle traceability links functional agents to skills, references, manifests, boundaries, capabilities, surfaces, observability/audit traces, and tests
 - internal agents are distinguished from user-facing functional agents and define governed behavior documents, tool boundaries, authority basis, traces, and tests where applicable
-- structured surfaces are defined as typed renderable artifacts with stable ids/types/versions, payload schemas, redaction rules, allowed actions, loading/empty/error/forbidden/stale states, accessibility/responsive expectations, rendering tests, and capability/action tests
-- surface types cover the in-scope work, including dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit/work-trace timelines, workflow status cards, evidence bundles, prompt/skill/version cards, and outcome panels as needed
-- every surface action, workstream action, agent tool, workflow step, API, timer, consumer, or internal call maps to a governed backend capability; surface affordances are never treated as authorization controls
+- structured surfaces are defined as typed renderable artifacts with stable ids/types/versions, payload schemas, redaction rules, allowed actions, attention contribution, loading/empty/error/forbidden/stale states, accessibility/responsive expectations, rendering tests, and capability/action tests
+- surface types cover the in-scope work, including dashboards, attention surfaces, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit/work-trace timelines, workflow status cards, autonomous task progress/result cards, notification summaries, evidence bundles, prompt/skill/version cards, and outcome panels as needed
+- every surface action, workstream action, agent tool, AutonomousAgent task lifecycle action/tool call, workflow step, API, timer, consumer, or internal call maps to a governed backend capability; surface affordances and notifications are never treated as authorization controls
 - the UI shell includes left rail functional agents, main workstream panel, persistent composer, context/authority indicators, denial/recovery states, trace links, and route/deep-link rules as implementation detail
 - frontend realization guidance points generated SaaS work to `frontend/src/workstream/**` and the User Admin dashboard → list/search → detail/edit contract; `frontend/src/screens/**`, route/page-first examples, and static-resource examples are labeled legacy/mechanics only
 
-Missing functional agents, workstream expert bundles, or structured surfaces for consequential authenticated work is a blocking readiness gap. Missing User Admin or Agent Admin is a blocking gap for full core SaaS scope unless a narrower scope is explicit and accepted.
+Missing functional agents, workstream attention/dashboard contracts, workstream expert bundles, or structured surfaces for consequential authenticated work is a blocking readiness gap. Missing User Admin or Agent Admin is a blocking gap for full core SaaS scope unless a narrower scope is explicit and accepted.
 
 ### 3. AI-first operating-model completeness
 Check this for generated AI-first SaaS apps and for any existing `15-operating-model/`:
@@ -130,7 +131,15 @@ Check this for generated AI-first SaaS apps and for any existing `15-operating-m
 - decision/exception semantics with evidence, risk, confidence, impact, alternatives, and precedents
 - audit/work/decision traces, policy invocations, tool/data-access events, feedback, replay/simulation, and outcome metrics
 
-### 4. Capability contract completeness
+### 4. Workstream attention, dashboard, and notification completeness
+Check this for generated full-stack AI-first SaaS apps and for any existing `12-workstreams/`:
+- each workstream answers `what needs my attention?` for each authorized actor and records attention categories, target audiences, severity, lifecycle, and escalation/dismissal/resolution semantics
+- each default dashboard defines summary cards, attention item surfaces, blocked/overdue/risky/failed/paused states, participants, active workflows/autonomous tasks, pending decisions/approvals/exceptions, recent changes, and authorized next actions
+- left-rail and My Account attention counts derive from backend-governed projections with tenant/customer/AuthContext filtering, hidden/unavailable/zero states, and highest-severity behavior
+- notifications are progress signals linked to source events/tasks/capabilities and never replace governed state, authorization, audit, or surface contracts
+- autonomous task progress/result/exception notifications update surfaces, dashboards, and traces through explicit projections and stale/reconnect behavior
+
+### 5. Capability contract completeness
 Check whether `10-capabilities/` is sufficiently defined for every in-scope capability:
 - stable id/name and capability class
 - purpose, in-scope outcomes, and out-of-scope boundaries
@@ -138,9 +147,10 @@ Check whether `10-capabilities/` is sufficiently defined for every in-scope capa
 - input/output schemas, validation, redaction, safe denial/error shape, idempotency, and correlation expectations
 - data access boundaries, side effects, policy/approval/escalation rules, autonomy level, and audit/work-trace obligations
 - selected exposure surfaces or explicit non-exposure
+- autonomous task lifecycle/exposure, notification/projection outputs, and dashboard/attention effects where applicable
 - links to operating-model, behavior, tests, auth/security, observability, UI, and traceability artifacts as applicable
 
-### 5. Behavior completeness
+### 6. Behavior completeness
 Check whether the app meaning is sufficiently defined:
 - governed capability contracts
 - major flows and state changes
@@ -149,7 +159,7 @@ Check whether the app meaning is sufficiently defined:
 - forbidden behavior
 - no-op or idempotency rules where relevant
 
-### 6. Test completeness
+### 7. Test completeness
 Check whether important behavior is backed by explicit verification expectations:
 - acceptance cases
 - regression cases
@@ -158,7 +168,7 @@ Check whether important behavior is backed by explicit verification expectations
 - failure-path expectations
 - workstream expertise tests for assigned skill/reference loads, unassigned denied loads, model binding success/denial/fallback where applicable, provider secret non-exposure, tool-boundary denial, no authority expansion from text, tenant isolation, surface rendering, and prompt/skill/reference/model-use/work trace emission
 
-### 7. Auth/security completeness
+### 8. Auth/security completeness
 Check whether required production security semantics are defined:
 - identity and trust model
 - authorization rules
@@ -168,7 +178,7 @@ Check whether required production security semantics are defined:
 - mechanical enforcement of agent/tool permissions and human authority boundaries when AI-first behavior is in scope
 - governed runtime agent security for disabled agents, active prompt and skill/reference version selection, explicit model config/policy resolution or governed default inheritance, provider secret boundary, disabled/unknown/policy-denied model denials, default behavior seed import validation/provenance/idempotency, `AgentSkillManifest` and reference-manifest assignment, authorized `readSkill(skillId)` and reference-document loading, `ToolPermissionBoundary` enforcement, editing agent proposal approval, denied unassigned/cross-tenant loads, and denial of unauthorized authority expansion
 
-### 8. Observability completeness
+### 9. Observability completeness
 Check whether required operational evidence is defined:
 - logs and audit events
 - metrics
@@ -178,20 +188,20 @@ Check whether required operational evidence is defined:
 - diagnosability expectations
 - AI-first work traces, decision traces, policy invocations, tool/data-access records, prompt assembly traces, model binding/model-use traces including denials/fallback decisions and safe aliases, skill/reference load traces including denials, and outcome links when applicable
 
-### 9. Frontend/UI completeness
+### 10. Frontend/UI completeness
 Check this for generated full-stack AI-first SaaS apps:
 - user journeys expressed through functional-agent workstreams and structured surfaces before conventional route/page details
 - left rail functional-agent navigation, main workstream panel, persistent composer, context/authority indicators, trace links, and safe denial/recovery behavior
 - forms/actions and validation behavior inside surfaces
-- frontend API contracts for workstreams, surface payloads, surface actions, and realtime updates
-- loading, empty, error, forbidden, submitting, success, stale, and reconnect states
+- frontend API contracts for workstreams, attention summaries, surface payloads, surface actions, autonomous task notifications/results, and realtime updates
+- loading, empty, error, forbidden, submitting, success, stale, reconnect, autonomous progress/result, and notification update states
 - test expectations for shell, rail, composer, structured surfaces, capability actions, deep links, realtime/stale behavior, and User Admin vertical coverage; route/page tests alone are not sufficient
 - User Admin fullstack acceptance expectations cover selecting User Admin, loading `user-admin-dashboard`, opening `user-admin-user-list`, searching/filtering users, opening `user-admin-user-account`, invoking a safe mutation or decision-card-producing action, observing audit/trace output, and negative checks for disabled actor, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner without support access, role escalation, and last-admin loss
 - accessibility and responsive expectations
 - selected web UI style guide, mode policy, core CSS tokens, component styling, and brand adaptation rules
 - for AI-first apps, supervision, decision-card, governance, digest, goal-to-execution, audit/trace, and outcome surfaces instead of only CRUD navigation
 
-### 10. Generation stability
+### 11. Generation stability
 Check whether remaining ambiguity would likely cause incorrect or unstable generated outputs.
 
 ## Allowed outcomes
@@ -231,6 +241,10 @@ Use this response shape:
 - notes:
 
 ## AI-first operating-model completeness
+- status:
+- notes:
+
+## Workstream attention, dashboard, and notification completeness
 - status:
 - notes:
 
@@ -276,7 +290,7 @@ If a critical area is underspecified, say so directly.
 Do not mark the description ready just because generation is technically possible.
 
 ### 2. Weight missing production concerns appropriately
-Missing secure SaaS foundation, agent workstream model, capability contracts, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, functional agents, internal agents, structured surfaces, workstream shell behavior, actors/callers, AuthContext/scope, schemas, side effects, idempotency, exposure surfaces, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
+Missing secure SaaS foundation, agent workstream model, attention/dashboard contracts, notification/projection semantics, autonomous task lifecycle semantics, capability contracts, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, functional agents, internal agents, structured surfaces, workstream shell behavior, actors/callers, AuthContext/scope, schemas, side effects, idempotency, exposure surfaces, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
 ### 3. Allow limited assumptions only when localized and non-runtime
 `ready-with-assumptions` is valid only when the remaining assumptions are:
@@ -290,7 +304,7 @@ If an assumption would change whether a user-visible/API/workstream feature work
 
 For browser UI generation, a missing style guide is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
 
-For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functional-agent, workstream-expertise, and structured-surface semantics are blocking when generation would otherwise invent consequential work areas, expert skills/references/manifests/boundaries, left-rail authorization, workstream behavior, surface payloads/actions/states, or User Admin / Agent Admin boundaries. Readiness is also blocked when the frontend plan uses legacy `frontend/src/screens/**`, page-first route tests, or static-resource mechanics as the generated SaaS UI model instead of the canonical `frontend/src/workstream/**` reference and User Admin vertical. Full-core readiness is blocked if User Admin dashboard/list/detail behavior is fixture-only, API-only, or UI-only instead of fullstack through `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` backed by scoped backend capabilities and tests.
+For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functional-agent, attention/dashboard, workstream-expertise, and structured-surface semantics are blocking when generation would otherwise invent consequential work areas, expert skills/references/manifests/boundaries, left-rail authorization, workstream behavior, attention counts, surface payloads/actions/states, autonomous task progress/result surfaces, notifications, or User Admin / Agent Admin boundaries. Readiness is also blocked when the frontend plan uses legacy `frontend/src/screens/**`, page-first route tests, or static-resource mechanics as the generated SaaS UI model instead of the canonical `frontend/src/workstream/**` reference and User Admin vertical. Full-core readiness is blocked if User Admin dashboard/list/detail behavior is fixture-only, API-only, or UI-only instead of fullstack through `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` backed by scoped backend capabilities and tests.
 
 For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
@@ -305,8 +319,8 @@ If the description is sufficiently mature, this skill may recommend moving on to
 Route onward as follows:
 - if `not-ready`, route to the most relevant missing description skills:
   - `core-saas-foundation`, `app-description-bootstrap`, `app-description-auth-security`, and `app-description-test-specification` when Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, disabled-user, forbidden-access, or foundation test semantics are missing
-  - `app-description-functional-agent-modeling` when authenticated consequential work areas, role-authorized left-rail functional agents, workstream expert bundles, User Admin, Agent Admin, internal-agent boundaries, traces, or tests are missing
-  - `app-description-surface-modeling` when structured surfaces, surface schemas, allowed actions, states, rendering tests, or capability mappings are missing
+  - `app-description-functional-agent-modeling` when authenticated consequential work areas, role-authorized left-rail functional agents, attention/dashboard contracts, workstream expert bundles, User Admin, Agent Admin, internal-agent boundaries, traces, or tests are missing
+  - `app-description-surface-modeling` when structured surfaces, attention/dashboard surfaces, autonomous task progress/result surfaces, surface schemas, allowed actions, notification/realtime behavior, states, rendering tests, or capability mappings are missing
   - `ai-first-saas` or focused AI-first companion skills when operating-model semantics are missing
   - `app-description-behavior-specification`
   - `app-description-test-specification`
@@ -346,7 +360,8 @@ Before finishing, verify:
 - core secure SaaS foundation completeness was assessed explicitly for generated SaaS apps
 - missing foundation/security blocks generation or marks the description `not-ready`
 - agent workstream application completeness was assessed explicitly for generated full-stack AI-first SaaS apps
-- missing functional agents, workstream expert bundles, or structured surfaces for authenticated consequential work blocks generation or marks the description `not-ready`
+- workstream attention, dashboard, notification/projection, and autonomous task surface semantics were assessed explicitly
+- missing functional agents, attention/dashboard contracts, workstream expert bundles, or structured surfaces for authenticated consequential work blocks generation or marks the description `not-ready`
 - missing User Admin or Agent Admin blocks full core SaaS generation unless narrower scope is explicit
 - AI-first operating-model completeness was assessed explicitly for generated AI-first SaaS
 - behavior completeness was assessed explicitly

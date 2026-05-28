@@ -15,7 +15,8 @@ It is the description-first equivalent of project scaffolding, but for the autho
 Create a minimum viable internal app-description tree that:
 - gives the harness a stable root to maintain
 - establishes the mandatory secure SaaS foundation for Account/Profile/Settings/Membership/Tenant/Customer/admin/audit before app-specific features
-- establishes authoritative layers for capabilities, role-authorized functional-agent workstreams, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
+- establishes authoritative layers for role-authorized functional-agent workstreams, per-workstream attention breakdowns, default dashboards, structured surfaces and surface actions, capabilities, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
+- records autonomous task candidates, notification/projection implications, and trace expectations when durable internal/background agent work may be needed
 - records an initial readiness posture
 - defines a generation policy that labels scope as `minimum starter / not full core`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
 - for starter/basic/minimum app requests, represents User Admin workstream v0 with `markdown_response`, bootstrap auth/security, durable workstream log, trace substrate, and explicit follow-up gaps to full core
@@ -28,6 +29,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must seed
 - `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
@@ -99,6 +101,8 @@ app-description/
     02-<primary-app-capability>.md
   12-workstreams/          # required for generated full-stack AI-first SaaS apps
     functional-agents.md
+    attention-and-dashboards.md
+    internal-agents.md      # create when internal/background agent work or autonomous task candidates are in scope
     surfaces-index.md
     surface-contracts/
       00-markdown-response.md      # required for minimum starter / User Admin workstream v0
@@ -190,7 +194,12 @@ From the initial user input, derive as applicable:
 - whether the app has AI-first/delegated operating-model semantics
 - delegated work versus retained human authority when applicable
 - selected scope label: `minimum starter / not full core`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
+- initial workstream inventory with owner functional agents, tenant/customer/AuthContext scope, and whether each workstream is core-foundation or domain-specific
+- per-workstream attention categories answering `what needs my attention?`, including severity/lifecycle, target audience, My Account aggregation, and left-rail count behavior
+- default dashboard contract for each workstream: summary cards, attention items, blocked/overdue/risky/failed/paused states, participant/task visibility, pending decisions, recent changes, and authorized next actions
 - first in-scope capability set, starting with the secure SaaS foundation capability and, for minimum starter scope, the User Admin workstream v0 read/explain/deny capability boundary
+- autonomous task candidates for durable internal/background model-driven work, including start/result/progress/notification surfaces and why Akka `AutonomousAgent` may fit
+- event/notification/projection implications for dashboard updates, My Account attention aggregation, left-rail attention summaries, audit/work traces, and stale/reconnect UI states
 - likely primary behavior flow, starting with sign-in, `/api/me`, context selection, Account/Profile/Settings maintenance, administration, invitations, support-access, audit viewing, and tenant/customer-scoped access
 - first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
 - initial auth/security expectations based on `core-saas-foundation`, including explicit default-deny authorization for every route, agent tool, data access, workflow action, view query, stream, and generated UI action
@@ -230,7 +239,10 @@ Create `00-system/generation-policy.md` with a conservative policy that preserve
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.
 
-Then add the clearest app-specific business capability as the next numbered file when the input supports it.
+Then add the clearest app-specific business capability as the next numbered file when the input supports it. For generated full-stack SaaS, every user-facing capability must link back to a functional-agent workstream, attention/dashboard context, structured surface action, or explicitly state `internal-only`.
+
+### 4a. Create the first workstream, attention, and dashboard layer
+Create `12-workstreams/functional-agents.md`, `12-workstreams/attention-and-dashboards.md`, and `12-workstreams/surfaces-index.md` before route/page/UI details. For each initial workstream, record owner functional agent, authorized actors, default dashboard, attention categories, left-rail/My Account summary behavior, participant visibility, surface actions, capability links, audit/work-trace links, and tests. If the input suggests durable background model-driven work, add or reserve `12-workstreams/internal-agents.md` entries for autonomous task candidates with lifecycle/result/notification surface expectations and route later implementation toward Akka `AutonomousAgent` when its typed task semantics fit.
 
 ### 5. Create the AI-first operating-model layer
 Create `15-operating-model/` for generated AI-first SaaS apps. The secure foundation itself includes delegated admin assistance, supervision, policy-governed decisions, auditability, and outcome accountability, so this layer is not optional for generated apps.

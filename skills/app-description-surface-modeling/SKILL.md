@@ -15,6 +15,7 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/agent-workstream-application-architecture.md`
+- `../../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification semantics
 - `../../docs/structured-surface-contracts.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -68,6 +69,7 @@ Use these types unless the product intent requires a more specific typed surface
 
 - `markdown_response` for the minimum User Admin workstream v0 and other low-ceremony explanatory replies that still require a typed payload, sanitized rendering, trace/correlation ids, explicit states, accessibility, and rendering/security tests; do not treat it as an informal chat blob or as a substitute for richer typed surfaces when decisions, approvals, forms, tables, settings, audit timelines, or workflow status are required;
 - `dashboard` / `attention-surface`;
+- `autonomous-task-progress` / `autonomous-task-result` / `notification-summary` for durable internal/background work surfaced through governed task lifecycle capabilities;
 - `form` / `guided-intake`;
 - `table` / `search-results`;
 - `chart` / `metric-panel`;
@@ -89,14 +91,17 @@ For each surface, capture the fields below. Use `../../docs/structured-surface-c
 - stable surface id, display name, type, and version;
 - purpose and user outcome;
 - owning functional agent and reusable functional agents;
-- workstream placement: default entry, embedded response, drill-in, modal, side panel, or deep-linkable surface;
-- payload schema: required fields, optional fields, lists, nested records, field formats, correlation ids, trace ids, pagination, sorting, and realtime event ids;
+- workstream placement: default entry dashboard, attention queue, embedded response, drill-in, modal, side panel, system-message surface, or deep-linkable surface;
+- attention contribution: category, severity, lifecycle state, target audience, My Account aggregation, left-rail count behavior, and when the surface opens/resolves/dismisses/escalates an attention item;
+- payload schema: required fields, optional fields, lists, nested records, field formats, correlation ids, trace ids, pagination, sorting, autonomous task ids, notification ids, and realtime event ids;
 - redaction and safe fields for user roles, support roles, auditors, functional agents, and internal agents;
 - data sources and read/evidence capabilities behind the payload;
 - allowed actions with labels, input payloads, confirmation requirements, idempotency keys, and linked backend capability ids, including surface-request actions such as `open_workstream` for buttons, links, cards, rows, or icons that open another protected surface/workstream;
+- autonomous task bindings when applicable: start/query/cancel/result-read/external-complete/external-fail capabilities, task lifecycle states, snapshot/result payloads, progress notifications, dependencies, and escalation/attention rules;
 - action authority: AuthContext, tenant/customer scope, role/capability requirements, approval/policy gates, and denial behavior;
 - action side-effect visibility: success, pending, approval-needed, queued, workflow-started, no-op, and failed states;
 - loading, empty, error, forbidden, stale, reconnecting, conflict, and partial-data states;
+- notification/projection behavior: which domain events, AutonomousAgent task notifications, workflow events, consumer/timer results, or audit signals update the surface, dashboard, My Account, and left rail;
 - realtime behavior: SSE/WebSocket/update polling, event ordering, stale markers, and recovery;
 - accessibility and responsive expectations;
 - audit/work-trace links visible to users, supervisors, admins, or auditors;
@@ -119,6 +124,7 @@ Use this shape when adding or revising a surface:
 - owner functional agent:
 - reusable by:
 - workstream placement:
+- attention category / dashboard role:
 
 ## Payload contract
 - schema summary:
@@ -135,6 +141,7 @@ Use this shape when adding or revising a surface:
   - approval / policy gate:
   - idempotency / duplicate behavior:
   - success / failure / denial state:
+- autonomous task or notification binding, if applicable:
 
 ## UI states
 - loading:
@@ -142,6 +149,8 @@ Use this shape when adding or revising a surface:
 - error:
 - forbidden:
 - stale / reconnect:
+- autonomous task progress/result states:
+- notification/projection update behavior:
 - responsive / accessibility:
 
 ## Tests
@@ -172,8 +181,9 @@ Use this shape when adding or revising a surface:
 4. **Payloads are safe by contract.** Record redaction, role-dependent fields, support/auditor visibility, secret boundaries, and tenant/customer scoping.
 5. **Actions preserve capability semantics.** Carry AuthContext, validation, idempotency, side effects, policy/approval, audit, and denial semantics from the capability layer.
 6. **Routes are subordinate.** Pages and deep links may address a surface, but they do not replace the functional-agent/workstream/surface model.
-7. **States are part of the surface.** Loading, empty, error, forbidden, stale/reconnect, conflict, and partial-data behavior must be described before generation.
-8. **Tests are mandatory.** A surface contract is incomplete without rendering, action, authorization, tenant-isolation, denial, audit/trace, and relevant realtime tests.
+7. **States are part of the surface.** Loading, empty, error, forbidden, stale/reconnect, conflict, partial-data, autonomous task progress/result, and notification update behavior must be described before generation.
+8. **Attention and dashboards are governed projections.** Dashboard badges, My Account counts, and left-rail indicators derive from backend state/projections linked to surface actions and capability results, not frontend-only notification math.
+9. **Tests are mandatory.** A surface contract is incomplete without rendering, action, authorization, tenant-isolation, denial, audit/trace, and relevant realtime tests.
 
 ## Change handling
 

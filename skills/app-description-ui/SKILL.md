@@ -7,9 +7,9 @@ description: Maintain authoritative frontend/UI descriptions for description-fir
 
 Use this skill for the mandatory browser frontend of generated full-stack AI-first SaaS apps, and for any description-first work that changes UI meaning.
 
-This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, and structured surfaces. Preserve supervision, decision, governance, digest, audit, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
+This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, per-workstream attention/dashboard summaries, and structured surfaces. Preserve supervision, decision, governance, digest, audit, autonomous task progress/result, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
 
-High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, workstream icon descriptors, structured surfaces, surface actions, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, workstream icon assignments, surfaces, or actions must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
+High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, attention/dashboard contracts, workstream icon descriptors, structured surfaces, surface actions, autonomous task/result surfaces, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, attention indicators, workstream icon assignments, surfaces, or actions must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
 
 ## Required reading
 
@@ -17,6 +17,7 @@ Read these first if present:
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification/projection rules
 - `../../docs/capability-first-backend-architecture.md` for selected capability exposure surfaces, browser action authority, frontend API contracts, audit, and denial semantics
 - `../../docs/workstream-ui-reference-architecture.md` for the canonical generated-app workstream UI implementation reference under `frontend/src/workstream/**`
 - `../../docs/web-ui-frontend-decomposition.md`
@@ -31,7 +32,7 @@ Read these first if present:
 ## Use this skill when
 
 - the user uses UI vocabulary such as screens, pages, dashboards, portals, admin consoles, or browser workflows; normalize generated SaaS requests into functional-agent workstreams, structured surfaces, routes/deep links, and frontend realization details
-- the user describes command centers, mission control, approval queues, decision cards, policy/governance centers, async digests, audit traces, or goal launch workbenches
+- the user describes command centers, mission control, attention dashboards, approval queues, decision cards, autonomous task progress/result surfaces, policy/governance centers, async digests, audit traces, or goal launch workbenches
 - frontend behavior needs to be captured before code generation
 - the app-description needs UI readiness for generation
 - a change request affects forms, navigation, frontend validation, realtime browser updates, accessibility, or responsive behavior
@@ -100,9 +101,10 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - empty/not-found/forbidden route states and recovery actions
 - reminder: primary/secondary actions, loading/error states, and authorization semantics belong first in structured surface contracts and governed capability contracts
 
-### Shell navigation and workstream icons
+### Shell navigation, attention summaries, and workstream icons
 - render workstream icon descriptors from `12-workstreams/` using stable icon ids, visual hints, theme accent color tokens, tooltips, accessible labels, and optional approved asset references; realization must use an approved SVG/icon-library registry or semantic SVG fallback derived from the workstream name/responsibility, never letter initials as the normal icon
 - show My Account only through the lower-left signed-in user tile/email; do not duplicate it as a top-rail workstream button
+- render left-rail counts and My Account aggregate attention from backend-governed projections such as `WorkstreamAttentionSummary`; define hidden/unavailable/zero states and highest-severity behavior in UI, but do not compute authority or attention from frontend-only notification state
 - treat buttons, links, icons, cards, rows, and status panels that open protected surfaces or workstreams as governed surface-request actions such as `open_workstream`, backed by capabilities and denial/system-message behavior
 - keep browser interaction details, tooltip/focus behavior, responsive rail collapse, and visual treatment in `55-ui/`; do not assign domain icon meaning here
 
@@ -126,6 +128,7 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 ### States and realtime
 - loading/ready/empty/error/submitting/success/stale states
 - supervisor attention states: needs review, waiting on evidence, blocked by policy, escalated, autonomous progress, completed, overridden, stale, and trace unavailable
+- autonomous task notification states: pending, assigned, in progress, dependency stuck, result rejected, completed with recommendation, failed, cancelled, and escalation-needed
 - SSE or WebSocket behavior
 - reconnect and stale data UX
 
@@ -158,8 +161,8 @@ Cosmetic style work may improve visual quality only within already-authoritative
 For any UI change, update:
 1. affected UI description files, including `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `ai-first-surfaces.md` when delegated work surfaces change, the managed-agent UI files when full-core agent behavior governance changes, and `style-guide.md` when style system, branding, density, tokens, icon rendering, or component styling change
 2. `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling` when a UI change adds, removes, or changes a user-facing functional agent, workstream icon assignment/meaning, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
-3. `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling` when a UI change adds, removes, or changes structured surfaces, payload schemas, reusable placement, allowed actions, states, trace links, or rendering tests
-4. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, or idempotency semantics
+3. `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling` when a UI change adds, removes, or changes structured surfaces, dashboard/attention surfaces, autonomous task result/progress surfaces, payload schemas, reusable placement, allowed actions, states, notification/realtime behavior, trace links, or rendering tests
+4. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, idempotency, notification/projection output, or autonomous task lifecycle semantics
 5. behavior flows if user-visible behavior changes
 6. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
 7. auth/security if route visibility, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes
