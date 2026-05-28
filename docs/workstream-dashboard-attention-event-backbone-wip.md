@@ -2,9 +2,12 @@
 
 ## Status
 
-Work in progress. This document captures an active design discussion so the ideas are not lost. It is not yet canonical doctrine, but it appears aligned with the existing secure AI-first SaaS, agent workstream, structured surface, and capability-first backend architecture.
+Superseded as the primary rule source by `docs/requirements-to-workstream-development-process.md`.
+
+This document remains as provenance, design detail, open-question backlog, and source material for future focused docs. For normative intake, PRD, app-description, planning, backlog, and implementation-readiness guidance, use the canonical requirements-to-workstream process doc first.
 
 Related current doctrine:
+- `docs/requirements-to-workstream-development-process.md`
 - `docs/ai-first-saas-application-architecture.md`
 - `docs/agent-workstream-application-architecture.md`
 - `docs/structured-surface-contracts.md`

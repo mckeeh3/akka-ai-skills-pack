@@ -154,7 +154,7 @@
 
 ### TASK-REQWS-02-001: Promote canonical process doctrine
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/02-doctrine-consolidation-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/02-doctrine/01-promote-canonical-process-doctrine.md
 - depends on: [TASK-REQWS-01-099]
@@ -180,7 +180,11 @@
 - done criteria:
   - canonical process source exists for later skills to reference
   - focused git commit exists
-- notes: []
+- notes:
+  - created `docs/requirements-to-workstream-development-process.md` as canonical requirements-to-workstream process doctrine
+  - marked `docs/workstream-dashboard-attention-event-backbone-wip.md` as superseded/provenance while preserving it
+  - added canonical process doc to `skills/README.md` doctrine references
+  - commit message: `requirements-workstream: promote process doctrine`
 
 ### TASK-REQWS-02-002: Update core doctrine crosslinks
 
