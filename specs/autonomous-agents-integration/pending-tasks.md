@@ -265,7 +265,7 @@
 
 ### TASK-AUTO-04-002: Add Autonomous Agent coordination executable example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/04-examples/02-add-autonomous-agent-coordination-example.md
 - depends on: [TASK-AUTO-04-001]
@@ -296,6 +296,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add coordination example`
+  - completed with `ResearchCoordinatorAutonomousAgent`, `ResearchWorkerAutonomousAgent`, `ResearchCoordinationTasks`, `AutonomousResearchEndpoint`, and endpoint-driven delegation integration test
+  - updated `docs/agent-coverage-matrix.md` for single-agent and coordination executable example coverage
+  - checks: `mvn test`; `git diff --check`; `rg -n "Delegation|delegateTo|AutonomousAgent|TaskAcceptance|completeTask" src/main/java src/test/java docs/agent-coverage-matrix.md`
 
 ### TASK-AUTO-05-001: Verify first-pass Autonomous Agents migration
 
