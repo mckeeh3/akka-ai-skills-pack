@@ -630,7 +630,7 @@
 
 ### TASK-AUTO-07-001: Verify additional Autonomous Agent examples
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/07-verification/01-verify-additional-examples.md
 - depends on: [TASK-AUTO-06-007]
@@ -662,3 +662,6 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: verify additional examples`
+  - completed with `specs/autonomous-agents-integration/additional-examples-verification-notes.md`
+  - no new follow-up tasks appended; remaining `TeamLeadership` and component/MCP side-effecting tool-boundary examples are accepted coverage-matrix cleanup backlog items, not blockers for this migration
+  - checks: `mvn test`; `git diff --check`; `rg -n "TaskRule|handoff|dependsOn|approval|notificationStream|TeamLeadership|Moderation|ToolPermissionBoundary" docs specs/autonomous-agents-integration src/main/java src/test/java`
