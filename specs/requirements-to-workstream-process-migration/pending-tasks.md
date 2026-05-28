@@ -377,7 +377,7 @@
 
 ### TASK-REQWS-04-001: Update solution and PRD planning skills
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/04-prd-spec-backlog-realignment-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/04-planning/01-update-solution-and-prd-planning.md
 - depends on: [TASK-REQWS-02-099]
@@ -405,7 +405,10 @@
 - done criteria:
   - direct planning paths produce the new vertical process model before Akka component selection
   - focused git commit exists
-- notes: []
+- notes:
+  - updated `akka-solution-decomposition` output/template/checklist to require attention/dashboard, My Account/left rail projections, autonomous task candidates, notifications, and traces before component selection
+  - updated `akka-prd-to-specs-backlog` PRD extraction, solution plan, sprint/slice/backlog, task brief, and pending task contracts to preserve workstream-attention-dashboard-surface-capability-autonomous-task context
+  - commit message: `requirements-workstream: update solution prd planning`
 
 ### TASK-REQWS-04-002: Update change/backlog planning skills and docs
 

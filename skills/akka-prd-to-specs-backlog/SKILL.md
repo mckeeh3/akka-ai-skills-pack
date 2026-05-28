@@ -14,8 +14,9 @@ This is a **project-specific planning skill** that builds on the ideas in `akka-
 Generate a consistent planning package from a PRD, requirements document, or high-level feature set that:
 - interprets product intent through the full-stack secure AI-first SaaS operating model before record-management or component decomposition
 - derives governed backend capabilities before Akka component or capability exposure-channel selection
-- produces a master Akka solution plan with explicit Java base package, operating-model, capability inventory, governance, mandatory UI-surface, outcome, and substrate mapping sections for generated SaaS apps
-- for large inputs, splits the plan into module-oriented vertical sprint specs
+- processes broad input through the requirements-to-workstream chain: workstreams → attention breakdowns → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → request-based workstream Agents and AutonomousAgent task candidates → events/notifications → attention projections → audit/work traces
+- produces a master Akka solution plan with explicit Java base package, operating-model, workstream attention/dashboard model, capability inventory, governance, mandatory UI-surface, autonomous task, notification/projection, outcome, and substrate mapping sections for generated SaaS apps
+- for large inputs, splits the plan into workstream-oriented or cross-workstream-foundation vertical sprint specs
 - for smaller inputs, splits the plan into bounded vertical slice specs
 - turns each sprint or slice into a build backlog suitable for one or more independent harness operations
 - creates or updates `specs/pending-questions.md` when unresolved decisions should be answered before safe task generation, including AI-first authority, policy, evidence, risk, approval, trace, UI mode, and outcome blockers
@@ -107,9 +108,12 @@ If the user provided a path to a PRD or requirements file:
 1. read that file completely
 2. first extract AI-first operating-model signals: delegated work, retained human authority, goals/plans, agents, policies, decisions, approvals, exceptions, evidence, risk, traces, outcome loops, and supervision/governance UI needs
 3. then extract the agent workstream model for generated full-stack SaaS: functional agents, internal agents, durable workstreams, structured surfaces, surface actions or workstream events, and candidate action-to-capability links
-4. for each functional agent with LLM behavior, extract or plan its workstream expert bundle: prompt intent, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), allowed modes, fallback/no-fallback policy, provider secret boundary, model-use trace facts, `SkillDocument` entries, `ReferenceDocument` entries, compact `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, authorized `readSkill`/`readReferenceDoc` loaders, traces, governance owner, seed/import expectations, UI surfaces, and tests
-5. then extract governed backend capabilities before component choices: capability ids/classes, actors/callers, AuthContext and tenant/customer scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace needs, candidate exposure channels, and tests
-6. then generate the file set
+4. then extract per-workstream attention breakdowns and dashboard contracts: `what needs my attention?`, target audiences, severity/lifecycle, summary cards, detail surfaces, My Account aggregate implications, left rail count behavior, and authoritative projection/query needs
+5. for each functional agent with LLM behavior, extract or plan its workstream expert bundle: prompt intent, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), allowed modes, fallback/no-fallback policy, provider secret boundary, model-use trace facts, `SkillDocument` entries, `ReferenceDocument` entries, compact `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, authorized `readSkill`/`readReferenceDoc` loaders, traces, governance owner, seed/import expectations, UI surfaces, and tests
+6. then extract governed backend capabilities before component choices: capability ids/classes, actors/callers, AuthContext and tenant/customer scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace needs, candidate exposure channels, and tests
+7. then identify internal/background model-driven worker candidates and map durable work to Akka `AutonomousAgent` tasks when lifecycle, snapshots/results, notifications, dependencies, failure/cancellation, delegation, handoff, teams, or moderation fit; keep request-based Akka `Agent` as the default for immediate user-facing workstream turns
+8. then map events, notifications, projections, and work traces that connect capabilities, autonomous tasks, dashboards, My Account, and left rail attention indicators
+9. then generate the file set
 
 If `specs/` already exists:
 - preserve numbering consistency where possible
@@ -240,16 +244,18 @@ The master plan must include:
 3. AI-first interpretation: objective, delegated work, retained human authority, durable substrate objects, governance/approval needs, supervision UI, audit/trace needs, and outcome loop when applicable
 4. Core secure SaaS foundation: SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals), and tenant-isolation/agent-governance tests
 5. Agent workstream model: functional agents, internal agents, durable workstreams, retained authority, default/attention surfaces, workstream expert bundle ids, and which work area owns each user-facing increment
-6. Structured surfaces and actions: surface type/version, typed payload, allowed actions, workstream events, AuthContext assumptions, trace links, frontend/API/realtime needs, and rendering states
-7. Surface action-to-capability map: every user-facing action, agent tool, workflow event, timer, consumer, API, or internal call maps to a stable capability id/class, or is explicitly non-actionable/read-only
-8. Capability inventory: stable ids/names, classes, actors/callers, AuthContext and scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected capability exposure channels or explicit non-exposure, and required tests
-9. Capability-to-component mapping
-10. Chosen components
-11. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
-12. Skill routing
-13. Open questions and assumptions
-14. Recommended implementation order
-15. Required tests, including capability success, validation, forbidden, tenant-isolation, idempotency, audit, approval, surface rendering/action, API/realtime, and exposure-specific tests
+6. Workstream attention and dashboard model: attention categories, target audiences, severity/lifecycle, dashboard summary/detail surfaces, My Account aggregate behavior, left rail counts/highest severity, authoritative projections/queries, and tests
+7. Structured surfaces and actions: surface type/version, typed payload, allowed actions, workstream events, AuthContext assumptions, trace links, frontend/API/realtime needs, and rendering states
+8. Surface action-to-capability map: every user-facing action, agent tool, workflow event, timer, consumer, API, autonomous task lifecycle action, or internal call maps to a stable capability id/class, or is explicitly non-actionable/read-only
+9. Autonomous task candidates and notification/projection map: candidate id, owning workstream, task start/result/read/notification capabilities, chosen `AutonomousAgent` vs request-based `Agent` rationale, result DTO/surface, notification-to-attention rules, and trace requirements
+10. Capability inventory: stable ids/names, classes, actors/callers, AuthContext and scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected capability exposure channels or explicit non-exposure, and required tests
+11. Capability-to-component mapping
+12. Chosen components
+13. Why each component exists, including how Akka components implement AI-first substrate objects when applicable
+14. Skill routing
+15. Open questions and assumptions
+16. Recommended implementation order by workstream/attention/dashboard/surface/capability increments
+17. Required tests, including capability success, validation, forbidden, tenant-isolation, idempotency, audit, approval, surface rendering/action, notification/projection, autonomous-task lifecycle when applicable, API/realtime, and exposure-specific tests
 
 Write that to:
 - `specs/akka-solution-plan.md`
@@ -273,20 +279,21 @@ Create one file per cross-cutting concern when it affects multiple modules, spri
 
 ### 3. Split into module-oriented sprints or harness-friendly slices
 
-For large PRDs, prefer module-oriented vertical sprint planning:
-1. identify durable app modules and write `specs/modules/NN-<module>.md` files
-2. define ordered vertical delivery sprints and write `specs/sprints/NN-<sprint>-sprint.md` files
-3. make each sprint testable through its backend and frontend surface for generated full-stack AI-first SaaS
+For large PRDs, prefer workstream-oriented vertical sprint planning:
+1. identify cross-workstream foundation concerns and durable workstream/module boundaries, then write `specs/modules/NN-<module-or-workstream>.md` files
+2. define ordered vertical delivery sprints around one workstream's attention/dashboard/surface/capability increments, or an explicit cross-workstream foundation increment, and write `specs/sprints/NN-<sprint>-sprint.md` files
+3. make each sprint testable through its backend and frontend workstream/dashboard/surface behavior for generated full-stack AI-first SaaS
 4. keep cross-cutting foundation work explicit rather than duplicating it in every module
 
-A good module spec contains boundaries, owned capabilities, actors/callers, AuthContext and scope rules, human operating roles, delegated work and retained authority when applicable, state ownership, agent/team ownership if any, policy/audit/outcome ownership, UI area, integrations, and related sprints.
+A good module spec contains boundaries, owned workstreams, attention categories/dashboard obligations, owned capabilities, actors/callers, AuthContext and scope rules, human operating roles, delegated work and retained authority when applicable, autonomous task ownership when needed, state ownership, agent/team ownership if any, policy/audit/outcome ownership, UI area, integrations, and related sprints.
 
 A good sprint spec contains:
-- one module or tightly related module increment
-- vertical workstream scope: functional agent(s), durable workstream item or event, structured surface(s), surface action(s), and mapped capability id(s)/class(es)
+- one workstream, cross-workstream foundation, or tightly related module increment
+- vertical workstream scope: functional agent(s), durable workstream item or event, attention category, dashboard summary/detail behavior, structured surface(s), surface action(s), and mapped capability id(s)/class(es)
 - AI-first scope when applicable: goals/plans, agents, policies, decisions, approvals/exceptions, traces, governance surfaces, and outcome loop delivered by the sprint
-- backend scope: capability contracts first, then entities, workflows, views, consumers, timers, endpoints, agents, and selected capability exposure channels
-- frontend/API/realtime scope: functional-agent workstream shell changes, structured surfaces, forms/surface actions, route/deep-link details, API client calls, realtime behavior, and supervision/decision/governance/audit/outcome surfaces when applicable
+- autonomous task scope when applicable: task definition/result DTO, start/read/result/notification capabilities, selected `AutonomousAgent` or request-based `Agent` rationale, and notification-to-attention behavior
+- backend scope: capability contracts first, then entities, workflows, views, consumers, timers, endpoints, agents, AutonomousAgents, and selected capability exposure channels
+- frontend/API/realtime scope: functional-agent workstream shell changes, dashboard cards, structured surfaces, forms/surface actions, route/deep-link details, API client calls, realtime/notification behavior, My Account/left rail attention effects, and supervision/decision/governance/audit/outcome surfaces when applicable
 - AuthContext, tenant/customer scope, role/capability rules, approval/audit/trace obligations, and required tests for every user-facing action
 - acceptance behavior and module-level tests
 - pending questions and explicit defer list
@@ -295,7 +302,7 @@ A good sprint spec contains:
 
 For smaller plans, create vertical slices that are:
 - independently meaningful to the business
-- anchored to functional agent(s), workstream events or surface actions, capability id(s)/class(es), AuthContext/rules, selected Akka substrate, frontend/API/realtime work, and tests
+- anchored to functional agent(s), attention category, dashboard/surface state, workstream events or surface actions, capability id(s)/class(es), AuthContext/rules, selected Akka substrate, autonomous task candidates when applicable, frontend/API/realtime work, notifications/projections, and tests
 - explicit about AI-first operating-model scope when delegated work, decisions, governance, audit, or outcomes are in scope
 - small enough for focused implementation
 - ordered by dependency
@@ -311,9 +318,11 @@ Avoid increments that are either:
 For each sprint or slice, create a matching backlog file that includes:
 - purpose
 - delivery goal
-- vertical workstream contract for every implementation task: functional agent, structured surface and action or workstream event, capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
+- vertical workstream contract for every implementation task: functional agent, attention category, dashboard card/detail surface, structured surface and action or workstream event, capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
 - AI-first operating-model scope when applicable: delegated work, retained authority, durable objects, agent/team responsibilities, policy/approval/exception rules, evidence/risk/confidence/impact requirements, audit traces, UI surfaces, and outcomes
+- autonomous task scope when applicable: task definition/result DTO, task lifecycle capabilities, `AutonomousAgent` vs request-based `Agent` rationale, dependencies, notification stream, failure/cancellation behavior, result surface, and attention/projection effects
 - capability contracts delivered or revised by the backlog: ids, actors/callers, AuthContext and scope, schemas, side effects, idempotency, approval, audit/trace, selected capability exposure channels, and tests
+- notification/projection contracts: events/messages emitted or consumed, dashboard projections, My Account aggregate behavior, left rail summaries, realtime refresh, and audit/work trace linkage
 - package layout additions if needed
 - class-by-class file list
 - endpoint list
@@ -335,7 +344,7 @@ Create physical task files under `specs/tasks/` only when at least one backlog t
 A good task brief should contain:
 - purpose
 - required reads
-- exact vertical scope: functional agent, surface/action or workstream event, capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
+- exact vertical scope: functional agent, attention category, dashboard card/detail surface, surface/action or workstream event, capability id/class, AuthContext and role/capability rules, selected Akka substrate, autonomous task candidate when applicable, notification/projection effects, frontend/API/realtime work, and required tests
 - explicit non-goals
 - Akka components involved
 - exact skills to load
@@ -391,7 +400,7 @@ The queue must:
 - include the smallest `required reads` needed for the task; include the AI-first doctrine and focused AI-first companion skills only when the task implements or verifies goals/plans, agents, policies, decisions, approvals, traces, UI surfaces, governance, or outcomes
 - include the exact implementation `skills` to load, pairing AI-first companion skills with the concrete Akka substrate skills rather than replacing them
 - include expected outputs, required checks, local/runtime validation when applicable, and done criteria
-- preserve vertical workstream context in each implementation task: functional agent(s), structured surface/action or workstream event, capability id(s)/class(es), AuthContext, role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
+- preserve vertical workstream context in each implementation task: functional agent(s), attention category, dashboard card/detail surface, structured surface/action or workstream event, capability id(s)/class(es), AuthContext, role/capability rules, selected Akka substrate, autonomous task candidate when applicable, notification/projection effects, frontend/API/realtime work, and required tests
 - preserve capability context in each implementation task: capability id(s), authority/scope, schemas, side effects, idempotency, approval rules, audit/trace obligations, and exposure channels affected
 - mark or keep tasks `blocked` when they name only a component, page, module, or generic UI feature without the workstream/surface/capability contract needed for implementation
 - point to a task brief when one exists, or use `task brief: none`
@@ -499,7 +508,7 @@ Each `specs/sprints/*.md` file should contain:
 - Sprint goal
 - Parent module or modules
 - Dependencies and prerequisite questions
-- Vertical workstream increment: functional agents, structured surfaces, surface actions or workstream events, capability ids/classes, AuthContext/rules, selected Akka substrate, frontend/API/realtime work, and tests
+- Vertical workstream increment: functional agents, attention categories, dashboard summary/detail behavior, structured surfaces, surface actions or workstream events, capability ids/classes, AuthContext/rules, selected Akka substrate, autonomous task candidates when applicable, notification/projection effects, frontend/API/realtime work, and tests
 - AI-first operating-model increment when applicable: goal/plan, agent/team, policy, decision, approval/exception, trace, UI-surface, and outcome scope
 - Backend scope
 - Mandatory frontend scope for generated full-stack AI-first SaaS
@@ -516,7 +525,9 @@ Each `specs/slices/*.md` file should contain:
 - Scope
 - Business goal
 - AI-first interpretation when applicable: delegated work, retained authority, durable substrate objects, policy/approval/exception rules, trace needs, UI surfaces, and outcome loop
+- Attention/dashboard and structured-surface contract: attention categories, dashboard cards/detail surfaces, My Account/left rail effects, payload queries, surface actions, states, and tests
 - Capability contracts involved before Akka components: ids, actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure channels, and tests
+- Autonomous task and notification/projection contract when applicable: task definition/result DTO, lifecycle capabilities, notifications, attention projection effects, and tests
 - Akka components involved
 - Domain shape or business objects
 - Commands and write operations
@@ -533,14 +544,14 @@ Each `specs/slices/*.md` file should contain:
 Each `specs/backlog/*.md` file should contain:
 - Purpose
 - Delivery goal
-- Vertical workstream contract per task: functional agent, surface/action or workstream event, capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, and required tests
+- Vertical workstream contract per task: functional agent, attention category, dashboard card/detail surface, surface/action or workstream event, capability id/class, AuthContext and role/capability rules, selected Akka substrate, autonomous task candidate when applicable, notification/projection effects, frontend/API/realtime work, and required tests
 - AI-first scope when applicable, including delegated work, retained authority, durable objects, agent/team boundaries, policies, approvals/exceptions, evidence/risk/confidence/impact, traces, UI surfaces, and outcomes
 - Capability contracts: ids, actors/callers, AuthContext/scope, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace obligations, selected capability exposure channels, and required tests
 - Recommended package layout additions
 - Class-by-class file list
 - Concrete endpoint list
 - Write-model design decisions
-- Agent/workflow/view/consumer/timer design as relevant
+- Agent/AutonomousAgent/workflow/view/consumer/timer design as relevant, including why durable internal/background model-driven work does or does not use Akka `AutonomousAgent`
 - Workstream expertise plan for each new or materially changed functional agent: expert bundle id, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), allowed modes, fallback/no-fallback policy, provider secret boundary, model-use trace facts, prompt/skill/reference document families, compact manifests, tool-boundary grants, loaders, traces, seed/import path, UI/governance surfaces, and tests
 - Test plan by file/class, including guardrail/evaluation/policy/audit/outcome checks when applicable
 - Implementation order
@@ -577,11 +588,14 @@ Create this queue only when open decisions are meaningful enough to affect plann
 - status
 - source backlog path
 - functional agent(s) or explicit internal-only/foundation scope
+- attention category and dashboard card/detail surface, or explicit non-attention/internal-only reason
 - surface/action or workstream event, or explicit non-UI/internal trigger
 - capability id(s)/class(es) or explicit foundation/cross-cutting scope, when applicable
 - workstream expert bundle scope when the task touches a functional agent's model binding, prompt, skills, references, manifests, loaders, boundaries, traces, seed content, governance UI, or expertise tests; LLM-backed agent tasks must name the approved `ModelConfigRef`/`ModelPolicy` or explicit inherited governed default, fallback policy, and model-use trace expectation
 - AuthContext and role/capability rules
 - selected Akka substrate plus frontend/API/realtime work when applicable
+- autonomous task definition/result/notification scope when the task starts, reads, renders, tests, or exposes durable internal/background model-driven work
+- notification/projection/attention effects, including My Account and left rail behavior when applicable
 - task brief path or `none`
 - dependencies
 - required reads
@@ -625,10 +639,10 @@ Before finishing, verify:
 - first runnable pending tasks implement the full-stack secure foundation before CRM/domain-specific features: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding with InvitationWorkflow, email delivery/outbox, expiry/reminder timers, InvitationView, admin invite UI/APIs, managed-agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, behavior editing agent flow), AI admin responsibilities, decision cards for risky admin actions, audit, frontend shell/context selection/admin/agent-governance surfaces, and tenant-isolation/frontend/agent-governance tests
 - high-level product inputs were checked for AI-first SaaS concerns before CRUD/module decomposition
 - AI-first planning sections exist wherever delegated work, agentic decisions, governance, supervision, audit, or outcomes are applicable
-- module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered
+- module/sprint specs exist for large PRDs, or slice specs exist for smaller plans, and they are dependency-ordered around workstreams, attention/dashboard increments, surfaces/actions, and capabilities rather than CRUD/page/component layers
 - backlog files exist and align by number with sprint or slice specs
-- backlogs preserve vertical workstream contracts and AI-first operating-model, capability authority/schemas/side effects/approval/audit/exposure-channel decisions, governance, UI-surface, and outcome implications before Akka task breakdown
-- every generated implementation task carries functional agent, surface/action or workstream event, capability id/class, AuthContext/rules, selected Akka substrate, frontend/API/realtime work, and tests, or is explicitly internal-only/foundation/cross-cutting
+- backlogs preserve vertical workstream contracts and AI-first operating-model, attention/dashboard, capability authority/schemas/side effects/approval/audit/exposure-channel decisions, autonomous task candidates, notification/projection effects, governance, UI-surface, and outcome implications before Akka task breakdown
+- every generated implementation task carries functional agent, attention category, dashboard card/detail surface, surface/action or workstream event, capability id/class, AuthContext/rules, selected Akka substrate, autonomous task candidate when applicable, notification/projection effects, frontend/API/realtime work, and tests, or is explicitly internal-only/foundation/cross-cutting
 - every new or materially changed functional agent with LLM behavior has planned workstream expertise tasks for the expert bundle, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), fallback/no-fallback behavior, provider secret boundary, prompts, `SkillDocument`/`ReferenceDocument` records, `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, authorized loaders, seed/import behavior, UI/governance surfaces, traces, and model success/denial/fallback, no-secret-leakage, assigned/denied/boundary/tenant-isolation tests
 - `specs/pending-questions.md` exists when unresolved decisions block safe task generation
 - unresolved `blocking` questions do not silently become implementation assumptions

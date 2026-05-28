@@ -94,29 +94,33 @@ Before any coding, produce a component plan with these sections:
 4. AI-first interpretation
 5. Core secure SaaS foundation
 6. Agent workstream model (functional agents, internal agents, workstreams, retained human authority)
-7. Structured surfaces and surface actions (surface ids/types, payload-producing queries, actions, events, states, trace links)
-8. Surface/action-to-capability mapping
-9. Capability summary
-10. Capability-to-component mapping
-11. Chosen components
-12. Why each component exists
-13. Skill routing
-14. Open questions and assumptions
-15. Recommended implementation order by vertical workstream/surface/capability increments
-16. Required tests
+7. Workstream attention and dashboard model (`what needs my attention?`, dashboard summary cards, My Account aggregate, left rail counts)
+8. Structured surfaces and surface actions (surface ids/types, payload-producing queries, actions, events, states, trace links)
+9. Surface/action-to-capability mapping
+10. Autonomous task candidates and notification/projection mapping, when internal/background model-driven work exists
+11. Capability summary
+12. Capability-to-component mapping
+13. Chosen components
+14. Why each component exists
+15. Skill routing
+16. Open questions and assumptions
+17. Recommended implementation order by vertical workstream/attention/dashboard/surface/capability increments
+18. Required tests
 
 For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not use `com.example` as the generated application package unless explicitly requested; `com.example` in local examples is only reference material.
 
 For section 3, label scope before choosing components. `minimum starter` is allowed for minimum/starter/basic/chatbot-like generated SaaS requests and must be User Admin workstream v0 from `docs/minimum-ai-first-saas-app.md`: bootstrap authorization, selected AuthContext, bounded UserAdminAgent, durable workstream log, `markdown_response`, backend capability boundary, audit/work trace substrate, markdown sanitization, starter tests, and explicit follow-up for full-core work. `full core` requires My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, authorized `readSkill`, and authorized `readReferenceDoc`); workstream UI; and acceptance/security/agent-governance/frontend tests. `Module 1-only / not full core` is allowed only when the plan explicitly defers User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, unified audit/work trace UI, and governance loops. Any other narrower scope must be named and must list deferred full-core areas.
 
-Treat sections 8, 10, 12, 14, and 15 as the implementation handoff.
+Treat sections 7, 9, 10, 12, 14, 16, and 17 as the implementation handoff.
 The plan is not complete if it only names components.
 It must also tell the downstream implementation phase:
-- which functional agent, workstream, surface, and action each generated SaaS increment belongs to
+- which functional agent, workstream, attention category, dashboard card/surface, and surface action each generated SaaS increment belongs to
 - which capability id and contract each component implements or exposes
+- which internal/background worker responsibilities should become Akka `AutonomousAgent` tasks, including task start/result/read/notification capabilities, when durable lifecycle fits
+- which events, notifications, authoritative projections, My Account aggregate behavior, left rail count behavior, and audit/work traces connect the increment
 - which skills to load for code generation
 - which skills to load for test generation
-- what vertical workstream/surface/capability order to implement before horizontal component details
+- what vertical workstream/attention/dashboard/surface/capability order to implement before horizontal component details
 - whether endpoint generation, web UI generation, or documentation/snippet generation belong downstream
 
 ## Decomposition workflow
@@ -158,9 +162,12 @@ If the product is clearly not agentic, say so and continue with secure foundatio
 For generated full-stack SaaS input, load or apply `agent-workstream-apps` before backend capability mapping. Identify:
 - role-authorized functional/context-area agents and any internal agents;
 - durable workstreams, retained human authority, default dashboard/attention surfaces, and supervision or decision surfaces;
+- per-workstream attention categories that answer `what needs my attention?`, including audience, severity/lifecycle, dashboard cards, left rail count implications, and My Account aggregate behavior;
 - structured surfaces with ids/types, payload-producing queries, allowed actions/forms, events, UI states, trace links, and reusable placement;
 - action result behavior: append surface, update surface, open modal/side panel/deep link, start workflow, or request approval;
-- backend capability candidates behind each surface action, agent tool, workflow step, API call, timer, consumer reaction, or internal operation.
+- backend capability candidates behind each surface action, agent tool, workflow step, API call, timer, consumer reaction, or internal operation;
+- internal/background model-driven worker candidates, defaulting to Akka `AutonomousAgent` when typed tasks, snapshots/results, dependencies, notification streams, failure/cancellation, delegation, handoff, teams, or moderation fit;
+- events, notifications, authoritative attention projections, and audit/work traces that connect workstream actions, autonomous task progress/results, dashboards, My Account, and left rail indicators.
 
 If a generated SaaS plan lacks this inventory, stop and add it or record a blocking gap. Do not jump from product intent directly to Akka components.
 
@@ -626,11 +633,17 @@ Use this exact response shape whenever the task starts from requirements:
 - workstreams:
 - retained human authority:
 
+## Workstream attention and dashboard model
+- <workstream-id>: attention categories; target audience; severity/lifecycle; default dashboard cards; My Account aggregate behavior; left rail count/highest-severity behavior; authoritative projection/query; tests
+
 ## Structured surfaces and surface actions
-- <surface-id> (<surface-type>): owner functional agent; payload-producing queries; actions/forms; events; states; trace links; tests
+- <surface-id> (<surface-type>): owner functional agent; dashboard/attention placement; payload-producing queries; actions/forms; events; states; trace links; tests
 
 ## Surface/action-to-capability mapping
-- <surface-id>/<action-id or query> → <capability-id>: <authority, input/output, result-surface, audit/trace summary>
+- <surface-id>/<action-id or query> → <capability-id>: <authority, input/output, result-surface, attention/projection effect, audit/trace summary>
+
+## Autonomous task candidates and notification/projection mapping
+- <task-candidate-id>: why request-based Agent is insufficient or why no AutonomousAgent is needed; task start/result/read/notification capabilities; owning workstream; dashboard/result surfaces; notification-to-attention rules; audit/work traces; tests
 
 ## Capability summary
 - <capability-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; capability exposure channels; required tests
@@ -652,8 +665,8 @@ Use this exact response shape whenever the task starts from requirements:
 - question:
 - assumption:
 
-## Recommended implementation order by vertical workstream/surface/capability increments
-1. <functional agent> / <surface> / <capability> → <components and tests>
+## Recommended implementation order by vertical workstream/attention/dashboard/surface/capability increments
+1. <functional agent> / <attention category> / <dashboard or surface> / <surface action or query> / <capability> → <components, autonomous task candidate if any, notifications/projections, traces, and tests>
 2. ...
 
 ## Required tests
@@ -701,8 +714,11 @@ Before moving from planning to coding, verify:
 - minimum-starter plans are User Admin workstream v0 with `markdown_response`, backend capability boundary, audit/work trace substrate, starter tests, and follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitations/onboarding, governed agent documents, and full security coverage
 - full-core plans include User Admin, Agent Admin, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests in capability summary, component mapping, implementation order, and test plan
 - delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
-- generated SaaS plans include functional agents, internal agents where needed, durable workstreams, structured surfaces, surface actions/events, and retained human authority before capability mapping
-- governed capabilities were derived from workstream operations, structured surface payload queries/actions, tools, workflow steps, APIs, timers, consumers, and internal operations before Akka component selection
+- generated SaaS plans include functional agents, internal agents where needed, durable workstreams, attention categories, dashboard contracts, structured surfaces, surface actions/events, and retained human authority before capability mapping
+- left rail and My Account attention summaries derive from governed backend projections, not frontend-only badge logic
+- durable internal/background model-driven work has been evaluated for Akka `AutonomousAgent` task semantics, with request-based `Agent` retained for immediate user-facing workstream turns
+- notifications are progress signals tied to events/projections/capabilities and are not treated as authority or source of truth
+- governed capabilities were derived from workstream operations, structured surface payload queries/actions, tools, workflow steps, APIs, timers, consumers, autonomous task lifecycle actions, and internal operations before Akka component selection
 - every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, capability exposure channels, and tests, or an explicit open question
 - the core foundation implementation order includes separate managed-agent work for behavior profiles, prompt governance, skill governance/manifests/readSkill, reference governance/manifests/readReferenceDoc, trace records, behavior editing agent proposals, agent governance UI, and tests before app-specific domain features
 - every structured surface action or payload-producing query maps to a capability or an explicit decision not to expose one
@@ -721,7 +737,7 @@ Before moving from planning to coding, verify:
 ## Response style
 
 When answering:
-- start with the generated-app chain when in SaaS scope: functional agents → surfaces/actions → capabilities → components
+- start with the generated-app chain when in SaaS scope: functional agents → attention/dashboard → surfaces/actions → capabilities/APIs → Akka substrate → request-based workstream Agents and AutonomousAgent task candidates → notifications/projections/traces
 - include a short capability summary with capability ids and authority/scope highlights
 - then list the proposed Akka components
 - justify each component in one line
