@@ -25,7 +25,7 @@ In generated AI-first SaaS implementations, distinguish two agent placements bef
 - **Functional/context-area agents** are user-facing, role-authorized workstream verticals such as User Admin, Agent Admin, Governance, Audit/Trace, Procurement, Finance, Support, or Sales Pipeline. They own a visible workstream context, default surfaces, callable capabilities, prompt/skill intent, tool boundaries, authority indicators, escalation behavior, traces, and UI tests.
 - **Internal agents** are bounded backend workers invoked by workflows, functional agents, tools, consumers, timers, or services for classification, summarization, routing, proposal drafting, extraction, evaluation, replay, or governance review. They are not left-rail application navigation units, but still require governed `AgentDefinition`, authority, tool boundaries, traces, and tests.
 
-Use agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use. Before coding, make responsibility, non-responsibility, functional/internal placement, allowed tools/data, tenant/customer scope, required permissions/capabilities, autonomous authority, policy gates, approval thresholds, escalation thresholds, session/memory behavior, and audit/work-trace obligations explicit. Use `akka-agent-behavior-profiles` first when agents are managed runtime actors with durable definitions, lifecycle, owner/steward, authority level, model references, tool permission boundaries, or admin UI. Use workflows for durable multi-agent orchestration, approvals, retries, timeouts, and progress tracking instead of chaining agents informally.
+Use request-based agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use when one prompt turn or stream is the right unit. Use `akka-autonomous-agents` instead for durable task-oriented internal/background work with task ids, lifecycle, dependencies, failure/cancellation, snapshots, notifications, or model-driven coordination. Before coding, make responsibility, non-responsibility, functional/internal placement, allowed tools/data, tenant/customer scope, required permissions/capabilities, autonomous authority, policy gates, approval thresholds, escalation thresholds, session/memory behavior, and audit/work-trace obligations explicit. Use `akka-agent-behavior-profiles` first when agents are managed runtime actors with durable definitions, lifecycle, owner/steward, authority level, model references, tool permission boundaries, or admin UI. Use workflows for deterministic durable orchestration, approvals, retries, timeouts, and progress tracking instead of chaining request-based agents informally.
 
 ## Required reading before coding
 
@@ -176,7 +176,15 @@ Load the companion skill that matches the current task:
 - `ai-first-saas-agent-team-design`
   - one governed skilled agent vs specialized agents vs workflow-supervised team vs evaluator decisions based on authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs
 - `akka-agent-orchestration`
-  - calling agents from workflows, shared session ids, and multi-agent supervisor patterns
+  - calling request-based agents from workflows, shared session ids, and multi-agent supervisor patterns
+- `akka-autonomous-agents`
+  - durable task-oriented internal/background model-driven work with typed tasks, task lifecycle, dependencies, notifications, and optional model-driven coordination
+- `akka-autonomous-agent-tasks`
+  - `Task`, `TaskTemplate`, `TaskAcceptance`, `TaskRule`, dependencies, attachments, and task client calls
+- `akka-autonomous-agent-coordination`
+  - delegation, handoff, TeamLeadership, Moderation, task dependencies, external input, and notification-aware coordination
+- `akka-autonomous-agent-testing`
+  - `TestModelProvider.AutonomousAgentTools`, Awaitility, typed task snapshots/results, notifications, and coordination scripts
 - `akka-agent-guardrails`
   - runtime-enforced input/output validation and configuration-driven guardrail selection
 - `akka-agent-evaluation`
@@ -275,13 +283,16 @@ Use when evaluator output or trace analysis should produce EvaluationRuns, findi
 
 Load `akka-agent-closed-loop-improvement`. Load `akka-agent-evaluation` too when implementing evaluator agents that return `EvaluationResult`.
 
-### 9. Single-purpose request/reply agent
+### 9. Durable autonomous task agent
+Use `akka-autonomous-agents` instead of this request-based component path when the work is a durable internal/background task with a typed result, task id, lifecycle, dependencies, failure/cancellation, snapshots, notifications, or model-driven delegation/handoff/team/moderation. Do not use Autonomous Agents as the default for user-facing workstream turns or immediate streamed replies; use `Workflow + AutonomousAgent` when a deterministic business process launches or waits on a durable model-driven investigation.
+
+### 10. Single-purpose request/reply agent
 Use when one model interaction produces one reply.
 
 Repository example:
 - `ActivityAgent`
 
-### 10. Tool-using agent
+### 11. Tool-using request-based agent
 Use when the model must call functions to fetch data, trigger actions, or load approved internal guidance for named capabilities. Agent tools are capability exposure surfaces, not the root design objects.
 
 Repository examples:
@@ -294,23 +305,23 @@ For tenant-, agent-, task-, or mode-specific model selection, load `akka-agent-m
 
 For model-loadable guidance that approximates harness skills inside an Akka service, load `akka-agent-harness-skills` in addition to `akka-agent-tools`.
 
-### 11. Streaming agent
+### 12. Streaming request-based agent
 Use when tokens should be returned incrementally to an endpoint or notification flow.
 
 Repository examples:
 - `StreamingActivityAgent`
 - `ActivityAgentEndpoint#stream`
 
-### 12. Agent responsibility shape
+### 13. Agent responsibility shape
 Use `ai-first-saas-agent-team-design` before creating multiple agent classes. Prefer a single governed skilled agent when responsibilities share authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs and differ only by governed skills in an `AgentSkillManifest`. Prefer specialized agents when those boundaries differ. Add an evaluator agent for independent quality, policy, completeness, or risk judgment. Use a workflow-supervised agent team when durable retries, handoffs, approvals, pauses, or progress visibility are required.
 
-### 13. Workflow-supervised agent team
+### 14. Workflow-supervised request-based agent team
 Use when AI calls need durable retries, shared sessions, or multi-step orchestration.
 
 Repository example:
 - `AgentTeamWorkflow`
 
-### 14. Evaluated or governed agent
+### 15. Evaluated or governed request-based agent
 Use when output quality or runtime safety checks are a first-class concern.
 
 Repository examples:

@@ -5,9 +5,11 @@ description: Implement Akka Java SDK Agent classes with one command handler, cle
 
 # Akka Agent Component
 
-Use this skill when the task is mainly about the agent class itself.
+Use this skill when the task is mainly about a request-based Akka `Agent` class itself.
 
 Before writing the class for a generated SaaS app, confirm whether it implements a user-facing functional/context-area agent or a bounded internal agent. Functional agents must align with a workstream, structured surfaces, capabilities, authority indicators, and UI tests; internal agents are invoked behind workflows, tools, timers, consumers, endpoints, or services and should not become primary navigation units by accident.
+
+If the internal/background work needs a durable typed task, task id, lifecycle, dependency, failure/cancellation, snapshot, notification stream, or model-driven delegation/handoff/team/moderation, switch to `akka-autonomous-agents` instead of forcing it into a request-based `Agent`.
 
 
 ## Generated SaaS input contract
@@ -37,7 +39,7 @@ Read these first if present:
 ## Core pattern
 
 1. Annotate the class with `@Component(id = "...")`.
-2. Extend `Agent`.
+2. Extend `Agent` (not `AutonomousAgent`; load `akka-autonomous-agents` for that component type).
 3. Keep exactly one public command handler.
 4. Use a stable system message constant or a small request-to-system-message builder.
 5. Add `.memory(...)` only when the memory behavior is intentional.

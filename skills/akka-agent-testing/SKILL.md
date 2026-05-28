@@ -5,7 +5,9 @@ description: Test Akka Java SDK agents with TestModelProvider, TestKitSupport, w
 
 # Akka Agent Testing
 
-Use this skill when testing agent code or agent-driven flows.
+Use this skill when testing request-based Akka `Agent` code or agent-driven flows.
+
+Use `akka-autonomous-agent-testing` instead for `AutonomousAgent` task lifecycle, task rules, snapshots/results, notifications, delegation, handoff, teams, moderation, and `TestModelProvider.AutonomousAgentTools`.
 
 
 ## Generated SaaS input contract
@@ -30,7 +32,7 @@ Read these first if present:
 ## Use this pattern when
 
 - agent behavior must be deterministic in tests
-- workflow steps call one or more agents
+- workflow steps call one or more request-based agents
 - endpoints expose agents directly
 - structured replies must be asserted without real model calls
 
@@ -139,10 +141,11 @@ For a named generated-app agent feature, completion also requires a local Akka i
 ## Review checklist
 
 Before finishing, verify:
-- each test-only agent has a registered `TestModelProvider`
+- each test-only request-based agent has a registered `TestModelProvider`
 - session ids are supplied in agent calls
 - structured responses are serialized with `JsonSupport.encodeToString(...)`
 - workflow tests use `Awaitility` when completion is asynchronous
 - endpoint tests use `httpClient`, not `componentClient`
 - governed runtime tests cover active profile resolution, disabled/archived denial, draft-only test/replay behavior, unapproved activation denial, unassigned-skill denial, unassigned-reference denial, cross-tenant and wrong-customer denial, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `ToolPermissionBoundary` denial for `read_skill` and `read_reference`, `AgentBehaviorEditorAgent` proposal flow, and authority expansion approval/denial
-- feature-bearing agent work has a recorded local runtime smoke/manual path or is explicitly blocked/not complete
+- feature-bearing request-based agent work has a recorded local runtime smoke/manual path or is explicitly blocked/not complete
+- Autonomous Agent tests are covered by `akka-autonomous-agent-testing`, not forced into request-based Agent test patterns

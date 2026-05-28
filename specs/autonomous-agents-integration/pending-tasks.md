@@ -190,7 +190,7 @@
 
 ### TASK-AUTO-03-002: Update agent guidance and coverage matrix
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/03-skills/02-update-agent-guidance-coverage.md
 - depends on: [TASK-AUTO-03-001]
@@ -222,6 +222,7 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: update guidance coverage`
+  - completed with coverage matrix updates and request-based Agent/Workflow cross-links to Autonomous Agent guidance
 
 ### TASK-AUTO-04-001: Add single Autonomous Agent executable example
 

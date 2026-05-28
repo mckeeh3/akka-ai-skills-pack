@@ -26,7 +26,7 @@ A workflow is the durable carrier of that capability execution. It preserves pro
 
 ## AI-first substrate role
 
-In AI-first SaaS implementations, use workflows as durable execution plans for long-running automation, approval routing, exceptions, retries, compensation, deadlines, and agent-team orchestration. Keep the workflow state explicit about actor, tenant/customer scope, selected AuthContext or membership reference, plan progress, human decisions, policy gates, evidence or risk summaries needed by later steps, and trace/outcome identifiers. Use agents for bounded model work inside the plan, but keep business progress, authorization checks, and authority transitions in the workflow.
+In AI-first SaaS implementations, use workflows as durable execution plans for long-running automation, approval routing, exceptions, retries, compensation, deadlines, and deterministic agent orchestration. Keep the workflow state explicit about actor, tenant/customer scope, selected AuthContext or membership reference, plan progress, human decisions, policy gates, evidence or risk summaries needed by later steps, and trace/outcome identifiers. Use request-based `Agent` for bounded model work inside explicit steps. Use `Workflow + AutonomousAgent` when the workflow must launch, supervise, or wait on a durable model-driven internal/background task while the workflow retains business process authority.
 
 ## Required reading before coding
 
@@ -77,6 +77,7 @@ If the workflow drives or is consumed by other components, also load:
 - `akka-consumer-from-workflow`
 - `akka-view-from-workflow`
 - `akka-http-endpoint-component-client` when exposing workflow commands through HTTP
+- `akka-autonomous-agents` and `akka-autonomous-agent-tasks` when a workflow starts, waits on, or supervises durable model-driven tasks
 - `../../docs/workflow-endpoint-pattern.md` for the shared HTTP workflow endpoint shape
 
 ## Default package layout
@@ -114,7 +115,7 @@ Before implementation, identify:
 - capability id, goal or plan id, owner, actor AuthContext, tenant/customer scope, success criteria, and outcome link carried in state
 - required roles/capabilities and when to reauthorize after pauses, timers, retries, or human approvals
 - approval gates, exception paths, policy triggers, deadlines, and compensation needs
-- agent calls that require durable retries, shared session ids, or human review
+- request-based agent calls that require durable retries, shared session ids, or human review, or Autonomous Agent task ids/results when model-driven investigation should outlive a single workflow step
 - trace events, AdminAuditEvent records, and view updates needed for supervision and audit surfaces
 
 ### 1. Straight-through orchestration workflow
