@@ -368,7 +368,7 @@
 
 ### TASK-AUTO-06-001: Add Autonomous Agent TaskRule retry example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/01-add-task-rule-retry-example.md
 - depends on: [TASK-AUTO-05-002]
@@ -399,6 +399,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add task rule example`
+  - completed with `EvidenceReviewAutonomousAgent`, `EvidenceReviewTasks`, `EvidenceReviewRule`, and component-client driven TaskRule retry integration test
+  - updated `docs/agent-coverage-matrix.md` for TaskRule retry executable coverage
+  - checks: `mvn test`; `git diff --check`; `rg -n "TaskRule|RESULT_REJECTED|AutonomousAgentTools|completeTask" src/main/java src/test/java docs/agent-coverage-matrix.md`
 
 ### TASK-AUTO-06-002: Add Autonomous Agent dependencies and approval example
 
