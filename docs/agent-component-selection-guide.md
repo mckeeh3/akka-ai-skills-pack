@@ -1,6 +1,6 @@
 # Agent Component Selection Guide
 
-Use this guide after secure AI-first SaaS, agent workstream, and capability-first modeling are clear enough to choose an Akka substrate.
+Use this guide after secure AI-first SaaS, the requirements-to-workstream process, agent workstream, and capability-first modeling are clear enough to choose an Akka substrate. The canonical process is `requirements-to-workstream-development-process.md`: workstreams → attention/dashboard/surfaces/actions → capabilities/APIs → Akka substrate → request-based workstream Agents and AutonomousAgent task candidates → notifications/projections/traces.
 
 ## Default choices
 
@@ -19,6 +19,7 @@ Use this guide after secure AI-first SaaS, agent workstream, and capability-firs
 - Use request-based `Agent` for one-shot internal helpers when there is no durable task identity, dependency graph, external observation, or independent lifecycle.
 - Use `Workflow` when approval, retry, compensation, timeout, or deterministic order is the core requirement, even if one step calls an agent.
 - Model every task start/query/result, delegation, handoff, team/moderation action, notification exposure, tool call, and external completion/failure as governed backend capabilities before implementation.
+- When an AutonomousAgent task is visible to users, map task progress snapshots, task result surfaces, failed/rejected/blocked states, and notification-to-attention behavior into the owning workstream dashboard, My Account aggregate counts when relevant, and governed surface actions.
 
 ## Governance requirements
 

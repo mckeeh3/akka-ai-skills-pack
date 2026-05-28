@@ -5,7 +5,7 @@
 This is the canonical agent workstream application architecture doctrine for this skills pack.
 It defines the mandatory default UI/application model for generated full-stack secure AI-first SaaS applications.
 
-Use this doctrine below `ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. It does not replace `capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
+Use this doctrine below `ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `requirements-to-workstream-development-process.md` before component selection. This document does not replace `capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
 
 ## Default generated-app architecture
 
@@ -22,6 +22,27 @@ workstream
 ```
 
 The primary application model is not a conventional page tree, CRUD console, or traditional app with a chatbot attached. Authenticated consequential work areas should be modeled as workstreams, each backed by exactly one functional agent and implemented through structured surfaces. Traditional routes may still exist for implementation, deep linking, static/public pages, asset hosting, or direct surface URLs, but they are not the primary architecture.
+
+## Requirements-to-workstream obligations
+
+For generated SaaS requirements, preserve this vertical chain from the canonical requirements-to-workstream process:
+
+```text
+input / PRD / feature request
+→ workstream inventory
+→ per-workstream attention categories answering "what needs my attention?"
+→ dashboard and WorkstreamAttentionSummary contract
+→ structured surfaces and surface actions
+→ governed capabilities/APIs
+→ Akka substrate and participants
+→ request-based workstream Agent turns and AutonomousAgent task candidates
+→ events/notifications/projections
+→ audit/work traces and tests
+```
+
+Default dashboard scoping is workstream-local: a dashboard should answer what is happening in that workstream, what needs the current user's attention, what is blocked/overdue/risky/failed/paused, which users/agents/workflows/AutonomousAgent tasks are participating, what decisions or approvals are pending, and what actions are authorized next. My Account is the main aggregate exception; its dashboard is the current user's cross-workstream attention inbox, with Profile/Settings shortcuts, personal queue items, and compact accessible-workstream status panels. Left rail attention indicators and My Account counts must come from governed backend attention projections, not frontend-only badge logic.
+
+AutonomousAgent task progress/result surfaces are part of the workstream model when durable internal/background model-driven work exists. Task lifecycle events, notifications, snapshots, blocked states, rejected results, failures, and completion recommendations should update dashboards, attention items, traces, and governed surface actions; the task machinery never grants authority by itself.
 
 ## Minimum initial core workstream set
 
@@ -169,6 +190,7 @@ Every surface should have:
 
 - stable surface type and version;
 - typed payload schema and redaction rules;
+- attention/dashboard semantics where the surface contributes to `WorkstreamAttentionSummary`, My Account aggregate panels, left rail counts, or task progress/result presentation;
 - allowed actions mapped to backend capabilities;
 - tenant/customer and AuthContext assumptions;
 - loading, empty, error, forbidden, and stale/reconnect states where relevant;
@@ -287,12 +309,13 @@ When this model is maintained in an app-description tree, keep ownership split b
 For high-level product input, apply this sequence:
 
 1. Preserve the mandatory secure AI-first SaaS foundation.
-2. Interpret the product as an agent workstream application unless explicitly out of scope.
-3. Identify functional agents, internal agents, initial workstreams, structured surfaces, and retained human authority.
-4. Model governed backend capabilities for every surface action, tool, workflow step, API, timer, consumer, and internal operation.
-5. Route to app-description maintenance, solution decomposition, PRD/spec/backlog planning, or focused implementation.
-6. Use web UI and agent skills to implement the workstream shell and governed agents.
-7. Use Akka component skills to implement the horizontal substrate from accepted capability contracts.
+2. Apply `requirements-to-workstream-development-process.md`: workstream inventory, attention categories, dashboard contracts, surfaces/actions, governed capabilities/APIs, Akka substrate, agent/AutonomousAgent workers, events/notifications/projections, traces, and tests.
+3. Interpret the product as an agent workstream application unless explicitly out of scope.
+4. Identify functional agents, internal agents, initial workstreams, structured surfaces, and retained human authority.
+5. Model governed backend capabilities for every surface action, tool, workflow step, API, timer, consumer, and internal operation.
+6. Route to app-description maintenance, solution decomposition, PRD/spec/backlog planning, or focused implementation.
+7. Use web UI and agent skills to implement the workstream shell and governed agents.
+8. Use Akka component skills to implement the horizontal substrate from accepted capability contracts.
 
 Use `workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
 

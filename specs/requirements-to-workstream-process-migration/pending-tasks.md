@@ -188,7 +188,7 @@
 
 ### TASK-REQWS-02-002: Update core doctrine crosslinks
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/02-doctrine-consolidation-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/02-doctrine/02-update-core-doctrine-crosslinks.md
 - depends on: [TASK-REQWS-02-001]
@@ -216,7 +216,9 @@
 - done criteria:
   - core doctrine consistently points to the canonical process without duplicating excessive prose
   - focused git commit exists
-- notes: []
+- notes:
+  - added concise requirements-to-workstream crosslinks and normative attention/dashboard/task-progress rules to core doctrine docs
+  - commit message: `requirements-workstream: update core doctrine crosslinks`
 
 ### TASK-REQWS-02-099: Verify doctrine consolidation sprint
 

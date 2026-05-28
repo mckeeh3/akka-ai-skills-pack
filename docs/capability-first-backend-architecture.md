@@ -9,12 +9,15 @@ Default generated-application interpretation:
 ```text
 product intent
 → mandatory secure SaaS foundation
+→ requirements-to-workstream process: workstreams, attention, dashboards, surfaces/actions
 → agent workstream application model: role-authorized functional/context-area agents, workstreams, and structured surfaces
 → capability inventory
 → authority, scope, schemas, side effects, audit, approval, and supervision rules
 → selected capability exposure channels
 → Akka component realization
 ```
+
+Use `requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
 
 A capability is the backend design object. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for a capability.
 
@@ -84,7 +87,7 @@ Select capability exposure after capability semantics are clear. Use `structured
 | Agent tool | A bounded agent may choose to read evidence, draft recommendations, or request/perform allowed work. | Tool receives or resolves AuthContext, enforces permission/scope, limits side effects, records tool/data/work traces. |
 | MCP tool/resource/prompt | Capabilities are shared with remote AI clients or other services. | Expose only selected tools/resources/prompts, use ACL/JWT/service identity, filter allowed tools, audit remote access. |
 | Workflow step | Work is long-running, retryable, approval-gated, compensating, or multi-component. | Persist progress, approval state, retries, denials, and trace links. |
-| View/query | Capability provides curated evidence, lists, dashboards, or search. | Return scoped and redacted read models, not raw state dumps by default. |
+| View/query | Capability provides curated evidence, lists, dashboards, attention summaries, My Account aggregate panels, or search. | Return scoped and redacted read models, not raw state dumps by default. |
 | Timer action | Deadlines, reminders, expiry, periodic checks, or scheduled governance work. | Store authority basis and audit scheduled actions; ensure idempotent retry behavior. |
 | Consumer | Capability reacts to events/topics/service streams. | Preserve provenance/correlation, enforce allowed side effects, handle duplicate/retry semantics. |
 | Internal component method | Operation is not directly exposed outside the backend. | Still validate invariants; apply auth at the caller boundary and audit where consequential. |
@@ -114,13 +117,14 @@ Choose Akka components from the capability shape, not from CRUD intuition.
 For broad product input or implementation planning:
 
 1. Preserve the mandatory secure SaaS foundation.
-2. Interpret the agent workstream application model: functional/context-area agents (shortened to functional agents), internal agents, workstreams, structured surfaces, and retained human authority.
-3. Interpret AI-first operating-model needs: delegated work, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
-4. Build a capability inventory before selecting Akka components.
-5. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
-6. Decide which exposure channels expose the capability, if any.
-7. Select Akka components that realize the capability semantics. Use `agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
-8. Generate code/tests component by component while preserving the capability contract.
+2. Apply the requirements-to-workstream process: identify workstreams, per-workstream attention categories ("what needs my attention?"), dashboard scope, `WorkstreamAttentionSummary` needs, structured surfaces/actions, My Account aggregate behavior, left rail projections, AutonomousAgent task progress/result surfaces, events/notifications, traces, and tests.
+3. Interpret the agent workstream application model: functional/context-area agents (shortened to functional agents), internal agents, workstreams, structured surfaces, and retained human authority.
+4. Interpret AI-first operating-model needs: delegated work, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
+5. Build a capability inventory before selecting Akka components.
+6. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
+7. Decide which exposure channels expose the capability, if any.
+8. Select Akka components that realize the capability semantics. Use `agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
+9. Generate code/tests component by component while preserving the capability contract.
 
 Do not jump from a product request directly to an entity, endpoint, or agent tool unless the capability contract is already clear enough.
 
@@ -128,12 +132,12 @@ Do not jump from a product request directly to an entity, endpoint, or agent too
 
 Use these classes to decompose a product safely:
 
-- **Read/evidence capability:** scoped query, explanation context, decision evidence, dashboard/search/list data.
+- **Read/evidence capability:** scoped query, explanation context, decision evidence, dashboard/search/list data, attention summaries, My Account aggregate panels, and task progress/result evidence.
 - **Command capability:** state-changing action with validation, auth, idempotency, audit, and denial semantics.
 - **Proposal capability:** agent or human drafts a change or recommendation without committing the side effect.
 - **Approval capability:** human or policy-governed decision commits, rejects, delegates, or asks for more evidence.
 - **Workflow capability:** starts or advances deterministic long-running, retryable, approval-gated, or compensating work.
-- **Autonomous task capability:** starts, assigns, reads, completes/fails, suspends/resumes, or observes a durable model-driven task owned by an Akka `AutonomousAgent`.
+- **Autonomous task capability:** starts, assigns, reads, completes/fails, suspends/resumes, or observes a durable model-driven task owned by an Akka `AutonomousAgent`; includes task progress snapshots/results/notifications when exposed to dashboards, attention items, or system-message surfaces.
 - **Policy/governance capability:** creates, reviews, simulates, activates, deprecates, or rolls back behavior-changing rules/prompts/skills/thresholds.
 - **Trace/audit capability:** records, searches, explains, redacts, or exports what happened and why.
 - **Scheduled capability:** timer-backed expiry, reminder, digest, replay, recheck, or retention work.
@@ -170,7 +174,7 @@ Future skills and planning artifacts should use this doctrine as the backend sub
 
 - Description-first paths should maintain capability inventories alongside functional agents, internal agents, workstreams, surfaces, behavior, auth/security, UI, observability, readiness, and tests. In app-description trees, `12-workstreams/` owns functional agents, workstreams, surface contracts, action-to-capability mappings, trace semantics, and surface/action tests; `55-ui/` owns browser realization such as shell rendering, routes/deep links, interactions, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
 - Direct Akka decomposition should derive capabilities before component selection.
-- PRD/spec/backlog planning should preserve capability ids, auth/scope, side effects, approval, audit, exposure channels, and tests in generated tasks.
+- PRD/spec/backlog planning should preserve the requirements-to-workstream chain: workstream id, attention category, dashboard/surface/action, capability ids, auth/scope, side effects, approval, audit, exposure channels, AutonomousAgent task semantics where applicable, notifications/projections, and tests in generated tasks.
 - Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or capability exposure channels.
 
 The top-level routing skill for this doctrine is `../skills/capability-first-backend/SKILL.md`. Use it with `../skills/README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure channels.

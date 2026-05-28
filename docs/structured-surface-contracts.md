@@ -1,6 +1,6 @@
 # Structured surface contracts
 
-Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `agent-workstream-application-architecture.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
+Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `agent-workstream-application-architecture.md` and the requirements-to-workstream process in `requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
 A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string.
 
@@ -10,12 +10,15 @@ Every surface contract must preserve this chain:
 
 ```text
 functional/context-area agent workstream placement
+→ attention/dashboard purpose where applicable
 → surface type and payload schema
 → allowed actions and events
 → governed backend capabilities
 → backend authorization, audit, and trace
 → frontend rendering and tests
 ```
+
+For broad requirements, surfaces are discovered through the canonical process: workstream → attention categories → dashboard/`WorkstreamAttentionSummary` → structured surfaces/actions → capabilities/APIs → Akka substrate. Do not design surfaces as page-first or CRUD-first artifacts.
 
 Frontend action visibility is advisory only. The linked backend capability remains authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior.
 
@@ -84,6 +87,14 @@ Payload rules:
 - Include stale/reconnect markers when rendered data may lag event streams or command results.
 - Return frontend-safe, scoped, redacted fields only. Do not send hidden secrets or cross-tenant data and rely on the UI not to display them.
 - Use role-specific action lists only as a UX hint; backend denial must still be correct if an action is submitted manually.
+
+## Attention, dashboard, and task progress surfaces
+
+Dashboard and attention surfaces are first-class structured surfaces. A normal workstream dashboard is scoped primarily to its owning workstream and should expose what is happening, what needs the current user's attention, what is blocked/overdue/risky/failed/paused, who or what is participating, pending decisions/approvals, recent changes, and authorized next actions. My Account is the main aggregate exception: its dashboard may summarize attention across accessible workstreams and open target workstream dashboards or attention items through governed surface-request actions.
+
+Use backend-produced attention projections for left rail badges, My Account aggregate panels, dashboard summary cards, digests, and briefing surfaces. The compact summary shape should align with `WorkstreamAttentionSummary` from `requirements-to-workstream-development-process.md`; detailed attention items should link to their owning workstream, source event/message/trace, relevant capability, and any linked AutonomousAgent task.
+
+AutonomousAgent task progress/result surfaces are required when durable internal/background model-driven work is user-visible or creates decisions, exceptions, approvals, failures, rejected results, blocked dependencies, or recommendations. Task progress notifications can update the surface, but task progress and attention state must derive from governed backend task/projection state. Actions such as `open_attention_item`, `retry_failed_action`, `request_approval`, `escalate`, `dismiss`, `start_investigation`, or `open_task_result` must map to governed capabilities.
 
 ## Base surface: `markdown_response`
 
@@ -218,6 +229,8 @@ type SurfaceEvent<TPatch = unknown> = {
     | "surface.action.accepted"
     | "surface.action.denied"
     | "surface.workflow.progressed"
+    | "surface.autonomous_task.progressed"
+    | "surface.attention.changed"
     | "surface.stale"
     | "surface.reconnected";
   surfaceId: string;
@@ -244,7 +257,7 @@ Event rules:
 
 For every surface action and payload-producing query, the capability inventory must specify:
 
-- capability id and class (`read/evidence`, `command`, `proposal`, `approval`, `workflow`, `governance`, `trace/audit`, `scheduled`, or `reactive`);
+- capability id and class (`read/evidence`, `command`, `proposal`, `approval`, `workflow`, `autonomous task`, `governance`, `trace/audit`, `scheduled`, or `reactive`);
 - actors/callers, including human roles, functional agents, internal agents, workflows, services, timers, consumers, or support roles;
 - AuthContext, tenant/customer scope, permissions/capabilities, denial behavior, and disabled-user behavior;
 - input/output schemas, redaction, validation, idempotency, and safe error shape;
