@@ -537,7 +537,7 @@
 
 ### TASK-REQWS-05-099: Verify queue and task contract sprint
 
-- status: pending
+- status: done
 - source: progressive verification loop for Sprint 05
 - task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
 - depends on: [TASK-REQWS-05-001]
@@ -569,7 +569,11 @@
   - queue maintenance and do-next guidance block or repair stale component-only/page-only/CRUD-only tasks
   - if gaps remain, bounded follow-up tasks are appended before a new Sprint 05 verification task
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/sprint-05-verification.md`
+  - verified Sprint 05 complete for queue and task contract scope; no new Sprint 05 follow-up tasks required
+  - downstream examples, seed, and packaging alignment remains covered by Sprint 06
+  - commit message: `requirements-workstream: verify sprint 05 queues`
 
 ### TASK-REQWS-06-001: Update examples, seed, and packaging alignment
 
