@@ -335,7 +335,7 @@
 
 ### TASK-REQWS-03-099: Verify intake and description-first realignment sprint
 
-- status: pending
+- status: done
 - source: progressive verification loop for Sprint 03
 - task brief: specs/requirements-to-workstream-process-migration/tasks/99-verification/00-progressive-sprint-verification.md
 - depends on: [TASK-REQWS-03-001, TASK-REQWS-03-002]
@@ -369,7 +369,11 @@
   - normalized envelopes and app-description modeling/readiness preserve attention, dashboard, surface/action, capability, autonomous task, notification, trace, auth, and test context
   - if gaps remain, bounded follow-up tasks are appended before a new Sprint 03 verification task
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/sprint-03-verification.md`
+  - verified Sprint 03 complete for intake and description-first realignment scope; no new Sprint 03 follow-up tasks required
+  - downstream process realignment remains covered by Sprints 04-06
+  - commit message: `requirements-workstream: verify sprint 03 intake`
 
 ### TASK-REQWS-04-001: Update solution and PRD planning skills
 
