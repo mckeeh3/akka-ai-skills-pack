@@ -577,7 +577,7 @@
 
 ### TASK-REQWS-06-001: Update examples, seed, and packaging alignment
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/06-examples-packaging-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/06-examples/01-update-examples-and-packaging.md
 - depends on: [TASK-REQWS-03-099, TASK-REQWS-05-099]
@@ -604,7 +604,10 @@
 - done criteria:
   - installed-pack examples and exports reinforce the new process
   - focused git commit exists
-- notes: []
+- notes:
+  - added `docs/examples/requirements-to-workstream-mini-example.md` as the compact installed-pack-facing process example
+  - updated examples index, seed/core input READMEs, PRD flow, installed-pack guidance, and packaging manifest/readme to point to requirements-to-workstream process guidance
+  - commit message: `requirements-workstream: update examples packaging`
 
 ### TASK-REQWS-06-099: Verify examples, seed, and packaging sprint
 

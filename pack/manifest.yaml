@@ -508,8 +508,12 @@ content:
     - docs/core-ai-first-saas-foundation.md
     - docs/core-saas-identity-tenancy-admin.md
     - docs/core-saas-owner-tenant-billing.md
+    - docs/requirements-to-workstream-development-process.md
+    - docs/prd-to-akka-flow.md
     - docs/frontend-with-akka-backend.md
     - docs/examples/README.md
+    - docs/examples/requirements-to-workstream-mini-example.md
+    - docs/examples/core-ai-first-saas-input/README.md
     - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
     - docs/examples/ai-first-saas-seed-app-description/README.md
     - docs/workstream-ui-reference-architecture.md

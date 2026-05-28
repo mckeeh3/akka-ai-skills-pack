@@ -4,6 +4,8 @@ This directory contains canonical example **input documents** for planning and g
 
 These files are source assets for the skills pack. They are intended to be used as realistic PRD/spec inputs that can be fed into the pack to produce solution plans, module specs, sprint specs, backlogs, and implementation tasks. They are not a replacement for the maintained app-description seed structure; use `../ai-first-saas-seed-app-description/README.md` as the preferred current generated-SaaS app-description reference.
 
+Process rule: feed these PRDs through the requirements-to-workstream chain before implementation planning: workstreams → attention categories → dashboard contracts → structured surfaces/actions → governed capabilities/APIs → Akka substrate → request-based workstream Agents and durable AutonomousAgent candidates where appropriate → events/notifications/projections → audit/work traces. For the compact pattern, read `../requirements-to-workstream-mini-example.md`.
+
 Start with:
 
 1. `00-document-development-process-context.md`

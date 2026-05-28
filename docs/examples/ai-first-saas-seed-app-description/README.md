@@ -9,6 +9,7 @@ Purpose:
 - provide a reusable source asset for the skills pack
 - describe secure multi-tenant SaaS foundations shared by generated apps
 - describe the agent workstream application model: role-authorized functional agents, durable workstreams, structured surfaces, governed capabilities, and horizontal Akka implementation maps
+- anchor the requirements-to-workstream target architecture: broad input is processed through workstreams, attention categories, dashboard contracts, surface actions, governed capabilities/APIs, selected Akka substrate, request-based Agent turns, AutonomousAgent task candidates for durable internal/background work, events/notifications/projections, and audit/work traces before implementation tasks are considered ready
 - describe a functional AI-first operating-model baseline: goals, plans, governed runtime agents, managed prompts/skills/manifests/tool boundaries, decisions, policy gates, traces, and outcomes
 - map the seed app description to Akka Java components and frontend/backend integration patterns without replacing the runnable starter template
 
@@ -60,5 +61,7 @@ five core workstream v0 starter
 Do not use this seed README to justify a generic public chatbot, unauthenticated assistant, page-first CRUD console, or app-specific domain workstream before the User Admin v0 minimum slice and full-core progression gates are visible.
 
 The seed app UI docs below describe functional agents, workstreams, structured surfaces, and deep links. They are not a page-first route/screen template. Older page/screen examples in the repository are legacy or mechanics references only.
+
+For a compact planning example that starts from input/PRD text and walks through workstreams, attention, dashboards, surfaces/actions, capabilities, AutonomousAgent candidates, events/notifications, projections, and traces, read `../requirements-to-workstream-mini-example.md` before using conventional mechanics examples.
 
 Use `../../agent-workstream-design-review-checklist.md` when checking whether another example, spec, or generated output still matches this canonical seed direction.

@@ -12,7 +12,12 @@ Use this mini-example set when you want a concrete pattern for planning mechanic
 8. route to the minimal focused skills
 9. implement bounded vertical increments in the recommended order
 
-## Canonical example pair
+## Generated SaaS process example
+
+For installed-pack users, start with:
+- `examples/requirements-to-workstream-mini-example.md` — compact target architecture example showing input/PRD → workstreams → attention → dashboards → surfaces/actions → governed capabilities/APIs → selected Akka substrate → request-based Agents/AutonomousAgent candidates → events/notifications/projections → audit/work traces → task shape.
+
+## Conventional mechanics reference pair
 
 Requirements input:
 - `examples/purchase-request-prd.md`
@@ -25,6 +30,8 @@ Example pending task queue:
 
 Example module/sprint planning shape for larger PRDs:
 - `examples/purchase-request-module-sprint-plan.md`
+
+These purchase-request files are a mechanics reference for planning shape only; they are not the generated SaaS target architecture.
 
 ## How to use the pair
 

@@ -6,7 +6,7 @@ This directory defines the installable packaging model for the Akka AI skills an
 
 This pack intentionally includes:
 - `skills/**`, including AI-first SaaS routing, description-first, planning, and implementation skills
-- repository docs under `docs/**`, including AI-first doctrine, description-first doctrine/architecture references, planning references, and example app-description artifacts
+- repository docs under `docs/**`, including AI-first doctrine, requirements-to-workstream process doctrine, description-first doctrine/architecture references, planning references, and example app-description artifacts
 - reference examples exported from `src/**`
 - starter app template resources exported from `templates/ai-first-saas-starter/**`
 - scaffold tooling exported from `tools/scaffold-ai-first-saas-starter.sh`
@@ -26,6 +26,8 @@ This pack intentionally does **not** include:
 The installed pack uses `pack/AGENTS.md` as the source for `<agents-root>/AGENTS.md`.
 It also uses `pack/EXAMPLES-README.md` as the source for `<agents-root>/resources/examples/java/README.md`.
 Those installed files are for pack users and are distinct from the repository-internal maintainer guidance files.
+
+Installed-pack users should treat `docs/requirements-to-workstream-development-process.md` plus `docs/examples/requirements-to-workstream-mini-example.md` as the compact target architecture path for broad PRD/input processing. Legacy purchase-request examples remain mechanics reference material only.
 
 Important distinction for real development projects:
 - the installed pack under `<agents-root>/` provides skills, guidance, and examples
@@ -59,6 +61,7 @@ Installed layout:
     agent-coverage-matrix.md
     pending-question-queue.md
     pending-task-queue.md
+    requirements-to-workstream-development-process.md
     prd-to-akka-flow.md
     module-sprint-planning.md
     security-pattern-selection.md
@@ -76,6 +79,7 @@ Installed layout:
     workflow-endpoint-pattern.md
     examples/
       README.md
+      requirements-to-workstream-mini-example.md
       core-ai-first-saas-input/
         README.md
         00-document-development-process-context.md

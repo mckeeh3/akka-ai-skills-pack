@@ -13,6 +13,8 @@ Security, the web UI, and AI-first managed agents are mandatory. Every generated
 
 AI-first SaaS means agents do bounded work while humans supervise, decide, approve, audit, teach, and own outcomes. First decide which durable goals/plans, bounded agents or agent teams, policy and approval controls, supervision surfaces, audit traces, and outcome loops the product needs; then model backend behavior as governed capabilities before applying only the justified Akka substrate components and exposure surfaces on top of the mandatory secure SaaS foundation.
 
+For broad product input or PRDs, use the requirements-to-workstream process as the normal path: input → workstreams → `what needs my attention?` categories → dashboard contracts → structured surfaces/actions → governed capabilities/APIs → Akka substrate → request-based workstream Agent turns and durable AutonomousAgent candidates where appropriate → events/notifications/projections → audit/work traces → implementation tasks. Use `docs/requirements-to-workstream-development-process.md` for the canonical rules and `docs/examples/requirements-to-workstream-mini-example.md` for the compact target architecture example. Purchase-request examples are mechanics reference material only, not the generated SaaS target architecture.
+
 This pack supports a secure AI-first interpretation layer plus two complementary ways of working in a real development project:
 
 0. **secure AI-first SaaS interpretation**
@@ -109,7 +111,7 @@ After installation, the main entry points are:
 - `resources/examples/java/` — exported Akka Java SDK substrate examples and tests for concrete component implementation patterns; these examples are not product-architecture templates
 - `resources/examples/frontend/` — exported React/Vite/TypeScript agent workstream UI reference, including `src/workstream/**` and contract tests for the generated SaaS workstream shell and User Admin vertical
 
-Use the docs under `docs/` as routing/reference support.
+Use the docs under `docs/` as routing/reference support. For broad requirements, prefer `docs/requirements-to-workstream-development-process.md` and `docs/examples/requirements-to-workstream-mini-example.md` before conventional mechanics examples.
 Use the Java examples under `resources/examples/java/` as canonical local implementation references when they match the task.
 Use the frontend workstream reference under `resources/examples/frontend/` when implementing generated SaaS browser UI; do not use static-resource output as the source structure.
 
