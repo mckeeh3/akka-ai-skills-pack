@@ -226,7 +226,7 @@
 
 ### TASK-AUTO-04-001: Add single Autonomous Agent executable example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/04-examples/01-add-single-autonomous-agent-example.md
 - depends on: [TASK-AUTO-03-001]
@@ -259,6 +259,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add single agent example`
+  - completed with `AnswerQuestionAutonomousAgent`, `AnswerQuestionTasks`, `AutonomousQuestionEndpoint`, and endpoint-driven typed task integration test
+  - updated Akka Java SDK parent to `3.6.0` so Autonomous Agent APIs are available
+  - checks: `mvn test`; `git diff --check`; `rg -n "extends AutonomousAgent|TaskAcceptance|forAutonomousAgent|AutonomousAgentTools|completeTask" src/main/java src/test/java`
 
 ### TASK-AUTO-04-002: Add Autonomous Agent coordination executable example
 
