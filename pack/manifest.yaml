@@ -192,6 +192,21 @@ content:
     - id: akka-agent-tools
       path: skills/akka-agent-tools
       category: focused
+    - id: akka-autonomous-agents
+      path: skills/akka-autonomous-agents
+      category: component-suite
+    - id: akka-autonomous-agent-tasks
+      path: skills/akka-autonomous-agent-tasks
+      category: focused
+    - id: akka-autonomous-agent-coordination
+      path: skills/akka-autonomous-agent-coordination
+      category: focused
+    - id: akka-autonomous-agent-testing
+      path: skills/akka-autonomous-agent-testing
+      category: testing
+    - id: akka-autonomous-agent-governance
+      path: skills/akka-autonomous-agent-governance
+      category: focused
     - id: akka-agents
       path: skills/akka-agents
       category: component-suite
@@ -591,6 +606,11 @@ bundles:
       - akka-agent-testing
       - akka-agent-tool-boundaries
       - akka-agent-tools
+      - akka-autonomous-agents
+      - akka-autonomous-agent-tasks
+      - akka-autonomous-agent-coordination
+      - akka-autonomous-agent-testing
+      - akka-autonomous-agent-governance
       - akka-agents
       - akka-consumer-from-event-sourced-entity
       - akka-consumer-from-key-value-entity

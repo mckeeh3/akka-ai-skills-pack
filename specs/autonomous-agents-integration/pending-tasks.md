@@ -151,7 +151,7 @@
 
 ### TASK-AUTO-03-001: Add Autonomous Agent skill family
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/03-skills/01-add-autonomous-agent-skill-family.md
 - depends on: [TASK-AUTO-02-001]
@@ -185,6 +185,7 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add skill family`
+  - completed with new installable Autonomous Agent skill family and manifest/routing updates
 
 ### TASK-AUTO-03-002: Update agent guidance and coverage matrix
 

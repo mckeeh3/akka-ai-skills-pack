@@ -422,11 +422,31 @@ For the durable queue contract, see `../docs/pending-task-queue.md`.
 
 Start with:
 - `akka-agents` for request-based Akka Agent work such as user-facing workstream turns, bounded request/response reasoning, streaming responses, model-backed tools, session memory, and workflow steps with one model round trip.
-- future `akka-autonomous-agents` for durable task-oriented internal/background agent work such as long-running investigations, autonomous monitoring/remediation, batch review, escalation processing, evaluator loops, handoff/delegation/team coordination, task dependencies, snapshots, cancellation/failure, and notification streams.
+- `akka-autonomous-agents` for durable task-oriented internal/background agent work such as long-running investigations, autonomous monitoring/remediation, batch review, escalation processing, evaluator loops, handoff/delegation/team coordination, task dependencies, snapshots, cancellation/failure, and notification streams.
 
 If the substrate is not clear, read `../docs/agent-component-selection-guide.md` before choosing between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`. Do not replace workstream request/response agents with Autonomous Agents by default.
 
 Then load the focused skill that matches the current task:
+
+### Autonomous Agents
+Use when implementing durable task-oriented internal/background model-driven work with typed task lifecycle, dependencies, snapshots, cancellation/failure, notification streams, or coordination. Do not use as the default for user-facing request/response workstream turns.
+- `akka-autonomous-agents`
+
+### Autonomous Agent tasks
+Use when defining `Task`, `TaskTemplate`, `TaskAcceptance`, `TaskRule`, dependencies, attachments, lifecycle operations, or task client calls.
+- `akka-autonomous-agent-tasks`
+
+### Autonomous Agent coordination
+Use when Autonomous Agents need delegation, handoff, TeamLeadership, Moderation, external-input tasks, or coordination notification handling.
+- `akka-autonomous-agent-coordination`
+
+### Autonomous Agent testing
+Use when validating Autonomous Agents with `TestModelProvider.AutonomousAgentTools`, task snapshots/results, Awaitility, notifications, or coordination scripts.
+- `akka-autonomous-agent-testing`
+
+### Autonomous Agent governance
+Use when generated-app Autonomous Agents need capability contracts, model policy, tenant scope, `ToolPermissionBoundary`, approval gates, trace obligations, notification-surface protection, or the Akka autonomous `AgentDefinition` vs governed managed-agent `AgentDefinition` terminology guardrail.
+- `akka-autonomous-agent-governance`
 
 ### Behavior profiles
 Use when agents are managed as tenant-scoped runtime actors with durable `AgentDefinition`, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin UI, or runtime profile lookup. For implementation handoff, pair this with `../docs/agent-runtime-invocation-pattern.md` to define the `AgentRuntimeResolver` sequence across AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace.
@@ -950,9 +970,9 @@ Load:
 - `akka-agent-testing`
 
 ### New durable internal/background Autonomous Agent
-Use for task-oriented model-driven work with typed task lifecycle, dependencies, snapshots, notification streams, handoff/delegation/team coordination, or independent cancellation/failure. Until the installable skill family is added, use `../docs/agent-component-selection-guide.md` and `../specs/autonomous-agents-integration/research-notes.md` as the local routing sources; do not fake normal runtime behavior.
+Use for task-oriented model-driven work with typed task lifecycle, dependencies, snapshots, notification streams, handoff/delegation/team coordination, or independent cancellation/failure. Do not fake normal runtime behavior or replace user-facing workstream request/response agents by default.
 
-Load after skill-family task lands:
+Load:
 - `akka-autonomous-agents`
 - `akka-autonomous-agent-tasks`
 - `akka-autonomous-agent-testing`
