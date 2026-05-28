@@ -468,6 +468,7 @@
 
 .workstream-composer {
   pointer-events: auto;
+  overflow: visible;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   border-color: color-mix(in srgb, var(--color-ai) 24%, var(--color-border));

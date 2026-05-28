@@ -63,6 +63,12 @@ test('workstream accessibility and quality checklist markers have source evidenc
   assert.match(layout + components, /@media \(max-width: 640px\)/);
 });
 
+test('workstream composer send tooltip can escape the composer frame', () => {
+  assert.match(components, /\.workstream-composer \{[\s\S]*?overflow: visible;/);
+  assert.match(components, /\.send-prompt-button \{[\s\S]*?overflow: visible;/);
+  assert.match(components, /\.workstream-send-prompt-tooltip \{[\s\S]*?position: absolute;/);
+});
+
 test('light dark system style guide and tokenized semantic states remain available', () => {
   assert.match(tokens, /\[data-mode="light"\]/);
   assert.match(tokens, /\[data-mode="dark"\]/);
