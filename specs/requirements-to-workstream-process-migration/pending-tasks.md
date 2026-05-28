@@ -89,7 +89,7 @@
 
 ### TASK-REQWS-01-002: Draft target process contract
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/01-audit-and-target-model-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/01-audit/02-draft-target-process-contract.md
 - depends on: [TASK-REQWS-01-001]
@@ -112,7 +112,9 @@
 - done criteria:
   - contract is concise and implementable by later skill/doc edit tasks
   - focused git commit exists
-- notes: []
+- notes:
+  - created `specs/requirements-to-workstream-process-migration/target-process-contract.md`
+  - commit message: `requirements-workstream: draft target process contract`
 
 ### TASK-REQWS-01-099: Verify audit and target model sprint
 
