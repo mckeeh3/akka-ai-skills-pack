@@ -590,7 +590,7 @@
 
 ### TASK-AUTO-06-007: Add governed Autonomous Agent tool-boundary example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/governed-tool-boundary-example-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/07-add-governed-tool-boundary-example.md
 - depends on: [TASK-AUTO-06-006]
@@ -624,6 +624,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add governed tool boundary example`
+  - completed with `GovernedRiskReviewAutonomousAgent`, `GovernedRiskReviewTasks`, `GovernedRiskReviewTools`, `GovernedToolBoundaryService`, and integration tests for allowed reads, ungranted/cross-scope denials, approval_required follow-up proposals, and fail-closed missing boundary behavior
+  - updated `docs/agent-coverage-matrix.md` for governed Autonomous Agent local function-tool facade coverage
+  - checks: `mvn test`; `git diff --check`; `rg -n "ToolPermissionBoundary|tenant|approval_required|trace|fail-closed|AutonomousAgent|FunctionTool" src/main/java src/test/java docs/agent-coverage-matrix.md`
 
 ### TASK-AUTO-07-001: Verify additional Autonomous Agent examples
 
