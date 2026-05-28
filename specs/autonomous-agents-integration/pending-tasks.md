@@ -302,7 +302,7 @@
 
 ### TASK-AUTO-05-001: Verify first-pass Autonomous Agents migration
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/05-review/01-verify-first-pass-migration.md
 - depends on: [TASK-AUTO-02-002, TASK-AUTO-03-002, TASK-AUTO-04-002]
@@ -329,6 +329,9 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: verify first pass`
+  - completed with `specs/autonomous-agents-integration/verification-notes.md`
+  - no duplicate follow-up implementation tasks appended; remaining example planning is covered by TASK-AUTO-05-002
+  - checks: `git diff --check`; `rg -n "AutonomousAgent|Autonomous Agent|request-based Agent|Workflow|AgentDefinition|TaskAcceptance|forAutonomousAgent" docs skills src templates specs/autonomous-agents-integration`
 
 ### TASK-AUTO-05-002: Define additional Autonomous Agent example tasks
 
