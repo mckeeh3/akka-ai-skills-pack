@@ -120,7 +120,7 @@
 
 ### TASK-AUTO-02-002: Align starter and generated-app background-agent guidance
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/backlog/01-autonomous-agents-first-pass-backlog.md
 - task brief: specs/autonomous-agents-integration/tasks/02-doctrine/02-align-starter-background-agent-guidance.md
 - depends on: [TASK-AUTO-02-001, TASK-AUTO-03-001]
@@ -148,6 +148,7 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: align starter guidance`
+  - completed with starter, minimum-app, core-foundation, and routing guidance updates
 
 ### TASK-AUTO-03-001: Add Autonomous Agent skill family
 

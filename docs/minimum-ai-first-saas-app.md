@@ -131,6 +131,8 @@ new PRD
 → Akka components/tests
 ```
 
+Internal/background work that grows out of these workstreams should not be hidden in the request/response turn. Keep the visible workstream agent request-based for bounded user-facing responses, and launch or surface durable background work through governed capabilities backed by Akka `AutonomousAgent` when the work needs typed task lifecycle, dependencies, notifications, model-driven investigation, delegation/handoff/team coordination, evaluation/replay loops, monitoring/remediation, or cancellation/failure state. The workstream should render a typed `system_message`, progress, decision, or trace surface for the started task rather than pretending the background task completed inside the immediate `markdown_response`.
+
 ## Routing implications
 
 When a user asks for the smallest useful AI-first SaaS app, route as follows:
