@@ -405,7 +405,7 @@
 
 ### TASK-AUTO-06-002: Add Autonomous Agent dependencies and approval example
 
-- status: pending
+- status: done
 - source: specs/autonomous-agents-integration/additional-examples-plan.md
 - task brief: specs/autonomous-agents-integration/tasks/06-additional-examples/02-add-dependencies-approval-example.md
 - depends on: [TASK-AUTO-06-001]
@@ -438,6 +438,8 @@
   - focused git commit exists
 - notes:
   - commit message: `autonomous-agents: add dependencies approval example`
+  - completed with `ApprovalPipelineAutonomousAgent`, `ApprovalPipelineTasks`, `AutonomousApprovalPipelineEndpoint`, and integration tests for dependency-gated approval completion plus failed-approval non-completion
+  - checks: `mvn test`; `git diff --check`; `rg -n "dependsOn|approval|complete\(|fail\(|CANCELLED|AutonomousAgent" src/main/java src/test/java docs/agent-coverage-matrix.md`
 
 ### TASK-AUTO-06-003: Add Autonomous Agent notification stream example
 
