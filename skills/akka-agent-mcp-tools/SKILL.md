@@ -50,6 +50,10 @@ Read these first if present:
 - `RemoteShoppingCartAgent`
   - connects to an explicit remote MCP server URL
   - allows only `getCartSummary` for the `cart.summary.inspect` capability
+- `GovernedRefundMcpEndpoint`
+  - exposes side-effecting `refund.request_consequential` through `request-governed-refund`
+  - preserves service ACL, stable MCP tool id, `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission
+  - covered by `GovernedRefundToolBoundaryIntegrationTest` for ungranted MCP denial, approval-required result, duplicate idempotency behavior, and no direct side-effect execution
 
 ## Review checklist
 

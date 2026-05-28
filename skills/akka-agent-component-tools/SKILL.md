@@ -61,6 +61,11 @@ If the agent-facing operation should compose multiple component calls, hide comp
 - `CartInspectorAgent`
   - registers `ShoppingCartEntity.class` as a tool
   - instructs the model to use `ShoppingCartEntity_inspectCartSummary`
+- `GovernedRefundAutonomousAgent` + `RefundApprovalWorkflow#requestFromGovernedTool`
+  - side-effecting workflow component tool for `refund.request_consequential`
+  - generated tool schema uses `uniqueId` as the refund workflow id and checks model-supplied tenant/customer/order/amount against backend context
+  - enforces `ToolPermissionBoundary`, idempotency, approval-required behavior, and trace emission before any refund side effect
+  - covered by `GovernedRefundToolBoundaryIntegrationTest` for approval-required, cross-tenant denial, and trace assertions
 
 ## Review checklist
 

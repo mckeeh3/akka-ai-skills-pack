@@ -1,6 +1,8 @@
 package com.example.application;
 
 import akka.javasdk.annotations.Component;
+import akka.javasdk.annotations.Description;
+import akka.javasdk.annotations.FunctionTool;
 import akka.javasdk.annotations.StepName;
 import akka.javasdk.workflow.Workflow;
 import com.example.domain.RefundApprovalState;
@@ -30,6 +32,31 @@ public class RefundApprovalWorkflow extends Workflow<RefundApprovalState> {
   private record AuthorityDecision(String idempotencyKey, String actor, String rationale) {}
 
   private final RefundProposalTools proposalTools = new RefundProposalTools();
+
+  /**
+   * Side-effecting component-tool reference surface for the {@code refund.request_consequential}
+   * capability.
+   *
+   * <p>The generated component tool includes {@code uniqueId}; that id is the refund workflow id and
+   * selects backend-owned refund context. Model-supplied tenant, customer, order, and amount values
+   * are checked against that context and cannot grant authority. The method returns an
+   * approval-required result when the active ToolPermissionBoundary grants the request-approval
+   * operation; this reference method does not directly execute refunds.
+   */
+  @FunctionTool(
+      description =
+          "Capability refund.request_consequential: request a consequential refund through a "
+              + "backend-governed component tool. The uniqueId is the refund workflow id. The "
+              + "tool enforces ToolPermissionBoundary, tenant/customer scope, idempotency, approval "
+              + "policy, and trace emission before any side effect.")
+  public Effect<GovernedRefundToolBoundaryService.GovernedRefundToolResult> requestFromGovernedTool(
+      @Description("Tenant/customer/order scoped refund request; checked against backend context")
+          GovernedRefundToolBoundaryService.RefundToolRequest request) {
+    return effects()
+        .reply(
+            GovernedRefundToolBoundaryService.INSTANCE.requestRefundViaComponentTool(
+                commandContext().workflowId(), request));
+  }
 
   public Effect<RefundApprovalState> request(RequestRefund request) {
     var validation = validateRequest(request);

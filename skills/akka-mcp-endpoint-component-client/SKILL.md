@@ -40,13 +40,17 @@ Read these first if present:
 5. Serialize tool results with `JsonSupport.encodeToString(...)`.
 6. Reuse the same summary mapper for matching dynamic resources when helpful.
 
-## Repository example
+## Repository examples
 
 - `ShoppingCartMcpEndpoint`
   - `getCartSummary` calls `ShoppingCartEntity::getCart`
   - adapts state to `CartSummary`
   - returns compact JSON for tool responses
   - reuses the same mapping for `cartSummaryResource`
+- `GovernedRefundMcpEndpoint`
+  - exposes `request-governed-refund` as a side-effecting MCP tool for `refund.request_consequential`
+  - calls backend-governed boundary logic before any consequential refund action
+  - returns safe `denied` or `approval_required` JSON and emits traces instead of relying on MCP tool descriptions for authorization
 
 ## Mapping rules
 

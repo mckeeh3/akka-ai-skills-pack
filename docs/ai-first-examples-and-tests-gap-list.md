@@ -144,7 +144,14 @@ Pattern notes:
 
 ### P2: MCP AI-client governance example
 
-Useful future example: an MCP endpoint exposing approved resources/tools for goals, policies, traces, or bounded action requests.
+Status: **partially covered for side-effecting tool-boundary mechanics**.
+
+Current reference coverage:
+
+- `GovernedRefundMcpEndpoint` exposes the side-effecting `refund.request_consequential` capability as `request-governed-refund` with service ACL, stable MCP tool id, tenant/customer scope checks, idempotency, approval-required behavior, and trace emission.
+- `GovernedRefundToolBoundaryIntegrationTest` covers ungranted MCP denial, approval-required behavior, duplicate idempotency handling, and no direct side-effect execution.
+
+Remaining useful future breadth: MCP endpoints exposing approved resources/tools for goals, policies, traces, or broader bounded action requests.
 
 Non-goal until P0/P1 are complete: broad autonomous external-agent control.
 
