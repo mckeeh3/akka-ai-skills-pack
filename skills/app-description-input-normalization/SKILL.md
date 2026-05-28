@@ -15,7 +15,7 @@ Its job is to convert messy input into a stable normalized representation that l
 Produce a normalized input result that:
 - preserves the user's intent in a structured form
 - separates description-change intent from generation and review intent
-- extracts candidate deltas across behavior, tests, auth/security, and observability
+- extracts candidate workstreams, attention needs, dashboards, structured surfaces/actions, governed capabilities, autonomous task candidates, events/notifications/traces, behavior, tests, auth/security, UI, and observability
 - distinguishes confirmed statements from inferred assumptions
 - records ambiguity explicitly instead of hiding it
 - gives downstream skills a stable basis for routing and maintenance
@@ -26,6 +26,9 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
+- `../../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
+- `../../docs/agent-workstream-application-architecture.md` for functional-agent workstream semantics
+- `../../docs/structured-surface-contracts.md` for surface/action contracts
 - `../../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -74,10 +77,17 @@ A good normalized result:
 From user input, derive as applicable:
 - primary intent
 - secondary intents
-- capability or scope delta, including candidate actors/callers, AuthContext, schemas, side effects, idempotency, approval, audit/trace, and exposure surfaces
+- functional-agent/workstream candidates, including owner roles, tenant/customer scope, and core-foundation vs domain-specific classification
+- attention needs per workstream: what needs my attention, target audience, severity/lifecycle, and whether the item contributes to My Account or left-rail counts
+- dashboard candidates: default summary cards, attention item surfaces, blocked/overdue/risky/failed/waiting states, participant visibility, and next authorized actions
+- structured surface/action candidates, including system-message surfaces, surface states, reusable placement, and surface-request actions such as `open_workstream`, `open_attention_item`, approval, retry, acknowledge, dismiss, escalate, or investigation start
+- capability or scope delta, including candidate actors/callers, AuthContext, schemas, side effects, idempotency, approval/policy, audit/trace, and exposure surfaces
+- autonomous task candidates for durable internal/background model-driven work, including why Akka `AutonomousAgent` may fit typed lifecycle, snapshots/results, notifications, dependencies, failure/cancellation, delegation, handoff, teams, or moderation
+- event/notification/projection/trace implications, including attention projection and audit/work trace candidates
 - behavior delta
 - test delta
 - auth/security delta
+- UI delta
 - observability delta
 - change-impact or readiness interest
 - generation request details
@@ -102,20 +112,44 @@ Use this normalized shape internally:
 - ...
 
 ## Confirmed deltas
+- workstreams / functional agents:
+  - workstreamId/name/responsibility:
+  - owner functional agent:
+  - authorized actors/roles/scope:
+  - core-foundation vs domain-specific:
+- attention / dashboard:
+  - attention categories and target audience:
+  - severity/lifecycle:
+  - My Account / left-rail contribution:
+  - default dashboard summary and attention surfaces:
+- structured surfaces / surface actions:
+  - surface ids/types/states:
+  - surface-request actions:
+  - action-to-capability candidates:
 - capabilities:
   - scope/outcome:
   - actors/callers:
   - AuthContext/scope:
   - inputs/outputs:
   - side effects/idempotency:
-  - approval/audit/exposure surfaces:
+  - approval/policy/audit/exposure surfaces:
+- autonomous task candidates:
+  - candidate background work:
+  - AutonomousAgent fit signals:
+  - lifecycle/notification/dependency needs:
+- events / notifications / projections / traces:
 - behavior:
 - tests:
 - auth/security:
+- UI:
 - observability:
 
 ## Candidate inferred deltas
+- workstream/attention/dashboard gaps:
+- surface/action gaps:
 - capability contract gaps:
+- autonomous task fit or non-fit:
+- event/notification/projection/trace impacts:
 - linked behavior/tests/auth-security/UI/observability impacts:
 - ...
 
@@ -142,9 +176,26 @@ Record both instead of forcing one to erase the other.
 Use `confirmed` for what the user clearly requested.
 Use `candidate inferred deltas` for plausible implications that still need confirmation or later skill validation.
 
-### 3. Preserve cross-layer separation
+### 3. Preserve the requirements-to-workstream chain
+For broad generated-SaaS input, normalize in this order before code or component concepts:
+1. secure SaaS/AuthContext assumptions
+2. workstream and functional-agent candidates
+3. attention needs and default dashboard implications
+4. structured surfaces, states, and surface actions
+5. governed capability/API candidates
+6. request-based workstream Agent turns for immediate user-facing messages
+7. autonomous task candidates for durable internal/background model-driven work
+8. events, notifications, projections, and audit/work traces
+9. behavior, tests, auth/security, UI, observability, realization, and review impacts
+
+### 4. Preserve cross-layer separation
 Do not collapse these into one bucket:
+- workstreams / functional agents
+- attention / dashboard
+- structured surfaces / surface actions
 - capability contract
+- autonomous task candidate
+- events / notifications / projections / traces
 - behavior
 - tests
 - auth/security
@@ -153,9 +204,9 @@ Do not collapse these into one bucket:
 - realization
 - review
 
-When a capability delta changes authority, side effects, approval, audit, or exposure surfaces, record the likely linked layer impacts instead of treating it as an isolated scope change.
+When a surface action or capability delta changes authority, side effects, approval, audit, exposure surfaces, attention counts, or autonomous task lifecycle, record the likely linked layer impacts instead of treating it as an isolated scope change.
 
-### 4. Normalize to app-description language, not code language
+### 5. Normalize to app-description language, not code language
 Prefer terms like:
 - capability
 - behavior rule
@@ -165,10 +216,10 @@ Prefer terms like:
 - audit requirement
 instead of jumping to classes, endpoints, or frameworks.
 
-### 5. Surface ambiguity explicitly
+### 6. Surface ambiguity explicitly
 If the input leaves unclear whether something is a behavior change, test clarification, or security rule, record the ambiguity instead of guessing silently.
 
-### 6. Preserve user priority signals
+### 7. Preserve user priority signals
 If the user says things like "for now", "must", "optional", "later", or "just for evaluation", carry those into constraints and preferences.
 
 ## Intent classification guide
@@ -193,8 +244,9 @@ Use when more than one of the above clearly applies in one prompt.
 Route onward as needed:
 - to `app-description-bootstrap` when the normalized intent is `bootstrap`
 - to `app-description-intake-router` when routing is still needed after normalization
-- to `app-description-capability-modeling` when capability scope, actors, AuthContext, schemas, side effects, idempotency, approval, audit, exposure surfaces, or intended outcomes are the dominant delta
-- to focused maintenance skills when normalization already isolates the dominant delta clearly, while preserving any linked behavior, tests, auth/security, UI, observability, or readiness impacts
+- to `app-description-functional-agent-modeling` and `app-description-surface-modeling` before direct capability/UI routing when broad generated-SaaS input names work areas, dashboards, queues, command centers, approvals, decisions, audit timelines, workflow status, forms, tables, actions, or agent/chat areas
+- to `app-description-capability-modeling` when capability scope, actors, AuthContext, schemas, side effects, idempotency, approval, audit, exposure surfaces, or intended outcomes are the dominant delta after workstream/surface context is preserved
+- to focused maintenance skills when normalization already isolates the dominant delta clearly, while preserving any linked workstream, attention, dashboard, surface action, autonomous task, event/notification/projection/trace, behavior, tests, auth/security, UI, observability, or readiness impacts
 - to `app-description-change-impact` when the input is explicitly asking about affected areas or regeneration scope
 - to `app-description-readiness-assessment` when the input explicitly asks whether generation is appropriate
 
@@ -222,7 +274,7 @@ Before finishing, verify:
 - primary intent is explicit
 - secondary intents are preserved when present
 - confirmed vs inferred deltas are separated
-- behavior, tests, security, and observability are separated
+- workstream, attention/dashboard, surface/action, capability, autonomous task, event/notification/projection/trace, behavior, tests, security, UI, and observability are separated
 - realization and review requests are separated
 - ambiguity is recorded as open questions instead of guessed away
 

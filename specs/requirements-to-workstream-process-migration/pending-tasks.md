@@ -261,7 +261,7 @@
 
 ### TASK-REQWS-03-001: Update input normalization and intake router
 
-- status: pending
+- status: done
 - source: specs/requirements-to-workstream-process-migration/backlog/03-intake-description-realignment-backlog.md
 - task brief: specs/requirements-to-workstream-process-migration/tasks/03-intake/01-update-input-normalization-and-router.md
 - depends on: [TASK-REQWS-02-099]
@@ -291,7 +291,10 @@
   - broad or mixed input normalization can represent the new process contract
   - router selects workstream/surface/capability paths in the correct order
   - focused git commit exists
-- notes: []
+- notes:
+  - extended `app-description-input-normalization` envelope with workstream, attention/dashboard, surface/action, autonomous task, event/notification/projection/trace, UI, and linked impact sections
+  - updated `app-description-intake-router` so broad generated-SaaS input preserves workstream-attention-dashboard and surface-action context before capability/UI/component routing
+  - commit message: `requirements-workstream: update intake normalization router`
 
 ### TASK-REQWS-03-002: Update app-description modeling and readiness skills
 
