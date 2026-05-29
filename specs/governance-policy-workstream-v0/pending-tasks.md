@@ -221,7 +221,7 @@
 
 ### TASK-GOVPOL-99-002: Verify Governance Policy Workstream v0 completion after seed-boundary repair
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-GOVPOL-99-001 follow-up
 - task brief: specs/governance-policy-workstream-v0/tasks/99-verification/02-verify-governance-policy-workstream-v0.md
 - depends on:
@@ -253,4 +253,8 @@
   - if complete, completion is recorded with no new required work
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
+  - verification result: complete after `TASK-GOVPOL-04-001`; no new required work appended.
+  - validation evidence: `tools/validate-ai-first-saas-starter-fullstack.sh` passed, including rendered backend tests, frontend tests/typecheck/build, static secret scan, and real provider smoke.
+  - seed-boundary repair commit observed: `3a5e09c governance-policy-v0: repair seed boundary validation`.
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`.
   - commit message: `governance-policy-v0: verify workstream completion after seed-boundary repair`
