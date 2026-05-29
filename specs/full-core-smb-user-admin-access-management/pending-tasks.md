@@ -46,7 +46,7 @@
 
 ### TASK-FCSMB-UAM-01-001: Inspect access-management source boundaries and define implementation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-management/backlog/01-user-admin-access-management-backlog.md
 - task brief: specs/full-core-smb-user-admin-access-management/tasks/01-access-management/01-inspect-access-management-boundaries.md
 - depends on: [TASK-FCSMB-UAM-00-001]
@@ -77,6 +77,104 @@
 - notes:
   - commit message: `full-core-smb: map user admin access management`
 
+### TASK-FCSMB-UAM-01-002: Implement backend User Admin access management
+
+- status: pending
+- source: specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
+- task brief: specs/full-core-smb-user-admin-access-management/tasks/01-access-management/02-implement-backend-access-management.md
+- depends on: [TASK-FCSMB-UAM-01-001]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-management/README.md
+  - specs/full-core-smb-user-admin-access-management/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
+  - specs/full-core-smb-user-admin-access-management/sprints/01-user-admin-access-management-sprint.md
+  - specs/full-core-smb-user-admin-access-management/backlog/01-user-admin-access-management-backlog.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+- skills:
+  - none; repository source-edit task
+- expected outputs:
+  - updated backend User Admin source under templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/
+  - updated backend tests under templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/
+  - updated specs/full-core-smb-user-admin-access-management/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `rg -n "USERADMIN_UPDATE_MEMBER_STATUS|USERADMIN_PREVIEW_ROLE_CHANGE|USERADMIN_CHANGE_MEMBER_ROLES|user_admin\.role_change_preview\.v1|last-admin|self-disable|idempotency|trace-useradmin|system_message|blocked_provider_or_runtime" templates/ai-first-saas-starter/backend/src templates/ai-first-saas-starter/backend/src/test --glob '!**/target/**'`
+  - `git diff --check`
+- done criteria:
+  - backend member status and role/capability runtime actions are deterministic and tested
+  - last-admin, self-disable, disabled-user, tenant/customer, no-op/idempotency, audit, and trace guardrails are covered
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement backend access management`
+
+### TASK-FCSMB-UAM-01-003: Implement frontend User Admin access management surfaces
+
+- status: pending
+- source: specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
+- task brief: specs/full-core-smb-user-admin-access-management/tasks/01-access-management/03-implement-frontend-access-management.md
+- depends on: [TASK-FCSMB-UAM-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-management/README.md
+  - specs/full-core-smb-user-admin-access-management/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
+  - specs/full-core-smb-user-admin-access-management/sprints/01-user-admin-access-management-sprint.md
+  - specs/full-core-smb-user-admin-access-management/backlog/01-user-admin-access-management-backlog.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+- skills:
+  - none; repository source-edit task
+- expected outputs:
+  - updated starter frontend workstream surfaces/actions/tests under templates/ai-first-saas-starter/frontend/src/
+  - root frontend mirror only if repository conventions require synchronization
+  - updated specs/full-core-smb-user-admin-access-management/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "USERADMIN_UPDATE_MEMBER_STATUS|USERADMIN_PREVIEW_ROLE_CHANGE|USERADMIN_CHANGE_MEMBER_ROLES|user_admin\.role_change_preview\.v1|user_admin\.member_directory\.v1|system_message|last-admin|self-disable|idempotency|trace-useradmin|blocked_provider_or_runtime|table-to-card" templates/ai-first-saas-starter/frontend/src --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - frontend surfaces render member status, role/capability deltas, denials, no-ops, idempotency, and trace links inside the workstream shell
+  - action controls submit governed capability requests and remain advisory only
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement frontend access management`
+
+### TASK-FCSMB-UAM-01-004: Validate User Admin access management runtime
+
+- status: pending
+- source: specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
+- task brief: specs/full-core-smb-user-admin-access-management/tasks/01-access-management/04-validate-access-management-runtime.md
+- depends on: [TASK-FCSMB-UAM-01-003]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-management/README.md
+  - specs/full-core-smb-user-admin-access-management/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
+  - specs/full-core-smb-user-admin-access-management/sprints/01-user-admin-access-management-sprint.md
+  - specs/full-core-smb-user-admin-access-management/backlog/01-user-admin-access-management-backlog.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+- skills:
+  - none; repository validation task
+- expected outputs:
+  - updated specs/full-core-smb-user-admin-access-management/pending-tasks.md with validation notes or follow-up tasks
+  - optional validation notes if useful for verification handoff
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "USERADMIN_UPDATE_MEMBER_STATUS|USERADMIN_PREVIEW_ROLE_CHANGE|USERADMIN_CHANGE_MEMBER_ROLES|user_admin\.role_change_preview\.v1|system_message|last-admin|self-disable|idempotency|trace-useradmin|blocked_provider_or_runtime|runtime validation" templates/ai-first-saas-starter specs/full-core-smb-user-admin-access-management --glob '!**/node_modules/**' --glob '!**/target/**'`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - targeted backend/frontend checks pass or bounded blocker tasks are appended
+  - fullstack validation passes or an explicit in-scope blocker is queued
+  - queue is ready for terminal verification
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: validate access management runtime`
+
 ### TASK-FCSMB-UAM-99-001: Verify User Admin access management readiness
 
 - status: pending
@@ -84,6 +182,9 @@
 - task brief: specs/full-core-smb-user-admin-access-management/tasks/99-verification/01-verify-user-admin-access-management.md
 - depends on:
   - TASK-FCSMB-UAM-01-001
+  - TASK-FCSMB-UAM-01-002
+  - TASK-FCSMB-UAM-01-003
+  - TASK-FCSMB-UAM-01-004
 - required reads:
   - AGENTS.md
   - skills/README.md
