@@ -142,7 +142,7 @@
 
 ### TASK-FCSMB-99-001: Verify full-core SMB umbrella readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-saas-hardening/tasks/99-verification/01-verify-full-core-smb-umbrella.md
 - depends on:
@@ -179,3 +179,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify umbrella readiness`
+  - verification: umbrella done state satisfied; Wave 1 child queues exist for `specs/full-core-smb-baseline-and-ux/` and `specs/full-core-smb-user-admin/` with first runnable tasks, inherited SMB/UX/runtime standards, and terminal verification tasks.
+  - checks: `git diff --check`; targeted `rg` over `specs/full-core-smb-baseline-and-ux`, `specs/full-core-smb-user-admin`, and `specs/full-core-smb-saas-hardening/wave-plan.md` returned 110 matches.
