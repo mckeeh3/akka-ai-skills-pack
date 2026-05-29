@@ -143,7 +143,7 @@
 
 ### TASK-REL-99-001: Verify release-readiness completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/release-readiness-after-five-core-v0/tasks/99-verification/01-verify-release-readiness.md
 - depends on:
@@ -176,3 +176,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `release-readiness: verify completion`
+  - verification recorded in `specs/release-readiness-after-five-core-v0/verification-notes.md`
+  - no release blockers or follow-up tasks were required
