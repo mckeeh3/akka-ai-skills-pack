@@ -144,7 +144,7 @@
 
 ### TASK-GOVPOL-99-001: Verify Governance Policy Workstream v0 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/governance-policy-workstream-v0/tasks/99-verification/01-verify-governance-policy-workstream-v0.md
 - depends on:
@@ -179,4 +179,76 @@
   - if complete, completion is recorded with no new required work
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
+  - validation evidence: `tools/validate-ai-first-saas-starter-fullstack.sh` failed in rendered starter at `AgentBehaviorSeedLoaderTest.allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles`; `agent-governance-policy` expected `ALLOWED` runtime tool resolution but was `DENIED`.
+  - verification result: incomplete; appended `TASK-GOVPOL-04-001` and new terminal `TASK-GOVPOL-99-002`.
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh` failed as above; `git diff --check` passed.
   - commit message: `governance-policy-v0: verify workstream completion`
+
+### TASK-GOVPOL-04-001: Repair Governance/Policy seed boundary validation
+
+- status: pending
+- source: TASK-GOVPOL-99-001 verification finding
+- task brief: specs/governance-policy-workstream-v0/tasks/04-validation/01-repair-governance-policy-seed-boundary.md
+- depends on:
+  - TASK-GOVPOL-99-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/governance-policy-workstream-v0/workstream-contract.md
+  - specs/governance-policy-workstream-v0/capability-inventory.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoader.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoaderTest.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeToolResolver.java
+- skills:
+  - akka-agent-tool-boundaries
+  - akka-agent-seed-documents
+- expected outputs:
+  - focused seed/boundary/runtime-tool validation repair for Governance/Policy managed-agent profile
+  - updated backend tests if needed
+  - updated specs/governance-policy-workstream-v0/pending-tasks.md
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - fullstack starter validation passes
+  - Governance/Policy managed-agent seed boundary resolves runtime loader tools through the governed runtime path
+  - task changes and queue update are committed
+- notes:
+  - commit message: `governance-policy-v0: repair seed boundary validation`
+
+### TASK-GOVPOL-99-002: Verify Governance Policy Workstream v0 completion after seed-boundary repair
+
+- status: pending
+- source: mini-project verification loop after TASK-GOVPOL-99-001 follow-up
+- task brief: specs/governance-policy-workstream-v0/tasks/99-verification/02-verify-governance-policy-workstream-v0.md
+- depends on:
+  - TASK-GOVPOL-04-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/five-core-workstreams-v0-plan/workstream-dependency-map.md
+  - specs/governance-policy-workstream-v0/README.md
+  - specs/governance-policy-workstream-v0/conversation-capture.md
+  - specs/governance-policy-workstream-v0/pending-tasks.md
+  - specs/governance-policy-workstream-v0/sprints/*.md
+  - specs/governance-policy-workstream-v0/backlog/*.md
+  - specs/governance-policy-workstream-v0/tasks/**/*.md
+  - specs/governance-policy-workstream-v0/workstream-contract.md
+  - specs/governance-policy-workstream-v0/capability-inventory.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/governance-policy-workstream-v0/pending-tasks.md
+  - completion summary, verification notes, or newly appended follow-up tasks
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - task group goals have been compared against completed work after seed-boundary repair
+  - mini-project done state has been compared against completed work
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+- notes:
+  - commit message: `governance-policy-v0: verify workstream completion after seed-boundary repair`
