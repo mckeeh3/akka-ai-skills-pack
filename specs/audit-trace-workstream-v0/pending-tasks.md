@@ -192,7 +192,7 @@
 
 ### TASK-AUDITTRACE-04-001: Fix Audit/Trace static secret-marker validation
 
-- status: pending
+- status: done
 - source: TASK-AUDITTRACE-99-001 verification finding
 - task brief: specs/audit-trace-workstream-v0/tasks/04-validation-repair/01-fix-static-secret-marker-validation.md
 - depends on:
@@ -220,6 +220,8 @@
   - frontend redaction fixtures still demonstrate omitted/secret field redaction without exposing backend secret environment-variable names in built assets
   - task changes and queue update are committed
 - notes:
+  - replaced the explicit backend provider secret environment-variable name in Audit/Trace frontend redaction fixtures with a generic `providerCredentialEnvVar` field marker while preserving omitted secret-field semantics.
+  - checks passed: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`
   - commit message: `audit-trace-v0: fix static secret validation`
 
 ### TASK-AUDITTRACE-99-002: Verify Audit Trace Workstream v0 completion after validation repair

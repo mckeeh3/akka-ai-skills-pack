@@ -989,7 +989,7 @@ export const auditTraceDetailSurface = envelope(
     authorizationBasis: 'audit.trace.detail.read',
     decision: 'blocked_provider_or_runtime',
     redactedEvidence: 'Model-backed explanation was blocked because backend provider configuration was missing or blank.',
-    redactionMetadata: { omittedFieldKeys: ['OPENAI_API_KEY', 'rawPrompt', 'hiddenPromptText', 'rawToolPayload'] },
+    redactionMetadata: { omittedFieldKeys: ['providerCredentialEnvVar', 'rawPrompt', 'hiddenPromptText', 'rawToolPayload'] },
     traceLinks: ['trace-provider-blocked-002']
   },
   [auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide]
