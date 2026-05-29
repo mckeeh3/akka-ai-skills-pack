@@ -47,7 +47,7 @@
 
 ### TASK-USERADMIN-01-001: Define User Admin Workstream v0 contract and capability inventory
 
-- status: pending
+- status: done
 - source: specs/user-admin-workstream-v0/backlog/01-user-admin-workstream-v0-build-backlog.md
 - task brief: specs/user-admin-workstream-v0/tasks/01-contract/01-define-workstream-contract.md
 - depends on:
@@ -74,6 +74,7 @@
   - task changes and queue update are committed
 - notes:
   - unblocked by completed TASK-FCPLAN-01-001; inherit shared contract and dependency map before defining workstream-specific scope.
+  - checks passed: `git diff --check`; `rg -n "capability|AuthContext|request/response|AutonomousAgent|deterministic|trace|validation" specs/user-admin-workstream-v0`
   - commit message: `user-admin-v0: define workstream contract`
 
 ### TASK-USERADMIN-02-001: Implement User Admin Workstream v0 backend/runtime vertical
