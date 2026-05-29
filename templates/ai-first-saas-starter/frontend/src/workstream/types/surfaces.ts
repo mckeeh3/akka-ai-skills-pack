@@ -130,6 +130,30 @@ export type DetailEditSurfaceData = {
   policyRefs?: string[];
   redactedDetails?: Record<string, string>;
   traceLinks?: string[];
+  accessManagement?: {
+    memberStatus?: {
+      accountStatus: string;
+      membershipStatus: string;
+      statusActionIds: string[];
+      denialHints: string[];
+      noOpMessage?: string;
+      idempotencyKeySource?: string;
+      traceLinks: string[];
+    };
+    roleChangePreview?: {
+      surfaceContract: 'user_admin.role_change_preview.v1';
+      currentRoles: string[];
+      proposedRoles: string[];
+      capabilityDelta: { added: string[]; removed: string[]; unchanged?: string[] };
+      affectedWorkstreams: string[];
+      policyHints: string[];
+      lastAdminImpact: string;
+      approvalRequired: boolean;
+      noOp: boolean;
+      traceLinks: string[];
+    };
+    advisoryNotice: string;
+  };
 };
 
 export type DecisionSurfaceData = {

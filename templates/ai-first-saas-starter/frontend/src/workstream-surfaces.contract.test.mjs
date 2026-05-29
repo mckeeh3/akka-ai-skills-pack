@@ -104,6 +104,9 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(allSurfaceComponents, /role="search"/);
   assert.match(allSurfaceComponents, /className="surface-detail-edit-form"/);
   assert.match(allSurfaceComponents, /permissionState/);
+  assert.match(allSurfaceComponents, /access-management-evidence/);
+  assert.match(allSurfaceComponents, /Role\/capability preview/);
+  assert.match(allSurfaceComponents, /Member status authority/);
   assert.match(allSurfaceComponents, /Detail audit trace affordances/);
   assert.match(allSurfaceComponents, /decision-card/);
   assert.match(allSurfaceComponents, /audit-timeline/);

@@ -53,7 +53,7 @@ export function CapabilityActionButton({ action, surfaceId, selectedContextId, s
         <span id={`${action.actionId}-audit`} className="capability-chip audit-trace">{auditTraceLabel(action)}</span>
         {action.resultSurface?.openPlacement && <span className="capability-chip result-surface">Opens {action.resultSurface.openPlacement}</span>}
       </div>
-      {action.requiresConfirmation && <p id={`${action.actionId}-confirmation`} className="capability-action-note">Confirmation required before submission.</p>}
+      {action.requiresConfirmation && <p id={`${action.actionId}-confirmation`} className="capability-action-note">Confirmation required before submission; frontend controls are advisory and backend capability checks remain authoritative.</p>}
       {action.requiresApproval && <p id={`${action.actionId}-approval`} className="capability-action-note">Approval policy applies before side effects are committed.</p>}
       {action.disabled && <p id={`${action.actionId}-denied`} className="form-error denied-reason">{action.disabled.message}</p>}
     </div>

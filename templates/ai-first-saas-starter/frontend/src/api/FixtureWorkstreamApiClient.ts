@@ -11,6 +11,9 @@ import {
   displayMyAccountSettingsActionResult,
   updateMyAccountSettingsActionResult,
   userAdminInvitationActionStatusSurface,
+  userAdminMemberStatusActionSurface,
+  userAdminRoleChangeActionSurface,
+  userAdminRoleChangePreviewSurface,
   displayAgentDetailActionResult,
   displayGovernancePolicyDashboardActionResult,
   displayGovernancePolicyInventoryActionResult,
@@ -151,6 +154,12 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
             ? displayUserListActionResult
             : ['action-invite-user', 'action-useradmin-resend-invitation', 'action-useradmin-revoke-invitation'].includes(request.actionId)
               ? { status: request.actionId === 'action-useradmin-revoke-invitation' ? 'no-op' as const : 'accepted' as const, message: 'Invitation action result came from the backend-aligned workstream action contract with safe system_message fallback states.', correlationId: request.correlationId, traceIds: ['trace-useradmin-invitation-action', 'trace-useradmin'], resultSurface: userAdminInvitationActionStatusSurface }
+              : ['action-useradmin-disable-member', 'action-useradmin-reactivate-member'].includes(request.actionId)
+                ? { status: request.actionId === 'action-useradmin-disable-member' ? 'no-op' as const : 'accepted' as const, message: 'Member status action result came from the backend-aligned USERADMIN_UPDATE_MEMBER_STATUS path with last-admin, self-disable, idempotency, trace, and system_message evidence.', correlationId: request.correlationId, traceIds: ['trace-useradmin-status-action', 'trace-useradmin'], resultSurface: userAdminMemberStatusActionSurface }
+                : request.actionId === 'action-useradmin-preview-role-change'
+                  ? { status: 'accepted' as const, message: 'Role-change preview returned user_admin.role_change_preview.v1 evidence with capability delta, affected workstreams, policy hints, last-admin impact, and trace links.', correlationId: request.correlationId, traceIds: ['trace-useradmin-role-preview', 'trace-useradmin'], resultSurface: userAdminRoleChangePreviewSurface }
+                  : request.actionId === 'action-useradmin-change-member-roles'
+                    ? { status: 'approval-required' as const, message: 'Role-change commit remains backend-authoritative and approval-gated; frontend controls are advisory only.', correlationId: request.correlationId, traceIds: ['trace-useradmin-role-change-action', 'trace-useradmin'], resultSurface: userAdminRoleChangeActionSurface }
             : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
             ? actionResultsByStatus['approval-required']
             : actionResultsByStatus.accepted;

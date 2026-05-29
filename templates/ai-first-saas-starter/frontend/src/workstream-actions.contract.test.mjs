@@ -20,6 +20,7 @@ test('capability action components preserve disabled, denied, approval, confirma
   assert.match(button, /data-trace-required=\{action\.audit\.traceRequired\}/);
   assert.match(button, /auditTraceLabel\(action\)/);
   assert.match(button, /idempotencyLabel\(action\)/);
+  assert.match(button, /frontend controls are advisory and backend capability checks remain authoritative/);
 });
 
 test('capability action helpers build governed requests with idempotency and selected auth context', () => {

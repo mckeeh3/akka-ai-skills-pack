@@ -112,7 +112,7 @@
 
 ### TASK-FCSMB-UAM-01-003: Implement frontend User Admin access management surfaces
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-access-management/tasks/01-access-management/03-implement-frontend-access-management.md
 - depends on: [TASK-FCSMB-UAM-01-002]
@@ -141,6 +141,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement frontend access management`
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; required `rg` proof; `git diff --check`
 
 ### TASK-FCSMB-UAM-01-004: Validate User Admin access management runtime
 
