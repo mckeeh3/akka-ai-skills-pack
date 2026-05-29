@@ -225,7 +225,7 @@
 
 ### TASK-AGENTADMIN-99-002: Verify Agent Admin Workstream v0 completion after validation fix
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-AGENTADMIN-04-001
 - task brief: specs/agent-admin-workstream-v0/tasks/99-verification/01-verify-agent-admin-workstream-v0.md
 - depends on:
@@ -258,4 +258,7 @@
   - if complete, completion is recorded with no new required work
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
+  - verification result: complete; fullstack starter validation passed after the managed-runtime validation fix, with backend tests, frontend tests/typecheck/build, static secret scan, and real model provider smoke passing through the rendered starter validation path.
+  - no new required follow-up tasks were appended; the Agent Admin Workstream v0 mini-project is complete at the stated scope.
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`
   - commit message: `agent-admin-v0: verify workstream completion`
