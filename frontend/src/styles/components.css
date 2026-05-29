@@ -219,10 +219,11 @@
   letter-spacing: 0.01em;
   line-height: 1.2;
   opacity: 0;
+  overflow-wrap: anywhere;
   pointer-events: none;
   transform: translateY(-50%) translateX(-0.25rem);
   transition: opacity 120ms ease, transform 120ms ease;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .workstream-agent-button:hover .workstream-icon-tooltip,
@@ -367,10 +368,11 @@
   letter-spacing: 0.01em;
   line-height: 1.2;
   opacity: 0;
+  overflow-wrap: anywhere;
   pointer-events: none;
   transform: translateY(-50%) translateX(-0.25rem);
   transition: opacity 120ms ease, transform 120ms ease;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .workstream-rail-toggle-tooltip::before {
@@ -531,10 +533,11 @@
   letter-spacing: 0.01em;
   line-height: 1.2;
   opacity: 0;
+  overflow-wrap: anywhere;
   pointer-events: none;
   transform: translateY(0.25rem);
   transition: opacity 120ms ease, transform 120ms ease;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .workstream-send-prompt-tooltip::before {
