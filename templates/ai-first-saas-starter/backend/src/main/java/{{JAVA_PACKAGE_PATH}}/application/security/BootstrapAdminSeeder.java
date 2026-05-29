@@ -41,20 +41,57 @@ public final class BootstrapAdminSeeder {
     if (entry.isBlank()) {
       return;
     }
-    var parts = entry.split(":");
-    if (parts.length < 3) {
+    var parts = entry.split(":", -1);
+    if (parts.length != 3) {
       throw new IllegalArgumentException("ADMIN_USERS entries must be email:ROLE:scope");
     }
     var email = parts[0].trim().toLowerCase(Locale.ROOT);
-    var role = FoundationRole.valueOf(parts[1].trim());
+    var role = FoundationRole.valueOf(parts[1].trim().toUpperCase(Locale.ROOT));
     var scope = parts[2].trim();
-    if (email.isBlank() || role != FoundationRole.TENANT_ADMIN) {
-      throw new IllegalArgumentException("Starter bootstrap only supports explicitly configured TENANT_ADMIN emails");
+    if (email.isBlank() || !email.contains("@")) {
+      throw new IllegalArgumentException("Invalid email in ADMIN_USERS entry");
     }
-    if (!DEFAULT_TENANT_ID.equals(scope)) {
-      throw new IllegalArgumentException("Starter bootstrap scope must be " + DEFAULT_TENANT_ID);
+    if (!role.name().endsWith("_ADMIN")) {
+      throw new IllegalArgumentException("ADMIN_USERS roles must be admin roles");
     }
-    seedTenantUser(repository, email, null, role, false);
+    var scopedMembership = scopedMembership(email, role, scope);
+    seedScopedUser(repository, email, null, scopedMembership);
+  }
+
+  private static Membership scopedMembership(String email, FoundationRole role, String scope) {
+    if (role == FoundationRole.SAAS_OWNER_ADMIN) {
+      if (!"OWNER".equalsIgnoreCase(scope)) {
+        throw new IllegalArgumentException("SAAS_OWNER_ADMIN scope must be OWNER");
+      }
+      return membership(email, ScopeType.SAAS_OWNER, null, null, role);
+    }
+    if (role.defaultScopeType() == ScopeType.TENANT) {
+      if (scope.isBlank() || "OWNER".equalsIgnoreCase(scope)) {
+        throw new IllegalArgumentException(role + " scope must include a tenant id");
+      }
+      return membership(email, ScopeType.TENANT, scope, null, role);
+    }
+    if (role.defaultScopeType() == ScopeType.CUSTOMER) {
+      var scopeParts = scope.split("/", -1);
+      if (scopeParts.length != 2 || scopeParts[0].isBlank() || scopeParts[1].isBlank()) {
+        throw new IllegalArgumentException(role + " scope must be tenant-id/customer-id");
+      }
+      return membership(email, ScopeType.CUSTOMER, scopeParts[0], scopeParts[1], role);
+    }
+    throw new IllegalArgumentException("Unsupported ADMIN_USERS role: " + role);
+  }
+
+  private static Membership membership(String email, ScopeType scopeType, String tenantId, String customerId, FoundationRole role) {
+    return new Membership(
+        "membership-" + email,
+        email,
+        scopeType,
+        tenantId,
+        customerId,
+        List.of(role),
+        MembershipStatus.ACTIVE,
+        false,
+        null);
   }
 
   private static void seedTenantUser(
@@ -63,11 +100,11 @@ public final class BootstrapAdminSeeder {
       String workosSubject,
       FoundationRole role,
       boolean includeAuditorRole) {
-    repository.saveAccount(new Account(email, workosSubject, email, email, AccountStatus.ACTIVE, workosSubject == null ? "UNLINKED" : "LINKED"));
-    repository.putProfile(new UserProfile(email, email, displayName(email), null, null, null));
-    repository.putSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
     var roles = includeAuditorRole ? List.of(role, FoundationRole.AUDITOR) : List.of(role);
-    repository.putMembership(
+    seedScopedUser(
+        repository,
+        email,
+        workosSubject,
         new Membership(
             "membership-" + email,
             email,
@@ -78,6 +115,17 @@ public final class BootstrapAdminSeeder {
             MembershipStatus.ACTIVE,
             false,
             null));
+  }
+
+  private static void seedScopedUser(
+      InMemoryIdentityRepository repository,
+      String email,
+      String workosSubject,
+      Membership membership) {
+    repository.saveAccount(new Account(email, workosSubject, email, email, AccountStatus.ACTIVE, workosSubject == null ? "UNLINKED" : "LINKED"));
+    repository.putProfile(new UserProfile(email, email, displayName(email), null, null, null));
+    repository.putSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
+    repository.putMembership(membership);
   }
 
   private static String displayName(String email) {

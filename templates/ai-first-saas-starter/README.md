@@ -158,7 +158,7 @@ For local WorkOS/AuthKit sign-in:
 2. Add `http://localhost:9000` as the AuthKit redirect/callback URI.
 3. Put the public client id in `frontend/.env.local` as `VITE_WORKOS_CLIENT_ID`; keep `VITE_WORKOS_REDIRECT_URI=http://localhost:9000`.
 4. Put backend-only WorkOS values in `.env`: `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, and `WORKOS_JWT_AUDIENCE` from the same WorkOS environment, plus `APP_PUBLIC_BASE_URL=http://localhost:9000`.
-5. Set `ADMIN_USERS="your.email@example.com:TENANT_ADMIN:tenant-starter"` before running the backend for real local AuthKit testing.
+5. Set `ADMIN_USERS="your.email@example.com:SAAS_OWNER_ADMIN:OWNER"` before running the backend for real local AuthKit testing. Add tenant admins as `email:TENANT_ADMIN:tenant-starter` when needed.
 6. Set `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL` before testing production invitation email delivery; local/dev/test may use the captured outbox adapter.
 
 AuthKit access tokens may contain `sub` without `email`. The backend resolves `/api/me` identity through `WorkosIdentityResolver`: it uses email-like token claims when present and otherwise calls WorkOS user-management server-side with backend-only `WORKOS_API_KEY`. This lookup does not authorize users by itself; local Akka `ADMIN_USERS`, account, membership, and invitation state remains authoritative.
@@ -171,7 +171,7 @@ Important variables:
 First-admin semantics are intentionally closed:
 
 - there is no open self-registration and no silent privileged account creation from `/api/me`;
-- `ADMIN_USERS` is an explicit first-admin allowlist for the clean local scaffold, currently limited to `email:TENANT_ADMIN:tenant-starter` entries;
+- `ADMIN_USERS` is an explicit first-admin allowlist for the clean local scaffold using `email:ROLE:scope` entries, such as `email:SAAS_OWNER_ADMIN:OWNER`, `email:TENANT_ADMIN:tenant-starter`, or `email:CUSTOMER_ADMIN:tenant-starter/customer-123`;
 - if `ADMIN_USERS` is unset, only deterministic `admin@example.test` / `member@example.test` demo records are seeded for tests and fixture inspection;
 - production-ready projects must replace the in-memory starter repository with durable local authorization state and an audited bootstrap/import flow before external use.
 

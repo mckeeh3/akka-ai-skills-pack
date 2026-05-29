@@ -75,16 +75,23 @@ class MeServiceTest {
 
   @Test
   void configuredBootstrapAdminLinksOnlyExplicitLocalAccount() {
-    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:TENANT_ADMIN:tenant-starter");
+    BootstrapAdminSeeder.seedConfiguredAdmins(
+        repository,
+        "owner@example.com:SAAS_OWNER_ADMIN:OWNER,tenant-admin@example.com:TENANT_ADMIN:tenant-starter");
 
-    var linked = meService.me(identity("workos-owner", "owner@example.com"), null, "corr-bootstrap");
+    var owner = meService.me(identity("workos-owner", "owner@example.com"), null, "corr-owner-bootstrap");
 
-    assertEquals("owner@example.com", linked.account().accountId());
-    assertEquals("active", linked.account().status());
-    assertEquals("tenant-starter", linked.selectedAuthContext().tenantId());
-    assertTrue(linked.visibleCapabilityIds().contains("tenant.user.manage"));
-    assertTrue(linked.visibleCapabilityIds().contains("secure-tenant-user-foundation"));
+    assertEquals("owner@example.com", owner.account().accountId());
+    assertEquals("active", owner.account().status());
+    assertTrue(owner.selectedAuthContext().roleIds().contains("saas-owner-admin"));
+    assertEquals(null, owner.selectedAuthContext().tenantId());
+    assertTrue(owner.visibleCapabilityIds().contains("saas_owner.user.manage"));
     assertEquals("workos-owner", repository.findAccountByEmail("owner@example.com").orElseThrow().workosUserId());
+
+    var tenantAdmin = meService.me(identity("workos-tenant-admin", "tenant-admin@example.com"), null, "corr-tenant-bootstrap");
+    assertEquals("tenant-starter", tenantAdmin.selectedAuthContext().tenantId());
+    assertTrue(tenantAdmin.visibleCapabilityIds().contains("tenant.user.manage"));
+    assertTrue(tenantAdmin.visibleCapabilityIds().contains("secure-tenant-user-foundation"));
 
     var unknown = assertThrows(
         AuthorizationException.class,
@@ -93,13 +100,16 @@ class MeServiceTest {
   }
 
   @Test
-  void bootstrapConfigRejectsImplicitPrivilegeAndWrongScope() {
+  void bootstrapConfigRejectsInvalidScopes() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:OWNER"));
+        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:tenant-starter"));
     assertThrows(
         IllegalArgumentException.class,
-        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:TENANT_ADMIN:other-tenant"));
+        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:CUSTOMER_ADMIN:tenant-only"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "member@example.com:TENANT_EMPLOYEE:tenant-starter"));
   }
 
   @Test
