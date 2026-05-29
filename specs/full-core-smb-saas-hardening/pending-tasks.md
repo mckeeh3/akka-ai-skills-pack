@@ -82,7 +82,7 @@
 
 ### TASK-FCSMB-01-002: Outline full-core workstream capabilities, surfaces, and agents
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-saas-hardening/backlog/01-full-core-smb-hardening-backlog.md
 - task brief: specs/full-core-smb-saas-hardening/tasks/01-baseline/02-outline-workstream-capabilities.md
 - depends on: [TASK-FCSMB-01-001]
@@ -110,6 +110,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: outline workstream capabilities`
+  - checks: `git diff --check`; `rg -n "My Account|User Admin|Agent Admin|Audit/Trace|Governance/Policy|capability|surface|dashboard|worker|AutonomousAgent|deterministic" specs/full-core-smb-saas-hardening`
 
 ### TASK-FCSMB-01-003: Create first-wave child mini-project queues
 
