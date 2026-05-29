@@ -47,7 +47,7 @@
 
 ### TASK-MYACCT-01-001: Define My Account Workstream v0 contract and capability inventory
 
-- status: pending
+- status: done
 - source: specs/my-account-workstream-v0/backlog/01-my-account-workstream-v0-build-backlog.md
 - task brief: specs/my-account-workstream-v0/tasks/01-contract/01-define-workstream-contract.md
 - depends on:
@@ -74,6 +74,7 @@
   - task changes and queue update are committed
 - notes:
   - unblocked by completed TASK-FCPLAN-01-001; inherit shared contract and dependency map before defining workstream-specific scope.
+  - checks passed: `git diff --check`; `rg -n "capability|AuthContext|request/response|AutonomousAgent|deterministic|trace|validation" specs/my-account-workstream-v0`
   - commit message: `my-account-v0: define workstream contract`
 
 ### TASK-MYACCT-02-001: Implement My Account Workstream v0 backend/runtime vertical
