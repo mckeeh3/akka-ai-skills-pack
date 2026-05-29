@@ -226,7 +226,7 @@
 
 ### TASK-AUDITTRACE-99-002: Verify Audit Trace Workstream v0 completion after validation repair
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-AUDITTRACE-04-001
 - task brief: specs/audit-trace-workstream-v0/tasks/99-verification/02-verify-audit-trace-workstream-v0.md
 - depends on:
@@ -259,4 +259,8 @@
   - if incomplete, new bounded tasks are appended before a new terminal verification task
   - task changes and queue update are committed
 - notes:
+  - verification compared completed contract/backend/frontend work and the validation repair against the shared five-core v0 contract, dependency-map gates, sprint/backlog goals, capability inventory, and mini-project done state.
+  - runtime/API/UI validation evidence is complete after the repair: `tools/validate-ai-first-saas-starter-fullstack.sh` passed backend Maven tests, frontend tests, frontend typecheck, frontend build into Akka static resources, built static secret scan, and optional real-provider smoke without provider-secret leaks.
+  - no material queue gaps remain for Audit Trace Workstream v0; no follow-up tasks were appended.
+  - checks passed: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`
   - commit message: `audit-trace-v0: verify workstream completion after validation repair`
