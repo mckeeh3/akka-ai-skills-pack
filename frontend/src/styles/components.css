@@ -459,6 +459,7 @@
   bottom: var(--space-6);
   left: calc(var(--shell-sidebar-width) + var(--space-6));
   z-index: 6;
+  overflow: visible;
   pointer-events: none;
 }
 
