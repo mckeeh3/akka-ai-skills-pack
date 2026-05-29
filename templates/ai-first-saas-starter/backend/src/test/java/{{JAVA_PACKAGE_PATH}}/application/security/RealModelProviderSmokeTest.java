@@ -25,7 +25,10 @@ class RealModelProviderSmokeTest extends TestKitSupport {
         .append("akka.javasdk.agent.openai-low-temperature.model-name = \"").append(hoconString(modelId)).append("\"\n")
         .append("akka.javasdk.agent.openai-low-temperature.api-key = \"").append(hoconString(apiKey == null ? "n/a" : apiKey)).append("\"\n")
         .append("akka.javasdk.agent.openai-low-temperature.base-url = \"").append(hoconString(baseUrl)).append("\"\n")
-        .append("akka.javasdk.agent.openai-low-temperature.temperature = 0.1\n")
+        // Keep sampling parameters at OpenAI defaults. Some supported OpenAI
+        // models reject non-default temperature values, while Akka provider
+        // configuration still requires these keys.
+        .append("akka.javasdk.agent.openai-low-temperature.temperature = 1.0\n")
         .append("akka.javasdk.agent.openai-low-temperature.top-p = 1.0\n")
         .append("akka.javasdk.agent.openai-low-temperature.max-tokens = -1\n")
         .append("akka.javasdk.agent.openai-low-temperature.max-completion-tokens = -1\n")

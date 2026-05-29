@@ -189,7 +189,7 @@
 
 ### TASK-MYACCT-04-001: Repair real-provider smoke model compatibility
 
-- status: pending
+- status: done
 - source: TASK-MYACCT-99-001 verification finding
 - task brief: specs/my-account-workstream-v0/tasks/04-provider-smoke/01-repair-real-provider-smoke-model-config.md
 - depends on:
@@ -220,6 +220,8 @@
   - task changes and queue update are committed
 - notes:
   - verification gap: when `OPENAI_API_KEY` was present, OpenAI rejected `temperature = 0.1`; do not replace the real provider path with deterministic/model-less fallback.
+  - repaired starter and real-provider smoke config to use OpenAI default-compatible sampling values (`temperature = 1.0`, `top-p = 1.0`) while preserving the concrete Akka Agent path, runtime tool registration, trace assertions, and secret-boundary checks.
+  - checks passed: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`
   - commit message: `my-account-v0: repair provider smoke config`
 
 ### TASK-MYACCT-99-002: Re-verify My Account Workstream v0 completion

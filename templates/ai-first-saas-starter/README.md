@@ -137,6 +137,8 @@ export OPENAI_REQUEST_TIMEOUT_SECONDS="30" # optional default
 tools/smoke-ai-first-saas-starter-real-model.sh
 ```
 
+The starter's Akka model-provider config intentionally keeps `temperature` and `top-p` at OpenAI default-compatible values because some supported OpenAI models reject non-default sampling overrides. Keep any future sampling overrides model-specific.
+
 Then open the Akka-hosted frontend at `http://localhost:9000/` or `http://localhost:9000/ui` depending on the local Akka port. Use `?fixtureWorkstream=1` only to inspect the frontend fixture mode; normal starter testing should exercise `/api/workstream/...` backend APIs.
 
 ## Local environment and AuthKit bootstrap
