@@ -15,7 +15,9 @@ const composer = read('./workstream/composer/WorkstreamComposer.tsx');
 const composerState = read('./workstream/composer/composerState.ts');
 const panel = read('./workstream/shell/WorkstreamPanel.tsx');
 const shell = read('./workstream/shell/WorkstreamShell.tsx');
+const shellState = read('./workstream/shell/shellState.ts');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
+const workstreamItem = read('./workstream/stream/WorkstreamItem.tsx');
 const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
 const agentTypes = read('./workstream/types/agents.ts');
 const agentFixtures = read('./workstream/fixtures/agents.ts');
@@ -194,4 +196,27 @@ test('deep links are secondary selectors for agent, item, surface, and placement
   for (const key of ['agent', 'itemId', 'surfaceId', 'placement']) {
     assert.match(deepLinks, new RegExp(key));
   }
+});
+
+test('shell requests normalize prompts, actions, and deep links into prompt-like request surfaces', () => {
+  assert.match(shell, /onShellRequest/);
+  assert.match(shell, /normalizePromptToShellRequest/);
+  assert.match(shell, /submitComposerRequest/);
+  assert.match(shell, /onSubmit=\{submitComposerRequest\}/);
+  assert.match(shell, /buildShellRequestItem\(request\)/);
+  assert.match(shell, /selectionFromShellRequest/);
+  assert.match(shell, /origin: functionalAgentId === 'agent-my-account' \? 'my_account_panel' : 'surface_action'/);
+  assert.match(shellState, /normalizePromptToShellRequest/);
+  assert.match(shellState, /show surface \$\{targetSurfaceId\}/);
+  assert.match(shellState, /show workstream \$\{normalizedWorkstream\}/);
+  assert.match(shellState, /scope: 'authorized_cross_workstream'/);
+  assert.match(shellState, /shellRequestFromSurfaceAction/);
+  assert.match(shellState, /origin \?\? 'surface_action'/);
+  assert.match(shellState, /buildShellRequestItem/);
+  assert.match(workstreamItem, /data-request-origin=\{item\.requestOrigin\}/);
+  assert.match(workstreamItem, /data-canonical-prompt=\{item\.canonicalPrompt\}/);
+  assert.match(deepLinks, /parseDeepLinkShellRequest/);
+  assert.match(deepLinks, /origin: 'deep_link'/);
+  assert.match(shellState, /const surfaceMatch = \/\^show\\s\+\(\?:surface\\s\+\)\?\(\.\+\)\$\/i\.exec\(trimmed\)/);
+  assert.match(shellState, /slugifyShellRequestToken\(surfaceMatch\[1\]\)/);
 });

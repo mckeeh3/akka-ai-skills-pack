@@ -46,6 +46,21 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     idempotency: { required: false },
     audit: { eventType: 'AdminUsersRead', traceRequired: true }
   },
+  'surface-request': {
+    actionId: 'action-show-user-list',
+    label: 'Show users list',
+    intent: 'surface-request',
+    capabilityId: userAdminCapabilities.search,
+    idempotency: { required: false },
+    resultSurface: { appendSurfaceType: 'table', openPlacement: 'inline' },
+    shellRequest: {
+      requestType: 'show_surface',
+      targetFunctionalAgentId: 'agent-user-admin',
+      targetSurfaceId: 'surface-user-admin-list',
+      displayText: 'Show users list'
+    },
+    audit: { eventType: 'UserListSurfaceRequested', traceRequired: true }
+  },
   command: {
     actionId: 'action-invite-user',
     label: 'Invite user',

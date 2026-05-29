@@ -1,4 +1,4 @@
-import type { WorkstreamSelection } from '../types';
+import type { WorkstreamSelection, WorkstreamShellRequest } from '../types';
 
 export function parseWorkstreamDeepLink(search: string): Partial<WorkstreamSelection> {
   const params = new URLSearchParams(search);
@@ -7,6 +7,25 @@ export function parseWorkstreamDeepLink(search: string): Partial<WorkstreamSelec
     selectedItemId: params.get('itemId') ?? undefined,
     selectedSurfaceId: params.get('surfaceId') ?? undefined,
     surfacePlacement: (params.get('placement') as WorkstreamSelection['surfacePlacement'] | null) ?? undefined
+  };
+}
+
+export function parseDeepLinkShellRequest(search: string, correlationId = `deep-link:${Date.now()}`): WorkstreamShellRequest | undefined {
+  const selection = parseWorkstreamDeepLink(search);
+  if (!selection.selectedFunctionalAgentId && !selection.selectedSurfaceId) return undefined;
+  const requestType = selection.selectedSurfaceId ? 'show_surface' : 'open_workstream';
+  const targetFunctionalAgentId = selection.selectedFunctionalAgentId;
+  const targetSurfaceId = selection.selectedSurfaceId;
+  return {
+    requestType,
+    origin: 'deep_link',
+    displayText: targetSurfaceId ? `Open linked surface ${targetSurfaceId}` : `Open linked workstream ${targetFunctionalAgentId}`,
+    canonicalPrompt: targetSurfaceId ? `show surface ${targetSurfaceId}` : `show workstream ${targetFunctionalAgentId}`,
+    targetFunctionalAgentId,
+    targetSurfaceId,
+    targetItemId: selection.selectedItemId,
+    scope: 'authorized_cross_workstream',
+    correlationId
   };
 }
 

@@ -182,7 +182,7 @@ Each surface action is a UI exposure of a governed capability.
 type SurfaceAction = {
   actionId: string;
   label: string;
-  intent: "read" | "command" | "proposal" | "approval" | "workflow" | "governance" | "trace";
+  intent: "read" | "surface-request" | "command" | "proposal" | "approval" | "workflow" | "governance" | "trace";
   capabilityId: string;
   inputSchemaRef?: string;
   requiresConfirmation?: boolean;
@@ -200,6 +200,13 @@ type SurfaceAction = {
     updateSurfaceId?: string;
     openPlacement?: "inline" | "modal" | "side-panel" | "deep-link";
   };
+  shellRequest?: {
+    requestType: "show_surface" | "open_workstream" | "refresh_surface" | "open_attention_item";
+    targetFunctionalAgentId?: string;
+    targetSurfaceId?: string;
+    targetItemId?: string;
+    displayText?: string;
+  };
   audit: {
     eventType: string;
     traceRequired: boolean;
@@ -209,12 +216,13 @@ type SurfaceAction = {
 
 Action rules:
 
-- `capabilityId` is required for every action, including read/query actions and surface-request actions such as show dashboard, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
+- `capabilityId` is required for every action, including read/query actions and surface-request actions such as show surface, show dashboard, open workstream, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
 - The capability definition owns input validation, authorization, idempotency, side effects, policy/approval, audit, and denial shape.
 - In browser realization, a surface action usually invokes a backend API; the API returns an accepted/denied/error result plus a new surface, updated surface, workstream item, workflow/progress surface, or `system_message` surface.
 - Side-effecting actions should default to proposal or approval flows unless a bounded autonomous policy is explicitly accepted.
 - Disabled/hidden actions must include a user-safe reason when visible; they must not be the only authorization control.
 - Action results should append a new surface, update the current surface, or render workflow/progress/system-message state explicitly.
+- Surface-request actions should include `shellRequest` metadata where the action opens a specific surface, workstream, or attention item. The shell renders a prompt-like request item using the canonical prompt in the target workstream while preserving origin metadata for audit; deep links must use the same pipeline.
 
 ## Event shape
 
@@ -270,6 +278,7 @@ For every surface action and payload-producing query, the capability inventory m
 A structured surface is not implementable until tests are named for:
 
 - payload rendering for ready, loading, empty, error, forbidden, conflict, stale/reconnecting, partial-data, and success states;
+- prompt-entered and action-entered shell request behavior for `show_surface`, `open_workstream`, deep links, My Account panels, canonical prompt feedback, origin metadata, and target-workstream-only request rendering;
 - action submission shape, idempotency key generation/preservation, and response/result surface behavior;
 - backend capability authorization for authorized, missing role/scope, disabled account, wrong tenant/customer, and support/auditor boundary cases;
 - audit/work-trace creation for payload access, action denial, approval, side effects, and agent/tool work;

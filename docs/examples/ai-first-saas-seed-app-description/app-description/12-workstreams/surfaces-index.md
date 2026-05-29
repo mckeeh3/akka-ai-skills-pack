@@ -16,6 +16,7 @@ Structured surfaces are typed renderable artifacts in functional-agent workstrea
 ## Surface rules
 
 - Surfaces are the primary UI contracts; conventional routes deep-link to surfaces but do not replace this index.
+- Surface-request actions include prompt-entered, action-entered, My Account panel, rail, and deep-link requests such as `show_surface`, `open_workstream`, `refresh_surface`, and `open_attention_item`; all map to governed capabilities, echo canonical prompt feedback, and preserve origin metadata.
 - The former `user-admin-command-center` aggregate is decomposed into `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account`; implementations may compose them in one command-center layout, but these three contracts are the canonical fullstack targets.
 - Allowed actions are display hints only. Backend capabilities decide authorization, validation, idempotency, audit, and side effects.
 - Every surface must define loading, empty, error, forbidden, stale/reconnect, accessibility, and responsive expectations before implementation.

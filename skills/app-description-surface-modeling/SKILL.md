@@ -96,7 +96,7 @@ For each surface, capture the fields below. Use `../../docs/structured-surface-c
 - payload schema: required fields, optional fields, lists, nested records, field formats, correlation ids, trace ids, pagination, sorting, autonomous task ids, notification ids, and realtime event ids;
 - redaction and safe fields for user roles, support roles, auditors, functional agents, and internal agents;
 - data sources and read/evidence capabilities behind the payload;
-- allowed actions with labels, input payloads, confirmation requirements, idempotency keys, and linked backend capability ids, including surface-request actions such as `open_workstream` for buttons, links, cards, rows, or icons that open another protected surface/workstream;
+- allowed actions with labels, input payloads, confirmation requirements, idempotency keys, and linked backend capability ids, including surface-request actions such as `show_surface`, `open_workstream`, `refresh_surface`, and `open_attention_item` for buttons, links, cards, rows, My Account panels, rail entries, deep links, or icons that open another protected surface/workstream;
 - autonomous task bindings when applicable: start/query/cancel/result-read/external-complete/external-fail capabilities, task lifecycle states, snapshot/result payloads, progress notifications, dependencies, and escalation/attention rules;
 - action authority: AuthContext, tenant/customer scope, role/capability requirements, approval/policy gates, and denial behavior;
 - action side-effect visibility: success, pending, approval-needed, queued, workflow-started, no-op, and failed states;
@@ -177,7 +177,7 @@ Use this shape when adding or revising a surface:
 
 1. **Surfaces are structured artifacts.** Prefer typed payloads and explicit actions over free-text responses or page descriptions.
 2. **Surfaces may be reused.** A surface can be owned by one functional agent and rendered by others when the same payload, action, auth, and trace contracts hold.
-3. **Surface actions are not authorization.** Every action maps to a governed backend capability; backend authorization remains authoritative even when an action is hidden or disabled in the UI. Controls that open protected surfaces or workstreams are governed surface-request actions, not frontend-only navigation.
+3. **Surface actions are not authorization.** Every action maps to a governed backend capability; backend authorization remains authoritative even when an action is hidden or disabled in the UI. Controls that open protected surfaces or workstreams are governed surface-request actions, not frontend-only navigation. Surface-request actions use the shell request pipeline: canonical prompt feedback (`show surface <surface-id>` or `show workstream <workstream-id>`), honest origin metadata, target-workstream-only request rendering, and typed denial/system-message behavior.
 4. **Payloads are safe by contract.** Record redaction, role-dependent fields, support/auditor visibility, secret boundaries, and tenant/customer scoping.
 5. **Actions preserve capability semantics.** Carry AuthContext, validation, idempotency, side effects, policy/approval, audit, and denial semantics from the capability layer.
 6. **Routes are subordinate.** Pages and deep links may address a surface, but they do not replace the functional-agent/workstream/surface model.
@@ -191,7 +191,7 @@ When a surface change adds or changes:
 
 - owning or reusable functional agents, update `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling`;
 - an action, query, command, approval, workflow launch, or side effect, update `10-capabilities/` via `app-description-capability-modeling`;
-- shell rendering, layout, route/deep-link, frontend API, state, realtime, accessibility, responsive behavior, icon rendering, tooltip/focus behavior, or style, update `55-ui/**` via `app-description-ui`;
+- shell rendering, layout, prompt-to-surface request routing, cross-workstream surface request behavior, route/deep-link, frontend API, state, realtime, accessibility, responsive behavior, icon rendering, tooltip/focus behavior, or style, update `55-ui/**` via `app-description-ui`;
 - authorization, visibility, redaction, or denial behavior, update auth/security and `/api/me` capability exposure expectations;
 - audit, trace links, correlation ids, or diagnostic evidence, update observability;
 - acceptance, rendering, or security expectations, update tests and traceability maps.

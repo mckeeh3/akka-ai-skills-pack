@@ -26,5 +26,8 @@ Implementation reference: `../../../../../frontend/src/workstream/**` provides t
 
 - The rail is populated from `/api/me` and backend capability grants.
 - Hidden or disabled UI controls are never authorization controls.
-- Selecting a functional agent opens that agent's workstream and default surface from `../12-workstreams/surfaces-index.md`.
-- Route URLs may deep-link to a functional agent, surface, or record, but the app's primary decomposition remains functional agents and surfaces.
+- Selecting a functional agent opens that agent's workstream and default surface from `../12-workstreams/surfaces-index.md` through the shell request pipeline.
+- The persistent composer accepts shell requests such as `show users list`, `show surface user-admin-user-list`, and `show workstream user-admin`; resolved aliases are echoed as canonical prompt-like request surfaces such as `show surface user-admin-user-list`.
+- Buttons, links, cards, rows, My Account panels, rail entries, and deep links that open protected surfaces or workstreams use the same typed shell request pipeline as prompts, preserving origin metadata (`user_prompt`, `surface_action`, `my_account_panel`, or `deep_link`).
+- Workstream switching renders the prompt-like request item in the new target workstream only.
+- Route URLs may deep-link to a functional agent, surface, or record, but the app's primary decomposition remains functional agents and surfaces and deep links still resolve through shell requests.

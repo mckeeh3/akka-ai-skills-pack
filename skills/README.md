@@ -112,7 +112,7 @@ Initial app-description skills:
 - `app-description-input-normalization` — convert flexible user input into a structured app-description delta envelope
 - `app-description-intake-router` — classify flexible user input and choose the next description-maintenance or realization path
 - `app-description-functional-agent-modeling` — update the authoritative `12-workstreams/functional-agents.md` layer for role-authorized user-facing context-area agents, workstream icon metadata (`WorkstreamIconDescriptor` semantics: stable icon id, visual hint derived from workstream responsibility, accent color token, tooltip, aria label, optional asset reference; rendered through approved SVG/icon-library artwork or semantic SVG fallback, not letters), prompt intent, skills, tools, surfaces, capabilities, traces, and tests
-- `app-description-surface-modeling` — update the authoritative `12-workstreams/surfaces-index.md` and `surface-contracts/**` layer for structured workstream surfaces, typed payloads, reusable functional-agent placement, capability-backed actions, states, traces, and tests
+- `app-description-surface-modeling` — update the authoritative `12-workstreams/surfaces-index.md` and `surface-contracts/**` layer for structured workstream surfaces, typed payloads, reusable functional-agent placement, capability-backed actions including prompt/action/deep-link shell requests, states, traces, and tests
 - `app-description-capability-modeling` — update the authoritative capability layer of the app description
 - `app-description-behavior-specification` — update the authoritative behavior layer of the app description
 - `app-description-test-specification` — update the authoritative test layer of the app description
@@ -137,7 +137,7 @@ Default description-first flow:
 9. run `app-description-change-impact` to identify cross-layer and realization implications
 10. update security with `app-description-auth-security` when the request changes identity, authorization, trust boundaries, frontend/backend JWT security, WorkOS authentication, basic administration, or data protection
 11. update observability with `app-description-observability` when the request changes logs, metrics, traces, auditability, or diagnosability
-12. update UI with `app-description-ui` when the request changes agent workstream shell regions, functional-agent rail behavior, workstream icon rendering/interactions, workstream interactions, structured surfaces, deep-link routes, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
+12. update UI with `app-description-ui` when the request changes agent workstream shell regions, prompt-to-surface/workstream request routing, functional-agent rail behavior, workstream icon rendering/interactions, workstream interactions, structured surfaces, deep-link routes, forms, frontend API contracts, realtime UI behavior, accessibility, responsive behavior, or web UI style guide
 13. assess readiness with `app-description-readiness-assessment` before generation or when the user asks whether the description is ready
 14. realize outputs with `app-generate-app` only when generation is requested or accepted
 15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`

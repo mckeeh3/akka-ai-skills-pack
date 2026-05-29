@@ -2,7 +2,7 @@
 
 Routes support implementation, browser history, bookmarks, and direct links to functional agents or surfaces. They are not the primary application architecture.
 
-Implementation reference: `../../../../../frontend/src/workstream/shell/WorkstreamDeepLinks.ts` parses and serializes selected functional-agent, stream-item, and surface links for the reusable shell. Do not rebuild the seed UI as a primary page-route tree.
+Implementation reference: `../../../../../frontend/src/workstream/shell/WorkstreamDeepLinks.ts` parses and serializes selected functional-agent, stream-item, and surface links for the reusable shell and turns direct entry into the same typed shell request pipeline used by prompts and surface actions. Do not rebuild the seed UI as a primary page-route tree.
 
 | Route family | Deep-links to | Notes |
 |---|---|---|
@@ -18,3 +18,5 @@ Implementation reference: `../../../../../frontend/src/workstream/shell/Workstre
 - Direct route entry must call `/api/me` before rendering protected data.
 - Backend APIs reject unauthorized route-backed queries and actions even if the route exists.
 - A route may open a specific surface in a workstream, but the surface contract and capability mapping remain authoritative.
+- Deep-link entry appends a prompt-like request item in the target workstream only, with `origin: deep_link` and canonical feedback such as `show surface user-admin-user-list` or `show workstream user-admin`.
+- Unresolved or unauthorized deep-link targets render a typed `system_message` surface rather than leaking hidden workstream or surface existence.

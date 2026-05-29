@@ -97,6 +97,7 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 ### Routes and deep links
 - implementation routes, UI paths, direct surface URLs, and auth-transition/public-static paths
 - mapping from each route/deep link to the selected functional agent, workstream item, or structured surface it opens
+- route/deep-link entry through the same shell request pipeline as prompts and surface actions: normalize to `show surface <surface-id>` or `show workstream <workstream-id>`, append the prompt-like request item in the target workstream only, preserve `origin: "deep_link"`, and render denial as a typed `system_message` surface
 - navigation entry/exit points as shell behavior, not as the primary application decomposition
 - empty/not-found/forbidden route states and recovery actions
 - reminder: primary/secondary actions, loading/error states, and authorization semantics belong first in structured surface contracts and governed capability contracts
@@ -105,7 +106,10 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - render workstream icon descriptors from `12-workstreams/` using stable icon ids, visual hints, theme accent color tokens, tooltips, accessible labels, and optional approved asset references; realization must use an approved SVG/icon-library registry or semantic SVG fallback derived from the workstream name/responsibility, never letter initials as the normal icon
 - show My Account only through the lower-left signed-in user tile/email; do not duplicate it as a top-rail workstream button
 - render left-rail counts and My Account aggregate attention from backend-governed projections such as `WorkstreamAttentionSummary`; define hidden/unavailable/zero states and highest-severity behavior in UI, but do not compute authority or attention from frontend-only notification state
-- treat buttons, links, icons, cards, rows, and status panels that open protected surfaces or workstreams as governed surface-request actions such as `open_workstream`, backed by capabilities and denial/system-message behavior
+- treat buttons, links, icons, cards, rows, and status panels that open protected surfaces or workstreams as governed surface-request actions such as `show_surface` or `open_workstream`, backed by capabilities and denial/system-message behavior
+- support prompt-entered shell requests such as `show users list`, `show surface users-list`, and `show workstream user-admin`; transform resolved aliases into canonical prompt feedback such as `show surface users-list` so users learn precise commands
+- allow authorized cross-workstream surface requests as a power-user path while defaulting ambiguous surface requests to the selected workstream; unauthorized or unresolved targets return safe `system_message` surfaces without leaking hidden workstreams
+- render surface-action, My Account panel, rail, and deep-link navigation as compact prompt-like request items with honest origin metadata, and place workstream-switch request items in the new target workstream only
 - keep browser interaction details, tooltip/focus behavior, responsive rail collapse, and visual treatment in `55-ui/`; do not assign domain icon meaning here
 
 ### Interactions and forms
@@ -165,7 +169,7 @@ For any UI change, update:
 4. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, idempotency, notification/projection output, or autonomous task lifecycle semantics
 5. behavior flows if user-visible behavior changes
 6. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
-7. auth/security if route visibility, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes
+7. auth/security if route visibility, shell request resolution, cross-workstream surface discovery, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes
 8. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, or outcome evidence
 9. readiness status if generation completeness changes
 

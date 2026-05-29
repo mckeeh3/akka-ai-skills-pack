@@ -31,6 +31,7 @@ Authenticated consequential UI is decomposed as:
 /api/me bootstrap
 → selected AuthContext
 → role-authorized functional-agent rail
+→ unified shell request pipeline for prompts, actions, rail/My Account selection, and deep links
 → continuous workstream shell
 → typed stream items and structured surfaces
 → capability-backed actions
@@ -64,8 +65,8 @@ frontend/src/workstream/
   shell/
     WorkstreamShell.tsx    # layout composition: rail + context + stream + composer
     ContextAuthorityBar.tsx
-    WorkstreamDeepLinks.ts # parse/serialize selected agent, stream item, surface links
-    shellState.ts          # explicit loading/ready/forbidden/stale state transitions
+    WorkstreamDeepLinks.ts # parse/serialize selected agent, stream item, surface links and deep-link shell requests
+    shellState.ts          # explicit loading/ready/forbidden/stale state transitions plus shell request normalization
     index.ts
   rail/
     FunctionalAgentRail.tsx
@@ -196,6 +197,7 @@ type WorkstreamItem = {
   functionalAgentId: string;
   kind:
     | "user-request"
+    | "surface-request"
     | "agent-response"
     | "surface"
     | "capability-result"
@@ -212,12 +214,35 @@ type WorkstreamItem = {
   title?: string;
   body?: string;
   status?: "working" | "waiting-for-human" | "blocked" | "ready" | "failed" | "stale";
+  requestOrigin?: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion";
+  canonicalPrompt?: string;
 };
 ```
 
 The stream supports grouped history, stable item ids, append/update semantics, trace links, and action-feedback items for non-chat navigation/actions.
 
-Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts and indirect requests raised by existing surface actions. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. Use `docs/workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
+Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. Workstream-switch request items are appended only in the new target workstream. Use `docs/workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
+
+Shell request normalization contract:
+
+```ts
+type WorkstreamShellRequest = {
+  requestType: "show_surface" | "open_workstream" | "refresh_surface" | "open_attention_item";
+  origin: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion";
+  displayText: string;
+  canonicalPrompt: string; // e.g. "show surface user-admin-user-list"
+  targetFunctionalAgentId?: string;
+  targetSurfaceId?: string;
+  targetItemId?: string;
+  sourceFunctionalAgentId?: string;
+  sourceSurfaceId?: string;
+  sourceActionId?: string;
+  scope: "current_workstream" | "authorized_cross_workstream";
+  correlationId: string;
+};
+```
+
+Default prompt resolution is current-workstream scoped. Authorized cross-workstream surface requests are supported for power users and deep links, but unresolved or unauthorized targets must render typed `system_message` denial/recovery surfaces without leaking hidden workstream existence.
 
 ### Surface envelopes
 
@@ -265,7 +290,7 @@ Each surface renders loading, empty, ready, submitting, success, pending, approv
 
 ### Capability actions
 
-Every workstream surface action maps to a governed backend capability, including read/query actions and surface-request actions such as show dashboard, search, open detail, refresh, or open trace. Frontend action availability is only a UX hint.
+Every workstream surface action maps to a governed backend capability, including read/query actions and surface-request actions such as `show_surface`, `open_workstream`, show dashboard, search, open detail, refresh, or open trace. Frontend action availability is only a UX hint. Surface-request actions may carry `shellRequest` metadata so buttons, links, cards, rows, My Account panels, rail entries, and deep links use the same canonical prompt feedback and origin-aware request item rendering as composer-entered prompts.
 
 ```ts
 type CapabilityActionRequest = {

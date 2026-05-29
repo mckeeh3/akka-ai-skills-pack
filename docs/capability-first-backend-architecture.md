@@ -82,7 +82,7 @@ Select capability exposure after capability semantics are clear. Use `structured
 
 | Channel | Use when | Capability rules |
 |---|---|---|
-| Browser UI action | Humans directly initiate or supervise work. | Backend still enforces auth; UI shows allowed actions from `/api/me`/capabilities but never decides authorization alone. |
+| Browser UI action | Humans directly initiate or supervise work, including prompt/action/deep-link shell requests such as `show_surface` and `open_workstream`. | Backend still enforces auth; UI shows allowed actions from `/api/me`/capabilities but never decides authorization alone. Shell request resolution must scope targets, audit origin metadata, and return safe denial/system-message surfaces for unauthorized workstreams or surfaces. |
 | HTTP/gRPC API | External clients, browser APIs, or services need a stable contract. | Validate tokens/context, scope every command/query, return safe denial/errors, audit protected access. |
 | Agent tool | A bounded agent may choose to read evidence, draft recommendations, or request/perform allowed work. | Tool receives or resolves AuthContext, enforces permission/scope, limits side effects, records tool/data/work traces. |
 | MCP tool/resource/prompt | Capabilities are shared with remote AI clients or other services. | Expose only selected tools/resources/prompts, use ACL/JWT/service identity, filter allowed tools, audit remote access. |
@@ -132,7 +132,7 @@ Do not jump from a product request directly to an entity, endpoint, or agent too
 
 Use these classes to decompose a product safely:
 
-- **Read/evidence capability:** scoped query, explanation context, decision evidence, dashboard/search/list data, attention summaries, My Account aggregate panels, and task progress/result evidence.
+- **Read/evidence capability:** scoped query, explanation context, decision evidence, dashboard/search/list data, shell request target resolution, attention summaries, My Account aggregate panels, and task progress/result evidence.
 - **Command capability:** state-changing action with validation, auth, idempotency, audit, and denial semantics.
 - **Proposal capability:** agent or human drafts a change or recommendation without committing the side effect.
 - **Approval capability:** human or policy-governed decision commits, rejects, delegates, or asks for more evidence.

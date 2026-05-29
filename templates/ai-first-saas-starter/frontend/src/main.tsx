@@ -25,7 +25,8 @@ import {
   type SurfaceEnvelope,
   type WorkstreamEvent,
   type WorkstreamItem,
-  type WorkstreamSelection
+  type WorkstreamSelection,
+  type WorkstreamShellRequest
 } from './workstream';
 
 const useFixtureWorkstream = new URLSearchParams(window.location.search).get('fixtureWorkstream') === '1';
@@ -254,6 +255,39 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     });
   }
 
+  function handleShellRequest(request: WorkstreamShellRequest, requestItem: WorkstreamItem) {
+    const targetFunctionalAgentId = resolveFunctionalAgentId(request.targetFunctionalAgentId, me) ?? selectedFunctionalAgentId ?? requestItem.functionalAgentId;
+    const targetSurface = resolveShellRequestSurface(request, ready.surfaces, targetFunctionalAgentId);
+    const resolvedRequestItem = {
+      ...requestItem,
+      functionalAgentId: targetFunctionalAgentId,
+      surfaceId: targetSurface?.surfaceId ?? requestItem.surfaceId
+    };
+    const responseItem: WorkstreamItem | undefined = targetSurface ? {
+      itemId: `shell-request-response-${targetSurface.surfaceId}-${Date.now()}`,
+      functionalAgentId: targetFunctionalAgentId,
+      kind: 'surface',
+      createdAt: new Date().toISOString(),
+      correlationId: resolvedRequestItem.correlationId,
+      traceIds: targetSurface.traceIds,
+      surfaceId: targetSurface.surfaceId,
+      title: targetSurface.title,
+      status: 'ready'
+    } : undefined;
+
+    setRequestScrollTargetForCurrentSession(resolvedRequestItem.itemId, targetFunctionalAgentId);
+    rememberVisualSession(sessionForAgent(targetFunctionalAgentId), { anchorSurfaceId: resolvedRequestItem.itemId, selectedSurfaceId: targetSurface?.surfaceId, userHasManualScroll: false });
+    setBootstrap((current) => current.status === 'ready'
+      ? { ...current, items: pruneWorkstreamItems([...current.items, resolvedRequestItem, ...(responseItem ? [responseItem] : [])]) }
+      : current);
+    updateSelection({
+      selectedFunctionalAgentId: targetFunctionalAgentId,
+      selectedItemId: request.targetItemId,
+      selectedSurfaceId: targetSurface?.surfaceId ?? request.targetSurfaceId,
+      surfacePlacement: targetSurface ? 'inline' : undefined
+    });
+  }
+
   function appendSurfaceRequestAndResponse(surface: SurfaceEnvelope<unknown>, title: string, body?: string) {
     const now = Date.now();
     const functionalAgentId = surface.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'agent-user-admin';
@@ -446,6 +480,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       appName="AI-first SaaS"
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
+      onShellRequest={handleShellRequest}
       submittingFunctionalAgentId={submittingFunctionalAgentId}
       railAttentionByAgentId={railAttentionByAgentId}
       onSignOut={onSignOut}
@@ -506,6 +541,38 @@ function safeComposerErrorCopy(error: ApiError): { title: string; body: string; 
 
 function surfaceForAgent(surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string) {
   return surfaces.find((surface) => surface.ownerFunctionalAgentId === functionalAgentId);
+}
+
+function resolveFunctionalAgentId(requestedFunctionalAgentId: string | undefined, me: MeResponse): string | undefined {
+  if (!requestedFunctionalAgentId) return undefined;
+  const requestedSlug = slugifyUiToken(requestedFunctionalAgentId);
+  return me.functionalAgents.find((agent) =>
+    agent.functionalAgentId === requestedFunctionalAgentId
+    || agent.functionalAgentId === `agent-${requestedSlug}`
+    || slugifyUiToken(agent.label) === requestedSlug
+    || slugifyUiToken(agent.functionalAgentId.replace(/^agent-/, '')) === requestedSlug
+  )?.functionalAgentId;
+}
+
+function resolveShellRequestSurface(request: WorkstreamShellRequest, surfaces: SurfaceEnvelope<unknown>[], targetFunctionalAgentId?: string): SurfaceEnvelope<unknown> | undefined {
+  if (!request.targetSurfaceId && request.requestType !== 'open_workstream') return undefined;
+  const targetSurfaceId = request.targetSurfaceId ? slugifyUiToken(request.targetSurfaceId) : undefined;
+  const candidates = targetFunctionalAgentId ? surfaces.filter((surface) => surface.ownerFunctionalAgentId === targetFunctionalAgentId) : surfaces;
+  return candidates.find((surface) => targetSurfaceId && (
+    slugifyUiToken(surface.surfaceId) === targetSurfaceId
+    || slugifyUiToken(surface.title) === targetSurfaceId
+    || slugifyUiToken(surface.surfaceId).endsWith(targetSurfaceId)
+    || surfaceAliases(surface).includes(targetSurfaceId)
+  )) ?? (request.requestType === 'open_workstream' ? surfaceForAgent(surfaces, targetFunctionalAgentId) : undefined);
+}
+
+function surfaceAliases(surface: SurfaceEnvelope<unknown>): string[] {
+  if (surface.surfaceId === 'user-admin-user-list') return ['users-list', 'user-list'];
+  return [];
+}
+
+function slugifyUiToken(value: string): string {
+  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
 function buildVisibleWorkstreamItems(items: WorkstreamItem[], surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string, selectedSurfaceId?: string): WorkstreamItem[] {

@@ -100,6 +100,42 @@ Selecting a functional agent selects its workstream and should normally produce 
 
 Universal shell navigation is still capability-aware. Controls that open a specific surface or another workstream are surface-request actions with typed result behavior, not ad hoc frontend-only jumps when protected data, selected context, or authorization is involved. Examples: Profile button opens the My Account Profile surface; Settings button opens the Settings surface; a User Admin dashboard button opens the User List surface; a My Account workstream status panel opens the target workstream dashboard. The backend or authorized bootstrap state remains authoritative for whether the target workstream/surface is visible and what denial/system-message surface appears when it is not.
 
+## Shell request routing for surfaces and workstreams
+
+The workstream shell must support a unified request pipeline for prompt-entered navigation, surface actions, My Account dashboard panels, rail selection, and deep links. The pipeline normalizes all of these inputs into a typed shell request, performs authorization and target resolution, appends a prompt-like request item in the target workstream, then renders the target surface/workstream or a typed `system_message` denial.
+
+Canonical shell request types:
+
+- `show_surface` — open or refresh a structured surface in the current workstream by default, for example `show surface users-list`.
+- `open_workstream` — switch to another authorized functional-agent workstream, for example `show workstream user-admin`.
+- `refresh_surface` — request a fresh payload for a visible surface.
+- `open_attention_item` — open the workstream/surface associated with an attention item.
+
+Prompt aliases such as `show users list`, `show user list`, and `open users` should normalize to canonical prompt feedback such as `show surface users-list` when the target can be resolved. This gives users precise feedback and trains the command vocabulary without requiring them to know internal ids first. Canonical commands should resolve deterministically where possible; ambiguous natural-language requests may be resolved by the selected workstream agent or a bounded router capability.
+
+Default resolution scope is the current selected workstream. Cross-workstream surface requests are allowed for experienced users and deep links only after authorized target discovery across visible workstreams; unresolved or unauthorized targets must return a safe `system_message` surface rather than leaking hidden workstream or surface existence. Workstream switching requests render the prompt-like request item in the **new target workstream only**, not duplicated in the source workstream.
+
+Every request item must preserve honest origin metadata even when it is visually rendered like a prompt:
+
+```ts
+type WorkstreamShellRequest = {
+  requestType: "show_surface" | "open_workstream" | "refresh_surface" | "open_attention_item";
+  origin: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion";
+  displayText: string;        // what the user typed or action label said
+  canonicalPrompt: string;    // e.g. "show surface users-list"
+  targetFunctionalAgentId?: string;
+  targetSurfaceId?: string;
+  targetItemId?: string;
+  sourceFunctionalAgentId?: string;
+  sourceSurfaceId?: string;
+  sourceActionId?: string;
+  scope: "current_workstream" | "authorized_cross_workstream";
+  correlationId: string;
+};
+```
+
+Deep links must enter through this same shell request pipeline. A route may preselect `agent`, `surfaceId`, or `itemId`, but the shell still appends the prompt-like request in the target workstream and relies on backend capability authorization for the protected payload.
+
 Workstream icon guidance:
 
 ```ts
@@ -201,7 +237,7 @@ A surface action is not authorization. The backend capability remains authoritat
 
 Surface actions include both state-changing actions and surface-request actions:
 
-- **Read/query or surface-request actions** request another surface, another allowed workstream, or refresh/update the current surface, such as `show_dashboard`, `open_profile`, `open_settings`, `open_workstream`, `search_users`, `view_user`, `open_audit_timeline`, or row-click-to-open-detail.
+- **Read/query or surface-request actions** request another surface, another allowed workstream, or refresh/update the current surface, such as `show_surface`, `show_dashboard`, `open_profile`, `open_settings`, `open_workstream`, `search_users`, `view_user`, `open_audit_timeline`, or row-click-to-open-detail. These actions normalize into the shell request pipeline and render a prompt-like request item in the target workstream before the result surface.
 - **Command actions** submit changes through classic forms or action controls, such as invite, revoke, disable, save, resend, or update settings.
 - **Proposal/approval/workflow actions** draft changes, request approval, approve/reject, start long-running work, or show progress.
 - **Governance/trace actions** open diffs, simulations, trace details, audit timelines, or behavior-change review surfaces.
@@ -290,6 +326,7 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.
 - [ ] System messages are modeled as typed surfaces, not ad hoc strings.
 - [ ] Surface actions, including surface-request actions, agent tools, APIs, workflows, timers, and consumers map to governed capabilities.
+- [ ] Prompt-entered surface/workstream requests, surface actions, My Account panels, rail selection, and deep links share one shell request pipeline with canonical prompt feedback, origin metadata, target-workstream-only request rendering, backend authorization, denial/system-message behavior, and tests.
 - [ ] Capability-first backend design remains intact: auth, scope, validation, idempotency, side effects, approval, audit, exposure channels, and tests are defined before Akka component selection.
 - [ ] Akka components are selected as horizontal implementation details from capability semantics.
 - [ ] The UI shell includes left rail functional agents, main workstream, persistent composer, context/authority indicators, denial/recovery states, and trace links.
