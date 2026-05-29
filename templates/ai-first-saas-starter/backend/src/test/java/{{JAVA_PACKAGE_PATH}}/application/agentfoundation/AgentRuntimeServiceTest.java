@@ -49,7 +49,7 @@ class AgentRuntimeServiceTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read"));
+        List.of("agent.user_admin.use", "agent.behavior.manage", "agent_admin.submit_turn", "agent_admin.draft_behavior_change", "tenant.user.read", "tenant.audit.read"));
   }
 
   @Test
@@ -174,6 +174,19 @@ class AgentRuntimeServiceTest {
     assertFalse(trace.safeSummary().toLowerCase().contains("api_key"));
     assertFalse(trace.safeSummary().toLowerCase().contains("secret="));
     assertFalse(trace.safeSummary().toLowerCase().contains("token="));
+  }
+
+  @Test
+  void agentAdminRuntimeInvocationUsesAgentAdminSubmitTurnCapability() {
+    var fakeProvider = new FakeModelProviderClient("## Model-backed Agent Admin response");
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), fakeProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, tenantAdmin, "corr-agent-admin-runtime", "Explain Agent Admin readiness."));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertEquals("## Model-backed Agent Admin response", result.markdown());
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID) && trace.capabilityId().equals("agent_admin.submit_turn")));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID) && trace.capabilityId().equals("agent_admin.submit_turn")));
   }
 
   @Test

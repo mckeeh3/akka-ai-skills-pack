@@ -29,7 +29,9 @@ import java.util.UUID;
 /** Governed runtime boundary for deterministic prompt assembly, readSkill, and behavior-edit proposals. */
 public final class AgentRuntimeService {
   public static final String INVOKE_CAPABILITY = "agent.user_admin.use";
+  public static final String AGENT_ADMIN_INVOKE_CAPABILITY = "agent_admin.submit_turn";
   public static final String BEHAVIOR_MANAGE_CAPABILITY = "agent.behavior.manage";
+  public static final String AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.draft_behavior_change";
   private static final int MAX_SKILL_BYTES = 20_000;
   private static final int MAX_REFERENCE_BYTES = 20_000;
 
@@ -90,15 +92,16 @@ public final class AgentRuntimeService {
   }
 
   public RuntimeInvocationPreparation prepareWorkstreamAgentInvocation(RuntimeInvocationRequest request) {
-    var promptRequest = new PromptAssemblyRequest(request.tenantId(), request.agentDefinitionId(), request.authContext(), "runtime", INVOKE_CAPABILITY, request.correlationId(), request.userInput());
+    var invocationCapability = invocationCapability(request.agentDefinitionId());
+    var promptRequest = new PromptAssemblyRequest(request.tenantId(), request.agentDefinitionId(), request.authContext(), "runtime", invocationCapability, request.correlationId(), request.userInput());
     var prompt = assemblePrompt(promptRequest);
     if (prompt.decision() != AgentRuntimeTrace.Decision.ALLOWED) {
-      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "workstream agent invocation blocked during PromptAssemblyTrace: " + prompt.safeDenialReason(), prompt.checksum());
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "workstream agent invocation blocked during PromptAssemblyTrace: " + prompt.safeDenialReason(), prompt.checksum());
       return new RuntimeInvocationPreparation(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "AGENT_RUNTIME_DENIED", prompt.safeDenialReason(), null, null);
     }
     try {
       var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "runtime");
-      var modelBinding = activeModelBinding(request.tenantId(), agent, "runtime", INVOKE_CAPABILITY);
+      var modelBinding = activeModelBinding(request.tenantId(), agent, "runtime", invocationCapability);
       var governedRequest = new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
           prompt.assembledSystemPrompt(),
           modelBinding.model().providerAlias(),
@@ -106,20 +109,21 @@ public final class AgentRuntimeService {
           request.agentDefinitionId(),
           request.authContext(),
           "runtime",
-          INVOKE_CAPABILITY,
+          invocationCapability,
           request.correlationId(),
           safe(request.userInput()),
           List.of(prompt.traceId()));
       return new RuntimeInvocationPreparation(AgentRuntimeTrace.Decision.ALLOWED, governedRequest, List.of(prompt.traceId()), null, null, prompt.checksum(), modelBinding.model().modelConfigRefId());
     } catch (RuntimeException failure) {
-      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "workstream agent invocation blocked by governed runtime resolution: " + safeReason(failure), prompt.checksum());
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "workstream agent invocation blocked by governed runtime resolution: " + safeReason(failure), prompt.checksum());
       return new RuntimeInvocationPreparation(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "AGENT_RUNTIME_DENIED", safeReason(failure), prompt.checksum(), null);
     }
   }
 
   public RuntimeInvocationResult completeWorkstreamAgentInvocation(RuntimeInvocationRequest request, RuntimeInvocationPreparation preparation, WorkstreamRuntimeAgent.MarkdownResponse response) {
-    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, response.producingAgentId(), safe(response.trace()), checksum(response.markdown()));
-    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "Akka Agent component produced model-backed markdown_response; modelConfigRef=" + preparation.modelConfigRefId(), checksum(response.markdown() + preparation.promptChecksum()));
+    var invocationCapability = invocationCapability(request.agentDefinitionId());
+    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, response.producingAgentId(), safe(response.trace()), checksum(response.markdown()));
+    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "Akka Agent component produced model-backed markdown_response; modelConfigRef=" + preparation.modelConfigRefId(), checksum(response.markdown() + preparation.promptChecksum()));
     var traceIds = new ArrayList<>(preparation.traceIds());
     traceIds.add(modelTrace.traceId());
     traceIds.add(workTrace.traceId());
@@ -132,8 +136,9 @@ public final class AgentRuntimeService {
         ? providerFailure.failure().safeCode()
         : "AKKA_AGENT_INVOCATION_FAILED";
     var traceIds = new ArrayList<>(preparation.traceIds());
-    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, preparation.modelConfigRefId(), safeSummary, null);
-    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), INVOKE_CAPABILITY, request.agentDefinitionId(), "Akka Agent component invocation failed closed: " + safeErrorCode + "; " + safeSummary, null);
+    var invocationCapability = invocationCapability(request.agentDefinitionId());
+    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, preparation.modelConfigRefId(), safeSummary, null);
+    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "Akka Agent component invocation failed closed: " + safeErrorCode + "; " + safeSummary, null);
     traceIds.add(modelTrace.traceId());
     traceIds.add(workTrace.traceId());
     return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, traceIds, safeErrorCode, safeSummary);
@@ -224,7 +229,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal proposeBehaviorChange(BehaviorChangeRequest request) {
     authContextResolver.requireTenant(request.authContext(), request.tenantId());
-    authContextResolver.requireCapability(request.authContext(), BEHAVIOR_MANAGE_CAPABILITY);
+    requireBehaviorDraftCapability(request.authContext());
     var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "test");
     var deniedReason = authorityExpansionReason(request, agent);
     var now = Instant.now(clock);
@@ -272,6 +277,17 @@ public final class AgentRuntimeService {
 
   public List<BehaviorChangeProposal> proposals() {
     return List.copyOf(proposals);
+  }
+
+  private String invocationCapability(String agentDefinitionId) {
+    return AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentDefinitionId) ? AGENT_ADMIN_INVOKE_CAPABILITY : INVOKE_CAPABILITY;
+  }
+
+  private void requireBehaviorDraftCapability(AuthContext authContext) {
+    if (authContext.capabilities().contains(AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY)) {
+      return;
+    }
+    authContextResolver.requireCapability(authContext, BEHAVIOR_MANAGE_CAPABILITY);
   }
 
   private void activateProposal(BehaviorChangeProposal proposal) {
@@ -443,7 +459,8 @@ public final class AgentRuntimeService {
   }
 
   private AgentRuntimeTrace trace(String type, AgentRuntimeTrace.Decision decision, BehaviorChangeRequest request, String targetId, String summary, String checksum) {
-    return trace(type, decision, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), BEHAVIOR_MANAGE_CAPABILITY, targetId, summary, checksum);
+    var capabilityId = AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(request.agentDefinitionId()) ? AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY : BEHAVIOR_MANAGE_CAPABILITY;
+    return trace(type, decision, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), capabilityId, targetId, summary, checksum);
   }
 
   private AgentRuntimeTrace trace(String type, AgentRuntimeTrace.Decision decision, String tenantId, String agentDefinitionId, String correlationId, String actorId, String capabilityId, String targetId, String summary, String checksum) {

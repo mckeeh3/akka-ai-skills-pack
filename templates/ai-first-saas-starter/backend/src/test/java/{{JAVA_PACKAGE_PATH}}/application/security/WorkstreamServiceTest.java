@@ -133,19 +133,25 @@ class WorkstreamServiceTest {
   @Test
   void agentAdminActionsCreateGovernedResultsAndTraces() {
     var promptProposal = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-propose-prompt-diff", "agent.prompts.govern", null, "idem-prompt", "membership-admin", "surface-agent-prompt-governance", "corr-prompt-ui"));
+        "action-propose-prompt-diff", "agent_admin.draft_behavior_change", null, "idem-prompt", "membership-admin", "surface-agent-prompt-governance", "corr-prompt-ui"));
     assertEquals("accepted", promptProposal.status());
     assertEquals("surface-agent-prompt-governance", promptProposal.resultSurface().surfaceId());
 
     var testRun = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-test-agent-prompt", "agent.runtime.test", null, "idem-test", "membership-admin", "surface-agent-test-console", "corr-test-ui"));
+        "action-test-agent-prompt", "agent_admin.draft_behavior_change", null, "idem-test", "membership-admin", "surface-agent-test-console", "corr-test-ui"));
     assertEquals("accepted", testRun.status());
     assertEquals("surface-agent-test-console", testRun.resultSurface().surfaceId());
 
     var approval = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-approve-skill-manifest", "agent.skills.govern", null, "idem-approval", "membership-admin", "surface-agent-skill-manifest-diff", "corr-approval-ui"));
+        "action-approve-skill-manifest", "agent_admin.approve_behavior_change", null, "idem-approval", "membership-admin", "surface-agent-skill-manifest-diff", "corr-approval-ui"));
     assertEquals("approval-required", approval.status());
     assertTrue(approval.message().contains("governed review gate"));
+    assertTrue(service.bootstrap(identity(), "membership-admin", "corr-agent-admin-caps").functionalAgents().stream()
+        .filter(agent -> agent.functionalAgentId().equals("agent-agent-admin"))
+        .findFirst()
+        .orElseThrow()
+        .requiredCapabilityIds()
+        .contains("agent_admin.submit_turn"));
   }
 
   @Test
@@ -290,6 +296,9 @@ class WorkstreamServiceTest {
       assertEquals("markdown_response", response.surface().surfaceType());
       assertEquals(agentId, response.surface().data().get("producingAgentId"));
       assertTrue(response.surface().data().get("markdown").toString().contains(agentId + " model response"));
+      if (agentId.equals("agent-agent-admin")) {
+        assertEquals("agent-agent-admin", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
+      }
     }
   }
 

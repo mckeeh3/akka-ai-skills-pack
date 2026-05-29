@@ -79,7 +79,7 @@
 
 ### TASK-AGENTADMIN-02-001: Implement Agent Admin Workstream v0 backend/runtime vertical
 
-- status: pending
+- status: done
 - source: specs/agent-admin-workstream-v0/backlog/01-agent-admin-workstream-v0-build-backlog.md
 - task brief: specs/agent-admin-workstream-v0/tasks/02-runtime/01-implement-backend-runtime.md
 - depends on:
@@ -111,6 +111,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: `Agent Admin Workstream v0; capability ids from capability-inventory; selected Akka substrate per capability; audit/work trace required`
+  - completed backend/runtime focus: Agent Admin v0 capability ids are exposed through `/api/me`, role grants, structured actions, behavior-change/test-console flows, and request/response runtime traces; Agent Admin prompt/test/proposal paths now target the Agent Admin managed definition.
+  - checks: `tmp=$(mktemp -d /tmp/agent-admin-v0-backend.XXXXXX); tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --template-dir templates/ai-first-saas-starter --app-name "Agent Admin Backend Check" --app-slug agent-admin-backend-check --base-package ai.first --maven-group-id ai.first >/tmp/scaffold-agent-admin.log && cd "$tmp" && mvn -q -Dtest=AgentRuntimeServiceTest,WorkstreamServiceTest test`; `git diff --check`
   - commit message: `agent-admin-v0: implement backend runtime`
 
 ### TASK-AGENTADMIN-03-001: Implement Agent Admin Workstream v0 frontend surfaces and workstream UX

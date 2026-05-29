@@ -146,12 +146,11 @@ public record MeResponse(
       var profileVisible = capabilities.contains("my_account.view_summary") || capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var auditVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read"));
       var governanceVisible = capabilities.stream().anyMatch(capability -> capability.startsWith("governance.") || capability.startsWith("improvements.") || capability.contains("policy"));
-      var agentAdminVisible = capabilities.contains("agent.definitions.manage")
-          && capabilities.contains("agent.prompts.govern")
-          && capabilities.contains("agent.skills.govern")
-          && capabilities.contains("agent.tool_boundaries.manage")
-          && capabilities.contains("agent.models.read")
-          && capabilities.contains("agent.runtime.test");
+      var agentAdminVisible = capabilities.contains("agent_admin.list_definitions")
+          && capabilities.contains("agent_admin.get_definition")
+          && capabilities.contains("agent_admin.draft_behavior_change")
+          && capabilities.contains("agent_admin.simulate_tool_boundary")
+          && capabilities.contains("agent_admin.get_model_ref");
       return List.of(
           new FunctionalAgentSummary(
               "agent-my-account",
@@ -180,7 +179,7 @@ public record MeResponse(
               "bot",
               icon("workstream-agent-admin", "Agent Admin", "bot-spark", "agent bot sparkle", "accent-agents", "Open Agent Admin workstream"),
               "markdown_response",
-              List.of("agent.definitions.manage", "agent.prompts.govern", "agent.skills.govern", "agent.tool_boundaries.manage", "agent.models.read", "agent.runtime.test"),
+              List.of("agent_admin.submit_turn", "agent_admin.list_definitions", "agent_admin.get_definition", "agent_admin.get_prompt_version", "agent_admin.get_skill_version", "agent_admin.get_reference_version", "agent_admin.get_manifest", "agent_admin.get_model_ref", "agent_admin.get_tool_boundary", "agent_admin.simulate_tool_boundary", "agent_admin.draft_behavior_change", "agent_admin.submit_behavior_change_for_review", "agent_admin.approve_behavior_change", "agent_admin.reject_behavior_change", "agent_admin.activate_behavior_change", "agent_admin.cancel_behavior_change", "agent_admin.list_seed_material", "agent_admin.reseed_missing_defaults", "agent_admin.start_behavior_review_task", "agent_admin.get_behavior_review_task", "agent_admin.cancel_behavior_review_task"),
               agentAdminVisible ? "visible" : "denied",
               agentAdminVisible ? null : "Missing governed Agent Admin capabilities."),
           new FunctionalAgentSummary(
