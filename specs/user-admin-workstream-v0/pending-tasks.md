@@ -147,7 +147,7 @@
 
 ### TASK-USERADMIN-99-001: Verify User Admin Workstream v0 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/user-admin-workstream-v0/tasks/99-verification/01-verify-user-admin-workstream-v0.md
 - depends on:
@@ -182,4 +182,7 @@
   - if complete, completion is recorded with no new required work
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
+  - compared completed TASK-USERADMIN-01-001 through TASK-USERADMIN-03-001 against the sprint/backlog goals, mini-project done state, shared five-core v0 contract, and workstream dependency map.
+  - completion recorded with no new required work: contract and capability inventory exist; backend/runtime and frontend notes record implemented User Admin v0 capability/action surfaces; access-review AutonomousAgent lifecycle remains safely blocked/unavailable rather than faked in this v0 slice; runtime/API/UI validation passed through the full scaffolded starter path.
+  - checks passed: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`
   - commit message: `user-admin-v0: verify workstream completion`
