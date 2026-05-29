@@ -452,13 +452,13 @@ export const userAdminSurfaceActions = {
   }
 } satisfies Record<string, SurfaceAction>;
 
-const agentDefinitionsCapability = 'agent.definitions.manage';
-const agentPromptsCapability = 'agent.prompts.govern';
-const agentSkillsCapability = 'agent.skills.govern';
-const agentToolBoundariesCapability = 'agent.tool_boundaries.manage';
-const agentModelsReadCapability = 'agent.models.read';
-const agentModelsManageCapability = 'agent.models.manage';
-const agentRuntimeTestCapability = 'agent.runtime.test';
+const agentDefinitionsCapability = 'agent_admin.list_definitions';
+const agentPromptsCapability = 'agent_admin.draft_behavior_change';
+const agentSkillsCapability = 'agent_admin.approve_behavior_change';
+const agentToolBoundariesCapability = 'agent_admin.simulate_tool_boundary';
+const agentModelsReadCapability = 'agent_admin.get_model_ref';
+const agentModelsManageCapability = 'agent_admin.activate_behavior_change';
+const agentRuntimeTestCapability = 'agent_admin.draft_behavior_change';
 
 export const agentAdminSurfaceActions = {
   displayCatalog: {
@@ -723,7 +723,7 @@ export const myAccountDashboardSurface = envelope(
     ],
     nextSteps: [
       { workstreamId: 'agent-user-admin', label: 'Review users and invitations', allowed: true, capabilityIds: ['secure-tenant-user-foundation'], traceId: 'trace-my-account-next-user-admin' },
-      { workstreamId: 'agent-agent-admin', label: 'Review governed agent readiness', allowed: true, capabilityIds: ['agent.definitions.manage'], traceId: 'trace-my-account-next-agent-admin' },
+      { workstreamId: 'agent-agent-admin', label: 'Review governed agent readiness', allowed: true, capabilityIds: ['agent_admin.list_definitions'], traceId: 'trace-my-account-next-agent-admin' },
       { workstreamId: 'agent-audit-trace', label: 'Open My Account traces', allowed: true, capabilityIds: [myAccountCapabilities.viewOwnTraceRefs], traceId: 'trace-my-account-next-audit' },
       { workstreamId: 'agent-billing', label: 'Billing', allowed: false, blockedReason: 'Billing workstream remains hidden unless backend capability summary grants billing.read.', capabilityIds: ['billing.read'] }
     ],
@@ -1104,22 +1104,27 @@ export const userAdminAccessReviewSurface = envelope(
 
 export const agentAdminCatalogSurface = envelope(
   'surface-agent-admin-catalog',
-  'dashboard',
-  'Agent Admin command center',
+  'list-search',
+  'Agent Admin catalog',
   'agent-agent-admin',
   {
-    cards: [
-      { cardId: 'agent-definitions', label: 'Agent definitions ready', value: 5, severity: 'info' },
-      { cardId: 'prompt-review', label: 'Prompt drafts needing review', value: 2, severity: 'warning' },
-      { cardId: 'skill-manifest-review', label: 'Skill manifest approvals', value: 1, severity: 'critical' },
-      { cardId: 'tool-boundary-denials', label: 'Recent tool boundary denials', value: 3, severity: 'critical' }
+    query: 'tenant:tenant-acme status:active OR review',
+    rows: [
+      { id: 'agent-agent-admin', rowType: 'agent-definition', displayName: 'Agent Admin Agent', status: 'ACTIVE', authorityLevel: 'APPROVAL_REQUIRED', functionalAreaId: 'agent-admin', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace' },
+      { id: 'agent-user-admin', rowType: 'agent-definition', displayName: 'User Admin Agent', status: 'ACTIVE', authorityLevel: 'APPROVAL_REQUIRED', functionalAreaId: 'user-admin', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace' }
     ],
-    sections: [
-      { sectionId: 'loading-state', label: 'Loading', summary: 'Agent catalog shows Loading surface… while /api/agent-admin definitions load.' },
-      { sectionId: 'empty-state', label: 'Empty', summary: 'No AgentDefinition records yet; create a draft definition before assigning prompts or skills.' },
-      { sectionId: 'forbidden-state', label: 'Forbidden', summary: 'Cross-tenant AgentDefinition ids return TARGET_NOT_FOUND_OR_FORBIDDEN and keep draft content hidden.' },
-      { sectionId: 'trace-linked-state', label: 'Trace linked', summary: 'PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace links are surfaced without provider secrets.' }
-    ]
+    pageInfo: { totalKnownCount: 2 },
+    emptyCopy: 'Empty when no governed AgentDefinition records are seeded.',
+    mobileFallback: 'table-to-card',
+    stateFixtures: {
+      loading: 'Loading surface while backend list_definitions reads scoped AgentDefinition projections.',
+      empty: 'Empty when no governed AgentDefinition records are seeded.',
+      forbidden: 'Cross-tenant AgentDefinition ids return TARGET_NOT_FOUND_OR_FORBIDDEN and keep draft content hidden.',
+      validation: 'validation-error preserves correlation id and input for behavior-change actions.',
+      approvalRequired: 'approval-required is shown before prompt, manifest, model, or tool-boundary activation.',
+      providerBlocked: 'MODEL_POLICY_DENIED and missing provider configuration render as safe blocked states.',
+      traceLinked: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, and AgentWorkTrace links are surfaced without provider secrets.'
+    }
   },
   [agentAdminSurfaceActions.displayCatalog, agentAdminSurfaceActions.openAgentDetail, agentAdminSurfaceActions.openAgentTrace]
 );

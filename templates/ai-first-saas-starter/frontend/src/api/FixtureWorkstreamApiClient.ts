@@ -135,7 +135,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
       ? displayUserDetailActionResult
       : request.actionId === 'action-display-agent-detail' || request.actionId === 'action-open-agent-detail'
         ? displayAgentDetailActionResult
-        : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent.definitions.manage'
+        : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent_admin.list_definitions'
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
             ? displayUserListActionResult

@@ -53,7 +53,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
       ariaLabel: 'Open Agent Admin workstream'
     },
     defaultSurfaceType: 'markdown_response',
-    requiredCapabilityIds: ['agent.definitions.manage', 'agent.prompts.govern', 'agent.skills.govern', 'agent.tool_boundaries.manage', 'agent.models.read', 'agent.runtime.test'],
+    requiredCapabilityIds: ['agent_admin.submit_turn', 'agent_admin.list_definitions', 'agent_admin.get_definition', 'agent_admin.draft_behavior_change', 'agent_admin.simulate_tool_boundary', 'agent_admin.get_model_ref'],
     attention: { count: 4, severity: 'critical' },
     availability: 'visible'
   },
@@ -148,8 +148,8 @@ export const deniedFunctionalAgentExample: FunctionalAgentSummary = {
     ariaLabel: 'Agent Admin workstream denied'
   },
   defaultSurfaceType: 'governance-diff',
-  requiredCapabilityIds: ['agent.definitions.manage'],
+  requiredCapabilityIds: ['agent_admin.list_definitions'],
   availability: 'denied',
-  deniedReason: 'Agent governance requires tenant-scoped agent.definitions.manage capability.'
+  deniedReason: 'Agent governance requires tenant-scoped agent_admin.list_definitions capability.'
 };
 export const hiddenFunctionalAgentExample = foundationFunctionalAgents.find((agent) => agent.availability === 'hidden')!;

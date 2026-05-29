@@ -10,16 +10,15 @@ const surfaces = read('./workstream/fixtures/surfaces.ts');
 const workstream = read('./workstream/fixtures/workstream.ts');
 const apiClient = read('./api/FixtureWorkstreamApiClient.ts');
 
-test('Agent Admin functional agent is visible and capability backed for full-core governance', () => {
-  assert.match(agents, /label: 'Agent Admin'/);
-  assert.match(agents, /defaultSurfaceType: 'dashboard'/);
+test('Agent Admin functional agent is visible and capability backed for v0 governed runtime', () => {
+  assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'markdown_response'/);
   for (const capability of [
-    'agent.definitions.manage',
-    'agent.prompts.govern',
-    'agent.skills.govern',
-    'agent.tool_boundaries.manage',
-    'agent.models.read',
-    'agent.runtime.test'
+    'agent_admin.submit_turn',
+    'agent_admin.list_definitions',
+    'agent_admin.get_definition',
+    'agent_admin.draft_behavior_change',
+    'agent_admin.simulate_tool_boundary',
+    'agent_admin.get_model_ref'
   ]) {
     assert.match(agents, new RegExp(capability.replaceAll('.', '\\.')));
     assert.match(me, new RegExp(capability.replaceAll('.', '\\.')));
@@ -99,7 +98,7 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
   assert.match(surfaces, /displayAgentDetailActionResult/);
   assert.match(apiClient, /displayAgentCatalogActionResult/);
   assert.match(apiClient, /displayAgentDetailActionResult/);
-  assert.match(apiClient, /agent\.definitions\.manage/);
+  assert.match(apiClient, /agent_admin\.list_definitions/);
 });
 
 test('Agent Admin defaults to five core v0 markdown and keeps richer governance surfaces demo-scoped', () => {

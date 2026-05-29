@@ -117,7 +117,7 @@
 
 ### TASK-AGENTADMIN-03-001: Implement Agent Admin Workstream v0 frontend surfaces and workstream UX
 
-- status: pending
+- status: done
 - source: specs/agent-admin-workstream-v0/backlog/01-agent-admin-workstream-v0-build-backlog.md
 - task brief: specs/agent-admin-workstream-v0/tasks/03-frontend/01-implement-frontend-surfaces.md
 - depends on:
@@ -140,6 +140,9 @@
   - frontend surfaces and workstream behavior reflect backend capabilities and do not create frontend-only authorization
   - task changes and queue update are committed
 - notes:
+  - completed Agent Admin frontend fixture/workstream surfaces now align with backend `agent_admin.*` capability ids, list-search catalog shape, action result routing, trace-linked states, and browser-safe role grants; root frontend mirror updated for source-reference parity.
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm test -- --run`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `git diff --check`
+  - extra non-required root mirror check attempted: `cd frontend && npm test -- --run && npm run typecheck` (failed on pre-existing root mirror drift/missing `backend/src/main/resources/agent-behavior-seeds/starter-v1/manifest.properties` and unrelated stale composer contract markers; template-required checks passed).
   - commit message: `agent-admin-v0: implement frontend surfaces`
 
 ### TASK-AGENTADMIN-99-001: Verify Agent Admin Workstream v0 completion
