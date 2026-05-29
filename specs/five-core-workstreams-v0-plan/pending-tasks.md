@@ -47,7 +47,7 @@
 
 ### TASK-FCPLAN-01-001: Define shared five-core v0 contract and dependency map
 
-- status: pending
+- status: done
 - source: specs/five-core-workstreams-v0-plan/backlog/01-five-core-v0-scope-backlog.md
 - task brief: specs/five-core-workstreams-v0-plan/tasks/01-scope/01-define-shared-contract.md
 - depends on: [TASK-FCPLAN-00-001]
@@ -75,6 +75,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `five-core-plan: define shared v0 contract`
+  - completed checks: `git diff --check`; `rg -n "request/response|AutonomousAgent|deterministic|runtime validation|AuthContext|ToolPermissionBoundary" specs/five-core-workstreams-v0-plan`
 
 ### TASK-FCPLAN-01-002: Align sibling workstream queues with shared contract
 
