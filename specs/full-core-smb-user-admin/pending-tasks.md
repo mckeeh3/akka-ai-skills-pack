@@ -71,7 +71,7 @@
 
 ### TASK-FCSMB-UA-01-002: Inspect User Admin starter boundaries and queue first source-edit slice
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
 - task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/02-inspect-user-admin-starter-boundaries.md
 - depends on: [TASK-FCSMB-UA-01-001]
@@ -99,6 +99,105 @@
 - notes:
   - commit message: `full-core-smb: inspect user admin starter boundaries`
 
+### TASK-FCSMB-UA-01-003: Implement User Admin backend dashboard and invitation action foundation
+
+- status: pending
+- source: specs/full-core-smb-user-admin/source-boundary-notes.md
+- task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/03-implement-user-admin-backend-dashboard-invitations.md
+- depends on: [TASK-FCSMB-UA-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin/README.md
+  - specs/full-core-smb-user-admin/conversation-capture.md
+  - specs/full-core-smb-user-admin/sprints/01-user-admin-vertical-contract-sprint.md
+  - specs/full-core-smb-user-admin/backlog/01-user-admin-vertical-contract-backlog.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+  - specs/full-core-smb-user-admin/source-boundary-notes.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/UserAdminService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/UserDirectoryView.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationView.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/ResendEmailService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/api/workstream/WorkstreamEndpoint.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/api/admin/AdminEndpoint.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/StarterSecurityComponents.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationAndUserAdminServiceTest.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/AdminEndpointIntegrationTest.java
+- skills:
+  - none; focused repository source-edit task
+- expected outputs:
+  - updated templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - optional updated backend application/security or api/admin source files named in the task brief
+  - updated backend tests under templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/
+  - updated specs/full-core-smb-user-admin/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `rg -n "USERADMIN_(VIEW_OVERVIEW|LIST_INVITATIONS|SEND_INVITATION|RESEND_INVITATION|REVOKE_INVITATION|LIST_MEMBERS)|user_admin\\.dashboard\\.v1|user_admin\\.invitation_panel\\.v1|system_message|blocked_provider_or_runtime|trace-useradmin|/api/workstream/actions|/api/admin/invitations" templates/ai-first-saas-starter/backend templates/ai-first-saas-starter/frontend/src --glob '!**/node_modules/**'`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh` if source changes claim local API/UI runtime readiness or touch cross-stack bootstrap/action behavior broadly
+- done criteria:
+  - backend workstream runtime can load an authorized User Admin dashboard/list/invitation foundation without fixture-only data substitution
+  - invitation create/resend/revoke actions route through deterministic services with backend authorization, idempotency/no-op semantics, audit/trace ids, tenant isolation, and safe provider/outbox failure behavior
+  - denials and missing prerequisites produce typed safe system-message or equivalent structured failure surfaces and do not leak tenant/customer data
+  - request/response UserAdminAgent behavior remains governed by Akka Agent runtime and provider fail-closed doctrine
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement user admin backend invitation foundation`
+
+### TASK-FCSMB-UA-01-004: Implement User Admin frontend dashboard and invitation surface foundation
+
+- status: pending
+- source: specs/full-core-smb-user-admin/source-boundary-notes.md
+- task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/04-implement-user-admin-frontend-dashboard-invitations.md
+- depends on: [TASK-FCSMB-UA-01-003]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin/README.md
+  - specs/full-core-smb-user-admin/conversation-capture.md
+  - specs/full-core-smb-user-admin/sprints/01-user-admin-vertical-contract-sprint.md
+  - specs/full-core-smb-user-admin/backlog/01-user-admin-vertical-contract-backlog.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+  - specs/full-core-smb-user-admin/source-boundary-notes.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - templates/ai-first-saas-starter/frontend/src/api/WorkstreamApiClient.ts
+  - templates/ai-first-saas-starter/frontend/src/api/HttpWorkstreamApiClient.ts
+  - templates/ai-first-saas-starter/frontend/src/api/ApiClient.ts
+  - templates/ai-first-saas-starter/frontend/src/api/HttpApiClient.ts
+  - templates/ai-first-saas-starter/frontend/src/api/types.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/SurfaceRenderer.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/DashboardSurface.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/ListSearchSurface.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/WorkflowStatusSurface.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/actions/CapabilityActionButton.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/actions/capabilityActionState.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - templates/ai-first-saas-starter/frontend/src/workstream-user-admin-expertise.contract.test.mjs
+  - templates/ai-first-saas-starter/frontend/src/workstream-surfaces.contract.test.mjs
+  - templates/ai-first-saas-starter/frontend/src/workstream-actions.contract.test.mjs
+  - templates/ai-first-saas-starter/frontend/src/api.contract.test.mjs
+- skills:
+  - none; focused repository source-edit task
+- expected outputs:
+  - updated frontend workstream sources/tests under templates/ai-first-saas-starter/frontend/src/
+  - optional synchronized fixture updates under templates/ai-first-saas-starter/frontend/src/workstream/fixtures/
+  - updated specs/full-core-smb-user-admin/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-user-admin-expertise.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-actions.contract.test.mjs src/api.contract.test.mjs`
+  - `cd templates/ai-first-saas-starter/frontend && npm run build`
+  - `rg -n "USERADMIN_(VIEW_OVERVIEW|LIST_INVITATIONS|SEND_INVITATION|RESEND_INVITATION|REVOKE_INVITATION|LIST_MEMBERS)|user_admin\\.dashboard\\.v1|user_admin\\.invitation_panel\\.v1|system_message|blocked_provider_or_runtime|trace-useradmin|/api/workstream/actions|/api/admin/invitations" templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/backend/src/main/java --glob '!**/node_modules/**'`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh` if this task changes runtime bootstrap/action contracts or claims local API/UI runtime readiness for the full first slice
+- done criteria:
+  - User Admin workstream UI renders backend-derived dashboard/list/invitation action states at the implemented scope
+  - UI action visibility remains advisory; backend-denied actions surface safe denial/system-message states with trace/correlation ids
+  - frontend fixtures do not imply access-review worker progress or model-backed UserAdminAgent success when backend/runtime/provider is missing
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement user admin frontend invitation foundation`
+
 ### TASK-FCSMB-UA-99-001: Verify User Admin readiness
 
 - status: pending
@@ -107,6 +206,8 @@
 - depends on:
   - TASK-FCSMB-UA-01-001
   - TASK-FCSMB-UA-01-002
+  - TASK-FCSMB-UA-01-003
+  - TASK-FCSMB-UA-01-004
 - required reads:
   - AGENTS.md
   - specs/full-core-smb-user-admin/README.md
