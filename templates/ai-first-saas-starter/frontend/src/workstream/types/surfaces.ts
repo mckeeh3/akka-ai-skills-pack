@@ -2,7 +2,7 @@ import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
 export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op';
-export type CanonicalSurfaceType = 'markdown_response' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome';
+export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome';
 
 export type SurfaceLink = {
   label: string;
@@ -64,6 +64,27 @@ export type MarkdownResponseData = {
     sanitized: boolean;
     blockedUnsafeLinks?: number;
     blockedRawHtml?: boolean;
+    redactionNote?: string;
+  };
+  trace?: {
+    correlationId?: string;
+    traceIds?: string[];
+  };
+};
+
+export type SystemMessageData = {
+  status?: 'blocked_provider_or_runtime' | 'forbidden' | 'validation-error' | 'error' | 'no-op' | string;
+  severity?: 'info' | 'warning' | 'error' | 'critical' | string;
+  title?: string;
+  summary?: string;
+  message?: string;
+  recoverySteps?: string[];
+  workstreamEntryId?: string;
+  producingAgentId?: string;
+  capabilityId?: string;
+  sourceRefs?: MarkdownResponseSourceRef[];
+  safety?: {
+    sanitized: boolean;
     redactionNote?: string;
   };
   trace?: {

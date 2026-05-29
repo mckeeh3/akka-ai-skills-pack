@@ -9,6 +9,7 @@ import { MarkdownResponseSurface } from './MarkdownResponseSurface';
 import { OutcomeSurface } from './OutcomeSurface';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
+import { SystemMessageSurface } from './SystemMessageSurface';
 import { WorkflowStatusSurface } from './WorkflowStatusSurface';
 
 type StructuredSurfaceRendererProps = {
@@ -28,6 +29,8 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
   switch (selectedEnvelope.surfaceType) {
     case 'markdown_response':
       return <MarkdownResponseSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+    case 'system_message':
+      return <SystemMessageSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'dashboard':
       return <DashboardSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'list-search':

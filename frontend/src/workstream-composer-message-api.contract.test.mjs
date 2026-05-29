@@ -78,6 +78,16 @@ test('composer maps provider-missing and forbidden errors to safe system notific
   assert.match(main, /status: safeError\.status/);
 });
 
+test('composer accepts backend typed system_message agent responses for provider/runtime blocked turns', () => {
+  assert.match(apiContract, /surface: SurfaceEnvelope<unknown>/);
+  assert.match(itemCard, /item\.kind === 'system_message'/);
+  assert.match(surfaceFrame, /Redaction profile/);
+  assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
+  assert.match(main, /traceableAgentItem/);
+  assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
+  assert.doesNotMatch(main, /blocked_provider_or_runtime[\s\S]*providerCredential|api[_-]?key/i);
+});
+
 test('successful prompt and model response surfaces render only prompt and response text', () => {
   assert.match(main, /traceableAgentItem/);
   assert.match(main, /traceLinks: agentItem\.traceLinks \?\? agentItem\.traceIds\.map/);

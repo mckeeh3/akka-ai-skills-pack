@@ -16,6 +16,7 @@ const readTemplateOrRenderedResource = (path) => {
 
 const surfaces = read('./workstream/fixtures/surfaces.ts');
 const workstream = read('./workstream/fixtures/workstream.ts');
+const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const seedManifest = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/manifest.properties');
 const expertiseBundle = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/user-admin-agent-expertise.yaml');
 const accessReviewSkill = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/access-review-triage.md');
@@ -84,6 +85,26 @@ test('User Admin expertise contract covers unassigned and tool-boundary denials'
   }
   assert.match(seedResources, /missing read_skill or read_reference tool-boundary grant/);
   assert.match(seedResources, /text claiming new roles, tenant scope, tool access, approval rights, or backend capabilities/);
+});
+
+test('UserAdminAgent guidance fixtures cover read-only evidence and provider-blocked system_message recovery', () => {
+  for (const marker of [
+    'UserAdminAgent',
+    'userAdminEvidence.read',
+    'readSkill',
+    'readReferenceDoc',
+    'system_message',
+    'blocked_provider_or_runtime',
+    'no direct mutation of invitations, memberships, roles, capabilities, authorization state, or provider configuration',
+    'Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant/customer evidence are omitted',
+    'trace-useradmin-agent-provider-blocked',
+    'USERADMIN_AGENT_TURN'
+  ]) {
+    assert.match(surfaces, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  assert.match(systemMessage, /Recovery steps/);
+  assert.match(systemMessage, /Trace links/);
+  assert.match(systemMessage, /UserAdminAgent guidance is read-only/);
 });
 
 test('User Admin expertise traces are visible from seed and workstream fixtures', () => {

@@ -128,7 +128,7 @@
 
 ### TASK-FCSMB-UAG-01-003: Implement frontend UserAdminAgent guidance and blocked-state rendering
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-agent-guidance/agent-guidance-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-agent-guidance/tasks/01-agent-guidance/03-implement-frontend-user-admin-agent-guidance.md
 - depends on: [TASK-FCSMB-UAG-01-002]
@@ -153,6 +153,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement user admin agent frontend guidance`
+  - implemented typed `system_message` rendering for provider/runtime-blocked UserAdminAgent turns, read-only guidance fixture copy, trace/recovery/redaction UI, and synchronized root frontend mirror files.
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-expertise.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/workstream-surfaces.contract.test.mjs`; `rg -n "UserAdminAgent|user-admin|markdown_response|system_message|blocked_provider_or_runtime|provider|trace|no direct mutation|readSkill|readReferenceDoc|userAdminEvidence" templates/ai-first-saas-starter/frontend/src`; `git diff --check`
 
 ### TASK-FCSMB-UAG-01-004: Validate UserAdminAgent guidance runtime
 

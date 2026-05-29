@@ -3,6 +3,7 @@ export type WorkstreamItemKind =
   | 'user-message'
   | 'agent-response'
   | 'markdown_response'
+  | 'system_message'
   | 'surface'
   | 'capability-result'
   | 'workflow-status'

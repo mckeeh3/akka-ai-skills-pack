@@ -31,7 +31,7 @@ export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardPr
     );
   }
 
-  if (item.kind === 'workflow-status' || item.kind === 'system-status' || item.status === 'stale') {
+  if (item.kind === 'workflow-status' || item.kind === 'system-status' || item.kind === 'system_message' || item.status === 'stale') {
     return <StreamStatusItem item={item} />;
   }
 

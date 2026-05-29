@@ -1024,10 +1024,41 @@
 }
 
 .workstream-item.system-notification,
+.workstream-item.system_message,
 .workstream-item.workstream-notification,
 .workstream-notification {
   border-color: color-mix(in srgb, var(--color-warning) 48%, var(--color-border));
   background: var(--color-warning-soft);
+}
+
+.system-message-surface {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.system-message-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.system-message-surface h4,
+.system-message-surface p,
+.system-message-surface ol,
+.system-message-surface ul {
+  margin-block: 0;
+}
+
+.system-message-traces a,
+.system-message-source-refs a {
+  font-weight: 750;
+}
+
+.system-message-redaction,
+.system-message-boundary {
+  color: var(--color-muted);
+  font-size: 0.9rem;
 }
 
 .structured-surface,

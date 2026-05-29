@@ -12,6 +12,7 @@ const streamState = read('./workstream/stream/streamState.ts');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const actionBar = read('./workstream/surfaces/SurfaceActionBar.tsx');
 const markdownResponse = read('./workstream/surfaces/MarkdownResponseSurface.tsx');
+const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const surfaceStyles = read('./styles/components.css');
 const packageJson = read('../package.json');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
@@ -21,6 +22,7 @@ const workstreamIndex = read('./workstream/index.ts');
 
 const surfaceComponentFiles = [
   './workstream/surfaces/MarkdownResponseSurface.tsx',
+  './workstream/surfaces/SystemMessageSurface.tsx',
   './workstream/surfaces/DashboardSurface.tsx',
   './workstream/surfaces/ListSearchSurface.tsx',
   './workstream/surfaces/DetailEditSurface.tsx',
@@ -48,10 +50,11 @@ test('workstream stream components cover canonical item kinds and action feedbac
 
 test('structured surface renderer routes every canonical surface type', () => {
   assert.match(renderer, /StructuredSurfaceRenderer/);
-  for (const surfaceType of ['markdown_response', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
+  for (const surfaceType of ['markdown_response', 'system_message', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
     assert.match(renderer, new RegExp(`case '${surfaceType}'`));
   }
   assert.match(renderer, /MarkdownResponseSurface/);
+  assert.match(renderer, /SystemMessageSurface/);
   assert.match(renderer, /JSON\.stringify/);
 });
 
@@ -84,6 +87,20 @@ test('markdown_response is typed, sanitized, text-only, and never routed to raw 
   assert.match(renderer, /case 'markdown_response':\n      return <MarkdownResponseSurface/);
 });
 
+test('system_message surfaces render provider-blocked recovery, trace links, and no-secret UserAdminAgent boundaries', () => {
+  assert.match(surfaceTypes, /SystemMessageData/);
+  assert.match(surfaceTypes, /'system_message'/);
+  assert.match(renderer, /case 'system_message':\n      return <SystemMessageSurface/);
+  assert.match(systemMessage, /blocked_provider_or_runtime/);
+  assert.match(systemMessage, /Recovery steps/);
+  assert.match(systemMessage, /Trace links/);
+  assert.match(systemMessage, /Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant\/customer evidence are not shown/);
+  assert.match(systemMessage, /no direct mutation of invitations, memberships, roles, capabilities, authorization state, or provider configuration occurred/);
+  assert.match(item, /item\.kind === 'system_message'/);
+  assert.match(surfaceStyles, /\.workstream-item\.system_message/);
+  assert.match(surfaceStyles, /\.system-message-surface/);
+});
+
 test('base surface frame and action bar preserve envelope, stale, redaction, disabled, confirmation, approval, and trace affordances', () => {
   assert.match(stateFrame, /data-surface-id=\{visibleEnvelope\.surfaceId\}/);
   assert.match(stateFrame, /data-surface-version=\{visibleEnvelope\.surfaceVersion\}/);
@@ -97,7 +114,7 @@ test('base surface frame and action bar preserve envelope, stale, redaction, dis
 });
 
 test('canonical surface components include dashboard, list/search, detail/edit, decision, audit, workflow, governance diff, and outcome patterns', () => {
-  for (const componentName of ['MarkdownResponseSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface']) {
+  for (const componentName of ['MarkdownResponseSurface', 'SystemMessageSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface']) {
     assert.match(surfaceIndex, new RegExp(componentName));
     assert.match(allSurfaceComponents, new RegExp(`function ${componentName}`));
   }
