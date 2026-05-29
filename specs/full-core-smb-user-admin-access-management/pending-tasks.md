@@ -181,7 +181,7 @@
 
 ### TASK-FCSMB-UAM-99-001: Verify User Admin access management readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-user-admin-access-management/tasks/99-verification/01-verify-user-admin-access-management.md
 - depends on:
@@ -217,3 +217,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify access management readiness`
+  - verification: compared mini-project README done state, conversation decisions, sprint/backlog goals, implementation map, and completed task notes; no bounded follow-up tasks are needed for this mini-project.
+  - validation: scaffolded backend targeted tests passed with `env -u ADMIN_USERS mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`; starter frontend targeted contract tests and `npm run typecheck` passed; `tools/validate-ai-first-saas-starter-fullstack.sh` passed; targeted `rg` proof for access-management/runtime terms passed; `git diff --check` passed.
