@@ -33,12 +33,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class WorkstreamServiceTest {
+  private InMemoryIdentityRepository identityRepository;
   private WorkstreamService service;
   private TrackingWorkstreamAgentRuntimeTestAdapter trackingRuntimeInvoker;
 
   @BeforeEach
   void setUp() {
-    var identityRepository = new InMemoryIdentityRepository();
+    identityRepository = new InMemoryIdentityRepository();
     var invitationRepository = new InMemoryInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
     var meService = new MeService(resolver);
@@ -155,6 +156,41 @@ class WorkstreamServiceTest {
     assertEquals("denied", result.status());
     assertTrue(result.message().contains("last tenant admin"));
     assertEquals("surface-user-admin-detail-admin", result.resultSurface().surfaceId());
+  }
+
+  @Test
+  void userAdminContractCapabilityActionsPreviewApplyAuditAndIdempotency() {
+    identityRepository.saveAccount(new Account("second-admin@example.test", null, "second-admin@example.test", "second-admin@example.test", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("second-admin@example.test", "second-admin@example.test", "Second Admin", "Second", "Admin", null));
+    identityRepository.putSettings(new UserSettings("second-admin@example.test", UserSettings.UiMode.LIGHT));
+    identityRepository.putMembership(new Membership("membership-second-admin", "second-admin@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), MembershipStatus.ACTIVE, false, null));
+
+    var preview = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-preview-role-change", "USERADMIN_PREVIEW_ROLE_CHANGE", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), null, "membership-admin", "surface-user-admin-detail-admin", "corr-useradmin-preview"));
+    assertEquals("accepted", preview.status());
+    assertTrue(preview.traceIds().get(0).contains("trace-useradmin-preview-role-change"));
+
+    var changed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), "idem-useradmin-change", "membership-admin", "surface-user-admin-detail-admin", "corr-useradmin-change"));
+    assertEquals("accepted", changed.status());
+    assertEquals("surface-user-admin-detail-admin", changed.resultSurface().surfaceId());
+
+    var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_EMPLOYEE"), "reason", "ignored replay"), "idem-useradmin-change", "membership-admin", "surface-user-admin-detail-admin", "corr-useradmin-change-replay"));
+    assertEquals(changed, duplicate);
+    assertEquals(List.of(FoundationRole.TENANT_ADMIN), identityRepository.findMembership("membership-member").orElseThrow().roles());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_CHANGE_MEMBER_ROLES") && event.correlationId().equals("corr-useradmin-change")));
+  }
+
+  @Test
+  void userAdminAccessReviewTaskFailsClosedWithoutAutonomousRuntime() {
+    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-start-access-review", "USERADMIN_START_ACCESS_REVIEW_TASK", Map.of("scope", "tenant"), "idem-access-review", "membership-admin", "surface-user-admin-dashboard", "corr-access-review"));
+
+    assertEquals("blocked-runtime", result.status());
+    assertTrue(result.message().contains("fails closed"));
+    assertEquals("surface-user-admin-access-review", result.resultSurface().surfaceId());
+    assertEquals("blocked_provider_or_runtime", result.resultSurface().data().get("status"));
   }
 
   @Test

@@ -79,7 +79,7 @@
 
 ### TASK-USERADMIN-02-001: Implement User Admin Workstream v0 backend/runtime vertical
 
-- status: pending
+- status: done
 - source: specs/user-admin-workstream-v0/backlog/01-user-admin-workstream-v0-build-backlog.md
 - task brief: specs/user-admin-workstream-v0/tasks/02-runtime/01-implement-backend-runtime.md
 - depends on:
@@ -111,6 +111,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: `User Admin Workstream v0; capability ids from capability-inventory; selected Akka substrate per capability; audit/work trace required`
+  - implemented contract-id backend action surfaces for `USERADMIN_PREVIEW_ROLE_CHANGE`, `USERADMIN_CHANGE_MEMBER_ROLES`, and fail-closed `USERADMIN_START_ACCESS_REVIEW_TASK`; preserved request/response Akka Agent runtime path for message turns.
+  - checks passed: rendered starter targeted backend tests `mvn -q -Dtest=WorkstreamServiceTest,InvitationAndUserAdminServiceTest test`; `git diff --check`
   - commit message: `user-admin-v0: implement backend runtime`
 
 ### TASK-USERADMIN-03-001: Implement User Admin Workstream v0 frontend surfaces and workstream UX

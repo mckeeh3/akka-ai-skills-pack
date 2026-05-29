@@ -57,18 +57,39 @@ public final class UserAdminService {
         .toList();
   }
 
-  public Membership replaceRoles(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String correlationId) {
+  public RoleChangePreview previewRoleChange(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String correlationId) {
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
     ensureAssignable(actor, roles);
+    var noOp = existing.roles().equals(roles);
+    var lastAdminDenied = wouldRemoveLastAdmin(existing, roles, existing.status());
+    audit(actor, existing, "USERADMIN_PREVIEW_ROLE_CHANGE", lastAdminDenied ? AdminAuditEvent.Result.DENIED : noOp ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED, lastAdminDenied ? "last-admin-denied" : reason, correlationId);
+    return new RoleChangePreview(!lastAdminDenied, noOp, lastAdminDenied ? "last-admin-denied" : noOp ? "requested roles already match current assignment" : "role change can proceed with backend authorization", "trace-useradmin-preview-role-change-" + stableSuffix(correlationId));
+  }
+
+  public RoleChangeResult changeMemberRoles(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) {
+      throw new AuthorizationException(400, "idempotency-key-required");
+    }
+    var existing = membership(membershipId);
+    requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
+    ensureAssignable(actor, roles);
+    if (existing.roles().equals(roles)) {
+      audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.NO_OP, "no-op", correlationId);
+      return new RoleChangeResult("no-op", "Requested roles already match current assignment.", existing, "trace-useradmin-change-member-roles-" + stableSuffix(idempotencyKey));
+    }
     if (wouldRemoveLastAdmin(existing, roles, existing.status())) {
-      audit(actor, existing, "ROLE_REPLACE", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
+      audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
       throw new AuthorizationException(403, "last-admin-denied");
     }
     var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), roles, existing.status(), existing.supportAccess(), existing.expiresAt());
     put(updated);
-    audit(actor, updated, "ROLE_REPLACE", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
-    return updated;
+    audit(actor, updated, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    return new RoleChangeResult("accepted", "Member roles changed by backend-authoritative User Admin capability.", updated, "trace-useradmin-change-member-roles-" + stableSuffix(idempotencyKey));
+  }
+
+  public Membership replaceRoles(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String correlationId) {
+    return changeMemberRoles(actor, membershipId, roles, reason, "legacy-role-replace-" + correlationId, correlationId).membership();
   }
 
   public Membership suspendMembership(AuthContextResolver.ResolvedMe actor, String membershipId, String reason, String correlationId) {
@@ -188,5 +209,11 @@ public final class UserAdminService {
     repository.appendAudit(new AdminAuditEvent(UUID.randomUUID().toString(), Instant.now(clock), correlationId, actor.account().accountId(), actor.selectedContext().membershipId(), actor.selectedContext().scopeType(), membership == null ? actor.selectedContext().tenantId() : membership.tenantId(), membership == null ? actor.selectedContext().customerId() : membership.customerId(), membership == null ? null : membership.accountId(), membership == null ? null : membership.membershipId(), action, result, reason, reason, "BROWSER_SAFE"));
   }
 
+  private static String stableSuffix(String value) {
+    return Integer.toUnsignedString(java.util.Objects.requireNonNullElse(value, "user-admin").hashCode(), 36);
+  }
+
   public record UserDirectoryRow(String accountId, String displayName, String membershipId, List<FoundationRole> roles, MembershipStatus status, ScopeType scopeType, String tenantId, String customerId) {}
+  public record RoleChangePreview(boolean allowed, boolean noOp, String message, String traceId) {}
+  public record RoleChangeResult(String status, String message, Membership membership, String traceId) {}
 }
