@@ -19,7 +19,7 @@ Source: `specs/release-readiness-after-five-core-v0/validation-results.md`.
   - Frontend typecheck and build passed.
   - Optional real model provider smoke passed without provider-secret leakage in checked outputs.
 - Version consistency: passed.
-  - `README.md` and `pack/README.md` version references match manifest version `0.2.10`.
+  - `README.md` and `pack/README.md` version references match manifest version `0.2.11`.
 - Pack build: passed after a direct release-blocking sync fix.
   - Initial failure: starter template `frontend/src` was out of sync with `frontend/src`.
   - Fix: synced `templates/ai-first-saas-starter/frontend/src` from `frontend/src`.
@@ -46,7 +46,7 @@ Reviewed files:
 
 Findings:
 
-- Version references are coherent with manifest version `0.2.10`.
+- Version references are coherent with manifest version `0.2.11`.
 - User-facing install and scaffold guidance consistently treats the installed pack as skills/resource-only until the user explicitly runs `scaffold-ai-first-saas-starter.sh`.
 - The recommended first-user path is coherent with the five-core v0 starter sequence:
   1. install pack,
