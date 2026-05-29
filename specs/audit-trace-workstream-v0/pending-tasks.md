@@ -146,7 +146,7 @@
 
 ### TASK-AUDITTRACE-99-001: Verify Audit Trace Workstream v0 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/audit-trace-workstream-v0/tasks/99-verification/01-verify-audit-trace-workstream-v0.md
 - depends on:
@@ -181,4 +181,80 @@
   - if complete, completion is recorded with no new required work
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
+  - verification compared completed contract/backend/frontend work against the shared five-core v0 contract, dependency-map gates, sprint/backlog goals, and mini-project done state.
+  - runtime evidence from completed implementation tasks covers backend tests, frontend tests/typecheck, trace/auth/redaction/provider-fail-closed behavior, and committed workstream capability/UI changes.
+  - `tools/validate-ai-first-saas-starter-fullstack.sh` re-ran backend and frontend validation successfully through Maven tests, frontend tests, typecheck, and build, but failed at the built static secret scan because built assets contain the explicit marker `OPENAI_API_KEY` from frontend redaction fixture/static data.
+  - gap: fullstack terminal validation is not complete until the frontend/static secret-marker validation issue is repaired and the full validation command passes.
+  - appended TASK-AUDITTRACE-04-001 and TASK-AUDITTRACE-99-002 to preserve the verification loop.
+  - checks passed: `git diff --check`
+  - checks failed: `tools/validate-ai-first-saas-starter-fullstack.sh` (potential backend secret marker found in built static assets)
   - commit message: `audit-trace-v0: verify workstream completion`
+
+### TASK-AUDITTRACE-04-001: Fix Audit/Trace static secret-marker validation
+
+- status: pending
+- source: TASK-AUDITTRACE-99-001 verification finding
+- task brief: specs/audit-trace-workstream-v0/tasks/04-validation-repair/01-fix-static-secret-marker-validation.md
+- depends on:
+  - TASK-AUDITTRACE-99-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/audit-trace-workstream-v0/pending-tasks.md
+  - specs/audit-trace-workstream-v0/workstream-contract.md
+  - specs/audit-trace-workstream-v0/capability-inventory.md
+  - tools/validate-ai-first-saas-starter-fullstack.sh
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
+  - frontend/src/workstream/fixtures/surfaces.ts
+  - templates/ai-first-saas-starter/src/main/resources/static-resources/index.html
+- skills:
+  - none; focused validation repair task
+- expected outputs:
+  - frontend/template validation repair for redaction fixture/static secret-marker hygiene
+  - updated specs/audit-trace-workstream-v0/pending-tasks.md
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - fullstack starter validation passes, including built static secret scan
+  - frontend redaction fixtures still demonstrate omitted/secret field redaction without exposing backend secret environment-variable names in built assets
+  - task changes and queue update are committed
+- notes:
+  - commit message: `audit-trace-v0: fix static secret validation`
+
+### TASK-AUDITTRACE-99-002: Verify Audit Trace Workstream v0 completion after validation repair
+
+- status: pending
+- source: mini-project verification loop after TASK-AUDITTRACE-04-001
+- task brief: specs/audit-trace-workstream-v0/tasks/99-verification/02-verify-audit-trace-workstream-v0.md
+- depends on:
+  - TASK-AUDITTRACE-04-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/five-core-workstreams-v0-plan/workstream-dependency-map.md
+  - specs/audit-trace-workstream-v0/README.md
+  - specs/audit-trace-workstream-v0/conversation-capture.md
+  - specs/audit-trace-workstream-v0/pending-tasks.md
+  - specs/audit-trace-workstream-v0/sprints/01-audit-trace-workstream-v0-sprint.md
+  - specs/audit-trace-workstream-v0/backlog/01-audit-trace-workstream-v0-build-backlog.md
+  - specs/audit-trace-workstream-v0/tasks/99-verification/02-verify-audit-trace-workstream-v0.md
+  - specs/audit-trace-workstream-v0/workstream-contract.md
+  - specs/audit-trace-workstream-v0/capability-inventory.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/audit-trace-workstream-v0/pending-tasks.md
+  - completion summary, verification notes, or newly appended follow-up tasks
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - task group goals and mini-project done state are compared against completed work
+  - runtime/API/UI validation evidence or blockers are recorded
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - task changes and queue update are committed
+- notes:
+  - commit message: `audit-trace-v0: verify workstream completion after validation repair`
