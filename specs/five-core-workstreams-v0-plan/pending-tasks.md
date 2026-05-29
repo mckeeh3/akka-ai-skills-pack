@@ -108,7 +108,7 @@
 
 ### TASK-FCPLAN-99-001: Verify five-core v0 planning series readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/five-core-workstreams-v0-plan/tasks/99-verification/01-verify-five-core-plan.md
 - depends on:
@@ -142,4 +142,6 @@
   - if complete, completion is recorded with no new required work
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
+  - verification result: complete; shared contract and dependency map exist, all five sibling queues inherit the shared contract, each queue has a runnable first contract task plus a terminal verification task, and no follow-up planning tasks are required before starting My Account.
+  - completed checks: `git diff --check`; `rg -n "status: pending|TASK-FCPLAN-99|Verify" specs/five-core-workstreams-v0-plan/pending-tasks.md`
   - commit message: `five-core-plan: verify planning readiness`
