@@ -114,7 +114,7 @@
 
 ### TASK-FCSMB-01-003: Create first-wave child mini-project queues
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-saas-hardening/backlog/01-full-core-smb-hardening-backlog.md
 - task brief: specs/full-core-smb-saas-hardening/tasks/02-child-projects/01-create-first-wave-child-queues.md
 - depends on: [TASK-FCSMB-01-002]
@@ -138,6 +138,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: create first wave queues`
+  - checks: `git diff --check`; `rg -n "Full-Core SMB|SMB|workstream|surface|dashboard|request/response|AutonomousAgent|deterministic|visual|runtime validation|provider|trace" specs/full-core-smb-baseline-and-ux specs/full-core-smb-user-admin specs/full-core-smb-saas-hardening/wave-plan.md`
 
 ### TASK-FCSMB-99-001: Verify full-core SMB umbrella readiness
 
