@@ -158,7 +158,7 @@
 
 ### TASK-FCSMB-UAG-01-004: Validate UserAdminAgent guidance runtime
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-agent-guidance/agent-guidance-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-agent-guidance/tasks/01-agent-guidance/04-validate-user-admin-agent-guidance-runtime.md
 - depends on: [TASK-FCSMB-UAG-01-003]
@@ -186,6 +186,12 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: validate user admin agent guidance runtime`
+  - validation: direct template backend Maven command fails before scaffolding because `templates/ai-first-saas-starter/backend/pom.xml` intentionally contains `{{MAVEN_GROUP_ID}}` and `{{APP_SLUG}}` placeholders.
+  - validation: scaffolded equivalent passed with `tools/scaffold-ai-first-saas-starter.sh --target /tmp/uag-validation-check --app-name 'UAG Validation Check' --app-slug uag-validation-check --base-package ai.first.uag --maven-group-id ai.first --yes` then `cd /tmp/uag-validation-check && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest`.
+  - validation: frontend targeted contract tests passed with `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-expertise.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/workstream-surfaces.contract.test.mjs`.
+  - validation: required `rg` evidence command passed and showed governed loader tools, `userAdminEvidence.read`, traces, typed `system_message`, no-direct-mutation copy, and secret redaction evidence.
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` passed; it scaffolded the starter, ran backend tests, frontend tests/typecheck/build, static secret scan, and provider smoke. The real provider Akka Agent smoke passed without provider-secret leaks.
+  - validation outcome: no blocker appended; provider-missing fail-closed and provider-configured smoke paths are covered by the targeted/fullstack validation output.
 
 ### TASK-FCSMB-UAG-99-001: Verify UserAdminAgent guidance readiness
 
