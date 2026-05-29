@@ -34,3 +34,16 @@ This is not accepted as a deterministic/model-less substitute and is not marked 
 ## Queue action
 
 - `TASK-MYACCT-99-001` appended `TASK-MYACCT-04-001` and a new terminal verification task `TASK-MYACCT-99-002`.
+
+## TASK-MYACCT-99-002 result
+
+Re-verification ran after `TASK-MYACCT-04-001` repaired provider-smoke model compatibility. The completed task group now satisfies the My Account v0 done state for its stated scope:
+
+- the workstream contract and capability inventory define My Account responsibility, capability ids, AuthContext/authority rules, request-based Agent usage, deterministic service boundaries, trace obligations, and validation path;
+- backend/runtime notes record real local backend test coverage for My Account capabilities, denials, trace/work records, provider fail-closed behavior, governed runtime tool registration, and concrete Akka Agent invocation;
+- frontend notes record My Account structured surfaces, settings/profile/summary/trace fixtures, next-step/open-workstream actions, blocked/denied states, and typecheck/test coverage;
+- provider-smoke repair preserved the concrete Akka Agent path and default-compatible OpenAI sampling configuration without adding deterministic/model-less normal runtime fallback.
+
+Re-verification ran `tools/validate-ai-first-saas-starter-fullstack.sh`. It passed rendered backend tests, frontend tests, frontend typecheck, frontend build, static secret scan, and optional real-provider Akka Agent smoke. The smoke submitted through backend workstream message handling and reported no provider-secret leaks in smoke logs, frontend env, or static assets.
+
+No material gaps remain for this mini-project's stated v0 vertical scope. No follow-up tasks were appended.
