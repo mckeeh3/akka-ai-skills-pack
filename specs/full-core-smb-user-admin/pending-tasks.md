@@ -253,7 +253,7 @@
 
 ### TASK-FCSMB-UA-01-005: Fix User Admin fullstack typecheck blockers
 
-- status: pending
+- status: done
 - source: TASK-FCSMB-UA-99-001 verification finding
 - task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/05-fix-user-admin-fullstack-typecheck.md
 - depends on:
@@ -286,6 +286,11 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: fix user admin fullstack typecheck`
+  - validation: `git diff --check` passed
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm run typecheck` passed
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-user-admin-expertise.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-actions.contract.test.mjs src/api.contract.test.mjs` passed
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` passed
+  - implementation: added `surface-request` to typed `SurfaceActionIntent` with shell request metadata and annotated `DashboardSurface.renderSurfaceValue` recursive return type
 
 ### TASK-FCSMB-UA-99-002: Verify User Admin readiness after typecheck fix
 

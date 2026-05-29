@@ -55,7 +55,7 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
   );
 }
 
-function renderSurfaceValue(value: unknown) {
+function renderSurfaceValue(value: unknown): string | undefined {
   if (value == null) return undefined;
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
   if (Array.isArray(value)) return value.map(renderSurfaceValue).filter(Boolean).join(' · ');
