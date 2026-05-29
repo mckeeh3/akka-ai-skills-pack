@@ -47,7 +47,7 @@
 
 ### TASK-GOVPOL-01-001: Define Governance Policy Workstream v0 contract and capability inventory
 
-- status: pending
+- status: done
 - source: specs/governance-policy-workstream-v0/backlog/01-governance-policy-workstream-v0-build-backlog.md
 - task brief: specs/governance-policy-workstream-v0/tasks/01-contract/01-define-workstream-contract.md
 - depends on:
@@ -74,6 +74,7 @@
   - task changes and queue update are committed
 - notes:
   - unblocked by completed TASK-FCPLAN-01-001; inherit shared contract and dependency map before defining workstream-specific scope.
+  - checks: `git diff --check`; `rg -n "capability|AuthContext|request/response|AutonomousAgent|deterministic|trace|validation" specs/governance-policy-workstream-v0`
   - commit message: `governance-policy-v0: define workstream contract`
 
 ### TASK-GOVPOL-02-001: Implement Governance Policy Workstream v0 backend/runtime vertical
