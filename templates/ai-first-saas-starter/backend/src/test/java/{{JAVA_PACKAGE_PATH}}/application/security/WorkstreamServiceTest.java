@@ -346,6 +346,84 @@ class WorkstreamServiceTest {
     assertFalse(response.surface().traceIds().isEmpty());
   }
 
+  @Test
+  void auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces() {
+    service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-audit-trace", "Explain current trace status", "corr-audit-runtime", "idem-audit-runtime"), "corr-header");
+
+    var search = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-search", "audit.trace.search", Map.of("pageSize", 10, "filter", "runtime"), null, "membership-admin", "surface-audit-trace-dashboard", "corr-audit-search"));
+    assertEquals("accepted", search.status());
+    assertEquals("surface-audit-trace-search", search.resultSurface().surfaceId());
+    assertEquals("list-search", search.resultSurface().surfaceType());
+    assertTrue(search.resultSurface().toString().contains("rawProviderCredential"));
+    assertFalse(search.resultSurface().toString().contains("sk-"));
+
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-detail", "audit.trace.detail.read", Map.of("traceId", search.resultSurface().traceIds().get(0)), null, "membership-admin", "surface-audit-trace-search", "corr-audit-detail"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-audit-trace-detail", detail.resultSurface().surfaceId());
+    assertTrue(detail.resultSurface().toString().contains("redactionMetadata"));
+
+    var timeline = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-timeline", "audit.trace.timeline.read", Map.of("correlationId", "corr-audit-runtime"), null, "membership-admin", "surface-audit-trace-detail", "corr-audit-timeline"));
+    assertEquals("accepted", timeline.status());
+    assertEquals("audit-timeline", timeline.resultSurface().surfaceType());
+    assertTrue(timeline.resultSurface().toString().contains("corr-audit-runtime"));
+
+    var failure = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-failure-evidence", "audit.trace.failureEvidence.read", Map.of("failureCategory", "provider_blocked"), null, "membership-admin", "surface-audit-trace-timeline", "corr-audit-failure"));
+    assertEquals("accepted", failure.status());
+    assertTrue(failure.resultSurface().toString().contains("[REDACTED]"));
+
+    var guide = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-investigation-guide", "audit.trace.investigationGuide.read", Map.of("correlationId", "corr-audit-runtime"), null, "membership-admin", "surface-audit-trace-failure-evidence", "corr-audit-guide"));
+    assertEquals("accepted", guide.status());
+    assertEquals("decision", guide.resultSurface().surfaceType());
+    assertTrue(guide.resultSurface().toString().contains("audit.trace.summaryTask.start"));
+  }
+
+  @Test
+  void auditTraceSearchValidatesInputAndDeniesCrossTenantScope() {
+    var invalid = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-search", "audit.trace.search", Map.of("pageSize", 500), null, "membership-admin", "surface-audit-trace-dashboard", "corr-audit-invalid"));
+    assertEquals("validation-error", invalid.status());
+    assertEquals("validation-error", invalid.resultSurface().surfaceType());
+    assertEquals("validation-error", invalid.resultSurface().data().get("status"));
+
+    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-search", "audit.trace.search", Map.of("tenantId", "tenant-other", "pageSize", 10), null, "membership-admin", "surface-audit-trace-dashboard", "corr-audit-cross-tenant")));
+    assertEquals("AUDIT_TRACE_TENANT_FORBIDDEN", denied.reasonCode());
+  }
+
+  @Test
+  void auditTraceCapabilitiesAreForbiddenForMemberWithoutAuditAuthority() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(memberIdentity(), "membership-member", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-search", "audit.trace.search", Map.of("pageSize", 10), null, "membership-member", "surface-audit-trace-dashboard", "corr-member-audit")));
+
+    assertEquals("CAPABILITY_FORBIDDEN", denied.reasonCode());
+  }
+
+  @Test
+  void auditTraceMessageFailsClosedWhenRuntimeProviderBoundaryIsMissing() {
+    var invitationRepository = new InMemoryInvitationRepository();
+    var resolver = new AuthContextResolver(identityRepository);
+    var meService = new MeService(resolver);
+    var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
+    var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
+    var agentRepository = new InMemoryAgentBehaviorRepository();
+    new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed-failclosed");
+    var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("should not be used", "fake", "fake", "fake", "stop", "fake"));
+    var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService);
+
+    var response = failClosedService.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-audit-trace", "Explain this provider failure", "corr-audit-failclosed", "idem-audit-failclosed"), "corr-header");
+
+    assertEquals("blocked", response.agentItem().status());
+    assertTrue(response.surface().data().get("markdown").toString().contains("blocked before a response was produced"));
+    assertFalse(response.surface().data().get("markdown").toString().contains("should not be used"));
+  }
+
   private static Path findSource(String fileName) throws Exception {
     try (Stream<Path> paths = Files.walk(Path.of("src/main/java"))) {
       return paths

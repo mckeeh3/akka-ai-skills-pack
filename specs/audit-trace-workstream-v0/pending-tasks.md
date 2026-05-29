@@ -79,7 +79,7 @@
 
 ### TASK-AUDITTRACE-02-001: Implement Audit Trace Workstream v0 backend/runtime vertical
 
-- status: pending
+- status: done
 - source: specs/audit-trace-workstream-v0/backlog/01-audit-trace-workstream-v0-build-backlog.md
 - task brief: specs/audit-trace-workstream-v0/tasks/02-runtime/01-implement-backend-runtime.md
 - depends on:
@@ -111,6 +111,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: `Audit Trace Workstream v0; capability ids from capability-inventory; selected Akka substrate per capability; audit/work trace required`
+  - implemented backend Audit/Trace dashboard, search, detail, timeline, failure-evidence, and investigation-guide capability actions/surfaces in the starter template, plus role capability grants and backend tests for success, validation, forbidden access, tenant isolation, redaction, runtime traces, and provider fail-closed behavior.
+  - checks passed: `tools/validate-ai-first-saas-starter-fullstack.sh --target /tmp/tmp.QGOxZ68l0T --keep`; `git diff --check`
   - commit message: `audit-trace-v0: implement backend runtime`
 
 ### TASK-AUDITTRACE-03-001: Implement Audit Trace Workstream v0 frontend surfaces and workstream UX
