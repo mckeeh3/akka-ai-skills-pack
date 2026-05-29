@@ -294,7 +294,7 @@
 
 ### TASK-FCSMB-UA-99-002: Verify User Admin readiness after typecheck fix
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-FCSMB-UA-01-005
 - task brief: specs/full-core-smb-user-admin/tasks/99-verification/02-verify-user-admin-readiness-after-typecheck.md
 - depends on:
@@ -327,3 +327,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify user admin readiness after typecheck fix`
+  - verification result: complete; the User Admin vertical contract, source-boundary notes, backend invitation/dashboard slice, frontend invitation/dashboard slice, and typecheck fix satisfy this child mini-project's stated done state with no new required User Admin planning or validation work.
+  - validation: `git diff --check` passed
+  - validation: required User Admin/runtime marker `rg` check passed
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` passed, including scaffolded backend tests, frontend tests, frontend typecheck, frontend build, static secret scan, and real-provider smoke path or configured smoke success.
