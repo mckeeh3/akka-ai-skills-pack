@@ -552,6 +552,234 @@ export const myAccountMarkdownSurface = markdownResponseEnvelope(
   '## My Account\n\n### Available now\n- Review signed-in profile, settings, selected context, and browser-safe capability basis.\n- Use backend-authorized profile/settings actions for changes.\n\n### Full-core follow-up\nRicher profile and settings edit surfaces remain explicit full-core follow-up/demo behavior.'
 );
 
+
+const myAccountCapabilities = {
+  viewSummary: 'my_account.view_summary',
+  viewContext: 'my_account.view_context',
+  updateProfileSettings: 'my_account.update_profile_settings',
+  listNextSteps: 'my_account.list_next_steps',
+  openAuthorizedWorkstream: 'my_account.open_authorized_workstream',
+  askAgent: 'my_account.ask_agent',
+  viewOwnTraceRefs: 'my_account.view_own_trace_refs'
+} as const;
+
+export const myAccountSurfaceActions = {
+  showDashboard: {
+    actionId: 'action-show-my-account-dashboard',
+    label: 'Refresh My Account summary',
+    intent: 'read',
+    capabilityId: myAccountCapabilities.viewSummary,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-my-account-dashboard', openPlacement: 'inline' },
+    audit: { eventType: 'MyAccountSummaryDisplayed', traceRequired: true }
+  },
+  showProfile: {
+    actionId: 'action-show-my-profile',
+    label: 'Show user profile',
+    intent: 'read',
+    capabilityId: myAccountCapabilities.viewSummary,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-my-profile', openPlacement: 'inline' },
+    audit: { eventType: 'UserProfileDisplayed', traceRequired: true }
+  },
+  showSettings: {
+    actionId: 'action-show-my-settings',
+    label: 'Show user settings',
+    intent: 'read',
+    capabilityId: myAccountCapabilities.viewSummary,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-my-settings', openPlacement: 'inline' },
+    audit: { eventType: 'UserSettingsDisplayed', traceRequired: true }
+  },
+  updateProfile: {
+    actionId: 'action-update-my-profile',
+    label: 'Save profile changes',
+    intent: 'command',
+    capabilityId: myAccountCapabilities.updateProfileSettings,
+    inputSchemaRef: 'schema.my-account.profile.update.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-my-profile', openPlacement: 'inline' },
+    audit: { eventType: 'UserProfileUpdateRequested', traceRequired: true }
+  },
+  updateSettings: {
+    actionId: 'action-update-my-settings',
+    label: 'Save settings changes',
+    intent: 'command',
+    capabilityId: myAccountCapabilities.updateProfileSettings,
+    inputSchemaRef: 'schema.my-account.settings.update.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-my-settings', openPlacement: 'inline' },
+    audit: { eventType: 'UserSettingsUpdateRequested', traceRequired: true }
+  },
+  openUserAdmin: {
+    actionId: 'action-open-user-admin',
+    label: 'Open User Admin',
+    intent: 'surface-request',
+    capabilityId: myAccountCapabilities.openAuthorizedWorkstream,
+    inputSchemaRef: 'schema.my-account.open-workstream.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'deep-link' },
+    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-user-admin', targetSurfaceId: 'user-admin-user-list', displayText: 'Open User Admin' },
+    audit: { eventType: 'MyAccountOpenUserAdminRequested', traceRequired: true }
+  },
+  openAgentAdmin: {
+    actionId: 'action-open-agent-admin',
+    label: 'Open Agent Admin',
+    intent: 'surface-request',
+    capabilityId: myAccountCapabilities.openAuthorizedWorkstream,
+    inputSchemaRef: 'schema.my-account.open-workstream.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-catalog', openPlacement: 'deep-link' },
+    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-agent-admin', targetSurfaceId: 'surface-agent-admin-catalog', displayText: 'Open Agent Admin' },
+    audit: { eventType: 'MyAccountOpenAgentAdminRequested', traceRequired: true }
+  },
+  openAuditTrace: {
+    actionId: 'action-open-audit-trace',
+    label: 'Open audit timeline',
+    intent: 'trace',
+    capabilityId: myAccountCapabilities.viewOwnTraceRefs,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-timeline', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTimelineOpened', traceRequired: true }
+  },
+  signOut: {
+    actionId: 'action-sign-out',
+    label: 'Sign out',
+    intent: 'command',
+    capabilityId: myAccountCapabilities.viewSummary,
+    requiresConfirmation: true,
+    disabled: { reasonCode: 'AUTHKIT_SESSION_ACTION', message: 'Sign-out is handled by the shell AuthKit session boundary, not by granting backend authority.' },
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-my-account-dashboard', openPlacement: 'inline' },
+    audit: { eventType: 'SessionSignOutRequested', traceRequired: true }
+  }
+} satisfies Record<string, SurfaceAction>;
+
+export const myAccountDashboardSurface = envelope(
+  'surface-my-account-dashboard',
+  'dashboard',
+  'My Account',
+  'agent-my-account',
+  {
+    cards: [
+      { cardId: 'card-my-profile', label: 'Signed-in profile', value: 'Tenant Admin', severity: 'info' },
+      { cardId: 'card-my-settings', label: 'Color mode', value: 'system', severity: 'info' },
+      { cardId: 'card-current-context', label: 'Selected AuthContext', value: tenantAdminAuthContext.tenantName, severity: 'info' }
+    ],
+    sections: [
+      { sectionId: 'authority-basis', label: 'Authority basis', summary: 'Backend-visible capabilities, selected membership, and Tenant/Customer scope determine available actions.' },
+      { sectionId: 'self-service', label: 'Self-service only', summary: 'Profile/settings edits are limited to allowed self-service fields; role, membership, and security changes stay in admin workstreams.' },
+      { sectionId: 'traceability', label: 'Traceability', summary: 'Summary reads, denials, settings writes, workstream opens, and model-backed turns preserve trace and correlation references.' }
+    ],
+    nextSteps: [
+      { workstreamId: 'agent-user-admin', label: 'Review users and invitations', allowed: true, capabilityIds: ['secure-tenant-user-foundation'], traceId: 'trace-my-account-next-user-admin' },
+      { workstreamId: 'agent-agent-admin', label: 'Review governed agent readiness', allowed: true, capabilityIds: ['agent.definitions.manage'], traceId: 'trace-my-account-next-agent-admin' },
+      { workstreamId: 'agent-audit-trace', label: 'Open My Account traces', allowed: true, capabilityIds: [myAccountCapabilities.viewOwnTraceRefs], traceId: 'trace-my-account-next-audit' },
+      { workstreamId: 'agent-billing', label: 'Billing', allowed: false, blockedReason: 'Billing workstream remains hidden unless backend capability summary grants billing.read.', capabilityIds: ['billing.read'] }
+    ],
+    blockedState: { reasonCode: 'NO_SELECTED_CONTEXT_SAFE_GLOBAL_ONLY', message: 'Account-global safe fields can render without selected context, but scoped actions are blocked until a Tenant/Customer context is selected.', recovery: 'Select an active membership context before running scoped actions.' }
+  },
+  [myAccountSurfaceActions.showProfile, myAccountSurfaceActions.showSettings, myAccountSurfaceActions.openUserAdmin, myAccountSurfaceActions.openAgentAdmin, myAccountSurfaceActions.openAuditTrace, myAccountSurfaceActions.signOut]
+);
+
+export const myAccountProfileSurface = envelope(
+  'surface-my-profile',
+  'detail-edit',
+  'User profile',
+  'agent-my-account',
+  {
+    recordId: 'acct-admin-profile',
+    recordLabel: 'Tenant Admin · admin@example.test',
+    recordKind: 'profile',
+    summary: 'Signed-in user profile. Editable fields are advisory UI hints; backend validation enforces allowed self-service fields and tenant isolation.',
+    fields: [
+      { fieldId: 'displayName', label: 'Display name', value: 'Tenant Admin', editable: true, inputType: 'text' },
+      { fieldId: 'email', label: 'Email', value: 'admin@example.test', editable: false, inputType: 'email', disabledReason: 'Email is owned by WorkOS/AuthKit identity reconciliation.' },
+      { fieldId: 'locale', label: 'Locale', value: 'en-US', editable: false, inputType: 'select', disabledReason: 'Locale changes are deferred beyond My Account v0.' },
+      { fieldId: 'timeZone', label: 'Time zone', value: 'America/New_York', editable: false, inputType: 'text', disabledReason: 'Time zone changes are deferred beyond My Account v0.' }
+    ],
+    version: 1,
+    permissionState: { canEdit: true, reason: 'Only self-owned display name is mutable in My Account v0.', authoritativeCapabilityId: myAccountCapabilities.updateProfileSettings },
+    audit: { lastEventType: 'UserProfileDisplayed', lastActor: 'Tenant Admin', traceIds: ['trace-my-profile', 'trace-my-account-profile-settings'] },
+    denialExamples: ['unsupported self-service field', 'cross-user target', 'disabled account', 'inactive membership']
+  },
+  [myAccountSurfaceActions.updateProfile, myAccountSurfaceActions.openAuditTrace]
+);
+
+export const myAccountSettingsSurface = envelope(
+  'surface-my-settings',
+  'detail-edit',
+  'User settings',
+  'agent-my-account',
+  {
+    recordId: 'acct-admin-settings',
+    recordLabel: 'Tenant Admin settings',
+    recordKind: 'settings',
+    summary: 'Personal settings for the workstream shell. Backend persistence, no-op, idempotency, and validation errors are reflected as capability action results.',
+    fields: [
+      { fieldId: 'preferredColorMode', label: 'Color mode', value: 'system', editable: true, inputType: 'select', options: [{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }] },
+      { fieldId: 'notificationDigest', label: 'Notification digest', value: 'daily', editable: false, inputType: 'select', disabledReason: 'Notification digest is deferred beyond My Account v0.' },
+      { fieldId: 'composerDensity', label: 'Composer density', value: 'comfortable', editable: false, inputType: 'select', disabledReason: 'Composer density is deferred beyond My Account v0.' }
+    ],
+    version: 1,
+    permissionState: { canEdit: true, reason: 'Only allowed preference fields are sent to the backend; role and capability fields are not browser-editable.', authoritativeCapabilityId: myAccountCapabilities.updateProfileSettings },
+    audit: { lastEventType: 'UserSettingsDisplayed', lastActor: 'Tenant Admin', traceIds: ['trace-my-settings', 'trace-my-account-profile-settings'] },
+    stateFixtures: { validation: 'Unsupported fields return validation/forbidden copy with correlation id.', noOp: 'Submitting unchanged preferences returns no-op with trace.', forbidden: 'Disabled account or inactive membership returns a safe denial.' }
+  },
+  [myAccountSurfaceActions.updateSettings, myAccountSurfaceActions.openAuditTrace]
+);
+
+export const myAccountTraceSurface = envelope(
+  'surface-my-account-trace',
+  'audit-timeline',
+  'My Account traces',
+  'agent-my-account',
+  {
+    events: [
+      { eventId: 'trace-my-summary', occurredAt: generatedAt, actor: 'My Account Agent', action: 'Protected summary read emitted my_account.view_summary trace', traceId: 'trace-surface-my-account-dashboard' },
+      { eventId: 'trace-my-settings-write', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'Self-service settings update audited with idempotency key', traceId: 'trace-my-account-profile-settings' },
+      { eventId: 'trace-my-agent-turn', occurredAt: generatedAt, actor: 'WorkstreamRuntimeAgent', action: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, and AgentWorkTrace linked to Ask My Account', traceId: 'trace-surface-v0-my-account-markdown' }
+    ]
+  },
+  [myAccountSurfaceActions.openAuditTrace]
+);
+
+export const myAccountStructuredSurfaces = [myAccountDashboardSurface, myAccountProfileSurface, myAccountSettingsSurface, myAccountTraceSurface];
+
+export const displayMyAccountDashboardActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Displayed My Account summary with backend-visible authority, selected context, next steps, and trace links.',
+  correlationId: 'corr-display-my-account-dashboard',
+  traceIds: ['trace-display-my-account-dashboard'],
+  resultSurface: myAccountDashboardSurface
+};
+
+export const displayMyAccountProfileActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Displayed signed-in profile with self-service field boundaries and audit trace links.',
+  correlationId: 'corr-display-my-profile',
+  traceIds: ['trace-display-my-profile'],
+  resultSurface: myAccountProfileSurface
+};
+
+export const displayMyAccountSettingsActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Displayed signed-in settings with validation, no-op, and idempotency guidance.',
+  correlationId: 'corr-display-my-settings',
+  traceIds: ['trace-display-my-settings'],
+  resultSurface: myAccountSettingsSurface
+};
+
+export const updateMyAccountSettingsActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'My Account profile/settings changes were accepted by the backend-authoritative self-service capability.',
+  correlationId: 'corr-update-my-account-settings',
+  traceIds: ['trace-my-account-profile-settings'],
+  resultSurface: myAccountSettingsSurface
+};
+
 export const userAdminMarkdownSurface = markdownResponseEnvelope(
   'surface-v0-user-admin-markdown',
   'User Admin v0 response',
@@ -966,6 +1194,7 @@ export const governanceDiffSurface = envelope('surface-governance-diff', 'govern
 export const outcomeSurface = envelope('surface-outcome-review', 'outcome', 'Outcome review', 'agent-governance-policy', { outcomeId: 'outcome-1', metrics: [{ metricId: 'decision-cycle-time', label: 'Decision cycle time', current: 4, target: 2, unit: 'hours' }] }, [surfaceActionsByIntent.read]);
 
 export const fullCoreDemoSurfaceEnvelopes = [
+  ...myAccountStructuredSurfaces,
   userAdminDashboardSurface,
   userAdminListSearchSurface,
   agentAdminCatalogSurface,
@@ -989,7 +1218,7 @@ export const fullCoreDemoSurfaceEnvelopes = [
 export const canonicalSurfaceEnvelopes = [
   ...fiveCoreV0MarkdownSurfaces
 ];
-export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions)];
+export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(myAccountSurfaceActions), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions)];
 
 const resultBase = { correlationId: 'corr-action-result', traceIds: ['trace-action-result'] };
 export const actionResultsByStatus: Record<CapabilityActionResult['status'], CapabilityActionResult> = {

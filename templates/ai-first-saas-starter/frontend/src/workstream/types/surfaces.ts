@@ -74,6 +74,9 @@ export type MarkdownResponseData = {
 
 export type DashboardSurfaceData = {
   cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'critical' }>;
+  sections?: Array<{ sectionId: string; label: string; summary: string }>;
+  nextSteps?: Array<{ workstreamId: string; label: string; allowed: boolean; blockedReason?: string; capabilityIds?: string[]; traceId?: string }>;
+  blockedState?: { reasonCode: string; message: string; recovery: string };
 };
 
 export type ListSearchSurfaceData = {

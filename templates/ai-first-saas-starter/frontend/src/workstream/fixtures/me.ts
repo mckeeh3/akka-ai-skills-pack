@@ -11,7 +11,7 @@ export const tenantAdminAuthContext: AuthContext = {
   customerName: 'Northwind Customer',
   membershipId: 'membership-admin',
   roleIds: ['tenant-admin', 'policy-owner'],
-  capabilityIds: ['profile.read', 'profile.update', 'secure-tenant-user-foundation', 'admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.invitations.resend', 'admin.invitations.revoke', 'admin.users.profile.patch', 'admin.roles.replace', 'admin.access_review.resolve', 'admin.audit.read', 'admin.users.read', 'admin.users.invite', 'admin.roles.update', 'audit.trace.read', 'governance.policy.read', 'governance.policy.propose', 'governance-decisions-audit', 'decision.approve', 'workflow.read', 'agent.definitions.manage', 'agent.prompts.govern', 'agent.skills.govern', 'agent.tool_boundaries.manage', 'agent.models.read', 'agent.models.manage', 'agent.runtime.test']
+  capabilityIds: ['profile.read', 'profile.update', 'my_account.view_summary', 'my_account.view_context', 'my_account.update_profile_settings', 'my_account.list_next_steps', 'my_account.open_authorized_workstream', 'my_account.ask_agent', 'my_account.view_own_trace_refs', 'secure-tenant-user-foundation', 'admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.invitations.resend', 'admin.invitations.revoke', 'admin.users.profile.patch', 'admin.roles.replace', 'admin.access_review.resolve', 'admin.audit.read', 'admin.users.read', 'admin.users.invite', 'admin.roles.update', 'audit.trace.read', 'governance.policy.read', 'governance.policy.propose', 'governance-decisions-audit', 'decision.approve', 'workflow.read', 'agent.definitions.manage', 'agent.prompts.govern', 'agent.skills.govern', 'agent.tool_boundaries.manage', 'agent.models.read', 'agent.models.manage', 'agent.runtime.test']
 };
 
 export const memberAuthContext: AuthContext = {
@@ -22,7 +22,7 @@ export const memberAuthContext: AuthContext = {
   customerName: 'Northwind Customer',
   membershipId: 'membership-member',
   roleIds: ['member'],
-  capabilityIds: ['profile.read', 'workflow.read', 'decision.read']
+  capabilityIds: ['profile.read', 'my_account.view_summary', 'my_account.view_context', 'my_account.update_profile_settings', 'my_account.list_next_steps', 'my_account.open_authorized_workstream', 'my_account.ask_agent', 'my_account.view_own_trace_refs', 'workflow.read', 'decision.read']
 };
 
 export const auditorSupportAuthContext: AuthContext = {

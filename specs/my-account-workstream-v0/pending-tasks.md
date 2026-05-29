@@ -117,7 +117,7 @@
 
 ### TASK-MYACCT-03-001: Implement My Account Workstream v0 frontend surfaces and workstream UX
 
-- status: pending
+- status: done
 - source: specs/my-account-workstream-v0/backlog/01-my-account-workstream-v0-build-backlog.md
 - task brief: specs/my-account-workstream-v0/tasks/03-frontend/01-implement-frontend-surfaces.md
 - depends on:
@@ -140,6 +140,8 @@
   - frontend surfaces and workstream behavior reflect backend capabilities and do not create frontend-only authorization
   - task changes and queue update are committed
 - notes:
+  - implemented My Account structured dashboard/profile/settings/trace fixtures, dashboard next-step/blocked-state rendering, fixture-client action results, and frontend contract coverage for self-service actions, denials, trace links, and cross-workstream launch requests.
+  - checks passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `git diff --check`
   - commit message: `my-account-v0: implement frontend surfaces`
 
 ### TASK-MYACCT-99-001: Verify My Account Workstream v0 completion
