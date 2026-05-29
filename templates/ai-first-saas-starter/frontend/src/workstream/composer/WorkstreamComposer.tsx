@@ -1,4 +1,4 @@
-import { FormEvent, KeyboardEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FormEvent, KeyboardEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { AuthContext, ComposerRequest, FunctionalAgentSummary, MeResponse } from '../types';
 import { buildComposerRequest, canSubmitComposer, composerAvailability } from './composerState';
 
@@ -19,12 +19,47 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
   const submitDisabled = isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability);
   const helperId = 'workstream-composer-helper';
 
+  function focusComposerInput() {
+    const input = inputRef.current;
+    if (!input || input.disabled) return;
+    input.focus({ preventScroll: true });
+  }
+
+  function shouldRestoreComposerFocus(activeElement: Element | null) {
+    if (!(activeElement instanceof HTMLElement)) return true;
+    const editableElement = activeElement.closest('input, textarea, select, [contenteditable="true"]');
+    return !editableElement;
+  }
+
+  function refocusComposerAfterBlur() {
+    window.requestAnimationFrame(() => {
+      if (shouldRestoreComposerFocus(document.activeElement)) focusComposerInput();
+    });
+  }
+
   useLayoutEffect(() => {
     const input = inputRef.current;
     if (!input) return;
     input.style.height = 'auto';
     input.style.height = `${input.scrollHeight}px`;
   }, [draft]);
+
+  useEffect(() => {
+    focusComposerInput();
+  }, [selectedAgent?.functionalAgentId, disabledReason, isSubmitting]);
+
+  useEffect(() => {
+    function refocusVisibleComposer() {
+      if (document.visibilityState === 'visible') focusComposerInput();
+    }
+
+    window.addEventListener('focus', focusComposerInput);
+    document.addEventListener('visibilitychange', refocusVisibleComposer);
+    return () => {
+      window.removeEventListener('focus', focusComposerInput);
+      document.removeEventListener('visibilitychange', refocusVisibleComposer);
+    };
+  }, [disabledReason, isSubmitting, selectedAgent?.functionalAgentId]);
 
   function submitFromKeyboard(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) return;
@@ -37,6 +72,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
     if (isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability)) return;
     const accepted = await onSubmit?.(buildComposerRequest(authContext, selectedAgent, draft, attachedSurfaceId));
     if (accepted !== false) setDraft('');
+    window.requestAnimationFrame(focusComposerInput);
   }
 
   return (
@@ -51,6 +87,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
           value={draft}
           onChange={(event) => setDraft(event.currentTarget.value)}
           onKeyDown={submitFromKeyboard}
+          onBlur={refocusComposerAfterBlur}
           aria-describedby={helperId}
           disabled={isSubmitting || Boolean(disabledReason)}
           placeholder={isSubmitting ? 'Model-backed agent is responding…' : disabledReason ?? "What's next..."}

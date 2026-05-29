@@ -158,7 +158,18 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
   assert.match(composer, /input\.style\.height = 'auto'/);
   assert.match(composer, /input\.scrollHeight/);
   assert.match(composer, /autoFocus/);
+  assert.match(composer, /function focusComposerInput/);
+  assert.match(composer, /input\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(composer, /useEffect\(\(\) => \{\s*focusComposerInput\(\);\s*\}, \[selectedAgent\?\.functionalAgentId, disabledReason, isSubmitting\]\)/);
+  assert.match(composer, /window\.addEventListener\('focus', focusComposerInput\)/);
+  assert.match(composer, /document\.addEventListener\('visibilitychange', refocusVisibleComposer\)/);
+  assert.match(composer, /shouldRestoreComposerFocus/);
+  assert.match(composer, /activeElement\.closest\('input, textarea, select, \[contenteditable="true"\]'\)/);
+  assert.match(composer, /window\.requestAnimationFrame\(\(\) => \{/);
+  assert.match(composer, /if \(shouldRestoreComposerFocus\(document\.activeElement\)\) focusComposerInput\(\)/);
+  assert.match(composer, /window\.requestAnimationFrame\(focusComposerInput\)/);
   assert.match(composer, /onKeyDown=\{submitFromKeyboard\}/);
+  assert.match(composer, /onBlur=\{refocusComposerAfterBlur\}/);
   assert.match(composer, /event\.key !== 'Enter' \|\| event\.shiftKey/);
   assert.match(composer, /event\.currentTarget\.form\?\.requestSubmit\(\)/);
   assert.match(composer, /workstream-send-prompt-tooltip/);

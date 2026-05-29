@@ -75,7 +75,7 @@ frontend/src/workstream/
     railState.ts           # visible/hidden/denied/attention/selected-agent behavior
     index.ts
   composer/
-    WorkstreamComposer.tsx
+    WorkstreamComposer.tsx # persistent prompt input; refocuses after submission/workstream changes so users can type next
     ComposerCommandHints.tsx
     composerState.ts       # draft, submit, disabled/forbidden, selected-agent context
     index.ts
@@ -401,7 +401,7 @@ The first implementation slice must include fixtures for:
 Focused contract tests should verify:
 - types/fixtures include `/api/me`, AuthContext, functional agents, workstream items, surface envelopes, actions, and events
 - rail visibility is capability-aware and supports denied/hidden states
-- composer is persistent and selected-agent aware
+- composer is persistent, selected-agent aware, and restores focus to the enabled prompt input after submission, workstream changes, browser refocus, and response completion so the next user input can be typed without clicking the field
 - context/authority indicators expose selected tenant/customer, role/capability basis, support-access state, pending approvals, and trace/recovery links
 - surface rendering uses envelope identity/type/version, payload, actions, stale markers, redaction, and trace ids
 - action controls preserve disabled/denied reasons, confirmation, idempotency, audit, trace, and result-surface mappings
