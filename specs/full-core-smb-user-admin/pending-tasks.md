@@ -40,7 +40,7 @@
 
 ### TASK-FCSMB-UA-01-001: Define User Admin vertical slice contracts and implementation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin/backlog/01-user-admin-vertical-contract-backlog.md
 - task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/01-define-user-admin-vertical-contracts.md
 - depends on: [TASK-FCSMB-UA-00-001]
@@ -58,7 +58,7 @@
   - none; repository planning task
 - expected outputs:
   - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
-  - optionally appended bounded implementation tasks if enough detail is available
+  - specs/full-core-smb-user-admin/tasks/01-user-admin/02-inspect-user-admin-starter-boundaries.md
 - required checks:
   - `git diff --check`
   - `rg -n "User Admin|invitation|member|role|disable|reactivate|access review|UserAdminAgent|AutonomousAgent|deterministic|audit|trace|runtime validation" specs/full-core-smb-user-admin`
@@ -69,6 +69,36 @@
 - notes:
   - commit message: `full-core-smb: define user admin vertical contracts`
 
+### TASK-FCSMB-UA-01-002: Inspect User Admin starter boundaries and queue first source-edit slice
+
+- status: pending
+- source: specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+- task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/02-inspect-user-admin-starter-boundaries.md
+- depends on: [TASK-FCSMB-UA-01-001]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin/README.md
+  - specs/full-core-smb-user-admin/conversation-capture.md
+  - specs/full-core-smb-user-admin/sprints/01-user-admin-vertical-contract-sprint.md
+  - specs/full-core-smb-user-admin/backlog/01-user-admin-vertical-contract-backlog.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+  - targeted source files discovered under templates/ai-first-saas-starter/
+- skills:
+  - none; repository planning/source-discovery task
+- expected outputs:
+  - updated specs/full-core-smb-user-admin/pending-tasks.md
+  - new source-edit task brief(s) under specs/full-core-smb-user-admin/tasks/01-user-admin/
+  - optional concise source-boundary note under specs/full-core-smb-user-admin/
+- required checks:
+  - `git diff --check`
+  - targeted `rg`/`find` commands proving discovered starter source/test boundaries
+- done criteria:
+  - next source-edit implementation task can run without guessing source paths or validation commands
+  - appended tasks preserve deterministic-service, surface, capability, trace, provider fail-closed, and runtime validation boundaries
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: inspect user admin starter boundaries`
+
 ### TASK-FCSMB-UA-99-001: Verify User Admin readiness
 
 - status: pending
@@ -76,6 +106,7 @@
 - task brief: specs/full-core-smb-user-admin/tasks/99-verification/01-verify-user-admin-readiness.md
 - depends on:
   - TASK-FCSMB-UA-01-001
+  - TASK-FCSMB-UA-01-002
 - required reads:
   - AGENTS.md
   - specs/full-core-smb-user-admin/README.md
