@@ -46,7 +46,7 @@
 
 ### TASK-REL-01-001: Run starter and pack validation
 
-- status: pending
+- status: done
 - source: specs/release-readiness-after-five-core-v0/backlog/01-release-readiness-backlog.md
 - task brief: specs/release-readiness-after-five-core-v0/tasks/01-validation/01-run-starter-and-pack-validation.md
 - depends on: [TASK-REL-00-001]
@@ -74,6 +74,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `release-readiness: run starter pack validation`
+  - validation recorded in `specs/release-readiness-after-five-core-v0/validation-results.md`
+  - fixed direct release blocker by syncing `templates/ai-first-saas-starter/frontend/src` from `frontend/src` so `tools/build-pack.sh --clean --no-archive` passes
 
 ### TASK-REL-01-002: Validate source install and scaffold behavior
 

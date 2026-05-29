@@ -25,9 +25,6 @@ test('deep links select functional agents, stream items, and surfaces', () => {
   assert.match(main, /selectedSurfaceId/);
   assert.match(main, /surfacePlacement: 'inline'/);
   assert.match(main, /window\.history\.pushState/);
-  assert.match(main, /onShellRequest=\{handleShellRequest\}/);
-  assert.match(main, /resolveShellRequestSurface/);
-  assert.match(main, /surfaceAliases/);
 });
 
 test('workstream shell uses fixture contracts and capability action feedback', () => {

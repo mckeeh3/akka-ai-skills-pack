@@ -1,15 +1,8 @@
 import type { SurfaceEnvelope } from './surfaces';
 
-export type SurfaceActionIntent = 'read' | 'surface-request' | 'command' | 'proposal' | 'approval' | 'workflow' | 'governance' | 'trace';
+export type SurfaceActionIntent = 'read' | 'command' | 'proposal' | 'approval' | 'workflow' | 'governance' | 'trace';
 export type IdempotencyKeySource = 'client-generated' | 'surface-item' | 'server-issued';
 export type ResultSurfacePlacement = 'inline' | 'modal' | 'side-panel' | 'deep-link';
-export type SurfaceActionShellRequest = {
-  requestType: 'show_surface' | 'open_workstream' | 'refresh_surface' | 'open_attention_item';
-  targetFunctionalAgentId?: string;
-  targetSurfaceId?: string;
-  targetItemId?: string;
-  displayText?: string;
-};
 
 export type DisabledReason = {
   reasonCode: string;
@@ -34,7 +27,6 @@ export type SurfaceAction = {
     updateSurfaceId?: string;
     openPlacement?: ResultSurfacePlacement;
   };
-  shellRequest?: SurfaceActionShellRequest;
   audit: {
     eventType: string;
     traceRequired: boolean;

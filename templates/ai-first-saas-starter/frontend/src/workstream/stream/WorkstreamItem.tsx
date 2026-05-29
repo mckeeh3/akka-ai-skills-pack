@@ -22,11 +22,11 @@ export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardPr
   }
 
   if (item.kind === 'surface-request') {
-    const requestVariant = item.requestOrigin === 'surface_action' || item.requestOrigin === 'my_account_panel' ? 'action-request-surface' : 'surface-request-surface';
+    const requestVariant = item.itemId.startsWith('surface-action-request-') ? 'action-request-surface' : 'surface-request-surface';
     return (
-      <article id={item.itemId} className={`ds-card workstream-item surface-request request-surface ${requestVariant}`} tabIndex={-1} aria-label={requestVariant === 'action-request-surface' ? 'Action request received' : 'Surface request received'} data-request-origin={item.requestOrigin} data-canonical-prompt={item.canonicalPrompt}>
-        <p>{item.canonicalPrompt ?? item.title ?? item.body ?? ''}</p>
-        {item.body && item.body !== item.canonicalPrompt && <small>{item.body}</small>}
+      <article id={item.itemId} className={`ds-card workstream-item surface-request request-surface ${requestVariant}`} tabIndex={-1} aria-label={requestVariant === 'action-request-surface' ? 'Action request received' : 'Surface request received'}>
+        <p>{item.title ?? item.body ?? ''}</p>
+        {item.body && item.body !== item.title && <small>{item.body}</small>}
       </article>
     );
   }

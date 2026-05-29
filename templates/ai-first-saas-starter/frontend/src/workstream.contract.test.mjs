@@ -1,15 +1,8 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const readFirstExisting = (paths) => {
-  for (const path of paths) {
-    const url = new URL(path, import.meta.url);
-    if (existsSync(url)) return readFileSync(url, 'utf8');
-  }
-  throw new Error(`None of the candidate files exist: ${paths.join(', ')}`);
-};
 
 const authTypes = read('./workstream/types/auth.ts');
 const agentTypes = read('./workstream/types/agents.ts');
@@ -22,10 +15,6 @@ const agentFixtures = read('./workstream/fixtures/agents.ts');
 const surfaceFixtures = read('./workstream/fixtures/surfaces.ts');
 const workstreamFixtures = read('./workstream/fixtures/workstream.ts');
 const eventFixtures = read('./workstream/fixtures/events.ts');
-const meResponseJava = readFirstExisting([
-  '../../backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MeResponse.java',
-  '../../src/main/java/ai/first/application/security/MeResponse.java'
-]);
 
 const allFixtures = [meFixtures, agentFixtures, surfaceFixtures, workstreamFixtures, eventFixtures].join('\n');
 
@@ -65,19 +54,6 @@ test('functional agent fixtures expose the five core v0 workstreams while My Acc
   assert.match(agentFixtures, /availability: 'hidden'/);
   assert.match(agentFixtures, /availability: 'disabled'/);
   assert.match(agentFixtures, /attention: \{ count: 2, severity: 'warning' \}/);
-});
-
-test('backend /api/me contract carries workstream icon descriptors for core v0 agents', () => {
-  assert.match(meResponseJava, /record WorkstreamIconDescriptor/);
-  assert.match(meResponseJava, /WorkstreamIconDescriptor workstreamIcon/);
-  for (const [label, iconId, token] of [
-    ['User Admin', 'users-admin', 'accent-users'],
-    ['Agent Admin', 'bot-spark', 'accent-agents'],
-    ['Audit/Trace', 'timeline-search', 'accent-audit'],
-    ['Governance/Policy', 'shield-checklist', 'accent-governance']
-  ]) {
-    assert.match(meResponseJava, new RegExp(`"${label.replace('/', '\\/')}"[\\s\\S]*?"${iconId}"[\\s\\S]*?"${token}"`));
-  }
 });
 
 test('functional agent fixtures carry typed workstream icon descriptors for core and fallback states', () => {

@@ -16,25 +16,6 @@ export type WorkstreamItemKind =
 
 export type WorkstreamItemStatus = 'working' | 'waiting-for-human' | 'blocked' | 'ready' | 'failed' | 'stale';
 
-export type WorkstreamShellRequestOrigin = 'user_prompt' | 'surface_action' | 'deep_link' | 'my_account_panel' | 'system_suggestion';
-export type WorkstreamShellRequestType = 'show_surface' | 'open_workstream' | 'refresh_surface' | 'open_attention_item';
-export type SurfaceRequestScope = 'current_workstream' | 'authorized_cross_workstream';
-
-export type WorkstreamShellRequest = {
-  requestType: WorkstreamShellRequestType;
-  origin: WorkstreamShellRequestOrigin;
-  displayText: string;
-  canonicalPrompt: string;
-  targetFunctionalAgentId?: string;
-  targetSurfaceId?: string;
-  targetItemId?: string;
-  sourceFunctionalAgentId?: string;
-  sourceSurfaceId?: string;
-  sourceActionId?: string;
-  scope: SurfaceRequestScope;
-  correlationId: string;
-};
-
 export type TraceLink = {
   traceId: string;
   label: string;
@@ -52,8 +33,6 @@ export type WorkstreamItem = {
   title?: string;
   body?: string;
   status?: WorkstreamItemStatus;
-  requestOrigin?: WorkstreamShellRequestOrigin;
-  canonicalPrompt?: string;
   traceLinks?: TraceLink[];
 };
 
