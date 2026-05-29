@@ -106,13 +106,73 @@ class WorkstreamServiceTest {
   @Test
   void actionDispatcherRequiresSelectedContextAndIdempotency() {
     var missingKey = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-invite-user", "secure-tenant-user-foundation", null, null, "membership-admin", "surface-user-admin-dashboard", "corr-invite"));
+        "action-invite-user", "USERADMIN_SEND_INVITATION", null, null, "membership-admin", "surface-user-admin-dashboard", "corr-invite"));
 
     assertEquals("validation-error", missingKey.status());
 
     var mismatch = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-display-user-list", "secure-tenant-user-foundation", null, null, "membership-other", "surface-user-admin-dashboard", "corr-forbidden")));
     assertEquals("CONTEXT_FORBIDDEN", mismatch.reasonCode());
+  }
+
+  @Test
+  void userAdminDashboardAndInvitationPanelAreBackendDerivedAndScoped() {
+    var dashboard = service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-useradmin-dashboard");
+
+    assertEquals("surface-user-admin-dashboard", dashboard.surfaceId());
+    assertEquals("dashboard", dashboard.surfaceType());
+    assertEquals("user_admin.dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.toString().contains("USERADMIN_VIEW_OVERVIEW"));
+    assertTrue(dashboard.toString().contains("USERADMIN_LIST_INVITATIONS"));
+    assertTrue(dashboard.toString().contains("USERADMIN_SEND_INVITATION"));
+    assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
+    assertTrue(dashboard.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-user-admin-dashboard")));
+
+    var invitationPanel = service.surface(identity(), "membership-admin", "surface-user-admin-invitation-panel", "corr-useradmin-invitations");
+    assertEquals("list-search", invitationPanel.surfaceType());
+    assertEquals("user_admin.invitation_panel.v1", invitationPanel.data().get("surfaceContract"));
+    assertTrue(invitationPanel.toString().contains("system_message"));
+    assertFalse(invitationPanel.toString().contains("invite-token"));
+    assertFalse(invitationPanel.toString().contains("tokenHash"));
+  }
+
+  @Test
+  void userAdminInvitationActionsCreateResendRevokeAndReplayThroughDeterministicServices() {
+    var created = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "USERADMIN_SEND_INVITATION", Map.of("email", "invitee@example.test", "displayName", "Invitee"), "idem-workstream-invite", "membership-admin", "surface-user-admin-dashboard", "corr-workstream-invite"));
+    assertEquals("accepted", created.status());
+    assertEquals("surface-user-admin-invitation-panel", created.resultSurface().surfaceId());
+    assertTrue(created.traceIds().get(0).contains("trace-useradmin-invitation"));
+    assertTrue(created.resultSurface().toString().contains("invitee@example.test"));
+    assertFalse(created.resultSurface().toString().contains("invite-token"));
+
+    var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "USERADMIN_SEND_INVITATION", Map.of("email", "changed@example.test"), "idem-workstream-invite", "membership-admin", "surface-user-admin-dashboard", "corr-workstream-invite-replay"));
+    assertEquals(created, duplicate);
+
+    var invitationId = created.resultSurface().data().get("rows").toString().contains("invitee@example.test")
+        ? identityRepository.auditEvents().stream().filter(event -> event.actionType().equals("INVITATION_CREATE")).findFirst().orElseThrow().targetMembershipId().replace("membership-", "")
+        : "missing";
+    var resent = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-resend-invitation", "USERADMIN_RESEND_INVITATION", Map.of("invitationId", invitationId, "reason", "delivery repair"), "idem-workstream-resend", "membership-admin", "surface-user-admin-invitation-panel", "corr-workstream-resend"));
+    assertEquals("accepted", resent.status());
+    assertTrue(resent.resultSurface().toString().contains("resendCount=1"));
+
+    var revoked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-revoke-invitation", "USERADMIN_REVOKE_INVITATION", Map.of("invitationId", invitationId, "reason", "wrong recipient"), "idem-workstream-revoke", "membership-admin", "surface-user-admin-invitation-panel", "corr-workstream-revoke"));
+    assertEquals("accepted", revoked.status());
+    assertTrue(revoked.resultSurface().toString().contains("status=revoked"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_RESEND") && event.correlationId().equals("corr-workstream-resend")));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_REVOKE") && event.correlationId().equals("corr-workstream-revoke")));
+  }
+
+  @Test
+  void userAdminInvitationActionsDenyMissingCapabilityBeforeDataLeakage() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(memberIdentity(), "membership-member", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "USERADMIN_SEND_INVITATION", Map.of("email", "leak@example.test"), "idem-denied-invite", "membership-member", "surface-user-admin-dashboard", "corr-denied-invite")));
+
+    assertEquals("CAPABILITY_FORBIDDEN", denied.reasonCode());
+    assertFalse(identityRepository.auditEvents().stream().anyMatch(event -> event.targetAccountId() != null && event.targetAccountId().contains("leak@example.test")));
   }
 
   @Test

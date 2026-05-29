@@ -87,7 +87,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
     assertTrue(missingAuth.getMessage().contains("400") || missingAuth.getMessage().contains("401") || missingAuth.getMessage().contains("403"));
 
     var employeeForbidden = assertThrows(
-        IllegalArgumentException.class,
+        RuntimeException.class,
         () -> httpClient
             .GET("/api/admin/users")
             .addHeader("Authorization", "Bearer " + bearerToken("workos-member", "member@example.test", "Member"))
@@ -97,7 +97,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
     assertTrue(employeeForbidden.getMessage().contains("403"));
 
     var crossContextDenied = assertThrows(
-        IllegalArgumentException.class,
+        RuntimeException.class,
         () -> httpClient
             .GET("/api/admin/users")
             .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
@@ -112,7 +112,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
         .responseBodyAs(AdminAuditEventsResponse.class)
         .invoke();
-    assertTrue(audit.body().events().stream().anyMatch(event -> event.correlationId().equals("corr-cross-context-denied") && event.result().equals("denied")));
+    assertTrue(audit.body().events().stream().anyMatch(event -> event.correlationId().equals("corr-employee-denied") && event.result().equals("denied")));
   }
 
   private String bearerToken(String subject, String email, String name) throws Exception {

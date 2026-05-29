@@ -125,6 +125,7 @@ public final class UserAdminService {
     requireScope(actor, scopeType, tenantId, customerId);
     var capability = scopeType == ScopeType.CUSTOMER ? "customer.user.read" : scopeType == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : "tenant.user.read";
     if (!actor.selectedContext().hasCapability(capability)) {
+      audit(actor, null, "USER_DIRECTORY_SEARCH", AdminAuditEvent.Result.DENIED, "missing-capability:" + capability, actor.correlationId());
       throw new AuthorizationException(403, "missing-capability:" + capability);
     }
   }

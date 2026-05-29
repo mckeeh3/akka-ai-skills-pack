@@ -101,7 +101,7 @@
 
 ### TASK-FCSMB-UA-01-003: Implement User Admin backend dashboard and invitation action foundation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin/source-boundary-notes.md
 - task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/03-implement-user-admin-backend-dashboard-invitations.md
 - depends on: [TASK-FCSMB-UA-01-002]
@@ -145,6 +145,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement user admin backend invitation foundation`
+  - validation: `git diff --check` passed
+  - validation: direct template command `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest` is not executable before scaffolding because template placeholders make `pom.xml` invalid; scaffolded equivalent passed with `env -u ADMIN_USERS`
+  - validation: required `rg` marker check passed
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` was attempted; backend compile/tests progressed, but the broad fullstack run remains blocked by pre-existing frontend composer contract assertions outside this backend-only task scope
 
 ### TASK-FCSMB-UA-01-004: Implement User Admin frontend dashboard and invitation surface foundation
 
