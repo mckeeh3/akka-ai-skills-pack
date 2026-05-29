@@ -106,3 +106,105 @@ git diff --check
 ```
 
 Result: passed with no output.
+
+## TASK-REL-01-002: Source install and scaffold validation
+
+Date: 2026-05-29
+
+### Summary
+
+- Source install into a disposable project target: passed.
+- Installed scaffold dry-run against the installed target: passed.
+- Installed scaffold non-dry-run into a separate disposable empty target: passed.
+- Rendered scaffold smoke paths `specs/scaffold-report.md`, `pom.xml`, `src/`, and `frontend/`: present.
+- No disposable target artifacts were created inside the repository.
+
+### Evidence
+
+Disposable targets:
+
+```text
+install target: /tmp/akka-pack-install-smoke.KjEaTt
+scaffold target: /tmp/akka-pack-scaffold-smoke.sIvxtL
+```
+
+#### Source install
+
+Command:
+
+```bash
+bash install.sh --location project --project /tmp/akka-pack-install-smoke.KjEaTt
+```
+
+Result: passed.
+
+Evidence:
+
+```text
+[install] Install complete
+[install] Installed pack guidance:    /tmp/akka-pack-install-smoke.KjEaTt/.agents/AGENTS.md
+[install] Installed docs:             /tmp/akka-pack-install-smoke.KjEaTt/.agents/docs
+[install] Installed manifest: /tmp/akka-pack-install-smoke.KjEaTt/.agents/manifests/akka-ai-skills-pack.yaml
+[install] Installed skills:   /tmp/akka-pack-install-smoke.KjEaTt/.agents/skills
+[install] Installed starter template:    /tmp/akka-pack-install-smoke.KjEaTt/.agents/resources/templates/ai-first-saas-starter
+[install] Installed scaffold command:    /tmp/akka-pack-install-smoke.KjEaTt/.agents/bin/scaffold-ai-first-saas-starter.sh
+```
+
+#### Installed scaffold dry-run
+
+Command:
+
+```bash
+/tmp/akka-pack-install-smoke.KjEaTt/.agents/bin/scaffold-ai-first-saas-starter.sh \
+  --target /tmp/akka-pack-install-smoke.KjEaTt \
+  --app-name "Release Smoke" \
+  --base-package ai.first \
+  --dry-run
+```
+
+Result: passed.
+
+Evidence:
+
+```text
+[scaffold] Template: /tmp/akka-pack-install-smoke.KjEaTt/.agents/resources/templates/ai-first-saas-starter
+[scaffold] Target:   /tmp/akka-pack-install-smoke.KjEaTt
+[scaffold] App:      Release Smoke (ai-first-saas-starter)
+[scaffold] Package:  ai.first
+[scaffold] Files:    291
+[dry-run] write specs/scaffold-report.md
+```
+
+#### Installed scaffold non-dry-run
+
+Command:
+
+```bash
+/tmp/akka-pack-install-smoke.KjEaTt/.agents/bin/scaffold-ai-first-saas-starter.sh \
+  --target /tmp/akka-pack-scaffold-smoke.sIvxtL \
+  --app-name "Release Smoke" \
+  --base-package ai.first
+```
+
+Result: passed.
+
+Evidence:
+
+```text
+[scaffold] Template: /tmp/akka-pack-install-smoke.KjEaTt/.agents/resources/templates/ai-first-saas-starter
+[scaffold] Target:   /tmp/akka-pack-scaffold-smoke.sIvxtL
+[scaffold] App:      Release Smoke (ai-first-saas-starter)
+[scaffold] Package:  ai.first
+[scaffold] Files:    291
+[scaffold] Wrote specs/scaffold-report.md
+[scaffold] Complete
+```
+
+Rendered path verification:
+
+```text
+verified /tmp/akka-pack-scaffold-smoke.sIvxtL/specs/scaffold-report.md
+verified /tmp/akka-pack-scaffold-smoke.sIvxtL/pom.xml
+verified /tmp/akka-pack-scaffold-smoke.sIvxtL/src
+verified /tmp/akka-pack-scaffold-smoke.sIvxtL/frontend
+```

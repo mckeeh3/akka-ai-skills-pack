@@ -79,7 +79,7 @@
 
 ### TASK-REL-01-002: Validate source install and scaffold behavior
 
-- status: pending
+- status: done
 - source: specs/release-readiness-after-five-core-v0/backlog/01-release-readiness-backlog.md
 - task brief: specs/release-readiness-after-five-core-v0/tasks/01-validation/02-validate-install-and-scaffold.md
 - depends on: [TASK-REL-01-001]
@@ -105,6 +105,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `release-readiness: validate install scaffold`
+  - validation recorded in `specs/release-readiness-after-five-core-v0/validation-results.md`
+  - source install, installed scaffold dry-run, installed scaffold non-dry-run, rendered path smoke, and `git diff --check` passed
 
 ### TASK-REL-02-001: Review release docs and write handoff
 
