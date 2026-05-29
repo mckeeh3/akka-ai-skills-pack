@@ -152,7 +152,7 @@
 
 ### TASK-FCSMB-UA-01-004: Implement User Admin frontend dashboard and invitation surface foundation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin/source-boundary-notes.md
 - task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/04-implement-user-admin-frontend-dashboard-invitations.md
 - depends on: [TASK-FCSMB-UA-01-003]
@@ -201,6 +201,11 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement user admin frontend invitation foundation`
+  - validation: `git diff --check` passed
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-user-admin-expertise.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-actions.contract.test.mjs src/api.contract.test.mjs` passed (package script runs the frontend contract suite)
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm run build` passed and refreshed static resources
+  - validation: required User Admin/runtime marker `rg` check passed
+  - validation: fullstack script not run because this task stayed within frontend rendering/API-client/static-resource scope and did not claim broad fullstack runtime readiness
 
 ### TASK-FCSMB-UA-99-001: Verify User Admin readiness
 

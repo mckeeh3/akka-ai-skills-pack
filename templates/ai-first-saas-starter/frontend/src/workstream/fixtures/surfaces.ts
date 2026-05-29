@@ -121,7 +121,7 @@ export const userAdminSurfaceActions = {
     intent: 'read',
     capabilityId: userAdminCapabilities.overview,
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-dashboard', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-dashboard', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDashboardRead', traceRequired: true }
   },
   displayUserList: {
@@ -130,7 +130,7 @@ export const userAdminSurfaceActions = {
     intent: 'read',
     capabilityId: userAdminCapabilities.listMembers,
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminListDisplayed', traceRequired: true }
   },
   searchUsers: {
@@ -140,7 +140,7 @@ export const userAdminSurfaceActions = {
     capabilityId: userAdminCapabilities.listMembers,
     inputSchemaRef: 'schema.user-admin.search.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDirectorySearched', traceRequired: true }
   },
   displayUserDetail: {
@@ -150,7 +150,7 @@ export const userAdminSurfaceActions = {
     capabilityId: userAdminCapabilities.listMembers,
     inputSchemaRef: 'schema.user-admin.detail.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDetailDisplayed', traceRequired: true }
   },
   displayRoleCapabilityMatrix: {
@@ -169,7 +169,7 @@ export const userAdminSurfaceActions = {
     capabilityId: userAdminCapabilities.previewRoleChange,
     inputSchemaRef: 'schema.user-admin.role-change.preview.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminRoleChangePreviewed', traceRequired: true }
   },
   changeMemberRoles: {
@@ -181,11 +181,11 @@ export const userAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminMemberRolesChanged', traceRequired: true }
   },
   createInvitation: {
-    actionId: 'action-create-invitation',
+    actionId: 'action-invite-user',
     label: 'Create invitation',
     intent: 'command',
     capabilityId: userAdminCapabilities.sendInvitation,
@@ -196,7 +196,7 @@ export const userAdminSurfaceActions = {
     audit: { eventType: 'InvitationRequested', traceRequired: true }
   },
   resendInvitation: {
-    actionId: 'action-resend-invitation',
+    actionId: 'action-useradmin-resend-invitation',
     label: 'Resend pending invitation',
     intent: 'command',
     capabilityId: userAdminCapabilities.resendInvitation,
@@ -207,14 +207,14 @@ export const userAdminSurfaceActions = {
     audit: { eventType: 'InvitationResendRequested', traceRequired: true }
   },
   revokeInvitation: {
-    actionId: 'action-revoke-invitation',
+    actionId: 'action-useradmin-revoke-invitation',
     label: 'Revoke expired invitation',
     intent: 'command',
     capabilityId: userAdminCapabilities.revokeInvitation,
     inputSchemaRef: 'schema.invitation.revoke.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
     audit: { eventType: 'InvitationRevoked', traceRequired: true }
   },
   addMembership: {
@@ -225,7 +225,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.membership.add.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'MembershipAddRequested', traceRequired: true }
   },
   suspendMembership: {
@@ -237,7 +237,7 @@ export const userAdminSurfaceActions = {
     requiresConfirmation: true,
     disabled: { reasonCode: 'last-admin', message: 'Backend authorization would deny this fixture action when it causes last-admin loss.' },
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'MembershipSuspendDenied', traceRequired: true }
   },
   reactivateMembership: {
@@ -248,7 +248,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.membership.reactivate.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'MembershipReactivated', traceRequired: true }
   },
   removeMembership: {
@@ -272,7 +272,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.user-admin.profile.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'UserProfileUpdateRequested', traceRequired: true }
   },
   replaceRole: {
@@ -285,7 +285,7 @@ export const userAdminSurfaceActions = {
     requiresApproval: true,
     disabled: { reasonCode: 'last-admin-risk', message: 'Backend authorization denied this fixture action: cannot remove the last tenant admin without an approved replacement.' },
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'MembershipRoleReplacementDenied', traceRequired: true }
   },
   removeRole: {
@@ -322,7 +322,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.user-admin.account.reactivate.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'AccountReactivateRequested', traceRequired: true }
   },
   requestIdentityRelink: {
@@ -346,7 +346,7 @@ export const userAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'server-issued' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'IdentityRelinkCompleted', traceRequired: true }
   },
   readSupportAccess: {
@@ -356,7 +356,7 @@ export const userAdminSurfaceActions = {
     capabilityId: userAdminCapabilities.viewTraceReference,
     inputSchemaRef: 'schema.support-access.search.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
     audit: { eventType: 'SupportAccessRead', traceRequired: true }
   },
   grantSupportAccess: {
@@ -380,7 +380,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.support-access.revoke.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
     audit: { eventType: 'SupportAccessRevoked', traceRequired: true }
   },
   extendSupportAccess: {
@@ -668,8 +668,8 @@ export const myAccountSurfaceActions = {
     capabilityId: myAccountCapabilities.openAuthorizedWorkstream,
     inputSchemaRef: 'schema.my-account.open-workstream.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-user-list', openPlacement: 'deep-link' },
-    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-user-admin', targetSurfaceId: 'user-admin-user-list', displayText: 'Open User Admin' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'deep-link' },
+    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-user-admin', targetSurfaceId: 'surface-user-admin-list', displayText: 'Open User Admin' },
     audit: { eventType: 'MyAccountOpenUserAdminRequested', traceRequired: true }
   },
   openAgentAdmin: {
@@ -1053,7 +1053,7 @@ export const auditTraceInvestigationGuideSurface = envelope(
 export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface];
 
 export const userAdminDashboardSurface = envelope(
-  'user-admin-dashboard',
+  'surface-user-admin-dashboard',
   'dashboard',
   'User Admin dashboard',
   'agent-user-admin',
@@ -1121,9 +1121,9 @@ export const userAdminDashboardSurface = envelope(
   ]
 );
 
-// Legacy fixture alias preserved for stale-screen quarantine tests: surface-user-list now resolves conceptually to user-admin-user-list.
+// Legacy fixture alias preserved for stale-screen quarantine tests: old user-admin-user-list now resolves conceptually to surface-user-admin-list.
 export const userAdminListSearchSurface = envelope(
-  'user-admin-user-list',
+  'surface-user-admin-list',
   'list-search',
   'Users, invitations, and memberships',
   'agent-user-admin',
@@ -1139,7 +1139,7 @@ export const userAdminListSearchSurface = envelope(
     pageInfo: { totalKnownCount: 5, nextPageToken: 'page-token-user-admin-2' },
     emptyMessage: 'No users, invitations, memberships, or support grants match the current scoped query.',
     mobileFallback: 'table-to-card',
-    dashboardOrigin: { surfaceId: 'user-admin-dashboard', queueId: 'access-review', traceId: 'trace-user-admin-dashboard' },
+    dashboardOrigin: { surfaceId: 'surface-user-admin-dashboard', legacySurfaceId: 'user-admin-dashboard', queueId: 'access-review', traceId: 'trace-user-admin-dashboard' },
     scopeVariants: [
       { role: 'SaaS Owner Admin', rowPolicy: 'SaaS Owner users plus redacted tenant bootstrap metadata unless support access is active.', forbiddenActions: ['admin.support_access.grant', 'admin.roles.replace'] },
       { role: 'Tenant Admin', rowPolicy: 'Tenant employees, Customer Admins/Users, invitations, support grants, and access-review rows.', allowedActions: ['admin.users.detail.read', 'admin.invitations.resend', 'admin.roles.replace'] },
@@ -1179,7 +1179,7 @@ export const userAdminListSearchSurface = envelope(
 );
 
 export const userAdminDetailEditSurface = envelope(
-  'user-admin-user-account',
+  'surface-user-admin-detail-admin',
   'detail-edit',
   'Tenant Admin account detail',
   'agent-user-admin',
@@ -1788,7 +1788,8 @@ export const listSearchSurface = userAdminListSearchSurface;
 export const detailEditSurface = userAdminDetailEditSurface;
 export const decisionSurface = envelope('surface-decision-card', 'decision', 'Approve bounded outreach plan', 'agent-governance-policy', { decisionId: 'decision-1', recommendation: 'Approve after evidence review.', riskScore: 72, confidenceScore: 84, evidence: [{ evidenceId: 'evidence-1', label: 'Trace summary', summary: 'Agent stayed within tool boundary.' }] }, [surfaceActionsByIntent.approval, surfaceActionsByIntent.trace]);
 export const auditTimelineSurface = envelope('surface-audit-timeline', 'audit-timeline', 'Admin audit timeline', 'agent-audit-trace', { events: [{ eventId: 'audit-1', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'invited user', traceId: 'trace-invite' }] }, [surfaceActionsByIntent.trace]);
-export const workflowStatusSurface = envelope('surface-workflow-status', 'workflow-status', 'Invitation workflow status', 'agent-user-admin', { workflowId: 'workflow-invite-1', status: 'waiting-for-human', steps: [{ stepId: 'send-email', label: 'Send invitation email', status: 'waiting-for-human' }] }, [surfaceActionsByIntent.workflow]);
+export const workflowStatusSurface = envelope('surface-workflow-status', 'workflow-status', 'Invitation workflow status', 'agent-user-admin', { workflowId: 'workflow-invite-1', status: 'waiting-for-human', summary: 'Fixture fallback for non-authoritative workflows. User Admin invitation actions use /api/workstream/actions and backend-aligned action ids.', traceIds: ['trace-useradmin-invitation-workflow'], requiredCapabilityId: userAdminCapabilities.sendInvitation, steps: [{ stepId: 'send-email', label: 'Send invitation email', status: 'waiting-for-human' }] }, [surfaceActionsByIntent.workflow]);
+export const userAdminInvitationActionStatusSurface = envelope('surface-user-admin-invitation-action-status', 'workflow-status', 'User Admin invitation action status', 'agent-user-admin', { workflowId: 'user-admin-invitation-action', status: 'completed', summary: 'Invitation create/resend/revoke action feedback is rendered from backend-authoritative /api/workstream/actions results with idempotency, audit, trace, and outbox status references.', traceIds: ['trace-useradmin-invitation-action', 'trace-useradmin'], requiredCapabilityId: userAdminCapabilities.sendInvitation, steps: [{ stepId: 'authorize-selected-auth-context', label: 'Backend selected AuthContext and USERADMIN_* capability authorized', status: 'completed' }, { stepId: 'enqueue-outbox', label: 'Invitation outbox/provider result surfaced without fixture-only success substitution', status: 'completed' }, { stepId: 'system-message-denials', label: 'system_message denials preserve correlation id for forbidden, stale, validation, no-op, or blocked_provider_or_runtime states', status: 'completed' }] }, [userAdminSurfaceActions.createInvitation, userAdminSurfaceActions.resendInvitation, userAdminSurfaceActions.revokeInvitation, userAdminSurfaceActions.openAdminAudit]);
 export const governanceDiffSurface = envelope('surface-governance-diff', 'governance-diff', 'Policy proposal diff', 'agent-governance-policy', { proposalId: 'proposal-1', beforeSummary: 'Manual approval over 75 risk.', afterSummary: 'Manual approval over 65 risk.', changes: [{ path: 'risk.approvalThreshold', before: '75', after: '65', impact: 'More decisions require human review.' }] }, [surfaceActionsByIntent.proposal, surfaceActionsByIntent.governance]);
 export const outcomeSurface = envelope('surface-outcome-review', 'outcome', 'Outcome review', 'agent-governance-policy', { outcomeId: 'outcome-1', metrics: [{ metricId: 'decision-cycle-time', label: 'Decision cycle time', current: 4, target: 2, unit: 'hours' }] }, [surfaceActionsByIntent.read]);
 
@@ -1798,6 +1799,7 @@ export const fullCoreDemoSurfaceEnvelopes = [
   userAdminListSearchSurface,
   userAdminRoleCapabilityMatrixSurface,
   userAdminAccessReviewSurface,
+  userAdminInvitationActionStatusSurface,
   agentAdminCatalogSurface,
   agentAdminDetailSurface,
   agentPromptGovernanceSurface,
@@ -1831,8 +1833,10 @@ export const actionResultsByStatus: Record<CapabilityActionResult['status'], Cap
   'validation-error': { status: 'validation-error', message: 'Correct the highlighted fields.', ...resultBase },
   'approval-required': { status: 'approval-required', message: 'Human approval is required.', ...resultBase, resultSurface: decisionSurface },
   conflict: { status: 'conflict', message: 'The surface changed. Refresh and try again.', ...resultBase },
-  'no-op': { status: 'no-op', message: 'No change was needed.', ...resultBase },
-  failed: { status: 'failed', message: 'Action failed safely.', ...resultBase }
+  'no-op': { status: 'no-op', message: 'No change was needed.', ...resultBase, resultSurface: userAdminInvitationActionStatusSurface },
+  failed: { status: 'failed', message: 'Action failed safely.', ...resultBase },
+  'blocked-runtime': { status: 'blocked-runtime', message: 'Runtime/provider prerequisite blocked safely.', ...resultBase, resultSurface: userAdminAccessReviewSurface },
+  'blocked_provider_or_runtime': { status: 'blocked_provider_or_runtime', message: 'Provider or runtime prerequisite blocked safely.', ...resultBase, resultSurface: userAdminAccessReviewSurface }
 };
 
 export const displayUserListActionResult: CapabilityActionResult = {

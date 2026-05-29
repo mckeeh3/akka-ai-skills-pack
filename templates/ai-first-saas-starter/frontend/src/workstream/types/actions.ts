@@ -43,7 +43,7 @@ export type CapabilityActionRequest = {
   correlationId: string;
 };
 
-export type CapabilityActionResultStatus = 'accepted' | 'denied' | 'validation-error' | 'approval-required' | 'conflict' | 'no-op' | 'failed';
+export type CapabilityActionResultStatus = 'accepted' | 'denied' | 'validation-error' | 'approval-required' | 'conflict' | 'no-op' | 'failed' | 'blocked-runtime' | 'blocked_provider_or_runtime';
 
 export type CapabilityActionResult = {
   status: CapabilityActionResultStatus;

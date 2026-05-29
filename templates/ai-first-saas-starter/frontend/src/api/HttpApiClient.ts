@@ -18,7 +18,7 @@ export class HttpApiClient implements ApiClient {
     };
     this.admin = {
       listUsers: () => this.get('/api/admin/users'),
-      inviteUser: (request) => this.post('/api/admin/users/invitations', request),
+      inviteUser: (request) => this.post('/api/admin/invitations', request),
       updateRoles: (userId, request) => this.put(`/api/admin/users/${encodeURIComponent(userId)}/roles`, request)
     };
     this.goals = {

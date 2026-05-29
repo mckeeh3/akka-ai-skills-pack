@@ -45,6 +45,7 @@ test('fixture API client simulates success, validation, forbidden/conflict style
 test('HTTP API client targets same-origin documented API route families', () => {
   assert.match(httpApi, /\/api\/me/);
   assert.match(httpApi, /\/api\/admin\/users/);
+  assert.match(httpApi, /\/api\/admin\/invitations/);
   assert.match(httpApi, /\/api\/goals/);
   assert.match(httpApi, /\/api\/decisions/);
   assert.match(httpApi, /\/api\/governance\/policies/);

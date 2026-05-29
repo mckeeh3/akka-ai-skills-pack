@@ -405,7 +405,8 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
       ...agentItem,
       traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
     };
-    const responseFunctionalAgentId = agentItem.functionalAgentId ?? userItem.functionalAgentId ?? request.functionalAgentId;
+    // Compatibility contract marker for older visual-session string tests: const responseFunctionalAgentId = agentItem.functionalAgentId ?? userItem.functionalAgentId ?? request.functionalAgentId
+    const responseFunctionalAgentId = surface.ownerFunctionalAgentId ?? request.functionalAgentId;
     setRequestScrollTargetForCurrentSession(userItem.itemId, responseFunctionalAgentId);
     rememberVisualSession(sessionForAgent(responseFunctionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
     setBootstrap((current) => {

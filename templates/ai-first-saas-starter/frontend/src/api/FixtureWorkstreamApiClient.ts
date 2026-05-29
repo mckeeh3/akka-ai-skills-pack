@@ -10,6 +10,7 @@ import {
   displayMyAccountProfileActionResult,
   displayMyAccountSettingsActionResult,
   updateMyAccountSettingsActionResult,
+  userAdminInvitationActionStatusSurface,
   displayAgentDetailActionResult,
   displayGovernancePolicyDashboardActionResult,
   displayGovernancePolicyInventoryActionResult,
@@ -148,6 +149,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
             ? displayUserListActionResult
+            : ['action-invite-user', 'action-useradmin-resend-invitation', 'action-useradmin-revoke-invitation'].includes(request.actionId)
+              ? { status: request.actionId === 'action-useradmin-revoke-invitation' ? 'no-op' as const : 'accepted' as const, message: 'Invitation action result came from the backend-aligned workstream action contract with safe system_message fallback states.', correlationId: request.correlationId, traceIds: ['trace-useradmin-invitation-action', 'trace-useradmin'], resultSurface: userAdminInvitationActionStatusSurface }
             : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
             ? actionResultsByStatus['approval-required']
             : actionResultsByStatus.accepted;
@@ -164,7 +167,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
         surfaceId: response.resultSurface?.surfaceId ?? request.surfaceId,
         title: `${action.label} ${response.status}`,
         body: response.message,
-        status: response.status === 'accepted' ? 'ready' : 'waiting-for-human'
+        status: response.status === 'accepted' || response.status === 'no-op' ? 'ready' : response.status === 'denied' || response.status === 'blocked-runtime' || response.status === 'blocked_provider_or_runtime' ? 'blocked' : 'waiting-for-human'
       }
     ];
     if (response.resultSurface && !this.surfaces.some((surface) => surface.surfaceId === response.resultSurface?.surfaceId)) {
