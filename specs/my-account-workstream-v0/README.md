@@ -4,7 +4,7 @@
 
 Complete the My Account vertical for selected AuthContext, profile/settings scope, personal attention, safe self-service guidance, and bottom-user-tile launch semantics.
 
-This mini-project is one vertical in the five-core v0 secure AI-first SaaS starter/reference runtime series. It must inherit the shared coordination contract from `specs/five-core-workstreams-v0-plan/` once that contract exists.
+This mini-project is one vertical in the five-core v0 secure AI-first SaaS starter/reference runtime series. It inherits the shared coordination contract from `specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md` and the execution/dependency order from `specs/five-core-workstreams-v0-plan/workstream-dependency-map.md`.
 
 ## Background
 
@@ -51,12 +51,13 @@ Execute one task per fresh harness session. Prefer completing this workstream ve
 
 1. `AGENTS.md`
 2. `skills/README.md`
-3. `specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md` when it exists
-4. this mini-project's `README.md`
-5. this mini-project's `conversation-capture.md`
-6. this mini-project's `pending-tasks.md`
-7. selected sprint/backlog/task brief
-8. only task-listed source files and skills
+3. `specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md`
+4. `specs/five-core-workstreams-v0-plan/workstream-dependency-map.md`
+5. this mini-project's `README.md`
+6. this mini-project's `conversation-capture.md`
+7. this mini-project's `pending-tasks.md`
+8. selected sprint/backlog/task brief
+9. only task-listed source files and skills
 
 ## Done state
 

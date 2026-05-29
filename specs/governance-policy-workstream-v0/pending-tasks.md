@@ -47,7 +47,7 @@
 
 ### TASK-GOVPOL-01-001: Define Governance Policy Workstream v0 contract and capability inventory
 
-- status: blocked
+- status: pending
 - source: specs/governance-policy-workstream-v0/backlog/01-governance-policy-workstream-v0-build-backlog.md
 - task brief: specs/governance-policy-workstream-v0/tasks/01-contract/01-define-workstream-contract.md
 - depends on:
@@ -56,6 +56,7 @@
   - AGENTS.md
   - skills/README.md
   - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/five-core-workstreams-v0-plan/workstream-dependency-map.md
   - specs/governance-policy-workstream-v0/README.md
   - specs/governance-policy-workstream-v0/conversation-capture.md
   - docs/capability-first-backend-architecture.md
@@ -72,7 +73,7 @@
   - workstream contract defines functional agent responsibility, structured surfaces/actions, capabilities, authority, traces, agent-type choices, and validation path
   - task changes and queue update are committed
 - notes:
-  - blocked by TASK-FCPLAN-01-001: shared five-core v0 contract must be defined before this workstream contract task runs.
+  - unblocked by completed TASK-FCPLAN-01-001; inherit shared contract and dependency map before defining workstream-specific scope.
   - commit message: `governance-policy-v0: define workstream contract`
 
 ### TASK-GOVPOL-02-001: Implement Governance Policy Workstream v0 backend/runtime vertical
@@ -151,6 +152,7 @@
   - AGENTS.md
   - skills/README.md
   - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/five-core-workstreams-v0-plan/workstream-dependency-map.md
   - specs/governance-policy-workstream-v0/README.md
   - specs/governance-policy-workstream-v0/conversation-capture.md
   - specs/governance-policy-workstream-v0/pending-tasks.md

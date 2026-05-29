@@ -15,7 +15,8 @@ Deliver the `Audit/Trace Agent` v0 vertical without expanding scope to the other
 
 ## Dependencies
 
-- Shared plan task `TASK-FCPLAN-01-001` should be done before implementation tasks in this workstream.
+- Shared plan task `TASK-FCPLAN-01-001` is complete; this workstream inherits `specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md`.
+- Follow `specs/five-core-workstreams-v0-plan/workstream-dependency-map.md` for execution order and cross-workstream prerequisites.
 - Existing production-ready five-core v0 baseline should remain passing.
 
 ## Required checks
@@ -27,3 +28,4 @@ Deliver the `Audit/Trace Agent` v0 vertical without expanding scope to the other
 
 - The workstream is vertically useful at v0 scope.
 - Request/response, AutonomousAgent, and deterministic internal service choices are documented and tested according to actual workstream needs.
+- Runtime validation, provider fail-closed behavior, AuthContext, ToolPermissionBoundary, trace, and terminal verification expectations match the shared five-core v0 contract.

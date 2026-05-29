@@ -79,7 +79,7 @@
 
 ### TASK-FCPLAN-01-002: Align sibling workstream queues with shared contract
 
-- status: pending
+- status: done
 - source: specs/five-core-workstreams-v0-plan/backlog/01-five-core-v0-scope-backlog.md
 - task brief: specs/five-core-workstreams-v0-plan/tasks/01-scope/02-align-workstream-queues.md
 - depends on: [TASK-FCPLAN-01-001]
@@ -104,6 +104,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `five-core-plan: align workstream queues`
+  - completed checks: `git diff --check`; `rg -n "shared-five-core-v0-contract|TASK-FCPLAN|runtime validation|terminal verification" specs/*workstream-v0 specs/five-core-workstreams-v0-plan`
 
 ### TASK-FCPLAN-99-001: Verify five-core v0 planning series readiness
 
