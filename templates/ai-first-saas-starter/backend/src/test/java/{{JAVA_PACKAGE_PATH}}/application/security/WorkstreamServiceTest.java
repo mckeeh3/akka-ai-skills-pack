@@ -405,6 +405,83 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces() {
+    var dashboard = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-dashboard", "governance.policy.read", null, null, "membership-admin", "surface-governance-policy-dashboard", "corr-gov-dashboard"));
+    assertEquals("accepted", dashboard.status());
+    assertEquals("surface-governance-policy-dashboard", dashboard.resultSurface().surfaceId());
+    assertTrue(dashboard.resultSurface().toString().contains("governance.policy.activate"));
+
+    var inventory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-list", "governance.policy.read", null, null, "membership-admin", "surface-governance-policy-dashboard", "corr-gov-list"));
+    assertEquals("list-search", inventory.resultSurface().surfaceType());
+    assertTrue(inventory.resultSurface().toString().contains("ToolPermissionBoundary"));
+
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-read", "governance.policy.read", Map.of("policyId", "policy-human-approval"), null, "membership-admin", "surface-governance-policy-inventory", "corr-gov-detail"));
+    assertEquals("detail-edit", detail.resultSurface().surfaceType());
+    assertTrue(detail.resultSurface().toString().contains("backend AuthContext"));
+
+    var draft = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-draft-proposal", "governance.policy.propose", Map.of("rationale", "tighten approval copy"), "idem-gov-draft", "membership-admin", "surface-governance-policy-detail", "corr-gov-draft"));
+    assertEquals("accepted", draft.status());
+    assertEquals("surface-governance-policy-proposal", draft.resultSurface().surfaceId());
+    assertFalse(service.bootstrap(identity(), "membership-admin", "corr-gov-after-draft").toString().contains("api_key"));
+
+    var duplicateDraft = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-draft-proposal", "governance.policy.propose", Map.of("rationale", "ignored duplicate"), "idem-gov-draft", "membership-admin", "surface-governance-policy-detail", "corr-gov-draft-duplicate"));
+    assertEquals(draft, duplicateDraft);
+
+    var simulation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-simulate", "governance.policy.simulate", Map.of("proposalId", "starter-governance-policy-review"), null, "membership-admin", "surface-governance-policy-proposal", "corr-gov-sim"));
+    assertEquals("accepted", simulation.status());
+    assertTrue(simulation.resultSurface().toString().contains("model cannot self-approve"));
+
+    var decision = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-decide", "governance.policy.approve", Map.of("decision", "approve", "rationale", "bounded starter proof"), "idem-gov-decision", "membership-admin", "surface-governance-policy-simulation", "corr-gov-decision"));
+    assertEquals("approval-required", decision.status());
+    assertEquals("surface-governance-policy-decision", decision.resultSurface().surfaceId());
+
+    var activation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-activate", "governance.policy.activate", Map.of("proposalId", "starter-governance-policy-review"), "idem-gov-activate", "membership-admin", "surface-governance-policy-decision", "corr-gov-activate"));
+    assertEquals("approval-required", activation.status());
+    assertTrue(activation.resultSurface().toString().contains("sideEffect=none"));
+
+    var analysis = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis", "governance.policy.analysis.start", Map.of("proposalId", "starter-governance-policy-review"), "idem-gov-analysis", "membership-admin", "surface-governance-policy-dashboard", "corr-gov-analysis"));
+    assertEquals("blocked-runtime", analysis.status());
+    assertEquals("workflow-status", analysis.resultSurface().surfaceType());
+    assertTrue(analysis.message().contains("fails closed"));
+  }
+
+  @Test
+  void governancePolicyActionsDenyMembersAndCrossTenantInput() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(memberIdentity(), "membership-member", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-list", "governance.policy.read", null, null, "membership-member", "surface-governance-policy-dashboard", "corr-gov-member")));
+    assertEquals("CAPABILITY_FORBIDDEN", denied.reasonCode());
+
+    var crossTenant = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-simulate", "governance.policy.simulate", Map.of("tenantId", "tenant-other"), null, "membership-admin", "surface-governance-policy-proposal", "corr-gov-cross")));
+    assertEquals("GOVERNANCE_POLICY_TENANT_FORBIDDEN", crossTenant.reasonCode());
+  }
+
+  @Test
+  void governancePolicyMessageUsesGovernanceCapabilityForRuntimeTraces() {
+    var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-governance-policy", "Explain policy approval gates", "corr-governance-message", "idem-governance-message"), "corr-header");
+
+    assertEquals("agent-governance-policy", response.surface().ownerFunctionalAgentId());
+    assertEquals("markdown_response", response.surface().surfaceType());
+    assertEquals("agent-governance-policy", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
+    assertTrue(service.bootstrap(identity(), "membership-admin", "corr-governance-trace-read").functionalAgents().stream()
+        .filter(agent -> agent.functionalAgentId().equals("agent-governance-policy"))
+        .findFirst()
+        .orElseThrow()
+        .requiredCapabilityIds()
+        .contains("governance.policy.read"));
+  }
+
+  @Test
   void auditTraceMessageFailsClosedWhenRuntimeProviderBoundaryIsMissing() {
     var invitationRepository = new InMemoryInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);

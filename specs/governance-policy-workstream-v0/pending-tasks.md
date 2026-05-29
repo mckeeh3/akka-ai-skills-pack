@@ -79,7 +79,7 @@
 
 ### TASK-GOVPOL-02-001: Implement Governance Policy Workstream v0 backend/runtime vertical
 
-- status: pending
+- status: done
 - source: specs/governance-policy-workstream-v0/backlog/01-governance-policy-workstream-v0-build-backlog.md
 - task brief: specs/governance-policy-workstream-v0/tasks/02-runtime/01-implement-backend-runtime.md
 - depends on:
@@ -111,6 +111,7 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: `Governance Policy Workstream v0; capability ids from capability-inventory; selected Akka substrate per capability; audit/work trace required`
+  - checks: `tmp=$(mktemp -d) && tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --base-package ai.first --app-name TestApp >/tmp/scaffold.log && cd "$tmp" && mvn test -Dtest=WorkstreamServiceTest -q`; `git diff --check`
   - commit message: `governance-policy-v0: implement backend runtime`
 
 ### TASK-GOVPOL-03-001: Implement Governance Policy Workstream v0 frontend surfaces and workstream UX
