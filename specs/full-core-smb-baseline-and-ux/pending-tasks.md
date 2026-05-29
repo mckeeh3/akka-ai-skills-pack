@@ -40,7 +40,7 @@
 
 ### TASK-FCSMB-BASEUX-01-001: Define executable shared baseline contracts and validation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-baseline-and-ux/backlog/01-shared-baseline-ux-backlog.md
 - task brief: specs/full-core-smb-baseline-and-ux/tasks/01-shared-baseline/01-define-shared-contracts.md
 - depends on: [TASK-FCSMB-BASEUX-00-001]
@@ -66,6 +66,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: define shared baseline contracts`
+  - completed shared baseline contracts in `specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md`
 
 ### TASK-FCSMB-BASEUX-99-001: Verify baseline and UX readiness
 
