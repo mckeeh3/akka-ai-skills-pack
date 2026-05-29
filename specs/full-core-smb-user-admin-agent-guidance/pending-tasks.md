@@ -195,7 +195,7 @@
 
 ### TASK-FCSMB-UAG-99-001: Verify UserAdminAgent guidance readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-user-admin-agent-guidance/tasks/99-verification/01-verify-user-admin-agent-guidance.md
 - depends on:
@@ -228,3 +228,6 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify user admin agent guidance readiness`
+  - verification: mini-project goals were compared against completed tasks, the implementation map, the SMB/full-core contracts, and source evidence. Backend, frontend, and validation tasks are complete; no bounded follow-up task is required for this mini-project scope.
+  - verification: targeted source-readiness checks found the registered `userAdminEvidence.read` tool, read-only evidence facade, governed loader tools, concrete Akka Agent invocation path, typed `system_message` provider/runtime blocked handling, frontend blocked-state rendering/tests, and no-direct-mutation guidance.
+  - checks: `rg -n "UserAdminAgent|user-admin-system|readSkill|readReferenceDoc|ToolPermissionBoundary|PromptAssemblyTrace|SkillLoadTrace|ReferenceLoadTrace|AgentWorkTrace|provider fail|system_message|no direct mutation|userAdminEvidence\\.read" templates/ai-first-saas-starter --glob '!**/node_modules/**' --glob '!**/target/**'`; `find templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java templates/ai-first-saas-starter/frontend/src -type f | sort | rg "(UserAdminEvidenceTools|AgentRuntimeToolResolverTest|WorkstreamRuntimeAgentTest|WorkstreamServiceTest|workstream-user-admin-expertise|workstream-composer-message-api|workstream-surfaces|WorkstreamItem|SurfaceRenderer|MarkdownResponseSurface|SurfaceStateFrame|surfaces\\.ts)$|UserAdminEvidence|AgentRuntimeToolResolver|ToolRegistry|WorkstreamService|AgentBehaviorSeedLoader"`; `rg -n "userAdminEvidence\\.read|no direct mutation|blocked_provider_or_runtime|provider secrets|Akka Agent component|system_message" templates/ai-first-saas-starter/backend/src/main templates/ai-first-saas-starter/backend/src/test templates/ai-first-saas-starter/frontend/src --glob '!**/target/**'`; `git diff --check`
