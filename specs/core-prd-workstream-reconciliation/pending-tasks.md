@@ -126,7 +126,7 @@
 
 ### TASK-CPR-99-001: Verify core PRD reconciliation completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/core-prd-workstream-reconciliation/tasks/99-verification/01-verify-core-prd-reconciliation.md
 - depends on:
@@ -147,7 +147,7 @@
   - none; repository verification task
 - expected outputs:
   - updated specs/core-prd-workstream-reconciliation/pending-tasks.md
-  - verification notes or newly appended follow-up tasks
+  - specs/core-prd-workstream-reconciliation/verification-notes.md
 - required checks:
   - `git diff --check`
   - any checks needed to validate applied follow-ups
@@ -158,3 +158,5 @@
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
   - commit message: `core-prd-reconcile: verify reconciliation completion`
+  - verification result: mini-project done state satisfied; no new follow-up tasks appended
+  - checks: `git diff --check`; `rg -n "older module-sequenced|workstream-oriented core-app domain|five-core v0|full-core/detail provenance|not the preferred current v0/starter rollout path|10-canonical-core-app-prd|04-module-user-admin|05-module-agent-definition|covered|partial|deferred|superseded|gap" docs/examples/core-ai-first-saas-input/README.md docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md docs/skills-pack-user-guide.md specs/core-prd-workstream-reconciliation`
