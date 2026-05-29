@@ -186,7 +186,7 @@
 
 ### TASK-GOVPOL-04-001: Repair Governance/Policy seed boundary validation
 
-- status: pending
+- status: done
 - source: TASK-GOVPOL-99-001 verification finding
 - task brief: specs/governance-policy-workstream-v0/tasks/04-validation/01-repair-governance-policy-seed-boundary.md
 - depends on:
@@ -215,6 +215,8 @@
   - Governance/Policy managed-agent seed boundary resolves runtime loader tools through the governed runtime path
   - task changes and queue update are committed
 - notes:
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` passed.
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`.
   - commit message: `governance-policy-v0: repair seed boundary validation`
 
 ### TASK-GOVPOL-99-002: Verify Governance Policy Workstream v0 completion after seed-boundary repair

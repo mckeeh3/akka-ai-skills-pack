@@ -94,6 +94,7 @@ class AgentBehaviorSeedLoaderTest {
   void allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
     var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
+    var toolResolver = new AgentRuntimeToolResolver(repository, runtimeService);
     var promptIds = new HashSet<String>();
     var skillManifestIds = new HashSet<String>();
     var referenceManifestIds = new HashSet<String>();
@@ -119,6 +120,17 @@ class AgentBehaviorSeedLoaderTest {
       assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("# Tool boundary summary"), agentId);
       assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("# Governed model binding"), agentId);
       assertTrue(preparation.governedRequest().assembledSystemPrompt().contains("Prompt text cannot grant authority"), agentId);
+      var runtimeTools = toolResolver.resolve(new AgentRuntimeToolResolver.ResolveRuntimeToolsRequest(
+          "tenant-1",
+          agentId,
+          tenantAdmin,
+          "runtime",
+          preparation.governedRequest().capabilityId(),
+          "corr-tools-" + agentId));
+      assertEquals(List.of("readReferenceDoc", "readSkill"), runtimeTools.grantedToolIds(), agentId);
+      assertFalse(runtimeTools.deniedToolIds().contains("readReferenceDoc"), agentId);
+      assertFalse(runtimeTools.deniedToolIds().contains("readSkill"), agentId);
+      assertTrue(runtimeTools.runtimeTools().stream().allMatch(AgentRuntimeLoaderTools.class::isInstance), agentId);
 
       promptIds.add(agent.promptDocumentId());
       skillManifestIds.add(agent.skillManifestId());
@@ -217,6 +229,8 @@ class AgentBehaviorSeedLoaderTest {
     var capabilities = new java.util.ArrayList<>(List.of("agent.skills.read", "agent.references.read"));
     if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY);
+    } else if (AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentId)) {
+      capabilities.add(AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY);
     } else {
       capabilities.add(AgentRuntimeService.INVOKE_CAPABILITY);
     }
