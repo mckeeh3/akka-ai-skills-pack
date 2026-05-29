@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
+import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolCatalogEntry;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
@@ -14,8 +15,10 @@ import java.util.function.Function;
 public final class ToolRegistry {
   public static final String READ_SKILL_TOOL_ID = "readSkill";
   public static final String READ_REFERENCE_DOC_TOOL_ID = "readReferenceDoc";
+  public static final String USER_ADMIN_EVIDENCE_TOOL_ID = UserAdminEvidenceTools.TOOL_ID;
   static final String READ_SKILL_BINDING = "governed-loader.readSkill";
   static final String READ_REFERENCE_DOC_BINDING = "governed-loader.readReferenceDoc";
+  static final String USER_ADMIN_EVIDENCE_BINDING = "user-admin.evidence.read";
 
   private final Map<String, RegisteredTool> toolsByStableToolId;
 
@@ -48,7 +51,17 @@ public final class ToolRegistry {
                 "Loads assigned factual/process reference evidence through governed readReferenceDoc(referenceId) authorization.",
                 ToolCatalogEntry.SideEffectLevel.NONE,
                 READ_REFERENCE_DOC_BINDING),
-            context -> context.loaderTools())));
+            context -> context.loaderTools()),
+        new RegisteredTool(
+            new ToolCatalogEntry(
+                USER_ADMIN_EVIDENCE_TOOL_ID,
+                "Read User Admin evidence",
+                ToolPermissionBoundary.Category.DATA_LOOKUP,
+                UserAdminEvidenceTools.CAPABILITY_ID,
+                "Reads scoped, redacted User Admin member, invitation, role, status, and audit evidence without side effects.",
+                ToolCatalogEntry.SideEffectLevel.NONE,
+                USER_ADMIN_EVIDENCE_BINDING),
+            context -> context.userAdminEvidenceTools())));
   }
 
   public Optional<RegisteredTool> find(String toolId) {
@@ -72,6 +85,15 @@ public final class ToolRegistry {
   public record BindingContext(AgentRuntimeService runtimeService, String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId) {
     public AgentRuntimeLoaderTools loaderTools() {
       return new AgentRuntimeLoaderTools(runtimeService, tenantId, agentDefinitionId, authContext, mode, capabilityId, correlationId);
+    }
+
+    public UserAdminEvidenceTools userAdminEvidenceTools() {
+      return new UserAdminEvidenceTools(
+          StarterSecurityComponents.identityRepository(),
+          StarterSecurityComponents.userAdminService(),
+          StarterSecurityComponents.invitationView(),
+          authContext,
+          correlationId);
     }
   }
 }

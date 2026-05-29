@@ -585,8 +585,11 @@ class WorkstreamServiceTest {
         "membership-admin", "agent-audit-trace", "Explain this provider failure", "corr-audit-failclosed", "idem-audit-failclosed"), "corr-header");
 
     assertEquals("blocked", response.agentItem().status());
-    assertTrue(response.surface().data().get("markdown").toString().contains("blocked before a response was produced"));
-    assertFalse(response.surface().data().get("markdown").toString().contains("should not be used"));
+    assertEquals("system_message", response.agentItem().kind());
+    assertEquals("system_message", response.surface().surfaceType());
+    assertEquals("blocked_provider_or_runtime", response.surface().data().get("status"));
+    assertTrue(response.surface().data().get("message").toString().contains("blocked before a response was produced"));
+    assertFalse(response.surface().toString().contains("should not be used"));
   }
 
   private static Path findSource(String fileName) throws Exception {

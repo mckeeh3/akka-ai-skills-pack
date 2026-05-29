@@ -127,10 +127,13 @@ class AgentBehaviorSeedLoaderTest {
           "runtime",
           preparation.governedRequest().capabilityId(),
           "corr-tools-" + agentId));
-      assertEquals(List.of("readReferenceDoc", "readSkill"), runtimeTools.grantedToolIds(), agentId);
+      var expectedToolIds = AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID.equals(agentId)
+          ? List.of("readReferenceDoc", "readSkill", "userAdminEvidence.read")
+          : List.of("readReferenceDoc", "readSkill");
+      assertEquals(expectedToolIds, runtimeTools.grantedToolIds(), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readReferenceDoc"), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readSkill"), agentId);
-      assertTrue(runtimeTools.runtimeTools().stream().allMatch(AgentRuntimeLoaderTools.class::isInstance), agentId);
+      assertTrue(runtimeTools.runtimeTools().stream().anyMatch(AgentRuntimeLoaderTools.class::isInstance), agentId);
 
       promptIds.add(agent.promptDocumentId());
       skillManifestIds.add(agent.skillManifestId());
@@ -227,7 +230,9 @@ class AgentBehaviorSeedLoaderTest {
 
   private AuthContext authContextFor(String agentId) {
     var capabilities = new java.util.ArrayList<>(List.of("agent.skills.read", "agent.references.read"));
-    if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)) {
+    if (AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID.equals(agentId)) {
+      capabilities.add(AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY);
+    } else if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY);
     } else if (AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY);

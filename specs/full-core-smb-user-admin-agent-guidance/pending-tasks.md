@@ -89,7 +89,7 @@
 
 ### TASK-FCSMB-UAG-01-002: Implement backend UserAdminAgent guidance runtime and evidence tool
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-agent-guidance/agent-guidance-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-agent-guidance/tasks/01-agent-guidance/02-implement-backend-user-admin-agent-guidance.md
 - depends on: [TASK-FCSMB-UAG-01-001]
@@ -123,6 +123,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement user admin agent backend guidance`
+  - implemented `userAdminEvidence.read` as a read-only scoped evidence tool, tightened User Admin seed prompt guidance, returned provider/runtime blocks as typed `system_message`, and preserved real Akka Agent runtime invocation for successful guidance.
+  - required direct template Maven command is not runnable before scaffolding because `templates/ai-first-saas-starter/backend/pom.xml` intentionally contains `{{MAVEN_GROUP_ID}}` and `{{APP_SLUG}}` placeholders; scaffolded equivalent passed with `tools/scaffold-ai-first-saas-starter.sh --target /tmp/uag-backend-check --app-name 'UAG Backend Check' --app-slug uag-backend-check --base-package ai.first.uag --maven-group-id ai.first --yes` then `cd /tmp/uag-backend-check && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest`.
 
 ### TASK-FCSMB-UAG-01-003: Implement frontend UserAdminAgent guidance and blocked-state rendering
 

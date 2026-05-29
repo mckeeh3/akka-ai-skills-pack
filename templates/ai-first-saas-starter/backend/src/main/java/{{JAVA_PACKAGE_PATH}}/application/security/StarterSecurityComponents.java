@@ -69,6 +69,10 @@ public final class StarterSecurityComponents {
     return INVITATION_SERVICE;
   }
 
+  public static InvitationView invitationView() {
+    return INVITATION_VIEW;
+  }
+
   public static UserAdminService userAdminService() {
     return USER_ADMIN_SERVICE;
   }
