@@ -110,7 +110,7 @@
 
 ### TASK-REL-02-001: Review release docs and write handoff
 
-- status: pending
+- status: done
 - source: specs/release-readiness-after-five-core-v0/backlog/01-release-readiness-backlog.md
 - task brief: specs/release-readiness-after-five-core-v0/tasks/02-handoff/01-review-docs-write-handoff.md
 - depends on: [TASK-REL-01-002]
@@ -138,6 +138,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `release-readiness: write release handoff`
+  - release handoff recorded in `specs/release-readiness-after-five-core-v0/release-handoff.md`
+  - no release-facing doc fixes were required
 
 ### TASK-REL-99-001: Verify release-readiness completion
 
