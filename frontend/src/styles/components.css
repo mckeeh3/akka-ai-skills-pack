@@ -481,6 +481,12 @@
   backdrop-filter: blur(20px) saturate(1.16);
 }
 
+.workstream-composer::before {
+  inset: var(--space-3) auto var(--space-3) var(--space-3);
+  width: 0.2rem;
+  border-radius: var(--radius-pill);
+}
+
 .workstream-composer:focus-within {
   transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--color-ai) 44%, var(--color-border));
