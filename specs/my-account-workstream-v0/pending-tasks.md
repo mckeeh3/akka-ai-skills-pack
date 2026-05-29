@@ -146,7 +146,7 @@
 
 ### TASK-MYACCT-99-001: Verify My Account Workstream v0 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/my-account-workstream-v0/tasks/99-verification/01-verify-my-account-workstream-v0.md
 - depends on:
@@ -181,4 +181,81 @@
   - if complete, completion is recorded with no new required work
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
+  - verification summary: specs/my-account-workstream-v0/verification-summary.md
+  - validation evidence: `tools/validate-ai-first-saas-starter-fullstack.sh` passed rendered backend tests, frontend tests, frontend typecheck, frontend build, and static secret scan, then failed optional real-provider smoke with configured credentials because OpenAI rejected `temperature = 0.1` for the selected/default model.
+  - follow-up appended: TASK-MYACCT-04-001 repairs provider-smoke model compatibility before final completion can be claimed.
+  - checks passed for verification artifacts: `git diff --check`
   - commit message: `my-account-v0: verify workstream completion`
+
+### TASK-MYACCT-04-001: Repair real-provider smoke model compatibility
+
+- status: pending
+- source: TASK-MYACCT-99-001 verification finding
+- task brief: specs/my-account-workstream-v0/tasks/04-provider-smoke/01-repair-real-provider-smoke-model-config.md
+- depends on:
+  - TASK-MYACCT-99-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/my-account-workstream-v0/workstream-contract.md
+  - specs/my-account-workstream-v0/capability-inventory.md
+  - specs/my-account-workstream-v0/tasks/04-provider-smoke/01-repair-real-provider-smoke-model-config.md
+  - templates/ai-first-saas-starter/README.md
+  - templates/ai-first-saas-starter/backend/src/main/resources/application.conf
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/RealModelProviderSmokeTest.java
+- skills:
+  - akka-agents
+- expected outputs:
+  - focused starter template/runtime smoke configuration changes
+  - provider configuration boundary tests or documentation updates as needed
+  - updated specs/my-account-workstream-v0/pending-tasks.md
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - optional real-provider smoke no longer fails because of incompatible hard-coded temperature for the documented/default model
+  - missing-provider behavior still skips loudly in smoke validation and fails closed in normal runtime behavior
+  - governed Akka Agent invocation, runtime tool registration, trace assertions, and provider secret-boundary checks are preserved
+  - task changes and queue update are committed
+- notes:
+  - verification gap: when `OPENAI_API_KEY` was present, OpenAI rejected `temperature = 0.1`; do not replace the real provider path with deterministic/model-less fallback.
+  - commit message: `my-account-v0: repair provider smoke config`
+
+### TASK-MYACCT-99-002: Re-verify My Account Workstream v0 completion
+
+- status: pending
+- source: mini-project verification loop after TASK-MYACCT-04-001
+- task brief: specs/my-account-workstream-v0/tasks/99-verification/02-verify-my-account-workstream-v0.md
+- depends on:
+  - TASK-MYACCT-04-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/five-core-workstreams-v0-plan/workstream-dependency-map.md
+  - specs/my-account-workstream-v0/README.md
+  - specs/my-account-workstream-v0/conversation-capture.md
+  - specs/my-account-workstream-v0/pending-tasks.md
+  - specs/my-account-workstream-v0/sprints/*.md
+  - specs/my-account-workstream-v0/backlog/*.md
+  - specs/my-account-workstream-v0/tasks/**/*.md
+  - specs/my-account-workstream-v0/workstream-contract.md
+  - specs/my-account-workstream-v0/capability-inventory.md
+  - specs/my-account-workstream-v0/verification-summary.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/my-account-workstream-v0/pending-tasks.md
+  - completion summary, verification notes, or newly appended follow-up tasks
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - task group goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - runtime/API/UI validation evidence or blockers are recorded
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+- notes:
+  - commit message: `my-account-v0: reverify workstream completion`
