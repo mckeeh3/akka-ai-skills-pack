@@ -116,7 +116,7 @@
 
 ### TASK-GOVPOL-03-001: Implement Governance Policy Workstream v0 frontend surfaces and workstream UX
 
-- status: pending
+- status: done
 - source: specs/governance-policy-workstream-v0/backlog/01-governance-policy-workstream-v0-build-backlog.md
 - task brief: specs/governance-policy-workstream-v0/tasks/03-frontend/01-implement-frontend-surfaces.md
 - depends on:
@@ -139,6 +139,7 @@
   - frontend surfaces and workstream behavior reflect backend capabilities and do not create frontend-only authorization
   - task changes and queue update are committed
 - notes:
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm test -- --run`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `git diff --check`
   - commit message: `governance-policy-v0: implement frontend surfaces`
 
 ### TASK-GOVPOL-99-001: Verify Governance Policy Workstream v0 completion

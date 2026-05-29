@@ -11,6 +11,9 @@ import {
   displayMyAccountSettingsActionResult,
   updateMyAccountSettingsActionResult,
   displayAgentDetailActionResult,
+  displayGovernancePolicyDashboardActionResult,
+  displayGovernancePolicyInventoryActionResult,
+  displayGovernancePolicySimulationActionResult,
   displayUserDetailActionResult,
   displayUserListActionResult,
   initialWorkstreamItems,
@@ -135,7 +138,13 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
       ? displayUserDetailActionResult
       : request.actionId === 'action-display-agent-detail' || request.actionId === 'action-open-agent-detail'
         ? displayAgentDetailActionResult
-        : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent_admin.list_definitions'
+        : request.actionId === 'action-govpol-show-dashboard' || request.capabilityId === 'governance.policy.read'
+          ? displayGovernancePolicyDashboardActionResult
+          : request.actionId === 'action-govpol-show-policy-inventory'
+            ? displayGovernancePolicyInventoryActionResult
+            : request.actionId === 'action-govpol-simulate-proposal' || request.capabilityId === 'governance.policy.simulate'
+              ? displayGovernancePolicySimulationActionResult
+              : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent_admin.list_definitions'
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
             ? displayUserListActionResult

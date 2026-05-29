@@ -155,18 +155,36 @@ export type AuditTimelineSurfaceData = {
 
 export type WorkflowStatusSurfaceData = {
   workflowId: string;
-  status: 'running' | 'waiting-for-human' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'failed';
+  status: 'running' | 'waiting-for-human' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'failed' | 'cancelled';
   summary?: string;
   traceIds?: string[];
   requiredCapabilityId?: string;
+  taskKind?: 'workflow' | 'autonomous-agent-analysis' | string;
+  progress?: Array<{ snapshotId: string; label: string; status: string; traceId?: string }>;
+  resultSummary?: string;
   steps?: Array<{ stepId: string; label: string; status: string }>;
 };
 
 export type GovernanceDiffSurfaceData = {
   proposalId: string;
+  lifecycleState?: 'draft' | 'in_review' | 'approved' | 'rejected' | 'activated' | 'rolled_back' | 'blocked';
+  source?: string;
+  riskClassification?: 'low' | 'medium' | 'high' | 'critical';
+  requiredApproval?: string;
+  simulationSummary?: string;
+  activationStatus?: string;
+  traceLinks?: string[];
   beforeSummary: string;
   afterSummary: string;
   changes: Array<{ path: string; before?: string; after?: string; impact: string }>;
+  simulation?: {
+    affectedCapabilities: string[];
+    expectedAllows: string[];
+    expectedDenials: string[];
+    warnings: string[];
+    confidence: string;
+    evidenceTraceIds: string[];
+  };
 };
 
 export type OutcomeSurfaceData = {
