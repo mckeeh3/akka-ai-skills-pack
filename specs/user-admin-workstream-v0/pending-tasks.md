@@ -117,7 +117,7 @@
 
 ### TASK-USERADMIN-03-001: Implement User Admin Workstream v0 frontend surfaces and workstream UX
 
-- status: pending
+- status: done
 - source: specs/user-admin-workstream-v0/backlog/01-user-admin-workstream-v0-build-backlog.md
 - task brief: specs/user-admin-workstream-v0/tasks/03-frontend/01-implement-frontend-surfaces.md
 - depends on:
@@ -140,6 +140,9 @@
   - frontend surfaces and workstream behavior reflect backend capabilities and do not create frontend-only authorization
   - task changes and queue update are committed
 - notes:
+  - implemented contract-aligned User Admin frontend action capability ids, role/capability matrix surface, access-review blocked runtime surface, trace/accessibility-safe workflow rendering, and template/root frontend mirror updates.
+  - checks passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `git diff --check`
+  - optional root frontend test command was not used as acceptance evidence because the root mirror test suite references non-existent root `backend/src/main/resources/...` seed resources; template frontend checks passed.
   - commit message: `user-admin-v0: implement frontend surfaces`
 
 ### TASK-USERADMIN-99-001: Verify User Admin Workstream v0 completion

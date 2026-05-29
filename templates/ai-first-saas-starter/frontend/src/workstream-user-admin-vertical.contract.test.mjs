@@ -31,6 +31,10 @@ test('User Admin dashboard, list, and detail surfaces use canonical surface ids 
   assert.match(surfaces, /userAdminDetailEditSurface/);
   assert.match(surfaces, /user-admin-user-account/);
   assert.match(surfaces, /Tenant Admin account detail/);
+  assert.match(surfaces, /userAdminRoleCapabilityMatrixSurface/);
+  assert.match(surfaces, /user-admin-role-capability-matrix/);
+  assert.match(surfaces, /userAdminAccessReviewSurface/);
+  assert.match(surfaces, /user-admin-access-review/);
   assert.match(surfaces, /permissionState/);
   for (const rowKind of ['user-directory', 'invitation-queue', 'membership', 'support-access', 'admin-audit-excerpt']) {
     assert.match(surfaces, new RegExp(rowKind));
@@ -55,32 +59,23 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /UserAdminListDisplayed/);
   assert.match(surfaces, /secureTenantUserFoundation = 'secure-tenant-user-foundation'/);
   for (const capabilityId of [
-    'admin.users.dashboard.read',
-    'admin.users.search',
-    'admin.users.detail.read',
-    'admin.invitations.create',
-    'admin.invitations.resend',
-    'admin.invitations.revoke',
-    'admin.users.profile.patch',
-    'admin.memberships.add',
-    'admin.memberships.suspend',
-    'admin.memberships.reactivate',
-    'admin.memberships.remove',
-    'admin.roles.replace',
-    'admin.roles.remove',
-    'admin.users.disable',
-    'admin.users.reactivate',
-    'admin.users.identity_relink.request',
-    'admin.users.identity_relink.complete',
-    'admin.support_access.read',
-    'admin.support_access.grant',
-    'admin.support_access.revoke',
-    'admin.support_access.extend',
-    'admin.access_review.read',
-    'admin.access_review.resolve',
-    'admin.audit.read'
+    'USERADMIN_VIEW_OVERVIEW',
+    'USERADMIN_LIST_INVITATIONS',
+    'USERADMIN_SEND_INVITATION',
+    'USERADMIN_RESEND_INVITATION',
+    'USERADMIN_REVOKE_INVITATION',
+    'USERADMIN_LIST_MEMBERS',
+    'USERADMIN_UPDATE_MEMBER_STATUS',
+    'USERADMIN_LIST_ROLES_CAPABILITIES',
+    'USERADMIN_PREVIEW_ROLE_CHANGE',
+    'USERADMIN_CHANGE_MEMBER_ROLES',
+    'USERADMIN_START_ACCESS_REVIEW_TASK',
+    'USERADMIN_VIEW_ACCESS_REVIEW_TASK',
+    'USERADMIN_CANCEL_ACCESS_REVIEW_TASK',
+    'USERADMIN_VIEW_ACCESS_REVIEW_RESULT',
+    'USERADMIN_VIEW_TRACE_REFERENCE'
   ]) {
-    assert.match(surfaces, new RegExp(capabilityId.replaceAll('.', '\\.')));
+    assert.match(surfaces, new RegExp(capabilityId));
   }
   for (const denialCategory of ['cross-tenant', 'disabled actor', 'CUSTOMER_ADMIN_TENANT_ACTION_DENIED', 'SAAS_OWNER_NO_SUPPORT_ACCESS', 'role escalation', 'last-admin']) {
     assert.match(surfaces, new RegExp(denialCategory));
@@ -88,6 +83,11 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /requiresApproval: true/);
   assert.match(surfaces, /idempotency: \{ required: true/);
   assert.match(surfaces, /traceRequired: true/);
+  assert.match(surfaces, /action-useradmin-preview-role-change/);
+  assert.match(surfaces, /action-useradmin-change-member-roles/);
+  assert.match(surfaces, /action-useradmin-start-access-review/);
+  assert.match(surfaces, /blocked_provider_or_runtime/);
+  assert.match(surfaces, /must not fake progress|not fake progress/);
   assert.match(surfaces, /displayUserListActionResult/);
   assert.match(surfaces, /action-display-user-detail/);
   assert.match(surfaces, /Display user account detail/);

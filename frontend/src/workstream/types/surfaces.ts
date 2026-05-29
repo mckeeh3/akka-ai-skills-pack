@@ -123,8 +123,11 @@ export type AuditTimelineSurfaceData = {
 
 export type WorkflowStatusSurfaceData = {
   workflowId: string;
-  status: 'running' | 'waiting-for-human' | 'blocked' | 'completed' | 'failed';
-  steps: Array<{ stepId: string; label: string; status: string }>;
+  status: 'running' | 'waiting-for-human' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'failed';
+  summary?: string;
+  traceIds?: string[];
+  requiredCapabilityId?: string;
+  steps?: Array<{ stepId: string; label: string; status: string }>;
 };
 
 export type GovernanceDiffSurfaceData = {
