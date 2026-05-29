@@ -117,7 +117,7 @@
 
 ### TASK-AUDITTRACE-03-001: Implement Audit Trace Workstream v0 frontend surfaces and workstream UX
 
-- status: pending
+- status: done
 - source: specs/audit-trace-workstream-v0/backlog/01-audit-trace-workstream-v0-build-backlog.md
 - task brief: specs/audit-trace-workstream-v0/tasks/03-frontend/01-implement-frontend-surfaces.md
 - depends on:
@@ -140,6 +140,8 @@
   - frontend surfaces and workstream behavior reflect backend capabilities and do not create frontend-only authorization
   - task changes and queue update are committed
 - notes:
+  - implemented Audit/Trace dashboard, search, trace detail/evidence, correlation timeline, failure-evidence, and investigation-guide frontend surfaces in the starter template and root frontend mirror, including flexible rendering for backend DTO shapes, trace links, redaction/partial states, disabled future summary-task guidance, and safe evidence rendering.
+  - checks passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `git diff --check`
   - commit message: `audit-trace-v0: implement frontend surfaces`
 
 ### TASK-AUDITTRACE-99-001: Verify Audit Trace Workstream v0 completion

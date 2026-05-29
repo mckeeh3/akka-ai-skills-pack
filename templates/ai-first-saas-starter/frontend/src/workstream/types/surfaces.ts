@@ -73,24 +73,28 @@ export type MarkdownResponseData = {
 };
 
 export type DashboardSurfaceData = {
-  cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'critical' }>;
+  cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'critical' | 'blocked_provider_or_runtime' }>;
   sections?: Array<{ sectionId: string; label: string; summary: string }>;
   nextSteps?: Array<{ workstreamId: string; label: string; allowed: boolean; blockedReason?: string; capabilityIds?: string[]; traceId?: string }>;
   blockedState?: { reasonCode: string; message: string; recovery: string };
+  readiness?: string;
+  capabilityIds?: string[];
 };
 
 export type ListSearchSurfaceData = {
-  query: string;
+  query: string | Record<string, string | number | boolean | undefined>;
   rows: Array<Record<string, string | number | boolean | undefined>>;
-  pageInfo?: { nextPageToken?: string; totalKnownCount?: number };
+  pageInfo?: { nextPageToken?: string; nextCursor?: string; totalKnownCount?: number };
+  partial?: boolean;
+  redaction?: string;
 };
 
 export type DetailEditSurfaceData = {
-  recordId: string;
+  recordId?: string;
   recordLabel?: string;
   recordKind?: 'account' | 'membership' | 'invitation' | 'support-access' | string;
   summary?: string;
-  fields: Array<{
+  fields?: Array<{
     fieldId: string;
     label: string;
     value: string;
@@ -99,7 +103,7 @@ export type DetailEditSurfaceData = {
     options?: Array<{ value: string; label: string }>;
     disabledReason?: string;
   }>;
-  version: number;
+  version?: number;
   permissionState?: {
     canEdit: boolean;
     reason?: string;
@@ -110,18 +114,43 @@ export type DetailEditSurfaceData = {
     lastActor: string;
     traceIds: string[];
   };
+  traceId?: string;
+  eventKind?: string;
+  timestamp?: string;
+  actor?: string;
+  source?: string;
+  correlationIds?: string[];
+  authorizationBasis?: string;
+  decision?: string;
+  redactedEvidence?: string;
+  redactionMetadata?: Record<string, unknown>;
+  category?: string;
+  safeReason?: string;
+  userActionableNextSteps?: string[];
+  policyRefs?: string[];
+  redactedDetails?: Record<string, string>;
+  traceLinks?: string[];
 };
 
 export type DecisionSurfaceData = {
-  decisionId: string;
+  decisionId?: string;
   recommendation: string;
-  riskScore?: number;
-  confidenceScore?: number;
-  evidence: Array<{ evidenceId: string; label: string; summary: string }>;
+  riskScore?: number | string;
+  confidenceScore?: number | string;
+  evidence?: Array<{ evidenceId: string; label: string; summary: string }>;
+  allowedActions?: Array<{ actionId: string; label: string; capabilityId: string }>;
+  disabledActions?: Array<{ actionId: string; reason: string }>;
+  risk?: string;
+  traceLinks?: string[];
 };
 
 export type AuditTimelineSurfaceData = {
-  events: Array<{ eventId: string; occurredAt: string; actor: string; action: string; traceId: string }>;
+  events?: Array<{ eventId: string; occurredAt: string; actor: string; action: string; traceId: string }>;
+  correlationId?: string;
+  nodes?: Array<{ nodeId: string; sourceType: string; summary: string; correlationId: string; status: string; traceId?: string }>;
+  partial?: boolean;
+  omittedCategories?: string[];
+  redactionSummary?: string;
 };
 
 export type WorkflowStatusSurfaceData = {

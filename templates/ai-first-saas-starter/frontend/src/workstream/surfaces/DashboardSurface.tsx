@@ -17,6 +17,8 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
           <p>{envelope.data.blockedState.recovery}</p>
         </div>
       )}
+      {envelope.data.readiness && <p className="surface-readiness">{envelope.data.readiness}</p>}
+      {envelope.data.capabilityIds && <p className="capability-basis">Backend capabilities: {envelope.data.capabilityIds.join(', ')}</p>}
       <div className="surface-dashboard-grid">
         {envelope.data.cards.map((card) => (
           <article key={card.cardId} className={`ds-card dashboard-card ${card.severity ?? 'info'}`}>

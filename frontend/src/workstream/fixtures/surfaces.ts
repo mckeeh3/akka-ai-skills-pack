@@ -603,7 +603,7 @@ export const auditTraceMarkdownSurface = markdownResponseEnvelope(
   'surface-v0-audit-trace-markdown',
   'Audit/Trace v0 response',
   'agent-audit-trace',
-  '## Audit/Trace\n\n### Available now\n- Ask for browser-safe audit and trace summaries for the selected context.\n- Correlation and trace ids are preserved in the response envelope.\n\n### Full-core follow-up\nRich audit timelines and investigation views remain full-core follow-up/demo surfaces.'
+  '## Audit/Trace\n\n### Available now\n- Search scoped audit/work traces for the selected AuthContext.\n- Open trace detail/evidence, correlation timelines, denial/provider/tool evidence, and investigation guidance.\n- Ask bounded explanations only through backend-governed Audit/Trace capability paths.\n\n### Runtime guardrail\nFrontend affordances never grant authority; backend capabilities, tenant/customer scope, redaction, trace links, and provider fail-closed surfaces remain authoritative.'
 );
 
 export const governancePolicyMarkdownSurface = markdownResponseEnvelope(
@@ -613,6 +613,69 @@ export const governancePolicyMarkdownSurface = markdownResponseEnvelope(
   '## Governance/Policy\n\n### Available now\n- Ask about policy guardrails, approval boundaries, deferred decisions, and safe next steps.\n\n### Full-core follow-up\nPolicy simulations, proposal diffs, and approval cards remain full-core follow-up/demo surfaces.'
 );
 
+
+export const auditTraceSurfaceActions = {
+  showDashboard: {
+    actionId: 'action-audit-trace-dashboard',
+    label: 'Refresh Audit/Trace dashboard',
+    intent: 'read',
+    capabilityId: 'audit.trace.dashboard.read',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-dashboard', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceDashboardRead', traceRequired: true }
+  },
+  search: {
+    actionId: 'action-audit-trace-search',
+    label: 'Search scoped traces',
+    intent: 'read',
+    capabilityId: 'audit.trace.search',
+    inputSchemaRef: 'schema.audit-trace.search.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-search', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceSearchRequested', traceRequired: true }
+  },
+  openDetail: {
+    actionId: 'action-audit-trace-detail',
+    label: 'Open trace detail',
+    intent: 'read',
+    capabilityId: 'audit.trace.detail.read',
+    inputSchemaRef: 'schema.audit-trace.detail.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceDetailRequested', traceRequired: true }
+  },
+  openTimeline: {
+    actionId: 'action-audit-trace-timeline',
+    label: 'Open correlation timeline',
+    intent: 'trace',
+    capabilityId: 'audit.trace.timeline.read',
+    inputSchemaRef: 'schema.audit-trace.timeline.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-timeline', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceTimelineRequested', traceRequired: true }
+  },
+  openFailureEvidence: {
+    actionId: 'action-audit-trace-failure-evidence',
+    label: 'Open failure evidence',
+    intent: 'read',
+    capabilityId: 'audit.trace.failureEvidence.read',
+    inputSchemaRef: 'schema.audit-trace.failure-evidence.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-failure-evidence', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceFailureEvidenceRequested', traceRequired: true }
+  },
+  showInvestigationGuide: {
+    actionId: 'action-audit-trace-investigation-guide',
+    label: 'Show investigation guidance',
+    intent: 'read',
+    capabilityId: 'audit.trace.investigationGuide.read',
+    inputSchemaRef: 'schema.audit-trace.investigation-guide.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-investigation-guide', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceInvestigationGuideRequested', traceRequired: true }
+  }
+} satisfies Record<string, SurfaceAction>;
+
 export const fiveCoreV0MarkdownSurfaces = [
   myAccountMarkdownSurface,
   userAdminMarkdownSurface,
@@ -620,6 +683,131 @@ export const fiveCoreV0MarkdownSurfaces = [
   auditTraceMarkdownSurface,
   governancePolicyMarkdownSurface
 ];
+
+
+export const auditTraceDashboardSurface = envelope(
+  'surface-audit-trace-dashboard',
+  'dashboard',
+  'Audit/Trace dashboard',
+  'agent-audit-trace',
+  {
+    cards: [
+      { cardId: 'card-runtime-traces', label: 'Runtime traces', value: 12, severity: 'warning' },
+      { cardId: 'card-denials-failures', label: 'Denials/failures', value: 3, severity: 'critical' },
+      { cardId: 'card-redaction', label: 'Redaction', value: 'browser-safe', severity: 'info' }
+    ],
+    readiness: 'Trace search, detail, timeline, failure evidence, and guidance use backend-scoped capabilities for the selected AuthContext.',
+    capabilityIds: ['audit.trace.dashboard.read', 'audit.trace.search', 'audit.trace.timeline.read'],
+    sections: [
+      { sectionId: 'recent-denials', label: 'Important denials', summary: 'Cross-tenant and missing capability denials show safe reasons without leaking row identities.' },
+      { sectionId: 'provider-blocked', label: 'Provider/tool evidence', summary: 'Missing provider config and tool-boundary denials are actionable but never expose secrets.' },
+      { sectionId: 'correlation-shortcuts', label: 'Correlation shortcuts', summary: 'Open a correlation timeline, trace detail, or bounded explanation from authorized evidence only.' }
+    ],
+    nextSteps: [
+      { workstreamId: 'agent-audit-trace', label: 'Search scoped traces', allowed: true, capabilityIds: ['audit.trace.search'], traceId: 'trace-audit-dashboard-search' },
+      { workstreamId: 'agent-audit-trace', label: 'Open failure evidence', allowed: true, capabilityIds: ['audit.trace.failureEvidence.read'], traceId: 'trace-audit-dashboard-failure' },
+      { workstreamId: 'agent-audit-trace-summary-task', label: 'Start audit summary task', allowed: false, blockedReason: 'Autonomous audit-summary task lifecycle is deferred until backend runtime exists.', capabilityIds: ['audit.trace.summaryTask.start'] }
+    ]
+  },
+  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide]
+);
+
+export const auditTraceSearchSurface = envelope(
+  'surface-audit-trace-search',
+  'list-search',
+  'Trace search results',
+  'agent-audit-trace',
+  {
+    query: { filter: 'recent denials OR provider_blocked', pageSize: 10 },
+    rows: [
+      { traceId: 'trace-auth-denied-001', correlationId: 'corr-auth-denied-001', eventKind: 'AUTHORIZATION_DENIED', actor: 'member@example.test', workstream: 'user-admin', severity: 'warning', status: 'denied', redactionSummary: 'target account redacted' },
+      { traceId: 'trace-provider-blocked-002', correlationId: 'corr-provider-blocked-002', eventKind: 'PROVIDER_BLOCKED', actor: 'WorkstreamRuntimeAgent', workstream: 'audit-trace', severity: 'critical', status: 'blocked_provider_or_runtime', redactionSummary: 'provider secret omitted' },
+      { traceId: 'trace-tool-denied-003', correlationId: 'corr-tool-denied-003', eventKind: 'TOOL_BOUNDARY_DENIED', actor: 'readReferenceDoc(referenceId)', workstream: 'agent-admin', severity: 'warning', status: 'denied', redactionSummary: 'unassigned reference omitted' }
+    ],
+    pageInfo: { totalKnownCount: 3, nextCursor: undefined },
+    partial: false,
+    redaction: 'Raw JWTs, provider credentials, hidden prompts, and unauthorized tenant/customer evidence are omitted.'
+  },
+  [auditTraceSurfaceActions.openDetail, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence]
+);
+
+export const auditTraceDetailSurface = envelope(
+  'surface-audit-trace-detail',
+  'detail-edit',
+  'Trace detail/evidence',
+  'agent-audit-trace',
+  {
+    traceId: 'trace-provider-blocked-002',
+    eventKind: 'PROVIDER_BLOCKED',
+    timestamp: generatedAt,
+    actor: 'WorkstreamRuntimeAgent',
+    source: 'agent-audit-trace',
+    correlationIds: ['corr-provider-blocked-002'],
+    authorizationBasis: 'audit.trace.detail.read',
+    decision: 'blocked_provider_or_runtime',
+    redactedEvidence: 'Model-backed explanation was blocked because backend provider configuration was missing or blank.',
+    redactionMetadata: { omittedFieldKeys: ['OPENAI_API_KEY', 'rawPrompt', 'hiddenPromptText', 'rawToolPayload'] },
+    traceLinks: ['trace-provider-blocked-002']
+  },
+  [auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide]
+);
+
+export const auditTraceTimelineSurface = envelope(
+  'surface-audit-trace-timeline',
+  'audit-timeline',
+  'Correlation timeline',
+  'agent-audit-trace',
+  {
+    correlationId: 'corr-provider-blocked-002',
+    nodes: [
+      { nodeId: 'node-auth-context', sourceType: 'policy', summary: 'Selected AuthContext resolved and tenant/customer scope applied.', correlationId: 'corr-provider-blocked-002', status: 'allowed' },
+      { nodeId: 'trace-provider-blocked-002', sourceType: 'model', summary: 'Provider configuration failed closed before model invocation.', correlationId: 'corr-provider-blocked-002', status: 'blocked_provider_or_runtime', traceId: 'trace-provider-blocked-002' },
+      { nodeId: 'trace-agent-work-002', sourceType: 'request_response', summary: 'Audit/Trace workstream response returned actionable blocked-provider copy.', correlationId: 'corr-provider-blocked-002', status: 'ready', traceId: 'trace-agent-work-002' }
+    ],
+    partial: false,
+    omittedCategories: [],
+    redactionSummary: 'Unauthorized tenant/customer evidence and provider secrets are omitted.'
+  },
+  [auditTraceSurfaceActions.openDetail, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide]
+);
+
+export const auditTraceFailureEvidenceSurface = envelope(
+  'surface-audit-trace-failure-evidence',
+  'detail-edit',
+  'Denial/provider/tool evidence',
+  'agent-audit-trace',
+  {
+    category: 'provider_blocked',
+    safeReason: 'Provider, tool, policy, and authorization failures are shown as redacted browser-safe evidence only.',
+    userActionableNextSteps: ['Check selected AuthContext and required capability.', 'Open correlation timeline.', 'Ask Audit/Trace for an explanation after provider configuration is available.'],
+    policyRefs: ['audit.trace.read', 'audit.trace.failureEvidence.read'],
+    redactedDetails: { providerCredential: '[REDACTED]', rawPrompt: '[OMITTED]' },
+    traceLinks: ['trace-provider-blocked-002', 'trace-agent-work-002']
+  },
+  [auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.showInvestigationGuide]
+);
+
+export const auditTraceInvestigationGuideSurface = envelope(
+  'surface-audit-trace-investigation-guide',
+  'decision',
+  'Investigation guidance',
+  'agent-audit-trace',
+  {
+    recommendation: 'Continue only with backend-authorized, tenant-scoped evidence.',
+    allowedActions: [
+      { actionId: 'action-audit-trace-search', label: 'Refine search', capabilityId: 'audit.trace.search' },
+      { actionId: 'action-audit-trace-timeline', label: 'Open timeline', capabilityId: 'audit.trace.timeline.read' }
+    ],
+    disabledActions: [
+      { actionId: 'audit.trace.summaryTask.start', reason: 'Autonomous audit summary tasks are deferred until task lifecycle/provider/tool-boundary runtime is implemented.' }
+    ],
+    risk: 'low',
+    traceLinks: ['corr-provider-blocked-002']
+  },
+  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence]
+);
+
+export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface];
 
 export const userAdminDashboardSurface = envelope(
   'user-admin-dashboard',
@@ -1066,6 +1254,7 @@ export const fullCoreDemoSurfaceEnvelopes = [
   agentTestConsoleSurface,
   agentBehaviorProposalSurface,
   agentAdminTraceSurface,
+  ...auditTraceStructuredSurfaces,
   dashboardSurface,
   detailEditSurface,
   decisionSurface,

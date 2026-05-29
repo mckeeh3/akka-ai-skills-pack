@@ -9,12 +9,15 @@ type ListSearchSurfaceProps = {
 
 export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps) {
   const columns = Array.from(new Set(envelope.data.rows.flatMap((row) => Object.keys(row))));
+  const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : JSON.stringify(envelope.data.query);
   return (
     <SurfaceStateFrame envelope={envelope}>
       <form className="surface-search-form" role="search">
         <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
-        <input id={`${envelope.surfaceId}-query`} name="query" defaultValue={envelope.data.query} />
+        <input id={`${envelope.surfaceId}-query`} name="query" defaultValue={queryValue} />
       </form>
+      {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
+      {envelope.data.redaction && <p className="redaction-note">Redaction: {envelope.data.redaction}</p>}
       {envelope.data.rows.length === 0 ? <p>No results match the current search.</p> : (
         <table>
           <caption>{envelope.title} results</caption>
