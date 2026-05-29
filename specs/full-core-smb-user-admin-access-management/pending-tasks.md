@@ -145,7 +145,7 @@
 
 ### TASK-FCSMB-UAM-01-004: Validate User Admin access management runtime
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-access-management/tasks/01-access-management/04-validate-access-management-runtime.md
 - depends on: [TASK-FCSMB-UAM-01-003]
@@ -176,6 +176,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: validate access management runtime`
+  - validation: direct template backend Maven command is not executable before scaffolding because template placeholders make `pom.xml` invalid; scaffolded equivalent passed with `env -u ADMIN_USERS`: `tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --template-dir templates/ai-first-saas-starter --app-name "FCSMB UAM Validation" --app-slug fcsmb-uam-validation --base-package ai.first --maven-group-id ai.first && cd "$tmp" && env -u ADMIN_USERS mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`; required `rg` proof; `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`
 
 ### TASK-FCSMB-UAM-99-001: Verify User Admin access management readiness
 
