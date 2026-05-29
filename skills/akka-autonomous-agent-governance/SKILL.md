@@ -1,6 +1,6 @@
 ---
 name: akka-autonomous-agent-governance
-description: Apply generated-app governance to Akka Autonomous Agents: capability contracts, model policy, tool boundaries, approvals, tenant scope, traces, notifications, and managed AgentDefinition terminology.
+description: "Apply generated-app governance to Akka Autonomous Agents: capability contracts, model policy, tool boundaries, approvals, tenant scope, traces, notifications, and managed AgentDefinition terminology."
 ---
 
 # Akka Autonomous Agent Governance
