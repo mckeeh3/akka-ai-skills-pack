@@ -147,7 +147,7 @@
 
 ### TASK-AGENTADMIN-99-001: Verify Agent Admin Workstream v0 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/agent-admin-workstream-v0/tasks/99-verification/01-verify-agent-admin-workstream-v0.md
 - depends on:
@@ -174,6 +174,80 @@
   - completion summary, verification notes, or newly appended follow-up tasks
 - required checks:
   - `tools/validate-ai-first-saas-starter-fullstack.sh` when runtime/template behavior changed
+  - `git diff --check`
+- done criteria:
+  - task group goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - runtime/API/UI validation evidence or blockers are recorded
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+- notes:
+  - verification result: incomplete; appended TASK-AGENTADMIN-04-001 and TASK-AGENTADMIN-99-002 because fullstack starter validation failed in `AgentBehaviorSeedLoaderTest.allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles` for `agent-agent-admin` (`expected ALLOWED but was DENIED`).
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh` failed as expected for the discovered validation gap; `git diff --check` passed.
+  - commit message: `agent-admin-v0: verify workstream completion`
+
+### TASK-AGENTADMIN-04-001: Fix Agent Admin managed runtime validation gap
+
+- status: pending
+- source: TASK-AGENTADMIN-99-001 verification finding
+- task brief: specs/agent-admin-workstream-v0/tasks/04-validation/01-fix-agent-admin-managed-runtime-validation.md
+- depends on:
+  - TASK-AGENTADMIN-99-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/agent-admin-workstream-v0/workstream-contract.md
+  - specs/agent-admin-workstream-v0/capability-inventory.md
+  - specs/agent-admin-workstream-v0/tasks/04-validation/01-fix-agent-admin-managed-runtime-validation.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoader.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoaderTest.java
+- skills:
+  - akka-agents
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - focused starter template/backend test or runtime authorization mapping fix
+  - updated specs/agent-admin-workstream-v0/pending-tasks.md
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - fullstack starter validation passes
+  - Agent Admin managed runtime preparation remains authorized only when the AuthContext has `agent_admin.submit_turn`
+  - no ToolPermissionBoundary, provider fail-closed, AuthContext, tenant-isolation, or trace requirement is weakened
+  - task changes and queue update are committed
+- notes:
+  - verification evidence: rendered-starter validation failed on `agent-agent-admin` runtime preparation because the shared test AuthContext did not include the per-agent Agent Admin invocation capability expected by `AgentRuntimeService.invocationCapability(...)`.
+  - commit message: `agent-admin-v0: fix managed runtime validation`
+
+### TASK-AGENTADMIN-99-002: Verify Agent Admin Workstream v0 completion after validation fix
+
+- status: pending
+- source: mini-project verification loop after TASK-AGENTADMIN-04-001
+- task brief: specs/agent-admin-workstream-v0/tasks/99-verification/01-verify-agent-admin-workstream-v0.md
+- depends on:
+  - TASK-AGENTADMIN-04-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/five-core-workstreams-v0-plan/shared-five-core-v0-contract.md
+  - specs/five-core-workstreams-v0-plan/workstream-dependency-map.md
+  - specs/agent-admin-workstream-v0/README.md
+  - specs/agent-admin-workstream-v0/conversation-capture.md
+  - specs/agent-admin-workstream-v0/pending-tasks.md
+  - specs/agent-admin-workstream-v0/sprints/*.md
+  - specs/agent-admin-workstream-v0/backlog/*.md
+  - specs/agent-admin-workstream-v0/tasks/**/*.md
+  - specs/agent-admin-workstream-v0/workstream-contract.md
+  - specs/agent-admin-workstream-v0/capability-inventory.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/agent-admin-workstream-v0/pending-tasks.md
+  - completion summary, verification notes, or newly appended follow-up tasks
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
   - `git diff --check`
 - done criteria:
   - task group goals have been compared against completed work
