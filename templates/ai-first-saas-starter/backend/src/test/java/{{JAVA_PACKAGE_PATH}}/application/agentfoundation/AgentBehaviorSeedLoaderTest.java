@@ -94,15 +94,6 @@ class AgentBehaviorSeedLoaderTest {
   void allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
     var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
-    var tenantAdmin = new AuthContext(
-        "admin-1",
-        "workos-admin-1",
-        "membership-1",
-        ScopeType.TENANT,
-        "tenant-1",
-        null,
-        List.of(FoundationRole.TENANT_ADMIN),
-        List.of(AgentRuntimeService.INVOKE_CAPABILITY, "agent.skills.read", "agent.references.read"));
     var promptIds = new HashSet<String>();
     var skillManifestIds = new HashSet<String>();
     var referenceManifestIds = new HashSet<String>();
@@ -111,6 +102,7 @@ class AgentBehaviorSeedLoaderTest {
 
     for (var agentId : AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS) {
       var agent = repository.agentDefinition("tenant-1", agentId).orElseThrow();
+      var tenantAdmin = authContextFor(agentId);
       var preparation = runtimeService.prepareWorkstreamAgentInvocation(new AgentRuntimeService.RuntimeInvocationRequest(
           "tenant-1",
           agentId,
@@ -143,6 +135,42 @@ class AgentBehaviorSeedLoaderTest {
     assertEquals(5, referenceManifestIds.size(), "shared generic reference manifests are not allowed for the five core agents");
     assertEquals(5, boundaryIds.size(), "shared generic tool boundaries are not allowed for the five core agents");
     assertEquals(5, runtimeClassRefs.size(), "each core agent profile must name its own functional-agent runtime binding");
+  }
+
+  @Test
+  void agentAdminRuntimePreparationRequiresAgentAdminSubmitTurnCapability() {
+    loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
+    var userAdminOnlyContext = new AuthContext(
+        "admin-1",
+        "workos-admin-1",
+        "membership-1",
+        ScopeType.TENANT,
+        "tenant-1",
+        null,
+        List.of(FoundationRole.TENANT_ADMIN),
+        List.of(AgentRuntimeService.INVOKE_CAPABILITY, "agent.skills.read", "agent.references.read"));
+
+    var denied = runtimeService.prepareWorkstreamAgentInvocation(new AgentRuntimeService.RuntimeInvocationRequest(
+        "tenant-1",
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        userAdminOnlyContext,
+        "corr-agent-admin-denied",
+        "Explain Agent Admin starter scope."));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, denied.decision());
+    assertEquals("AGENT_RUNTIME_DENIED", denied.safeErrorCode());
+    assertTrue(denied.safeErrorSummary().contains(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY));
+
+    var allowed = runtimeService.prepareWorkstreamAgentInvocation(new AgentRuntimeService.RuntimeInvocationRequest(
+        "tenant-1",
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        authContextFor(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "corr-agent-admin-allowed",
+        "Explain Agent Admin starter scope."));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, allowed.decision());
+    assertEquals(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, allowed.governedRequest().capabilityId());
   }
 
   @Test
@@ -183,6 +211,24 @@ class AgentBehaviorSeedLoaderTest {
     assertEquals(1, second.proposedDraftCount());
     assertEquals(2, repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow().activeVersion());
     assertTrue(repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow().contentBody().contains("Tenant-approved custom instruction."));
+  }
+
+  private AuthContext authContextFor(String agentId) {
+    var capabilities = new java.util.ArrayList<>(List.of("agent.skills.read", "agent.references.read"));
+    if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)) {
+      capabilities.add(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY);
+    } else {
+      capabilities.add(AgentRuntimeService.INVOKE_CAPABILITY);
+    }
+    return new AuthContext(
+        "admin-1",
+        "workos-admin-1",
+        "membership-1",
+        ScopeType.TENANT,
+        "tenant-1",
+        null,
+        List.of(FoundationRole.TENANT_ADMIN),
+        capabilities);
   }
 
   @Test

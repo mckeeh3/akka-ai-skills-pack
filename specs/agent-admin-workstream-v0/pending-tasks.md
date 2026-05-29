@@ -188,7 +188,7 @@
 
 ### TASK-AGENTADMIN-04-001: Fix Agent Admin managed runtime validation gap
 
-- status: pending
+- status: done
 - source: TASK-AGENTADMIN-99-001 verification finding
 - task brief: specs/agent-admin-workstream-v0/tasks/04-validation/01-fix-agent-admin-managed-runtime-validation.md
 - depends on:
@@ -219,6 +219,8 @@
   - task changes and queue update are committed
 - notes:
   - verification evidence: rendered-starter validation failed on `agent-agent-admin` runtime preparation because the shared test AuthContext did not include the per-agent Agent Admin invocation capability expected by `AgentRuntimeService.invocationCapability(...)`.
+  - fix: updated the managed-runtime seed test to use per-agent invocation capabilities and added explicit denial/allowance coverage proving Agent Admin requires `agent_admin.submit_turn` rather than the generic invoke capability.
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`
   - commit message: `agent-admin-v0: fix managed runtime validation`
 
 ### TASK-AGENTADMIN-99-002: Verify Agent Admin Workstream v0 completion after validation fix
