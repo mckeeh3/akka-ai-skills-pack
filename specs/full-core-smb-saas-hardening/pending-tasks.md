@@ -48,7 +48,7 @@
 
 ### TASK-FCSMB-01-001: Define SMB full-core baseline and visual UX standard
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-saas-hardening/backlog/01-full-core-smb-hardening-backlog.md
 - task brief: specs/full-core-smb-saas-hardening/tasks/01-baseline/01-define-smb-baseline-ux-standard.md
 - depends on: [TASK-FCSMB-00-001]
@@ -78,6 +78,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: define baseline ux standard`
+  - checks: `git diff --check`; `rg -n "SMB|workstream|surface|dashboard|request/response|AutonomousAgent|deterministic|visual|runtime validation" specs/full-core-smb-saas-hardening`
 
 ### TASK-FCSMB-01-002: Outline full-core workstream capabilities, surfaces, and agents
 
