@@ -70,7 +70,7 @@
 
 ### TASK-FCSMB-BASEUX-99-001: Verify baseline and UX readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-baseline-and-ux/tasks/99-verification/01-verify-baseline-ux-readiness.md
 - depends on:
@@ -101,3 +101,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify baseline ux readiness`
+  - verification: `shared-baseline-contracts.md` covers inherited workstream shell, typed structured surfaces, `system_message`, capability/authority, Agent/internal-worker, audit/work trace, attention/dashboard, visual, accessibility/responsive, provider/secret-boundary, runtime validation, and child handoff contracts.
+  - verification: compared child goals with `smb-full-core-baseline.md`, `visual-ux-quality-standard.md`, and `workstream-full-core-outline.md`; no missing shared-contract gap blocks User Admin full-core work.
+  - checks: `git diff --check`; `rg -n "workstream shell|structured surface|system_message|provider|trace|visual|runtime validation|secret-boundary" specs/full-core-smb-baseline-and-ux`.
+  - no follow-up tasks appended; mini-project done state is complete for shared baseline/UX readiness.
