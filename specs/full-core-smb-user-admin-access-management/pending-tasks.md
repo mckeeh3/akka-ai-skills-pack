@@ -79,7 +79,7 @@
 
 ### TASK-FCSMB-UAM-01-002: Implement backend User Admin access management
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-access-management/tasks/01-access-management/02-implement-backend-access-management.md
 - depends on: [TASK-FCSMB-UAM-01-001]
@@ -108,6 +108,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement backend access management`
+  - validation: direct template Maven command is not executable before scaffolding because template placeholders make `pom.xml` invalid; scaffolded equivalent passed with `env -u ADMIN_USERS`: `tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --template-dir templates/ai-first-saas-starter --app-name "FCSMB UAM Backend Check" --app-slug fcsmb-uam-backend-check --base-package ai.first --maven-group-id ai.first && cd "$tmp" && env -u ADMIN_USERS mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
 
 ### TASK-FCSMB-UAM-01-003: Implement frontend User Admin access management surfaces
 

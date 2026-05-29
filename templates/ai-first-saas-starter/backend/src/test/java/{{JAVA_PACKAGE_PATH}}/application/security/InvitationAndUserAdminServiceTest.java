@@ -150,8 +150,52 @@ class InvitationAndUserAdminServiceTest {
     assertEquals("last-admin-denied", lastAdminError.reasonCode());
 
     seedAdmin("second-admin@example.com", "membership-second-admin", FoundationRole.TENANT_ADMIN);
-    var updated = userAdmin.replaceRoles(tenantAdmin, "membership-admin", List.of(FoundationRole.TENANT_EMPLOYEE), "handoff", "corr-role-replace");
+    var updated = userAdmin.replaceRoles(tenantAdmin, "membership-second-admin", List.of(FoundationRole.TENANT_EMPLOYEE), "handoff", "corr-role-replace");
     assertEquals(List.of(FoundationRole.TENANT_EMPLOYEE), updated.roles());
+  }
+
+  @Test
+  void userAdminStatusTransitionsAreAuthoritativeIdempotentAndGuarded() {
+    seedAdmin("second-admin@example.com", "membership-second-admin", FoundationRole.TENANT_ADMIN);
+    seedAdmin("member@example.com", "membership-member", FoundationRole.TENANT_EMPLOYEE);
+
+    var disabled = userAdmin.updateMemberStatus(tenantAdmin, "membership-member", MembershipStatus.SUSPENDED, "offboarding", "idem-disable-member", "corr-disable-member");
+    assertEquals("accepted", disabled.status());
+    assertEquals(MembershipStatus.SUSPENDED, disabled.membership().status());
+    assertTrue(disabled.traceId().contains("trace-useradmin-update-member-status"));
+
+    var noOp = userAdmin.updateMemberStatus(tenantAdmin, "membership-member", MembershipStatus.SUSPENDED, "offboarding replay", "idem-disable-member-replay", "corr-disable-member-replay");
+    assertEquals("no-op", noOp.status());
+    assertTrue(noOp.message().contains("idempotency"));
+
+    var reactivated = userAdmin.updateMemberStatus(tenantAdmin, "membership-member", MembershipStatus.ACTIVE, "return", "idem-reactivate-member", "corr-reactivate-member");
+    assertEquals("accepted", reactivated.status());
+    assertEquals(MembershipStatus.ACTIVE, reactivated.membership().status());
+
+    var selfDisable = assertThrows(AuthorizationException.class, () -> userAdmin.updateMemberStatus(tenantAdmin, "membership-admin", MembershipStatus.SUSPENDED, "self", "idem-self-disable", "corr-self-disable"));
+    assertEquals("self-disable-denied", selfDisable.reasonCode());
+    identityRepository.putMembership(new Membership("membership-admin", "admin@example.com", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
+    var lastAdmin = assertThrows(AuthorizationException.class, () -> userAdmin.updateMemberStatus(tenantAdmin, "membership-second-admin", MembershipStatus.SUSPENDED, "last admin", "idem-last-admin", "corr-last-admin-disable"));
+    assertEquals("last-admin-denied", lastAdmin.reasonCode());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_UPDATE_MEMBER_STATUS") && event.result() == {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent.Result.NO_OP));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.reasonCode().equals("self-disable-denied")));
+  }
+
+  @Test
+  void userAdminRolePreviewShowsCapabilityDeltaAndDeniesSelfAdminRemoval() {
+    seedAdmin("second-admin@example.com", "membership-second-admin", FoundationRole.TENANT_ADMIN);
+
+    var preview = userAdmin.previewRoleChange(tenantAdmin, "membership-second-admin", List.of(FoundationRole.TENANT_EMPLOYEE), "least privilege", "corr-role-preview-delta");
+    assertTrue(preview.allowed());
+    assertFalse(preview.capabilityDelta().isEmpty());
+    assertTrue(preview.affectedWorkstreams().contains("User Admin"));
+    assertEquals("admin-coverage-preserved", preview.lastAdminImpact());
+
+    var selfPreview = userAdmin.previewRoleChange(tenantAdmin, "membership-admin", List.of(FoundationRole.TENANT_EMPLOYEE), "self demotion", "corr-role-preview-self");
+    assertFalse(selfPreview.allowed());
+    assertEquals("self-admin-role-removal-denied", selfPreview.message());
+    var selfChange = assertThrows(AuthorizationException.class, () -> userAdmin.changeMemberRoles(tenantAdmin, "membership-admin", List.of(FoundationRole.TENANT_EMPLOYEE), "self demotion", "idem-self-role", "corr-self-role"));
+    assertEquals("self-admin-role-removal-denied", selfChange.reasonCode());
   }
 
   @Test

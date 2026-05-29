@@ -10,7 +10,9 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /** Scoped User Admin capability seam for account, membership, role, audit, and last-admin safety. */
@@ -63,8 +65,11 @@ public final class UserAdminService {
     ensureAssignable(actor, roles);
     var noOp = existing.roles().equals(roles);
     var lastAdminDenied = wouldRemoveLastAdmin(existing, roles, existing.status());
-    audit(actor, existing, "USERADMIN_PREVIEW_ROLE_CHANGE", lastAdminDenied ? AdminAuditEvent.Result.DENIED : noOp ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED, lastAdminDenied ? "last-admin-denied" : reason, correlationId);
-    return new RoleChangePreview(!lastAdminDenied, noOp, lastAdminDenied ? "last-admin-denied" : noOp ? "requested roles already match current assignment" : "role change can proceed with backend authorization", "trace-useradmin-preview-role-change-" + stableSuffix(correlationId));
+    var selfRemovalDenied = wouldRemoveOwnAdminRole(actor, existing, roles);
+    var allowed = !lastAdminDenied && !selfRemovalDenied;
+    var denialReason = lastAdminDenied ? "last-admin-denied" : selfRemovalDenied ? "self-admin-role-removal-denied" : null;
+    audit(actor, existing, "USERADMIN_PREVIEW_ROLE_CHANGE", allowed ? noOp ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.DENIED, denialReason == null ? reason : denialReason, correlationId);
+    return new RoleChangePreview(allowed, noOp, denialReason == null ? noOp ? "requested roles already match current assignment" : "role change can proceed with backend authorization" : denialReason, "trace-useradmin-preview-role-change-" + stableSuffix(correlationId), capabilityDelta(existing.roles(), roles), affectedWorkstreams(existing.roles(), roles), List.of("SMB policy: backend authority and human approval required for role changes", "last-admin and self-admin-role-removal guardrails enforced"), lastAdminDenied ? "would-remove-final-admin" : "admin-coverage-preserved");
   }
 
   public RoleChangeResult changeMemberRoles(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String idempotencyKey, String correlationId) {
@@ -82,6 +87,10 @@ public final class UserAdminService {
       audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
       throw new AuthorizationException(403, "last-admin-denied");
     }
+    if (wouldRemoveOwnAdminRole(actor, existing, roles)) {
+      audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.DENIED, "self-admin-role-removal-denied", correlationId);
+      throw new AuthorizationException(403, "self-admin-role-removal-denied");
+    }
     var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), roles, existing.status(), existing.supportAccess(), existing.expiresAt());
     put(updated);
     audit(actor, updated, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
@@ -92,17 +101,40 @@ public final class UserAdminService {
     return changeMemberRoles(actor, membershipId, roles, reason, "legacy-role-replace-" + correlationId, correlationId).membership();
   }
 
-  public Membership suspendMembership(AuthContextResolver.ResolvedMe actor, String membershipId, String reason, String correlationId) {
+  public StatusTransitionResult updateMemberStatus(AuthContextResolver.ResolvedMe actor, String membershipId, MembershipStatus targetStatus, String reason, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) {
+      throw new AuthorizationException(400, "idempotency-key-required");
+    }
+    if (targetStatus != MembershipStatus.ACTIVE && targetStatus != MembershipStatus.SUSPENDED) {
+      throw new AuthorizationException(400, "unsupported-membership-status");
+    }
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
-    if (wouldRemoveLastAdmin(existing, existing.roles(), MembershipStatus.SUSPENDED)) {
-      audit(actor, existing, "MEMBERSHIP_SUSPEND", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
+    if (actor.account().accountId().equals(existing.accountId()) && targetStatus != MembershipStatus.ACTIVE) {
+      audit(actor, existing, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.DENIED, "self-disable-denied", correlationId);
+      throw new AuthorizationException(403, "self-disable-denied");
+    }
+    if (existing.status() == targetStatus) {
+      audit(actor, existing, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.NO_OP, "no-op idempotency", correlationId);
+      return new StatusTransitionResult("no-op", "Requested member status already matches current assignment; idempotency preserved.", existing, "trace-useradmin-update-member-status-" + stableSuffix(idempotencyKey));
+    }
+    if (targetStatus != MembershipStatus.ACTIVE && wouldRemoveLastAdmin(existing, existing.roles(), targetStatus)) {
+      audit(actor, existing, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
       throw new AuthorizationException(403, "last-admin-denied");
     }
-    var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), MembershipStatus.SUSPENDED, existing.supportAccess(), existing.expiresAt());
+    var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), targetStatus, existing.supportAccess(), existing.expiresAt());
     put(updated);
-    audit(actor, updated, "MEMBERSHIP_SUSPEND", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
-    return updated;
+    audit(actor, updated, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    var label = targetStatus == MembershipStatus.ACTIVE ? "reactivated" : "disabled";
+    return new StatusTransitionResult("accepted", "Member " + label + " by backend-authoritative User Admin capability.", updated, "trace-useradmin-update-member-status-" + stableSuffix(idempotencyKey));
+  }
+
+  public Membership suspendMembership(AuthContextResolver.ResolvedMe actor, String membershipId, String reason, String correlationId) {
+    return updateMemberStatus(actor, membershipId, MembershipStatus.SUSPENDED, reason, "legacy-suspend-" + correlationId, correlationId).membership();
+  }
+
+  public Membership reactivateMembership(AuthContextResolver.ResolvedMe actor, String membershipId, String reason, String correlationId) {
+    return updateMemberStatus(actor, membershipId, MembershipStatus.ACTIVE, reason, "legacy-reactivate-" + correlationId, correlationId).membership();
   }
 
   public Account disableAccount(AuthContextResolver.ResolvedMe actor, String accountId, String reason, String correlationId) {
@@ -189,8 +221,36 @@ public final class UserAdminService {
         .noneMatch(m -> m.roles().contains(adminRole(target.scopeType())));
   }
 
+  private boolean wouldRemoveOwnAdminRole(AuthContextResolver.ResolvedMe actor, Membership target, List<FoundationRole> newRoles) {
+    return actor.account().accountId().equals(target.accountId())
+        && target.roles().contains(adminRole(target.scopeType()))
+        && !newRoles.contains(adminRole(target.scopeType()));
+  }
+
   private FoundationRole adminRole(ScopeType scopeType) {
     return scopeType == ScopeType.CUSTOMER ? FoundationRole.CUSTOMER_ADMIN : scopeType == ScopeType.SAAS_OWNER ? FoundationRole.SAAS_OWNER_ADMIN : FoundationRole.TENANT_ADMIN;
+  }
+
+  private List<String> capabilityDelta(List<FoundationRole> currentRoles, List<FoundationRole> requestedRoles) {
+    var current = capabilities(currentRoles);
+    var requested = capabilities(requestedRoles);
+    var added = requested.stream().filter(capability -> !current.contains(capability)).map(capability -> "+" + capability).toList();
+    var removed = current.stream().filter(capability -> !requested.contains(capability)).map(capability -> "-" + capability).toList();
+    return java.util.stream.Stream.concat(added.stream(), removed.stream()).toList();
+  }
+
+  private List<String> affectedWorkstreams(List<FoundationRole> currentRoles, List<FoundationRole> requestedRoles) {
+    return capabilityDelta(currentRoles, requestedRoles).stream()
+        .map(entry -> entry.startsWith("+") || entry.startsWith("-") ? entry.substring(1) : entry)
+        .map(capability -> capability.startsWith("agent_admin") || capability.startsWith("agent.") ? "Agent Admin" : capability.startsWith("audit.") || capability.contains("audit") ? "Audit/Trace" : capability.startsWith("governance.") ? "Governance/Policy" : capability.contains("user") || capability.contains("invitation") || capability.contains("role") ? "User Admin" : "Application workstream")
+        .distinct()
+        .toList();
+  }
+
+  private Set<String> capabilities(List<FoundationRole> roles) {
+    var capabilities = new LinkedHashSet<String>();
+    for (var role : roles) capabilities.addAll(role.capabilities());
+    return capabilities;
   }
 
   private Membership membership(String membershipId) {
@@ -215,6 +275,7 @@ public final class UserAdminService {
   }
 
   public record UserDirectoryRow(String accountId, String displayName, String membershipId, List<FoundationRole> roles, MembershipStatus status, ScopeType scopeType, String tenantId, String customerId) {}
-  public record RoleChangePreview(boolean allowed, boolean noOp, String message, String traceId) {}
+  public record RoleChangePreview(boolean allowed, boolean noOp, String message, String traceId, List<String> capabilityDelta, List<String> affectedWorkstreams, List<String> policyHints, String lastAdminImpact) {}
   public record RoleChangeResult(String status, String message, Membership membership, String traceId) {}
+  public record StatusTransitionResult(String status, String message, Membership membership, String traceId) {}
 }
