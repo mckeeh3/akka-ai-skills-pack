@@ -209,7 +209,7 @@
 
 ### TASK-FCSMB-UA-99-001: Verify User Admin readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-user-admin/tasks/99-verification/01-verify-user-admin-readiness.md
 - depends on:
@@ -244,3 +244,81 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify user admin readiness`
+  - verification result: incomplete; implementation contracts and first backend/frontend slices exist, but fullstack validation exposed frontend typecheck blockers.
+  - validation: `git diff --check` passed before queue follow-up edits
+  - validation: required User Admin/runtime marker `rg` check passed
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-user-admin-expertise.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-actions.contract.test.mjs src/api.contract.test.mjs && npm run build` passed
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` failed at frontend `npm run typecheck` with `surface-request` `SurfaceActionIntent`/`SurfaceAction` type mismatches and recursive `DashboardSurface.renderSurfaceValue` implicit return types
+  - follow-up: appended TASK-FCSMB-UA-01-005 and terminal TASK-FCSMB-UA-99-002
+
+### TASK-FCSMB-UA-01-005: Fix User Admin fullstack typecheck blockers
+
+- status: pending
+- source: TASK-FCSMB-UA-99-001 verification finding
+- task brief: specs/full-core-smb-user-admin/tasks/01-user-admin/05-fix-user-admin-fullstack-typecheck.md
+- depends on:
+  - TASK-FCSMB-UA-99-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin/README.md
+  - specs/full-core-smb-user-admin/conversation-capture.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+  - specs/full-core-smb-user-admin/source-boundary-notes.md
+  - specs/full-core-smb-user-admin/tasks/99-verification/01-verify-user-admin-readiness.md
+  - templates/ai-first-saas-starter/frontend/src/workstream/types/actions.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/DashboardSurface.tsx
+- skills:
+  - none; focused repository source-edit task
+- expected outputs:
+  - updated templates/ai-first-saas-starter/frontend/src/workstream/types/actions.ts
+  - optional updated templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
+  - updated templates/ai-first-saas-starter/frontend/src/workstream/surfaces/DashboardSurface.tsx
+  - updated specs/full-core-smb-user-admin/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-user-admin-expertise.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-actions.contract.test.mjs src/api.contract.test.mjs`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - fullstack validation no longer fails on the `surface-request` action intent or `DashboardSurface` implicit recursive return type
+  - existing User Admin surface/action contract tests still pass
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: fix user admin fullstack typecheck`
+
+### TASK-FCSMB-UA-99-002: Verify User Admin readiness after typecheck fix
+
+- status: pending
+- source: mini-project verification loop after TASK-FCSMB-UA-01-005
+- task brief: specs/full-core-smb-user-admin/tasks/99-verification/02-verify-user-admin-readiness-after-typecheck.md
+- depends on:
+  - TASK-FCSMB-UA-01-005
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin/README.md
+  - specs/full-core-smb-user-admin/conversation-capture.md
+  - specs/full-core-smb-user-admin/pending-tasks.md
+  - specs/full-core-smb-user-admin/sprints/*.md
+  - specs/full-core-smb-user-admin/backlog/*.md
+  - specs/full-core-smb-user-admin/tasks/**/*.md
+  - specs/full-core-smb-saas-hardening/smb-full-core-baseline.md
+  - specs/full-core-smb-saas-hardening/visual-ux-quality-standard.md
+  - specs/full-core-smb-saas-hardening/workstream-full-core-outline.md
+  - specs/full-core-smb-saas-hardening/agent-worker-opportunities.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/full-core-smb-user-admin/pending-tasks.md
+  - completion notes or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - targeted `rg` checks needed to validate User Admin readiness
+- done criteria:
+  - child goals have been compared against completed work after typecheck blocker fix
+  - if complete, completion is recorded with no new required work
+  - if incomplete, bounded tasks are appended before a new terminal verification task
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: verify user admin readiness after typecheck fix`
