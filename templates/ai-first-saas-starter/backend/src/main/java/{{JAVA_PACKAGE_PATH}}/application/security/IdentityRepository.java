@@ -20,7 +20,11 @@ public interface IdentityRepository {
 
   UserProfile profile(String accountId);
 
+  UserProfile saveProfile(UserProfile profile);
+
   UserSettings settings(String accountId);
+
+  UserSettings saveSettings(UserSettings settings);
 
   List<Membership> membershipsByAccount(String accountId);
 

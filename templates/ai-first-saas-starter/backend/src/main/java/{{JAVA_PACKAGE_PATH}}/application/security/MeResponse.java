@@ -143,7 +143,7 @@ public record MeResponse(
     static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
       var userAdminVisible = capabilities.contains("secure-tenant-user-foundation")
           || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
-      var profileVisible = capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
+      var profileVisible = capabilities.contains("my_account.view_summary") || capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var auditVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read"));
       var governanceVisible = capabilities.stream().anyMatch(capability -> capability.startsWith("governance.") || capability.startsWith("improvements.") || capability.contains("policy"));
       var agentAdminVisible = capabilities.contains("agent.definitions.manage")
@@ -160,7 +160,7 @@ public record MeResponse(
               "my-account",
               icon("workstream-my-account", "My Account", "my-account", "user account avatar", "accent-account", "Open My Account workstream from the signed-in user tile"),
               "markdown_response",
-              List.of("profile.read"),
+              List.of("my_account.view_summary", "my_account.ask_agent"),
               profileVisible ? "visible" : "denied",
               profileVisible ? null : "No active profile context is available."),
           new FunctionalAgentSummary(

@@ -7,6 +7,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
+import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 import java.time.Instant;
@@ -70,6 +71,40 @@ public final class AuthContextResolver {
     }
   }
 
+  public ProfileSettingsUpdateResult updateOwnProfileSettings(
+      ResolvedMe actor,
+      String displayName,
+      UserSettings.UiMode uiMode,
+      String idempotencyKey,
+      String correlationId) {
+    requireCapability(actor.selectedContext(), "my_account.update_profile_settings");
+    var profile = actor.profile();
+    var settings = actor.settings();
+    var nextDisplayName = displayName == null || displayName.isBlank() ? profile.displayName() : displayName.trim();
+    var nextUiMode = uiMode == null ? settings.uiMode() : uiMode;
+    var changed = !nextDisplayName.equals(profile.displayName()) || nextUiMode != settings.uiMode();
+    var savedProfile = changed
+        ? repository.saveProfile(new UserProfile(profile.accountId(), profile.displayEmail(), nextDisplayName, profile.givenName(), profile.familyName(), profile.avatarUrl()))
+        : profile;
+    var savedSettings = changed ? repository.saveSettings(new UserSettings(settings.accountId(), nextUiMode)) : settings;
+    appendAudit(
+        "MY_ACCOUNT_PROFILE_SETTINGS_UPDATE",
+        AdminAuditEvent.Result.ALLOWED,
+        actor.account(),
+        selectedMembership(actor),
+        changed ? "changed-fields:displayName/uiMode" : "no-op",
+        correlationId);
+    return new ProfileSettingsUpdateResult(savedProfile, savedSettings, changed, correlationId, idempotencyKey);
+  }
+
+  public void appendProtectedReadTrace(ResolvedMe actor, String action, String reason, String correlationId) {
+    appendAudit(action, AdminAuditEvent.Result.ALLOWED, actor.account(), selectedMembership(actor), reason, correlationId);
+  }
+
+  public void appendDeniedTrace(ResolvedMe actor, String action, String reason, String correlationId) {
+    appendAudit(action, AdminAuditEvent.Result.DENIED, actor.account(), selectedMembership(actor), reason, correlationId);
+  }
+
   public void requireTenant(AuthContext authContext, String tenantId) {
     if (authContext.scopeType() == ScopeType.SAAS_OWNER || !tenantId.equals(authContext.tenantId())) {
       throw new AuthorizationException(403, "tenant-mismatch");
@@ -101,6 +136,13 @@ public final class AuthContextResolver {
         .sorted(Comparator.comparing(Membership::membershipId))
         .findFirst()
         .orElseThrow();
+  }
+
+  private Membership selectedMembership(ResolvedMe actor) {
+    return actor.memberships().stream()
+        .filter(membership -> actor.selectedContext().membershipId().equals(membership.membershipId()))
+        .findFirst()
+        .orElse(null);
   }
 
   private void validateScopeState(Account account, Membership membership, String correlationId) {
@@ -152,4 +194,11 @@ public final class AuthContextResolver {
       List<Membership> memberships,
       AuthContext selectedContext,
       String correlationId) {}
+
+  public record ProfileSettingsUpdateResult(
+      UserProfile profile,
+      UserSettings settings,
+      boolean changed,
+      String correlationId,
+      String idempotencyKey) {}
 }

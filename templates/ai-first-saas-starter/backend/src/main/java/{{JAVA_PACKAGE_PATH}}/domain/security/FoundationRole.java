@@ -9,6 +9,13 @@ public enum FoundationRole {
       List.of(
           "profile.read",
           "profile.update",
+          "my_account.view_summary",
+          "my_account.view_context",
+          "my_account.update_profile_settings",
+          "my_account.list_next_steps",
+          "my_account.open_authorized_workstream",
+          "my_account.ask_agent",
+          "my_account.view_own_trace_refs",
           "saas_owner.user.manage",
           "saas_owner.tenant.read",
           "saas_owner.tenant.manage",
@@ -19,6 +26,13 @@ public enum FoundationRole {
       List.of(
           "profile.read",
           "profile.update",
+          "my_account.view_summary",
+          "my_account.view_context",
+          "my_account.update_profile_settings",
+          "my_account.list_next_steps",
+          "my_account.open_authorized_workstream",
+          "my_account.ask_agent",
+          "my_account.view_own_trace_refs",
           "secure-tenant-user-foundation",
           "tenant.user.read",
           "tenant.user.manage",
@@ -44,12 +58,32 @@ public enum FoundationRole {
           "agent.models.read",
           "agent.models.manage",
           "agent.runtime.test")),
-  TENANT_EMPLOYEE(ScopeType.TENANT, List.of("profile.read", "profile.update", "tenant.app.use", "agent.workstream.use")),
+  TENANT_EMPLOYEE(
+      ScopeType.TENANT,
+      List.of(
+          "profile.read",
+          "profile.update",
+          "my_account.view_summary",
+          "my_account.view_context",
+          "my_account.update_profile_settings",
+          "my_account.list_next_steps",
+          "my_account.open_authorized_workstream",
+          "my_account.ask_agent",
+          "my_account.view_own_trace_refs",
+          "tenant.app.use",
+          "agent.workstream.use")),
   CUSTOMER_ADMIN(
       ScopeType.CUSTOMER,
       List.of(
           "profile.read",
           "profile.update",
+          "my_account.view_summary",
+          "my_account.view_context",
+          "my_account.update_profile_settings",
+          "my_account.list_next_steps",
+          "my_account.open_authorized_workstream",
+          "my_account.ask_agent",
+          "my_account.view_own_trace_refs",
           "secure-tenant-user-foundation",
           "customer.user.read",
           "customer.user.manage",
@@ -73,10 +107,34 @@ public enum FoundationRole {
           "agent.models.read",
           "agent.models.manage",
           "agent.runtime.test")),
-  CUSTOMER_USER(ScopeType.CUSTOMER, List.of("profile.read", "profile.update", "customer.app.use", "agent.workstream.use")),
+  CUSTOMER_USER(
+      ScopeType.CUSTOMER,
+      List.of(
+          "profile.read",
+          "profile.update",
+          "my_account.view_summary",
+          "my_account.view_context",
+          "my_account.update_profile_settings",
+          "my_account.list_next_steps",
+          "my_account.open_authorized_workstream",
+          "my_account.ask_agent",
+          "my_account.view_own_trace_refs",
+          "customer.app.use",
+          "agent.workstream.use")),
   AUDITOR(
       ScopeType.TENANT,
-      List.of("profile.read", "profile.update", "tenant.audit.read", "tenant.access_review.read", "customer.audit.read", "customer.access_review.read"));
+      List.of(
+          "profile.read",
+          "profile.update",
+          "my_account.view_summary",
+          "my_account.view_context",
+          "my_account.list_next_steps",
+          "my_account.ask_agent",
+          "my_account.view_own_trace_refs",
+          "tenant.audit.read",
+          "tenant.access_review.read",
+          "customer.audit.read",
+          "customer.access_review.read"));
 
   private final ScopeType defaultScopeType;
   private final List<String> capabilities;

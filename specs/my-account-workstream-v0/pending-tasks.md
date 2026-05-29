@@ -79,7 +79,7 @@
 
 ### TASK-MYACCT-02-001: Implement My Account Workstream v0 backend/runtime vertical
 
-- status: pending
+- status: done
 - source: specs/my-account-workstream-v0/backlog/01-my-account-workstream-v0-build-backlog.md
 - task brief: specs/my-account-workstream-v0/tasks/02-runtime/01-implement-backend-runtime.md
 - depends on:
@@ -111,6 +111,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: `My Account Workstream v0; capability ids from capability-inventory; selected Akka substrate per capability; audit/work trace required`
+  - implemented self-service backend capability ids for My Account profile/settings update, summary/next steps, trace/open-workstream actions, and request-based agent availability without adding AutonomousAgent scope.
+  - checks passed: rendered starter `mvn test`; `git diff --check`
   - commit message: `my-account-v0: implement backend runtime`
 
 ### TASK-MYACCT-03-001: Implement My Account Workstream v0 frontend surfaces and workstream UX

@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -190,6 +191,43 @@ class WorkstreamServiceTest {
     var persistedSurface = service.surface(identity(), "membership-admin", response.surface().surfaceId(), "corr-read");
     assertEquals(response.surface().surfaceId(), persistedSurface.surfaceId());
     assertEquals("corr-message", persistedSurface.correlationId());
+  }
+
+  @Test
+  void myAccountProfileSettingsUpdatePersistsAllowedSelfServiceFieldsAndIsIdempotent() {
+    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-profile", "my_account.update_profile_settings", Map.of("displayName", "Updated Admin", "preferredColorMode", "dark"), "idem-my-account-update", "membership-admin", "surface-my-profile", "corr-my-account-update"));
+
+    assertEquals("accepted", result.status());
+    assertEquals("surface-my-profile", result.resultSurface().surfaceId());
+    assertTrue(result.resultSurface().toString().contains("Updated Admin"));
+    var me = service.bootstrap(identity(), "membership-admin", "corr-my-account-read").me();
+    assertEquals("Updated Admin", me.profile().displayName());
+    assertEquals("dark", me.settings().preferredColorMode());
+
+    var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-profile", "my_account.update_profile_settings", Map.of("displayName", "Ignored Duplicate"), "idem-my-account-update", "membership-admin", "surface-my-profile", "corr-my-account-duplicate"));
+    assertEquals(result, duplicate);
+    assertEquals("Updated Admin", service.bootstrap(identity(), "membership-admin", "corr-my-account-read-2").me().profile().displayName());
+  }
+
+  @Test
+  void myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-settings", "my_account.update_profile_settings", Map.of("roleIds", List.of("tenant-admin")), "idem-my-account-denied", "membership-admin", "surface-my-settings", "corr-my-account-denied")));
+
+    assertTrue(denied.reasonCode().contains("MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD"));
+    assertEquals("Tenant Admin", service.bootstrap(identity(), "membership-admin", "corr-my-account-denied-read").me().profile().displayName());
+  }
+
+  @Test
+  void myAccountOpenWorkstreamActionReturnsBackendResolvedSurface() {
+    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-agent-admin", "my_account.open_authorized_workstream", null, null, "membership-admin", "surface-my-account-dashboard", "corr-open-agent-admin"));
+
+    assertEquals("accepted", result.status());
+    assertEquals("surface-agent-admin-catalog", result.resultSurface().surfaceId());
+    assertEquals("agent-agent-admin", result.resultSurface().ownerFunctionalAgentId());
   }
 
   @Test

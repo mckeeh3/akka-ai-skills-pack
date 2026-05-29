@@ -45,8 +45,20 @@ public final class InMemoryIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public UserProfile saveProfile(UserProfile profile) {
+    profiles.put(profile.accountId(), profile);
+    return profile;
+  }
+
+  @Override
   public UserSettings settings(String accountId) {
     return settings.get(accountId);
+  }
+
+  @Override
+  public UserSettings saveSettings(UserSettings userSettings) {
+    settings.put(userSettings.accountId(), userSettings);
+    return userSettings;
   }
 
   @Override
@@ -75,11 +87,11 @@ public final class InMemoryIdentityRepository implements IdentityRepository {
   }
 
   public void putProfile(UserProfile profile) {
-    profiles.put(profile.accountId(), profile);
+    saveProfile(profile);
   }
 
   public void putSettings(UserSettings userSettings) {
-    settings.put(userSettings.accountId(), userSettings);
+    saveSettings(userSettings);
   }
 
   public Optional<Membership> findMembership(String membershipId) {
