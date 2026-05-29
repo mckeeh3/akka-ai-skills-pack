@@ -97,7 +97,7 @@
 
 ### TASK-CPR-01-002: Apply reconciliation follow-up updates
 
-- status: pending
+- status: done
 - source: specs/core-prd-workstream-reconciliation/reconciliation-findings.md
 - task brief: specs/core-prd-workstream-reconciliation/tasks/01-reconciliation/02-apply-reconciliation-followups.md
 - depends on: [TASK-CPR-01-001]
@@ -121,6 +121,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `core-prd-reconcile: apply followups`
+  - changed docs to label `core-ai-first-saas-input/` as older module-sequenced full-core/detail provenance and point current v0/starter planning to the workstream-oriented core-app domain PRDs
+  - checks: `git diff --check`; `rg -n "older module-sequenced|workstream-oriented core-app domain|five-core v0|full-core/detail provenance|not the preferred current v0/starter rollout path|10-canonical-core-app-prd|04-module-user-admin|05-module-agent-definition|covered|partial|deferred|superseded|gap" docs/examples/core-ai-first-saas-input/README.md docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md docs/skills-pack-user-guide.md specs/core-prd-workstream-reconciliation`
 
 ### TASK-CPR-99-001: Verify core PRD reconciliation completion
 

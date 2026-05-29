@@ -123,7 +123,7 @@ Use **starter scaffold** for a new secure AI-first SaaS app when you want the pa
 
 For scaffolded starter projects, the preferred full-core rollout input is the workstream-oriented core-app domain PRD set under `.agents/docs/examples/ai-first-saas-core-app-domain/`. Use it after the five core v0 shell is running locally: copy it into `docs/input/core-app-domain/`, ask the harness to create/update `specs/pending-tasks.md`, then implement My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy one workstream at a time through real local Akka runtime behavior.
 
-For broader skills-pack release testing, the older module-sequenced core input set under `docs/examples/core-ai-first-saas-input/` can still be used as an end-to-end sample: PRD inputs should drive app-description/specs, module/sprint backlogs, implementation tasks, generated Akka + React code, tests, and manually testable live-app increments.
+For broader skills-pack release testing, the older module-sequenced core input set under `docs/examples/core-ai-first-saas-input/` can still be used as an end-to-end sample and full-core/detail provenance source. It is not the preferred current v0/starter rollout path; use the workstream-oriented core-app domain PRDs for that. When the older sample is explicitly selected, PRD inputs should drive app-description/specs, module/sprint backlogs, implementation tasks, generated Akka + React code, tests, and manually testable live-app increments.
 
 Recommended release-test loop:
 
@@ -183,7 +183,7 @@ unless User Admin and Agent Admin functional agents are included and backed by t
 agent workstream/runtime, authorization, audit, and tests described in the PRDs.
 ```
 
-Full core is the canonical PRD-backed target. If User Admin or Agent Admin is deferred, the selected scope must be recorded as `Module 1-only / not full core` or another explicitly named narrower scope rather than full core. The harness should also ask for the Java base package before it generates Java code: "What Java base package should I use for generated code? Press Enter to use `ai.first`." If you accept or defer, `ai.first` is used. `com.example` appears only in reference examples and is not the generated-code default. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
+When the older module-sequenced sample is explicitly selected, full core is its canonical PRD-backed target. Do not infer from that sample that the five-core v0 starter/workstream contracts already satisfy every full-core detail. If User Admin or Agent Admin is deferred, the selected scope must be recorded as `Module 1-only / not full core` or another explicitly named narrower scope rather than full core. The harness should also ask for the Java base package before it generates Java code: "What Java base package should I use for generated code? Press Enter to use `ai.first`." If you accept or defer, `ai.first` is used. `com.example` appears only in reference examples and is not the generated-code default. The harness should create or update planning artifacts first, queue questions instead of guessing, and only move to implementation when the plan is clear enough.
 
 ### Core app module order
 
