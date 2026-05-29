@@ -46,7 +46,7 @@
 
 ### TASK-CPR-01-001: Create PRD-to-workstream traceability report
 
-- status: pending
+- status: done
 - source: specs/core-prd-workstream-reconciliation/backlog/01-core-prd-reconciliation-backlog.md
 - task brief: specs/core-prd-workstream-reconciliation/tasks/01-reconciliation/01-create-prd-workstream-traceability.md
 - depends on: [TASK-CPR-00-001]
@@ -93,6 +93,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `core-prd-reconcile: map prds to workstreams`
+  - checks: `git diff --check`; `rg -n "10-canonical-core-app-prd|04-module-user-admin|05-module-agent-definition|covered|partial|deferred|superseded|gap" specs/core-prd-workstream-reconciliation`
 
 ### TASK-CPR-01-002: Apply reconciliation follow-up updates
 
