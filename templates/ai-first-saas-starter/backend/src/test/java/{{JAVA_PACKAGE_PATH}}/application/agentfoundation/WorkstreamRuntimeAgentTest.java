@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import {{JAVA_BASE_PACKAGE}}.application.security.BootstrapAdminSeeder;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
@@ -17,6 +19,7 @@ import akka.javasdk.testkit.TestModelProvider;
 import akka.javasdk.testkit.TestModelProvider.AiResponse;
 import akka.javasdk.testkit.TestModelProvider.ToolInvocationRequest;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class WorkstreamRuntimeAgentTest extends TestKitSupport {
@@ -35,6 +38,14 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
             """
                 .stripIndent())
         .withModelProvider(WorkstreamRuntimeAgent.class, workstreamRuntimeModelTestProvider);
+  }
+
+  @BeforeEach
+  void bindIdentityTestDouble() {
+    var identityRepository = new LocalDemoIdentityRepository();
+    BootstrapAdminSeeder.seedConfiguredAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:" + TENANT_ID);
+    StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
+    StarterSecurityComponents.startup();
   }
 
   @Test

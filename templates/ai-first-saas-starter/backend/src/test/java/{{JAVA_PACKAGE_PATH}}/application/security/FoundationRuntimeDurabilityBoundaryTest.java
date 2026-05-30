@@ -15,8 +15,8 @@ final class FoundationRuntimeDurabilityBoundaryTest {
     var governanceFailure = assertThrows(IllegalStateException.class, () -> new FailClosedGovernancePolicyRepository().listProposals("tenant-starter", null));
 
     for (var failure : new IllegalStateException[] {identityFailure, workstreamFailure, accessReviewFailure, auditFailure, governanceFailure}) {
-      assertTrue(failure.getMessage().contains("Durable foundation repository binding is required for normal runtime"));
-      assertTrue(failure.getMessage().contains(FailClosedFoundationRuntime.LOCAL_DEMO_ENV));
+      assertTrue(failure.getMessage().contains("Durable Akka foundation repository binding is required for normal runtime"));
+      assertTrue(failure.getMessage().contains("Test doubles are allowed only from test source"));
     }
   }
 }

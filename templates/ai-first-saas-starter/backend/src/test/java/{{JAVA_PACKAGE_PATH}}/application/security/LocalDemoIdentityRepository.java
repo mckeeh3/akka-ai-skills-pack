@@ -94,23 +94,47 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
     saveSettings(userSettings);
   }
 
-  public Optional<Membership> findMembership(String membershipId) {
+  @Override
+  public Optional<Membership> membership(String membershipId) {
     return Optional.ofNullable(memberships.get(membershipId));
   }
 
+  public Optional<Membership> findMembership(String membershipId) {
+    return membership(membershipId);
+  }
+
+  @Override
   public List<Membership> membershipRows() {
     return memberships.values().stream().toList();
   }
 
-  public void putMembership(Membership membership) {
+  @Override
+  public Membership saveMembership(Membership membership) {
     memberships.put(membership.membershipId(), membership);
+    return membership;
+  }
+
+  public void putMembership(Membership membership) {
+    saveMembership(membership);
+  }
+
+  @Override
+  public Tenant saveTenant(Tenant tenant) {
+    tenants.put(tenant.tenantId(), tenant);
+    return tenant;
   }
 
   public void putTenant(Tenant tenant) {
-    tenants.put(tenant.tenantId(), tenant);
+    saveTenant(tenant);
+  }
+
+  @Override
+  public Customer saveCustomer(Customer customer) {
+    customers.put(customer.tenantId() + ":" + customer.customerId(), customer);
+    return customer;
   }
 
   public void putCustomer(Customer customer) {
-    customers.put(customer.tenantId() + ":" + customer.customerId(), customer);
+    saveCustomer(customer);
   }
 }

@@ -48,15 +48,17 @@ class RealModelProviderSmokeTest extends TestKitSupport {
 
     StarterSecurityComponents.startup();
     StarterSecurityComponents.bindAkkaRuntime(componentClient);
-    BootstrapAdminSeeder.seedConfiguredAdmins(StarterSecurityComponents.identityRepository(), null);
+    BootstrapAdminSeeder.seedConfiguredAdmins(
+        StarterSecurityComponents.identityRepository(),
+        "admin@example.test:TENANT_ADMIN:" + BootstrapAdminSeeder.DEFAULT_TENANT_ID);
     StarterSecurityComponents.agentBehaviorSeedLoader()
         .importStarterDefaults(BootstrapAdminSeeder.DEFAULT_TENANT_ID, "real-provider-smoke", "corr-real-provider-seed");
     var meService = StarterSecurityComponents.meService();
     var agentRuntimeService = StarterSecurityComponents.agentRuntimeService();
     var service = StarterSecurityComponents.workstreamService(componentClient, new LocalDemoWorkstreamLogRepository());
-    var selectedContextId = "membership-" + BootstrapAdminSeeder.LOCAL_DEMO_ADMIN_EMAIL;
+    var selectedContextId = "membership-admin@example.test";
 
-    var identity = new WorkosIdentity("workos-admin", BootstrapAdminSeeder.LOCAL_DEMO_ADMIN_EMAIL, "Tenant Admin");
+    var identity = new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin");
     var me = meService.me(identity, selectedContextId, "corr-real-provider-me");
     assertFalse(me.toString().contains(apiKey), "Provider secret leaked into /api/me response");
 

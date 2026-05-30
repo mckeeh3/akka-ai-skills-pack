@@ -83,7 +83,7 @@
 
 ### TASK-RUNTIME-01-002: Replace identity foundation with Akka components
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/02-replace-identity-foundation-with-akka-components.md
 - depends on: [TASK-RUNTIME-01-001]
@@ -119,6 +119,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: replace identity foundation with Akka components`
+  - completed: added Akka-backed identity repository state/entity/adapter, rebound `StarterSecurityComponents` identity services through `ComponentClient`, removed main-source local-demo/fail-closed identity adapters to test source, and updated user admin/invitation/bootstrap paths to use the repository port instead of local-demo casts
+  - checks: `git diff --check`; rendered backend `mvn test -q`; rendered targeted backend tests `mvn -q -Dtest=MeServiceTest,WorkosIdentityResolverTest,InvitationAndUserAdminServiceTest,DurableIdentityRepositoryEntityTest test`; required main-source identity substitute scan returned no matches
 
 ### TASK-RUNTIME-01-003: Replace workstream log and audit trace runtime with Akka components
 

@@ -16,15 +16,12 @@ import java.util.Locale;
 public final class BootstrapAdminSeeder {
   public static final String DEFAULT_TENANT_ID = "tenant-starter";
   public static final String DEFAULT_TENANT_NAME = "Starter Tenant";
-  public static final String LOCAL_DEMO_ADMIN_EMAIL = "admin@example.test";
-
   private BootstrapAdminSeeder() {}
 
-  public static void seedConfiguredAdmins(LocalDemoIdentityRepository repository, String adminUsersConfig) {
-    repository.putTenant(new Tenant(DEFAULT_TENANT_ID, DEFAULT_TENANT_NAME, true));
+  public static void seedConfiguredAdmins(IdentityRepository repository, String adminUsersConfig) {
+    repository.saveTenant(new Tenant(DEFAULT_TENANT_ID, DEFAULT_TENANT_NAME, true));
     var normalizedConfig = adminUsersConfig == null ? "" : adminUsersConfig.trim();
     if (normalizedConfig.isBlank()) {
-      seedTenantUser(repository, LOCAL_DEMO_ADMIN_EMAIL, "workos-admin", FoundationRole.TENANT_ADMIN, true);
       return;
     }
 
@@ -33,11 +30,7 @@ public final class BootstrapAdminSeeder {
     }
   }
 
-  public static void seedLocalDemoMember(LocalDemoIdentityRepository repository) {
-    seedTenantUser(repository, "member@example.test", null, FoundationRole.TENANT_EMPLOYEE, false);
-  }
-
-  private static void seedConfiguredAdminEntry(LocalDemoIdentityRepository repository, String entry) {
+  private static void seedConfiguredAdminEntry(IdentityRepository repository, String entry) {
     if (entry.isBlank()) {
       return;
     }
@@ -95,7 +88,7 @@ public final class BootstrapAdminSeeder {
   }
 
   private static void seedTenantUser(
-      LocalDemoIdentityRepository repository,
+      IdentityRepository repository,
       String email,
       String workosSubject,
       FoundationRole role,
@@ -118,14 +111,14 @@ public final class BootstrapAdminSeeder {
   }
 
   private static void seedScopedUser(
-      LocalDemoIdentityRepository repository,
+      IdentityRepository repository,
       String email,
       String workosSubject,
       Membership membership) {
     repository.saveAccount(new Account(email, workosSubject, email, email, AccountStatus.ACTIVE, workosSubject == null ? "UNLINKED" : "LINKED"));
-    repository.putProfile(new UserProfile(email, email, displayName(email), null, null, null));
-    repository.putSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
-    repository.putMembership(membership);
+    repository.saveProfile(new UserProfile(email, email, displayName(email), null, null, null));
+    repository.saveSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
+    repository.saveMembership(membership);
   }
 
   private static String displayName(String email) {

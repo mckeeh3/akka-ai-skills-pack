@@ -362,28 +362,20 @@ public final class InvitationService {
   }
 
   private void putProfileIfSupported(UserProfile profile) {
-    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
-      memory.putProfile(profile);
-    }
+    identityRepository.saveProfile(profile);
   }
 
   private void putSettingsIfSupported(UserSettings settings) {
-    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
-      memory.putSettings(settings);
-    }
+    identityRepository.saveSettings(settings);
   }
 
   private void putMembershipIfSupported(Membership membership) {
-    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
-      memory.putMembership(membership);
-    }
+    identityRepository.saveMembership(membership);
   }
 
   private void activateMembershipIfSupported(String membershipId) {
-    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
-      memory.findMembership(membershipId).ifPresent(existing -> memory.putMembership(new Membership(
-          existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), MembershipStatus.ACTIVE, existing.supportAccess(), existing.expiresAt())));
-    }
+    identityRepository.membership(membershipId).ifPresent(existing -> identityRepository.saveMembership(new Membership(
+        existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), MembershipStatus.ACTIVE, existing.supportAccess(), existing.expiresAt())));
   }
 
   private static String normalizeEmail(String email) {

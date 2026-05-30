@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.BootstrapAdminSeeder;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoAccessReviewTaskRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminAccessReviewService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
@@ -37,8 +38,8 @@ class UserAdminAccessReviewWorkerTest {
         "provider-response-1",
         "stop",
         "test provider produced model-backed access review"));
-    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var actor = starterTenantAdmin("corr-worker-actor");
+    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-success", "corr-worker-start");
 
@@ -65,8 +66,8 @@ class UserAdminAccessReviewWorkerTest {
     };
     var runtime = runtimeService(failingProvider);
     var worker = new UserAdminAccessReviewWorker(runtime, new AgentRuntimeToolResolver(StarterSecurityComponents.agentBehaviorRepository(), runtime), failingProvider);
-    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var actor = starterTenantAdmin("corr-worker-blocked-actor");
+    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-blocked", "corr-worker-blocked-start");
 
@@ -90,12 +91,21 @@ class UserAdminAccessReviewWorkerTest {
   }
 
   private AuthContextResolver.ResolvedMe starterTenantAdmin(String correlationId) {
-    BootstrapAdminSeeder.seedConfiguredAdmins(StarterSecurityComponents.identityRepository(), null);
-    BootstrapAdminSeeder.seedLocalDemoMember(StarterSecurityComponents.identityRepository());
+    var identityRepository = new LocalDemoIdentityRepository();
+    StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
+    BootstrapAdminSeeder.seedConfiguredAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:tenant-starter");
+    seedTenantMember(identityRepository);
     StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults("tenant-starter", "test-bootstrap", correlationId + "-seed");
     return StarterSecurityComponents.authContextResolver().resolveMe(
         new WorkosIdentity("workos-admin", "admin@example.test", "Admin"),
         "membership-admin@example.test",
         correlationId);
+  }
+
+  private void seedTenantMember(LocalDemoIdentityRepository identityRepository) {
+    identityRepository.saveAccount(new {{JAVA_BASE_PACKAGE}}.domain.security.Account("member@example.test", null, "member@example.test", "member@example.test", {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus.ACTIVE, "UNLINKED"));
+    identityRepository.saveProfile(new {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile("member@example.test", "member@example.test", "member", null, null, null));
+    identityRepository.saveSettings(new {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings("member@example.test", {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings.UiMode.LIGHT));
+    identityRepository.saveMembership(new {{JAVA_BASE_PACKAGE}}.domain.security.Membership("membership-member@example.test", "member@example.test", {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType.TENANT, "tenant-starter", null, java.util.List.of({{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole.TENANT_EMPLOYEE), {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus.ACTIVE, false, null));
   }
 }

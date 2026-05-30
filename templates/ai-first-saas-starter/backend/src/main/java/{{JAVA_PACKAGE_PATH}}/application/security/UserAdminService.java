@@ -27,14 +27,12 @@ public final class UserAdminService {
 
   public List<UserDirectoryRow> listUsers(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireRead(actor, scopeType, tenantId, customerId);
-    return repository instanceof LocalDemoIdentityRepository memory
-        ? memory.membershipRows().stream()
-            .filter(m -> scopeType == m.scopeType())
-            .filter(m -> java.util.Objects.equals(tenantId, m.tenantId()))
-            .filter(m -> java.util.Objects.equals(customerId, m.customerId()))
-            .map(m -> new UserDirectoryRow(m.accountId(), repository.profile(m.accountId()) == null ? m.accountId() : repository.profile(m.accountId()).displayName(), m.membershipId(), m.roles(), m.status(), m.scopeType(), m.tenantId(), m.customerId()))
-            .toList()
-        : List.of();
+    return repository.membershipRows().stream()
+        .filter(m -> scopeType == m.scopeType())
+        .filter(m -> java.util.Objects.equals(tenantId, m.tenantId()))
+        .filter(m -> java.util.Objects.equals(customerId, m.customerId()))
+        .map(m -> new UserDirectoryRow(m.accountId(), repository.profile(m.accountId()) == null ? m.accountId() : repository.profile(m.accountId()).displayName(), m.membershipId(), m.roles(), m.status(), m.scopeType(), m.tenantId(), m.customerId()))
+        .toList();
   }
 
   public List<UserDirectoryRow> searchUsers(AuthContextResolver.ResolvedMe actor, String query, String correlationId) {
@@ -221,10 +219,7 @@ public final class UserAdminService {
     if (targetStillAdmin) {
       return false;
     }
-    if (!(repository instanceof LocalDemoIdentityRepository memory)) {
-      return true;
-    }
-    return memory.membershipRows().stream()
+    return repository.membershipRows().stream()
         .filter(m -> !m.membershipId().equals(target.membershipId()))
         .filter(m -> m.status() == MembershipStatus.ACTIVE)
         .filter(m -> target.scopeType() == m.scopeType())
@@ -266,16 +261,11 @@ public final class UserAdminService {
   }
 
   private Membership membership(String membershipId) {
-    if (repository instanceof LocalDemoIdentityRepository memory) {
-      return memory.findMembership(membershipId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
-    }
-    throw new AuthorizationException(404, "target-not-found-or-forbidden");
+    return repository.membership(membershipId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
   }
 
   private void put(Membership membership) {
-    if (repository instanceof LocalDemoIdentityRepository memory) {
-      memory.putMembership(membership);
-    }
+    repository.saveMembership(membership);
   }
 
   private void audit(AuthContextResolver.ResolvedMe actor, Membership membership, String action, AdminAuditEvent.Result result, String reason, String correlationId) {
