@@ -50,7 +50,7 @@
 
 ### TASK-FCSMB-UARW-01-001: Inspect access-review worker source boundaries and define implementation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-review-worker/backlog/01-access-review-worker-backlog.md
 - task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/01-inspect-access-review-worker-boundaries.md
 - depends on: [TASK-FCSMB-UARW-00-001]
@@ -91,6 +91,143 @@
 - notes:
   - commit message: `full-core-smb: map user admin access review worker`
 
+### TASK-FCSMB-UARW-01-002: Implement deterministic access-review lifecycle and backend surfaces
+
+- status: pending
+- source: specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+- task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/02-implement-deterministic-access-review-lifecycle.md
+- depends on: [TASK-FCSMB-UARW-01-001]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-review-worker/README.md
+  - specs/full-core-smb-user-admin-access-review-worker/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-review-worker/sprints/01-access-review-worker-sprint.md
+  - specs/full-core-smb-user-admin-access-review-worker/backlog/01-access-review-worker-backlog.md
+  - specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+  - specs/full-core-smb-user-admin-access-management/access-management-implementation-map.md
+  - specs/full-core-smb-user-admin-agent-guidance/agent-guidance-implementation-map.md
+- skills:
+  - none; focused backend source-edit task
+- expected outputs:
+  - new/updated backend access-review domain/application files under templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/
+  - updated templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - backend access-review lifecycle tests
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=UserAdminAccessReviewServiceTest,WorkstreamServiceTest,InvitationAndUserAdminServiceTest`
+  - `rg -n "user_admin\.access_review\.(start|read|cancel|accept_result|reject_result)|user_admin\.access_review_task\.v1|AccessReviewTask|UserAdminAccessReview|system_message|provider|no direct mutation|blocked_provider_or_runtime" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - deterministic lifecycle tests pass
+  - runtime action paths produce typed access-review task surfaces and safe blocked/provider states
+  - access-review task results cannot directly mutate User Admin access state
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement access review lifecycle`
+
+### TASK-FCSMB-UARW-01-003: Implement governed access-review worker runtime
+
+- status: pending
+- source: specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+- task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/03-implement-governed-access-review-worker-runtime.md
+- depends on: [TASK-FCSMB-UARW-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-review-worker/README.md
+  - specs/full-core-smb-user-admin-access-review-worker/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-review-worker/sprints/01-access-review-worker-sprint.md
+  - specs/full-core-smb-user-admin-access-review-worker/backlog/01-access-review-worker-backlog.md
+  - specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+  - specs/full-core-smb-user-admin-agent-guidance/agent-guidance-implementation-map.md
+  - docs/agent-component-selection-guide.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+- skills:
+  - akka-agents
+  - akka-agent-tools
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - worker/invoker code under templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/ and/or application/security/
+  - updated seed/tool-boundary/runtime wiring only if needed
+  - backend worker tests
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,UserAdminAccessReviewWorkerTest,WorkstreamServiceTest`
+  - `rg -n "AutonomousAgent|UserAdminAccessReviewWorker|userAdminEvidence\.read|readSkill|readReferenceDoc|ToolPermissionBoundary|AgentWorkTrace|user_admin\.access_review_task\.v1|provider|blocked_provider_or_runtime|no direct mutation" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - normal successful worker behavior is model-backed through governed runtime when provider config is available
+  - missing/misconfigured provider fails closed with actionable blocked task/system-message state and trace links
+  - worker has no direct access mutation path
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: wire access review worker runtime`
+
+### TASK-FCSMB-UARW-01-004: Implement access-review frontend surfaces and actions
+
+- status: pending
+- source: specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+- task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/04-implement-access-review-frontend-surfaces.md
+- depends on: [TASK-FCSMB-UARW-01-003]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-review-worker/README.md
+  - specs/full-core-smb-user-admin-access-review-worker/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-review-worker/sprints/01-access-review-worker-sprint.md
+  - specs/full-core-smb-user-admin-access-review-worker/backlog/01-access-review-worker-backlog.md
+  - specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+- skills:
+  - none; focused frontend source-edit task
+- expected outputs:
+  - updated starter frontend workstream surface/action/API files
+  - updated frontend contract tests
+  - root frontend synchronized only if touched source is mirrored by repository convention
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "user_admin\.access_review_task\.v1|user_admin\.access_review\.(start|read|cancel|accept_result|reject_result)|access-review|blocked_provider_or_runtime|provider|trace|no direct mutation" templates/ai-first-saas-starter/frontend/src --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - frontend contract tests pass
+  - runtime and fixture surfaces cover all required access-review states safely
+  - UI copy preserves backend authority and no-direct-mutation boundaries
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: render access review task surfaces`
+
+### TASK-FCSMB-UARW-01-005: Run integrated access-review validation
+
+- status: pending
+- source: specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+- task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/05-run-integrated-access-review-validation.md
+- depends on: [TASK-FCSMB-UARW-01-004]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-review-worker/README.md
+  - specs/full-core-smb-user-admin-access-review-worker/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-review-worker/sprints/01-access-review-worker-sprint.md
+  - specs/full-core-smb-user-admin-access-review-worker/backlog/01-access-review-worker-backlog.md
+  - specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+- skills:
+  - none; repository validation task
+- expected outputs:
+  - updated specs/full-core-smb-user-admin-access-review-worker/pending-tasks.md with validation notes, blockers, or appended follow-up tasks
+  - optional validation notes in access-review-worker-implementation-map.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=UserAdminAccessReviewServiceTest,UserAdminAccessReviewWorkerTest,WorkstreamServiceTest,InvitationAndUserAdminServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "user_admin\.access_review\.(start|read|cancel|accept_result|reject_result)|user_admin\.access_review_task\.v1|AccessReviewTask|UserAdminAccessReview|AutonomousAgent|userAdminEvidence\.read|ToolPermissionBoundary|AgentWorkTrace|system_message|provider|no direct mutation|blocked_provider_or_runtime" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - targeted backend/frontend checks pass
+  - broad validation passes, or any blocker is captured with a bounded follow-up task before terminal verification
+  - queue has a runnable verification task after all required follow-ups
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: validate access review worker`
+
 ### TASK-FCSMB-UARW-99-001: Verify access-review worker readiness
 
 - status: pending
@@ -98,6 +235,10 @@
 - task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/99-verification/01-verify-access-review-worker-readiness.md
 - depends on:
   - TASK-FCSMB-UARW-01-001
+  - TASK-FCSMB-UARW-01-002
+  - TASK-FCSMB-UARW-01-003
+  - TASK-FCSMB-UARW-01-004
+  - TASK-FCSMB-UARW-01-005
 - required reads:
   - AGENTS.md
   - skills/README.md
