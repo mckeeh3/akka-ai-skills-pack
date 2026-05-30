@@ -244,7 +244,7 @@
 
 ### TASK-FCSMB-AT-01-006: Run integrated Audit/Trace validation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
 - task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/06-run-integrated-audit-trace-validation.md
 - depends on:
@@ -279,6 +279,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: validate audit trace full core`
+  - fixed bounded validation blocker: provider-fail-closed `system_message` surfaces now include `safeErrorCode`, and the AuditTraceAgent provider-missing test uses the governed test-adapter invocation path rather than the component-client-required fail-closed placeholder.
+  - targeted backend Maven commands were attempted against the uninstantiated template and still cannot parse placeholder POM values (`{{MAVEN_GROUP_ID}}`, `{{APP_SLUG}}`); broad scaffold validation renders the template and runs the backend suite successfully.
+  - checks passed: targeted frontend contract test command; required `rg` proof; `tools/validate-ai-first-saas-starter-fullstack.sh`; `git diff --check`.
 
 ### TASK-FCSMB-AT-99-001: Verify Audit/Trace full-core readiness
 
