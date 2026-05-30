@@ -4,11 +4,11 @@ Date: 2026-05-30
 
 ## Release recommendation
 
-Recommendation: **superseded for the stronger no-in-memory-normal-runtime bar**.
+Recommendation: **ship for the documented full-core SMB starter scope, including the stronger no-in-memory-normal-runtime bar**.
 
-The original release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries. A later source-boundary scan found normal starter runtime defaults and frontend/static fixture paths that violate the user's stronger durability bar.
+The original release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries. The follow-up runtime durability remediation then removed or gated normal runtime in-memory/default fixture dependencies and revalidated the rendered starter.
 
-Do **not** ship under a claim that completed normal generated runtime has no in-memory/default fixture dependencies until `specs/full-core-smb-runtime-durability-remediation/` completes. The remediation map is `specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md`.
+The stronger durability bar is now met at the documented scope: normal completed runtime paths either bind Akka durable components or fail closed with actionable guidance; explicit local/demo repositories require `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true`; frontend fixture mode requires dev/local opt-in; production-like static resources scan clean for fixture/demo/provider-secret markers. The remediation map is `specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md`.
 
 This recommendation remains scoped to `templates/ai-first-saas-starter/` after scaffold rendering. The template source itself contains placeholders and is not intended to run Maven directly before rendering.
 
@@ -16,7 +16,7 @@ This recommendation remains scoped to `templates/ai-first-saas-starter/` after s
 
 | Area | Result | Evidence |
 |---|---|---|
-| Fullstack scaffold validation | Pass | `tools/validate-ai-first-saas-starter-fullstack.sh` rendered the starter, ran backend tests, frontend tests/typecheck/build, verified static resources, scanned built assets, and ran real-provider smoke when `OPENAI_API_KEY` was present. |
+| Fullstack scaffold validation | Pass | `tools/validate-ai-first-saas-starter-fullstack.sh` rendered the starter, ran backend tests, frontend tests/typecheck/build, verified static resources, scanned built assets, and ran real-provider smoke when `OPENAI_API_KEY` was present. Latest durability-remediation validation passed on 2026-05-30 against `/tmp/ai-first-saas-starter-fullstack.YQvBuC`. |
 | Kept rendered scaffold validation | Pass | `tools/validate-ai-first-saas-starter-fullstack.sh --keep` repeated fullstack validation and retained `/tmp/ai-first-saas-starter-fullstack.ASsYXm` for focused backend commands. |
 | Workstream icon proof | Pass | `tools/prove-workstream-icons-v0.sh` verified descriptor-backed top-rail icons for User Admin, Agent Admin, Audit/Trace, and Governance/Policy while My Account remains launched from the lower-left signed-in user tile. |
 | Provider-missing smoke mode | Expected skip | `env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh` skipped loudly with enablement guidance rather than producing model-less success. |
@@ -53,8 +53,8 @@ These are not release blockers because the starter does not claim them as comple
 
 ## Documentation status
 
-`templates/ai-first-saas-starter/README.md` now records the current release-readiness status, validation commands, provider fail-closed expectations, and post-release deferrals. It does not claim deterministic/model-less runtime completion for model-backed behavior.
+`templates/ai-first-saas-starter/README.md` now records the current release-readiness status, validation commands, provider fail-closed expectations, durability boundaries, explicit local/demo gating, and post-release deferrals. It does not claim deterministic/model-less runtime completion for model-backed behavior.
 
 ## Next step
 
-Proceed to terminal verification: `TASK-FCSMB-REL-99-001: Verify full-core SMB release readiness`.
+For the durability remediation mini-project, proceed to terminal verification: `TASK-FCSMB-DUR-99-001: Verify runtime durability remediation readiness`.

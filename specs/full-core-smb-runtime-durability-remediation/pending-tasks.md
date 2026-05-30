@@ -221,7 +221,7 @@
 
 ### TASK-FCSMB-DUR-01-005: Validate durability remediation and update release handoff
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md
 - task brief: specs/full-core-smb-runtime-durability-remediation/tasks/01-remediation/05-validate-durability-and-update-release-handoff.md
 - depends on:
@@ -253,6 +253,10 @@
   - release docs no longer recommend shipping under the stronger durability bar unless the bar is met
   - task changes and queue update are committed
 - notes:
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` passed on rendered target `/tmp/ai-first-saas-starter-fullstack.YQvBuC`, including real provider Akka Agent smoke because `OPENAI_API_KEY` was present
+  - broad inventory scan still reports test-only/local-demo/dev-fixture/documentation hits; these are classified as acceptable under the remediated normal-runtime gating/fail-closed boundaries
+  - static resource scan passed with no matches: `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
+  - release handoff and starter README now recommend shipping at the documented SMB starter scope under the stronger no-in-memory-normal-runtime bar
   - commit message: `full-core-smb: validate runtime durability remediation`
 
 ### TASK-FCSMB-DUR-99-001: Verify runtime durability remediation readiness

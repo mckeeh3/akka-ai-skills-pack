@@ -6,11 +6,11 @@ Date: 2026-05-30
 
 The full-core SMB polish and release-readiness mini-project was complete for its original stated scope.
 
-Release recommendation: **superseded for the stronger no-in-memory-normal-runtime bar**.
+Release recommendation after durability remediation: **ship for the documented full-core SMB starter scope, including the stronger no-in-memory-normal-runtime bar**.
 
-A later source-boundary scan found normal starter runtime defaults and frontend/static fixture paths that violate the user's stronger durability bar. Do not ship under a no-in-memory-normal-runtime claim until `specs/full-core-smb-runtime-durability-remediation/` completes.
+A later source-boundary scan found normal starter runtime defaults and frontend/static fixture paths that violated the user's stronger durability bar. `specs/full-core-smb-runtime-durability-remediation/` remediated those paths by binding durable Akka seams where available, failing closed for unimplemented foundation ports unless explicit local/demo mode is enabled, gating frontend fixture mode to dev/local opt-in, refreshing static assets, and re-running fullstack validation plus static scans.
 
-No additional bounded blocker tasks were needed for the original mini-project scope; durability remediation is tracked separately.
+No additional bounded blocker tasks were needed for the original mini-project scope; durability remediation is tracked separately and should complete with `TASK-FCSMB-DUR-99-001` terminal verification.
 
 ## Scope comparison
 
@@ -34,7 +34,7 @@ Compared the completed work against:
 | Visual UX meets shared SMB quality standard | Complete for source/test review. Manual mobile viewport QA remains a non-blocking recommendation, not a release blocker. |
 | Docs and handoff describe actual runtime, provider configuration, fail-closed behavior, and intentional deferrals | Complete. Starter README and release handoff explicitly preserve governed Akka Agent runtime requirements, provider-gated smoke behavior, and post-release deferrals. |
 | No browser-visible secrets, provider credentials, hidden prompts, or unauthorized evidence are found | Complete for targeted source/static candidates and prior rendered fullstack validation asset scans. A final rendered production asset scan remains a non-blocking release QA recommendation after future source changes. |
-| Release handoff summarizes validation commands/results, known follow-ups, and release recommendation | Complete. `release-handoff.md` recommends shipping with scoped evidence and non-blocking follow-ups. |
+| Release handoff summarizes validation commands/results, known follow-ups, and release recommendation | Complete. `release-handoff.md` recommends shipping with scoped evidence, durability-remediation validation, and non-blocking follow-ups. |
 
 ## Intentional deferrals and recommendations retained
 

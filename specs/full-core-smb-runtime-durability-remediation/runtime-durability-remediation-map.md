@@ -4,9 +4,9 @@ Date: 2026-05-30
 
 ## Summary
 
-The stronger no-in-memory-normal-runtime release bar is **not met**. The rendered starter still wires multiple in-memory repositories as normal backend runtime defaults and ships frontend fixture inspection paths/static assets that can be mistaken for production-like runtime unless gated more explicitly.
+Initial inventory found that the stronger no-in-memory-normal-runtime release bar was **not met**: the rendered starter wired multiple in-memory repositories as normal backend runtime defaults and shipped frontend fixture inspection paths/static assets that could be mistaken for production-like runtime.
 
-Release status: **blocked for the stronger durability bar** until the remediation tasks appended in `pending-tasks.md` pass. The prior full-core SMB release handoff is superseded for this bar.
+Release status after remediation validation on 2026-05-30: **passed for the documented SMB starter scope**. Normal completed runtime paths now either bind Akka durable components or fail closed with actionable guidance. Explicit local/demo repositories require `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true`; frontend fixture mode requires dev/local opt-in; production-like static resources scan clean for fixture/demo/provider-secret markers. The prior full-core SMB release handoff is no longer superseded for this bar after `TASK-FCSMB-DUR-01-005` validation.
 
 ## Inventory commands used
 
@@ -65,6 +65,12 @@ rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less
 3. Frontend fixture gating, root/template synchronization, loading fallback removal, and static asset regeneration/cleanup.
 4. Broad validation and release handoff update after source remediation.
 5. Terminal verification.
+
+## Validation evidence from TASK-FCSMB-DUR-01-005
+
+- `tools/validate-ai-first-saas-starter-fullstack.sh` passed on rendered target `/tmp/ai-first-saas-starter-fullstack.YQvBuC`, including backend tests, frontend tests/typecheck/build, static resource verification, built asset secret scan, and real provider Akka Agent smoke because `OPENAI_API_KEY` was present.
+- Broad inventory scan still reports test-only/local-demo/dev-fixture/documentation hits. These are classified as acceptable because normal runtime uses Akka durable seams or fail-closed ports, local/demo adapters are explicitly named and gated, and frontend fixture mode requires dev/local opt-in.
+- `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'` returned no matches.
 
 ## Validation commands for future tasks
 
