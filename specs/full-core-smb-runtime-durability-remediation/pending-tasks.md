@@ -261,7 +261,7 @@
 
 ### TASK-FCSMB-DUR-99-001: Verify runtime durability remediation readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-runtime-durability-remediation/tasks/99-verification/01-verify-runtime-durability-remediation.md
 - depends on:
@@ -285,7 +285,7 @@
   - none; repository verification task
 - expected outputs:
   - updated specs/full-core-smb-runtime-durability-remediation/pending-tasks.md
-  - verification notes or newly appended follow-up tasks
+  - specs/full-core-smb-runtime-durability-remediation/verification-notes.md
 - required checks:
   - `git diff --check`
   - targeted checks needed to validate remediation done state
@@ -295,4 +295,6 @@
   - if complete, release-readiness status is corrected and explicit
   - task changes and queue update are committed
 - notes:
+  - verification complete; no follow-up blocker tasks appended
+  - validation: `git diff --check`; targeted backend normal-runtime in-memory scan returned no matches; static resource fixture/demo/provider-secret scan returned no matches; `tools/validate-ai-first-saas-starter-fullstack.sh` passed on `/tmp/ai-first-saas-starter-fullstack.9nYyN9`; broad inventory scan returns only classified test-only/local-demo/dev-fixture/documentation hits
   - commit message: `full-core-smb: verify runtime durability remediation`
