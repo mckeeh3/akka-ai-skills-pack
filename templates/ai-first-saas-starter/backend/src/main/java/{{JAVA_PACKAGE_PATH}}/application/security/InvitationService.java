@@ -362,25 +362,25 @@ public final class InvitationService {
   }
 
   private void putProfileIfSupported(UserProfile profile) {
-    if (identityRepository instanceof InMemoryIdentityRepository memory) {
+    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
       memory.putProfile(profile);
     }
   }
 
   private void putSettingsIfSupported(UserSettings settings) {
-    if (identityRepository instanceof InMemoryIdentityRepository memory) {
+    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
       memory.putSettings(settings);
     }
   }
 
   private void putMembershipIfSupported(Membership membership) {
-    if (identityRepository instanceof InMemoryIdentityRepository memory) {
+    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
       memory.putMembership(membership);
     }
   }
 
   private void activateMembershipIfSupported(String membershipId) {
-    if (identityRepository instanceof InMemoryIdentityRepository memory) {
+    if (identityRepository instanceof LocalDemoIdentityRepository memory) {
       memory.findMembership(membershipId).ifPresent(existing -> memory.putMembership(new Membership(
           existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), MembershipStatus.ACTIVE, existing.supportAccess(), existing.expiresAt())));
     }

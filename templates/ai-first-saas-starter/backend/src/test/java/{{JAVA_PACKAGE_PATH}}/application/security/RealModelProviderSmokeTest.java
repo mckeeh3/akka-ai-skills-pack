@@ -52,7 +52,7 @@ class RealModelProviderSmokeTest extends TestKitSupport {
         .importStarterDefaults(BootstrapAdminSeeder.DEFAULT_TENANT_ID, "real-provider-smoke", "corr-real-provider-seed");
     var meService = StarterSecurityComponents.meService();
     var agentRuntimeService = StarterSecurityComponents.agentRuntimeService();
-    var service = StarterSecurityComponents.workstreamService(componentClient, new InMemoryWorkstreamLogRepository());
+    var service = StarterSecurityComponents.workstreamService(componentClient, new LocalDemoWorkstreamLogRepository());
     var selectedContextId = "membership-" + BootstrapAdminSeeder.LOCAL_DEMO_ADMIN_EMAIL;
 
     var identity = new WorkosIdentity("workos-admin", BootstrapAdminSeeder.LOCAL_DEMO_ADMIN_EMAIL, "Tenant Admin");

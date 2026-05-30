@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** In-memory access-review task store for local starter execution and tests. */
-public final class InMemoryAccessReviewTaskRepository implements AccessReviewTaskRepository {
+public final class LocalDemoAccessReviewTaskRepository implements AccessReviewTaskRepository {
   private final Map<String, AccessReviewTask> tasks = new ConcurrentHashMap<>();
   private final Map<String, String> idempotencyIndex = new ConcurrentHashMap<>();
 

@@ -9,7 +9,7 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeToolResolve
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.GovernancePolicyService;
-import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryInvitationRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView;
@@ -44,7 +44,7 @@ class AgentRuntimeToolResolverTest {
   void setUp() {
     repository = new InMemoryAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock());
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock());
     resolver = new AgentRuntimeToolResolver(repository, runtimeService);
     tenantAdmin = new AuthContext(
         "admin-1",
@@ -330,8 +330,8 @@ class AgentRuntimeToolResolverTest {
     return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, correlationId);
   }
 
-  private InMemoryIdentityRepository seededIdentityRepository() {
-    var identityRepository = new InMemoryIdentityRepository();
+  private LocalDemoIdentityRepository seededIdentityRepository() {
+    var identityRepository = new LocalDemoIdentityRepository();
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin-1", "workos-admin-1", "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("admin-1", "admin@example.test", "Tenant Admin", "Tenant", "Admin", null));

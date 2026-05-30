@@ -10,11 +10,11 @@ import java.util.Objects;
  * Starter repository facade that normalizes currently available in-memory runtime and workstream evidence.
  * Production templates can replace this with view-backed adapters without changing AuditTraceService DTOs.
  */
-public final class InMemoryAuditTraceRepository implements AuditTraceRepository {
+public final class LocalDemoAuditTraceRepository implements AuditTraceRepository {
   private final AgentRuntimeService agentRuntimeService;
   private final WorkstreamLogRepository workstreamLogRepository;
 
-  public InMemoryAuditTraceRepository(AgentRuntimeService agentRuntimeService, WorkstreamLogRepository workstreamLogRepository) {
+  public LocalDemoAuditTraceRepository(AgentRuntimeService agentRuntimeService, WorkstreamLogRepository workstreamLogRepository) {
     this.agentRuntimeService = Objects.requireNonNull(agentRuntimeService);
     this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
   }

@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Test/local adapter for the starter template. */
-public final class InMemoryIdentityRepository implements IdentityRepository {
+public final class LocalDemoIdentityRepository implements IdentityRepository {
   private final Map<String, Account> accounts = new ConcurrentHashMap<>();
   private final Map<String, UserProfile> profiles = new ConcurrentHashMap<>();
   private final Map<String, UserSettings> settings = new ConcurrentHashMap<>();

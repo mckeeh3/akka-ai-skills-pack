@@ -22,15 +22,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class GovernancePolicyServiceTest {
-  private InMemoryIdentityRepository identityRepository;
+  private LocalDemoIdentityRepository identityRepository;
   private AuthContextResolver resolver;
   private GovernancePolicyService service;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new InMemoryIdentityRepository();
+    identityRepository = new LocalDemoIdentityRepository();
     resolver = new AuthContextResolver(identityRepository);
-    service = new GovernancePolicyService(new InMemoryGovernancePolicyRepository(), resolver, Clock.systemUTC());
+    service = new GovernancePolicyService(new LocalDemoGovernancePolicyRepository(), resolver, Clock.systemUTC());
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", "workos-admin", "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));

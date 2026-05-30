@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 class UserAdminAccessReviewServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-21T10:15:30Z"), ZoneOffset.UTC);
-  private InMemoryIdentityRepository identityRepository;
+  private LocalDemoIdentityRepository identityRepository;
   private AuthContextResolver resolver;
   private UserAdminService userAdminService;
   private UserAdminAccessReviewService accessReviews;
@@ -33,10 +33,10 @@ class UserAdminAccessReviewServiceTest {
 
   @BeforeEach
   void setUp() {
-    identityRepository = new InMemoryIdentityRepository();
+    identityRepository = new LocalDemoIdentityRepository();
     resolver = new AuthContextResolver(identityRepository);
     userAdminService = new UserAdminService(identityRepository, clock);
-    accessReviews = new UserAdminAccessReviewService(new InMemoryAccessReviewTaskRepository(), userAdminService, clock);
+    accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), userAdminService, clock);
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seed("admin@example.test", "membership-admin", FoundationRole.TENANT_ADMIN);
     seed("member@example.test", "membership-member", FoundationRole.TENANT_EMPLOYEE);

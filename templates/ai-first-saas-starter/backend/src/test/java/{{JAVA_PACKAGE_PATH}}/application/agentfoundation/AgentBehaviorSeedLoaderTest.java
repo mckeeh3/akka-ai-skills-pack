@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import {{JAVA_BASE_PACKAGE}}.application.security.AuditTraceService;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
-import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.MyAccountService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
@@ -95,7 +95,7 @@ class AgentBehaviorSeedLoaderTest {
   @Test
   void allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
     var toolResolver = new AgentRuntimeToolResolver(repository, runtimeService);
     var promptIds = new HashSet<String>();
     var skillManifestIds = new HashSet<String>();
@@ -165,7 +165,7 @@ class AgentBehaviorSeedLoaderTest {
   @Test
   void agentAdminRuntimePreparationRequiresAgentAdminSubmitTurnCapability() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
     var userAdminOnlyContext = new AuthContext(
         "admin-1",
         "workos-admin-1",

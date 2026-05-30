@@ -20,7 +20,7 @@ public final class BootstrapAdminSeeder {
 
   private BootstrapAdminSeeder() {}
 
-  public static void seedConfiguredAdmins(InMemoryIdentityRepository repository, String adminUsersConfig) {
+  public static void seedConfiguredAdmins(LocalDemoIdentityRepository repository, String adminUsersConfig) {
     repository.putTenant(new Tenant(DEFAULT_TENANT_ID, DEFAULT_TENANT_NAME, true));
     var normalizedConfig = adminUsersConfig == null ? "" : adminUsersConfig.trim();
     if (normalizedConfig.isBlank()) {
@@ -33,11 +33,11 @@ public final class BootstrapAdminSeeder {
     }
   }
 
-  public static void seedLocalDemoMember(InMemoryIdentityRepository repository) {
+  public static void seedLocalDemoMember(LocalDemoIdentityRepository repository) {
     seedTenantUser(repository, "member@example.test", null, FoundationRole.TENANT_EMPLOYEE, false);
   }
 
-  private static void seedConfiguredAdminEntry(InMemoryIdentityRepository repository, String entry) {
+  private static void seedConfiguredAdminEntry(LocalDemoIdentityRepository repository, String entry) {
     if (entry.isBlank()) {
       return;
     }
@@ -95,7 +95,7 @@ public final class BootstrapAdminSeeder {
   }
 
   private static void seedTenantUser(
-      InMemoryIdentityRepository repository,
+      LocalDemoIdentityRepository repository,
       String email,
       String workosSubject,
       FoundationRole role,
@@ -118,7 +118,7 @@ public final class BootstrapAdminSeeder {
   }
 
   private static void seedScopedUser(
-      InMemoryIdentityRepository repository,
+      LocalDemoIdentityRepository repository,
       String email,
       String workosSubject,
       Membership membership) {

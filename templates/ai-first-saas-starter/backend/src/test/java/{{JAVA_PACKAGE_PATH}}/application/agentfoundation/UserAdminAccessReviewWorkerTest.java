@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.BootstrapAdminSeeder;
-import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryAccessReviewTaskRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoAccessReviewTaskRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminAccessReviewService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
@@ -37,7 +37,7 @@ class UserAdminAccessReviewWorkerTest {
         "provider-response-1",
         "stop",
         "test provider produced model-backed access review"));
-    var accessReviews = new UserAdminAccessReviewService(new InMemoryAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
+    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var actor = starterTenantAdmin("corr-worker-actor");
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-success", "corr-worker-start");
@@ -65,7 +65,7 @@ class UserAdminAccessReviewWorkerTest {
     };
     var runtime = runtimeService(failingProvider);
     var worker = new UserAdminAccessReviewWorker(runtime, new AgentRuntimeToolResolver(StarterSecurityComponents.agentBehaviorRepository(), runtime), failingProvider);
-    var accessReviews = new UserAdminAccessReviewService(new InMemoryAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
+    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var actor = starterTenantAdmin("corr-worker-blocked-actor");
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-blocked", "corr-worker-blocked-start");

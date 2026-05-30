@@ -66,8 +66,8 @@ The scaffolded backend foundation includes:
 - JWT-protected `GET /api/me` returning browser-safe account, profile, settings, selected context, memberships, capabilities, functional-agent availability, and audit correlation;
 - backend denial paths for disabled accounts, missing memberships, forbidden selected contexts, and tenant/customer mismatch;
 - invitation onboarding and user administration services with captured-outbox/Resend boundary, idempotency, and audit behavior;
-- a first durable Akka invitation repository seam: `DurableInvitationRepositoryEntity` stores current invitation/outbox state behind the existing `InvitationRepository` contract through `AkkaInvitationRepository` while preserving the in-memory adapter as the default local/demo fallback;
-- a first durable Akka governed-agent repository seam: `DurableAgentBehaviorRepositoryEntity` stores current AgentDefinition, PromptDocument, SkillDocument, ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary records behind `AgentBehaviorRepository` through `AkkaAgentBehaviorRepository` while preserving the in-memory adapter as the default local/demo fallback;
+- a first durable Akka invitation repository seam: `DurableInvitationRepositoryEntity` stores current invitation/outbox state behind the existing `InvitationRepository` contract through `AkkaInvitationRepository` while the remaining local/demo adapter must be explicitly gated before external use;
+- a first durable Akka governed-agent repository seam: `DurableAgentBehaviorRepositoryEntity` stores current AgentDefinition, PromptDocument, SkillDocument, ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary records behind `AgentBehaviorRepository` through `AkkaAgentBehaviorRepository` while the remaining local/demo adapter must be explicitly gated before external use;
 - governed runtime agent records, seed import, deterministic prompt assembly with compact skill/reference manifests, authorized `readSkill(skillId)` and `readReferenceDoc(referenceId)`, behavior-change proposal semantics, and trace records;
 - workstream API services for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface payloads;
 - service tests that can run after scaffold placeholder rendering.
@@ -76,8 +76,9 @@ Current durability coverage:
 
 - durable/component seam present: invitation current state and captured email outbox through `DurableInvitationRepositoryEntity` plus entity tests for lookup, tenant-scoped duplicate detection, and idempotent outbox enqueue;
 - durable/component seam present: governed-agent current state through `DurableAgentBehaviorRepositoryEntity` and `AgentBehaviorRepositoryState`, covering seeded AgentDefinition, active prompt, active skill, active reference, compact skill/reference manifests, and tool boundary records used by prompt assembly, `readSkill(skillId)`, and `readReferenceDoc(referenceId)`;
-- local/demo fallback retained: `StarterSecurityComponents` still wires `InMemoryIdentityRepository`, `InMemoryInvitationRepository`, and `InMemoryAgentBehaviorRepository` so a clean scaffold runs without dependency injection setup;
-- remaining slices: Account/Profile/Settings/Membership, Tenant/Customer, AdminAuditEvent history, event-sourced invitation lifecycle history, event-sourced PromptDocument/SkillDocument/ReferenceDocument/manifest/ToolPermissionBoundary lifecycle history, InvitationView/UserDirectoryView/AdminAuditView/governed-agent projections, and endpoint-level binding to Akka-backed repositories.
+- local/demo adapters retained for tests and explicit local inspection: set `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true` only for local/demo use; without that opt-in, foundation identity, access-review, audit, governance, and non-ComponentClient workstream log paths fail closed with actionable repository-binding guidance;
+- durable normal path present for workstream messages where `ComponentClient` is available: `WorkstreamEndpoint` binds `AkkaWorkstreamLogRepository`; service construction without `ComponentClient` uses a fail-closed workstream log port instead of a silent volatile default;
+- remaining slices: durable Account/Profile/Settings/Membership, Tenant/Customer, AdminAuditEvent history, durable access-review task lifecycle, durable Governance/Policy proposal lifecycle, event-sourced invitation lifecycle history, event-sourced PromptDocument/SkillDocument/ReferenceDocument/manifest/ToolPermissionBoundary lifecycle history, InvitationView/UserDirectoryView/AdminAuditView/governed-agent projections, and endpoint-level binding to all Akka-backed repositories.
 
 ## Internal/background agent guidance
 
@@ -91,7 +92,7 @@ The scaffold includes the validated React/Vite workstream frontend under `fronte
 
 ## Full-core SMB release-readiness status
 
-As of the `specs/full-core-smb-runtime-durability-remediation/` source-boundary scan on 2026-05-30, the prior `specs/full-core-smb-polish-release-readiness/` ship recommendation is **blocked for the stronger no-in-memory-normal-runtime bar**. The starter still contains normal runtime in-memory repository defaults and frontend/static fixture paths that must be replaced, durably wired, or explicitly gated before claiming completed normal generated runtime has no in-memory/default fixture dependencies.
+As of the `specs/full-core-smb-runtime-durability-remediation/` remediation pass on 2026-05-30, the prior `specs/full-core-smb-polish-release-readiness/` ship recommendation remains **blocked for the stronger no-in-memory-normal-runtime bar** until all queued backend, frontend, static-asset, and release-handoff tasks pass. Backend foundation workstream-log normal paths now bind Akka where `ComponentClient` is available, while identity, access-review, audit, and governance ports fail closed unless the scaffold is explicitly opted into local/demo repositories with `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true`. Invitation, governed-agent behavior, frontend/static fixture gating, and final release validation remain queued before claiming completed normal generated runtime has no in-memory/default fixture dependencies.
 
 The earlier release-readiness evidence remains useful for provider fail-closed, governed-agent runtime, visual UX, and secret-boundary checks, but it is superseded for this stronger durability bar until the remediation queue completes. This status remains bounded by the recorded release handoff and does not expand scope to enterprise IAM, SIEM/legal hold/e-discovery, compliance suites, marketplace prompts, arbitrary tenant-managed tool binding, policy-as-code authoring, or optional durable background workers.
 
@@ -182,8 +183,8 @@ First-admin semantics are intentionally closed:
 
 - there is no open self-registration and no silent privileged account creation from `/api/me`;
 - `ADMIN_USERS` is an explicit first-admin allowlist for the clean local scaffold using `email:ROLE:scope` entries, such as `email:SAAS_OWNER_ADMIN:OWNER`, `email:TENANT_ADMIN:tenant-starter`, or `email:CUSTOMER_ADMIN:tenant-starter/customer-123`;
-- if `ADMIN_USERS` is unset, only deterministic `admin@example.test` / `member@example.test` demo records are seeded for tests and fixture inspection;
-- production-ready projects must replace the in-memory starter repository with durable local authorization state and an audited bootstrap/import flow before external use.
+- if `ADMIN_USERS` is unset, deterministic `admin@example.test` / `member@example.test` demo records are seeded only in test runtime or when `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true` is set for explicit local/demo inspection;
+- production-ready projects must bind durable local authorization state and an audited bootstrap/import flow before external use; absent that binding, the starter fails closed instead of silently using volatile foundation state.
 
 Never put backend secrets into frontend env files or built static assets.
 

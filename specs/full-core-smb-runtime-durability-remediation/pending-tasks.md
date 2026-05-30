@@ -81,7 +81,7 @@
 
 ### TASK-FCSMB-DUR-01-002: Remediate backend foundation runtime durability
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md
 - task brief: specs/full-core-smb-runtime-durability-remediation/tasks/01-remediation/02-remediate-backend-foundation-durability.md
 - depends on: [TASK-FCSMB-DUR-01-001]
@@ -107,6 +107,9 @@
   - test/local-demo use is explicitly named and gated
   - task changes and queue update are committed
 - notes:
+  - renamed foundation repository adapters to explicit `LocalDemo*` test/local-demo adapters and added `FailClosed*` normal-runtime ports
+  - `WorkstreamEndpoint` continues to bind `AkkaWorkstreamLogRepository` where `ComponentClient` is available; service construction without durable state fails closed unless `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true` or test runtime is active
+  - validation: `git diff --check`; `rg -n "new InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)|InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)Repository" templates/ai-first-saas-starter/backend/src/main/java`; `tools/validate-ai-first-saas-starter-fullstack.sh --keep`
   - commit message: `full-core-smb: remediate backend foundation durability`
 
 ### TASK-FCSMB-DUR-01-003: Bind invitation, agent behavior, and runtime trace durable seams

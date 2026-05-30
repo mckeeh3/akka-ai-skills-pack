@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** Unit-test/local adapter for the durable workstream log port; production API paths bind AkkaWorkstreamLogRepository. */
-public final class InMemoryWorkstreamLogRepository implements WorkstreamLogRepository {
+public final class LocalDemoWorkstreamLogRepository implements WorkstreamLogRepository {
   private WorkstreamLogState state = WorkstreamLogState.empty();
 
   @Override

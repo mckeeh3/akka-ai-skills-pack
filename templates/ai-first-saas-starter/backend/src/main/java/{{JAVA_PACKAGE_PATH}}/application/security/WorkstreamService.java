@@ -110,7 +110,7 @@ public final class WorkstreamService {
       InvitationService invitationService,
       AgentBehaviorRepository agentBehaviorRepository,
       AgentRuntimeService agentRuntimeService) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), new InMemoryWorkstreamLogRepository());
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), new LocalDemoWorkstreamLogRepository());
   }
 
   public WorkstreamService(
@@ -137,21 +137,38 @@ public final class WorkstreamService {
       AgentRuntimeService agentRuntimeService,
       WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker,
       WorkstreamLogRepository workstreamLogRepository) {
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository());
+  }
+
+  public WorkstreamService(
+      MeService meService,
+      AuthContextResolver authContextResolver,
+      UserDirectoryView userDirectoryView,
+      InvitationView invitationView,
+      UserAdminService userAdminService,
+      InvitationService invitationService,
+      AgentBehaviorRepository agentBehaviorRepository,
+      AgentRuntimeService agentRuntimeService,
+      WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker,
+      WorkstreamLogRepository workstreamLogRepository,
+      AccessReviewTaskRepository accessReviewTaskRepository,
+      AuditTraceRepository auditTraceRepository,
+      GovernancePolicyRepository governancePolicyRepository) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.myAccountService = new MyAccountService(authContextResolver);
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
-    this.accessReviewService = new UserAdminAccessReviewService(new InMemoryAccessReviewTaskRepository(), userAdminService, Clock.systemUTC());
+    this.accessReviewService = new UserAdminAccessReviewService(Objects.requireNonNull(accessReviewTaskRepository), userAdminService, Clock.systemUTC());
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentAdminService = new AgentAdminService(agentBehaviorRepository, authContextResolver);
     this.agentRuntimeService = agentRuntimeService;
     this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
-    this.workstreamLogRepository = workstreamLogRepository;
-    this.auditTraceService = new AuditTraceService(authContextResolver, new InMemoryAuditTraceRepository(agentRuntimeService, workstreamLogRepository));
-    this.governancePolicyService = new GovernancePolicyService(new InMemoryGovernancePolicyRepository(), authContextResolver, Clock.systemUTC());
+    this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
+    this.auditTraceService = new AuditTraceService(authContextResolver, Objects.requireNonNull(auditTraceRepository));
+    this.governancePolicyService = new GovernancePolicyService(Objects.requireNonNull(governancePolicyRepository), authContextResolver, Clock.systemUTC());
   }
 
   public WorkstreamBootstrapResponse bootstrap(WorkosIdentity identity, String selectedContextId, String correlationId) {

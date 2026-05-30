@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
-import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
@@ -25,7 +25,7 @@ class AgentRuntimeTraceSinkTest {
     var sink = new CapturingTraceSink();
     var service = new AgentRuntimeService(
         repository,
-        new AuthContextResolver(new InMemoryIdentityRepository()),
+        new AuthContextResolver(new LocalDemoIdentityRepository()),
         fixedClock(),
         new OpenAiModelProviderClient(),
         sink);
@@ -54,7 +54,7 @@ class AgentRuntimeTraceSinkTest {
     var sink = new CapturingTraceSink();
     var service = new AgentRuntimeService(
         repository,
-        new AuthContextResolver(new InMemoryIdentityRepository()),
+        new AuthContextResolver(new LocalDemoIdentityRepository()),
         fixedClock(),
         new OpenAiModelProviderClient(),
         sink);

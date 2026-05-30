@@ -27,7 +27,7 @@ public final class UserAdminService {
 
   public List<UserDirectoryRow> listUsers(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireRead(actor, scopeType, tenantId, customerId);
-    return repository instanceof InMemoryIdentityRepository memory
+    return repository instanceof LocalDemoIdentityRepository memory
         ? memory.membershipRows().stream()
             .filter(m -> scopeType == m.scopeType())
             .filter(m -> java.util.Objects.equals(tenantId, m.tenantId()))
@@ -221,7 +221,7 @@ public final class UserAdminService {
     if (targetStillAdmin) {
       return false;
     }
-    if (!(repository instanceof InMemoryIdentityRepository memory)) {
+    if (!(repository instanceof LocalDemoIdentityRepository memory)) {
       return true;
     }
     return memory.membershipRows().stream()
@@ -266,14 +266,14 @@ public final class UserAdminService {
   }
 
   private Membership membership(String membershipId) {
-    if (repository instanceof InMemoryIdentityRepository memory) {
+    if (repository instanceof LocalDemoIdentityRepository memory) {
       return memory.findMembership(membershipId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
     }
     throw new AuthorizationException(404, "target-not-found-or-forbidden");
   }
 
   private void put(Membership membership) {
-    if (repository instanceof InMemoryIdentityRepository memory) {
+    if (repository instanceof LocalDemoIdentityRepository memory) {
       memory.putMembership(membership);
     }
   }
