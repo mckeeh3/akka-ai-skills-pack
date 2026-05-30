@@ -653,9 +653,16 @@ class WorkstreamServiceTest {
 
     var analysis = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-governance-policy-start-impact-analysis", "governance.policy.analysis.start", Map.of("proposalId", "starter-governance-policy-review"), "idem-gov-analysis", "membership-admin", "surface-governance-policy-dashboard", "corr-gov-analysis"));
-    assertEquals("blocked-runtime", analysis.status());
+    assertEquals("blocked_provider_or_runtime", analysis.status());
     assertEquals("workflow-status", analysis.resultSurface().surfaceType());
-    assertTrue(analysis.message().contains("fails closed"));
+    assertEquals("governance.policy.analysis_task.v1", analysis.resultSurface().data().get("surfaceContract"));
+    assertEquals("not_ready_real_worker_required", analysis.resultSurface().data().get("readinessDecision"));
+    assertEquals(true, analysis.resultSurface().data().get("noFakeProgress"));
+    assertTrue(analysis.message().contains("no fake progress"));
+    assertTrue(analysis.resultSurface().toString().contains("AutonomousAgent"));
+    assertTrue(analysis.resultSurface().toString().contains("ToolPermissionBoundary"));
+    assertTrue(analysis.resultSurface().toString().contains("governance.policy.analysis.read"));
+    assertTrue(analysis.resultSurface().toString().contains("forbiddenEffects"));
   }
 
   @Test

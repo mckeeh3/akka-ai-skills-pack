@@ -1913,7 +1913,7 @@ export const governancePolicySurfaceActions = {
     capabilityId: governancePolicyCapabilities.startImpactAnalysis,
     inputSchemaRef: 'schema.governance-policy.impact-analysis.start.v1',
     requiresConfirmation: true,
-    disabled: { reasonCode: 'blocked_provider_or_runtime', message: 'Durable AutonomousAgent policy-impact analysis is unavailable in this starter slice; the UI must not fake task progress.' },
+    disabled: { reasonCode: 'blocked_provider_or_runtime', message: 'Durable AutonomousAgent policy-impact analysis is not ready for successful execution; the UI must not fake task progress or model-less recommendations.' },
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis', openPlacement: 'inline' },
     audit: { eventType: 'GovernancePolicyImpactAnalysisStartBlocked', traceRequired: true }
@@ -1945,12 +1945,12 @@ export const governancePolicyDashboardSurface = envelope(
     sections: [
       { sectionId: 'posture', label: 'Governance posture', summary: 'Selected AuthContext has read and proposal authority; backend remains authoritative for approval, activation, and rollback.' },
       { sectionId: 'attention', label: 'Attention items', summary: 'One policy-boundary proposal requires human approval after deterministic simulation evidence is reviewed.' },
-      { sectionId: 'blocked-runtime', label: 'Blocked runtime', summary: 'AutonomousAgent impact analysis is visibly blocked until a real durable task path exists; no simulated progress is shown.' }
+      { sectionId: 'blocked-runtime', label: 'Blocked runtime', summary: 'AutonomousAgent impact analysis is visibly blocked until a real provider-backed task path exists; no simulated progress or model-less recommendations are shown.' }
     ],
     nextSteps: [
       { workstreamId: 'agent-governance-policy', label: 'Review policy inventory', allowed: true, capabilityIds: [governancePolicyCapabilities.readDashboard], traceId: 'trace-govpol-inventory' },
       { workstreamId: 'agent-governance-policy', label: 'Simulate proposal impact', allowed: true, capabilityIds: [governancePolicyCapabilities.simulateProposal], traceId: 'trace-govpol-simulation' },
-      { workstreamId: 'agent-governance-policy-analysis', label: 'Start impact analysis', allowed: false, blockedReason: 'Durable AutonomousAgent runtime is not enabled; backend must fail closed.', capabilityIds: [governancePolicyCapabilities.startImpactAnalysis], traceId: 'trace-govpol-analysis-blocked' }
+      { workstreamId: 'agent-governance-policy-analysis', label: 'Start impact analysis', allowed: false, blockedReason: 'Durable AutonomousAgent runtime, provider configuration, and ToolPermissionBoundary are not enabled; backend must fail closed.', capabilityIds: [governancePolicyCapabilities.startImpactAnalysis], traceId: 'trace-govpol-analysis-blocked' }
     ],
     blockedState: { reasonCode: 'FRONTEND_NOT_AUTHORITY', message: 'Launcher visibility and action buttons are convenience signals only.', recovery: 'Backend capability checks decide every protected action and return safe denial surfaces when authority is missing.' }
   },
@@ -2111,12 +2111,25 @@ export const governancePolicyAnalysisTaskSurface = envelope(
     workflowId: 'govpol-analysis-task-blocked',
     taskKind: 'autonomous-agent-analysis',
     status: 'blocked_provider_or_runtime',
-    summary: 'Policy-impact analysis is a durable AutonomousAgent follow-up only; this fixture fails closed until the backend task lifecycle exists.',
+    surfaceContract: 'governance.policy.analysis_task.v1',
+    summary: 'Policy-impact analysis remains a justified durable worker candidate, but this fixture fails closed until a real model-backed AutonomousAgent task lifecycle, provider configuration, and ToolPermissionBoundary exist.',
+    readinessDecision: 'not_ready_real_worker_required',
     requiredCapabilityId: governancePolicyCapabilities.startImpactAnalysis,
+    readCapabilityId: governancePolicyCapabilities.readImpactAnalysis,
+    providerFailures: ['blocked_provider_or_runtime'],
+    blockers: [
+      { code: 'autonomous_agent_runtime_not_selected', message: 'No concrete Governance/Policy AutonomousAgent task runtime has been implemented.' },
+      { code: 'provider_or_model_not_configured_for_worker', message: 'The starter fails closed rather than returning deterministic/model-less successful analysis.' },
+      { code: 'tool_boundary_not_granted', message: 'Future worker must use read-only evidence tools and cannot gain mutation authority.' }
+    ],
+    evidenceRefs: ['GovernancePolicyService.proposal', 'GovernancePolicyService.simulation', 'governancePolicyEvidence.read', 'audit.trace.read'],
+    forbiddenEffects: ['approve', 'activate', 'rollback', 'mutate policy', 'mutate users', 'mutate agent behavior', 'change provider config'],
     traceIds: ['trace-govpol-analysis-blocked'],
     backendSurfaceId: 'surface-governance-policy-impact-analysis',
     legacyAliasSurfaceId: 'surface-governance-policy-analysis-task',
-    progress: [{ snapshotId: 'blocked-start', label: 'Start denied before task creation', status: 'blocked_provider_or_runtime', traceId: 'trace-govpol-analysis-blocked' }],
+    noDirectMutation: true,
+    noFakeProgress: true,
+    progress: [{ snapshotId: 'blocked-start', label: 'Start denied before successful task progress', status: 'blocked_provider_or_runtime', traceId: 'trace-govpol-analysis-blocked' }],
     resultSummary: 'No model-less or deterministic fake analysis result is produced.'
   },
   [governancePolicySurfaceActions.openTrace]

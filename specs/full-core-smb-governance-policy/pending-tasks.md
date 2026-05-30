@@ -248,7 +248,7 @@
 
 ### TASK-FCSMB-GP-01-006: Decide policy-impact analysis worker readiness
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
 - task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/06-decide-policy-impact-analysis-readiness.md
 - depends on: [TASK-FCSMB-GP-01-004, TASK-FCSMB-GP-01-005]
@@ -278,6 +278,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: decide governance policy worker readiness`
+  - completed: kept Governance/Policy impact analysis as a justified durable worker candidate but not ready for successful runtime execution; strengthened backend/frontend blocked readiness surfaces with `governance.policy.analysis_task.v1`, `not_ready_real_worker_required`, provider/tool-boundary blockers, forbidden effects, no-direct-mutation, no-fake-progress, and follow-up recommendation.
+  - validation: direct template Maven command remains blocked by unresolved placeholders in `backend/pom.xml`; scaffolded equivalent `mvn test -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest,UserAdminAccessReviewServiceTest,UserAdminAccessReviewWorkerTest` passed. Frontend required npm contract command, targeted rg proof, and `git diff --check` passed.
 
 ### TASK-FCSMB-GP-01-007: Run integrated Governance/Policy validation
 
