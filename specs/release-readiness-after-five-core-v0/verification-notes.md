@@ -26,7 +26,7 @@ bash tools/check-version-consistency.sh
 Result: passed.
 
 ```text
-[check-version] README.md and pack/README.md version references match manifest version 0.2.11
+[check-version] README.md and pack/README.md version references match manifest version 0.2.12
 ```
 
 ```bash

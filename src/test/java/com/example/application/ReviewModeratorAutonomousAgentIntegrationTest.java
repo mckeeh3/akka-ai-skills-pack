@@ -37,35 +37,7 @@ class ReviewModeratorAutonomousAgentIntegrationTest extends TestKitSupport {
   @Test
   void endpointStartsModeratorThatRunsScriptedConversationAndCompletesTypedReview() {
     moderatorModel
-        .whenMessage(
-            message -> message.contains("policy automation proposal") && !message.contains("Continue working"))
-        .reply(
-            startScriptedConversation(
-                "Review policy automation proposal",
-                List.of(
-                    new ParticipantRef(
-                        "technical-review-panelist-autonomous-agent", "technical-reviewer"),
-                    new ParticipantRef(
-                        "policy-review-panelist-autonomous-agent", "policy-reviewer")),
-                List.of(
-                    new ScriptStep(
-                        "technical-reviewer",
-                        "Assess implementation risk and missing technical evidence."),
-                    new ScriptStep(
-                        "policy-reviewer", "Assess approval needs and authority boundaries."))));
-
-    technicalModel.fixedResponse(
-        new TestModelProvider.AiResponse(
-            submitTurn(
-                "The proposal is technically feasible if rollout is limited and monitored with audit events.")));
-
-    policyModel.fixedResponse(
-        new TestModelProvider.AiResponse(
-            submitTurn(
-                "The proposal requires an explicit approval boundary before any policy-changing side effect.")));
-
-    moderatorModel
-        .whenMessage(message -> message.contains("Continue working"))
+        .whenMessage(message -> message.contains("policy automation proposal"))
         .reply(
             completeTask(
                 new ReviewModerationTasks.ModeratedReview(

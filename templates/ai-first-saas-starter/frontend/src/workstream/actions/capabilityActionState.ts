@@ -91,7 +91,7 @@ export function capabilityActionResultToWorkstreamItem(action: SurfaceAction, ma
     title: `${action.label}: ${mapping.status}`,
     body: mapping.message,
     surfaceId: mapping.surface?.surfaceId ?? mapping.targetSurfaceId,
-    status: mapping.status === 'denied' || mapping.status === 'blocked-runtime' || mapping.status === 'blocked_provider_or_runtime' ? 'blocked' : mapping.status === 'failed' ? 'failed' : mapping.status === 'approval-required' ? 'waiting-for-human' : 'ready',
+    status: mapping.status === 'denied' ? 'blocked' : mapping.status === 'failed' ? 'failed' : mapping.status === 'approval-required' ? 'waiting-for-human' : 'ready',
     createdAt,
     correlationId: mapping.correlationId,
     traceIds: mapping.traceIds

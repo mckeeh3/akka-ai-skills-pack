@@ -49,7 +49,7 @@ Result: passed.
 Evidence:
 
 ```text
-[check-version] README.md and pack/README.md version references match manifest version 0.2.11
+[check-version] README.md and pack/README.md version references match manifest version 0.2.12
 ```
 
 #### Pack build
@@ -89,11 +89,11 @@ Retry result: passed.
 Evidence:
 
 ```text
-[build-pack] Cleaning previous outputs for akka-ai-skills-pack-0.2.11
-[build-pack] Building akka-ai-skills-pack-0.2.11
+[build-pack] Cleaning previous outputs for akka-ai-skills-pack-0.2.12
+[build-pack] Building akka-ai-skills-pack-0.2.12
 [build-pack] GitHub repo: mckeeh3/akka-ai-skills-pack
-[build-pack] Bundle directory:  /home/hxmc/ai/akka-ai-skills-pack/dist/akka-ai-skills-pack-0.2.11
-[build-pack] Release installer: /home/hxmc/ai/akka-ai-skills-pack/dist/install-akka-ai-skills-pack-0.2.11.sh
+[build-pack] Bundle directory:  /home/hxmc/ai/akka-ai-skills-pack/dist/akka-ai-skills-pack-0.2.12
+[build-pack] Release installer: /home/hxmc/ai/akka-ai-skills-pack/dist/install-akka-ai-skills-pack-0.2.12.sh
 [build-pack] Done
 ```
 

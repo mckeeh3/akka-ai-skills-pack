@@ -31,22 +31,13 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
         ))}
       </div>
       {envelope.data.attentionItems && envelope.data.attentionItems.length > 0 && (
-        <section className="surface-section-list" aria-label="Personal attention items / Audit/Trace attention items">
+        <section className="surface-section-list" aria-label="Audit/Trace attention items">
           {envelope.data.attentionItems.map((item) => (
             <article key={item.itemId} className={`surface-section-card ${item.severity ?? item.status}`}>
               <h4>{item.label}</h4>
               <p>Status: {item.status}</p>
-              {item.capabilityId && <p className="capability-basis">{item.capabilityId}</p>}
-              {item.redaction && <p className="redaction-note">{item.redaction}</p>}
               {item.traceId && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(item.traceId)}`}>{item.traceId}</a>}
             </article>
-          ))}
-        </section>
-      )}
-      {envelope.data.traceRefs && envelope.data.traceRefs.length > 0 && (
-        <section className="trace-link-list" aria-label="My Account trace refs">
-          {envelope.data.traceRefs.map((trace) => (
-            <a key={trace.traceId} href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(trace.traceId)}`}>{trace.label}: {trace.traceId}</a>
           ))}
         </section>
       )}

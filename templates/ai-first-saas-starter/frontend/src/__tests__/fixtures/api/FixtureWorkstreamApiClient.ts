@@ -24,15 +24,9 @@ import {
   userAdminMemberStatusActionSurface,
   userAdminRoleChangeActionSurface,
   userAdminRoleChangePreviewSurface,
-  displayGovernancePolicyActivationBlockedActionResult,
   displayGovernancePolicyDashboardActionResult,
-  displayGovernancePolicyDecisionActionResult,
-  displayGovernancePolicyImpactAnalysisBlockedActionResult,
   displayGovernancePolicyInventoryActionResult,
-  displayGovernancePolicyProposalActionResult,
-  displayGovernancePolicyRollbackBlockedActionResult,
   displayGovernancePolicySimulationActionResult,
-  governancePolicyActionAliases,
   displayUserDetailActionResult,
   displayUserListActionResult,
   initialWorkstreamItems,
@@ -142,9 +136,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
   }
 
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>> {
-    const resolvedActionId = resolveGovernancePolicyActionId(request.actionId);
-    const actionById = allSurfaceActions.find((candidate) => candidate.actionId === resolvedActionId);
-    const action = actionById ?? allSurfaceActions.find((candidate) => candidate.capabilityId === request.capabilityId);
+    const action = allSurfaceActions.find((candidate) => candidate.actionId === request.actionId || candidate.capabilityId === request.capabilityId);
     if (!action) return delayedError('not_found', 'The requested capability action is not exposed by this surface.');
     if (action.disabled) return delayedOk({ ...actionResultsByStatus.denied, message: action.disabled.message, correlationId: request.correlationId });
     const result = request.actionId === 'action-show-my-account-dashboard'
@@ -175,22 +167,12 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
                       ? displayAgentBehaviorProposalActionResult
                       : request.actionId === 'action-open-agent-trace'
                         ? displayAgentAdminTraceActionResult
-        : resolvedActionId === 'action-governance-policy-dashboard'
+        : request.actionId === 'action-govpol-show-dashboard' || request.capabilityId === 'governance.policy.read'
           ? displayGovernancePolicyDashboardActionResult
-          : resolvedActionId === 'action-governance-policy-list'
+          : request.actionId === 'action-govpol-show-policy-inventory'
             ? displayGovernancePolicyInventoryActionResult
-            : ['action-governance-policy-draft-proposal', 'action-governance-policy-submit-proposal'].includes(resolvedActionId)
-              ? displayGovernancePolicyProposalActionResult
-              : resolvedActionId === 'action-governance-policy-simulate' || request.capabilityId === 'governance.policy.simulate'
-                ? displayGovernancePolicySimulationActionResult
-                : resolvedActionId === 'action-governance-policy-decide'
-                  ? displayGovernancePolicyDecisionActionResult
-                  : resolvedActionId === 'action-governance-policy-activate'
-                    ? displayGovernancePolicyActivationBlockedActionResult
-                    : resolvedActionId === 'action-governance-policy-rollback'
-                      ? displayGovernancePolicyRollbackBlockedActionResult
-                      : resolvedActionId === 'action-governance-policy-start-impact-analysis'
-                        ? displayGovernancePolicyImpactAnalysisBlockedActionResult
+            : request.actionId === 'action-govpol-simulate-proposal' || request.capabilityId === 'governance.policy.simulate'
+              ? displayGovernancePolicySimulationActionResult
               : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent_admin.list_definitions'
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
@@ -212,7 +194,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     this.items = [
       ...this.items,
       {
-        itemId: `fixture-action-${resolvedActionId}-${Date.now()}`,
+        itemId: `fixture-action-${request.actionId}-${Date.now()}`,
         functionalAgentId: surfaceOwnerFor(request.surfaceId, this.surfaces) ?? 'agent-user-admin',
         kind: 'action-feedback',
         createdAt: new Date().toISOString(),
@@ -229,10 +211,6 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     }
     return delayedOk(response);
   }
-}
-
-function resolveGovernancePolicyActionId(actionId: string) {
-  return governancePolicyActionAliases[actionId as keyof typeof governancePolicyActionAliases] ?? actionId;
 }
 
 function surfaceOwnerFor(surfaceId: string | undefined, surfaces: SurfaceEnvelope<unknown>[]) {

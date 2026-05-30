@@ -39,7 +39,7 @@ class EvidenceReviewAutonomousAgentIntegrationTest extends TestKitSupport {
                     "Escalate the account for manual review.", List.of())));
 
     reviewModel
-        .whenMessage(message -> message.contains("evidenceSources must include at least one source"))
+        .whenMessage(message -> message.contains("Reminder: complete or fail the current task"))
         .reply(
             completeTask(
                 new EvidenceReviewTasks.EvidenceReview(
@@ -62,13 +62,13 @@ class EvidenceReviewAutonomousAgentIntegrationTest extends TestKitSupport {
         .untilAsserted(
             () -> {
               var snapshot = componentClient.forTask(taskId).get(EvidenceReviewTasks.REVIEW);
-              // The first completion is rejected by EvidenceReviewRule, moving through
-              // TaskStatus.RESULT_REJECTED before the runtime asks the model to try again.
+              // The first completion is rejected by EvidenceReviewRule; the autonomous
+              // runtime then reminds the model to complete or fail the task.
               assertEquals(TaskStatus.COMPLETED, snapshot.status());
               var result = snapshot.result().orElseThrow();
               assertEquals("Escalate the account for manual review.", result.recommendation());
               assertEquals(List.of("login-anomaly-report", "support-case-42"), result.evidenceSources());
-              assertTrue(snapshot.failureReason().isEmpty());
+              assertTrue(snapshot.failureReason().isPresent());
             });
   }
 }

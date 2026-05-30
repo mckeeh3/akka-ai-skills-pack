@@ -96,10 +96,7 @@ export type SystemMessageData = {
 export type DashboardSurfaceData = {
   surfaceContract?: 'audit.trace.dashboard.v1' | string;
   cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'critical' | 'blocked_provider_or_runtime' }>;
-  attentionItems?: Array<{ itemId: string; label: string; status: string; severity?: string; traceId?: string; capabilityId?: string; sourceWorkstreamId?: string; redaction?: string }>;
-  traceRefs?: Array<{ traceId: string; category: string; label: string; capabilityId: string; correlationId: string }>;
-  authorityBasis?: Record<string, unknown>;
-  contextCapabilityGroups?: Array<{ groupId: string; label: string; capabilityIds: string[] }>;
+  attentionItems?: Array<{ itemId: string; label: string; status: string; severity?: string; traceId?: string }>;
   sections?: Array<{ sectionId: string; label: string; summary: string }>;
   nextSteps?: Array<{ workstreamId: string; label: string; allowed: boolean; blockedReason?: string; capabilityIds?: string[]; traceId?: string }>;
   blockedState?: { reasonCode: string; message: string; recovery: string };

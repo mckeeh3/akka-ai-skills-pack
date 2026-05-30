@@ -47,29 +47,6 @@ export type AuthContext = {
   supportAccess?: SupportAccess;
 };
 
-export type AuthorityBasisSummary = {
-  selectedContextId: string;
-  tenantId: string;
-  customerId?: string;
-  roleIds: string[];
-  primaryRoleBasis: string;
-  myAccountCapabilityIds: string[];
-};
-
-export type CapabilityGroupSummary = {
-  groupId: string;
-  label: string;
-  capabilityIds: string[];
-};
-
-export type TraceRef = {
-  traceId: string;
-  category: string;
-  label: string;
-  capabilityId: string;
-  correlationId: string;
-};
-
 export type MeResponse = {
   account: AccountSummary;
   profile: UserProfile;
@@ -79,10 +56,6 @@ export type MeResponse = {
   availableAuthContexts: AuthContext[];
   visibleCapabilityIds: string[];
   functionalAgents: import('./agents').FunctionalAgentSummary[];
-  authorityBasis?: AuthorityBasisSummary;
-  contextCapabilityGroups?: CapabilityGroupSummary[];
-  traceRefs?: TraceRef[];
-  auditCorrelationId?: string;
 };
 
 export type MeFixtureState = 'admin' | 'member' | 'auditorSupport' | 'disabled' | 'forbiddenNoMembership';
