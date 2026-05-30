@@ -393,6 +393,25 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void myAccountSurfacesAreBackendRetrievedWithAuthorityTraceAndContextData() {
+    var dashboard = service.surface(identity(), "membership-admin", "surface-my-account-dashboard", "corr-my-account-dashboard");
+    var profile = service.surface(identity(), "membership-admin", "surface-my-profile", "corr-my-account-profile");
+    var settings = service.surface(identity(), "membership-admin", "surface-my-settings", "corr-my-account-settings");
+
+    assertEquals("dashboard", dashboard.surfaceType());
+    assertEquals("my_account.dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.toString().contains("selected context"));
+    assertTrue(dashboard.toString().contains("authorityBasis"));
+    assertTrue(dashboard.toString().contains("my_account.view_context"));
+    assertTrue(dashboard.toString().contains("traceRefs"));
+    assertEquals("agent-my-account", dashboard.ownerFunctionalAgentId());
+    assertEquals("detail-edit", profile.surfaceType());
+    assertEquals("detail-edit", settings.surfaceType());
+    assertTrue(profile.toString().contains("my_account.update_profile_settings"));
+    assertTrue(settings.toString().contains("preferredColorMode"));
+  }
+
+  @Test
   void myAccountProfileSettingsUpdatePersistsAllowedSelfServiceFieldsAndIsIdempotent() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-update-my-profile", "my_account.update_profile_settings", Map.of("displayName", "Updated Admin", "preferredColorMode", "dark"), "idem-my-account-update", "membership-admin", "surface-my-profile", "corr-my-account-update"));
@@ -420,6 +439,16 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void myAccountProfileSettingsNoOpIsTracedAndReturnsCurrentSurface() {
+    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-settings", "my_account.update_profile_settings", Map.of("displayName", "Tenant Admin", "preferredColorMode", "light"), "idem-my-account-noop", "membership-admin", "surface-my-settings", "corr-my-account-noop"));
+
+    assertEquals("no-op", result.status());
+    assertEquals("surface-my-settings", result.resultSurface().surfaceId());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_PROFILE_SETTINGS_UPDATE") && event.reasonCode().equals("no-op") && event.correlationId().equals("corr-my-account-noop")));
+  }
+
+  @Test
   void myAccountOpenWorkstreamActionReturnsBackendResolvedSurface() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-open-agent-admin", "my_account.open_authorized_workstream", null, null, "membership-admin", "surface-my-account-dashboard", "corr-open-agent-admin"));
@@ -427,6 +456,19 @@ class WorkstreamServiceTest {
     assertEquals("accepted", result.status());
     assertEquals("surface-agent-admin-catalog", result.resultSurface().surfaceId());
     assertEquals("agent-agent-admin", result.resultSurface().ownerFunctionalAgentId());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM") && event.correlationId().equals("corr-open-agent-admin")));
+  }
+
+  @Test
+  void myAccountOpenWorkstreamDeniesHiddenTargetsWithSystemMessage() {
+    var result = service.runAction(memberIdentity(), "membership-member", new WorkstreamService.CapabilityActionRequest(
+        "action-open-agent-admin", "my_account.open_authorized_workstream", null, null, "membership-member", "surface-my-account-dashboard", "corr-member-open-agent-admin"));
+
+    assertEquals("denied", result.status());
+    assertEquals("system_message", result.resultSurface().surfaceType());
+    assertEquals("not_found_or_redacted", result.resultSurface().data().get("status"));
+    assertFalse(result.resultSurface().toString().contains("agent_admin.list_definitions"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM") && event.result().name().equals("DENIED") && event.correlationId().equals("corr-member-open-agent-admin")));
   }
 
   @Test

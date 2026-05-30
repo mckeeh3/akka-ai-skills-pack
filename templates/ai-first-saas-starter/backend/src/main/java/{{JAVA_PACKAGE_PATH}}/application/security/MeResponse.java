@@ -17,6 +17,9 @@ public record MeResponse(
     List<AuthContextSummary> availableAuthContexts,
     List<String> visibleCapabilityIds,
     List<FunctionalAgentSummary> functionalAgents,
+    MyAccountService.AuthorityBasisSummary authorityBasis,
+    List<MyAccountService.CapabilityGroupSummary> contextCapabilityGroups,
+    List<MyAccountService.TraceRef> traceRefs,
     String auditCorrelationId) {
 
   static MeResponse from(
@@ -25,6 +28,7 @@ public record MeResponse(
       UserSettings settings,
       List<Membership> memberships,
       AuthContext selectedContext,
+      MyAccountService.Summary myAccountSummary,
       String auditCorrelationId) {
     var contexts = memberships.stream().filter(Membership::active).map(AuthContextSummary::from).toList();
     var capabilities = selectedContext.capabilities();
@@ -37,6 +41,9 @@ public record MeResponse(
         contexts,
         capabilities,
         FunctionalAgentSummary.fromCapabilities(capabilities),
+        myAccountSummary.authorityBasis(),
+        myAccountSummary.capabilityGroups(),
+        myAccountSummary.traceRefs(),
         auditCorrelationId);
   }
 

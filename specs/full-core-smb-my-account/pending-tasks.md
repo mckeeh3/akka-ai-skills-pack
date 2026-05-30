@@ -103,7 +103,7 @@
 
 ### TASK-FCSMB-MA-01-002: Implement deterministic backend My Account foundations
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-my-account/my-account-implementation-map.md
 - task brief: specs/full-core-smb-my-account/tasks/01-my-account/02-implement-backend-my-account-foundations.md
 - depends on: [TASK-FCSMB-MA-01-001]
@@ -136,6 +136,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement my account backend foundations`
+  - checks: direct template `mvn test -Dtest=MeServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest` is blocked by unrendered `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent with `ADMIN_USERS='admin@example.test:TENANT_ADMIN:tenant-starter'` passed.
 
 ### TASK-FCSMB-MA-01-003: Implement My Account attention, trace refs, and frontend surfaces
 

@@ -86,6 +86,7 @@ public final class WorkstreamService {
   private static final String GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY = "governance.policy.analysis.start";
   private final MeService meService;
   private final AuthContextResolver authContextResolver;
+  private final MyAccountService myAccountService;
   private final UserDirectoryView userDirectoryView;
   private final InvitationView invitationView;
   private final UserAdminService userAdminService;
@@ -138,6 +139,7 @@ public final class WorkstreamService {
       WorkstreamLogRepository workstreamLogRepository) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
+    this.myAccountService = new MyAccountService(authContextResolver);
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
@@ -250,7 +252,10 @@ public final class WorkstreamService {
       var update = updateOwnProfileSettings(actor, request);
       result = new CapabilityActionResult(update.changed() ? "accepted" : "no-op", update.changed() ? "My Account profile/settings changes were persisted by the backend." : "My Account profile/settings update was a no-op.", request.correlationId(), List.of("trace-my-account-profile-settings-" + stableSuffix(request.idempotencyKey())), surfaceForAction(authContextResolver.resolveMe(identity, selectedContextId, request.correlationId()), request.actionId(), request.correlationId()));
     } else if ("action-open-user-admin".equals(request.actionId()) || "action-open-agent-admin".equals(request.actionId()) || "action-open-audit-trace".equals(request.actionId()) || "action-open-governance-policy".equals(request.actionId())) {
-      authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", request.actionId(), request.correlationId());
+      var open = myAccountService.openAuthorizedWorkstream(actor, request.actionId(), request.correlationId());
+      result = "accepted".equals(open.status())
+          ? new CapabilityActionResult("accepted", open.message(), request.correlationId(), open.traceIds(), surfaceForAction(actor, request.actionId(), request.correlationId()))
+          : new CapabilityActionResult("denied", open.message(), request.correlationId(), open.traceIds(), myAccountOpenDeniedSurface(actor, open, request.correlationId()));
     } else if ("action-audit-trace-dashboard".equals(request.actionId())) {
       result = auditTraceReadResult(actor, "Audit trace dashboard loaded.", request.correlationId(), auditTraceDashboardSurface(actor, request.correlationId()));
     } else if ("action-audit-trace-search".equals(request.actionId())) {
@@ -389,9 +394,9 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope myAccountDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_VIEW_SUMMARY", "browser-safe account/context summary", correlationId);
+    var dashboard = myAccountService.dashboardData(actor, correlationId);
     return envelope("surface-my-account-dashboard", "dashboard", "My Account", actor, correlationId,
-        mapOf("cards", List.of(mapOf("cardId", "card-my-profile", "label", "Profile", "value", actor.profile().displayName(), "severity", "info"), mapOf("cardId", "card-my-settings", "label", "Settings", "value", actor.settings().uiMode().name().toLowerCase(), "severity", "info"), mapOf("cardId", "card-current-context", "label", "Selected context", "value", actor.selectedContext().tenantId(), "severity", "info")), "sections", List.of(mapOf("sectionId", "self-service", "label", "Self-service", "summary", "Profile and settings updates are backend-validated self-service actions only."), mapOf("sectionId", "security-boundary", "label", "Security boundary", "summary", "Roles, memberships, support access, and tenant administration stay in governed admin workstreams.")), "nextSteps", myAccountNextSteps(actor)),
+        mapOf("surfaceContract", dashboard.surfaceContract(), "cards", dashboard.cards(), "sections", dashboard.sections(), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace")),
         List.of(showProfileAction(), showSettingsAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
   }
 
@@ -403,6 +408,12 @@ public final class WorkstreamService {
   private SurfaceEnvelope mySettingsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     return envelope("surface-my-settings", "detail-edit", "User settings", actor, correlationId,
         mapOf("recordId", actor.account().accountId() + "-settings", "recordLabel", actor.profile().displayName() + " settings", "recordKind", "settings", "summary", "Current signed-in user preferences for the workstream shell and notifications.", "fields", List.of(mapOf("fieldId", "preferredColorMode", "label", "Color mode", "value", actor.settings().uiMode().name().toLowerCase(), "editable", true, "inputType", "select"), mapOf("fieldId", "notificationDigest", "label", "Notification digest", "value", "daily", "editable", false, "inputType", "select", "disabledReason", "Notification digest is deferred beyond My Account v0."), mapOf("fieldId", "composerDensity", "label", "Composer density", "value", "comfortable", "editable", false, "inputType", "select", "disabledReason", "Composer density is deferred beyond My Account v0.")), "version", 1, "permissionState", mapOf("canEdit", true, "authoritativeCapabilityId", MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), "audit", mapOf("lastEventType", "UserSettingsDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-my-settings"))), List.of(updateSettingsAction(), openAuditAction()));
+  }
+
+  private SurfaceEnvelope myAccountOpenDeniedSurface(AuthContextResolver.ResolvedMe actor, MyAccountService.OpenWorkstreamDecision decision, String correlationId) {
+    return envelope("surface-my-account-open-denied", "system_message", "Workstream unavailable", actor, correlationId,
+        mapOf("status", "not_found_or_redacted", "severity", "warning", "title", "Workstream unavailable", "message", decision.message(), "capabilityId", MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "safeReasonCode", decision.safeReasonCode(), "recoverySteps", List.of("Review the selected context and authority basis in My Account.", "Ask an administrator for access if this workstream should be available."), "traceRefs", decision.traceIds(), "redaction", "target workstream details are redacted when unauthorized"),
+        List.of(showProfileAction(), showSettingsAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope dashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -674,6 +685,9 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope dynamicSurface(AuthContextResolver.ResolvedMe actor, String surfaceId, String correlationId) {
     return switch (surfaceId) {
+      case "surface-my-account-dashboard" -> myAccountDashboardSurface(actor, correlationId);
+      case "surface-my-profile" -> myProfileSurface(actor, correlationId);
+      case "surface-my-settings" -> mySettingsSurface(actor, correlationId);
       case "surface-user-admin-dashboard" -> dashboardSurface(actor, correlationId);
       case "surface-user-admin-list" -> listSurface(actor, correlationId);
       case "surface-user-admin-invitation-panel" -> invitationPanelSurface(actor, correlationId);
@@ -791,14 +805,6 @@ public final class WorkstreamService {
   private SurfaceAction openAgentAdminAction() { return new SurfaceAction("action-open-agent-admin", "Open Agent Admin", "shell", MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-catalog", "deep-link"), new Audit("MyAccountOpenAgentAdminRequested", true)); }
   private SurfaceAction openGovernancePolicyAction() { return new SurfaceAction("action-open-governance-policy", "Open Governance/Policy", "shell", MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-dashboard", "deep-link"), new Audit("MyAccountOpenGovernancePolicyRequested", true)); }
 
-  private List<Map<String, Object>> myAccountNextSteps(AuthContextResolver.ResolvedMe actor) {
-    var agents = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities());
-    return agents.stream()
-        .filter(agent -> !MY_ACCOUNT_AGENT_ID.equals(agent.functionalAgentId()))
-        .map(agent -> mapOf("workstreamId", agent.functionalAgentId(), "label", agent.label(), "allowed", "visible".equals(agent.availability()), "blockedReason", agent.deniedReason(), "capabilityIds", agent.requiredCapabilityIds()))
-        .toList();
-  }
-
   private AuthContextResolver.ProfileSettingsUpdateResult updateOwnProfileSettings(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request) {
     if (!(request.input() instanceof Map<?, ?> input)) throw new AuthorizationException(400, "MY_ACCOUNT_UPDATE_INPUT_REQUIRED");
     var unsupported = input.keySet().stream()
@@ -816,7 +822,7 @@ public final class WorkstreamService {
         default -> throw new AuthorizationException(400, "MY_ACCOUNT_INVALID_COLOR_MODE");
       };
     }
-    return authContextResolver.updateOwnProfileSettings(actor, displayName, uiMode, request.idempotencyKey(), request.correlationId());
+    return myAccountService.updateProfileSettings(actor, displayName, uiMode, request.idempotencyKey(), request.correlationId());
   }
 
   private SurfaceAction displayListAction() { return new SurfaceAction("action-display-user-list", "Display user list view", "read", USERADMIN_LIST_MEMBERS, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-list", "inline"), new Audit("UserAdminListDisplayed", true)); }

@@ -42,6 +42,11 @@ class MeServiceTest {
     assertEquals("active", response.account().status());
     assertEquals("tenant-1", response.selectedAuthContext().tenantId());
     assertEquals(List.of("tenant-admin"), response.selectedAuthContext().roleIds());
+    assertEquals("membership-admin@example.com", response.authorityBasis().selectedContextId());
+    assertEquals("active membership in selected context", response.authorityBasis().primaryRoleBasis());
+    assertTrue(response.authorityBasis().myAccountCapabilityIds().contains("my_account.view_context"));
+    assertTrue(response.contextCapabilityGroups().stream().anyMatch(group -> group.groupId().equals("my_account")));
+    assertTrue(response.traceRefs().stream().anyMatch(trace -> trace.capabilityId().equals("my_account.view_context") && trace.correlationId().equals("corr-1")));
     assertTrue(response.visibleCapabilityIds().contains("profile.read"));
     assertTrue(response.visibleCapabilityIds().contains("profile.update"));
     assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
