@@ -360,7 +360,7 @@
 
 ### TASK-RUNTIME-99-001: Verify real Akka runtime replacement
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/real-akka-runtime-replacement/tasks/99-verification/01-verify-real-akka-runtime-replacement.md
 - depends on:
@@ -401,3 +401,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: verify real Akka runtime replacement`
+  - completed: wrote `specs/real-akka-runtime-replacement/verification-notes.md`; verified mini-project done state with no new bounded follow-up tasks required; classified remaining scan hits as test-only fixtures or intentional fail-closed blocked-provider/runtime messages.
+  - checks: exact `tools/validate-ai-first-saas-starter-fullstack.sh` was attempted and failed only at optional live OpenAI provider smoke under the ambient `OPENAI_API_KEY`; provider-independent `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh` passed; template frontend test/typecheck/build passed; root frontend test/typecheck/build passed; production substitute scans passed; `git diff --check` passed.
