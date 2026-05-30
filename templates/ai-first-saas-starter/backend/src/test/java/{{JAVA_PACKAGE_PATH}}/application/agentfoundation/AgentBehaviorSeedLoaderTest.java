@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import {{JAVA_BASE_PACKAGE}}.application.security.AuditTraceService;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
@@ -131,7 +132,9 @@ class AgentBehaviorSeedLoaderTest {
           ? List.of("readReferenceDoc", "readSkill", "userAdminEvidence.read")
           : AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)
               ? List.of("agentAdminEvidence.read", "readReferenceDoc", "readSkill")
-              : List.of("readReferenceDoc", "readSkill");
+              : AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID.equals(agentId)
+                  ? List.of("auditTraceEvidence.read", "readReferenceDoc", "readSkill")
+                  : List.of("readReferenceDoc", "readSkill");
       assertEquals(expectedToolIds, runtimeTools.grantedToolIds(), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readReferenceDoc"), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readSkill"), agentId);
@@ -237,6 +240,12 @@ class AgentBehaviorSeedLoaderTest {
     } else if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY);
       capabilities.add(AgentAdminService.LIST_DEFINITIONS);
+    } else if (AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID.equals(agentId)) {
+      capabilities.add(AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY);
+      capabilities.add(AuditTraceService.SEARCH_CAPABILITY);
+      capabilities.add(AuditTraceService.DETAIL_CAPABILITY);
+      capabilities.add(AuditTraceService.TIMELINE_CAPABILITY);
+      capabilities.add(AuditTraceService.FAILURE_EVIDENCE_CAPABILITY);
     } else if (AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY);
     } else {

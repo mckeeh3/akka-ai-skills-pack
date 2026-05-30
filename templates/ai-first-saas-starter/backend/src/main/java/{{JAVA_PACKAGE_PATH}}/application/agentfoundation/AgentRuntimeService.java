@@ -33,6 +33,7 @@ public final class AgentRuntimeService {
   public static final String INVOKE_CAPABILITY = "agent.user_admin.use";
   public static final String MY_ACCOUNT_INVOKE_CAPABILITY = "my_account.ask_agent";
   public static final String AGENT_ADMIN_INVOKE_CAPABILITY = "agent_admin.submit_turn";
+  public static final String AUDIT_TRACE_INVOKE_CAPABILITY = "audit.trace.explain";
   public static final String GOVERNANCE_POLICY_INVOKE_CAPABILITY = "governance.policy.read";
   public static final String BEHAVIOR_MANAGE_CAPABILITY = "agent.behavior.manage";
   public static final String AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.draft_behavior_change";
@@ -358,6 +359,7 @@ public final class AgentRuntimeService {
   private String invocationCapability(String agentDefinitionId) {
     if (AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID.equals(agentDefinitionId)) return MY_ACCOUNT_INVOKE_CAPABILITY;
     if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentDefinitionId)) return AGENT_ADMIN_INVOKE_CAPABILITY;
+    if (AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID.equals(agentDefinitionId)) return AUDIT_TRACE_INVOKE_CAPABILITY;
     if (AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentDefinitionId)) return GOVERNANCE_POLICY_INVOKE_CAPABILITY;
     return INVOKE_CAPABILITY;
   }

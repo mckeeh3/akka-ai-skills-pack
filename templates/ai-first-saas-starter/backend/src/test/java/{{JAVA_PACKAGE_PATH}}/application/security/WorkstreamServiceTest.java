@@ -658,7 +658,9 @@ class WorkstreamServiceTest {
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
     var agentRepository = new InMemoryAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed-failclosed");
-    var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("should not be used", "fake", "fake", "fake", "stop", "fake"));
+    var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> {
+      throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
+    });
     var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService);
 
     var response = failClosedService.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
@@ -669,6 +671,7 @@ class WorkstreamServiceTest {
     assertEquals("system_message", response.surface().surfaceType());
     assertEquals("blocked_provider_or_runtime", response.surface().data().get("status"));
     assertTrue(response.surface().data().get("message").toString().contains("blocked before a response was produced"));
+    assertTrue(response.surface().toString().contains("model-provider-config-missing"));
     assertFalse(response.surface().toString().contains("should not be used"));
   }
 

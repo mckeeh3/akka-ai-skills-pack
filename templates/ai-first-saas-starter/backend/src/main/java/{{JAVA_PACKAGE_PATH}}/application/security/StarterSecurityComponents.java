@@ -29,6 +29,7 @@ public final class StarterSecurityComponents {
   private static final UserDirectoryView USER_DIRECTORY_VIEW = new UserDirectoryView(USER_ADMIN_SERVICE);
   private static final InvitationView INVITATION_VIEW = new InvitationView(INVITATION_SERVICE);
   private static final WorkstreamLogRepository WORKSTREAM_LOG_REPOSITORY = new InMemoryWorkstreamLogRepository();
+  private static final AuditTraceService AUDIT_TRACE_SERVICE = new AuditTraceService(AUTH_CONTEXT_RESOLVER, new InMemoryAuditTraceRepository(AGENT_RUNTIME_SERVICE, WORKSTREAM_LOG_REPOSITORY));
   private static final WorkstreamService WORKSTREAM_SERVICE = workstreamService(WORKSTREAM_LOG_REPOSITORY);
 
   static {
@@ -95,6 +96,10 @@ public final class StarterSecurityComponents {
 
   public static AgentRuntimeToolResolver agentRuntimeToolResolver() {
     return AGENT_RUNTIME_TOOL_RESOLVER;
+  }
+
+  public static AuditTraceService auditTraceService() {
+    return AUDIT_TRACE_SERVICE;
   }
 
   public static ModelProviderClient modelProviderClient() {

@@ -12,6 +12,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryInvitationRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView;
+import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
@@ -51,7 +52,7 @@ class AgentRuntimeToolResolverTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent_admin.submit_turn", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read", "agent_admin.list_definitions"));
+        List.of("agent.user_admin.use", "agent_admin.submit_turn", "audit.trace.explain", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "agent_admin.list_definitions"));
   }
 
   @Test
@@ -114,6 +115,44 @@ class AgentRuntimeToolResolverTest {
     assertFalse(evidence.toLowerCase().contains("api_key"));
     assertFalse(evidence.toLowerCase().contains("providersecret"));
     assertEquals(beforeBoundary, repository.toolBoundary("tenant-1", "tool-boundary-agent-admin").orElseThrow().checksum(), "Evidence reads must not mutate tool boundaries");
+  }
+
+  @Test
+  void auditTraceEvidenceToolReadsScopedRedactedEvidenceWithoutMutation() {
+    var resolved = resolver.resolve(auditTraceRuntimeToolsRequest("corr-audit-trace-evidence-tools"));
+
+    assertEquals(List.of("auditTraceEvidence.read", "readReferenceDoc", "readSkill"), resolved.grantedToolIds());
+    assertTrue(resolved.runtimeTools().stream().anyMatch(AuditTraceEvidenceTools.class::isInstance));
+    var tool = resolved.runtimeTools().stream().filter(AuditTraceEvidenceTools.class::isInstance).map(AuditTraceEvidenceTools.class::cast).findFirst().orElseThrow();
+    var beforeBoundary = repository.toolBoundary("tenant-1", "tool-boundary-audit-trace").orElseThrow().checksum();
+
+    var evidence = tool.read("summarize current tenantId=tenant-1 filter=provider correlationId=corr-audit-trace-evidence-tools failureCategory=provider_blocked; no direct mutation");
+
+    assertTrue(evidence.contains("tool_id=auditTraceEvidence.read"));
+    assertTrue(evidence.contains("mode=read_only_no_direct_mutation"));
+    assertTrue(evidence.contains("audit.trace.search.v1"));
+    assertTrue(evidence.contains("audit.trace.detail.v1"));
+    assertTrue(evidence.contains("audit.trace.timeline.v1"));
+    assertTrue(evidence.contains("audit.trace.failureEvidence.v1"));
+    assertTrue(evidence.contains("trace-audittrace-evidence"));
+    assertTrue(evidence.contains("authority_note=Evidence is scoped deterministic data only"));
+    assertFalse(evidence.toLowerCase().contains("api_key"));
+    assertFalse(evidence.toLowerCase().contains("providersecret"));
+    assertFalse(evidence.toLowerCase().contains("bearer abc"));
+    assertEquals(beforeBoundary, repository.toolBoundary("tenant-1", "tool-boundary-audit-trace").orElseThrow().checksum(), "Evidence reads must not mutate tool boundaries");
+  }
+
+  @Test
+  void auditTraceEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
+    var noSearchCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of("audit.trace.explain"));
+    var deniedCapabilityTool = new AuditTraceEvidenceTools(StarterSecurityComponents.auditTraceService(), noSearchCapability, "corr-audit-evidence-denied");
+
+    var missingCapability = assertThrows(AuthorizationException.class, () -> deniedCapabilityTool.read("summarize"));
+    assertTrue(missingCapability.getMessage().contains("missing-capability:audit.trace.search"));
+
+    var tool = new AuditTraceEvidenceTools(StarterSecurityComponents.auditTraceService(), tenantAdmin, "corr-audit-evidence-cross-tenant");
+    var crossTenant = assertThrows(AuthorizationException.class, () -> tool.read("tenantId=tenant-other"));
+    assertTrue(crossTenant.getMessage().contains("audit-trace-evidence-tenant-mismatch"));
   }
 
   @Test
@@ -190,6 +229,10 @@ class AgentRuntimeToolResolverTest {
 
   private ResolveRuntimeToolsRequest agentAdminRuntimeToolsRequest(String correlationId) {
     return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, correlationId);
+  }
+
+  private ResolveRuntimeToolsRequest auditTraceRuntimeToolsRequest(String correlationId) {
+    return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY, correlationId);
   }
 
   private InMemoryIdentityRepository seededIdentityRepository() {

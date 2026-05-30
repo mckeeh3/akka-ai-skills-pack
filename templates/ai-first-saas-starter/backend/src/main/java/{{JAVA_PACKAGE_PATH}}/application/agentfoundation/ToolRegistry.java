@@ -17,10 +17,12 @@ public final class ToolRegistry {
   public static final String READ_REFERENCE_DOC_TOOL_ID = "readReferenceDoc";
   public static final String USER_ADMIN_EVIDENCE_TOOL_ID = UserAdminEvidenceTools.TOOL_ID;
   public static final String AGENT_ADMIN_EVIDENCE_TOOL_ID = AgentAdminEvidenceTools.TOOL_ID;
+  public static final String AUDIT_TRACE_EVIDENCE_TOOL_ID = AuditTraceEvidenceTools.TOOL_ID;
   static final String READ_SKILL_BINDING = "governed-loader.readSkill";
   static final String READ_REFERENCE_DOC_BINDING = "governed-loader.readReferenceDoc";
   static final String USER_ADMIN_EVIDENCE_BINDING = "user-admin.evidence.read";
   static final String AGENT_ADMIN_EVIDENCE_BINDING = "agent-admin.evidence.read";
+  static final String AUDIT_TRACE_EVIDENCE_BINDING = "audit-trace.evidence.read";
 
   private final Map<String, RegisteredTool> toolsByStableToolId;
 
@@ -73,7 +75,17 @@ public final class ToolRegistry {
                 "Reads scoped, redacted Agent Admin definition, manifest, model readiness, tool-boundary, seed, proposal, and trace evidence without side effects.",
                 ToolCatalogEntry.SideEffectLevel.NONE,
                 AGENT_ADMIN_EVIDENCE_BINDING),
-            context -> context.agentAdminEvidenceTools())));
+            context -> context.agentAdminEvidenceTools()),
+        new RegisteredTool(
+            new ToolCatalogEntry(
+                AUDIT_TRACE_EVIDENCE_TOOL_ID,
+                "Read Audit/Trace evidence",
+                ToolPermissionBoundary.Category.DATA_LOOKUP,
+                AuditTraceEvidenceTools.CAPABILITY_ID,
+                "Reads scoped, redacted Audit/Trace search, detail, timeline, failure evidence, and correlation summaries without side effects.",
+                ToolCatalogEntry.SideEffectLevel.NONE,
+                AUDIT_TRACE_EVIDENCE_BINDING),
+            context -> context.auditTraceEvidenceTools())));
   }
 
   public Optional<RegisteredTool> find(String toolId) {
@@ -111,6 +123,13 @@ public final class ToolRegistry {
     public AgentAdminEvidenceTools agentAdminEvidenceTools() {
       return new AgentAdminEvidenceTools(
           repository,
+          authContext,
+          correlationId);
+    }
+
+    public AuditTraceEvidenceTools auditTraceEvidenceTools() {
+      return new AuditTraceEvidenceTools(
+          StarterSecurityComponents.auditTraceService(),
           authContext,
           correlationId);
     }

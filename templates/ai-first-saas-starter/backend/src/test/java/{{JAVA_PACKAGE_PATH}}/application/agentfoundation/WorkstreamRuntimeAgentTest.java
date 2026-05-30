@@ -155,6 +155,41 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
   }
 
   @Test
+  void modelInvokedAuditTraceEvidenceToolReturnsScopedDeterministicEvidence() {
+    var preparedPrompt = assembledAuditPrompt("corr-audit-evidence-tool");
+    assertTrue(preparedPrompt.contains("auditTraceEvidence.read"));
+    assertTrue(preparedPrompt.contains("audit-trace.starter-guidance.v1"));
+
+    workstreamRuntimeModelTestProvider
+        .whenMessage(message -> message.contains("Use audit trace evidence"))
+        .reply(
+            new ToolInvocationRequest(
+                "AuditTraceEvidenceTools_read",
+                "{\"evidenceRequest\":\"tenantId=tenant-starter filter=provider correlationId=corr-audit-evidence-tool\"}"));
+    workstreamRuntimeModelTestProvider
+        .whenToolResult(result -> result.name().equals("AuditTraceEvidenceTools_read"))
+        .thenReply(
+            result ->
+                new AiResponse(
+                    JsonSupport.encodeToString(
+                        new WorkstreamRuntimeAgent.MarkdownResponse(
+                            result.content().contains("tool_id=auditTraceEvidence.read")
+                                    && result.content().contains("authority_note=Evidence is scoped deterministic data only")
+                                ? "## Audit evidence loaded\n\nThe AuditTraceAgent used governed scoped evidence before explaining the trace."
+                                : "## Audit evidence unavailable",
+                            AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID,
+                            "corr-audit-evidence-tool",
+                            "auditTraceEvidence.read completed through governed runtime tools",
+                            "AgentWorkTrace plus deterministic AuditTraceService evidence"))));
+
+    var response = invokeAuditAgent(preparedPrompt, "corr-audit-evidence-tool", "Use audit trace evidence before answering.");
+
+    assertTrue(response.markdown().contains("Audit evidence loaded"));
+    assertTrue(response.safety().contains("governed runtime tools"));
+    assertTrue(response.trace().contains("AgentWorkTrace"));
+  }
+
+  @Test
   void modelInvokedUnassignedLoaderToolReturnsSafeDenialAndEmitsDenialTrace() {
     var preparedPrompt = assembledPrompt("corr-agent-denied-tool");
 
@@ -297,6 +332,20 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
     assertTrue(failure.getMessage().contains("runtime-tool-tenant-mismatch"));
   }
 
+  private String assembledAuditPrompt(String correlationId) {
+    var result = StarterSecurityComponents.agentRuntimeService().assemblePrompt(
+        new AgentRuntimeService.PromptAssemblyRequest(
+            TENANT_ID,
+            AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID,
+            auditTraceAdmin(),
+            "runtime",
+            AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY,
+            correlationId,
+            "Summarize current provider/tool trace evidence."));
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    return result.assembledSystemPrompt();
+  }
+
   private String assembledPrompt(String correlationId) {
     var result = StarterSecurityComponents.agentRuntimeService().assemblePrompt(
         new AgentRuntimeService.PromptAssemblyRequest(
@@ -309,6 +358,26 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
             "Summarize current invite and access-review risks."));
     assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
     return result.assembledSystemPrompt();
+  }
+
+  private WorkstreamRuntimeAgent.MarkdownResponse invokeAuditAgent(
+      String assembledPrompt, String correlationId, String userMessage) {
+    return componentClient
+        .forAgent()
+        .inSession("workstream-runtime-audit-" + correlationId)
+        .method(WorkstreamRuntimeAgent::respond)
+        .invoke(
+            new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
+                assembledPrompt,
+                MODEL_ALIAS,
+                TENANT_ID,
+                AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID,
+                auditTraceAdmin(),
+                "runtime",
+                AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY,
+                correlationId,
+                userMessage,
+                List.of("trace-prompt-" + correlationId)));
   }
 
   private WorkstreamRuntimeAgent.MarkdownResponse invokeAgent(
@@ -341,5 +410,17 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
         null,
         List.of(FoundationRole.TENANT_ADMIN),
         List.of("agent.user_admin.use", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read"));
+  }
+
+  private static AuthContext auditTraceAdmin() {
+    return new AuthContext(
+        "starter-admin",
+        "workos-starter-admin",
+        "membership-starter-admin",
+        ScopeType.TENANT,
+        TENANT_ID,
+        null,
+        List.of(FoundationRole.TENANT_ADMIN),
+        List.of("audit.trace.explain", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "tenant.audit.read"));
   }
 }

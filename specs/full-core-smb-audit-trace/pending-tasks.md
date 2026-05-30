@@ -163,7 +163,7 @@
 
 ### TASK-FCSMB-AT-01-004: Implement AuditTraceAgent evidence tool and governed runtime tests
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
 - task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/04-implement-audit-trace-agent-evidence-tool.md
 - depends on: [TASK-FCSMB-AT-01-002]
@@ -198,6 +198,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement audit trace agent evidence tool`
+  - implemented `AuditTraceEvidenceTools` as a read-only `auditTraceEvidence.read` DATA_LOOKUP facade over deterministic `AuditTraceService` search/detail/timeline/failure evidence.
+  - updated AuditTraceAgent seed prompt/skill/reference guidance and the seeded Audit/Trace `ToolPermissionBoundary` grant; AuditTraceAgent runtime now uses `audit.trace.explain` and the shared model-backed governed path.
+  - added resolver, seed-loader, runtime-service, Akka agent tool-call, and WorkstreamService provider-fail-closed tests for scoped evidence, tenant mismatch denial, tool-boundary registration, model-backed normal response, and no deterministic/model-less fallback.
+  - check note: targeted Maven command was attempted but the template POM still contains unresolved placeholders (`{{MAVEN_GROUP_ID}}`, `{{APP_SLUG}}`), so Maven cannot parse this uninstantiated template project; required `rg` proof and `git diff --check` completed.
 
 ### TASK-FCSMB-AT-01-005: Decide Audit/Trace summary worker readiness
 

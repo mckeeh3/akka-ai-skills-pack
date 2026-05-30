@@ -184,7 +184,7 @@ public final class AgentBehaviorSeedLoader {
   private ModelConfigRef createModelConfigRef(String tenantId, ModelPolicy policy, String actor, String correlationId, Instant now, SeedImportResult result) {
     var safeModelFacts = STARTER_DEFAULT_MODEL_CONFIG_ID + ":openai-low-temperature:" + policy.modelPolicyRefId();
     var checksum = checksum(safeModelFacts);
-    var model = new ModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", "openai-low-temperature", AgentLifecycleStatus.ACTIVE, CORE_V0_AGENT_IDS, List.of(AgentRuntimeService.INVOKE_CAPABILITY, AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), List.of("runtime", "test", "replay"), List.of(AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED), policy.modelPolicyRefId(), provenance("model-configs/starter-default-model", checksum, actor, correlationId, now, false), now, now);
+    var model = new ModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", "openai-low-temperature", AgentLifecycleStatus.ACTIVE, CORE_V0_AGENT_IDS, List.of(AgentRuntimeService.INVOKE_CAPABILITY, AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY, AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), List.of("runtime", "test", "replay"), List.of(AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED), policy.modelPolicyRefId(), provenance("model-configs/starter-default-model", checksum, actor, correlationId, now, false), now, now);
     repository.saveModelConfigRef(model);
     result.created("ModelConfigRef", STARTER_DEFAULT_MODEL_CONFIG_ID);
     return model;
@@ -273,6 +273,9 @@ public final class AgentBehaviorSeedLoader {
     grants.add(new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_REFERENCE, "agent.references.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "ReferenceLoadTrace"));
     if (AGENT_ADMIN_AGENT_ID.equals(seed.agentDefinitionId())) {
       grants.add(new ToolPermissionBoundary.ToolGrant("agentAdminEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, AgentAdminService.LIST_DEFINITIONS, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
+    }
+    if (AUDIT_TRACE_AGENT_ID.equals(seed.agentDefinitionId())) {
+      grants.add(new ToolPermissionBoundary.ToolGrant("auditTraceEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, AuditTraceEvidenceTools.CAPABILITY_ID, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
     }
     var checksum = checksum(grants.toString());
     var boundary = new ToolPermissionBoundary(tenantId, seed.toolBoundaryId(), seed.agentDefinitionId(), AgentLifecycleStatus.ACTIVE, 1, grants, checksum, provenance("tool-boundaries/" + seed.slug() + "-agent-tools", checksum, actor, correlationId, now, false), now, now);

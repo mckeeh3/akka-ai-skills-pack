@@ -49,7 +49,7 @@ class AgentRuntimeServiceTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent.behavior.manage", "agent_admin.submit_turn", "agent_admin.draft_behavior_change", "tenant.user.read", "tenant.audit.read"));
+        List.of("agent.user_admin.use", "agent.behavior.manage", "agent_admin.submit_turn", "agent_admin.draft_behavior_change", "audit.trace.explain", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "tenant.user.read", "tenant.audit.read"));
   }
 
   @Test
@@ -187,6 +187,20 @@ class AgentRuntimeServiceTest {
     assertEquals("## Model-backed Agent Admin response", result.markdown());
     assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID) && trace.capabilityId().equals("agent_admin.submit_turn")));
     assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID) && trace.capabilityId().equals("agent_admin.submit_turn")));
+  }
+
+  @Test
+  void auditTraceRuntimeInvocationUsesAuditExplainCapabilityAndModelBackedPath() {
+    var fakeProvider = new FakeModelProviderClient("## Model-backed Audit/Trace response");
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), fakeProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID, tenantAdmin, "corr-audit-trace-runtime", "Explain provider failure evidence."));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertEquals("## Model-backed Audit/Trace response", result.markdown());
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("auditTraceEvidence.read"));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID) && trace.capabilityId().equals("audit.trace.explain")));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID) && trace.capabilityId().equals("audit.trace.explain")));
   }
 
   @Test
