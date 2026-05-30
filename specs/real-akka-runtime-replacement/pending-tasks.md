@@ -249,7 +249,7 @@
 
 ### TASK-RUNTIME-01-006: Remove backend substitute adapters from main runtime
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/06-remove-backend-substitute-adapters-from-main-runtime.md
 - depends on: [TASK-RUNTIME-01-005]
@@ -277,6 +277,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: remove backend substitute adapters`
+  - completed: removed the public non-ComponentClient workstream service factory that accepted arbitrary log repositories, kept pre-binding service state unbound/fail-closed only, removed AgentRuntimeService constructors that silently selected an unbound trace sink, and updated starter README language to remove the local-demo repository runtime switch.
+  - checks: `git diff --check`; rendered fullstack validation with `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh --keep --target /tmp/ai-first-saas-starter-runtime-task-01006-nosmoke-2`; required production adapter filename scan returned no matches; required local-demo/in-memory runtime switch scan returned no matches.
 
 ### TASK-RUNTIME-01-007: Quarantine frontend fixtures to tests
 

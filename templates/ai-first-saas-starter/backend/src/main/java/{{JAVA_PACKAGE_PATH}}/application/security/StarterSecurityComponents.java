@@ -60,7 +60,7 @@ public final class StarterSecurityComponents {
   private static volatile GovernancePolicyRepository governancePolicyRepository = new UnboundGovernancePolicyRepository();
   private static volatile AuditTraceService auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
   private static volatile GovernancePolicyService governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
-  private static volatile WorkstreamService workstreamService = workstreamService(workstreamLogRepository());
+  private static volatile WorkstreamService workstreamService = unboundWorkstreamService();
 
   static {
     startup();
@@ -115,10 +115,6 @@ public final class StarterSecurityComponents {
     return workstreamService;
   }
 
-  public static WorkstreamService workstreamService(WorkstreamLogRepository workstreamLogRepository) {
-    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), workstreamLogRepository, accessReviewTaskRepository(), auditTraceRepository(workstreamLogRepository), governancePolicyRepository());
-  }
-
   public static WorkstreamService workstreamService(ComponentClient componentClient, WorkstreamLogRepository workstreamLogRepository) {
     bindAkkaRuntime(componentClient);
     return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository());
@@ -154,7 +150,7 @@ public final class StarterSecurityComponents {
     governancePolicyRepository = new UnboundGovernancePolicyRepository();
     auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
     governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
-    workstreamService = workstreamService(workstreamLogRepository());
+    workstreamService = unboundWorkstreamService();
   }
 
   /** Test-only hook for unit tests that use explicit test-source invitation adapters. */
@@ -182,7 +178,7 @@ public final class StarterSecurityComponents {
   public static void bindTestAccessReviewTaskRepository(AccessReviewTaskRepository testRepository) {
     if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test access-review task repository binding");
     accessReviewTaskRepository = testRepository;
-    workstreamService = workstreamService(workstreamLogRepository());
+    workstreamService = unboundWorkstreamService();
   }
 
   /** Test-only hook for unit tests that use explicit test-source governed-agent adapters. */
@@ -229,8 +225,9 @@ public final class StarterSecurityComponents {
     return MODEL_PROVIDER_CLIENT;
   }
 
-  private static WorkstreamLogRepository workstreamLogRepository() {
-    return new UnboundWorkstreamLogRepository();
+  private static WorkstreamService unboundWorkstreamService() {
+    var workstreamLogRepository = new UnboundWorkstreamLogRepository();
+    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), workstreamLogRepository, accessReviewTaskRepository(), auditTraceRepository(workstreamLogRepository), governancePolicyRepository());
   }
 
   private static AccessReviewTaskRepository accessReviewTaskRepository() {
@@ -238,7 +235,7 @@ public final class StarterSecurityComponents {
   }
 
   private static AuditTraceRepository auditTraceRepository() {
-    return auditTraceRepository(workstreamLogRepository());
+    return new UnboundAuditTraceRepository();
   }
 
   private static AuditTraceRepository auditTraceRepository(WorkstreamLogRepository workstreamLogRepository) {
