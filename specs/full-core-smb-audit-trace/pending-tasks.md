@@ -285,7 +285,7 @@
 
 ### TASK-FCSMB-AT-99-001: Verify Audit/Trace full-core readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-audit-trace/tasks/99-verification/01-verify-audit-trace-readiness.md
 - depends on:
@@ -319,3 +319,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify audit trace readiness`
+  - verified completed work against README done state, sprint/backlog goals, implementation map, and completed task notes; no material Audit/Trace readiness gaps remain in this mini-project scope.
+  - broad rendered starter validation passed, including backend tests, frontend tests/typecheck/build, static asset secret scan, and real-provider smoke path.
+  - targeted `rg` proof for Audit/Trace, AuditTraceAgent, governed evidence tool, timeline/correlation/redaction/provider/tool/model/worker/system_message/tenant terms completed.
+  - `git diff --check` completed.
