@@ -21,8 +21,10 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,6 +36,12 @@ public final class AgentRuntimeService {
   public static final String GOVERNANCE_POLICY_INVOKE_CAPABILITY = "governance.policy.read";
   public static final String BEHAVIOR_MANAGE_CAPABILITY = "agent.behavior.manage";
   public static final String AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.draft_behavior_change";
+  public static final String AGENT_ADMIN_SUBMIT_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.submit_behavior_change_for_review";
+  public static final String AGENT_ADMIN_APPROVE_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.approve_behavior_change";
+  public static final String AGENT_ADMIN_REJECT_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.reject_behavior_change";
+  public static final String AGENT_ADMIN_ACTIVATE_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.activate_behavior_change";
+  public static final String AGENT_ADMIN_CANCEL_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.cancel_behavior_change";
+  public static final String AGENT_ADMIN_ROLLBACK_BEHAVIOR_CHANGE_CAPABILITY = "agent_admin.rollback_behavior_change";
   private static final int MAX_SKILL_BYTES = 20_000;
   private static final int MAX_REFERENCE_BYTES = 20_000;
 
@@ -43,6 +51,7 @@ public final class AgentRuntimeService {
   private final ModelProviderClient modelProviderClient;
   private final AgentRuntimeTraceSink traceSink;
   private final List<BehaviorChangeProposal> proposals = new ArrayList<>();
+  private final Map<String, RollbackSnapshot> rollbackSnapshots = new HashMap<>();
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
     this(repository, authContextResolver, clock, new OpenAiModelProviderClient(), new InMemoryAgentRuntimeTraceSink());
@@ -231,12 +240,12 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal proposeBehaviorChange(BehaviorChangeRequest request) {
     authContextResolver.requireTenant(request.authContext(), request.tenantId());
-    requireBehaviorDraftCapability(request.authContext());
+    requireCapabilityOrLegacy(request.authContext(), AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY);
     var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "test");
     var deniedReason = authorityExpansionReason(request, agent);
     var now = Instant.now(clock);
     var status = deniedReason.isPresent() ? BehaviorChangeProposal.Status.DENIED : BehaviorChangeProposal.Status.PROPOSED;
-    var proposal = new BehaviorChangeProposal(
+    var proposal = withLifecycle(
         UUID.randomUUID().toString(),
         request.tenantId(),
         request.agentDefinitionId(),
@@ -252,25 +261,90 @@ public final class AgentRuntimeService {
         now,
         deniedReason.isPresent() ? now : null,
         deniedReason.isPresent() ? "system-policy" : null,
-        deniedReason.orElse(null));
+        deniedReason.orElse(null),
+        null,
+        null,
+        null,
+        null);
     proposals.add(proposal);
-    trace("BEHAVIOR_PROPOSAL", deniedReason.isPresent() ? AgentRuntimeTrace.Decision.DENIED : AgentRuntimeTrace.Decision.APPROVAL_REQUIRED, request, proposal.proposalId(), deniedReason.orElse("draft proposal created; active behavior unchanged"), checksum(String.valueOf(request.proposedContent()) + request.proposedToolGrants()));
+    trace("BEHAVIOR_PROPOSAL", deniedReason.isPresent() ? AgentRuntimeTrace.Decision.DENIED : AgentRuntimeTrace.Decision.APPROVAL_REQUIRED, request, proposal.proposalId(), deniedReason.orElse("draft behavior change created; no direct mutation; active behavior unchanged"), checksum(String.valueOf(request.proposedContent()) + request.proposedToolGrants()));
     return proposal;
+  }
+
+  public BehaviorChangeProposal submitProposalForReview(AuthContext actor, String tenantId, String proposalId, String correlationId) {
+    authContextResolver.requireTenant(actor, tenantId);
+    requireCapabilityOrLegacy(actor, AGENT_ADMIN_SUBMIT_BEHAVIOR_CHANGE_CAPABILITY);
+    var proposal = proposal(tenantId, proposalId);
+    if (proposal.status() == BehaviorChangeProposal.Status.IN_REVIEW) return proposal;
+    if (proposal.status() != BehaviorChangeProposal.Status.PROPOSED) throw new AuthorizationException(409, "proposal-not-submittable");
+    var submitted = transition(proposal, BehaviorChangeProposal.Status.IN_REVIEW, actor.accountId(), "submitted for review", null, null, null, null);
+    trace("BEHAVIOR_REVIEW", AgentRuntimeTrace.Decision.APPROVAL_REQUIRED, tenantId, proposal.agentDefinitionId(), correlationId, actor.accountId(), AGENT_ADMIN_SUBMIT_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "behavior change submitted for human review; active behavior unchanged", checksum(proposal.proposalId() + proposal.status()));
+    return submitted;
   }
 
   public BehaviorChangeProposal approveProposal(AuthContext reviewer, String tenantId, String proposalId, String correlationId) {
     authContextResolver.requireTenant(reviewer, tenantId);
-    authContextResolver.requireCapability(reviewer, BEHAVIOR_MANAGE_CAPABILITY);
-    var proposal = proposals.stream().filter(candidate -> candidate.proposalId().equals(proposalId) && candidate.tenantId().equals(tenantId)).findFirst().orElseThrow(() -> new AuthorizationException(404, "proposal-not-found"));
-    if (proposal.status() != BehaviorChangeProposal.Status.PROPOSED) {
-      throw new AuthorizationException(409, "proposal-not-approvable");
-    }
-    activateProposal(proposal);
-    var approved = new BehaviorChangeProposal(proposal.proposalId(), proposal.tenantId(), proposal.agentDefinitionId(), proposal.targetArtifactId(), proposal.targetArtifact(), BehaviorChangeProposal.Status.APPROVED, proposal.requestedByAccountId(), proposal.rationale(), proposal.proposedContent(), proposal.proposedToolGrants(), proposal.riskClassification(), proposal.correlationId(), proposal.createdAt(), Instant.now(clock), reviewer.accountId(), "approved");
-    proposals.remove(proposal);
-    proposals.add(approved);
-    trace("BEHAVIOR_ACTIVATION", AgentRuntimeTrace.Decision.ALLOWED, tenantId, proposal.agentDefinitionId(), correlationId, reviewer.accountId(), BEHAVIOR_MANAGE_CAPABILITY, proposal.proposalId(), "approved draft activated", checksum(String.valueOf(proposal.proposedContent()) + proposal.proposedToolGrants()));
+    requireCapabilityOrLegacy(reviewer, AGENT_ADMIN_APPROVE_BEHAVIOR_CHANGE_CAPABILITY);
+    var proposal = proposal(tenantId, proposalId);
+    if (proposal.status() == BehaviorChangeProposal.Status.APPROVED) return proposal;
+    if (proposal.status() != BehaviorChangeProposal.Status.IN_REVIEW) throw new AuthorizationException(409, "proposal-not-approvable");
+    var approved = transition(proposal, BehaviorChangeProposal.Status.APPROVED, reviewer.accountId(), "approved; activation remains a separate backend command", null, null, null, null);
+    trace("BEHAVIOR_REVIEW", AgentRuntimeTrace.Decision.ALLOWED, tenantId, proposal.agentDefinitionId(), correlationId, reviewer.accountId(), AGENT_ADMIN_APPROVE_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "approval recorded; no direct mutation; activation still required", checksum(String.valueOf(proposal.proposedContent()) + proposal.proposedToolGrants()));
     return approved;
+  }
+
+  public BehaviorChangeProposal rejectProposal(AuthContext reviewer, String tenantId, String proposalId, String reason, String correlationId) {
+    authContextResolver.requireTenant(reviewer, tenantId);
+    requireCapabilityOrLegacy(reviewer, AGENT_ADMIN_REJECT_BEHAVIOR_CHANGE_CAPABILITY);
+    var proposal = proposal(tenantId, proposalId);
+    if (proposal.status() == BehaviorChangeProposal.Status.REJECTED) return proposal;
+    if (proposal.status() != BehaviorChangeProposal.Status.IN_REVIEW && proposal.status() != BehaviorChangeProposal.Status.APPROVED) throw new AuthorizationException(409, "proposal-not-rejectable");
+    var rejected = transition(proposal, BehaviorChangeProposal.Status.REJECTED, reviewer.accountId(), firstNonBlank(reason, "rejected"), null, null, null, null);
+    trace("BEHAVIOR_REVIEW", AgentRuntimeTrace.Decision.DENIED, tenantId, proposal.agentDefinitionId(), correlationId, reviewer.accountId(), AGENT_ADMIN_REJECT_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "behavior change rejected; active behavior unchanged", checksum(proposal.proposalId() + reason));
+    return rejected;
+  }
+
+  public BehaviorChangeProposal cancelProposal(AuthContext actor, String tenantId, String proposalId, String reason, String correlationId) {
+    authContextResolver.requireTenant(actor, tenantId);
+    requireCapabilityOrLegacy(actor, AGENT_ADMIN_CANCEL_BEHAVIOR_CHANGE_CAPABILITY);
+    var proposal = proposal(tenantId, proposalId);
+    if (proposal.status() == BehaviorChangeProposal.Status.CANCELLED) return proposal;
+    if (proposal.status() == BehaviorChangeProposal.Status.ACTIVATED || proposal.status() == BehaviorChangeProposal.Status.ROLLED_BACK || proposal.status() == BehaviorChangeProposal.Status.DENIED) throw new AuthorizationException(409, "proposal-not-cancellable");
+    var cancelled = transition(proposal, BehaviorChangeProposal.Status.CANCELLED, actor.accountId(), firstNonBlank(reason, "cancelled"), null, null, null, null);
+    trace("BEHAVIOR_REVIEW", AgentRuntimeTrace.Decision.DENIED, tenantId, proposal.agentDefinitionId(), correlationId, actor.accountId(), AGENT_ADMIN_CANCEL_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "behavior change cancelled; active behavior unchanged", checksum(proposal.proposalId() + reason));
+    return cancelled;
+  }
+
+  public BehaviorChangeProposal activateProposal(AuthContext actor, String tenantId, String proposalId, String correlationId) {
+    authContextResolver.requireTenant(actor, tenantId);
+    requireCapabilityOrLegacy(actor, AGENT_ADMIN_ACTIVATE_BEHAVIOR_CHANGE_CAPABILITY);
+    var proposal = proposal(tenantId, proposalId);
+    if (proposal.status() == BehaviorChangeProposal.Status.ACTIVATED) return proposal;
+    if (proposal.status() != BehaviorChangeProposal.Status.APPROVED) throw new AuthorizationException(409, "proposal-not-activatable");
+    var rollback = rollbackSnapshot(proposal);
+    if (rollback == null) {
+      trace("BEHAVIOR_ACTIVATION", AgentRuntimeTrace.Decision.DENIED, tenantId, proposal.agentDefinitionId(), correlationId, actor.accountId(), AGENT_ADMIN_ACTIVATE_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "activation blocked: unsupported target or missing rollback metadata; active behavior unchanged", null);
+      throw new AuthorizationException(409, "rollback-metadata-missing-or-unsupported-target");
+    }
+    rollbackSnapshots.put(proposal.proposalId(), rollback);
+    applyProposal(proposal);
+    var activated = transition(proposal, BehaviorChangeProposal.Status.ACTIVATED, proposal.reviewedByAccountId(), proposal.reviewReason(), Instant.now(clock), actor.accountId(), null, null);
+    trace("BEHAVIOR_ACTIVATION", AgentRuntimeTrace.Decision.ALLOWED, tenantId, proposal.agentDefinitionId(), correlationId, actor.accountId(), AGENT_ADMIN_ACTIVATE_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "approved behavior change activated by deterministic backend command; rollback metadata recorded", checksum(String.valueOf(proposal.proposedContent()) + proposal.proposedToolGrants()));
+    return activated;
+  }
+
+  public BehaviorChangeProposal rollbackProposal(AuthContext actor, String tenantId, String proposalId, String correlationId) {
+    authContextResolver.requireTenant(actor, tenantId);
+    requireCapabilityOrLegacy(actor, AGENT_ADMIN_ROLLBACK_BEHAVIOR_CHANGE_CAPABILITY);
+    var proposal = proposal(tenantId, proposalId);
+    if (proposal.status() == BehaviorChangeProposal.Status.ROLLED_BACK) return proposal;
+    if (proposal.status() != BehaviorChangeProposal.Status.ACTIVATED) throw new AuthorizationException(409, "proposal-not-rollbackable");
+    var rollback = rollbackSnapshots.get(proposal.proposalId());
+    if (rollback == null) throw new AuthorizationException(409, "rollback-metadata-missing");
+    restoreRollback(rollback);
+    var rolledBack = transition(proposal, BehaviorChangeProposal.Status.ROLLED_BACK, proposal.reviewedByAccountId(), proposal.reviewReason(), proposal.activatedAt(), proposal.activatedByAccountId(), Instant.now(clock), actor.accountId());
+    trace("BEHAVIOR_ROLLBACK", AgentRuntimeTrace.Decision.ALLOWED, tenantId, proposal.agentDefinitionId(), correlationId, actor.accountId(), AGENT_ADMIN_ROLLBACK_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "activated behavior change rolled back through deterministic backend command", checksum(proposal.proposalId() + rollback.kind()));
+    return rolledBack;
   }
 
   public List<AgentRuntimeTrace> traces() {
@@ -288,14 +362,44 @@ public final class AgentRuntimeService {
     return INVOKE_CAPABILITY;
   }
 
-  private void requireBehaviorDraftCapability(AuthContext authContext) {
-    if (authContext.capabilities().contains(AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY)) {
-      return;
-    }
+  private void requireCapabilityOrLegacy(AuthContext authContext, String capabilityId) {
+    if (authContext.capabilities().contains(capabilityId)) return;
     authContextResolver.requireCapability(authContext, BEHAVIOR_MANAGE_CAPABILITY);
   }
 
-  private void activateProposal(BehaviorChangeProposal proposal) {
+  private BehaviorChangeProposal proposal(String tenantId, String proposalId) {
+    return proposals.stream()
+        .filter(candidate -> candidate.proposalId().equals(proposalId) && candidate.tenantId().equals(tenantId))
+        .findFirst()
+        .orElseThrow(() -> new AuthorizationException(404, "proposal-not-found"));
+  }
+
+  private BehaviorChangeProposal transition(BehaviorChangeProposal proposal, BehaviorChangeProposal.Status status, String reviewedBy, String reviewReason, Instant activatedAt, String activatedBy, Instant rolledBackAt, String rolledBackBy) {
+    var updated = withLifecycle(proposal.proposalId(), proposal.tenantId(), proposal.agentDefinitionId(), proposal.targetArtifactId(), proposal.targetArtifact(), status, proposal.requestedByAccountId(), proposal.rationale(), proposal.proposedContent(), proposal.proposedToolGrants(), proposal.riskClassification(), proposal.correlationId(), proposal.createdAt(), reviewedBy == null ? proposal.reviewedAt() : Instant.now(clock), reviewedBy == null ? proposal.reviewedByAccountId() : reviewedBy, reviewReason == null ? proposal.reviewReason() : reviewReason, activatedAt, activatedBy, rolledBackAt, rolledBackBy);
+    proposals.remove(proposal);
+    proposals.add(updated);
+    return updated;
+  }
+
+  private BehaviorChangeProposal withLifecycle(String proposalId, String tenantId, String agentDefinitionId, String targetArtifactId, BehaviorChangeProposal.TargetArtifact targetArtifact, BehaviorChangeProposal.Status status, String requestedByAccountId, String rationale, String proposedContent, List<ToolPermissionBoundary.ToolGrant> proposedToolGrants, String riskClassification, String correlationId, Instant createdAt, Instant reviewedAt, String reviewedByAccountId, String reviewReason, Instant activatedAt, String activatedByAccountId, Instant rolledBackAt, String rolledBackByAccountId) {
+    return new BehaviorChangeProposal(proposalId, tenantId, agentDefinitionId, targetArtifactId, targetArtifact, status, requestedByAccountId, rationale, proposedContent, proposedToolGrants, riskClassification, correlationId, createdAt, reviewedAt, reviewedByAccountId, reviewReason, activatedAt, activatedByAccountId, rolledBackAt, rolledBackByAccountId);
+  }
+
+  private RollbackSnapshot rollbackSnapshot(BehaviorChangeProposal proposal) {
+    if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.PROMPT) {
+      var existing = repository.promptDocument(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
+      return new RollbackSnapshot("prompt", existing);
+    } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.SKILL) {
+      var existing = repository.skillDocument(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
+      return new RollbackSnapshot("skill", existing);
+    } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.TOOL_BOUNDARY) {
+      var existing = repository.toolBoundary(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
+      return new RollbackSnapshot("tool-boundary", existing);
+    }
+    return null;
+  }
+
+  private void applyProposal(BehaviorChangeProposal proposal) {
     if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.PROMPT) {
       var existing = repository.promptDocument(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
       repository.savePromptDocument(new PromptDocument(existing.tenantId(), existing.promptDocumentId(), existing.agentDefinitionId(), existing.title(), existing.promptType(), AgentLifecycleStatus.ACTIVE, existing.activeVersion() + 1, proposal.proposedContent(), checksum(proposal.proposedContent()), proposal.rationale(), customized(existing.seedProvenance()), existing.createdAt(), Instant.now(clock)));
@@ -306,6 +410,12 @@ public final class AgentRuntimeService {
       var existing = repository.toolBoundary(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
       repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), AgentLifecycleStatus.ACTIVE, existing.boundaryVersion() + 1, proposal.proposedToolGrants(), checksum(proposal.proposedToolGrants().toString()), customized(existing.seedProvenance()), existing.createdAt(), Instant.now(clock)));
     }
+  }
+
+  private void restoreRollback(RollbackSnapshot rollback) {
+    if (rollback.record() instanceof PromptDocument prompt) repository.savePromptDocument(prompt);
+    else if (rollback.record() instanceof SkillDocument skill) repository.saveSkillDocument(skill);
+    else if (rollback.record() instanceof ToolPermissionBoundary boundary) repository.saveToolBoundary(boundary);
   }
 
   private Optional<String> authorityExpansionReason(BehaviorChangeRequest request, AgentDefinition agent) {
@@ -328,6 +438,10 @@ public final class AgentRuntimeService {
     return switch (targetArtifact) {
       case PROMPT -> agent.promptDocumentId();
       case SKILL -> repository.skillManifest(agent.tenantId(), agent.skillManifestId()).orElseThrow().entries().get(0).skillDocumentId();
+      case REFERENCE -> repository.referenceManifest(agent.tenantId(), agent.referenceManifestId()).orElseThrow().entries().get(0).referenceDocumentId();
+      case SKILL_MANIFEST -> agent.skillManifestId();
+      case REFERENCE_MANIFEST -> agent.referenceManifestId();
+      case MODEL_REF -> agent.modelConfigRefId();
       case TOOL_BOUNDARY -> agent.toolBoundaryId();
     };
   }
@@ -489,6 +603,11 @@ public final class AgentRuntimeService {
     return failure.getMessage() == null ? "denied" : safe(failure.getMessage());
   }
 
+  private static String firstNonBlank(String... values) {
+    for (var value : values) if (value != null && !value.isBlank()) return value;
+    return null;
+  }
+
   private static boolean containsSecretLikeText(String text) {
     return text != null && text.matches("(?is).*(api[_-]?key|secret|token)\\s*[:=].*");
   }
@@ -530,6 +649,7 @@ public final class AgentRuntimeService {
   public record ReferenceReadRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String stableReferenceId, String requestedUse) {}
   public record ReferenceReadResult(AgentRuntimeTrace.Decision decision, String title, String content, String checksum, String traceId, String safeDenialReason) {}
   private record ResolvedModelBinding(ModelConfigRef model, ModelPolicy policy) {}
+  private record RollbackSnapshot(String kind, Object record) {}
 
   public record BehaviorChangeRequest(String tenantId, String agentDefinitionId, AuthContext authContext, BehaviorChangeProposal.TargetArtifact targetArtifact, String proposedContent, List<ToolPermissionBoundary.ToolGrant> proposedToolGrants, String rationale, String correlationId) {
     public BehaviorChangeRequest {

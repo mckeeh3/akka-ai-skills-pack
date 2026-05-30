@@ -3,7 +3,7 @@ package {{JAVA_BASE_PACKAGE}}.domain.agentfoundation;
 import java.time.Instant;
 import java.util.List;
 
-/** Draft governed-agent behavior change; approval activates the exact reviewed draft. */
+/** Governed-agent behavior change; draft/review/activation are deterministic and separate. */
 public record BehaviorChangeProposal(
     String proposalId,
     String tenantId,
@@ -20,7 +20,11 @@ public record BehaviorChangeProposal(
     Instant createdAt,
     Instant reviewedAt,
     String reviewedByAccountId,
-    String reviewReason) {
+    String reviewReason,
+    Instant activatedAt,
+    String activatedByAccountId,
+    Instant rolledBackAt,
+    String rolledBackByAccountId) {
   public BehaviorChangeProposal {
     proposedToolGrants = List.copyOf(proposedToolGrants == null ? List.of() : proposedToolGrants);
   }
@@ -28,13 +32,21 @@ public record BehaviorChangeProposal(
   public enum TargetArtifact {
     PROMPT,
     SKILL,
+    REFERENCE,
+    SKILL_MANIFEST,
+    REFERENCE_MANIFEST,
+    MODEL_REF,
     TOOL_BOUNDARY
   }
 
   public enum Status {
     PROPOSED,
+    IN_REVIEW,
     APPROVED,
+    ACTIVATED,
     REJECTED,
-    DENIED
+    CANCELLED,
+    DENIED,
+    ROLLED_BACK
   }
 }

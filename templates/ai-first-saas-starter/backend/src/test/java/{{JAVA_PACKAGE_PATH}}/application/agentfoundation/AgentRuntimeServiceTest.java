@@ -395,14 +395,58 @@ class AgentRuntimeServiceTest {
     assertEquals(BehaviorChangeProposal.Status.PROPOSED, proposal.status());
     var before = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
 
+    var submitted = service.submitProposalForReview(tenantAdmin, "tenant-1", proposal.proposalId(), "corr-submit-1");
     var approved = service.approveProposal(tenantAdmin, "tenant-1", proposal.proposalId(), "corr-approve-1");
+    var stillBeforeActivation = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
+    var activated = service.activateProposal(tenantAdmin, "tenant-1", proposal.proposalId(), "corr-activate-1");
     var after = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
 
+    assertEquals(BehaviorChangeProposal.Status.IN_REVIEW, submitted.status());
     assertEquals(BehaviorChangeProposal.Status.APPROVED, approved.status());
+    assertEquals(before, stillBeforeActivation);
+    assertEquals(BehaviorChangeProposal.Status.ACTIVATED, activated.status());
     assertEquals(before.activeVersion() + 1, after.activeVersion());
     assertEquals("Approved revised prompt. Continue to require backend authorization and approvals.", after.contentBody());
     assertTrue(after.seedProvenance().tenantCustomized());
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("BEHAVIOR_REVIEW") && trace.safeSummary().contains("activation still required")));
     assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("BEHAVIOR_ACTIVATION") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
+  }
+
+  @Test
+  void behaviorEditSupportsCancelRejectRollbackAndUnsupportedTargetsFailClosed() {
+    var rejectedDraft = service.proposeBehaviorChange(new BehaviorChangeRequest(
+        "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, BehaviorChangeProposal.TargetArtifact.PROMPT,
+        "Approved rejected prompt. Continue to require backend authorization.", List.of(), "Reject me.", "corr-reject-draft"));
+    service.submitProposalForReview(tenantAdmin, "tenant-1", rejectedDraft.proposalId(), "corr-reject-submit");
+    var rejected = service.rejectProposal(tenantAdmin, "tenant-1", rejectedDraft.proposalId(), "not enough evidence", "corr-reject");
+
+    var cancelledDraft = service.proposeBehaviorChange(new BehaviorChangeRequest(
+        "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, BehaviorChangeProposal.TargetArtifact.PROMPT,
+        "Approved cancelled prompt. Continue to require backend authorization.", List.of(), "Cancel me.", "corr-cancel-draft"));
+    var cancelled = service.cancelProposal(tenantAdmin, "tenant-1", cancelledDraft.proposalId(), "superseded", "corr-cancel");
+
+    var rollbackDraft = service.proposeBehaviorChange(new BehaviorChangeRequest(
+        "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, BehaviorChangeProposal.TargetArtifact.PROMPT,
+        "Approved rollback prompt. Continue to require backend authorization.", List.of(), "Rollback me.", "corr-rollback-draft"));
+    var beforeRollback = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
+    service.submitProposalForReview(tenantAdmin, "tenant-1", rollbackDraft.proposalId(), "corr-rollback-submit");
+    service.approveProposal(tenantAdmin, "tenant-1", rollbackDraft.proposalId(), "corr-rollback-approve");
+    service.activateProposal(tenantAdmin, "tenant-1", rollbackDraft.proposalId(), "corr-rollback-activate");
+    var rolledBack = service.rollbackProposal(tenantAdmin, "tenant-1", rollbackDraft.proposalId(), "corr-rollback");
+
+    var unsupported = service.proposeBehaviorChange(new BehaviorChangeRequest(
+        "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, BehaviorChangeProposal.TargetArtifact.MODEL_REF,
+        "starter-default-model", List.of(), "Try model ref activation.", "corr-model-ref-draft"));
+    service.submitProposalForReview(tenantAdmin, "tenant-1", unsupported.proposalId(), "corr-model-ref-submit");
+    service.approveProposal(tenantAdmin, "tenant-1", unsupported.proposalId(), "corr-model-ref-approve");
+    var failure = org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> service.activateProposal(tenantAdmin, "tenant-1", unsupported.proposalId(), "corr-model-ref-activate"));
+
+    assertEquals(BehaviorChangeProposal.Status.REJECTED, rejected.status());
+    assertEquals(BehaviorChangeProposal.Status.CANCELLED, cancelled.status());
+    assertEquals(BehaviorChangeProposal.Status.ROLLED_BACK, rolledBack.status());
+    assertEquals(beforeRollback, repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow());
+    assertTrue(failure.getMessage().contains("rollback-metadata-missing-or-unsupported-target"));
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("BEHAVIOR_ROLLBACK") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
   }
 
   @Test

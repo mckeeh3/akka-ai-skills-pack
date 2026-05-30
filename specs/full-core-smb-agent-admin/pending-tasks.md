@@ -136,7 +136,7 @@
 
 ### TASK-FCSMB-AA-01-003: Implement Agent Admin behavior-change lifecycle
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
 - task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/03-implement-agent-admin-behavior-lifecycle.md
 - depends on: [TASK-FCSMB-AA-01-002]
@@ -166,6 +166,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement agent admin lifecycle`
+  - implemented deterministic draft, submit, approve, reject, activate, cancel, and rollback lifecycle semantics with separate activation and rollback metadata for supported targets
+  - prompt/skill/tool-boundary activation is backend-owned; reference/manifest/model-ref targets fail closed on activation until supported by a durable artifact mutation path
+  - validation: source-template Maven command is blocked by placeholder `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent passed with `mvn test -Dtest=AgentRuntimeServiceTest,WorkstreamServiceTest,DurableAgentBehaviorRepositoryStateTest,ManifestBoundaryEntityTest`
+  - validation: required `rg` proof command and `git diff --check` passed
 
 ### TASK-FCSMB-AA-01-004: Implement AgentAdminAgent governed guidance evidence path
 
