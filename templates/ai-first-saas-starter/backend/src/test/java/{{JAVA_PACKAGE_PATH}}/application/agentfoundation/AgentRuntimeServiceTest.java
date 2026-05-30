@@ -49,7 +49,7 @@ class AgentRuntimeServiceTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent.behavior.manage", "agent_admin.submit_turn", "agent_admin.draft_behavior_change", "audit.trace.explain", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "tenant.user.read", "tenant.audit.read"));
+        List.of("agent.user_admin.use", "agent.behavior.manage", "agent_admin.submit_turn", "agent_admin.draft_behavior_change", "audit.trace.explain", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "tenant.user.read", "tenant.audit.read", "governance.policy.read"));
   }
 
   @Test
@@ -201,6 +201,42 @@ class AgentRuntimeServiceTest {
     assertTrue(fakeProvider.lastRequest.systemPrompt().contains("auditTraceEvidence.read"));
     assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID) && trace.capabilityId().equals("audit.trace.explain")));
     assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID) && trace.capabilityId().equals("audit.trace.explain")));
+  }
+
+  @Test
+  void governancePolicyRuntimeInvocationUsesGovernanceAskCapabilityEvidenceBoundaryAndModelBackedPath() {
+    var fakeProvider = new FakeModelProviderClient("## Model-backed Governance/Policy response");
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), fakeProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID, tenantAdmin, "corr-governance-policy-runtime", "Explain policy approval readiness and evidence."));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertEquals("## Model-backed Governance/Policy response", result.markdown());
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("governancePolicyEvidence.read"));
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("No direct mutation"));
+    assertFalse(fakeProvider.lastRequest.systemPrompt().toLowerCase().contains("api_key="));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID) && trace.capabilityId().equals("governance.policy.read")));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID) && trace.capabilityId().equals("governance.policy.read")));
+  }
+
+  @Test
+  void governancePolicyRuntimeFailsClosedWithSystemMessageWhenProviderConfigurationIsMissing() {
+    var failingProvider = new ModelProviderClient() {
+      @Override
+      public ModelProviderClient.ModelProviderResponse invoke(ModelProviderClient.ModelProviderRequest request) {
+        throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
+      }
+    };
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), failingProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID, tenantAdmin, "corr-governance-policy-provider-missing", "Explain approval readiness."));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, result.decision());
+    assertNull(result.markdown());
+    assertEquals("model-provider-config-missing", result.safeErrorCode());
+    assertTrue(result.safeErrorSummary().contains("OPENAI_API_KEY"));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("MODEL_INVOCATION") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID)));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("model-provider-config-missing")));
   }
 
   @Test

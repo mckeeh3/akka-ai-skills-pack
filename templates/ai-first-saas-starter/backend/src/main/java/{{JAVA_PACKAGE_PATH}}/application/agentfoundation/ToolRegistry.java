@@ -18,11 +18,13 @@ public final class ToolRegistry {
   public static final String USER_ADMIN_EVIDENCE_TOOL_ID = UserAdminEvidenceTools.TOOL_ID;
   public static final String AGENT_ADMIN_EVIDENCE_TOOL_ID = AgentAdminEvidenceTools.TOOL_ID;
   public static final String AUDIT_TRACE_EVIDENCE_TOOL_ID = AuditTraceEvidenceTools.TOOL_ID;
+  public static final String GOVERNANCE_POLICY_EVIDENCE_TOOL_ID = GovernancePolicyEvidenceTools.TOOL_ID;
   static final String READ_SKILL_BINDING = "governed-loader.readSkill";
   static final String READ_REFERENCE_DOC_BINDING = "governed-loader.readReferenceDoc";
   static final String USER_ADMIN_EVIDENCE_BINDING = "user-admin.evidence.read";
   static final String AGENT_ADMIN_EVIDENCE_BINDING = "agent-admin.evidence.read";
   static final String AUDIT_TRACE_EVIDENCE_BINDING = "audit-trace.evidence.read";
+  static final String GOVERNANCE_POLICY_EVIDENCE_BINDING = "governance-policy.evidence.read";
 
   private final Map<String, RegisteredTool> toolsByStableToolId;
 
@@ -85,7 +87,17 @@ public final class ToolRegistry {
                 "Reads scoped, redacted Audit/Trace search, detail, timeline, failure evidence, and correlation summaries without side effects.",
                 ToolCatalogEntry.SideEffectLevel.NONE,
                 AUDIT_TRACE_EVIDENCE_BINDING),
-            context -> context.auditTraceEvidenceTools())));
+            context -> context.auditTraceEvidenceTools()),
+        new RegisteredTool(
+            new ToolCatalogEntry(
+                GOVERNANCE_POLICY_EVIDENCE_TOOL_ID,
+                "Read Governance/Policy evidence",
+                ToolPermissionBoundary.Category.DATA_LOOKUP,
+                GovernancePolicyEvidenceTools.CAPABILITY_ID,
+                "Reads scoped, redacted Governance/Policy dashboard, inventory, policy, proposal, simulation, decision, and blocked-state evidence without side effects.",
+                ToolCatalogEntry.SideEffectLevel.NONE,
+                GOVERNANCE_POLICY_EVIDENCE_BINDING),
+            context -> context.governancePolicyEvidenceTools())));
   }
 
   public Optional<RegisteredTool> find(String toolId) {
@@ -130,6 +142,13 @@ public final class ToolRegistry {
     public AuditTraceEvidenceTools auditTraceEvidenceTools() {
       return new AuditTraceEvidenceTools(
           StarterSecurityComponents.auditTraceService(),
+          authContext,
+          correlationId);
+    }
+
+    public GovernancePolicyEvidenceTools governancePolicyEvidenceTools() {
+      return new GovernancePolicyEvidenceTools(
+          StarterSecurityComponents.governancePolicyService(),
           authContext,
           correlationId);
     }

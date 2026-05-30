@@ -30,6 +30,8 @@ public final class StarterSecurityComponents {
   private static final InvitationView INVITATION_VIEW = new InvitationView(INVITATION_SERVICE);
   private static final WorkstreamLogRepository WORKSTREAM_LOG_REPOSITORY = new InMemoryWorkstreamLogRepository();
   private static final AuditTraceService AUDIT_TRACE_SERVICE = new AuditTraceService(AUTH_CONTEXT_RESOLVER, new InMemoryAuditTraceRepository(AGENT_RUNTIME_SERVICE, WORKSTREAM_LOG_REPOSITORY));
+  private static final GovernancePolicyRepository GOVERNANCE_POLICY_REPOSITORY = new InMemoryGovernancePolicyRepository();
+  private static final GovernancePolicyService GOVERNANCE_POLICY_SERVICE = new GovernancePolicyService(GOVERNANCE_POLICY_REPOSITORY, AUTH_CONTEXT_RESOLVER, CLOCK);
   private static final WorkstreamService WORKSTREAM_SERVICE = workstreamService(WORKSTREAM_LOG_REPOSITORY);
 
   static {
@@ -100,6 +102,10 @@ public final class StarterSecurityComponents {
 
   public static AuditTraceService auditTraceService() {
     return AUDIT_TRACE_SERVICE;
+  }
+
+  public static GovernancePolicyService governancePolicyService() {
+    return GOVERNANCE_POLICY_SERVICE;
   }
 
   public static ModelProviderClient modelProviderClient() {

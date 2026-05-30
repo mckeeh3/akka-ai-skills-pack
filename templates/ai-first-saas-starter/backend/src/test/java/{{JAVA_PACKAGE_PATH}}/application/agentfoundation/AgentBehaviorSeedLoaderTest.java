@@ -134,7 +134,9 @@ class AgentBehaviorSeedLoaderTest {
               ? List.of("agentAdminEvidence.read", "readReferenceDoc", "readSkill")
               : AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID.equals(agentId)
                   ? List.of("auditTraceEvidence.read", "readReferenceDoc", "readSkill")
-                  : List.of("readReferenceDoc", "readSkill");
+                  : AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentId)
+                      ? List.of("governancePolicyEvidence.read", "readReferenceDoc", "readSkill")
+                      : List.of("readReferenceDoc", "readSkill");
       assertEquals(expectedToolIds, runtimeTools.grantedToolIds(), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readReferenceDoc"), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readSkill"), agentId);
@@ -248,6 +250,7 @@ class AgentBehaviorSeedLoaderTest {
       capabilities.add(AuditTraceService.FAILURE_EVIDENCE_CAPABILITY);
     } else if (AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY);
+      capabilities.add("governance.policy.read");
     } else {
       capabilities.add(AgentRuntimeService.INVOKE_CAPABILITY);
     }

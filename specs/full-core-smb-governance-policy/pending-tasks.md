@@ -203,7 +203,7 @@
 
 ### TASK-FCSMB-GP-01-005: Implement GovernancePolicyAgent evidence tool and seed boundary
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
 - task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/05-implement-governance-policy-agent-evidence-tool.md
 - depends on: [TASK-FCSMB-GP-01-003]
@@ -243,6 +243,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: add governance policy agent evidence tool`
+  - completed: added read-only `GovernancePolicyEvidenceTools`, registry/resolver binding, Governance/Policy seed tool-boundary grant, seed prompt/skill/reference guidance updates, provider fail-closed runtime coverage, and redaction/no-direct-mutation tests.
+  - validation: direct template Maven command remains blocked by unresolved placeholders in `backend/pom.xml`; scaffolded equivalent `mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest` passed. Targeted rg proof and `git diff --check` passed.
 
 ### TASK-FCSMB-GP-01-006: Decide policy-impact analysis worker readiness
 

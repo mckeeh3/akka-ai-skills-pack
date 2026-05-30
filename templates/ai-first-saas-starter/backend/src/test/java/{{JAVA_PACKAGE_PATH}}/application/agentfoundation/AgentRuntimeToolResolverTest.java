@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeToolResolver.ResolveRuntimeToolsRequest;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
+import {{JAVA_BASE_PACKAGE}}.application.security.GovernancePolicyService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryInvitationRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
@@ -52,7 +53,7 @@ class AgentRuntimeToolResolverTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent_admin.submit_turn", "audit.trace.explain", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "agent_admin.list_definitions"));
+        List.of("agent.user_admin.use", "agent_admin.submit_turn", "audit.trace.explain", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "agent_admin.list_definitions", "governance.policy.read"));
   }
 
   @Test
@@ -140,6 +141,48 @@ class AgentRuntimeToolResolverTest {
     assertFalse(evidence.toLowerCase().contains("providersecret"));
     assertFalse(evidence.toLowerCase().contains("bearer abc"));
     assertEquals(beforeBoundary, repository.toolBoundary("tenant-1", "tool-boundary-audit-trace").orElseThrow().checksum(), "Evidence reads must not mutate tool boundaries");
+  }
+
+  @Test
+  void governancePolicyEvidenceToolReadsScopedRedactedEvidenceWithoutMutation() {
+    var resolved = resolver.resolve(governancePolicyRuntimeToolsRequest("corr-governance-policy-evidence-tools"));
+
+    assertEquals(List.of("governancePolicyEvidence.read", "readReferenceDoc", "readSkill"), resolved.grantedToolIds());
+    assertTrue(resolved.runtimeTools().stream().anyMatch(GovernancePolicyEvidenceTools.class::isInstance));
+    var tool = resolved.runtimeTools().stream().filter(GovernancePolicyEvidenceTools.class::isInstance).map(GovernancePolicyEvidenceTools.class::cast).findFirst().orElseThrow();
+    var beforeBoundary = repository.toolBoundary("tenant-1", "tool-boundary-governance-policy").orElseThrow().checksum();
+
+    var evidence = tool.read("summarize current tenantId=tenant-1 Governance/Policy proposal simulation decision activation rollback provider system_message trace no direct mutation evidence");
+
+    assertTrue(evidence.contains("tool_id=governancePolicyEvidence.read"));
+    assertTrue(evidence.contains("capability=governance.policy.read"));
+    assertTrue(evidence.contains("mode=read_only_no_direct_mutation"));
+    assertTrue(evidence.contains("governance.policy.dashboard.v1"));
+    assertTrue(evidence.contains("governance.policy.inventory.v1"));
+    assertTrue(evidence.contains("governance.policy.detail.v1"));
+    assertTrue(evidence.contains("ToolPermissionBoundary"));
+    assertTrue(evidence.contains("PromptAssemblyTrace"));
+    assertTrue(evidence.contains("AgentWorkTrace"));
+    assertTrue(evidence.contains("provider/model readiness is enforced"));
+    assertTrue(evidence.contains("authority_note=Evidence is scoped deterministic data only"));
+    assertTrue(evidence.contains("trace-governancepolicy-evidence"));
+    assertFalse(evidence.toLowerCase().contains("api_key"));
+    assertFalse(evidence.toLowerCase().contains("providersecret"));
+    assertFalse(evidence.toLowerCase().contains("hidden prompt text="));
+    assertEquals(beforeBoundary, repository.toolBoundary("tenant-1", "tool-boundary-governance-policy").orElseThrow().checksum(), "Evidence reads must not mutate tool boundaries");
+  }
+
+  @Test
+  void governancePolicyEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
+    var noReadCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of("agent.skills.read"));
+    var deniedCapabilityTool = new GovernancePolicyEvidenceTools(StarterSecurityComponents.governancePolicyService(), noReadCapability, "corr-governance-policy-evidence-denied");
+
+    var missingCapability = assertThrows(AuthorizationException.class, () -> deniedCapabilityTool.read("summarize"));
+    assertTrue(missingCapability.getMessage().contains("missing-capability:" + GovernancePolicyService.READ_CAPABILITY));
+
+    var tool = new GovernancePolicyEvidenceTools(StarterSecurityComponents.governancePolicyService(), tenantAdmin, "corr-governance-policy-evidence-cross-tenant");
+    var crossTenant = assertThrows(AuthorizationException.class, () -> tool.read("tenantId=tenant-other"));
+    assertTrue(crossTenant.getMessage().contains("governance-policy-evidence-tenant-mismatch"));
   }
 
   @Test
@@ -233,6 +276,10 @@ class AgentRuntimeToolResolverTest {
 
   private ResolveRuntimeToolsRequest auditTraceRuntimeToolsRequest(String correlationId) {
     return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY, correlationId);
+  }
+
+  private ResolveRuntimeToolsRequest governancePolicyRuntimeToolsRequest(String correlationId) {
+    return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, correlationId);
   }
 
   private InMemoryIdentityRepository seededIdentityRepository() {

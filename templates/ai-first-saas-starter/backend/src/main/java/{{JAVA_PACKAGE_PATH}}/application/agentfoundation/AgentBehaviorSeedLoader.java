@@ -277,6 +277,9 @@ public final class AgentBehaviorSeedLoader {
     if (AUDIT_TRACE_AGENT_ID.equals(seed.agentDefinitionId())) {
       grants.add(new ToolPermissionBoundary.ToolGrant("auditTraceEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, AuditTraceEvidenceTools.CAPABILITY_ID, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
     }
+    if (GOVERNANCE_POLICY_AGENT_ID.equals(seed.agentDefinitionId())) {
+      grants.add(new ToolPermissionBoundary.ToolGrant("governancePolicyEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, GovernancePolicyEvidenceTools.CAPABILITY_ID, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
+    }
     var checksum = checksum(grants.toString());
     var boundary = new ToolPermissionBoundary(tenantId, seed.toolBoundaryId(), seed.agentDefinitionId(), AgentLifecycleStatus.ACTIVE, 1, grants, checksum, provenance("tool-boundaries/" + seed.slug() + "-agent-tools", checksum, actor, correlationId, now, false), now, now);
     repository.saveToolBoundary(boundary);
