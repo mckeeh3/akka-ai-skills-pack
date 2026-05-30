@@ -309,7 +309,7 @@
 
 ### TASK-FCSMB-MA-99-001: Verify My Account full-core readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-my-account/tasks/99-verification/01-verify-my-account-readiness.md
 - depends on:
@@ -343,3 +343,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify my account readiness`
+  - verification result: My Account mini-project goals are complete at the planned SMB full-core scope; no follow-up tasks were appended.
+  - checks: required My Account `rg` proof over `templates/ai-first-saas-starter` and `specs/full-core-smb-my-account` passed.
+  - checks: queue status/source-boundary proof confirmed all predecessor tasks are done and expected backend/frontend My Account source/test files exist.
+  - checks: `git diff --check` passed.
