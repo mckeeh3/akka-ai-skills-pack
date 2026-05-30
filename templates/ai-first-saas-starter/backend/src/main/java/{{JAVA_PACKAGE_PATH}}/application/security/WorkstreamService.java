@@ -8,10 +8,12 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.WorkstreamAgentRuntimeI
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.BehaviorChangeProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -40,7 +42,11 @@ public final class WorkstreamService {
   private static final String USERADMIN_CHANGE_MEMBER_ROLES = "USERADMIN_CHANGE_MEMBER_ROLES";
   private static final String USERADMIN_UPDATE_MEMBER_STATUS = "USERADMIN_UPDATE_MEMBER_STATUS";
   private static final String USERADMIN_VIEW_TRACE_REFERENCE = "USERADMIN_VIEW_TRACE_REFERENCE";
-  private static final String USERADMIN_START_ACCESS_REVIEW_TASK = "USERADMIN_START_ACCESS_REVIEW_TASK";
+  private static final String USERADMIN_ACCESS_REVIEW_START = UserAdminAccessReviewService.START_CAPABILITY;
+  private static final String USERADMIN_ACCESS_REVIEW_READ = UserAdminAccessReviewService.READ_CAPABILITY;
+  private static final String USERADMIN_ACCESS_REVIEW_CANCEL = UserAdminAccessReviewService.CANCEL_CAPABILITY;
+  private static final String USERADMIN_ACCESS_REVIEW_ACCEPT_RESULT = UserAdminAccessReviewService.ACCEPT_RESULT_CAPABILITY;
+  private static final String USERADMIN_ACCESS_REVIEW_REJECT_RESULT = UserAdminAccessReviewService.REJECT_RESULT_CAPABILITY;
   private static final String AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY = "agent_admin.list_definitions";
   private static final String AGENT_ADMIN_GET_DEFINITION_CAPABILITY = "agent_admin.get_definition";
   private static final String AGENT_ADMIN_GET_PROMPT_VERSION_CAPABILITY = "agent_admin.get_prompt_version";
@@ -75,6 +81,7 @@ public final class WorkstreamService {
   private final UserDirectoryView userDirectoryView;
   private final InvitationView invitationView;
   private final UserAdminService userAdminService;
+  private final UserAdminAccessReviewService accessReviewService;
   private final InvitationService invitationService;
   private final AgentBehaviorRepository agentBehaviorRepository;
   private final AgentRuntimeService agentRuntimeService;
@@ -123,6 +130,7 @@ public final class WorkstreamService {
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
+    this.accessReviewService = new UserAdminAccessReviewService(new InMemoryAccessReviewTaskRepository(), userAdminService, Clock.systemUTC());
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentRuntimeService = agentRuntimeService;
@@ -201,7 +209,20 @@ public final class WorkstreamService {
       var changed = userAdminService.updateMemberStatus(actor, stringInput(request.input(), "membershipId", actor.selectedContext().membershipId()), targetStatus, stringInput(request.input(), "reason", "workstream member status change"), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(changed.status(), changed.message(), request.correlationId(), List.of(changed.traceId()), listSurface(actor, request.correlationId()));
     } else if ("action-useradmin-start-access-review".equals(request.actionId())) {
-      result = new CapabilityActionResult("blocked-runtime", "Durable User Admin access-review tasks require AutonomousAgent provider, task lifecycle, and tool-boundary configuration; this starter fails closed instead of faking progress.", request.correlationId(), List.of("trace-useradmin-access-review-blocked"), accessReviewBlockedSurface(actor, request.correlationId()));
+      var task = accessReviewService.start(actor, request.idempotencyKey(), request.correlationId());
+      result = accessReviewActionResult(task, "blocked-runtime", "Access-review task record created; governed worker execution is blocked until provider/runtime configuration is available.", request.correlationId(), actor);
+    } else if ("action-useradmin-read-access-review".equals(request.actionId())) {
+      var task = accessReviewService.read(actor, stringInput(request.input(), "taskId", ""), request.correlationId());
+      result = accessReviewActionResult(task, "accepted", "Access-review task read through backend-authoritative User Admin capability.", request.correlationId(), actor);
+    } else if ("action-useradmin-cancel-access-review".equals(request.actionId())) {
+      var task = accessReviewService.cancel(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "workstream cancel"), request.correlationId());
+      result = accessReviewActionResult(task, "accepted", "Access-review task cancellation recorded; access state unchanged.", request.correlationId(), actor);
+    } else if ("action-useradmin-accept-access-review-result".equals(request.actionId())) {
+      var task = accessReviewService.acceptResult(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "accepted by User Admin"), request.correlationId());
+      result = accessReviewActionResult(task, "accepted", "Access-review result accepted as human review evidence; access state unchanged.", request.correlationId(), actor);
+    } else if ("action-useradmin-reject-access-review-result".equals(request.actionId())) {
+      var task = accessReviewService.rejectResult(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "rejected by User Admin"), request.correlationId());
+      result = accessReviewActionResult(task, "accepted", "Access-review result rejected as human review evidence; access state unchanged.", request.correlationId(), actor);
     } else if ("action-propose-prompt-diff".equals(request.actionId())) {
       agentRuntimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), BehaviorChangeProposal.TargetArtifact.PROMPT, "Approved revised Agent Admin prompt. Continue to require backend authorization, approval, and trace links.", List.of(), "Agent Admin UI-proposed prompt clarification", request.correlationId()));
     } else if ("action-test-agent-prompt".equals(request.actionId())) {
@@ -364,7 +385,7 @@ public final class WorkstreamService {
     var invites = invitationView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
     var failedInvites = invites.stream().filter(invite -> invite.deliveryStatus().name().equals("FAILED")).count();
     return envelope("surface-user-admin-dashboard", "dashboard", "User Admin command center", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.dashboard.v1", "readiness", mapOf("directory", "backend-derived", "invitationOutbox", "backend-derived", "accessReviewWorker", "blocked_provider_or_runtime"), "cards", List.of(mapOf("cardId", "card-pending-invitations", "label", "Pending invitations", "value", invites.size(), "severity", invites.isEmpty() ? "info" : "warning"), mapOf("cardId", "card-active-users", "label", "Active users", "value", users.size(), "severity", "info"), mapOf("cardId", "card-failed-invitations", "label", "Failed invitation delivery", "value", failedInvites, "severity", failedInvites == 0 ? "info" : "warning"), mapOf("cardId", "card-access-review", "label", "Access review items", "value", 0, "severity", "blocked_provider_or_runtime")), "attentionItems", List.of(mapOf("itemId", "invitation-delivery", "label", "Invitation delivery", "status", failedInvites == 0 ? "clear" : "needs-review"), mapOf("itemId", "trace-useradmin-dashboard", "label", "Trace", "status", "available")), "capabilityIds", List.of(USERADMIN_VIEW_OVERVIEW, USERADMIN_LIST_MEMBERS, USERADMIN_LIST_INVITATIONS, USERADMIN_SEND_INVITATION, USERADMIN_RESEND_INVITATION, USERADMIN_REVOKE_INVITATION, USERADMIN_LIST_ROLES_CAPABILITIES, USERADMIN_UPDATE_MEMBER_STATUS)),
+        mapOf("surfaceContract", "user_admin.dashboard.v1", "readiness", mapOf("directory", "backend-derived", "invitationOutbox", "backend-derived", "accessReviewWorker", "blocked_provider_or_runtime"), "cards", List.of(mapOf("cardId", "card-pending-invitations", "label", "Pending invitations", "value", invites.size(), "severity", invites.isEmpty() ? "info" : "warning"), mapOf("cardId", "card-active-users", "label", "Active users", "value", users.size(), "severity", "info"), mapOf("cardId", "card-failed-invitations", "label", "Failed invitation delivery", "value", failedInvites, "severity", failedInvites == 0 ? "info" : "warning"), mapOf("cardId", "card-access-review", "label", "Access review items", "value", 0, "severity", "blocked_provider_or_runtime")), "attentionItems", List.of(mapOf("itemId", "invitation-delivery", "label", "Invitation delivery", "status", failedInvites == 0 ? "clear" : "needs-review"), mapOf("itemId", "trace-useradmin-dashboard", "label", "Trace", "status", "available")), "capabilityIds", List.of(USERADMIN_VIEW_OVERVIEW, USERADMIN_LIST_MEMBERS, USERADMIN_LIST_INVITATIONS, USERADMIN_SEND_INVITATION, USERADMIN_RESEND_INVITATION, USERADMIN_REVOKE_INVITATION, USERADMIN_LIST_ROLES_CAPABILITIES, USERADMIN_UPDATE_MEMBER_STATUS, USERADMIN_ACCESS_REVIEW_START, USERADMIN_ACCESS_REVIEW_READ, USERADMIN_ACCESS_REVIEW_CANCEL, USERADMIN_ACCESS_REVIEW_ACCEPT_RESULT, USERADMIN_ACCESS_REVIEW_REJECT_RESULT)),
         List.of(displayListAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), previewRoleChangeAction(), startAccessReviewAction(), traceAction()));
   }
 
@@ -485,11 +506,22 @@ public final class WorkstreamService {
     }
   }
 
-  private SurfaceEnvelope accessReviewBlockedSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    authContextResolver.appendProtectedReadTrace(actor, USERADMIN_START_ACCESS_REVIEW_TASK, "access-review autonomous task unavailable", correlationId);
+  private SurfaceEnvelope accessReviewSurface(AuthContextResolver.ResolvedMe actor, AccessReviewTask task, String correlationId) {
+    authContextResolver.appendProtectedReadTrace(actor, USERADMIN_ACCESS_REVIEW_READ, "user_admin.access_review_task.v1", correlationId);
     return envelope("surface-user-admin-access-review", "workflow-status", "User Admin access review", actor, correlationId,
-        mapOf("workflowId", "user-admin-access-review", "status", "blocked_provider_or_runtime", "summary", "Access-review investigation is not started because the durable AutonomousAgent task lifecycle and provider/tool-boundary configuration are not enabled in this starter slice.", "traceIds", List.of("trace-useradmin-access-review-blocked"), "requiredCapabilityId", USERADMIN_START_ACCESS_REVIEW_TASK),
-        List.of(startAccessReviewAction(), traceAction()));
+        mapOf("surfaceContract", "user_admin.access_review_task.v1", "workflowId", task.taskId(), "taskId", task.taskId(), "status", accessReviewStatus(task), "initiatingCapabilityId", USERADMIN_ACCESS_REVIEW_START, "scope", mapOf("scopeType", task.scopeType().name(), "tenantId", task.tenantId(), "customerId", task.customerId()), "progress", mapOf("percent", task.progressPercent(), "summary", task.summary()), "blockers", task.blockerCode() == null ? List.of() : List.of(mapOf("code", task.blockerCode(), "message", "Governed AutonomousAgent provider/runtime is not configured; the starter fails closed instead of returning model-less access-review recommendations.")), "evidenceRefs", task.evidenceRefs(), "recommendations", task.recommendationRefs(), "resultReviewState", task.decision() == null ? "pending_worker_result" : task.decision(), "providerFailures", task.blockerCode() == null ? List.of() : List.of("blocked_provider_or_runtime"), "traceIds", task.traceIds(), "noDirectMutation", true, "safety", "access-review output cannot directly mutate memberships, invitations, roles, capabilities, or authorization state"),
+        List.of(startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), traceAction()));
+  }
+
+  private SurfaceEnvelope accessReviewBlockedSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.appendProtectedReadTrace(actor, USERADMIN_ACCESS_REVIEW_START, "access-review autonomous task unavailable", correlationId);
+    return envelope("surface-user-admin-access-review", "workflow-status", "User Admin access review", actor, correlationId,
+        mapOf("surfaceContract", "user_admin.access_review_task.v1", "workflowId", "user-admin-access-review", "status", "blocked_provider_or_runtime", "summary", "Start creates a durable task record, but worker execution remains blocked until governed AutonomousAgent provider/runtime configuration is enabled.", "traceIds", List.of("trace-useradmin-access-review-blocked"), "requiredCapabilityId", USERADMIN_ACCESS_REVIEW_START, "noDirectMutation", true),
+        List.of(startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), traceAction()));
+  }
+
+  private String accessReviewStatus(AccessReviewTask task) {
+    return task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : task.status().name().toLowerCase();
   }
 
   private CapabilityActionResult governancePolicyReadResult(AuthContextResolver.ResolvedMe actor, String message, String correlationId, SurfaceEnvelope surface) {
@@ -671,6 +703,10 @@ public final class WorkstreamService {
     return new CapabilityActionResult(status, message, correlationId, List.of(traceId), invitationPanelSurface(actor, correlationId));
   }
 
+  private CapabilityActionResult accessReviewActionResult(AccessReviewTask task, String status, String message, String correlationId, AuthContextResolver.ResolvedMe actor) {
+    return new CapabilityActionResult(status, message, correlationId, task.traceIds(), accessReviewSurface(actor, task, correlationId));
+  }
+
   private Map<String, Object> invitationRow(InvitationView.InvitationRow invite) {
     return mapOf("id", invite.invitationId(), "rowType", "invitation-queue", "email", invite.targetEmail(), "displayName", invite.targetEmail(), "role", invite.requestedRoles().toString(), "status", invite.status().name().toLowerCase(), "delivery", invite.deliveryStatus().name().toLowerCase(), "deliveryAttempts", invite.deliveryAttempts(), "resendCount", invite.resendCount(), "lastDeliveryErrorSummary", invite.lastDeliveryErrorSummary(), "expiresAt", invite.expiresAt().toString(), "acceptedAt", invite.acceptedAt() == null ? null : invite.acceptedAt().toString(), "revokedAt", invite.revokedAt() == null ? null : invite.revokedAt().toString(), "canResend", invite.canResend(), "canRevoke", invite.canRevoke(), "traceId", "trace-useradmin-invitation-" + stableSuffix(invite.invitationId()));
   }
@@ -721,7 +757,7 @@ public final class WorkstreamService {
       case "action-manage-model-ref" -> agentModelRefsSurface(actor, correlationId);
       case "action-display-user-detail", "action-replace-membership-role", "action-useradmin-preview-role-change", "action-useradmin-change-member-roles" -> detailSurface(actor, correlationId);
       case "action-useradmin-disable-member", "action-useradmin-reactivate-member" -> listSurface(actor, correlationId);
-      case "action-useradmin-start-access-review" -> accessReviewBlockedSurface(actor, correlationId);
+      case "action-useradmin-start-access-review", "action-useradmin-read-access-review", "action-useradmin-cancel-access-review", "action-useradmin-accept-access-review-result", "action-useradmin-reject-access-review-result" -> accessReviewBlockedSurface(actor, correlationId);
       case "action-useradmin-resend-invitation", "action-useradmin-revoke-invitation", "action-invite-user" -> invitationPanelSurface(actor, correlationId);
       case "action-display-user-list" -> listSurface(actor, correlationId);
       default -> dashboardSurface(actor, correlationId);
@@ -729,7 +765,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showProfileAction(), showSettingsAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayListAction(), displayDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), simulateToolBoundaryAction(), manageModelRefAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showProfileAction(), showSettingsAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayListAction(), displayDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), simulateToolBoundaryAction(), manageModelRefAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
@@ -785,7 +821,11 @@ public final class WorkstreamService {
   private SurfaceAction reactivateMemberStatusAction() { return new SurfaceAction("action-useradmin-reactivate-member", "Reactivate member", "command", USERADMIN_UPDATE_MEMBER_STATUS, "schema.user-admin.member-status.update.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-list", "inline"), new Audit("UserAdminMemberStatusChanged", true)); }
   private SurfaceAction previewRoleChangeAction() { return new SurfaceAction("action-useradmin-preview-role-change", "Preview role change", "proposal", USERADMIN_PREVIEW_ROLE_CHANGE, "schema.user-admin.role-change.preview.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-role-change-preview", "inline"), new Audit("UserAdminRoleChangePreviewed", true)); }
   private SurfaceAction changeMemberRolesAction() { return new SurfaceAction("action-useradmin-change-member-roles", "Apply role change", "command", USERADMIN_CHANGE_MEMBER_ROLES, "schema.user-admin.role-change.apply.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-detail-admin", "inline"), new Audit("UserAdminMemberRolesChanged", true)); }
-  private SurfaceAction startAccessReviewAction() { return new SurfaceAction("action-useradmin-start-access-review", "Start access review", "workflow", USERADMIN_START_ACCESS_REVIEW_TASK, "schema.user-admin.access-review.start.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-access-review", "inline"), new Audit("UserAdminAccessReviewStartBlocked", true)); }
+  private SurfaceAction startAccessReviewAction() { return new SurfaceAction("action-useradmin-start-access-review", "Start access review", "workflow", USERADMIN_ACCESS_REVIEW_START, "schema.user-admin.access-review.start.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-access-review", "inline"), new Audit("UserAdminAccessReviewStarted", true)); }
+  private SurfaceAction readAccessReviewAction() { return new SurfaceAction("action-useradmin-read-access-review", "Read access review", "read", USERADMIN_ACCESS_REVIEW_READ, "schema.user-admin.access-review.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-access-review", "inline"), new Audit("UserAdminAccessReviewRead", true)); }
+  private SurfaceAction cancelAccessReviewAction() { return new SurfaceAction("action-useradmin-cancel-access-review", "Cancel access review", "command", USERADMIN_ACCESS_REVIEW_CANCEL, "schema.user-admin.access-review.cancel.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-access-review", "inline"), new Audit("UserAdminAccessReviewCancelled", true)); }
+  private SurfaceAction acceptAccessReviewResultAction() { return new SurfaceAction("action-useradmin-accept-access-review-result", "Accept access review result", "approval", USERADMIN_ACCESS_REVIEW_ACCEPT_RESULT, "schema.user-admin.access-review.accept-result.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-access-review", "inline"), new Audit("UserAdminAccessReviewResultAccepted", true)); }
+  private SurfaceAction rejectAccessReviewResultAction() { return new SurfaceAction("action-useradmin-reject-access-review-result", "Reject access review result", "approval", USERADMIN_ACCESS_REVIEW_REJECT_RESULT, "schema.user-admin.access-review.reject-result.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-access-review", "inline"), new Audit("UserAdminAccessReviewResultRejected", true)); }
   private SurfaceAction deniedReplaceRoleAction() { return new SurfaceAction("action-replace-membership-role", "Replace membership role", "command", USER_ADMIN_CAPABILITY, "schema.membership.role.replace.v1", true, false, new DisabledReason("LAST_ADMIN_DENIED", "Backend authorization denied this action: cannot remove the last tenant admin without an approved replacement."), new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-user-admin-detail-admin", "inline"), new Audit("MembershipRoleReplacementDenied", true)); }
   private SurfaceAction traceAction() { return new SurfaceAction("action-open-trace", "Open trace", "trace", "my_account.view_own_trace_refs", null, false, false, null, new Idempotency(false, null), null, new Audit("TraceOpened", true)); }
   private SurfaceAction openAuditAction() { return new SurfaceAction("action-open-audit-trace", "Open audit timeline", "trace", "my_account.view_own_trace_refs", null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-audit-trace-dashboard", "inline"), new Audit("AuditTimelineOpened", true)); }
@@ -819,7 +859,7 @@ public final class WorkstreamService {
     if (actor.selectedContext().capabilities().contains(capabilityId) || USER_ADMIN_CAPABILITY.equals(capabilityId)) return true;
     if (capabilityId != null && capabilityId.startsWith("audit.trace.") && actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) return true;
     if (capabilityId != null && capabilityId.startsWith("governance.policy.") && actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_READ_CAPABILITY)) return actor.selectedContext().capabilities().contains(capabilityId);
-    return capabilityId != null && capabilityId.startsWith("USERADMIN_") && actor.selectedContext().capabilities().contains(USER_ADMIN_CAPABILITY);
+    return capabilityId != null && (capabilityId.startsWith("USERADMIN_") || capabilityId.startsWith("user_admin.")) && actor.selectedContext().capabilities().contains(USER_ADMIN_CAPABILITY);
   }
 
   private static String stringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return value; return fallback; }

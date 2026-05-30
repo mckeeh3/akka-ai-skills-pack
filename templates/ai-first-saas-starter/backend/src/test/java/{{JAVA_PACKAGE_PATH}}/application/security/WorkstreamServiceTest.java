@@ -277,14 +277,29 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void userAdminAccessReviewTaskFailsClosedWithoutAutonomousRuntime() {
+  void userAdminAccessReviewTaskLifecycleProducesTypedProviderBlockedSurface() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-start-access-review", "USERADMIN_START_ACCESS_REVIEW_TASK", Map.of("scope", "tenant"), "idem-access-review", "membership-admin", "surface-user-admin-dashboard", "corr-access-review"));
+        "action-useradmin-start-access-review", "user_admin.access_review.start", Map.of("scope", "tenant"), "idem-access-review", "membership-admin", "surface-user-admin-dashboard", "corr-access-review"));
 
     assertEquals("blocked-runtime", result.status());
-    assertTrue(result.message().contains("fails closed"));
+    assertTrue(result.message().contains("provider/runtime configuration"));
     assertEquals("surface-user-admin-access-review", result.resultSurface().surfaceId());
+    assertEquals("user_admin.access_review_task.v1", result.resultSurface().data().get("surfaceContract"));
     assertEquals("blocked_provider_or_runtime", result.resultSurface().data().get("status"));
+    assertEquals(true, result.resultSurface().data().get("noDirectMutation"));
+    assertTrue(result.resultSurface().toString().contains("user_admin.access_review.read"));
+    assertTrue(result.resultSurface().toString().contains("AccessReviewTask") || result.resultSurface().toString().contains("access-review"));
+
+    var taskId = result.resultSurface().data().get("taskId").toString();
+    var read = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-read-access-review", "user_admin.access_review.read", Map.of("taskId", taskId), null, "membership-admin", "surface-user-admin-access-review", "corr-access-review-read"));
+    assertEquals("accepted", read.status());
+    assertEquals(taskId, read.resultSurface().data().get("taskId"));
+
+    var cancelled = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-cancel-access-review", "user_admin.access_review.cancel", Map.of("taskId", taskId, "reason", "not needed"), "idem-access-review-cancel", "membership-admin", "surface-user-admin-access-review", "corr-access-review-cancel"));
+    assertEquals("accepted", cancelled.status());
+    assertEquals("cancelled", cancelled.resultSurface().data().get("status"));
   }
 
   @Test

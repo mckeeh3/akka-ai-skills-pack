@@ -153,6 +153,18 @@ public final class UserAdminService {
     return disabled;
   }
 
+  void requireAccessReviewRead(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
+    requireRead(actor, scopeType, tenantId, customerId);
+  }
+
+  void requireAccessReviewManage(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
+    requireManage(actor, scopeType, tenantId, customerId);
+  }
+
+  void auditAccessReview(AuthContextResolver.ResolvedMe actor, {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask task, String action, AdminAuditEvent.Result result, String reason, String correlationId) {
+    repository.appendAudit(new AdminAuditEvent(UUID.randomUUID().toString(), Instant.now(clock), correlationId, actor.account().accountId(), actor.selectedContext().membershipId(), task.scopeType(), task.tenantId(), task.customerId(), task.startedByAccountId(), task.taskId(), action, result, reason, reason, "BROWSER_SAFE"));
+  }
+
   private void requireRead(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireScope(actor, scopeType, tenantId, customerId);
     var capability = scopeType == ScopeType.CUSTOMER ? "customer.user.read" : scopeType == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : "tenant.user.read";
