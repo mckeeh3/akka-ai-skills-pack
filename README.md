@@ -98,7 +98,7 @@ For global installs, dry runs, archive installs, and detailed usage, see the [Sk
 
 ## Getting started: implement your initial AI-first app
 
-The recommended first-user path is incremental and production-oriented. Start with the packaged secure AI-first SaaS starter, make the five core v0 workstreams functional with real model-backed agents, then use the packaged core-app domain PRDs to implement the full core workstreams one at a time before adding product-specific capabilities. The starter is not just boilerplate; it is the working runtime shell and training vertical for the app's future feature work:
+The recommended first-user path is incremental and production-oriented. Start with the packaged secure AI-first SaaS starter, validate the production-ready five-core v0 baseline, then extend the five core workstreams vertically one at a time before adding product-specific capabilities. The current v0 objective is not a generic chatbot and not full-core SaaS completion: it is a secure AI-first SaaS reference runtime where My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy are fully implemented at v0 scope through real local Akka runtime paths. The starter is not just boilerplate; it is the working runtime shell and training vertical for the app's future feature work:
 
 ```text
 intent → functional agent/workstream → structured surface → governed backend capability
@@ -217,13 +217,13 @@ minimum starter to run. Do not add domain-specific features yet.
 Report every command run and its result.
 ```
 
-### Step 6 — Make the five core v0 workstreams functional
+### Step 6 — Validate the five-core v0 runtime baseline
 
-Once basic checks pass, continue with the first starter target rather than jumping to domain work. The five core v0 app is not functional until normal workstream message submission goes through real governed prompt assembly, a concrete Akka `Agent` component, and a configured backend model provider. A service-only provider call that bypasses the Akka Agent is not a completed workstream-agent runtime. Missing provider configuration should produce a safe blocked/error response, not a canned deterministic answer.
+Once basic checks pass, validate the current starter target rather than jumping to product-specific domain work. The five-core v0 app is not functional until normal workstream message submission goes through real governed prompt assembly, a concrete Akka `Agent` component, and a configured backend model provider. A service-only provider call that bypasses the Akka Agent is not a completed workstream-agent runtime. Missing provider configuration should produce a safe blocked/error response, not a canned deterministic answer.
 
 ```text
-Use the installed skills pack to continue the initial app rollout.
-Focus on making all five core v0 workstreams functional end to end with real
+Use the installed skills pack to validate and continue the initial v0 app rollout.
+Focus on proving all five core v0 workstreams work end to end with real
 model-backed workstream-agent responses through the Akka Agent component path.
 My Account is opened by clicking the signed-in user tile at the bottom of the
 left rail; the primary left-rail workstream links are User Admin, Agent Admin,
@@ -249,68 +249,52 @@ Manual model-backed smoke checklist after the workstream-agent runtime is implem
 
 This phase teaches the repeatable app pattern: functional agent/workstream, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.
 
-### Step 7 — Roll out the full core app workstreams from the packaged PRDs
+### Step 7 — Continue the five core workstreams one vertical at a time
 
-After the five core v0 workstreams work locally with real model-backed responses, use the packaged core-app domain PRDs as the implementation source for the full core foundation. These PRDs live in the installed pack at:
+After the five-core v0 baseline runs locally with real model-backed responses, keep working inside the five core workstreams before adding product-specific workstreams. The current v0 objective is to make each core workstream a real secure AI-first SaaS vertical, not merely a starter shell. Each vertical should preserve the shared v0 contract:
 
-```text
-.agents/docs/examples/ai-first-saas-core-app-domain/
-  README.md
-  my-account-workstream/README.md
-  user-admin-workstream/README.md
-  agent-admin-workstream/README.md
-  audit-trace-workstream/README.md
-  governance-policy-workstream/README.md
-```
+- request-based Akka `Agent` components for normal user-facing composer turns;
+- Akka `AutonomousAgent` only for durable internal/background work where task lifecycle, progress, cancellation, notifications, investigations, batches, or improvement loops justify it;
+- deterministic non-AI services for mechanical authorization, policy checks, validation, trace normalization, projections, outbox delivery, sanitization, and idempotency;
+- governed backend capabilities before exposing browser actions, surface actions, agent tools, workflow steps, timers, consumers, or queries;
+- backend authorization, tenant/customer isolation, safe denials, audit/work traces, frontend secret boundaries, tests, and local runtime/API/UI validation.
 
-Copy them into the project workspace so they become project input, not hidden pack internals:
-
-```bash
-mkdir -p docs/input/core-app-domain
-cp -R .agents/docs/examples/ai-first-saas-core-app-domain/* docs/input/core-app-domain/
-```
-
-Then ask the harness to create the rollout queue before coding:
+Ask the harness to create or continue a workstream-specific queue before coding:
 
 ```text
 Read .agents/AGENTS.md, .agents/skills/README.md, specs/scaffold-report.md,
-app-description/, specs/, and docs/input/core-app-domain/.
+app-description/, specs/, and the current five-core v0 workstream plan or pending tasks.
 
-The five core v0 workstreams are now running locally with real model-backed
-markdown_response behavior. My Account is accessed through the signed-in user
-tile at the bottom of the left rail; do not add a redundant My Account rail link.
-Use docs/input/core-app-domain/ as the source PRD for the full core app domain.
-Create or update specs/pending-tasks.md with a production-ready rollout plan
-that implements the core workstreams one at a time:
-1. My Account via signed-in user tile
-2. User Admin
-3. Agent Admin
-4. Audit/Trace
-5. Governance/Policy
+The five-core v0 baseline runs locally with real model-backed markdown_response behavior.
+Continue the v0 rollout by selecting exactly one core workstream vertical:
+My Account via the signed-in user tile, User Admin, Agent Admin, Audit/Trace,
+or Governance/Policy.
 
-For each workstream, derive structured surfaces, surface actions, governed backend
-capabilities, Akka components, frontend integration, real workstream-agent skills/tools,
-authorization, tenant isolation, audit/work traces, tests, and manual local smoke checks.
-Do not add product-specific domain features until the full core workstream rollout
-queue exists and the current next core task is clear.
+For that workstream, update the app-description/specs/pending-tasks first.
+Derive structured surfaces, surface actions, governed backend capabilities,
+Akka components, frontend integration, workstream-agent skills/tools, any justified
+AutonomousAgent background tasks, deterministic non-AI services, authorization,
+tenant isolation, audit/work traces, tests, and manual local smoke checks.
+Do not add product-specific domain features until the current five-core v0
+workstream task is complete or explicitly deferred.
 ```
 
-Execute the rollout one task at a time, preferably in fresh harness sessions:
+Execute one task at a time, preferably in fresh harness sessions:
 
 ```text
 Read .agents/AGENTS.md, .agents/skills/README.md, specs/pending-tasks.md,
-docs/input/core-app-domain/, and the files relevant to the next task.
-Select the next runnable pending task for the full core app rollout.
+app-description/, specs/, and the files relevant to the next five-core v0 task.
+Select the next runnable pending task for the five-core v0 rollout.
 Implement only that task through the real local Akka runtime path, update tests,
 run the relevant checks, perform any required local smoke validation, and update
 specs/pending-tasks.md with the result.
 ```
 
-Do not treat PRD processing as a paperwork step. Each core workstream is done only when it works through the authenticated shell, real backend capabilities, real governed agents where applicable, durable state/traces, React surfaces, tests, and local Akka smoke validation.
+Do not treat planning or PRD processing as a paperwork step. A core workstream task is done only when it works through the authenticated shell, real backend capabilities, real governed agents where applicable, durable state/traces, React surfaces, tests, and local Akka smoke validation.
 
-### Step 8 — Add product-specific features after the core foundation is usable
+### Step 8 — Add product-specific features after the five-core v0 foundation is usable
 
-When the full core foundation is usable, use natural product prompts to extend it. The pack should make reasonable decisions, record assumptions, and ask only for blocking information.
+When the five core v0 workstreams are usable at the selected scope, use natural product prompts to extend the app. The pack should make reasonable decisions, record assumptions, and ask only for blocking information.
 
 ```text
 Now extend this AI-first SaaS app with this domain feature:
