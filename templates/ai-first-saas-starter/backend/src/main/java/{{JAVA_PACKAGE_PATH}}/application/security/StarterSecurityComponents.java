@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Shared starter-template service registry. Normal runtime binds identity and other foundation state to Akka components. */
 public final class StarterSecurityComponents {
   private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-  private static final AtomicBoolean AKKA_RUNTIME_BOUND = new AtomicBoolean(false);
   private static final Clock CLOCK = Clock.systemUTC();
   private static final ModelProviderClient MODEL_PROVIDER_CLIENT = new OpenAiModelProviderClient();
 
@@ -65,7 +64,7 @@ public final class StarterSecurityComponents {
 
   /** Bind normal endpoint/agent runtime seams to Akka durable repositories once a ComponentClient is available. */
   public static void bindAkkaRuntime(ComponentClient componentClient) {
-    if (componentClient == null || !AKKA_RUNTIME_BOUND.compareAndSet(false, true)) return;
+    if (componentClient == null) return;
     var durableIdentity = new AkkaIdentityRepository(componentClient);
     var durableInvitations = new AkkaInvitationRepository(componentClient);
     var durableAgentBehavior = new AkkaAgentBehaviorRepository(componentClient);
@@ -74,6 +73,7 @@ public final class StarterSecurityComponents {
     meService = new MeService(authContextResolver);
     userAdminService = new UserAdminService(durableIdentity, CLOCK);
     BootstrapAdminSeeder.seedConfiguredAdmins(durableIdentity, System.getenv("ADMIN_USERS"));
+    var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
     var durableRuntime = new AgentRuntimeService(durableAgentBehavior, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, new AkkaAgentRuntimeTraceSink(componentClient));
     invitationRepository = durableInvitations;
     agentBehaviorRepository = durableAgentBehavior;
@@ -83,9 +83,9 @@ public final class StarterSecurityComponents {
     agentRuntimeToolResolver = new AgentRuntimeToolResolver(durableAgentBehavior, durableRuntime);
     invitationService = new InvitationService(durableIdentity, durableInvitations, CLOCK);
     invitationView = new InvitationView(invitationService);
-    auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
+    auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
     governancePolicyService = new GovernancePolicyService(governancePolicyRepository(), authContextResolver, CLOCK);
-    workstreamService = workstreamService(workstreamLogRepository());
+    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), governancePolicyRepository());
   }
 
   public static AuthContextResolver authContextResolver() {
@@ -106,7 +106,7 @@ public final class StarterSecurityComponents {
 
   public static WorkstreamService workstreamService(ComponentClient componentClient, WorkstreamLogRepository workstreamLogRepository) {
     bindAkkaRuntime(componentClient);
-    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), auditTraceRepository(workstreamLogRepository), governancePolicyRepository());
+    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository());
   }
 
   public static InvitationService invitationService() {
@@ -132,11 +132,27 @@ public final class StarterSecurityComponents {
     authContextResolver = new AuthContextResolver(testRepository);
     meService = new MeService(authContextResolver);
     userAdminService = new UserAdminService(testRepository, CLOCK);
+    invitationRepository = new LocalDemoInvitationRepository();
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK);
     invitationView = new InvitationView(invitationService);
     auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
     governancePolicyService = new GovernancePolicyService(governancePolicyRepository(), authContextResolver, CLOCK);
     workstreamService = workstreamService(workstreamLogRepository());
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source log/audit adapters. */
+  public static void bindTestAuditTraceRepository(AuditTraceRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test audit trace repository binding");
+    auditTraceService = new AuditTraceService(authContextResolver, testRepository);
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source governed-agent adapters. */
+  public static void bindTestAgentBehaviorRepository(AgentBehaviorRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test agent behavior repository binding");
+    agentBehaviorRepository = testRepository;
+    agentBehaviorSeedLoader = new AgentBehaviorSeedLoader(testRepository, CLOCK);
+    agentRuntimeService = new AgentRuntimeService(testRepository, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, traceSinkBeforeAkkaBinding());
+    agentRuntimeToolResolver = new AgentRuntimeToolResolver(testRepository, agentRuntimeService);
   }
 
   public static AgentBehaviorRepository agentBehaviorRepository() {
@@ -168,7 +184,7 @@ public final class StarterSecurityComponents {
   }
 
   private static WorkstreamLogRepository workstreamLogRepository() {
-    return FailClosedFoundationRuntime.localDemoOrTestEnabled() ? new LocalDemoWorkstreamLogRepository() : new FailClosedWorkstreamLogRepository();
+    return new UnboundWorkstreamLogRepository();
   }
 
   private static AccessReviewTaskRepository accessReviewTaskRepository() {
@@ -180,7 +196,7 @@ public final class StarterSecurityComponents {
   }
 
   private static AuditTraceRepository auditTraceRepository(WorkstreamLogRepository workstreamLogRepository) {
-    return FailClosedFoundationRuntime.localDemoOrTestEnabled() ? new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository) : new FailClosedAuditTraceRepository();
+    return new UnboundAuditTraceRepository();
   }
 
   private static AgentRuntimeTraceSink traceSinkBeforeAkkaBinding() {
@@ -189,6 +205,25 @@ public final class StarterSecurityComponents {
 
   private static GovernancePolicyRepository governancePolicyRepository() {
     return FailClosedFoundationRuntime.localDemoOrTestEnabled() ? new LocalDemoGovernancePolicyRepository() : new FailClosedGovernancePolicyRepository();
+  }
+
+  private static final class UnboundWorkstreamLogRepository implements WorkstreamLogRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("WorkstreamLogRepository");
+    }
+
+    public List<WorkstreamService.WorkstreamItem> items(String tenantId, String selectedContextId, String functionalAgentId) { throw unavailable(); }
+    public Optional<WorkstreamService.SurfaceEnvelope> surface(String tenantId, String selectedContextId, String surfaceId) { throw unavailable(); }
+    public Optional<WorkstreamLogRepository.WorkstreamMessageLogEntry> findByIdempotencyKey(String tenantId, String selectedContextId, String functionalAgentId, String idempotencyKey) { throw unavailable(); }
+    public WorkstreamLogRepository.WorkstreamMessageLogEntry appendMessage(WorkstreamLogRepository.WorkstreamMessageLogEntry entry) { throw unavailable(); }
+    public WorkstreamService.WorkstreamItem appendSystemEntry(String tenantId, String selectedContextId, WorkstreamService.WorkstreamItem item, WorkstreamService.SurfaceEnvelope surface) { throw unavailable(); }
+  }
+
+  private static final class UnboundAuditTraceRepository implements AuditTraceRepository {
+    @Override
+    public List<AuditTraceService.TraceEvent> eventsFor(AuthContextResolver.ResolvedMe actor, String correlationId) {
+      throw FailClosedFoundationRuntime.unavailable("AuditTraceRepository");
+    }
   }
 
   private static final class UnboundIdentityRepository implements IdentityRepository {

@@ -4,7 +4,6 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentAdminService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
-import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.FailClosedWorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.WorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.BehaviorChangeProposal;
@@ -100,45 +99,6 @@ public final class WorkstreamService {
   private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
   private final WorkstreamLogRepository workstreamLogRepository;
   private final Map<String, CapabilityActionResult> idempotentActionResults = new ConcurrentHashMap<>();
-
-  public WorkstreamService(
-      MeService meService,
-      AuthContextResolver authContextResolver,
-      UserDirectoryView userDirectoryView,
-      InvitationView invitationView,
-      UserAdminService userAdminService,
-      InvitationService invitationService,
-      AgentBehaviorRepository agentBehaviorRepository,
-      AgentRuntimeService agentRuntimeService) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), new LocalDemoWorkstreamLogRepository());
-  }
-
-  public WorkstreamService(
-      MeService meService,
-      AuthContextResolver authContextResolver,
-      UserDirectoryView userDirectoryView,
-      InvitationView invitationView,
-      UserAdminService userAdminService,
-      InvitationService invitationService,
-      AgentBehaviorRepository agentBehaviorRepository,
-      AgentRuntimeService agentRuntimeService,
-      WorkstreamLogRepository workstreamLogRepository) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), workstreamLogRepository);
-  }
-
-  public WorkstreamService(
-      MeService meService,
-      AuthContextResolver authContextResolver,
-      UserDirectoryView userDirectoryView,
-      InvitationView invitationView,
-      UserAdminService userAdminService,
-      InvitationService invitationService,
-      AgentBehaviorRepository agentBehaviorRepository,
-      AgentRuntimeService agentRuntimeService,
-      WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker,
-      WorkstreamLogRepository workstreamLogRepository) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository());
-  }
 
   public WorkstreamService(
       MeService meService,

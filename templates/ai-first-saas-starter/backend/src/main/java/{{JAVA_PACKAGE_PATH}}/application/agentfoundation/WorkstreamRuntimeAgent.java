@@ -4,6 +4,7 @@ import akka.javasdk.agent.Agent;
 import akka.javasdk.agent.ModelProvider;
 import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.Description;
+import akka.javasdk.client.ComponentClient;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuthContext;
@@ -21,7 +22,11 @@ import java.util.List;
     name = "Workstream Runtime Agent",
     description = "Produces governed markdown_response content for role-authorized workstreams.")
 public final class WorkstreamRuntimeAgent extends Agent {
-  private final AgentRuntimeToolResolver runtimeToolResolver = StarterSecurityComponents.agentRuntimeToolResolver();
+  private final ComponentClient componentClient;
+
+  public WorkstreamRuntimeAgent(ComponentClient componentClient) {
+    this.componentClient = componentClient;
+  }
 
   public record GovernedWorkstreamRequest(
       @Description("The fully assembled governed system prompt and safe runtime context")
@@ -71,7 +76,8 @@ public final class WorkstreamRuntimeAgent extends Agent {
 
   private AgentRuntimeToolResolver.ResolvedRuntimeTools resolveRuntimeTools(GovernedWorkstreamRequest request) {
     try {
-      var runtimeTools = runtimeToolResolver.resolve(new AgentRuntimeToolResolver.ResolveRuntimeToolsRequest(
+      StarterSecurityComponents.bindAkkaRuntime(componentClient);
+      var runtimeTools = StarterSecurityComponents.agentRuntimeToolResolver().resolve(new AgentRuntimeToolResolver.ResolveRuntimeToolsRequest(
           request.tenantId(),
           request.functionalAgentId(),
           request.authContext(),

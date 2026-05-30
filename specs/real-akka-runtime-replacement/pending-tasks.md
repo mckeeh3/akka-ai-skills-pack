@@ -124,7 +124,7 @@
 
 ### TASK-RUNTIME-01-003: Replace workstream log and audit trace runtime with Akka components
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/03-replace-workstream-audit-runtime-with-akka-components.md
 - depends on: [TASK-RUNTIME-01-002]
@@ -160,6 +160,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: replace workstream audit storage with Akka components`
+  - completed: added `AkkaAuditTraceRepository`, bound normal runtime WorkstreamService/AuditTraceService paths to Akka workstream log, agent trace views, and durable trace sinks; moved log/audit local-demo and fail-closed adapters to test source; removed main-source convenience constructors that selected local-demo audit/log storage
+  - checks: `git diff --check`; rendered fullstack validation with `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh --keep --target /tmp/ai-first-saas-starter-runtime-task-01003-nosmoke`; required main-source log/audit substitute scan returned no matches
 
 ### TASK-RUNTIME-01-004: Replace governance policy and access-review runtime with Akka components
 

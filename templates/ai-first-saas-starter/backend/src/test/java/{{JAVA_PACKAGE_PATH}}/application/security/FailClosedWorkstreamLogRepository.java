@@ -3,8 +3,8 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import java.util.List;
 import java.util.Optional;
 
-/** Fail-closed workstream log port used when no Akka-backed log is supplied. */
-public final class FailClosedWorkstreamLogRepository implements WorkstreamLogRepository {
+/** Test-only fail-closed workstream log port used to verify durable binding diagnostics. */
+final class FailClosedWorkstreamLogRepository implements WorkstreamLogRepository {
   private IllegalStateException unavailable() {
     return FailClosedFoundationRuntime.unavailable("WorkstreamLogRepository");
   }

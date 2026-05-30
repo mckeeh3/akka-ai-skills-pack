@@ -48,7 +48,7 @@ public class AgentRuntimeTraceView extends View {
           trace.capabilityId(),
           trace.targetId(),
           trace.safeSummary(),
-          trace.checksum(),
+          trace.checksum() == null ? "" : trace.checksum(),
           trace.decision() == AgentRuntimeTrace.Decision.DENIED,
           trace.decision() == AgentRuntimeTrace.Decision.ALLOWED,
           trace.decision() == AgentRuntimeTrace.Decision.APPROVAL_REQUIRED);

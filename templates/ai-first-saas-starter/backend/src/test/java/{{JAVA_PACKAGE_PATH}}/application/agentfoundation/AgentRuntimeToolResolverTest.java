@@ -9,7 +9,9 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeToolResolve
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.GovernancePolicyService;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoAuditTraceRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoWorkstreamLogRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoInvitationRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView;
@@ -44,7 +46,10 @@ class AgentRuntimeToolResolverTest {
   void setUp() {
     repository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock());
+    var identityRepository = new LocalDemoIdentityRepository();
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock());
+    StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
+    StarterSecurityComponents.bindTestAuditTraceRepository(new LocalDemoAuditTraceRepository(runtimeService, new LocalDemoWorkstreamLogRepository()));
     resolver = new AgentRuntimeToolResolver(repository, runtimeService);
     tenantAdmin = new AuthContext(
         "admin-1",

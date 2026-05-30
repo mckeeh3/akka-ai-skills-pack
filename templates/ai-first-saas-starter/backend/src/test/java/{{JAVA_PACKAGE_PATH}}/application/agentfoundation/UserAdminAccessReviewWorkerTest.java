@@ -83,6 +83,7 @@ class UserAdminAccessReviewWorkerTest {
   }
 
   private AgentRuntimeService runtimeService(ModelProviderClient provider) {
+    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
     return new AgentRuntimeService(
         StarterSecurityComponents.agentBehaviorRepository(),
         StarterSecurityComponents.authContextResolver(),
