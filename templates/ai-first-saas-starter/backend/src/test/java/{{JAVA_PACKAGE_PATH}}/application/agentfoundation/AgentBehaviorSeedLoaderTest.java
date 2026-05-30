@@ -129,7 +129,9 @@ class AgentBehaviorSeedLoaderTest {
           "corr-tools-" + agentId));
       var expectedToolIds = AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID.equals(agentId)
           ? List.of("readReferenceDoc", "readSkill", "userAdminEvidence.read")
-          : List.of("readReferenceDoc", "readSkill");
+          : AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)
+              ? List.of("agentAdminEvidence.read", "readReferenceDoc", "readSkill")
+              : List.of("readReferenceDoc", "readSkill");
       assertEquals(expectedToolIds, runtimeTools.grantedToolIds(), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readReferenceDoc"), agentId);
       assertFalse(runtimeTools.deniedToolIds().contains("readSkill"), agentId);
@@ -234,6 +236,7 @@ class AgentBehaviorSeedLoaderTest {
       capabilities.add(AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY);
     } else if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY);
+      capabilities.add(AgentAdminService.LIST_DEFINITIONS);
     } else if (AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY);
     } else {

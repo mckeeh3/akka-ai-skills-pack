@@ -18,6 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 
@@ -267,9 +268,12 @@ public final class AgentBehaviorSeedLoader {
   }
 
   private ToolPermissionBoundary createBasicBoundary(String tenantId, BasicCoreAgentSeed seed, String actor, String correlationId, Instant now, SeedImportResult result) {
-    var grants = List.of(
-        new ToolPermissionBoundary.ToolGrant("readSkill", ToolPermissionBoundary.Category.READ_SKILL, "agent.skills.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "SkillLoadTrace"),
-        new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_REFERENCE, "agent.references.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "ReferenceLoadTrace"));
+    var grants = new ArrayList<ToolPermissionBoundary.ToolGrant>();
+    grants.add(new ToolPermissionBoundary.ToolGrant("readSkill", ToolPermissionBoundary.Category.READ_SKILL, "agent.skills.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "SkillLoadTrace"));
+    grants.add(new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_REFERENCE, "agent.references.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "ReferenceLoadTrace"));
+    if (AGENT_ADMIN_AGENT_ID.equals(seed.agentDefinitionId())) {
+      grants.add(new ToolPermissionBoundary.ToolGrant("agentAdminEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, AgentAdminService.LIST_DEFINITIONS, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
+    }
     var checksum = checksum(grants.toString());
     var boundary = new ToolPermissionBoundary(tenantId, seed.toolBoundaryId(), seed.agentDefinitionId(), AgentLifecycleStatus.ACTIVE, 1, grants, checksum, provenance("tool-boundaries/" + seed.slug() + "-agent-tools", checksum, actor, correlationId, now, false), now, now);
     repository.saveToolBoundary(boundary);

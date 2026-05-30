@@ -51,7 +51,7 @@ class AgentRuntimeToolResolverTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read"));
+        List.of("agent.user_admin.use", "agent_admin.submit_turn", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read", "agent_admin.list_definitions"));
   }
 
   @Test
@@ -89,6 +89,44 @@ class AgentRuntimeToolResolverTest {
     assertFalse(evidence.toLowerCase().contains("invite-token"));
     assertFalse(evidence.toLowerCase().contains("providersecret"));
     assertEquals(beforeRoles, identityRepository.findMembership("membership-member").orElseThrow().roles(), "Evidence reads must not mutate roles or membership state");
+  }
+
+  @Test
+  void agentAdminEvidenceToolReadsScopedRedactedEvidenceWithoutMutation() {
+    var resolved = resolver.resolve(agentAdminRuntimeToolsRequest("corr-agent-admin-evidence-tools"));
+
+    assertEquals(List.of("agentAdminEvidence.read", "readReferenceDoc", "readSkill"), resolved.grantedToolIds());
+    assertTrue(resolved.runtimeTools().stream().anyMatch(AgentAdminEvidenceTools.class::isInstance));
+    var tool = resolved.runtimeTools().stream().filter(AgentAdminEvidenceTools.class::isInstance).map(AgentAdminEvidenceTools.class::cast).findFirst().orElseThrow();
+    var beforeBoundary = repository.toolBoundary("tenant-1", "tool-boundary-agent-admin").orElseThrow().checksum();
+
+    var evidence = tool.read("summarize current tenantId=tenant-1 Agent Admin provider readiness, tool boundary, proposal, activate, rollback evidence; no direct mutation");
+
+    assertTrue(evidence.contains("tool_id=agentAdminEvidence.read"));
+    assertTrue(evidence.contains("mode=read_only_no_direct_mutation"));
+    assertTrue(evidence.contains("agentDefinitionCount=5"));
+    assertTrue(evidence.contains("agent-agent-admin"));
+    assertTrue(evidence.contains("tool-boundary-agent-admin"));
+    assertTrue(evidence.contains("providerReadiness=ready:openai-low-temperature:credentials-redacted"));
+    assertTrue(evidence.contains("proposalGuidance=Guidance may draft rationale"));
+    assertTrue(evidence.contains("authority_note=Evidence is scoped deterministic data only"));
+    assertTrue(evidence.contains("trace-agentadmin-evidence"));
+    assertFalse(evidence.toLowerCase().contains("api_key"));
+    assertFalse(evidence.toLowerCase().contains("providersecret"));
+    assertEquals(beforeBoundary, repository.toolBoundary("tenant-1", "tool-boundary-agent-admin").orElseThrow().checksum(), "Evidence reads must not mutate tool boundaries");
+  }
+
+  @Test
+  void agentAdminEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
+    var noReadCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of("agent_admin.submit_turn"));
+    var deniedCapabilityTool = new AgentAdminEvidenceTools(repository, noReadCapability, "corr-agent-admin-evidence-denied");
+
+    var missingCapability = assertThrows(AuthorizationException.class, () -> deniedCapabilityTool.read("summarize"));
+    assertTrue(missingCapability.getMessage().contains("missing-capability:agent_admin.list_definitions"));
+
+    var tool = new AgentAdminEvidenceTools(repository, tenantAdmin, "corr-agent-admin-evidence-cross-tenant");
+    var crossTenant = assertThrows(AuthorizationException.class, () -> tool.read("tenantId=tenant-other"));
+    assertTrue(crossTenant.getMessage().contains("agent-admin-evidence-tenant-mismatch"));
   }
 
   @Test
@@ -148,6 +186,10 @@ class AgentRuntimeToolResolverTest {
 
   private ResolveRuntimeToolsRequest runtimeToolsRequest(String correlationId) {
     return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, correlationId);
+  }
+
+  private ResolveRuntimeToolsRequest agentAdminRuntimeToolsRequest(String correlationId) {
+    return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, correlationId);
   }
 
   private InMemoryIdentityRepository seededIdentityRepository() {

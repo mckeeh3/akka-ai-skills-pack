@@ -16,9 +16,11 @@ public final class ToolRegistry {
   public static final String READ_SKILL_TOOL_ID = "readSkill";
   public static final String READ_REFERENCE_DOC_TOOL_ID = "readReferenceDoc";
   public static final String USER_ADMIN_EVIDENCE_TOOL_ID = UserAdminEvidenceTools.TOOL_ID;
+  public static final String AGENT_ADMIN_EVIDENCE_TOOL_ID = AgentAdminEvidenceTools.TOOL_ID;
   static final String READ_SKILL_BINDING = "governed-loader.readSkill";
   static final String READ_REFERENCE_DOC_BINDING = "governed-loader.readReferenceDoc";
   static final String USER_ADMIN_EVIDENCE_BINDING = "user-admin.evidence.read";
+  static final String AGENT_ADMIN_EVIDENCE_BINDING = "agent-admin.evidence.read";
 
   private final Map<String, RegisteredTool> toolsByStableToolId;
 
@@ -61,7 +63,17 @@ public final class ToolRegistry {
                 "Reads scoped, redacted User Admin member, invitation, role, status, and audit evidence without side effects.",
                 ToolCatalogEntry.SideEffectLevel.NONE,
                 USER_ADMIN_EVIDENCE_BINDING),
-            context -> context.userAdminEvidenceTools())));
+            context -> context.userAdminEvidenceTools()),
+        new RegisteredTool(
+            new ToolCatalogEntry(
+                AGENT_ADMIN_EVIDENCE_TOOL_ID,
+                "Read Agent Admin evidence",
+                ToolPermissionBoundary.Category.DATA_LOOKUP,
+                AgentAdminEvidenceTools.CAPABILITY_ID,
+                "Reads scoped, redacted Agent Admin definition, manifest, model readiness, tool-boundary, seed, proposal, and trace evidence without side effects.",
+                ToolCatalogEntry.SideEffectLevel.NONE,
+                AGENT_ADMIN_EVIDENCE_BINDING),
+            context -> context.agentAdminEvidenceTools())));
   }
 
   public Optional<RegisteredTool> find(String toolId) {
@@ -82,7 +94,7 @@ public final class ToolRegistry {
     }
   }
 
-  public record BindingContext(AgentRuntimeService runtimeService, String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId) {
+  public record BindingContext(AgentRuntimeService runtimeService, AgentBehaviorRepository repository, String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId) {
     public AgentRuntimeLoaderTools loaderTools() {
       return new AgentRuntimeLoaderTools(runtimeService, tenantId, agentDefinitionId, authContext, mode, capabilityId, correlationId);
     }
@@ -92,6 +104,13 @@ public final class ToolRegistry {
           StarterSecurityComponents.identityRepository(),
           StarterSecurityComponents.userAdminService(),
           StarterSecurityComponents.invitationView(),
+          authContext,
+          correlationId);
+    }
+
+    public AgentAdminEvidenceTools agentAdminEvidenceTools() {
+      return new AgentAdminEvidenceTools(
+          repository,
           authContext,
           correlationId);
     }

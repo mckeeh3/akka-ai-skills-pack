@@ -76,7 +76,7 @@ public final class AgentRuntimeToolResolver {
       var bindingGroup = bindingGroup(entry);
       if (!registeredBindingGroups.contains(bindingGroup)) {
         registeredBindingGroups.add(bindingGroup);
-        runtimeTools.add(registered.get().createBinding(new ToolRegistry.BindingContext(runtimeService, request.tenantId(), request.agentDefinitionId(), request.authContext(), request.mode(), request.capabilityId(), request.correlationId())));
+        runtimeTools.add(registered.get().createBinding(new ToolRegistry.BindingContext(runtimeService, repository, request.tenantId(), request.agentDefinitionId(), request.authContext(), request.mode(), request.capabilityId(), request.correlationId())));
       }
     }
     return new ResolvedRuntimeTools(List.copyOf(runtimeTools), List.copyOf(entries), List.copyOf(grantedToolIds), List.copyOf(deniedToolIds));

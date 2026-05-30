@@ -173,7 +173,7 @@
 
 ### TASK-FCSMB-AA-01-004: Implement AgentAdminAgent governed guidance evidence path
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
 - task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/04-implement-agent-admin-agent-guidance.md
 - depends on: [TASK-FCSMB-AA-01-003]
@@ -212,6 +212,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement agent admin guidance`
+  - implemented read-only `agentAdminEvidence.read` DATA_LOOKUP facade, registry binding, Agent Admin tool-boundary grant, seed guidance hardening, and tests for scoped evidence, provider readiness, no direct mutation, capability denial, and cross-tenant denial
+  - validation: source-template Maven command is blocked by placeholder `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent passed with `mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest`
+  - validation: required frontend contract tests, required `rg` proof command, and `git diff --check` passed
 
 ### TASK-FCSMB-AA-01-005: Implement Agent Admin frontend runtime-aligned surfaces
 
