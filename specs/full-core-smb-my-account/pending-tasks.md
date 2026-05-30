@@ -267,7 +267,7 @@
 
 ### TASK-FCSMB-MA-01-006: Run integrated My Account validation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-my-account/my-account-implementation-map.md
 - task brief: specs/full-core-smb-my-account/tasks/01-my-account/06-run-integrated-my-account-validation.md
 - depends on: [TASK-FCSMB-MA-01-005]
@@ -301,6 +301,11 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: validate my account full core`
+  - checks: direct template backend targeted Maven commands are blocked by unrendered `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; broad scaffolded validation rendered the starter and passed backend `mvn test`, including My Account, workstream, admin endpoint, seed loader, runtime service, tool resolver, and runtime agent tests.
+  - checks: frontend targeted `npm test -- --runTestsByPath src/workstream-my-account-vertical.contract.test.mjs src/workstream-shell.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/api.contract.test.mjs` passed.
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh` passed, including scaffold, backend tests, frontend install/tests/typecheck/build, static asset secret scan, and real provider smoke.
+  - checks: required `rg` proof and `git diff --check` passed.
+  - validation result: no new My Account blockers were found; terminal verification is ready to run.
 
 ### TASK-FCSMB-MA-99-001: Verify My Account full-core readiness
 
