@@ -97,6 +97,7 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
         <article className="audit-evidence-panel" aria-label="Denial/provider/tool evidence">
           {envelope.data.safeReason && <p className="safe-reason">{envelope.data.safeReason}</p>}
           {envelope.data.redactedEvidence && <p>{envelope.data.redactedEvidence}</p>}
+          {envelope.data.decision === 'not_found_or_redacted' && <p className="surface-state-inline forbidden" role="status">not_found_or_redacted: hidden or cross-scope evidence is not enumerated.</p>}
           <dl>
             {envelope.data.traceId && <><dt>Trace id</dt><dd>{envelope.data.traceId}</dd></>}
             {envelope.data.eventKind && <><dt>Event kind</dt><dd>{envelope.data.eventKind}</dd></>}
@@ -110,6 +111,20 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
           {envelope.data.userActionableNextSteps && <section><h4>Safe next steps</h4><ul>{envelope.data.userActionableNextSteps.map((step) => <li key={step}>{step}</li>)}</ul></section>}
           {envelope.data.policyRefs && <p className="capability-basis">Policy/capability refs: {envelope.data.policyRefs.join(', ')}</p>}
           {envelope.data.redactedDetails && <section className="redaction-note"><h4>Redacted details</h4><ul>{Object.entries(envelope.data.redactedDetails).map(([key, value]) => <li key={key}><strong>{key}</strong>: {value}</li>)}</ul></section>}
+          {envelope.data.relatedEvents && envelope.data.relatedEvents.length > 0 && (
+            <section className="surface-card-list" aria-label="Related provider tool model worker events">
+              <h4>Related failure evidence</h4>
+              {envelope.data.relatedEvents.map((event) => (
+                <article key={event.traceId} className={`surface-row-card ${event.status ?? 'event'}`}>
+                  <p><span>traceId</span><strong><a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(event.traceId)}`}>{event.traceId}</a></strong></p>
+                  {event.eventKind && <p><span>eventKind</span><strong>{event.eventKind}</strong></p>}
+                  {event.status && <p><span>status</span><strong>{event.status}</strong></p>}
+                  {event.correlationId && <p><span>correlation</span><strong><a href={`/ui?surfaceId=surface-audit-trace-timeline&correlationId=${encodeURIComponent(event.correlationId)}`}>{event.correlationId}</a></strong></p>}
+                  {event.summary && <p><span>summary</span><strong>{event.summary}</strong></p>}
+                </article>
+              ))}
+            </section>
+          )}
           {envelope.data.traceLinks && <section className="trace-link-list" aria-label="Audit evidence trace links">{envelope.data.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
         </article>
       )}

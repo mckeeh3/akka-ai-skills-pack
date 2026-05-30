@@ -51,7 +51,7 @@ export const initialWorkstreamItems: WorkstreamItem[] = [
     title: 'Audit/Trace v0 response',
     body: 'Five core v0 starter surface for browser-safe audit and trace summaries.',
     status: 'ready',
-    traceLinks: [{ traceId: 'trace-surface-v0-audit-trace-markdown', label: 'Audit/Trace fixture trace', href: '/ui?surfaceId=surface-v0-audit-trace-markdown' }]
+    traceLinks: [{ traceId: 'trace-surface-v0-audit-trace-markdown', label: 'Audit/Trace fixture trace', href: '/ui?surfaceId=surface-audit-trace-detail&traceId=trace-surface-v0-audit-trace-markdown' }]
   },
   {
     itemId: 'item-v0-governance-policy-markdown',

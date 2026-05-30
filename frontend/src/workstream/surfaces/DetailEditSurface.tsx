@@ -35,6 +35,41 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
           Edit authority: {permissionState.authoritativeCapabilityId}. {permissionState.reason}
         </p>
       )}
+      {envelope.data.accessManagement && (
+        <section className="access-management-evidence" aria-label="User Admin access-management evidence">
+          <p className="capability-basis">{envelope.data.accessManagement.advisoryNotice}</p>
+          {envelope.data.accessManagement.memberStatus && (
+            <article className="access-management-card">
+              <h4>Member status authority</h4>
+              <dl>
+                <dt>Account status</dt><dd>{envelope.data.accessManagement.memberStatus.accountStatus}</dd>
+                <dt>Membership status</dt><dd>{envelope.data.accessManagement.memberStatus.membershipStatus}</dd>
+                <dt>Action ids</dt><dd>{envelope.data.accessManagement.memberStatus.statusActionIds.join(', ')}</dd>
+                {envelope.data.accessManagement.memberStatus.noOpMessage && <><dt>No-op/idempotency</dt><dd>{envelope.data.accessManagement.memberStatus.noOpMessage}</dd></>}
+                {envelope.data.accessManagement.memberStatus.idempotencyKeySource && <><dt>Idempotency key source</dt><dd>{envelope.data.accessManagement.memberStatus.idempotencyKeySource}</dd></>}
+              </dl>
+              <ul>{envelope.data.accessManagement.memberStatus.denialHints.map((hint) => <li key={hint}>{hint}</li>)}</ul>
+              <section className="trace-link-list" aria-label="Member status trace links">{envelope.data.accessManagement.memberStatus.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>
+            </article>
+          )}
+          {envelope.data.accessManagement.roleChangePreview && (
+            <article className="access-management-card role-change-preview" data-surface-contract={envelope.data.accessManagement.roleChangePreview.surfaceContract}>
+              <h4>Role/capability preview</h4>
+              <dl>
+                <dt>Current roles</dt><dd>{envelope.data.accessManagement.roleChangePreview.currentRoles.join(', ')}</dd>
+                <dt>Proposed roles</dt><dd>{envelope.data.accessManagement.roleChangePreview.proposedRoles.join(', ')}</dd>
+                <dt>Capability delta</dt><dd>Added {envelope.data.accessManagement.roleChangePreview.capabilityDelta.added.join(', ') || 'none'}; removed {envelope.data.accessManagement.roleChangePreview.capabilityDelta.removed.join(', ') || 'none'}</dd>
+                <dt>Affected workstreams</dt><dd>{envelope.data.accessManagement.roleChangePreview.affectedWorkstreams.join(', ')}</dd>
+                <dt>Policy hints</dt><dd>{envelope.data.accessManagement.roleChangePreview.policyHints.join('; ')}</dd>
+                <dt>Last-admin impact</dt><dd>{envelope.data.accessManagement.roleChangePreview.lastAdminImpact}</dd>
+                <dt>Approval required</dt><dd>{envelope.data.accessManagement.roleChangePreview.approvalRequired ? 'yes' : 'no'}</dd>
+                <dt>No-op</dt><dd>{envelope.data.accessManagement.roleChangePreview.noOp ? 'yes' : 'no'}</dd>
+              </dl>
+              <section className="trace-link-list" aria-label="Role-change preview trace links">{envelope.data.accessManagement.roleChangePreview.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>
+            </article>
+          )}
+        </section>
+      )}
       {fields.length > 0 ? (
         <form className="surface-detail-edit-form" aria-label={`${envelope.title} edit form`}>
           <input type="hidden" name="recordId" value={recordId} readOnly />
@@ -62,6 +97,7 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
         <article className="audit-evidence-panel" aria-label="Denial/provider/tool evidence">
           {envelope.data.safeReason && <p className="safe-reason">{envelope.data.safeReason}</p>}
           {envelope.data.redactedEvidence && <p>{envelope.data.redactedEvidence}</p>}
+          {envelope.data.decision === 'not_found_or_redacted' && <p className="surface-state-inline forbidden" role="status">not_found_or_redacted: hidden or cross-scope evidence is not enumerated.</p>}
           <dl>
             {envelope.data.traceId && <><dt>Trace id</dt><dd>{envelope.data.traceId}</dd></>}
             {envelope.data.eventKind && <><dt>Event kind</dt><dd>{envelope.data.eventKind}</dd></>}
@@ -75,6 +111,20 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
           {envelope.data.userActionableNextSteps && <section><h4>Safe next steps</h4><ul>{envelope.data.userActionableNextSteps.map((step) => <li key={step}>{step}</li>)}</ul></section>}
           {envelope.data.policyRefs && <p className="capability-basis">Policy/capability refs: {envelope.data.policyRefs.join(', ')}</p>}
           {envelope.data.redactedDetails && <section className="redaction-note"><h4>Redacted details</h4><ul>{Object.entries(envelope.data.redactedDetails).map(([key, value]) => <li key={key}><strong>{key}</strong>: {value}</li>)}</ul></section>}
+          {envelope.data.relatedEvents && envelope.data.relatedEvents.length > 0 && (
+            <section className="surface-card-list" aria-label="Related provider tool model worker events">
+              <h4>Related failure evidence</h4>
+              {envelope.data.relatedEvents.map((event) => (
+                <article key={event.traceId} className={`surface-row-card ${event.status ?? 'event'}`}>
+                  <p><span>traceId</span><strong><a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(event.traceId)}`}>{event.traceId}</a></strong></p>
+                  {event.eventKind && <p><span>eventKind</span><strong>{event.eventKind}</strong></p>}
+                  {event.status && <p><span>status</span><strong>{event.status}</strong></p>}
+                  {event.correlationId && <p><span>correlation</span><strong><a href={`/ui?surfaceId=surface-audit-trace-timeline&correlationId=${encodeURIComponent(event.correlationId)}`}>{event.correlationId}</a></strong></p>}
+                  {event.summary && <p><span>summary</span><strong>{event.summary}</strong></p>}
+                </article>
+              ))}
+            </section>
+          )}
           {envelope.data.traceLinks && <section className="trace-link-list" aria-label="Audit evidence trace links">{envelope.data.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
         </article>
       )}

@@ -11,6 +11,7 @@ const detail = read('./workstream/surfaces/DetailEditSurface.tsx');
 const decision = read('./workstream/surfaces/DecisionSurface.tsx');
 const list = read('./workstream/surfaces/ListSearchSurface.tsx');
 const dashboard = read('./workstream/surfaces/DashboardSurface.tsx');
+const traceLinks = read('./workstream/stream/TraceLinkList.tsx');
 const workstream = read('./workstream/fixtures/workstream.ts');
 
 test('Audit/Trace v0 fixture exposes contract capabilities, surfaces, and backend-authoritative actions', () => {
@@ -25,6 +26,8 @@ test('Audit/Trace v0 fixture exposes contract capabilities, surfaces, and backen
 });
 
 test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redaction, and safe rendering states', () => {
+  assert.match(types, /surfaceContract\?: 'audit\.trace\.dashboard\.v1'/);
+  assert.match(types, /attentionItems\?: Array/);
   assert.match(types, /nodes\?: Array/);
   assert.match(types, /redactedEvidence\?: string/);
   assert.match(types, /safeReason\?: string/);
@@ -34,12 +37,16 @@ test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redac
   assert.match(timeline, /surface-audit-trace-detail/);
   assert.match(detail, /audit-evidence-panel/);
   assert.match(detail, /Denial\/provider\/tool evidence/);
+  assert.match(detail, /not_found_or_redacted/);
+  assert.match(detail, /Related failure evidence/);
   assert.match(detail, /Redacted details/);
   assert.match(decision, /Backend-authorized investigation actions/);
   assert.match(decision, /Disabled or deferred investigation actions/);
   assert.match(list, /JSON\.stringify\(envelope\.data\.query\)/);
   assert.match(list, /Partial results/);
+  assert.match(dashboard, /Audit\/Trace attention items/);
   assert.match(dashboard, /Backend capabilities/);
+  assert.match(traceLinks, /surface-audit-trace-detail/);
 });
 
 test('Audit/Trace initial workstream remains trace-linked and does not claim frontend authorization', () => {

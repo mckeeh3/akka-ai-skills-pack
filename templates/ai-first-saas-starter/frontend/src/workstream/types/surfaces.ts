@@ -1,7 +1,7 @@
 import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
-export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op';
+export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op' | 'blocked_provider_or_runtime' | 'not_found_or_redacted' | 'validation-error';
 export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome';
 
 export type SurfaceLink = {
@@ -94,16 +94,20 @@ export type SystemMessageData = {
 };
 
 export type DashboardSurfaceData = {
+  surfaceContract?: 'audit.trace.dashboard.v1' | string;
   cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'critical' | 'blocked_provider_or_runtime' }>;
+  attentionItems?: Array<{ itemId: string; label: string; status: string; severity?: string; traceId?: string }>;
   sections?: Array<{ sectionId: string; label: string; summary: string }>;
   nextSteps?: Array<{ workstreamId: string; label: string; allowed: boolean; blockedReason?: string; capabilityIds?: string[]; traceId?: string }>;
   blockedState?: { reasonCode: string; message: string; recovery: string };
   readiness?: string;
   capabilityIds?: string[];
+  redaction?: string;
 };
 
 export type ListSearchSurfaceData = {
-  query: string | Record<string, string | number | boolean | undefined>;
+  surfaceContract?: 'audit.trace.search.v1' | string;
+  query: string | Record<string, string | number | boolean | undefined | Record<string, unknown>>;
   rows: Array<Record<string, string | number | boolean | undefined>>;
   pageInfo?: { nextPageToken?: string; nextCursor?: string; totalKnownCount?: number };
   partial?: boolean;
@@ -151,6 +155,7 @@ export type DetailEditSurfaceData = {
   policyRefs?: string[];
   redactedDetails?: Record<string, string>;
   traceLinks?: string[];
+  relatedEvents?: Array<{ traceId: string; eventKind?: string; summary?: string; correlationId?: string; status?: string }>;
   accessManagement?: {
     memberStatus?: {
       accountStatus: string;

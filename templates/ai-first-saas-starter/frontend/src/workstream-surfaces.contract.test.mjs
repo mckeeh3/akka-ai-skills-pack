@@ -43,6 +43,7 @@ test('workstream stream components cover canonical item kinds and action feedbac
   assert.match(feedback, /Action feedback/);
   assert.match(feedback, /Open result surface/);
   assert.match(traceLinks, /aria-label="Trace links"/);
+  assert.match(traceLinks, /surface-audit-trace-detail/);
   assert.match(streamState, /appendOrUpdateWorkstreamItem/);
   assert.match(streamState, /markSurfaceItemsStale/);
   assert.match(streamState, /mergeWorkstreamEvents/);

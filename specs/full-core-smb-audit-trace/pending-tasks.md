@@ -131,7 +131,7 @@
 
 ### TASK-FCSMB-AT-01-003: Implement frontend Audit/Trace runtime-aligned surfaces
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
 - task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/03-implement-frontend-audit-trace-surfaces.md
 - depends on: [TASK-FCSMB-AT-01-002]
@@ -158,6 +158,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement audit trace frontend surfaces`
+  - aligned starter and mirrored root frontend Audit/Trace types/renderers/tests with backend `audit.trace.*.v1` DTO fields, attention cards, related failure evidence, non-enumerating redaction state, and Audit/Trace detail/timeline trace-link routing.
+  - checks passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-audit-trace-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`; required `rg` proof; `git diff --check`.
 
 ### TASK-FCSMB-AT-01-004: Implement AuditTraceAgent evidence tool and governed runtime tests
 

@@ -8,7 +8,7 @@ type TraceLinkListProps = {
 export function TraceLinkList({ traceIds = [], traceLinks = [] }: TraceLinkListProps) {
   const derivedLinks = traceIds
     .filter((traceId) => !traceLinks.some((link) => link.traceId === traceId))
-    .map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }));
+    .map((traceId) => ({ traceId, label: traceId, href: `/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}` }));
   const links = [...traceLinks, ...derivedLinks];
 
   if (links.length === 0) {

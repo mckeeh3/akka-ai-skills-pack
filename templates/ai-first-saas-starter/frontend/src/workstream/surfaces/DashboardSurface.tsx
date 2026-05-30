@@ -11,8 +11,10 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
   const readiness = renderSurfaceValue(envelope.data.readiness);
   return (
     <SurfaceStateFrame envelope={envelope}>
+      {envelope.data.surfaceContract && <p className="capability-basis">Surface contract: {envelope.data.surfaceContract}</p>}
       {readiness && <p className="surface-readiness">{readiness}</p>}
       {envelope.data.capabilityIds && <p className="capability-basis">Backend capabilities: {envelope.data.capabilityIds.join(', ')}</p>}
+      {envelope.data.redaction && <p className="redaction-note">Redaction: {envelope.data.redaction}</p>}
       {envelope.data.blockedState && (
         <section className="surface-state-inline forbidden" aria-label="Blocked dashboard state">
           <strong>{envelope.data.blockedState.reasonCode}</strong>
@@ -28,6 +30,17 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
           </article>
         ))}
       </div>
+      {envelope.data.attentionItems && envelope.data.attentionItems.length > 0 && (
+        <section className="surface-section-list" aria-label="Audit/Trace attention items">
+          {envelope.data.attentionItems.map((item) => (
+            <article key={item.itemId} className={`surface-section-card ${item.severity ?? item.status}`}>
+              <h4>{item.label}</h4>
+              <p>Status: {item.status}</p>
+              {item.traceId && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(item.traceId)}`}>{item.traceId}</a>}
+            </article>
+          ))}
+        </section>
+      )}
       {envelope.data.sections && (
         <section className="surface-section-list" aria-label="Dashboard sections">
           {envelope.data.sections.map((section) => (
@@ -45,7 +58,7 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
               <h4>{step.label}</h4>
               <p>{step.allowed ? 'Allowed by selected AuthContext.' : step.blockedReason}</p>
               {step.capabilityIds && <p className="capability-basis">{step.capabilityIds.join(', ')}</p>}
-              {step.traceId && <a href={`/ui?surfaceId=surface-audit-timeline#${encodeURIComponent(step.traceId)}`}>{step.traceId}</a>}
+              {step.traceId && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(step.traceId)}`}>{step.traceId}</a>}
             </article>
           ))}
         </section>
