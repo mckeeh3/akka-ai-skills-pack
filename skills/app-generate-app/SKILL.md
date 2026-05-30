@@ -87,7 +87,7 @@ When generating, this skill must:
 - identify whether generation is full or localized
 - identify which outputs are in scope
 - identify the local run, endpoint smoke, browser/workstream smoke, or manual-test path expected to prove the generated scope works
-- realize the generated scope as working runtime code, not as a mock/demo/simulated substitute; any provider/security gap must fail closed with actionable configuration errors and any omitted runtime behavior must become a blocked/deferred task outside the completion claim
+- realize the generated scope as working runtime code with Akka component-backed normal runtime state for claimed workstream/foundation features, not as a mock/demo/simulated substitute; provider/security gaps must fail closed with actionable configuration errors, while missing internal Akka persistence must block or narrow the completion claim
 - realize outputs from the description
 - keep generated outputs consistent with the current description
 - avoid treating generated code as authoritative

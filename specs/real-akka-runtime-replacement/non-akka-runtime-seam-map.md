@@ -63,7 +63,7 @@ The broad scan also found compliant doctrine/test guidance in `skills/**` and re
 
 | Area | Findings | Classification | Follow-up task |
 |---|---|---|---|
-| Starter README | Still describes explicit local/demo repositories, fail-closed foundation ports, and release-ready status under the prior compromise. It also says identity/access-review/audit/governance remain fail-closed unless local-demo is enabled. | `docs-only wording cleanup`; update after source replacement to the stricter bar | `TASK-RUNTIME-01-008` |
+| Starter README and related guidance | Must state the stricter real-Akka-runtime bar: normal claimed workstream/foundation features bind Akka components; fail-closed applies to missing external provider/security configuration or unbound pre-runtime setup; substitutes are test-only. | `docs-only wording cleanup`; update after source replacement to the stricter bar | `TASK-RUNTIME-01-008` |
 | Skills doctrine | `skills/README.md`, `skills/app-description-readiness-assessment/SKILL.md`, `skills/app-description-ui/SKILL.md`, `skills/akka-agent-testing/SKILL.md`, and similar hits mostly already state mocks/fixtures are test-only and not completion proof. | `no replacement`; preserve, optionally align wording during doctrine cleanup | `TASK-RUNTIME-01-008` |
 | Testing skills | Consumer/view/agent testing skills mention mocked inputs/providers as test mechanics. | `test-only acceptable` | None unless wording implies runtime completion; scan did not show such implication. |
 | Reference app-description docs | Seed app-description examples use “demo/demonstrate” in reference context, not normal runtime adapters. | `reference/docs acceptable` | None. |

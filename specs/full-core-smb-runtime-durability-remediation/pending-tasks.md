@@ -144,7 +144,7 @@
   - governed Akka Agent runtime path and provider fail-closed behavior are preserved
   - task changes and queue update are committed
 - notes:
-  - normal endpoint wiring now binds invitations, governed-agent behavior, and agent runtime traces to Akka-backed repositories/sinks when `ComponentClient` is available; remaining local/demo adapters are explicitly named `LocalDemo*`
+  - superseded by `specs/real-akka-runtime-replacement/`: normal endpoint wiring now requires Akka-backed repositories/sinks for claimed features, and substitute adapters belong only in test source
   - validation: `git diff --check`; `rg -n "new InMemory(Invitation|AgentBehavior|AgentRuntimeTrace)|InMemory(Invitation|AgentBehavior)Repository|InMemoryAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java` (no matches); `tools/validate-ai-first-saas-starter-fullstack.sh --keep`
   - commit message: `full-core-smb: bind durable agent and invitation seams`
 
@@ -176,7 +176,7 @@
   - root frontend checks if root mirror changes: `cd frontend && npm test -- --run && npm run typecheck && npm run build`
   - `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
 - done criteria:
-  - normal frontend runtime cannot render fixture bootstrap data or fixture clients unless explicit local/dev fixture mode is enabled
+  - superseded current bar: normal frontend runtime cannot render fixture bootstrap data or use test fixture clients; fixtures belong in test-only assets
   - static resources match updated source or are intentionally cleaned
   - task changes and queue update are committed
 - notes:

@@ -323,7 +323,7 @@
 
 ### TASK-RUNTIME-01-008: Update doctrine and readiness for real Akka runtime replacement
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/backlog/01-real-akka-runtime-replacement-build-backlog.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/08-update-doctrine-and-readiness-for-real-akka-runtime.md
 - depends on: [TASK-RUNTIME-01-007]
@@ -355,6 +355,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: update real Akka runtime doctrine`
+  - completed: updated core doctrine, readiness/generation/planning/queue skills, web UI guidance, starter README, and superseded durability remediation specs to require Akka component-backed normal runtime for claimed workstream/foundation features; clarified fail-closed behavior is for missing external provider/security configuration or unbound pre-runtime setup, not missing internal persistence; fixture/substitute guidance now says test-only.
+  - checks: `git diff --check`; required wording scan completed and now reports only intentional historical/spec/queue/task references plus current stricter guidance, not generated-app guidance that permits local/demo runtime for completed features.
 
 ### TASK-RUNTIME-99-001: Verify real Akka runtime replacement
 

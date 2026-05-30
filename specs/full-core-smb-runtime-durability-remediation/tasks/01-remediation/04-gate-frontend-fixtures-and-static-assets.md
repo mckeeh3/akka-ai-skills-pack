@@ -2,7 +2,7 @@
 
 ## Objective
 
-Ensure frontend fixture/demo paths are explicit local/dev inspection aids, never normal production-like runtime. Remove normal loading fallback to fixture data, synchronize root/template frontend mirrors, and regenerate or clean static resources.
+Historical task objective: ensure frontend fixture/demo paths are not normal production-like runtime. Superseded current guidance requires fixture clients/data to be test-only, not local/dev selectable generated-app runtime. Remove normal loading fallback to fixture data, synchronize root/template frontend mirrors, and regenerate or clean static resources.
 
 ## Required reads
 
@@ -19,7 +19,7 @@ Ensure frontend fixture/demo paths are explicit local/dev inspection aids, never
 
 - `fixtureWorkstream` gating in template frontend and root frontend mirror.
 - Loading/error behavior that currently falls back to fixture `meTenantAdmin`, `initialWorkstreamItems`, or `canonicalSurfaceEnvelopes` outside explicit fixture mode.
-- Contract tests that currently require fixture clients in the default main entry.
+- Contract tests that historically required fixture clients in the default main entry.
 - Static resource regeneration/cleanup under `templates/ai-first-saas-starter/src/main/resources/static-resources/`.
 - README copy explaining fixture inspection vs normal backend runtime.
 
@@ -44,8 +44,8 @@ Ensure frontend fixture/demo paths are explicit local/dev inspection aids, never
 
 ## Done criteria
 
-- Normal frontend runtime cannot render fixture bootstrap data or fixture clients unless explicit local/dev fixture mode is enabled.
-- Fixture inspection remains clearly labeled and gated.
+- Normal frontend runtime cannot render fixture bootstrap data or use fixture clients; fixtures belong only in test-only assets.
+- Fixture inspection is superseded by test-only fixture usage.
 - Static resources match the updated source or are intentionally cleaned.
 - Checks pass and changes are committed.
 

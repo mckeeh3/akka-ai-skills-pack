@@ -309,7 +309,7 @@ For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functiona
 For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
 ### 4. Treat manual evaluation as a runtime target, not a lower bar
-If the user wants an early evaluation build, narrow the scope aggressively but still require the selected scope to run through real local Akka/API/UI paths with fail-closed provider/security handling. Do not use mock, fixture, deterministic, simulated, frontend-only, or provider-bypass behavior as the normal runtime substitute for a named generated-app feature. Missing runtime behavior remains `not-ready`, blocked, or explicitly outside the narrowed scope.
+If the user wants an early evaluation build, narrow the scope aggressively but still require the selected scope to run through real local Akka/API/UI paths with Akka component-backed normal runtime state and fail-closed provider/security handling. Do not use mock, fixture, deterministic, simulated, frontend-only, provider-bypass behavior, or missing internal Akka persistence as the normal runtime substitute for a named generated-app feature. Missing runtime behavior remains `not-ready`, blocked, or explicitly outside the narrowed scope.
 
 ### 5. Recommend generation proactively when justified
 If the description is sufficiently mature, this skill may recommend moving on to generation even when the user has not yet explicitly asked.

@@ -4,16 +4,16 @@ Date: 2026-05-30
 
 ## Result
 
-The mini-project is complete for its stated scope. No follow-up blocker tasks are needed.
+The mini-project is historically complete for its original stated scope. Its gated/fail-closed compromise is superseded by `specs/real-akka-runtime-replacement/`, which raises the current bar to real Akka component-backed normal runtime for all claimed starter workstream/foundation features.
 
 ## Done-state comparison
 
 | Done-state item | Verification |
 |---|---|
-| All in-memory/mock/fixture/demo paths inventoried and classified | Complete. `runtime-durability-remediation-map.md` records the inventory, classifications, remediation plan, and post-remediation validation evidence. The final broad inventory scan still reports test-only, local/demo, dev-fixture, documentation, and safe wording hits; no new normal-runtime blocker category was found. |
-| Normal generated runtime no longer silently depends on in-memory stores for claimed-complete features, or fails closed | Complete at the documented SMB starter scope. Workstream log, invitation, governed-agent behavior, and agent runtime trace paths bind Akka durable components when `ComponentClient` is available. Foundation ports that are not fully durable at this starter scope fail closed unless `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true` or test runtime is active. |
-| Tests may use fakes/fixtures only when clearly test/local scoped | Complete. Remaining backend `Fake*`, `LocalDemo*`, and frontend fixture hits are in tests, explicitly named local/demo adapters, dev/local fixture inspection assets, or explanatory documentation. |
-| Frontend fixture/demo paths are gated and not confused with production-like runtime | Complete. Production-like static resources scan clean for fixture/demo/provider-secret markers, and fixture workstream mode remains dev/local opt-in. |
+| All in-memory/mock/fixture/demo paths inventoried and classified | Complete historically. `runtime-durability-remediation-map.md` records the inventory, classifications, remediation plan, and post-remediation validation evidence; current guidance supersedes any classification that allowed non-Akka normal runtime substitutes for claimed features. |
+| Normal generated runtime no longer silently depends on in-memory stores for claimed-complete features, or fails closed | Superseded. The current bar requires Akka component-backed normal runtime for claimed starter features. Fail-closed behavior is for missing external provider/security configuration or unbound pre-runtime setup, not for substituting internal persistence. |
+| Tests may use fakes/fixtures only when clearly test scoped | Current. Remaining substitutes are acceptable only as test-only assets or adapters. |
+| Frontend fixture paths are quarantined from production-like runtime | Superseded by stricter guidance. Fixture clients/data must be test-only and normal UI must use real HTTP/realtime clients. |
 | Static generated assets are clean/regenerated | Complete. Fullstack validation rebuilt static resources and the final static scan returned no matches. |
 | Release-readiness docs are corrected and explicit | Complete. `templates/ai-first-saas-starter/README.md`, `specs/full-core-smb-polish-release-readiness/release-handoff.md`, and `specs/full-core-smb-polish-release-readiness/release-readiness-verification.md` recommend shipping for the documented scope including the stronger durability bar, while preserving explicit boundaries and deferrals. |
 | Broad starter validation passes after remediation or blockers are bounded | Complete. `tools/validate-ai-first-saas-starter-fullstack.sh` passed on rendered target `/tmp/ai-first-saas-starter-fullstack.9nYyN9`, including backend tests, frontend tests/typecheck/build, static resource checks, and real provider Akka Agent smoke because provider configuration was present. |
@@ -32,4 +32,4 @@ rg -n "InMemory|in-memory|mock|Mock|fake|Fake|fixture|Fixture|demo|Demo|canned|m
 
 - The targeted backend normal-runtime in-memory scan returned no matches.
 - The static resource fixture/demo/provider-secret scan returned no matches.
-- The broad inventory scan intentionally still returns acceptable test-only/local-demo/dev-fixture/documentation hits; these are covered by the remediation map and release docs.
+- Any broad inventory scan hits must now be interpreted under the stricter real-Akka-runtime bar: substitutes are acceptable only in tests or explicitly test-only assets, never as normal runtime for claimed starter features.

@@ -26,7 +26,7 @@
 - accepted assumptions:
   - v1 may use WorkOS-compatible local test tokens for developer execution while preserving production WorkOS/AuthKit semantics and fail-closed behavior when required provider configuration is absent
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules
-  - tenant isolation is mandatory even in local/demo mode
+  - tenant isolation is mandatory in local developer execution and generated-app runtime
   - UI design validation uses the `atlas-ops-supervisory-console` style system with no copied mockup content
 - last readiness update basis:
   - seed app UI design review and next-step UI description updates

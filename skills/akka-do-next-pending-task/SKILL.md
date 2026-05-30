@@ -288,7 +288,7 @@ Block instead of guessing when:
 - a generated full-stack SaaS task is component-only, CRUD-only, page-only, or dashboard-only and lacks a vertical contract naming or inheriting workstream, attention category, surface action, capability id, API/exposure channel, selected Akka substrate, AuthContext, audit/work trace, and local validation path
 - an AutonomousAgent or autonomous task is in scope but start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and lifecycle tests are missing
 - the task conflicts with current code or specs
-- a required external credential/service is unavailable for normal runtime; implement fail-closed configuration errors and test/local adapters where appropriate, but do not mark provider-backed user-facing behavior done through mocks
+- a required external credential/service is unavailable for normal runtime; implement fail-closed configuration errors and test-only adapters where appropriate, but do not mark provider-backed user-facing behavior done through mocks, and do not use fail-closed internal persistence as a substitute for Akka component-backed state
 - required local app-run, endpoint, browser, or manual-smoke validation cannot be performed for a feature-bearing task; record incomplete validation and keep the task blocked unless the task is explicitly non-runtime/docs-only or the affected runtime feature is outside the named scope
 - completing the named feature would require widening into another queue item
 

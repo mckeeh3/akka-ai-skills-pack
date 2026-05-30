@@ -89,7 +89,7 @@ Required from the first slice:
 - capability-first backend modeling before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
 - tests for allowed bootstrap access, forbidden access, disabled or missing authority where modeled, trace creation, markdown sanitization, five-core workstream availability, My Account bottom-user-tile launch behavior with no duplicate top-rail entry, and frontend secret boundaries.
 
-Akka local execution is the production-like validation path for the starter. Minimum starter readiness requires local backend/API/UI smoke or manual validation that exercises the real runtime behavior, not only fixture rendering or mocked unit tests. Test fixtures and fakes should be named as such and isolated to tests.
+Akka local execution is the production-like validation path for the starter. Minimum starter readiness requires local backend/API/UI smoke or manual validation that exercises the real runtime behavior with Akka component-backed workstream/foundation state, not only fixture rendering or mocked unit tests. Fail-closed behavior is for missing external provider/security configuration or unbound pre-runtime setup, not for replacing internal Akka persistence. Test fixtures and fakes should be named as such and isolated to tests.
 
 Prompt instructions, loaded skill text, hidden UI state, and route names cannot grant authority. The backend capability contract remains authoritative.
 

@@ -15,7 +15,7 @@ The user asked whether there are no in-memory mockups. The answer was: not liter
 Accepted clarification:
 
 - It is acceptable that tests use fakes/mocks/fixtures.
-- It is acceptable to keep explicitly named local/demo/test adapters if they are gated and not claimed as the normal production-like generated-app runtime.
+- Superseded by `specs/real-akka-runtime-replacement/`: explicitly named local/demo adapters are no longer acceptable as generated-app normal runtime for claimed starter features; substitutes may remain only as test-only adapters or fixtures.
 - It is not acceptable for completed normal runtime features to depend on in-memory stores or fixture/demo clients while being described as full-core release-ready.
 
 ## Scope
@@ -54,12 +54,4 @@ Execute one task per fresh harness session. Start with a source-boundary invento
 
 ## Done state
 
-This mini-project is complete when:
-
-- all in-memory/mock/fixture/demo paths in the starter are inventoried and classified;
-- normal generated runtime no longer silently depends on in-memory stores for features claimed as complete, or those paths fail closed with clear configuration/actionable guidance;
-- tests may still use test fakes and fixtures, but those are clearly test-only;
-- frontend fixture/demo paths are explicitly gated and not confused with production-like runtime;
-- stale/static generated assets are cleaned or regenerated as needed;
-- release-readiness docs are corrected to supersede any prior ship recommendation until remediation passes;
-- broad starter validation passes after remediation or blockers are bounded in the queue.
+This mini-project's original gated/fail-closed compromise has been superseded by `specs/real-akka-runtime-replacement/`. For current guidance, completion requires real Akka component-backed normal runtime for claimed starter features; fail-closed behavior is for missing external provider/security configuration or unbound pre-runtime wiring, not a replacement for Akka persistence. Tests may still use clearly test-only fakes and fixtures.
