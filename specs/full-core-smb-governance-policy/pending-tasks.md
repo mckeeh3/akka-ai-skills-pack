@@ -54,7 +54,7 @@
 
 ### TASK-FCSMB-GP-01-001: Define Governance/Policy vertical slice contracts and implementation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-governance-policy/backlog/01-governance-policy-full-core-backlog.md
 - task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/01-define-governance-policy-implementation-map.md
 - depends on: [TASK-FCSMB-GP-00-001]
@@ -98,6 +98,215 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: map governance policy full core`
+  - completed: implementation map and bounded source-edit task briefs appended.
+
+### TASK-FCSMB-GP-01-002: Implement deterministic backend Governance/Policy foundation
+
+- status: pending
+- source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+- task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/02-implement-backend-governance-policy-foundation.md
+- depends on: [TASK-FCSMB-GP-01-001]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-governance-policy/README.md
+  - specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/governance-policy-workstream-v0/workstream-contract.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java
+- skills:
+  - none; focused source implementation task
+- expected outputs:
+  - GovernancePolicyService/repository/domain backend foundation files
+  - updated WorkstreamService Governance/Policy routing
+  - backend tests for reads and proposal draft/submit/read lifecycle
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `rg -n "GovernancePolicyService|GovernancePolicyRepository|GovernancePolicyProposal|governance\.policy\.(dashboard|list|read|proposal)|proposal lifecycle|idempotency|tenant|system_message|trace" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - backend reads and proposal draft/submit/read are service-backed, tenant-scoped, redacted, idempotent where required, and traced
+  - future simulation/decision lifecycle can build on a real proposal record
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement governance policy backend foundation`
+
+### TASK-FCSMB-GP-01-003: Implement Governance/Policy simulation and decision lifecycle
+
+- status: pending
+- source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+- task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/03-implement-governance-policy-decision-lifecycle.md
+- depends on: [TASK-FCSMB-GP-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-governance-policy/README.md
+  - specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/governance-policy-workstream-v0/workstream-contract.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/02-implement-backend-governance-policy-foundation.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/GovernancePolicyService.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/GovernancePolicyServiceTest.java
+- skills:
+  - none; focused source implementation task
+- expected outputs:
+  - updated Governance/Policy backend service/repository/domain lifecycle
+  - updated WorkstreamService action routing
+  - backend tests for simulation, decision, activation, rollback, authorization, idempotency, and traces
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `rg -n "governance\.policy\.(simulate|approve|reject|activate|rollback)|simulation|approve|reject|activate|rollback|approval-required|blocked_provider_or_runtime|rollback metadata|idempotency|no direct mutation|trace" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - simulation is advisory and deterministic
+  - approval/rejection/activation/rollback lifecycle is backend-owned, scoped, audited, idempotent where required, and fail-closed for unsafe states
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement governance policy decision lifecycle`
+
+### TASK-FCSMB-GP-01-004: Align frontend Governance/Policy surfaces and actions
+
+- status: pending
+- source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+- task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/04-align-frontend-governance-policy-surfaces.md
+- depends on: [TASK-FCSMB-GP-01-003]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-governance-policy/README.md
+  - specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/02-implement-backend-governance-policy-foundation.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/03-implement-governance-policy-decision-lifecycle.md
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
+  - templates/ai-first-saas-starter/frontend/src/api/FixtureWorkstreamApiClient.ts
+  - templates/ai-first-saas-starter/frontend/src/api/HttpWorkstreamApiClient.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream-governance-policy-vertical.contract.test.mjs
+- skills:
+  - none; focused source implementation task
+- expected outputs:
+  - updated Governance/Policy frontend fixtures, action ids/aliases, types/renderers/client code, and contract tests
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-governance-policy-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "action-governance-policy|action-govpol|governance\.policy|Governance/Policy|policy inventory|proposal|simulation|decision|activate|rollback|blocked_provider_or_runtime|system_message|trace|no fake|no direct mutation" templates/ai-first-saas-starter/frontend/src --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - frontend and backend Governance/Policy contracts no longer diverge silently
+  - UI is structured, accessible, trace-linked, redacted, and explicit that backend checks are authoritative
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: align governance policy frontend surfaces`
+
+### TASK-FCSMB-GP-01-005: Implement GovernancePolicyAgent evidence tool and seed boundary
+
+- status: pending
+- source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+- task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/05-implement-governance-policy-agent-evidence-tool.md
+- depends on: [TASK-FCSMB-GP-01-003]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-governance-policy/README.md
+  - specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/governance-policy-workstream-v0/workstream-contract.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/02-implement-backend-governance-policy-foundation.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/03-implement-governance-policy-decision-lifecycle.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/ToolRegistry.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeToolResolver.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoader.java
+  - templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds/starter-v1/governance-policy-system.md
+  - templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds/starter-v1/governance-policy-starter-guidance.md
+  - templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds/starter-v1/governance-policy-starter-scope-reference.md
+- skills:
+  - akka-agents
+  - akka-agent-tools
+  - akka-agent-tool-boundaries
+  - akka-agent-seed-documents
+- expected outputs:
+  - GovernancePolicyEvidenceTools or equivalent read-only facade
+  - updated ToolRegistry, AgentRuntimeToolResolver, AgentBehaviorSeedLoader, Governance/Policy seed resources, and backend tests
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest`
+  - `rg -n "GovernancePolicyAgent|governancePolicyEvidence\.read|ToolPermissionBoundary|readSkill|readReferenceDoc|PromptAssemblyTrace|SkillLoadTrace|ReferenceLoadTrace|AgentWorkTrace|provider|system_message|no direct mutation|provider secret|hidden prompt" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/main/resources templates/ai-first-saas-starter/backend/src/test/java --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - GovernancePolicyAgent normal guidance uses governed Akka Agent runtime plus authorized read-only evidence/loading tools
+  - provider/model/tool-boundary failure returns safe `system_message` and traces
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: add governance policy agent evidence tool`
+
+### TASK-FCSMB-GP-01-006: Decide policy-impact analysis worker readiness
+
+- status: pending
+- source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+- task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/06-decide-policy-impact-analysis-readiness.md
+- depends on: [TASK-FCSMB-GP-01-004, TASK-FCSMB-GP-01-005]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-governance-policy/README.md
+  - specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+  - specs/full-core-smb-saas-hardening/agent-worker-opportunities.md
+  - specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/02-implement-backend-governance-policy-foundation.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/03-implement-governance-policy-decision-lifecycle.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/05-implement-governance-policy-agent-evidence-tool.md
+- skills:
+  - none; worker readiness decision and bounded implementation task
+- expected outputs:
+  - updated blocked readiness surfaces/tests or bounded task lifecycle files if justified
+  - optional appended follow-up task if real worker implementation is selected but too large
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest,UserAdminAccessReviewServiceTest,UserAdminAccessReviewWorkerTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-governance-policy-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs`
+  - `rg -n "governance\.policy\.analysis|impact analysis|AutonomousAgent|blocked_provider_or_runtime|no fake|no direct mutation|provider|ToolPermissionBoundary|AgentWorkTrace" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - policy-impact analysis worker status is explicit, safe, tested, and not model-less successful
+  - any follow-up real worker work is appended as bounded tasks before verification
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: decide governance policy worker readiness`
+
+### TASK-FCSMB-GP-01-007: Run integrated Governance/Policy validation
+
+- status: pending
+- source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+- task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/07-run-governance-policy-integrated-validation.md
+- depends on: [TASK-FCSMB-GP-01-006]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-governance-policy/README.md
+  - specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/governance-policy-workstream-v0/workstream-contract.md
+  - specs/full-core-smb-governance-policy/pending-tasks.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/02-implement-backend-governance-policy-foundation.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/03-implement-governance-policy-decision-lifecycle.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/04-align-frontend-governance-policy-surfaces.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/05-implement-governance-policy-agent-evidence-tool.md
+  - specs/full-core-smb-governance-policy/tasks/01-governance-policy/06-decide-policy-impact-analysis-readiness.md
+- skills:
+  - none; repository validation task
+- expected outputs:
+  - updated specs/full-core-smb-governance-policy/pending-tasks.md notes
+  - optional appended follow-up tasks if validation finds gaps
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-governance-policy-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "Governance/Policy|GovernancePolicyAgent|governance\.policy|governancePolicyEvidence\.read|policy dashboard|proposal|simulate|approve|reject|activate|rollback|exception|decision|AgentWorkTrace|PromptAssemblyTrace|ToolPermissionBoundary|provider|system_message|tenant|no direct mutation|blocked_provider_or_runtime" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - targeted checks and broad validation pass, or exact blockers are recorded and bounded follow-up tasks are appended
+  - Governance/Policy implementation group is ready for terminal verification
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: validate governance policy full core`
 
 ### TASK-FCSMB-GP-99-001: Verify Governance/Policy full-core readiness
 
@@ -105,7 +314,7 @@
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-governance-policy/tasks/99-verification/01-verify-governance-policy-readiness.md
 - depends on:
-  - TASK-FCSMB-GP-01-001
+  - TASK-FCSMB-GP-01-007
 - required reads:
   - AGENTS.md
   - skills/README.md
@@ -128,6 +337,7 @@
 - required checks:
   - `git diff --check`
   - targeted checks needed to validate implementation-map/source-edit task readiness
+  - `rg -n "TASK-FCSMB-GP-01-00[2-7]|governance-policy-implementation-map|GovernancePolicyService|governancePolicyEvidence|blocked_provider_or_runtime" specs/full-core-smb-governance-policy`
 - done criteria:
   - mini-project goals have been compared against completed work
   - if ready, next implementation task is runnable without guessing
