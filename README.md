@@ -96,14 +96,24 @@ curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2
 
 For global installs, dry runs, archive installs, and detailed usage, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md).
 
-## Getting started: implement your initial AI-first app
+## Getting started: scaffold the five-core AI-first SaaS baseline
 
-The recommended first-user path is incremental and production-oriented. Start with the packaged secure AI-first SaaS starter, validate the production-ready five-core v0 baseline, then extend the five core workstreams vertically one at a time before adding product-specific capabilities. The current v0 objective is not a generic chatbot and not full-core SaaS completion: it is a secure AI-first SaaS reference runtime where My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy are fully implemented at v0 scope through real local Akka runtime paths. The starter is not just boilerplate; it is the working runtime shell and training vertical for the app's future feature work:
+The recommended first-user path is to scaffold the packaged secure AI-first SaaS starter, validate it locally, then add product-specific capabilities on top of the established five-core workstream model. The starter is no longer just a thin v0 shell: it is the working SMB-oriented baseline for the five mandatory core workstreams:
+
+- **My Account** — opened from the signed-in user tile/email at the bottom of the rail; profile/settings, selected context, authority basis, personal attention, own trace refs, and MyAccountAgent guidance.
+- **User Admin** — left-rail workstream for invitations, members, roles/capabilities, access management, UserAdminAgent guidance, and access-review task surfaces.
+- **Agent Admin** — left-rail workstream for governed managed-agent definitions, prompts, skills, references, manifests, model refs, tool boundaries, seeds, behavior-change lifecycle, and AgentAdminAgent guidance.
+- **Audit/Trace** — left-rail workstream for trace dashboard/search/detail/timeline, redacted evidence cards, provider/tool/model/worker failure evidence, and AuditTraceAgent explanations.
+- **Governance/Policy** — left-rail workstream for policy posture, proposals, simulations, decisions, activation/rollback, blocked analysis-task readiness, and GovernancePolicyAgent guidance.
+
+The starter pattern is:
 
 ```text
 intent → functional agent/workstream → structured surface → governed backend capability
-→ Akka components → tests → UI integration → audit/security review
+→ durable Akka/runtime component → tests → UI integration → audit/security review
 ```
+
+Normal completed runtime paths must be production-like for the stated starter scope. Model-backed workstream messages use the governed Akka `Agent` runtime path with active managed configuration, compact prompt/skill/reference manifests, `ToolPermissionBoundary`, governed loader/evidence tools, `effects().tools(runtimeTools)`, concrete Akka Agent invocation, provider-backed responses, and durable traces. Missing provider/security configuration must fail closed with actionable `system_message` behavior. Test fakes and frontend fixture inspection modes may exist only as explicitly named test/local inspection paths; they are not the completed normal runtime substitute.
 
 ### Step 1 — Create a target app project and install the pack
 
@@ -131,12 +141,13 @@ App name: <your app name>.
 Java base package: <press Enter/use ai.first unless I provide another package>.
 
 Scaffold the starter into this project. Do not invent a different architecture.
-Preserve the skills-pack defaults: secure SaaS foundation, agent workstream shell,
-five core v0 workstreams, four primary left-rail workstream links (User Admin,
-Agent Admin, Audit/Trace, and Governance/Policy), the signed-in user tile at the
-bottom of the rail opening My Account, markdown_response surfaces,
-capability-first backend boundaries, audit/work trace substrate, backend
-authorization, and frontend secret boundaries.
+Preserve the skills-pack defaults: secure SaaS foundation, five core AI-first
+workstreams, My Account launched only from the signed-in user tile, the four
+left-rail workstreams User Admin / Agent Admin / Audit/Trace / Governance/Policy,
+structured surfaces, governed backend capabilities, durable Akka-backed runtime
+state/traces, governed model-backed Agent runtime, provider fail-closed behavior,
+backend authorization, tenant/customer isolation, and frontend secret boundaries.
+
 After scaffolding, summarize what was created and what I need to configure next.
 ```
 
@@ -151,23 +162,22 @@ The harness should run the installed scaffold command, roughly:
 
 Use a different Java base package if you already have one. Do not use `com.example` unless you explicitly want that package.
 
-### Step 3 — Ask for an actionable starter readiness triage
+### Step 3 — Ask for starter readiness triage
 
-After scaffolding, ask the harness to inspect the generated project before changing code. This is a readiness gate, not a general audit: the goal is to confirm what landed, identify only the configuration and checks needed now, and separate true blockers from later foundation follow-up work.
+After scaffolding, ask the harness to inspect the generated project before changing code. The goal is to confirm what landed, identify local configuration, and separate true blockers from later app-specific work.
 
 ```text
-Review the scaffolded starter app for minimum AI-first SaaS starter readiness.
-Read specs/scaffold-report.md, app-description/, specs/, pom.xml, src/, frontend/, .env.example,
-and frontend/.env.example if present.
+Review the scaffolded starter app for five-core AI-first SaaS starter readiness.
+Read specs/scaffold-report.md, app-description/, specs/, pom.xml, src/, frontend/,
+.env.example, and frontend/.env.example if present.
 
-Do not implement changes yet. Do not give me a broad perfect-SaaS backlog.
-Return the answer in this exact format:
+Do not implement changes yet. Return the answer in this exact format:
 
 1. Current status
    - Ready to build/test? yes/no, with one sentence why.
    - Ready to run locally? yes/no, with one sentence why.
    - Ready for app-specific domain features? yes/no, with one sentence why.
-   - Five core v0 workstream status: one line for My Account via the signed-in user tile,
+   - Five core workstream status: one line for My Account via the signed-in user tile,
      plus User Admin, Agent Admin, Audit/Trace, and Governance/Policy in the left rail.
 
 2. Required local configuration
@@ -184,7 +194,7 @@ Return the answer in this exact format:
    - Include only issues that prevent build/test/local run or invalidate the starter foundation.
    - For each issue, include the exact next action or prompt I should give you.
 
-5. Non-blocking foundation follow-up
+5. Non-blocking follow-up
    - Include only starter/foundation tasks that can wait until after the starter builds/runs.
    - Do not include app-specific domain features.
 
@@ -192,7 +202,7 @@ Return the answer in this exact format:
    - Give me the single next prompt I should send.
 ```
 
-### Step 4 — Configure local environment placeholders
+### Step 4 — Configure local environment
 
 Copy the generated environment example and fill only the values needed for local testing. Keep backend secrets out of frontend files.
 
@@ -204,109 +214,79 @@ and which values can remain as local/test placeholders for now.
 Do not commit real secrets.
 ```
 
-Typical values include WorkOS/AuthKit, JWT configuration, Resend, bootstrap admin settings, and backend-only model-provider keys such as `OPENAI_API_KEY` when validating real model-backed workstream agents. Local/dev/test may use captured outbox behavior for email where supported, but model-backed workstream message submission must be blocked with an actionable provider-configuration error when provider variables are missing; it must not silently return deterministic placeholder text.
+Typical values include WorkOS/AuthKit, JWT configuration, Resend, explicit `ADMIN_USERS` bootstrap entries, and backend-only model-provider keys such as `OPENAI_API_KEY` when validating real model-backed workstream agents. If provider variables are missing, workstream message submission should be blocked with actionable recovery copy rather than deterministic placeholder text.
 
-### Step 5 — Run the app checks and fix scaffold-level issues first
+### Step 5 — Run generated checks and fullstack validation
 
-Ask the harness to run the generated checks, then fix only starter/foundation issues:
+Ask the harness to run generated checks first, then fix only scaffold/foundation issues:
 
 ```text
 Run the generated backend and frontend checks for the scaffolded starter.
 If something fails, fix only scaffold-level or configuration-related issues needed for the
-minimum starter to run. Do not add domain-specific features yet.
+five-core starter to run. Do not add domain-specific features yet.
 Report every command run and its result.
 ```
 
-### Step 6 — Validate the five-core v0 runtime baseline
+Expected local checks normally include:
 
-Once basic checks pass, validate the current starter target rather than jumping to product-specific domain work. The five-core v0 app is not functional until normal workstream message submission goes through real governed prompt assembly, a concrete Akka `Agent` component, and a configured backend model provider. A service-only provider call that bypasses the Akka Agent is not a completed workstream-agent runtime. Missing provider configuration should produce a safe blocked/error response, not a canned deterministic answer.
-
-```text
-Use the installed skills pack to validate and continue the initial v0 app rollout.
-Focus on proving all five core v0 workstreams work end to end with real
-model-backed workstream-agent responses through the Akka Agent component path.
-My Account is opened by clicking the signed-in user tile at the bottom of the
-left rail; the primary left-rail workstream links are User Admin, Agent Admin,
-Audit/Trace, and Governance/Policy.
-For each workstream, preserve bootstrap-authorized access, selected AuthContext,
-durable workstream entries, markdown_response rendering, backend capability checks,
-denials, prompt/model/work traces, and frontend secret boundaries.
-Use backend-only provider variables such as OPENAI_API_KEY and configured model id/endpoint
-from .env. If provider configuration is missing, block message submission with an
-actionable error; do not use deterministic placeholder text as normal runtime behavior.
-Update app-description/specs/pending-tasks as needed before code changes.
-Implement one small task at a time and include tests.
+```bash
+mvn test
+cd frontend
+npm install
+npm test -- --run
+npm run typecheck
+npm run build
+cd ..
 ```
 
-Manual model-backed smoke checklist after the workstream-agent runtime is implemented:
+From this skills-pack source repository, maintainers can also validate the rendered starter with:
 
-1. Start the Akka app with backend-only provider variables loaded from `.env`; keep `OPENAI_API_KEY` out of `frontend/.env*` and static assets.
-2. Sign in through AuthKit as a configured `ADMIN_USERS` account.
-3. Select each core workstream: open My Account from the signed-in user tile, then select User Admin, Agent Admin, Audit/Trace, and Governance/Policy from the left rail.
-4. Submit a short prompt in each workstream and verify the response is an Akka Agent-backed, provider-backed `markdown_response`, not deterministic fixture copy or a service-only provider bypass.
-5. Check prompt/model/work trace surfaces or trace APIs for correlation ids, AgentWorkTrace shape, and redacted provider metadata.
-6. Re-run once with provider variables absent and verify message submission is safely blocked with actionable recovery copy and no secret leakage.
-
-This phase teaches the repeatable app pattern: functional agent/workstream, structured surface, backend capability, Akka implementation, tests, UI integration, and audit/security review.
-
-### Step 7 — Continue the five core workstreams one vertical at a time
-
-After the five-core v0 baseline runs locally with real model-backed responses, keep working inside the five core workstreams before adding product-specific workstreams. The current v0 objective is to make each core workstream a real secure AI-first SaaS vertical, not merely a starter shell. Each vertical should preserve the shared v0 contract:
-
-- request-based Akka `Agent` components for normal user-facing composer turns;
-- Akka `AutonomousAgent` only for durable internal/background work where task lifecycle, progress, cancellation, notifications, investigations, batches, or improvement loops justify it;
-- deterministic non-AI services for mechanical authorization, policy checks, validation, trace normalization, projections, outbox delivery, sanitization, and idempotency;
-- governed backend capabilities before exposing browser actions, surface actions, agent tools, workflow steps, timers, consumers, or queries;
-- backend authorization, tenant/customer isolation, safe denials, audit/work traces, frontend secret boundaries, tests, and local runtime/API/UI validation.
-
-Ask the harness to create or continue a workstream-specific queue before coding:
-
-```text
-Read .agents/AGENTS.md, .agents/skills/README.md, specs/scaffold-report.md,
-app-description/, specs/, and the current five-core v0 workstream plan or pending tasks.
-
-The five-core v0 baseline runs locally with real model-backed markdown_response behavior.
-Continue the v0 rollout by selecting exactly one core workstream vertical:
-My Account via the signed-in user tile, User Admin, Agent Admin, Audit/Trace,
-or Governance/Policy.
-
-For that workstream, update the app-description/specs/pending-tasks first.
-Derive structured surfaces, surface actions, governed backend capabilities,
-Akka components, frontend integration, workstream-agent skills/tools, any justified
-AutonomousAgent background tasks, deterministic non-AI services, authorization,
-tenant isolation, audit/work traces, tests, and manual local smoke checks.
-Do not add product-specific domain features until the current five-core v0
-workstream task is complete or explicitly deferred.
+```bash
+tools/validate-ai-first-saas-starter-fullstack.sh
 ```
 
-Execute one task at a time, preferably in fresh harness sessions:
+### Step 6 — Smoke the five core workstreams
+
+Before adding product-specific features, validate the starter as an AI-first runtime:
+
+1. Start the Akka app with backend-only WorkOS/AuthKit/JWT/admin and model-provider variables loaded from `.env`.
+2. Sign in through AuthKit as an explicitly configured `ADMIN_USERS` account.
+3. Open My Account from the signed-in user tile at the bottom of the rail.
+4. Open User Admin, Agent Admin, Audit/Trace, and Governance/Policy from the left rail.
+5. Submit a short prompt in each workstream and verify each normal response is generated through the governed Akka Agent runtime, not fixture copy or a service-only provider bypass.
+6. Inspect trace/correlation ids and verify provider metadata is redacted.
+7. Re-run once with provider variables absent and verify message submission is safely blocked with actionable recovery copy and no secret leakage.
+
+Prompt the harness:
 
 ```text
-Read .agents/AGENTS.md, .agents/skills/README.md, specs/pending-tasks.md,
-app-description/, specs/, and the files relevant to the next five-core v0 task.
-Select the next runnable pending task for the five-core v0 rollout.
-Implement only that task through the real local Akka runtime path, update tests,
-run the relevant checks, perform any required local smoke validation, and update
-specs/pending-tasks.md with the result.
+Validate the scaffolded five-core AI-first SaaS starter end to end.
+Use the normal authenticated shell and backend workstream APIs.
+Verify My Account from the signed-in user tile and the four left-rail workstreams:
+User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+For each workstream, confirm backend authorization, selected AuthContext, durable
+workstream entries/traces, structured surfaces or markdown_response rendering,
+governed Agent runtime behavior, provider fail-closed behavior, and frontend secret boundaries.
+Do not use frontend fixtures or model-less fallback text as normal runtime success.
+Record any blockers in specs/pending-tasks.md before fixing them one task at a time.
 ```
 
-Do not treat planning or PRD processing as a paperwork step. A core workstream task is done only when it works through the authenticated shell, real backend capabilities, real governed agents where applicable, durable state/traces, React surfaces, tests, and local Akka smoke validation.
+### Step 7 — Add product-specific capabilities after the core baseline is healthy
 
-### Step 8 — Add product-specific features after the five-core v0 foundation is usable
-
-When the five core v0 workstreams are usable at the selected scope, use natural product prompts to extend the app. The pack should make reasonable decisions, record assumptions, and ask only for blocking information.
+When the five-core baseline builds, runs, and smokes successfully at the starter scope, use natural product prompts to extend the app. New app-specific work should preserve the established pattern: functional agent/workstream, structured surfaces, governed backend capabilities, Akka component selection, tests, UI integration, authorization, audit/work traces, and readiness review.
 
 ```text
 Now extend this AI-first SaaS app with this domain feature:
 <describe the feature in normal product language>
 
-Use the established pattern from the initial app rollout:
+Use the established five-core starter pattern:
 functional agent/workstream, structured surfaces, governed backend capabilities,
-Akka component selection, tests, UI integration, authorization, audit/work traces, and readiness review.
-Make best-judgment decisions where safe, record assumptions, and ask only for blocking questions.
+Akka component selection, tests, UI integration, authorization, audit/work traces,
+and readiness review. Make best-judgment decisions where safe, record assumptions,
+and ask only for blocking questions.
 ```
 
-A good feature iteration should preserve the app-description, specs, pending questions, pending tasks, code, tests, and UI as aligned artifacts.
+A good feature iteration keeps `app-description/`, `specs/`, pending questions, pending tasks, code, tests, and UI aligned.
 
 ## Repository status
 
