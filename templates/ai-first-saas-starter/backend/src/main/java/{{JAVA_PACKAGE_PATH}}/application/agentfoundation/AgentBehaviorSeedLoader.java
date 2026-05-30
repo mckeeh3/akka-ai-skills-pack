@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
+import {{JAVA_BASE_PACKAGE}}.application.security.MyAccountService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
@@ -271,6 +272,9 @@ public final class AgentBehaviorSeedLoader {
     var grants = new ArrayList<ToolPermissionBoundary.ToolGrant>();
     grants.add(new ToolPermissionBoundary.ToolGrant("readSkill", ToolPermissionBoundary.Category.READ_SKILL, "agent.skills.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "SkillLoadTrace"));
     grants.add(new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_REFERENCE, "agent.references.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "ReferenceLoadTrace"));
+    if (MY_ACCOUNT_AGENT_ID.equals(seed.agentDefinitionId())) {
+      grants.add(new ToolPermissionBoundary.ToolGrant("myAccountEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, MyAccountEvidenceTools.CAPABILITY_ID, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
+    }
     if (AGENT_ADMIN_AGENT_ID.equals(seed.agentDefinitionId())) {
       grants.add(new ToolPermissionBoundary.ToolGrant("agentAdminEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, AgentAdminService.LIST_DEFINITIONS, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
     }

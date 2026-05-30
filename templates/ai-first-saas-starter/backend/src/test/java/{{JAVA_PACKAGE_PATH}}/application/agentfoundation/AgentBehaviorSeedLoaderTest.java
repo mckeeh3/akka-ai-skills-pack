@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuditTraceService;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.MyAccountService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
@@ -130,7 +131,9 @@ class AgentBehaviorSeedLoaderTest {
           "corr-tools-" + agentId));
       var expectedToolIds = AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID.equals(agentId)
           ? List.of("readReferenceDoc", "readSkill", "userAdminEvidence.read")
-          : AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)
+          : AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID.equals(agentId)
+              ? List.of("myAccountEvidence.read", "readReferenceDoc", "readSkill")
+              : AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)
               ? List.of("agentAdminEvidence.read", "readReferenceDoc", "readSkill")
               : AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID.equals(agentId)
                   ? List.of("auditTraceEvidence.read", "readReferenceDoc", "readSkill")
@@ -239,6 +242,10 @@ class AgentBehaviorSeedLoaderTest {
     var capabilities = new java.util.ArrayList<>(List.of("agent.skills.read", "agent.references.read"));
     if (AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY);
+      capabilities.add(MyAccountService.VIEW_SUMMARY_CAPABILITY);
+      capabilities.add(MyAccountService.VIEW_CONTEXT_CAPABILITY);
+      capabilities.add(MyAccountService.LIST_PERSONAL_ATTENTION_CAPABILITY);
+      capabilities.add(MyAccountService.VIEW_OWN_TRACE_REFS_CAPABILITY);
     } else if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentId)) {
       capabilities.add(AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY);
       capabilities.add(AgentAdminService.LIST_DEFINITIONS);

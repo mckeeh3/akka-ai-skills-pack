@@ -184,7 +184,7 @@
 
 ### TASK-FCSMB-MA-01-004: Implement MyAccountAgent evidence tool and fail-closed guidance
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-my-account/my-account-implementation-map.md
 - task brief: specs/full-core-smb-my-account/tasks/01-my-account/04-implement-my-account-agent-evidence-tool.md
 - depends on: [TASK-FCSMB-MA-01-003]
@@ -226,6 +226,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement my account agent evidence`
+  - checks: direct template `mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest` is blocked by unrendered `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent with `ADMIN_USERS='admin@example.test:TENANT_ADMIN:tenant-starter'` passed.
+  - checks: frontend targeted `npm test -- --runTestsByPath src/workstream-composer-message-api.contract.test.mjs src/workstream-my-account-vertical.contract.test.mjs src/api.contract.test.mjs` passed.
+  - checks: required `rg` proof and `git diff --check` passed.
 
 ### TASK-FCSMB-MA-01-005: Decide My Account personal digest worker readiness
 

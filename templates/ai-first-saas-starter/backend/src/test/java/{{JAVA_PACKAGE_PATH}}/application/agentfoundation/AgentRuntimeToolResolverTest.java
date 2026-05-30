@@ -13,6 +13,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryInvitationRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView;
+import {{JAVA_BASE_PACKAGE}}.application.security.MyAccountService;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
@@ -53,7 +54,7 @@ class AgentRuntimeToolResolverTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent_admin.submit_turn", "audit.trace.explain", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "agent_admin.list_definitions", "governance.policy.read"));
+        List.of("agent.user_admin.use", AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, "agent_admin.submit_turn", "audit.trace.explain", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "agent_admin.list_definitions", "governance.policy.read", MyAccountService.VIEW_SUMMARY_CAPABILITY, MyAccountService.VIEW_CONTEXT_CAPABILITY, MyAccountService.LIST_PERSONAL_ATTENTION_CAPABILITY, MyAccountService.OPEN_AUTHORIZED_WORKSTREAM_CAPABILITY, MyAccountService.VIEW_OWN_TRACE_REFS_CAPABILITY));
   }
 
   @Test
@@ -91,6 +92,35 @@ class AgentRuntimeToolResolverTest {
     assertFalse(evidence.toLowerCase().contains("invite-token"));
     assertFalse(evidence.toLowerCase().contains("providersecret"));
     assertEquals(beforeRoles, identityRepository.findMembership("membership-member").orElseThrow().roles(), "Evidence reads must not mutate roles or membership state");
+  }
+
+  @Test
+  void myAccountEvidenceToolReadsScopedRedactedEvidenceWithoutMutation() {
+    var resolved = resolver.resolve(myAccountRuntimeToolsRequest("corr-my-account-evidence-tools"));
+
+    assertEquals(List.of("myAccountEvidence.read", "readReferenceDoc", "readSkill"), resolved.grantedToolIds());
+    assertTrue(resolved.runtimeTools().stream().anyMatch(MyAccountEvidenceTools.class::isInstance));
+    var identityRepository = seededIdentityRepository();
+    var tool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository)), tenantAdmin, "corr-my-account-evidence");
+    var beforeSettings = identityRepository.settings("admin-1").uiMode();
+
+    var evidence = tool.read("summarize current tenantId=tenant-1 My Account selected context authority personal attention trace refs provider system_message no direct mutation evidence");
+
+    assertTrue(evidence.contains("tool_id=myAccountEvidence.read"));
+    assertTrue(evidence.contains("capability=my_account.view_summary"));
+    assertTrue(evidence.contains("mode=read_only_no_direct_mutation"));
+    assertTrue(evidence.contains("selectedContextId=membership-1"));
+    assertTrue(evidence.contains("authorityBasis="));
+    assertTrue(evidence.contains("personalAttention="));
+    assertTrue(evidence.contains("ownTraceRefs="));
+    assertTrue(evidence.contains("blocked_provider_or_runtime"));
+    assertTrue(evidence.contains("system_message"));
+    assertTrue(evidence.contains("authority_note=Evidence is scoped deterministic data only"));
+    assertTrue(evidence.contains("trace-myaccount-evidence"));
+    assertFalse(evidence.toLowerCase().contains("rawjwt="));
+    assertFalse(evidence.toLowerCase().contains("providersecret="));
+    assertFalse(evidence.toLowerCase().contains("hiddenprompttext="));
+    assertEquals(beforeSettings, identityRepository.settings("admin-1").uiMode(), "Evidence reads must not mutate profile or settings");
   }
 
   @Test
@@ -199,6 +229,20 @@ class AgentRuntimeToolResolverTest {
   }
 
   @Test
+  void myAccountEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
+    var identityRepository = seededIdentityRepository();
+    var noReadCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of(AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY));
+    var deniedCapabilityTool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository)), noReadCapability, "corr-my-account-evidence-denied");
+
+    var missingCapability = assertThrows(AuthorizationException.class, () -> deniedCapabilityTool.read("summarize"));
+    assertTrue(missingCapability.getMessage().contains("missing-capability:" + MyAccountService.VIEW_SUMMARY_CAPABILITY));
+
+    var tool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository)), tenantAdmin, "corr-my-account-evidence-cross-tenant");
+    var crossTenant = assertThrows(AuthorizationException.class, () -> tool.read("tenantId=tenant-other"));
+    assertTrue(crossTenant.getMessage().contains("my-account-evidence-tenant-mismatch"));
+  }
+
+  @Test
   void agentAdminEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
     var noReadCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of("agent_admin.submit_turn"));
     var deniedCapabilityTool = new AgentAdminEvidenceTools(repository, noReadCapability, "corr-agent-admin-evidence-denied");
@@ -268,6 +312,10 @@ class AgentRuntimeToolResolverTest {
 
   private ResolveRuntimeToolsRequest runtimeToolsRequest(String correlationId) {
     return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, correlationId);
+  }
+
+  private ResolveRuntimeToolsRequest myAccountRuntimeToolsRequest(String correlationId) {
+    return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, correlationId);
   }
 
   private ResolveRuntimeToolsRequest agentAdminRuntimeToolsRequest(String correlationId) {

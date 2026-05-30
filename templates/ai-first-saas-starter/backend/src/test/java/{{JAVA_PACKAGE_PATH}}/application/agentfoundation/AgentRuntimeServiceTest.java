@@ -12,6 +12,7 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService.Ref
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService.SkillReadRequest;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryIdentityRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.MyAccountService;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
@@ -49,7 +50,7 @@ class AgentRuntimeServiceTest {
         "tenant-1",
         null,
         List.of(FoundationRole.TENANT_ADMIN),
-        List.of("agent.user_admin.use", "agent.behavior.manage", "agent_admin.submit_turn", "agent_admin.draft_behavior_change", "audit.trace.explain", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "tenant.user.read", "tenant.audit.read", "governance.policy.read"));
+        List.of("agent.user_admin.use", AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, "agent.behavior.manage", "agent_admin.submit_turn", "agent_admin.draft_behavior_change", "audit.trace.explain", "audit.trace.search", "audit.trace.detail.read", "audit.trace.timeline.read", "audit.trace.failureEvidence.read", "tenant.user.read", "tenant.audit.read", "governance.policy.read", MyAccountService.VIEW_SUMMARY_CAPABILITY, MyAccountService.VIEW_CONTEXT_CAPABILITY, MyAccountService.LIST_PERSONAL_ATTENTION_CAPABILITY, MyAccountService.VIEW_OWN_TRACE_REFS_CAPABILITY));
   }
 
   @Test
@@ -174,6 +175,42 @@ class AgentRuntimeServiceTest {
     assertFalse(trace.safeSummary().toLowerCase().contains("api_key"));
     assertFalse(trace.safeSummary().toLowerCase().contains("secret="));
     assertFalse(trace.safeSummary().toLowerCase().contains("token="));
+  }
+
+  @Test
+  void myAccountRuntimeInvocationUsesMyAccountAskCapabilityEvidenceBoundaryAndModelBackedPath() {
+    var fakeProvider = new FakeModelProviderClient("## Model-backed My Account response");
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), fakeProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID, tenantAdmin, "corr-my-account-runtime", "Explain my selected context, attention, trace refs, and safe next steps."));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertEquals("## Model-backed My Account response", result.markdown());
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("myAccountEvidence.read"));
+    assertTrue(fakeProvider.lastRequest.systemPrompt().contains("no direct mutation") || fakeProvider.lastRequest.systemPrompt().contains("direct mutation"));
+    assertFalse(fakeProvider.lastRequest.systemPrompt().toLowerCase().contains("api_key="));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID) && trace.capabilityId().equals("my_account.ask_agent")));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID) && trace.capabilityId().equals("my_account.ask_agent")));
+  }
+
+  @Test
+  void myAccountRuntimeFailsClosedWithSystemMessageWhenProviderConfigurationIsMissing() {
+    var failingProvider = new ModelProviderClient() {
+      @Override
+      public ModelProviderClient.ModelProviderResponse invoke(ModelProviderClient.ModelProviderRequest request) {
+        throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
+      }
+    };
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryIdentityRepository()), fixedClock(), failingProvider);
+
+    var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID, tenantAdmin, "corr-my-account-provider-missing", "Explain my account readiness."));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, result.decision());
+    assertNull(result.markdown());
+    assertEquals("model-provider-config-missing", result.safeErrorCode());
+    assertTrue(result.safeErrorSummary().contains("OPENAI_API_KEY"));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("MODEL_INVOCATION") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.agentDefinitionId().equals(AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID)));
+    assertTrue(runtimeService.traces().stream().anyMatch(trace -> trace.traceType().equals("AgentWorkTrace") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("model-provider-config-missing")));
   }
 
   @Test

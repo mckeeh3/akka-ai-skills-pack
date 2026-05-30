@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
+import {{JAVA_BASE_PACKAGE}}.application.security.MyAccountService;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolCatalogEntry;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
@@ -16,12 +17,14 @@ public final class ToolRegistry {
   public static final String READ_SKILL_TOOL_ID = "readSkill";
   public static final String READ_REFERENCE_DOC_TOOL_ID = "readReferenceDoc";
   public static final String USER_ADMIN_EVIDENCE_TOOL_ID = UserAdminEvidenceTools.TOOL_ID;
+  public static final String MY_ACCOUNT_EVIDENCE_TOOL_ID = MyAccountEvidenceTools.TOOL_ID;
   public static final String AGENT_ADMIN_EVIDENCE_TOOL_ID = AgentAdminEvidenceTools.TOOL_ID;
   public static final String AUDIT_TRACE_EVIDENCE_TOOL_ID = AuditTraceEvidenceTools.TOOL_ID;
   public static final String GOVERNANCE_POLICY_EVIDENCE_TOOL_ID = GovernancePolicyEvidenceTools.TOOL_ID;
   static final String READ_SKILL_BINDING = "governed-loader.readSkill";
   static final String READ_REFERENCE_DOC_BINDING = "governed-loader.readReferenceDoc";
   static final String USER_ADMIN_EVIDENCE_BINDING = "user-admin.evidence.read";
+  static final String MY_ACCOUNT_EVIDENCE_BINDING = "my-account.evidence.read";
   static final String AGENT_ADMIN_EVIDENCE_BINDING = "agent-admin.evidence.read";
   static final String AUDIT_TRACE_EVIDENCE_BINDING = "audit-trace.evidence.read";
   static final String GOVERNANCE_POLICY_EVIDENCE_BINDING = "governance-policy.evidence.read";
@@ -68,6 +71,16 @@ public final class ToolRegistry {
                 ToolCatalogEntry.SideEffectLevel.NONE,
                 USER_ADMIN_EVIDENCE_BINDING),
             context -> context.userAdminEvidenceTools()),
+        new RegisteredTool(
+            new ToolCatalogEntry(
+                MY_ACCOUNT_EVIDENCE_TOOL_ID,
+                "Read My Account evidence",
+                ToolPermissionBoundary.Category.DATA_LOOKUP,
+                MyAccountEvidenceTools.CAPABILITY_ID,
+                "Reads scoped, redacted My Account profile, selected context, authority, personal attention, trace refs, provider-blocked cues, and navigation evidence without side effects.",
+                ToolCatalogEntry.SideEffectLevel.NONE,
+                MY_ACCOUNT_EVIDENCE_BINDING),
+            context -> context.myAccountEvidenceTools()),
         new RegisteredTool(
             new ToolCatalogEntry(
                 AGENT_ADMIN_EVIDENCE_TOOL_ID,
@@ -128,6 +141,14 @@ public final class ToolRegistry {
           StarterSecurityComponents.identityRepository(),
           StarterSecurityComponents.userAdminService(),
           StarterSecurityComponents.invitationView(),
+          authContext,
+          correlationId);
+    }
+
+    public MyAccountEvidenceTools myAccountEvidenceTools() {
+      return new MyAccountEvidenceTools(
+          StarterSecurityComponents.identityRepository(),
+          new MyAccountService(StarterSecurityComponents.authContextResolver()),
           authContext,
           correlationId);
     }
