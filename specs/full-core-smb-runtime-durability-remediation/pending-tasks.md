@@ -187,7 +187,7 @@
 
 ### TASK-FCSMB-DUR-01-004A: Resolve root frontend mirror check drift
 
-- status: pending
+- status: done
 - source: TASK-FCSMB-DUR-01-004 root frontend validation failure
 - task brief: specs/full-core-smb-runtime-durability-remediation/tasks/01-remediation/04a-resolve-root-frontend-mirror-check-drift.md
 - depends on: [TASK-FCSMB-DUR-01-004]
@@ -214,6 +214,9 @@
   - follow-on validation dependencies are accurate
   - task changes and queue update are committed
 - notes:
+  - resolved root mirror drift by aligning User Admin vertical contract expectations with root fixture ids, adding root fallback reads for template seed resources, and syncing action status/surface-request typings needed by root fixtures
+  - validation: `git diff --check`; `cd frontend && npm test -- --run && npm run typecheck && npm run build`
+  - root build generated transient static resources under `src/main/resources/static-resources`; those build outputs were not committed because this task only validates the root frontend mirror and task 01-004 owns template static assets
   - commit message: `full-core-smb: resolve root frontend mirror drift`
 
 ### TASK-FCSMB-DUR-01-005: Validate durability remediation and update release handoff

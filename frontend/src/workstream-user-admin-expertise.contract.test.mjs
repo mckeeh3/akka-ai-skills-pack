@@ -4,14 +4,14 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const readTemplateOrRenderedResource = (path) => {
-  for (const root of ['../../backend/src/main/resources', '../../src/main/resources']) {
+  for (const root of ['../../backend/src/main/resources', '../../src/main/resources', '../../templates/ai-first-saas-starter/backend/src/main/resources']) {
     try {
       return read(`${root}/${path}`);
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
     }
   }
-  return read(`../../backend/src/main/resources/${path}`);
+  return read(`../../templates/ai-first-saas-starter/backend/src/main/resources/${path}`);
 };
 
 const surfaces = read('./workstream/fixtures/surfaces.ts');

@@ -1,6 +1,6 @@
 import type { SurfaceEnvelope } from './surfaces';
 
-export type SurfaceActionIntent = 'read' | 'command' | 'proposal' | 'approval' | 'workflow' | 'governance' | 'trace';
+export type SurfaceActionIntent = 'read' | 'surface-request' | 'command' | 'proposal' | 'approval' | 'workflow' | 'governance' | 'trace';
 export type IdempotencyKeySource = 'client-generated' | 'surface-item' | 'server-issued';
 export type ResultSurfacePlacement = 'inline' | 'modal' | 'side-panel' | 'deep-link';
 
@@ -14,6 +14,12 @@ export type SurfaceAction = {
   label: string;
   intent: SurfaceActionIntent;
   capabilityId: string;
+  shellRequest?: {
+    requestType: 'show_surface' | 'open_workstream';
+    targetFunctionalAgentId: string;
+    targetSurfaceId: string;
+    displayText: string;
+  };
   inputSchemaRef?: string;
   requiresConfirmation?: boolean;
   requiresApproval?: boolean;
@@ -43,7 +49,7 @@ export type CapabilityActionRequest = {
   correlationId: string;
 };
 
-export type CapabilityActionResultStatus = 'accepted' | 'denied' | 'validation-error' | 'approval-required' | 'conflict' | 'no-op' | 'failed';
+export type CapabilityActionResultStatus = 'accepted' | 'denied' | 'validation-error' | 'approval-required' | 'conflict' | 'no-op' | 'failed' | 'blocked-runtime' | 'blocked_provider_or_runtime';
 
 export type CapabilityActionResult = {
   status: CapabilityActionResultStatus;

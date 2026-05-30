@@ -21,16 +21,19 @@ test('User Admin functional agent defaults to markdown_response and uses the gov
 
 test('User Admin dashboard, list, and detail surfaces use canonical surface ids and scoped variants', () => {
   assert.match(surfaces, /userAdminDashboardSurface/);
-  assert.match(surfaces, /user-admin-dashboard/);
+  assert.match(surfaces, /surface-user-admin-dashboard/);
+  assert.match(surfaces, /legacySurfaceId: 'user-admin-dashboard'/);
   assert.match(surfaces, /User Admin dashboard/);
   assert.match(surfaces, /invitation-queue/);
   assert.match(surfaces, /access-review/);
   assert.match(surfaces, /admin-audit/);
   assert.match(surfaces, /userAdminListSearchSurface/);
-  assert.match(surfaces, /user-admin-user-list/);
+  assert.match(surfaces, /surface-user-admin-list/);
   assert.match(surfaces, /userAdminDetailEditSurface/);
-  assert.match(surfaces, /user-admin-user-account/);
+  assert.match(surfaces, /surface-user-admin-detail-admin/);
   assert.match(surfaces, /Tenant Admin account detail/);
+  assert.match(surfaces, /userAdminRoleChangePreviewSurface/);
+  assert.match(surfaces, /surface-user-admin-role-change-preview/);
   assert.match(surfaces, /userAdminRoleCapabilityMatrixSurface/);
   assert.match(surfaces, /user-admin-role-capability-matrix/);
   assert.match(surfaces, /userAdminAccessReviewSurface/);
@@ -40,7 +43,12 @@ test('User Admin dashboard, list, and detail surfaces use canonical surface ids 
     assert.match(surfaces, new RegExp(rowKind));
   }
   assert.match(surfaces, /last-admin-risk/);
+  assert.match(surfaces, /self-disable/);
   assert.match(surfaces, /Backend authorization denied role replacement/);
+  assert.match(surfaces, /accessManagement/);
+  assert.match(surfaces, /user_admin\.role_change_preview\.v1/);
+  assert.match(surfaces, /capabilityDelta/);
+  assert.match(surfaces, /affectedWorkstreams/);
   assert.match(surfaces, /trace-user-admin-detail/);
   assert.match(surfaces, /table-to-card/);
   for (const variant of ['SaaS Owner Admin', 'Tenant Admin', 'Customer Admin']) {
@@ -84,6 +92,11 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /requiresApproval: true/);
   assert.match(surfaces, /idempotency: \{ required: true/);
   assert.match(surfaces, /traceRequired: true/);
+  assert.match(surfaces, /action-invite-user/);
+  assert.match(surfaces, /action-useradmin-resend-invitation/);
+  assert.match(surfaces, /action-useradmin-revoke-invitation/);
+  assert.match(surfaces, /action-useradmin-disable-member/);
+  assert.match(surfaces, /action-useradmin-reactivate-member/);
   assert.match(surfaces, /action-useradmin-preview-role-change/);
   assert.match(surfaces, /action-useradmin-change-member-roles/);
   assert.match(surfaces, /action-useradmin-start-access-review/);
@@ -106,13 +119,17 @@ test('User Admin surface actions map to capability ids and trace or audit afford
 test('workstream and API clients support five core markdown plus demo dashboard-to-list-to-detail navigation feedback', () => {
   assert.match(workstream, /item-v0-user-admin-markdown/);
   assert.match(workstream, /kind: 'markdown_response'/);
-  assert.match(surfaces, /user-admin-user-list/);
+  assert.match(surfaces, /surface-user-admin-list/);
   assert.match(surfaces, /Display user account detail/);
-  assert.match(surfaces, /user-admin-user-account/);
+  assert.match(surfaces, /surface-user-admin-detail-admin/);
   assert.match(apiClient, /displayUserListActionResult/);
   assert.match(apiClient, /displayUserDetailActionResult/);
   assert.match(apiClient, /action-display-user-list/);
   assert.match(apiClient, /action-display-user-detail/);
+  assert.match(apiClient, /action-useradmin-resend-invitation/);
+  assert.match(apiClient, /action-useradmin-disable-member/);
+  assert.match(apiClient, /userAdminMemberStatusActionSurface/);
+  assert.match(apiClient, /userAdminRoleChangePreviewSurface/);
   assert.match(httpApiClient, /\/api\/workstream\/bootstrap/);
   assert.match(httpApiClient, /\/api\/workstream\/actions/);
   assert.match(httpApiClient, /X-Selected-Context-Id/);
