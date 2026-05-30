@@ -53,7 +53,7 @@
 
 ### TASK-FCSMB-AT-01-001: Define Audit/Trace vertical slice contracts and implementation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-audit-trace/backlog/01-audit-trace-full-core-backlog.md
 - task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/01-define-audit-trace-implementation-map.md
 - depends on: [TASK-FCSMB-AT-00-001]
@@ -97,13 +97,184 @@
 - notes:
   - commit message: `full-core-smb: map audit trace full core`
 
+### TASK-FCSMB-AT-01-002: Implement backend deterministic Audit/Trace service
+
+- status: pending
+- source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+- task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/02-implement-backend-audit-trace-service.md
+- depends on: [TASK-FCSMB-AT-01-001]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-audit-trace/README.md
+  - specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/audit-trace-workstream-v0/workstream-contract.md
+- skills:
+  - none; focused backend source task
+- expected outputs:
+  - backend source changes under templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/
+  - backend tests under templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/
+  - updated specs/full-core-smb-audit-trace/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=WorkstreamServiceTest,AdminEndpointIntegrationTest,AgentRuntimeTraceEntityTest,AgentRuntimeTraceViewTest,AgentRuntimeTraceSinkTest`
+  - `rg -n "AuditTraceService|AuditTraceRepository|audit\.trace\.(dashboard|search|detail|timeline|failureEvidence|investigationGuide)|redacted|correlation|not_found_or_redacted|provider|tool|model|tenant" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - backend Audit/Trace reads are deterministic, tenant-scoped, redacted, correlated, and tested
+  - future frontend and agent-tool tasks can consume stable backend DTOs without guessing
+  - no model-backed or worker behavior is claimed complete
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement audit trace backend service`
+
+### TASK-FCSMB-AT-01-003: Implement frontend Audit/Trace runtime-aligned surfaces
+
+- status: pending
+- source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+- task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/03-implement-frontend-audit-trace-surfaces.md
+- depends on: [TASK-FCSMB-AT-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-audit-trace/README.md
+  - specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - docs/web-ui-style-guide.md
+- skills:
+  - none; focused frontend source task
+- expected outputs:
+  - frontend source/test changes under templates/ai-first-saas-starter/frontend/src/
+  - root frontend/ synchronization only if touched starter UI files have mirrored root copies by repository convention
+  - updated specs/full-core-smb-audit-trace/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-audit-trace-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "audit\.trace|Audit/Trace|Audit correlation timeline|redacted|Partial results|provider|tool|model|worker|system_message|Frontend affordances never grant authority|traceLinks" templates/ai-first-saas-starter/frontend/src --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - Audit/Trace frontend surfaces are runtime-aligned, polished, accessible, trace-linked, and safe
+  - cross-workstream trace links route to Audit/Trace actions/surfaces without implying frontend authority
+  - no secrets, hidden prompts, or cross-tenant evidence are exposed in browser-visible fixture/runtime shapes
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement audit trace frontend surfaces`
+
+### TASK-FCSMB-AT-01-004: Implement AuditTraceAgent evidence tool and governed runtime tests
+
+- status: pending
+- source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+- task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/04-implement-audit-trace-agent-evidence-tool.md
+- depends on: [TASK-FCSMB-AT-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-audit-trace/README.md
+  - specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - docs/agent-component-selection-guide.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
+- skills:
+  - akka-agents
+  - akka-agent-tools
+  - akka-agent-tool-boundaries
+  - akka-agent-seed-documents
+- expected outputs:
+  - backend source changes under templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/
+  - seed resource updates under templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds/starter-v1/
+  - backend tests under templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/ and/or application/security/
+  - updated specs/full-core-smb-audit-trace/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest`
+  - `rg -n "AuditTraceAgent|auditTraceEvidence\.read|ToolPermissionBoundary|readSkill|readReferenceDoc|AgentWorkTrace|PromptAssemblyTrace|provider|blocked_provider_or_runtime|no direct mutation|tenant" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/main/resources templates/ai-first-saas-starter/backend/src/test/java --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - AuditTraceAgent can access scoped deterministic evidence only through governed tools and loader tools
+  - missing provider/model config fails closed with typed system-message surfaces and traces
+  - tests prove no deterministic/model-less normal explanation is used to claim model-backed completion
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement audit trace agent evidence tool`
+
+### TASK-FCSMB-AT-01-005: Decide Audit/Trace summary worker readiness
+
+- status: pending
+- source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+- task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/05-decide-audit-summary-worker-readiness.md
+- depends on:
+  - TASK-FCSMB-AT-01-002
+  - TASK-FCSMB-AT-01-004
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-audit-trace/README.md
+  - specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+  - specs/full-core-smb-saas-hardening/agent-worker-opportunities.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+  - docs/agent-component-selection-guide.md
+- skills:
+  - none; focused worker-readiness task
+- expected outputs:
+  - source/test changes only for the bounded readiness/blocked/task-record path selected
+  - queue notes if a separate future mini-project is required for a real AutonomousAgent audit-summary worker
+  - updated specs/full-core-smb-audit-trace/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=WorkstreamServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-audit-trace-vertical.contract.test.mjs src/workstream-surfaces.contract.test.mjs`
+  - `rg -n "audit\.trace\.summaryTask|audit summary|AutonomousAgent|blocked_provider_or_runtime|worker|no direct mutation|provider" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - audit-summary worker path is either safely blocked/deferred or has a bounded deterministic task-record foundation with provider-blocked semantics
+  - no user-facing worker success path is claimed unless it uses a real governed model-backed runtime
+  - follow-up work is queued or noted if a future AutonomousAgent implementation remains needed
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: decide audit trace worker readiness`
+
+### TASK-FCSMB-AT-01-006: Run integrated Audit/Trace validation
+
+- status: pending
+- source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+- task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/06-run-integrated-audit-trace-validation.md
+- depends on:
+  - TASK-FCSMB-AT-01-003
+  - TASK-FCSMB-AT-01-004
+  - TASK-FCSMB-AT-01-005
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-audit-trace/README.md
+  - specs/full-core-smb-audit-trace/conversation-capture.md
+  - specs/full-core-smb-audit-trace/pending-tasks.md
+  - specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/audit-trace-workstream-v0/workstream-contract.md
+- skills:
+  - none; repository validation task
+- expected outputs:
+  - validation notes in queue/task notes or a small verification artifact if needed
+  - bounded fixes for validation blockers, if any
+  - updated specs/full-core-smb-audit-trace/pending-tasks.md with follow-up tasks if gaps remain
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=WorkstreamServiceTest,AdminEndpointIntegrationTest,AgentRuntimeTraceEntityTest,AgentRuntimeTraceViewTest,AgentRuntimeTraceSinkTest`
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-audit-trace-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "Audit/Trace|AuditTraceAgent|audit\.trace|auditTraceEvidence\.read|trace dashboard|trace search|timeline|correlation|evidence|redacted|provider|tool|model|worker|system_message|AgentWorkTrace|PromptAssemblyTrace|no secret|tenant" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - targeted backend/frontend checks pass or blockers are recorded as bounded follow-up tasks
+  - broad starter validation passes or a concrete blocker is recorded and queued
+  - terminal verification can determine whether Audit/Trace full-core readiness has been achieved
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: validate audit trace full core`
+
 ### TASK-FCSMB-AT-99-001: Verify Audit/Trace full-core readiness
 
 - status: pending
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-audit-trace/tasks/99-verification/01-verify-audit-trace-readiness.md
 - depends on:
-  - TASK-FCSMB-AT-01-001
+  - TASK-FCSMB-AT-01-006
 - required reads:
   - AGENTS.md
   - skills/README.md
