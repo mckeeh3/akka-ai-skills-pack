@@ -48,7 +48,7 @@ class AgentRuntimeToolResolverTest {
     repository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     var identityRepository = new LocalDemoIdentityRepository();
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock());
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock(), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
     StarterSecurityComponents.bindTestAuditTraceRepository(new LocalDemoAuditTraceRepository(runtimeService, new LocalDemoWorkstreamLogRepository()));
     StarterSecurityComponents.bindTestGovernancePolicyRepository(new LocalDemoGovernancePolicyRepository());

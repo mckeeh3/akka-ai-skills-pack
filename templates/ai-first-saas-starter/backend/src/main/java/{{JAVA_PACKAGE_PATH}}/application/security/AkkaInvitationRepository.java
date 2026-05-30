@@ -12,8 +12,7 @@ import java.util.Optional;
  *
  * <p>This preserves the synchronous starter repository port while moving state into
  * {@link DurableInvitationRepositoryEntity}. Normal endpoint wiring binds this adapter as soon as a
- * {@link ComponentClient} is available; the local/demo adapter is retained only for explicit
- * local/demo or test execution.
+ * {@link ComponentClient} is available; test doubles live only in test source.
  */
 public final class AkkaInvitationRepository implements InvitationRepository {
   private final ComponentClient componentClient;

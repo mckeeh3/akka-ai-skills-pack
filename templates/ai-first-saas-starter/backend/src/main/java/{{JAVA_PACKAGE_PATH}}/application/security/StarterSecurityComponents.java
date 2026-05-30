@@ -6,13 +6,20 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeToolResolver;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeTraceSink;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentDefinition;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelConfigRef;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ModelPolicy;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ReferenceDocument;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AkkaAgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AkkaAgentRuntimeTraceSink;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.DefaultWorkstreamAgentRuntimeInvoker;
-import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.FailClosedAgentRuntimeTraceSink;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.FailClosedWorkstreamAgentRuntimeInvoker;
-import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoAgentBehaviorRepository;
-import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoAgentRuntimeTraceSink;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.OpenAiModelProviderClient;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
@@ -20,7 +27,10 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Customer;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
+import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
+import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Tenant;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
@@ -39,8 +49,8 @@ public final class StarterSecurityComponents {
   private static volatile AuthContextResolver authContextResolver = new AuthContextResolver(identityRepository);
   private static volatile MeService meService = new MeService(authContextResolver);
   private static volatile UserAdminService userAdminService = new UserAdminService(identityRepository, CLOCK);
-  private static volatile InvitationRepository invitationRepository = new LocalDemoInvitationRepository();
-  private static volatile AgentBehaviorRepository agentBehaviorRepository = new LocalDemoAgentBehaviorRepository();
+  private static volatile InvitationRepository invitationRepository = new UnboundInvitationRepository();
+  private static volatile AgentBehaviorRepository agentBehaviorRepository = new UnboundAgentBehaviorRepository();
   private static volatile AgentBehaviorSeedLoader agentBehaviorSeedLoader = new AgentBehaviorSeedLoader(agentBehaviorRepository, CLOCK);
   private static volatile AgentRuntimeService agentRuntimeService = new AgentRuntimeService(agentBehaviorRepository, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, traceSinkBeforeAkkaBinding());
   private static volatile AgentRuntimeToolResolver agentRuntimeToolResolver = new AgentRuntimeToolResolver(agentBehaviorRepository, agentRuntimeService);
@@ -61,9 +71,6 @@ public final class StarterSecurityComponents {
   /** Idempotent startup hook used by the Akka @Setup class and by local tests/endpoints. */
   public static void startup() {
     STARTED.compareAndSet(false, true);
-    if (FailClosedFoundationRuntime.testRuntime()) {
-      agentBehaviorSeedLoader.importStarterDefaults("tenant-starter", "starter-bootstrap", "corr-starter-agent-seed");
-    }
   }
 
   /** Bind normal endpoint/agent runtime seams to Akka durable repositories once a ComponentClient is available. */
@@ -140,7 +147,7 @@ public final class StarterSecurityComponents {
     authContextResolver = new AuthContextResolver(testRepository);
     meService = new MeService(authContextResolver);
     userAdminService = new UserAdminService(testRepository, CLOCK);
-    invitationRepository = new LocalDemoInvitationRepository();
+    invitationRepository = new UnboundInvitationRepository();
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK);
     invitationView = new InvitationView(invitationService);
     accessReviewTaskRepository = new UnboundAccessReviewTaskRepository();
@@ -148,6 +155,14 @@ public final class StarterSecurityComponents {
     auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
     governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
     workstreamService = workstreamService(workstreamLogRepository());
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source invitation adapters. */
+  public static void bindTestInvitationRepository(InvitationRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test invitation repository binding");
+    invitationRepository = testRepository;
+    invitationService = new InvitationService(identityRepository, invitationRepository, CLOCK);
+    invitationView = new InvitationView(invitationService);
   }
 
   /** Test-only hook for unit tests that use explicit test-source log/audit adapters. */
@@ -177,6 +192,13 @@ public final class StarterSecurityComponents {
     agentBehaviorSeedLoader = new AgentBehaviorSeedLoader(testRepository, CLOCK);
     agentRuntimeService = new AgentRuntimeService(testRepository, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, traceSinkBeforeAkkaBinding());
     agentRuntimeToolResolver = new AgentRuntimeToolResolver(testRepository, agentRuntimeService);
+  }
+
+  /** Test-only hook for unit tests that need a test-source trace sink before Akka binding. */
+  public static void bindTestAgentRuntimeTraceSink(AgentRuntimeTraceSink testTraceSink) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test agent runtime trace sink binding");
+    agentRuntimeService = new AgentRuntimeService(agentBehaviorRepository, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, testTraceSink);
+    agentRuntimeToolResolver = new AgentRuntimeToolResolver(agentBehaviorRepository, agentRuntimeService);
   }
 
   public static AgentBehaviorRepository agentBehaviorRepository() {
@@ -224,11 +246,65 @@ public final class StarterSecurityComponents {
   }
 
   private static AgentRuntimeTraceSink traceSinkBeforeAkkaBinding() {
-    return FailClosedFoundationRuntime.localDemoOrTestEnabled() ? new LocalDemoAgentRuntimeTraceSink() : new FailClosedAgentRuntimeTraceSink();
+    return new UnboundAgentRuntimeTraceSink();
   }
 
   private static GovernancePolicyRepository governancePolicyRepository() {
     return governancePolicyRepository;
+  }
+
+  private static final class UnboundAgentRuntimeTraceSink implements AgentRuntimeTraceSink {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("AgentRuntimeTraceSink");
+    }
+
+    public AgentRuntimeTrace record(AgentRuntimeTrace trace) { throw unavailable(); }
+    public List<AgentRuntimeTrace> traces() { throw unavailable(); }
+  }
+
+  private static final class UnboundInvitationRepository implements InvitationRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("InvitationRepository");
+    }
+
+    public Optional<Invitation> invitation(String invitationId) { throw unavailable(); }
+    public Optional<Invitation> findByIdempotencyKey(String idempotencyKey) { throw unavailable(); }
+    public Optional<Invitation> findActiveDuplicate(String normalizedEmail, ScopeType scopeType, String tenantId, String customerId) { throw unavailable(); }
+    public Optional<Invitation> findByAcceptanceContext(String acceptanceContextId) { throw unavailable(); }
+    public Optional<Invitation> findByTokenHash(String tokenHash) { throw unavailable(); }
+    public Invitation saveInvitation(Invitation invitation) { throw unavailable(); }
+    public void enqueueEmail(EmailOutboxMessage message) { throw unavailable(); }
+    public Optional<EmailOutboxMessage> email(String outboxId) { throw unavailable(); }
+    public List<EmailOutboxMessage> queuedEmails() { throw unavailable(); }
+    public List<Invitation> invitations() { throw unavailable(); }
+  }
+
+  private static final class UnboundAgentBehaviorRepository implements AgentBehaviorRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("AgentBehaviorRepository");
+    }
+
+    public Optional<AgentDefinition> agentDefinition(String tenantId, String agentDefinitionId) { throw unavailable(); }
+    public AgentDefinition saveAgentDefinition(AgentDefinition definition) { throw unavailable(); }
+    public List<AgentDefinition> agentDefinitions(String tenantId) { throw unavailable(); }
+    public Optional<PromptDocument> promptDocument(String tenantId, String promptDocumentId) { throw unavailable(); }
+    public PromptDocument savePromptDocument(PromptDocument prompt) { throw unavailable(); }
+    public Optional<SkillDocument> skillDocument(String tenantId, String skillDocumentId) { throw unavailable(); }
+    public SkillDocument saveSkillDocument(SkillDocument skill) { throw unavailable(); }
+    public List<SkillDocument> skillDocuments(String tenantId) { throw unavailable(); }
+    public Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId) { throw unavailable(); }
+    public ReferenceDocument saveReferenceDocument(ReferenceDocument reference) { throw unavailable(); }
+    public List<ReferenceDocument> referenceDocuments(String tenantId) { throw unavailable(); }
+    public Optional<AgentSkillManifest> skillManifest(String tenantId, String manifestId) { throw unavailable(); }
+    public AgentSkillManifest saveSkillManifest(AgentSkillManifest manifest) { throw unavailable(); }
+    public Optional<AgentReferenceManifest> referenceManifest(String tenantId, String manifestId) { throw unavailable(); }
+    public AgentReferenceManifest saveReferenceManifest(AgentReferenceManifest manifest) { throw unavailable(); }
+    public Optional<ToolPermissionBoundary> toolBoundary(String tenantId, String boundaryId) { throw unavailable(); }
+    public ToolPermissionBoundary saveToolBoundary(ToolPermissionBoundary boundary) { throw unavailable(); }
+    public Optional<ModelConfigRef> modelConfigRef(String tenantId, String modelConfigRefId) { throw unavailable(); }
+    public ModelConfigRef saveModelConfigRef(ModelConfigRef modelConfigRef) { throw unavailable(); }
+    public Optional<ModelPolicy> modelPolicy(String tenantId, String modelPolicyRefId) { throw unavailable(); }
+    public ModelPolicy saveModelPolicy(ModelPolicy modelPolicy) { throw unavailable(); }
   }
 
   private static final class UnboundAccessReviewTaskRepository implements AccessReviewTaskRepository {

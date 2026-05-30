@@ -21,7 +21,7 @@ import java.util.Optional;
  * first-class {@link AgentDefinitionEntity}. The remaining governed records still use {@link
  * DurableAgentBehaviorRepositoryEntity} until their own first-class components are added. Normal
  * endpoint and Akka Agent runtime wiring binds this adapter as soon as a {@link ComponentClient} is
- * available; the local/demo adapter is retained only for explicit local/demo or test execution.
+ * available; test doubles live only in test source.
  */
 public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepository {
   private final ComponentClient componentClient;

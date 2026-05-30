@@ -55,11 +55,11 @@ public final class AgentRuntimeService {
   private final Map<String, RollbackSnapshot> rollbackSnapshots = new HashMap<>();
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
-    this(repository, authContextResolver, clock, new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
+    this(repository, authContextResolver, clock, new OpenAiModelProviderClient(), new UnboundAgentRuntimeTraceSink());
   }
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock, ModelProviderClient modelProviderClient) {
-    this(repository, authContextResolver, clock, modelProviderClient, new LocalDemoAgentRuntimeTraceSink());
+    this(repository, authContextResolver, clock, modelProviderClient, new UnboundAgentRuntimeTraceSink());
   }
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock, ModelProviderClient modelProviderClient, AgentRuntimeTraceSink traceSink) {
@@ -652,6 +652,18 @@ public final class AgentRuntimeService {
   public record ReferenceReadResult(AgentRuntimeTrace.Decision decision, String title, String content, String checksum, String traceId, String safeDenialReason) {}
   private record ResolvedModelBinding(ModelConfigRef model, ModelPolicy policy) {}
   private record RollbackSnapshot(String kind, Object record) {}
+
+  private static final class UnboundAgentRuntimeTraceSink implements AgentRuntimeTraceSink {
+    @Override
+    public AgentRuntimeTrace record(AgentRuntimeTrace trace) {
+      throw new IllegalStateException("Agent runtime trace persistence requires AkkaAgentRuntimeTraceSink bound with ComponentClient or an explicit test-source trace sink.");
+    }
+
+    @Override
+    public List<AgentRuntimeTrace> traces() {
+      throw new IllegalStateException("Agent runtime trace reads require AkkaAgentRuntimeTraceSink bound with ComponentClient or an explicit test-source trace sink.");
+    }
+  }
 
   public record BehaviorChangeRequest(String tenantId, String agentDefinitionId, AuthContext authContext, BehaviorChangeProposal.TargetArtifact targetArtifact, String proposedContent, List<ToolPermissionBoundary.ToolGrant> proposedToolGrants, String rationale, String correlationId) {
     public BehaviorChangeRequest {

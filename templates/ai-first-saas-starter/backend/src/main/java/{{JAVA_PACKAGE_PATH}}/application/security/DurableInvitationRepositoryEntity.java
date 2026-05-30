@@ -15,8 +15,8 @@ import java.util.Optional;
  * <p>Normal endpoint wiring binds {@link AkkaInvitationRepository} to this entity without changing
  * {@link InvitationService} or the browser API contracts. This Key Value Entity stores current
  * invitation/outbox state; a later event-sourced invitation lifecycle slice can preserve full
- * historical facts and project the same read methods through views. The local/demo adapter is only
- * for explicit local/demo or test execution.
+ * historical facts and project the same read methods through views. Test-only substitutes live under
+ * test source, not normal runtime wiring.
  */
 @Component(id = "starter-invitation-repository")
 public class DurableInvitationRepositoryEntity extends KeyValueEntity<InvitationRepositoryState> {

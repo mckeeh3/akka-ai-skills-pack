@@ -24,6 +24,8 @@ class UserAdminAccessReviewWorkerTest {
 
   @Test
   void completesAccessReviewWithModelBackedGovernedRuntimeAndNoDirectMutation() {
+    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
+    var actor = starterTenantAdmin("corr-worker-actor");
     var runtime = runtimeService(request -> new ModelProviderClient.ModelProviderResponse(
         "## Access review recommendation\n\nNo stale admin memberships found. no direct mutation; human must accept or reject.",
         request.providerAlias(),
@@ -38,7 +40,6 @@ class UserAdminAccessReviewWorkerTest {
         "provider-response-1",
         "stop",
         "test provider produced model-backed access review"));
-    var actor = starterTenantAdmin("corr-worker-actor");
     var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-success", "corr-worker-start");
@@ -64,9 +65,10 @@ class UserAdminAccessReviewWorkerTest {
     var failingProvider = (ModelProviderClient) request -> {
       throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
     };
+    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
+    var actor = starterTenantAdmin("corr-worker-blocked-actor");
     var runtime = runtimeService(failingProvider);
     var worker = new UserAdminAccessReviewWorker(runtime, new AgentRuntimeToolResolver(StarterSecurityComponents.agentBehaviorRepository(), runtime), failingProvider);
-    var actor = starterTenantAdmin("corr-worker-blocked-actor");
     var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-blocked", "corr-worker-blocked-start");
@@ -83,17 +85,18 @@ class UserAdminAccessReviewWorkerTest {
   }
 
   private AgentRuntimeService runtimeService(ModelProviderClient provider) {
-    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
     return new AgentRuntimeService(
         StarterSecurityComponents.agentBehaviorRepository(),
         StarterSecurityComponents.authContextResolver(),
         clock,
-        provider);
+        provider,
+        new LocalDemoAgentRuntimeTraceSink());
   }
 
   private AuthContextResolver.ResolvedMe starterTenantAdmin(String correlationId) {
     var identityRepository = new LocalDemoIdentityRepository();
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
+    StarterSecurityComponents.bindTestInvitationRepository(new {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoInvitationRepository());
     BootstrapAdminSeeder.seedConfiguredAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:tenant-starter");
     seedTenantMember(identityRepository);
     StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults("tenant-starter", "test-bootstrap", correlationId + "-seed");

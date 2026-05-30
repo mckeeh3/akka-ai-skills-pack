@@ -41,7 +41,7 @@ class AgentRuntimeServiceTest {
   void setUp() {
     repository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
-    service = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock());
+    service = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
     tenantAdmin = new AuthContext(
         "admin-1",
         "workos-admin-1",
@@ -180,7 +180,7 @@ class AgentRuntimeServiceTest {
   @Test
   void myAccountRuntimeInvocationUsesMyAccountAskCapabilityEvidenceBoundaryAndModelBackedPath() {
     var fakeProvider = new FakeModelProviderClient("## Model-backed My Account response");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID, tenantAdmin, "corr-my-account-runtime", "Explain my selected context, attention, trace refs, and safe next steps."));
 
@@ -201,7 +201,7 @@ class AgentRuntimeServiceTest {
         throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
       }
     };
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), failingProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), failingProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID, tenantAdmin, "corr-my-account-provider-missing", "Explain my account readiness."));
 
@@ -216,7 +216,7 @@ class AgentRuntimeServiceTest {
   @Test
   void agentAdminRuntimeInvocationUsesAgentAdminSubmitTurnCapability() {
     var fakeProvider = new FakeModelProviderClient("## Model-backed Agent Admin response");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, tenantAdmin, "corr-agent-admin-runtime", "Explain Agent Admin readiness."));
 
@@ -229,7 +229,7 @@ class AgentRuntimeServiceTest {
   @Test
   void auditTraceRuntimeInvocationUsesAuditExplainCapabilityAndModelBackedPath() {
     var fakeProvider = new FakeModelProviderClient("## Model-backed Audit/Trace response");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID, tenantAdmin, "corr-audit-trace-runtime", "Explain provider failure evidence."));
 
@@ -243,7 +243,7 @@ class AgentRuntimeServiceTest {
   @Test
   void governancePolicyRuntimeInvocationUsesGovernanceAskCapabilityEvidenceBoundaryAndModelBackedPath() {
     var fakeProvider = new FakeModelProviderClient("## Model-backed Governance/Policy response");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID, tenantAdmin, "corr-governance-policy-runtime", "Explain policy approval readiness and evidence."));
 
@@ -264,7 +264,7 @@ class AgentRuntimeServiceTest {
         throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
       }
     };
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), failingProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), failingProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID, tenantAdmin, "corr-governance-policy-provider-missing", "Explain approval readiness."));
 
@@ -279,7 +279,7 @@ class AgentRuntimeServiceTest {
   @Test
   void runtimeInvocationAssemblesPromptInvokesModelAndEmitsWorkTraces() {
     var fakeProvider = new FakeModelProviderClient("## Model-backed User Admin response");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), fakeProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "corr-runtime-model", "Summarize current governed runtime readiness."));
 
@@ -305,7 +305,7 @@ class AgentRuntimeServiceTest {
         throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
       }
     };
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), failingProvider);
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), failingProvider, new LocalDemoAgentRuntimeTraceSink());
 
     var result = runtimeService.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "corr-runtime-missing-provider", "Hello"));
 

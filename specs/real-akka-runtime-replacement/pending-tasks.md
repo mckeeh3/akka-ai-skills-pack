@@ -206,7 +206,7 @@
 
 ### TASK-RUNTIME-01-005: Harden agent, invitation, and trace Akka bindings
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/05-harden-agent-invitation-trace-bindings.md
 - depends on: [TASK-RUNTIME-01-004]
@@ -244,6 +244,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: harden agent invitation trace Akka bindings`
+  - completed: rebound normal startup defaults for invitations, governed agent behavior, and agent runtime traces to unbound fail-closed ports until `ComponentClient` binds the Akka adapters; moved local-demo invitation/agent behavior/trace test doubles to test source; removed the main-source fail-closed trace sink class; added explicit test-only binding hooks and updated tests to pass explicit test-source sinks/adapters.
+  - checks: `git diff --check`; rendered fullstack validation with `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh --keep --target /tmp/ai-first-saas-starter-runtime-task-01005-3`; required main-source agent/invitation/trace substitute scan returned no matches.
 
 ### TASK-RUNTIME-01-006: Remove backend substitute adapters from main runtime
 

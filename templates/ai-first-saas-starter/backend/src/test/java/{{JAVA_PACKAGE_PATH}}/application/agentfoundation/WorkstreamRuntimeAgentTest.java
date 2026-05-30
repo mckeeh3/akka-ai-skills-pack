@@ -45,6 +45,9 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
     var identityRepository = new LocalDemoIdentityRepository();
     BootstrapAdminSeeder.seedConfiguredAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:" + TENANT_ID);
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
+    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
+    StarterSecurityComponents.bindTestAgentRuntimeTraceSink(new LocalDemoAgentRuntimeTraceSink());
+    StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults(TENANT_ID, "test-bootstrap", "corr-workstream-agent-seed");
     StarterSecurityComponents.startup();
   }
 

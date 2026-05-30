@@ -95,7 +95,7 @@ class AgentBehaviorSeedLoaderTest {
   @Test
   void allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
     var toolResolver = new AgentRuntimeToolResolver(repository, runtimeService);
     var promptIds = new HashSet<String>();
     var skillManifestIds = new HashSet<String>();
@@ -165,7 +165,7 @@ class AgentBehaviorSeedLoaderTest {
   @Test
   void agentAdminRuntimePreparationRequiresAgentAdminSubmitTurnCapability() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
     var userAdminOnlyContext = new AuthContext(
         "admin-1",
         "workos-admin-1",
