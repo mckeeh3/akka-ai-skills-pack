@@ -55,7 +55,7 @@
 
 ### TASK-FCSMB-MA-01-001: Define My Account vertical slice contracts and implementation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-my-account/backlog/01-my-account-full-core-backlog.md
 - task brief: specs/full-core-smb-my-account/tasks/01-my-account/01-define-my-account-implementation-map.md
 - depends on: [TASK-FCSMB-MA-00-001]
@@ -101,13 +101,205 @@
 - notes:
   - commit message: `full-core-smb: map my account full core`
 
+### TASK-FCSMB-MA-01-002: Implement deterministic backend My Account foundations
+
+- status: pending
+- source: specs/full-core-smb-my-account/my-account-implementation-map.md
+- task brief: specs/full-core-smb-my-account/tasks/01-my-account/02-implement-backend-my-account-foundations.md
+- depends on: [TASK-FCSMB-MA-01-001]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-my-account/README.md
+  - specs/full-core-smb-my-account/conversation-capture.md
+  - specs/full-core-smb-my-account/my-account-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/my-account-workstream-v0/workstream-contract.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MeService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MeResponse.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AuthContextResolver.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/MeServiceTest.java
+  - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java
+- skills:
+  - none; deterministic backend implementation task
+- expected outputs:
+  - backend My Account source/test updates under templates/ai-first-saas-starter/backend
+  - updated specs/full-core-smb-my-account/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=MeServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `rg -n "MyAccountService|my_account\.view_context|my_account\.update_profile_settings|my_account\.open_authorized_workstream|surface-my-account-dashboard|surface-my-profile|surface-my-settings|selected context|authority|system_message|tenant|trace" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - backend My Account account/context/profile/settings/open-workstream behavior is deterministic, capability-checked, trace-linked, and tested
+  - My Account surfaces are independently retrievable through the workstream surface endpoint
+  - forbidden/hidden workstream open requests fail closed with safe non-leaking denials
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement my account backend foundations`
+
+### TASK-FCSMB-MA-01-003: Implement My Account attention, trace refs, and frontend surfaces
+
+- status: pending
+- source: specs/full-core-smb-my-account/my-account-implementation-map.md
+- task brief: specs/full-core-smb-my-account/tasks/01-my-account/03-implement-attention-trace-frontend-surfaces.md
+- depends on: [TASK-FCSMB-MA-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-my-account/README.md
+  - specs/full-core-smb-my-account/conversation-capture.md
+  - specs/full-core-smb-my-account/my-account-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/my-account-workstream-v0/workstream-contract.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/02-implement-backend-my-account-foundations.md
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/me.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/agents.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/types/auth.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/types/surfaces.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/rail/FunctionalAgentRail.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/shell/WorkstreamShell.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/DashboardSurface.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/DetailEditSurface.tsx
+- skills:
+  - none; frontend/backend surface implementation task
+- expected outputs:
+  - backend/frontend My Account attention, trace-ref, fixture, type, renderer, and contract-test updates
+  - updated specs/full-core-smb-my-account/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=MeServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-my-account-vertical.contract.test.mjs src/workstream-shell.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "My Account|my_account\.list_personal_attention|personal attention|trace refs|view_own_trace_refs|open_authorized_workstream|user tile|agent-my-account|surface-my-account-dashboard|system_message|not_found_or_redacted|blocked_provider_or_runtime|no duplicate top-rail" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - My Account aggregates only authorized personal attention and trace refs
+  - frontend renders My Account states with accessible, responsive, workstream-first surfaces
+  - lower-left user tile launch is preserved and no top-rail duplicate appears
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement my account attention surfaces`
+
+### TASK-FCSMB-MA-01-004: Implement MyAccountAgent evidence tool and fail-closed guidance
+
+- status: pending
+- source: specs/full-core-smb-my-account/my-account-implementation-map.md
+- task brief: specs/full-core-smb-my-account/tasks/01-my-account/04-implement-my-account-agent-evidence-tool.md
+- depends on: [TASK-FCSMB-MA-01-003]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-my-account/README.md
+  - specs/full-core-smb-my-account/conversation-capture.md
+  - specs/full-core-smb-my-account/my-account-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/my-account-workstream-v0/workstream-contract.md
+  - docs/agent-component-selection-guide.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/ToolRegistry.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeToolResolver.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+  - templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds/starter-v1/my-account-system.md
+  - templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds/starter-v1/my-account-starter-guidance.md
+  - templates/ai-first-saas-starter/backend/src/main/resources/agent-behavior-seeds/starter-v1/my-account-starter-scope-reference.md
+- skills:
+  - akka-agents
+  - akka-agent-tools
+  - akka-agent-tool-boundaries
+  - akka-agent-seed-documents
+- expected outputs:
+  - MyAccountAgent evidence-tool, seed/tool-boundary, fail-closed test, and no-secret updates
+  - updated specs/full-core-smb-my-account/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-composer-message-api.contract.test.mjs src/workstream-my-account-vertical.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "MyAccountAgent|agent-my-account|myAccountEvidence\.read|my_account\.ask_agent|readSkill|readReferenceDoc|ToolPermissionBoundary|AgentWorkTrace|PromptAssemblyTrace|provider|system_message|blocked_provider_or_runtime|no direct mutation|rawJwt|providerSecret|hiddenPromptText" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - MyAccountAgent guidance can load scoped evidence only through governed tools and loader tools
+  - missing provider/model config fails closed with typed `system_message` and traces
+  - no deterministic/model-less normal runtime guidance is used to claim completion
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement my account agent evidence`
+
+### TASK-FCSMB-MA-01-005: Decide My Account personal digest worker readiness
+
+- status: pending
+- source: specs/full-core-smb-my-account/my-account-implementation-map.md
+- task brief: specs/full-core-smb-my-account/tasks/01-my-account/05-decide-personal-digest-readiness.md
+- depends on: [TASK-FCSMB-MA-01-004]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-my-account/README.md
+  - specs/full-core-smb-my-account/conversation-capture.md
+  - specs/full-core-smb-my-account/my-account-implementation-map.md
+  - specs/full-core-smb-saas-hardening/agent-worker-opportunities.md
+  - docs/agent-component-selection-guide.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/02-implement-backend-my-account-foundations.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/03-implement-attention-trace-frontend-surfaces.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/04-implement-my-account-agent-evidence-tool.md
+- skills:
+  - none; worker-readiness decision task
+- expected outputs:
+  - updated implementation map or queue notes with worker readiness decision
+  - optional blocked/readiness source updates if appropriate
+  - updated specs/full-core-smb-my-account/pending-tasks.md
+- required checks:
+  - `rg -n "personal digest|my_account\.personal_digest|AutonomousAgent|blocked_provider_or_runtime|system_message|no deterministic|attention filtering|trace redaction|provider" specs/full-core-smb-my-account templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `git diff --check`
+  - targeted backend/frontend tests if source changes are made
+- done criteria:
+  - Personal digest worker state is explicit: deferred/blocked/readiness-only or queued as a new bounded implementation task
+  - no model-less successful worker behavior is claimed
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: decide my account digest readiness`
+
+### TASK-FCSMB-MA-01-006: Run integrated My Account validation
+
+- status: pending
+- source: specs/full-core-smb-my-account/my-account-implementation-map.md
+- task brief: specs/full-core-smb-my-account/tasks/01-my-account/06-run-integrated-my-account-validation.md
+- depends on: [TASK-FCSMB-MA-01-005]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-my-account/README.md
+  - specs/full-core-smb-my-account/conversation-capture.md
+  - specs/full-core-smb-my-account/pending-tasks.md
+  - specs/full-core-smb-my-account/my-account-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/my-account-workstream-v0/workstream-contract.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/02-implement-backend-my-account-foundations.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/03-implement-attention-trace-frontend-surfaces.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/04-implement-my-account-agent-evidence-tool.md
+  - specs/full-core-smb-my-account/tasks/01-my-account/05-decide-personal-digest-readiness.md
+- skills:
+  - none; integrated validation task
+- expected outputs:
+  - updated specs/full-core-smb-my-account/pending-tasks.md with validation notes and any bounded blockers
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=MeServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest`
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-my-account-vertical.contract.test.mjs src/workstream-shell.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "My Account|MyAccountAgent|my_account|/api/me|selected context|authority|profile|settings|personal attention|user tile|trace refs|open_authorized_workstream|myAccountEvidence\.read|ToolPermissionBoundary|provider|system_message|tenant|no duplicate top-rail|blocked_provider_or_runtime" templates/ai-first-saas-starter specs/full-core-smb-my-account --glob '!**/node_modules/**'`
+  - `git diff --check`
+  - run or explicitly record blocker for `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - targeted validation passes or blockers are captured as bounded follow-up tasks before terminal verification
+  - broad validation is run or a concrete blocker is recorded
+  - terminal verification task can determine readiness without guessing
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: validate my account full core`
+
 ### TASK-FCSMB-MA-99-001: Verify My Account full-core readiness
 
 - status: pending
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-my-account/tasks/99-verification/01-verify-my-account-readiness.md
 - depends on:
-  - TASK-FCSMB-MA-01-001
+  - TASK-FCSMB-MA-01-006
 - required reads:
   - AGENTS.md
   - skills/README.md
