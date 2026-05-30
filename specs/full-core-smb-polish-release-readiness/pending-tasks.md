@@ -184,7 +184,7 @@
 
 ### TASK-FCSMB-REL-01-005: Update release docs and write handoff
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-polish-release-readiness/integrated-release-readiness-map.md
 - task brief: specs/full-core-smb-polish-release-readiness/tasks/01-release-readiness/05-update-release-docs-and-handoff.md
 - depends on: [TASK-FCSMB-REL-01-004]
@@ -213,6 +213,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: write release handoff`
+  - release handoff recommends shipping the current full-core SMB baseline; no release blockers or bounded blocker tasks were added
+  - updated starter README with scoped full-core SMB release-readiness status, provider fail-closed expectations, and post-release/manual QA recommendations
 
 ### TASK-FCSMB-REL-99-001: Verify full-core SMB release readiness
 

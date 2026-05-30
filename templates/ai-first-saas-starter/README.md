@@ -89,6 +89,14 @@ Generated-app extensions must expose those background tasks through governed cap
 
 The scaffold includes the validated React/Vite workstream frontend under `frontend/`. Its production build writes Akka static resources to `src/main/resources/static-resources/`, and `StarterFrontendEndpoint` serves `/`, `/ui`, `/workstream`, `/favicon.ico`, and `/assets/**` while protected APIs remain under `/api/...`.
 
+## Full-core SMB release-readiness status
+
+As of the `specs/full-core-smb-polish-release-readiness/` task group on 2026-05-30, the rendered starter is considered shippable for the current full-core SMB baseline scope when validated with the commands below. That status is bounded by the recorded release handoff and does not expand scope to enterprise IAM, SIEM/legal hold/e-discovery, compliance suites, marketplace prompts, arbitrary tenant-managed tool binding, policy-as-code authoring, or optional durable background workers.
+
+This release status depends on the same runtime completion doctrine used by the starter: normal model-backed workstream message submission must use the governed Akka Agent runtime path, including active managed configuration resolution, `WorkstreamRuntimeAgent`, governed loader tools, `ToolPermissionBoundary`, `effects().tools(runtimeTools)`, trace emission, and a configured backend model provider. Missing or blank provider configuration must fail closed with actionable `system_message`/provider-blocked behavior; it must not return deterministic, mock, canned, model-less, or fixture-backed normal success responses.
+
+Recommended post-release/manual QA items are mobile viewport/off-canvas rail inspection, a final rendered production static asset secret scan after any future source changes, and frontend bundle-size optimization if the Vite chunk-size warning becomes operationally relevant.
+
 ## Fullstack scaffold validation
 
 From the skills-pack source repository, validate the rendered starter with one command:
