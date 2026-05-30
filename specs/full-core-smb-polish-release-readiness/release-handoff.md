@@ -4,11 +4,13 @@ Date: 2026-05-30
 
 ## Release recommendation
 
-Recommendation: **ship the AI-first SaaS starter full-core SMB baseline** for the current release scope.
+Recommendation: **superseded for the stronger no-in-memory-normal-runtime bar**.
 
-The release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries.
+The original release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries. A later source-boundary scan found normal starter runtime defaults and frontend/static fixture paths that violate the user's stronger durability bar.
 
-This recommendation is scoped to `templates/ai-first-saas-starter/` after scaffold rendering. The template source itself contains placeholders and is not intended to run Maven directly before rendering.
+Do **not** ship under a claim that completed normal generated runtime has no in-memory/default fixture dependencies until `specs/full-core-smb-runtime-durability-remediation/` completes. The remediation map is `specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md`.
+
+This recommendation remains scoped to `templates/ai-first-saas-starter/` after scaffold rendering. The template source itself contains placeholders and is not intended to run Maven directly before rendering.
 
 ## Evidence summary
 

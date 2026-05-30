@@ -4,11 +4,13 @@ Date: 2026-05-30
 
 ## Verification result
 
-The full-core SMB polish and release-readiness mini-project is complete for its stated scope.
+The full-core SMB polish and release-readiness mini-project was complete for its original stated scope.
 
-Release recommendation: **ship the AI-first SaaS starter full-core SMB baseline** for the current release scope.
+Release recommendation: **superseded for the stronger no-in-memory-normal-runtime bar**.
 
-No additional bounded blocker tasks are needed before this mini-project closes.
+A later source-boundary scan found normal starter runtime defaults and frontend/static fixture paths that violate the user's stronger durability bar. Do not ship under a no-in-memory-normal-runtime claim until `specs/full-core-smb-runtime-durability-remediation/` completes.
+
+No additional bounded blocker tasks were needed for the original mini-project scope; durability remediation is tracked separately.
 
 ## Scope comparison
 
