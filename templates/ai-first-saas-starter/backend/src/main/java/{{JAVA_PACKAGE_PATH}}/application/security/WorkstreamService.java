@@ -396,7 +396,7 @@ public final class WorkstreamService {
   private SurfaceEnvelope myAccountDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var dashboard = myAccountService.dashboardData(actor, correlationId);
     return envelope("surface-my-account-dashboard", "dashboard", "My Account", actor, correlationId,
-        mapOf("surfaceContract", dashboard.surfaceContract(), "cards", dashboard.cards(), "sections", dashboard.sections(), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace")),
+        mapOf("surfaceContract", dashboard.surfaceContract(), "cards", dashboard.cards(), "sections", dashboard.sections(), "attentionItems", dashboard.attentionItems(), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention only includes authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
         List.of(showProfileAction(), showSettingsAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
   }
 

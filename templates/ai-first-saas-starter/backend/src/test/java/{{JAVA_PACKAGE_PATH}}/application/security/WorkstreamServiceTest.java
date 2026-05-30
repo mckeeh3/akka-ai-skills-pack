@@ -404,6 +404,10 @@ class WorkstreamServiceTest {
     assertTrue(dashboard.toString().contains("authorityBasis"));
     assertTrue(dashboard.toString().contains("my_account.view_context"));
     assertTrue(dashboard.toString().contains("traceRefs"));
+    assertTrue(dashboard.toString().contains("personal-attention-agent-admin-provider"));
+    assertTrue(dashboard.toString().contains("my_account.list_personal_attention"));
+    assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
+    assertTrue(dashboard.toString().contains("not_found_or_redacted"));
     assertEquals("agent-my-account", dashboard.ownerFunctionalAgentId());
     assertEquals("detail-edit", profile.surfaceType());
     assertEquals("detail-edit", settings.surfaceType());

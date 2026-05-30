@@ -694,6 +694,7 @@ const myAccountCapabilities = {
   viewSummary: 'my_account.view_summary',
   viewContext: 'my_account.view_context',
   updateProfileSettings: 'my_account.update_profile_settings',
+  listPersonalAttention: 'my_account.list_personal_attention',
   listNextSteps: 'my_account.list_next_steps',
   openAuthorizedWorkstream: 'my_account.open_authorized_workstream',
   askAgent: 'my_account.ask_agent',
@@ -805,16 +806,27 @@ export const myAccountDashboardSurface = envelope(
       { cardId: 'card-my-settings', label: 'Color mode', value: 'system', severity: 'info' },
       { cardId: 'card-current-context', label: 'Selected AuthContext', value: tenantAdminAuthContext.tenantName, severity: 'info' }
     ],
+    attentionItems: [
+      { itemId: 'personal-attention-user-admin-invitations', label: 'User Admin invitation delivery needs review', status: 'needs-review', severity: 'warning', capabilityId: 'secure-tenant-user-foundation', sourceWorkstreamId: 'agent-user-admin', traceId: 'trace-my-account-attention-user-admin' },
+      { itemId: 'personal-attention-agent-admin-provider', label: 'Agent Admin provider readiness is blocked', status: 'blocked_provider_or_runtime', severity: 'critical', capabilityId: 'agent_admin.list_definitions', sourceWorkstreamId: 'agent-agent-admin', traceId: 'trace-my-account-attention-agent-admin' },
+      { itemId: 'personal-attention-governance-policy', label: 'Governance policy decision awaits authorized review', status: 'approval-needed', severity: 'critical', capabilityId: 'governance.policy.read', sourceWorkstreamId: 'agent-governance-policy', traceId: 'trace-my-account-attention-governance' }
+    ],
     sections: [
       { sectionId: 'authority-basis', label: 'Authority basis', summary: 'Backend-visible capabilities, selected membership, and Tenant/Customer scope determine available actions.' },
+      { sectionId: 'personal-attention', label: 'Personal attention', summary: 'My Account aggregates only authorized personal attention from sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.' },
       { sectionId: 'self-service', label: 'Self-service only', summary: 'Profile/settings edits are limited to allowed self-service fields; role, membership, and security changes stay in admin workstreams.' },
-      { sectionId: 'traceability', label: 'Traceability', summary: 'Summary reads, denials, settings writes, workstream opens, and model-backed turns preserve trace and correlation references.' }
+      { sectionId: 'traceability', label: 'Traceability', summary: 'Summary reads, denials, settings writes, workstream opens, and model-backed turns preserve trace refs and correlation references.' }
     ],
+    traceRefs: [
+      { traceId: 'trace-my-account-context-membership-admin', category: 'AuthContext', label: 'Selected context resolved', capabilityId: myAccountCapabilities.viewContext, correlationId: 'corr-surface-my-account-dashboard' },
+      { traceId: 'trace-my-account-personal-attention-membership-admin', category: 'PersonalAttention', label: 'Authorized personal attention aggregation', capabilityId: myAccountCapabilities.listPersonalAttention, correlationId: 'corr-surface-my-account-dashboard' }
+    ],
+    redaction: 'Personal attention excludes hidden workstream names/counts and uses not_found_or_redacted for unauthorized trace refs.',
     nextSteps: [
       { workstreamId: 'agent-user-admin', label: 'Review users and invitations', allowed: true, capabilityIds: ['secure-tenant-user-foundation'], traceId: 'trace-my-account-next-user-admin' },
       { workstreamId: 'agent-agent-admin', label: 'Review governed agent readiness', allowed: true, capabilityIds: ['agent_admin.list_definitions'], traceId: 'trace-my-account-next-agent-admin' },
       { workstreamId: 'agent-audit-trace', label: 'Open My Account traces', allowed: true, capabilityIds: [myAccountCapabilities.viewOwnTraceRefs], traceId: 'trace-my-account-next-audit' },
-      { workstreamId: 'agent-billing', label: 'Billing', allowed: false, blockedReason: 'Billing workstream remains hidden unless backend capability summary grants billing.read.', capabilityIds: ['billing.read'] }
+      { workstreamId: 'not_found_or_redacted', label: 'Additional workstream unavailable', allowed: false, blockedReason: 'Hidden workstreams are not named or counted for this selected context.', capabilityIds: [] }
     ],
     blockedState: { reasonCode: 'NO_SELECTED_CONTEXT_SAFE_GLOBAL_ONLY', message: 'Account-global safe fields can render without selected context, but scoped actions are blocked until a Tenant/Customer context is selected.', recovery: 'Select an active membership context before running scoped actions.' }
   },
@@ -876,6 +888,7 @@ export const myAccountTraceSurface = envelope(
   {
     events: [
       { eventId: 'trace-my-summary', occurredAt: generatedAt, actor: 'My Account Agent', action: 'Protected summary read emitted my_account.view_summary trace', traceId: 'trace-surface-my-account-dashboard' },
+      { eventId: 'trace-my-personal-attention', occurredAt: generatedAt, actor: 'My Account Service', action: 'Authorized personal attention aggregation emitted my_account.list_personal_attention trace refs', traceId: 'trace-my-account-personal-attention-membership-admin' },
       { eventId: 'trace-my-settings-write', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'Self-service settings update audited with idempotency key', traceId: 'trace-my-account-profile-settings' },
       { eventId: 'trace-my-agent-turn', occurredAt: generatedAt, actor: 'WorkstreamRuntimeAgent', action: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, and AgentWorkTrace linked to Ask My Account', traceId: 'trace-surface-v0-my-account-markdown' }
     ]

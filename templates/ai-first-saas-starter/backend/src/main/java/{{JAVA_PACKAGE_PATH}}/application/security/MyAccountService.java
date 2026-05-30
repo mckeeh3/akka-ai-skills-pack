@@ -11,6 +11,7 @@ public final class MyAccountService {
   public static final String VIEW_SUMMARY_CAPABILITY = "my_account.view_summary";
   public static final String VIEW_CONTEXT_CAPABILITY = "my_account.view_context";
   public static final String UPDATE_PROFILE_SETTINGS_CAPABILITY = "my_account.update_profile_settings";
+  public static final String LIST_PERSONAL_ATTENTION_CAPABILITY = "my_account.list_personal_attention";
   public static final String OPEN_AUTHORIZED_WORKSTREAM_CAPABILITY = "my_account.open_authorized_workstream";
   public static final String VIEW_OWN_TRACE_REFS_CAPABILITY = "my_account.view_own_trace_refs";
 
@@ -77,10 +78,23 @@ public final class MyAccountService {
         List.of(
             mapOf("sectionId", "selected-context", "label", "Selected context", "summary", "selected context is resolved and authorized by the backend AuthContextResolver."),
             mapOf("sectionId", "security-boundary", "label", "Security boundary", "summary", "My Account can explain and route; roles, memberships, policy, and agent behavior changes stay in governed admin workstreams.")),
+        personalAttention(actor, correlationId),
         nextSteps(actor),
         summary.traceRefs(),
         summary.authorityBasis(),
         summary.capabilityGroups());
+  }
+
+  public List<Map<String, Object>> personalAttention(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), LIST_PERSONAL_ATTENTION_CAPABILITY);
+    var capabilities = actor.selectedContext().capabilities();
+    var items = new java.util.ArrayList<Map<String, Object>>();
+    if (capabilities.contains("secure-tenant-user-foundation")) items.add(mapOf("itemId", "personal-attention-user-admin-invitations", "label", "User Admin invitation delivery needs review", "status", "needs-review", "severity", "warning", "capabilityId", "secure-tenant-user-foundation", "traceId", "trace-my-account-attention-user-admin", "sourceWorkstreamId", "agent-user-admin"));
+    if (capabilities.contains("agent_admin.list_definitions")) items.add(mapOf("itemId", "personal-attention-agent-admin-provider", "label", "Agent Admin provider readiness is blocked", "status", "blocked_provider_or_runtime", "severity", "critical", "capabilityId", "agent_admin.list_definitions", "traceId", "trace-my-account-attention-agent-admin", "sourceWorkstreamId", "agent-agent-admin"));
+    if (capabilities.contains("governance.policy.read")) items.add(mapOf("itemId", "personal-attention-governance-policy", "label", "Governance policy decision awaits authorized review", "status", "approval-needed", "severity", "critical", "capabilityId", "governance.policy.read", "traceId", "trace-my-account-attention-governance", "sourceWorkstreamId", "agent-governance-policy"));
+    if (capabilities.contains("audit.trace.read")) items.add(mapOf("itemId", "personal-attention-audit-trace", "label", "Audit/Trace has provider failure evidence available", "status", "ready", "severity", "info", "capabilityId", "audit.trace.read", "traceId", "trace-my-account-attention-audit", "sourceWorkstreamId", "agent-audit-trace"));
+    authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_LIST_PERSONAL_ATTENTION", "authorized personal attention", correlationId);
+    return items;
   }
 
   public List<Map<String, Object>> nextSteps(AuthContextResolver.ResolvedMe actor) {
@@ -99,7 +113,8 @@ public final class MyAccountService {
     authContextResolver.requireCapability(actor.selectedContext(), VIEW_OWN_TRACE_REFS_CAPABILITY);
     return List.of(
         new TraceRef("trace-my-account-context-" + actor.selectedContext().membershipId(), "AuthContext", "Selected context resolved", "my_account.view_context", correlationId),
-        new TraceRef("trace-my-account-profile-" + actor.account().accountId().hashCode(), "ProfileSettings", "Profile/settings browser-safe read", "my_account.view_summary", correlationId));
+        new TraceRef("trace-my-account-profile-" + actor.account().accountId().hashCode(), "ProfileSettings", "Profile/settings browser-safe read", "my_account.view_summary", correlationId),
+        new TraceRef("trace-my-account-personal-attention-" + actor.selectedContext().membershipId(), "PersonalAttention", "Authorized personal attention aggregation", "my_account.list_personal_attention", correlationId));
   }
 
   private AuthorityBasisSummary authorityBasis(AuthContextResolver.ResolvedMe actor) {
@@ -135,7 +150,7 @@ public final class MyAccountService {
   public record AuthorityBasisSummary(String selectedContextId, String tenantId, String customerId, List<String> roleIds, String primaryRoleBasis, List<String> myAccountCapabilityIds) {}
   public record CapabilityGroupSummary(String groupId, String label, List<String> capabilityIds) {}
   public record TraceRef(String traceId, String category, String label, String capabilityId, String correlationId) {}
-  public record DashboardData(String surfaceContract, List<Map<String, Object>> cards, List<Map<String, Object>> sections, List<Map<String, Object>> nextSteps, List<TraceRef> traceRefs, AuthorityBasisSummary authorityBasis, List<CapabilityGroupSummary> capabilityGroups) {}
+  public record DashboardData(String surfaceContract, List<Map<String, Object>> cards, List<Map<String, Object>> sections, List<Map<String, Object>> attentionItems, List<Map<String, Object>> nextSteps, List<TraceRef> traceRefs, AuthorityBasisSummary authorityBasis, List<CapabilityGroupSummary> capabilityGroups) {}
   public record OpenWorkstreamDecision(String status, String message, String surfaceId, String functionalAgentId, String label, String requiredCapabilityId, String correlationId, List<String> traceIds, String safeReasonCode) {
     static OpenWorkstreamDecision denied(String safeReasonCode, String message, String correlationId) {
       return new OpenWorkstreamDecision("denied", message, "surface-my-account-open-denied", "agent-my-account", "Workstream unavailable", null, correlationId, List.of("trace-my-account-open-denied"), safeReasonCode);

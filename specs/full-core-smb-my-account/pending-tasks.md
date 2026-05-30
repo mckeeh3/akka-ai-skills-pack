@@ -140,7 +140,7 @@
 
 ### TASK-FCSMB-MA-01-003: Implement My Account attention, trace refs, and frontend surfaces
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-my-account/my-account-implementation-map.md
 - task brief: specs/full-core-smb-my-account/tasks/01-my-account/03-implement-attention-trace-frontend-surfaces.md
 - depends on: [TASK-FCSMB-MA-01-002]
@@ -178,6 +178,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement my account attention surfaces`
+  - checks: direct template `mvn test -Dtest=MeServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest` is blocked by unrendered `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent with `ADMIN_USERS='admin@example.test:TENANT_ADMIN:tenant-starter'` passed.
+  - checks: frontend targeted `npm test -- --runTestsByPath src/workstream-my-account-vertical.contract.test.mjs src/workstream-shell.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs` passed.
+  - checks: required `rg` proof and `git diff --check` passed.
 
 ### TASK-FCSMB-MA-01-004: Implement MyAccountAgent evidence tool and fail-closed guidance
 
