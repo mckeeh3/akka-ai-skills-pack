@@ -218,7 +218,7 @@
 
 ### TASK-FCSMB-REL-99-001: Verify full-core SMB release readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-polish-release-readiness/tasks/99-verification/01-verify-full-core-smb-release-readiness.md
 - depends on:
@@ -241,7 +241,7 @@
   - none; repository verification task
 - expected outputs:
   - updated specs/full-core-smb-polish-release-readiness/pending-tasks.md
-  - release-readiness notes or appended follow-up tasks
+  - specs/full-core-smb-polish-release-readiness/release-readiness-verification.md
 - required checks:
   - `git diff --check`
   - targeted checks needed to validate release-readiness done state
@@ -252,3 +252,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify release readiness`
+  - verification recommends shipping the current full-core SMB baseline; no release blockers remain and no follow-up blocker tasks were appended
+  - checks passed: targeted release-readiness `rg` scan; queue status scan; `git diff --check`
