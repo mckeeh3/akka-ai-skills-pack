@@ -93,6 +93,7 @@ public final class WorkstreamService {
   private final AgentBehaviorRepository agentBehaviorRepository;
   private final AgentAdminService agentAdminService;
   private final AgentRuntimeService agentRuntimeService;
+  private final AuditTraceService auditTraceService;
   private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
   private final WorkstreamLogRepository workstreamLogRepository;
   private final Map<String, CapabilityActionResult> idempotentActionResults = new ConcurrentHashMap<>();
@@ -145,6 +146,7 @@ public final class WorkstreamService {
     this.agentRuntimeService = agentRuntimeService;
     this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
     this.workstreamLogRepository = workstreamLogRepository;
+    this.auditTraceService = new AuditTraceService(authContextResolver, new InMemoryAuditTraceRepository(agentRuntimeService, workstreamLogRepository));
   }
 
   public WorkstreamBootstrapResponse bootstrap(WorkosIdentity identity, String selectedContextId, String correlationId) {
@@ -438,81 +440,37 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope auditTraceDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    authContextResolver.appendProtectedReadTrace(actor, AUDIT_TRACE_DASHBOARD_CAPABILITY, "dashboard scoped to selected AuthContext", correlationId);
-    var traces = agentRuntimeService.traces();
-    return envelope("surface-audit-trace-dashboard", "dashboard", "Audit/Trace dashboard", actor, correlationId,
-        mapOf("cards", List.of(mapOf("cardId", "card-runtime-traces", "label", "Runtime traces", "value", traces.size(), "severity", traces.isEmpty() ? "info" : "warning"), mapOf("cardId", "card-selected-context", "label", "Selected context", "value", actor.selectedContext().membershipId(), "severity", "info"), mapOf("cardId", "card-redaction", "label", "Redaction", "value", "browser-safe", "severity", "info")), "readiness", "Trace search, details, timeline, failure evidence, and guidance are backend-scoped and redacted for the selected AuthContext.", "capabilityIds", List.of(AUDIT_TRACE_DASHBOARD_CAPABILITY, AUDIT_TRACE_SEARCH_CAPABILITY, AUDIT_TRACE_TIMELINE_CAPABILITY)),
-        List.of(auditTraceSearchAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
+    var surface = auditTraceService.dashboard(actor, correlationId);
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceSearchAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
   }
 
   private SurfaceEnvelope auditTraceSearchSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    validateAuditTraceInputScope(actor, input, correlationId);
-    var pageSize = intInput(input, "pageSize", 10);
-    if (pageSize < 1 || pageSize > 50) return auditTraceValidationSurface(actor, correlationId, "pageSize", "Page size must be between 1 and 50.");
-    authContextResolver.appendProtectedReadTrace(actor, AUDIT_TRACE_SEARCH_CAPABILITY, "search page-size-band:" + (pageSize <= 10 ? "small" : "bounded"), correlationId);
-    var rows = new ArrayList<Map<String, Object>>();
-    rows.add(mapOf("traceId", "trace-auth-context-" + stableSuffix(correlationId), "correlationId", correlationId, "eventKind", "AUTH_CONTEXT_RESOLVE", "actor", actor.account().accountId(), "workstream", "security", "severity", "info", "status", "allowed", "redactionSummary", "raw JWT and provider credentials omitted"));
-    for (var trace : agentRuntimeService.traces()) if (actor.selectedContext().tenantId().equals(trace.tenantId())) rows.add(mapOf("traceId", trace.traceId(), "correlationId", trace.correlationId(), "eventKind", trace.traceType(), "actor", trace.actorId(), "workstream", trace.agentDefinitionId(), "severity", trace.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "info" : "warning", "status", trace.decision().name().toLowerCase(), "redactionSummary", "safe summary only"));
-    return envelope("surface-audit-trace-search", "list-search", "Trace search results", actor, correlationId,
-        mapOf("query", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "pageSize", pageSize, "filter", stringInput(input, "filter", "recent")), "rows", rows.stream().limit(pageSize).toList(), "pageInfo", mapOf("totalKnownCount", rows.size(), "nextCursor", null), "partial", false, "redaction", "safe summaries only; raw payloads, tokens, provider secrets, and hidden prompts omitted"),
-        List.of(auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
+    var surface = auditTraceService.search(actor, input, correlationId);
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
   }
 
   private SurfaceEnvelope auditTraceDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    validateAuditTraceInputScope(actor, input, correlationId);
-    var traceId = stringInput(input, "traceId", "trace-auth-context-" + stableSuffix(correlationId));
-    authContextResolver.appendProtectedReadTrace(actor, AUDIT_TRACE_DETAIL_CAPABILITY, "detail trace:" + traceId, correlationId);
-    var matched = agentRuntimeService.traces().stream().filter(trace -> actor.selectedContext().tenantId().equals(trace.tenantId()) && traceId.equals(trace.traceId())).findFirst();
-    var payload = matched.<Map<String, Object>>map(trace -> mapOf("traceId", trace.traceId(), "eventKind", trace.traceType(), "timestamp", trace.occurredAt().toString(), "actor", trace.actorId(), "source", trace.agentDefinitionId(), "correlationIds", List.of(trace.correlationId()), "authorizationBasis", trace.capabilityId(), "decision", trace.decision().name().toLowerCase(), "redactedEvidence", trace.safeSummary(), "redactionMetadata", mapOf("omittedFieldKeys", List.of("rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload")))).orElseGet(() -> mapOf("traceId", traceId, "eventKind", "synthetic-safe-not-found", "decision", "not_found_or_redacted", "redactedEvidence", "No authorized matching trace was found for the selected context.", "redactionMetadata", mapOf("nonEnumerating", true)));
-    return envelope("surface-audit-trace-detail", "detail-edit", "Trace detail/evidence", actor, correlationId, payload, List.of(auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
+    var surface = auditTraceService.detail(actor, input, correlationId);
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
   }
 
   private SurfaceEnvelope auditTraceCorrelationTimelineSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    validateAuditTraceInputScope(actor, input, correlationId);
-    var requestedCorrelation = stringInput(input, "correlationId", correlationId);
-    if (requestedCorrelation == null || requestedCorrelation.isBlank() || requestedCorrelation.length() > 128) return auditTraceValidationSurface(actor, correlationId, "correlationId", "Correlation id is required and must be at most 128 characters.");
-    authContextResolver.appendProtectedReadTrace(actor, AUDIT_TRACE_TIMELINE_CAPABILITY, "timeline correlation:" + requestedCorrelation, correlationId);
-    var nodes = new ArrayList<Map<String, Object>>();
-    nodes.add(mapOf("nodeId", "auth-context", "sourceType", "policy", "summary", "Selected AuthContext resolved and tenant/customer scope applied.", "correlationId", requestedCorrelation, "status", "allowed"));
-    for (var trace : agentRuntimeService.traces()) if (actor.selectedContext().tenantId().equals(trace.tenantId()) && requestedCorrelation.equals(trace.correlationId())) nodes.add(mapOf("nodeId", trace.traceId(), "sourceType", "model", "summary", trace.safeSummary(), "correlationId", trace.correlationId(), "status", trace.decision().name().toLowerCase()));
-    return envelope("surface-audit-trace-timeline", "audit-timeline", "Correlation timeline", actor, correlationId, mapOf("correlationId", requestedCorrelation, "nodes", nodes, "partial", false, "omittedCategories", List.of(), "redactionSummary", "Unauthorized tenant/customer evidence is omitted."), List.of(auditTraceDetailAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
+    var surface = auditTraceService.timeline(actor, input, correlationId);
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceDetailAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
   }
 
   private SurfaceEnvelope auditTraceFailureEvidenceSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    validateAuditTraceInputScope(actor, input, correlationId);
-    var category = stringInput(input, "failureCategory", "provider_blocked");
-    authContextResolver.appendProtectedReadTrace(actor, AUDIT_TRACE_FAILURE_EVIDENCE_CAPABILITY, "failure category:" + category, correlationId);
-    return envelope("surface-audit-trace-failure-evidence", "detail-edit", "Denial/provider/tool evidence", actor, correlationId,
-        mapOf("category", category, "safeReason", "Provider, tool, policy, and authorization failures are shown as redacted browser-safe evidence only.", "userActionableNextSteps", List.of("Check selected AuthContext and required capability.", "Open correlation timeline.", "Ask Audit/Trace for an explanation after provider configuration is available."), "policyRefs", List.of(AUDIT_TRACE_READ_CAPABILITY, AUDIT_TRACE_FAILURE_EVIDENCE_CAPABILITY), "redactedDetails", mapOf("providerSecret", "[REDACTED]", "rawPrompt", "[OMITTED]"), "traceLinks", List.of(correlationId)),
-        List.of(auditTraceTimelineAction(), auditTraceInvestigationGuideAction()));
+    var surface = auditTraceService.failureEvidence(actor, input, correlationId);
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceTimelineAction(), auditTraceInvestigationGuideAction()));
   }
 
   private SurfaceEnvelope auditTraceInvestigationGuideSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    validateAuditTraceInputScope(actor, input, correlationId);
-    authContextResolver.appendProtectedReadTrace(actor, AUDIT_TRACE_GUIDE_CAPABILITY, "investigation guidance", correlationId);
-    return envelope("surface-audit-trace-investigation-guide", "decision", "Investigation guidance", actor, correlationId,
-        mapOf("recommendation", "Continue only with backend-authorized, tenant-scoped evidence.", "allowedActions", List.of(mapOf("actionId", "action-audit-trace-search", "label", "Refine search", "capabilityId", AUDIT_TRACE_SEARCH_CAPABILITY), mapOf("actionId", "action-audit-trace-timeline", "label", "Open timeline", "capabilityId", AUDIT_TRACE_TIMELINE_CAPABILITY)), "disabledActions", List.of(mapOf("actionId", "audit.trace.summaryTask.start", "reason", "Autonomous audit summary tasks are deferred until task lifecycle/provider/tool-boundary runtime is implemented.")), "risk", "low", "traceLinks", List.of(correlationId)),
-        List.of(auditTraceSearchAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction()));
+    var surface = auditTraceService.investigationGuide(actor, input, correlationId);
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceSearchAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction()));
   }
 
-  private SurfaceEnvelope auditTraceValidationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String field, String message) {
-    authContextResolver.appendDeniedTrace(actor, "AUDIT_TRACE_VALIDATION", field + ":" + message, correlationId);
-    return envelope("surface-audit-trace-validation-error", "validation-error", "Audit/Trace validation", actor, correlationId, mapOf("field", field, "message", message, "status", "validation-error", "safe", true), List.of(auditTraceSearchAction()));
-  }
-
-  private void validateAuditTraceInputScope(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    if (input instanceof Map<?, ?> map) {
-      var tenantId = map.get("tenantId") instanceof String value ? value : null;
-      var customerId = map.get("customerId") instanceof String value ? value : null;
-      if (tenantId != null && !tenantId.isBlank() && !tenantId.equals(actor.selectedContext().tenantId())) {
-        authContextResolver.appendDeniedTrace(actor, "AUDIT_TRACE_SCOPE_DENIED", "tenant-mismatch", correlationId);
-        throw new AuthorizationException(403, "AUDIT_TRACE_TENANT_FORBIDDEN");
-      }
-      if (customerId != null && actor.selectedContext().customerId() != null && !customerId.equals(actor.selectedContext().customerId())) {
-        authContextResolver.appendDeniedTrace(actor, "AUDIT_TRACE_SCOPE_DENIED", "customer-mismatch", correlationId);
-        throw new AuthorizationException(403, "AUDIT_TRACE_CUSTOMER_FORBIDDEN");
-      }
-    }
+  private SurfaceEnvelope auditTraceEnvelope(AuthContextResolver.ResolvedMe actor, String correlationId, AuditTraceService.SurfaceData surface, List<SurfaceAction> actions) {
+    return new SurfaceEnvelope(surface.surfaceId(), surface.surfaceType(), "v1", surface.title(), AUDIT_TRACE_AGENT_ID, reusableAgentsForSurface(surface.surfaceId()), mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()), correlationId, surface.traceIds(), Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawInvitationToken", "rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload")), surface.data(), actions, List.of(mapOf("label", "Open surface", "href", "/ui?surfaceId=" + surface.surfaceId(), "rel", "deep-link")));
   }
 
   private SurfaceEnvelope accessReviewSurface(AuthContextResolver.ResolvedMe actor, AccessReviewTask task, String correlationId) {

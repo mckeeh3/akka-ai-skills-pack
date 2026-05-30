@@ -504,7 +504,7 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces() {
+  void auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces() throws Exception {
     service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-audit-trace", "Explain current trace status", "corr-audit-runtime", "idem-audit-runtime"), "corr-header");
 
@@ -513,6 +513,8 @@ class WorkstreamServiceTest {
     assertEquals("accepted", search.status());
     assertEquals("surface-audit-trace-search", search.resultSurface().surfaceId());
     assertEquals("list-search", search.resultSurface().surfaceType());
+    assertEquals("audit.trace.search.v1", search.resultSurface().data().get("surfaceContract"));
+    assertTrue(search.resultSurface().toString().contains("AuditTraceService") || Files.readString(findSource("AuditTraceService.java")).contains("not_found_or_redacted"));
     assertTrue(search.resultSurface().toString().contains("rawProviderCredential"));
     assertFalse(search.resultSurface().toString().contains("sk-"));
 
@@ -520,23 +522,32 @@ class WorkstreamServiceTest {
         "action-audit-trace-detail", "audit.trace.detail.read", Map.of("traceId", search.resultSurface().traceIds().get(0)), null, "membership-admin", "surface-audit-trace-search", "corr-audit-detail"));
     assertEquals("accepted", detail.status());
     assertEquals("surface-audit-trace-detail", detail.resultSurface().surfaceId());
+    assertEquals("audit.trace.detail.v1", detail.resultSurface().data().get("surfaceContract"));
     assertTrue(detail.resultSurface().toString().contains("redactionMetadata"));
+
+    var hidden = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-detail", "audit.trace.detail.read", Map.of("traceId", "trace-other-tenant-secret"), null, "membership-admin", "surface-audit-trace-search", "corr-audit-hidden"));
+    assertEquals("not_found_or_redacted", hidden.resultSurface().data().get("decision"));
 
     var timeline = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-timeline", "audit.trace.timeline.read", Map.of("correlationId", "corr-audit-runtime"), null, "membership-admin", "surface-audit-trace-detail", "corr-audit-timeline"));
     assertEquals("accepted", timeline.status());
     assertEquals("audit-timeline", timeline.resultSurface().surfaceType());
+    assertEquals("audit.trace.timeline.v1", timeline.resultSurface().data().get("surfaceContract"));
     assertTrue(timeline.resultSurface().toString().contains("corr-audit-runtime"));
 
     var failure = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-failure-evidence", "audit.trace.failureEvidence.read", Map.of("failureCategory", "provider_blocked"), null, "membership-admin", "surface-audit-trace-timeline", "corr-audit-failure"));
     assertEquals("accepted", failure.status());
+    assertEquals("audit.trace.failureEvidence.v1", failure.resultSurface().data().get("surfaceContract"));
     assertTrue(failure.resultSurface().toString().contains("[REDACTED]"));
+    assertTrue(failure.resultSurface().toString().contains("provider"));
 
     var guide = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-investigation-guide", "audit.trace.investigationGuide.read", Map.of("correlationId", "corr-audit-runtime"), null, "membership-admin", "surface-audit-trace-failure-evidence", "corr-audit-guide"));
     assertEquals("accepted", guide.status());
     assertEquals("decision", guide.resultSurface().surfaceType());
+    assertEquals("audit.trace.investigationGuide.v1", guide.resultSurface().data().get("surfaceContract"));
     assertTrue(guide.resultSurface().toString().contains("audit.trace.summaryTask.start"));
   }
 

@@ -99,7 +99,7 @@
 
 ### TASK-FCSMB-AT-01-002: Implement backend deterministic Audit/Trace service
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
 - task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/02-implement-backend-audit-trace-service.md
 - depends on: [TASK-FCSMB-AT-01-001]
@@ -126,6 +126,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement audit trace backend service`
+  - implemented `AuditTraceService`, `AuditTraceRepository`, and `InMemoryAuditTraceRepository` deterministic backend boundary with tenant-scoped redacted dashboard/search/detail/timeline/failure/guidance DTOs.
+  - check note: targeted Maven command was attempted but the template POM still contains unresolved placeholders (`{{MAVEN_GROUP_ID}}`, `{{APP_SLUG}}`), so Maven cannot parse this uninstantiated template project; `rg` proof and `git diff --check` completed.
 
 ### TASK-FCSMB-AT-01-003: Implement frontend Audit/Trace runtime-aligned surfaces
 
