@@ -128,6 +128,11 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(allSurfaceComponents, /decision-card/);
   assert.match(allSurfaceComponents, /audit-timeline/);
   assert.match(allSurfaceComponents, /workflow-steps/);
+  assert.match(allSurfaceComponents, /Access review task/);
+  assert.match(allSurfaceComponents, /Access review evidence references/);
+  assert.match(allSurfaceComponents, /Provider\/runtime blockers/);
+  assert.match(allSurfaceComponents, /No direct mutation/);
+  assert.match(surfaceTypes, /user_admin\.access_review_task\.v1/);
   assert.match(allSurfaceComponents, /governance-diff-summary/);
   assert.match(allSurfaceComponents, /outcome-metrics/);
 });

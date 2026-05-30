@@ -199,15 +199,40 @@ export type AuditTimelineSurfaceData = {
 };
 
 export type WorkflowStatusSurfaceData = {
+  surfaceContract?: 'user_admin.access_review_task.v1' | string;
   workflowId: string;
-  status: 'running' | 'waiting-for-human' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'failed' | 'cancelled';
+  taskId?: string;
+  status: 'queued' | 'running' | 'waiting-for-human' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'failed' | 'cancelled' | 'accepted' | 'rejected';
   summary?: string;
   traceIds?: string[];
   requiredCapabilityId?: string;
+  initiatingCapabilityId?: string;
   taskKind?: 'workflow' | 'autonomous-agent-analysis' | string;
-  progress?: Array<{ snapshotId: string; label: string; status: string; traceId?: string }>;
+  progress?: Array<{ snapshotId: string; label: string; status: string; traceId?: string }> | { percent?: number; summary?: string };
   resultSummary?: string;
   steps?: Array<{ stepId: string; label: string; status: string }>;
+  scope?: { scopeType?: string; tenantId?: string; customerId?: string };
+  blockers?: Array<{ code: string; message: string }>;
+  evidenceRefs?: Array<{ refId: string; label?: string; summary?: string; traceId?: string }>;
+  recommendations?: Array<{ recommendationId?: string; label?: string; risk?: string; confidence?: string; summary?: string }>;
+  providerFailures?: string[];
+  resultReviewState?: string;
+  noDirectMutation?: boolean;
+  safety?: string;
+  accessReview?: {
+    surfaceContract: 'user_admin.access_review_task.v1';
+    taskId: string;
+    lifecycleState: string;
+    progressPercent?: number;
+    blockers?: Array<{ code: string; message: string }>;
+    evidenceRefs?: Array<{ refId: string; label: string; summary: string; traceId?: string }>;
+    recommendations?: Array<{ recommendationId: string; label: string; risk: string; confidence: string; summary: string }>;
+    providerFailures?: string[];
+    resultReviewState?: string;
+    noDirectMutation: boolean;
+    safety: string;
+    traceIds: string[];
+  };
 };
 
 export type GovernanceDiffSurfaceData = {

@@ -10,6 +10,7 @@ import {
   displayMyAccountProfileActionResult,
   displayMyAccountSettingsActionResult,
   updateMyAccountSettingsActionResult,
+  userAdminAccessReviewSurface,
   userAdminInvitationActionStatusSurface,
   userAdminMemberStatusActionSurface,
   userAdminRoleChangeActionSurface,
@@ -160,6 +161,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
                   ? { status: 'accepted' as const, message: 'Role-change preview returned user_admin.role_change_preview.v1 evidence with capability delta, affected workstreams, policy hints, last-admin impact, and trace links.', correlationId: request.correlationId, traceIds: ['trace-useradmin-role-preview', 'trace-useradmin'], resultSurface: userAdminRoleChangePreviewSurface }
                   : request.actionId === 'action-useradmin-change-member-roles'
                     ? { status: 'approval-required' as const, message: 'Role-change commit remains backend-authoritative and approval-gated; frontend controls are advisory only.', correlationId: request.correlationId, traceIds: ['trace-useradmin-role-change-action', 'trace-useradmin'], resultSurface: userAdminRoleChangeActionSurface }
+                    : ['action-useradmin-start-access-review', 'action-useradmin-read-access-review', 'action-useradmin-cancel-access-review', 'action-useradmin-accept-access-review-result', 'action-useradmin-reject-access-review-result'].includes(request.actionId)
+                      ? { status: request.actionId === 'action-useradmin-read-access-review' ? 'accepted' as const : 'blocked_provider_or_runtime' as const, message: 'Access-review task action returned backend-shaped user_admin.access_review_task.v1 state with provider/runtime blocker traces and no direct mutation.', correlationId: request.correlationId, traceIds: ['trace-useradmin-access-review-blocked', 'trace-useradmin-access-review-task-001'], resultSurface: userAdminAccessReviewSurface }
             : request.capabilityId === 'governance-decisions-audit' || request.capabilityId === 'decision.approve'
             ? actionResultsByStatus['approval-required']
             : actionResultsByStatus.accepted;

@@ -22,10 +22,11 @@ const userAdminCapabilities = {
   previewRoleChange: 'USERADMIN_PREVIEW_ROLE_CHANGE',
   changeMemberRoles: 'USERADMIN_CHANGE_MEMBER_ROLES',
   agentTurn: 'USERADMIN_AGENT_TURN',
-  startAccessReviewTask: 'USERADMIN_START_ACCESS_REVIEW_TASK',
-  viewAccessReviewTask: 'USERADMIN_VIEW_ACCESS_REVIEW_TASK',
-  cancelAccessReviewTask: 'USERADMIN_CANCEL_ACCESS_REVIEW_TASK',
-  viewAccessReviewResult: 'USERADMIN_VIEW_ACCESS_REVIEW_RESULT',
+  startAccessReviewTask: 'user_admin.access_review.start',
+  viewAccessReviewTask: 'user_admin.access_review.read',
+  cancelAccessReviewTask: 'user_admin.access_review.cancel',
+  acceptAccessReviewResult: 'user_admin.access_review.accept_result',
+  rejectAccessReviewResult: 'user_admin.access_review.reject_result',
   viewTraceReference: 'USERADMIN_VIEW_TRACE_REFERENCE'
 } as const;
 
@@ -402,19 +403,18 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.user-admin.access-review.start.v1',
     requiresConfirmation: true,
     requiresApproval: true,
-    disabled: { reasonCode: 'blocked_provider_or_runtime', message: 'Durable AutonomousAgent access-review task runtime is unavailable in this starter slice; the UI must not fake progress.' },
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'user-admin-access-review', openPlacement: 'inline' },
-    audit: { eventType: 'UserAdminAccessReviewStartBlocked', traceRequired: true }
+    resultSurface: { updateSurfaceId: 'surface-user-admin-access-review', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminAccessReviewStarted', traceRequired: true }
   },
   readAccessReview: {
-    actionId: 'action-read-access-review',
+    actionId: 'action-useradmin-read-access-review',
     label: 'Read access review item',
     intent: 'read',
     capabilityId: userAdminCapabilities.viewAccessReviewTask,
-    inputSchemaRef: 'schema.access-review.read.v1',
+    inputSchemaRef: 'schema.user-admin.access-review.read.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'user-admin-access-review', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-access-review', openPlacement: 'inline' },
     audit: { eventType: 'AccessReviewRead', traceRequired: true }
   },
   cancelAccessReview: {
@@ -424,21 +424,33 @@ export const userAdminSurfaceActions = {
     capabilityId: userAdminCapabilities.cancelAccessReviewTask,
     inputSchemaRef: 'schema.user-admin.access-review.cancel.v1',
     requiresConfirmation: true,
-    disabled: { reasonCode: 'blocked_provider_or_runtime', message: 'No durable access-review task exists to cancel until the AutonomousAgent lifecycle is enabled.' },
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'user-admin-access-review', openPlacement: 'inline' },
-    audit: { eventType: 'UserAdminAccessReviewCancelBlocked', traceRequired: true }
+    resultSurface: { updateSurfaceId: 'surface-user-admin-access-review', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminAccessReviewCancelled', traceRequired: true }
   },
-  approveRiskyAccess: {
-    actionId: 'action-approve-risky-access',
-    label: 'Approve risky access decision',
+  acceptAccessReviewResult: {
+    actionId: 'action-useradmin-accept-access-review-result',
+    label: 'Accept access review result',
     intent: 'approval',
-    capabilityId: userAdminCapabilities.viewAccessReviewResult,
+    capabilityId: userAdminCapabilities.acceptAccessReviewResult,
+    inputSchemaRef: 'schema.user-admin.access-review.accept-result.v1',
     requiresConfirmation: true,
     requiresApproval: true,
-    idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
-    audit: { eventType: 'RiskyAccessDecisionApproved', traceRequired: true }
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-access-review', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminAccessReviewResultAccepted', traceRequired: true }
+  },
+  rejectAccessReviewResult: {
+    actionId: 'action-useradmin-reject-access-review-result',
+    label: 'Reject access review result',
+    intent: 'approval',
+    capabilityId: userAdminCapabilities.rejectAccessReviewResult,
+    inputSchemaRef: 'schema.user-admin.access-review.reject-result.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-access-review', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminAccessReviewResultRejected', traceRequired: true }
   },
   openAdminAudit: {
     actionId: 'action-open-admin-audit',
@@ -1322,7 +1334,7 @@ export const userAdminRoleCapabilityMatrixSurface = envelope(
     rows: [
       { id: 'role-tenant-admin', rowType: 'role-capability', role: 'Tenant Admin', capabilityId: 'USERADMIN_CHANGE_MEMBER_ROLES', assignable: false, policy: 'last-admin and delegation checks required', traceId: 'trace-useradmin-role-matrix-tenant-admin' },
       { id: 'role-tenant-employee', rowType: 'role-capability', role: 'Tenant Employee', capabilityId: 'USERADMIN_PREVIEW_ROLE_CHANGE', assignable: true, policy: 'preview before commit', traceId: 'trace-useradmin-role-matrix-employee' },
-      { id: 'access-review', rowType: 'autonomous-task-capability', role: 'Access Review', capabilityId: 'USERADMIN_START_ACCESS_REVIEW_TASK', assignable: false, policy: 'blocked_provider_or_runtime until durable AutonomousAgent lifecycle is enabled', traceId: 'trace-useradmin-access-review-blocked' }
+      { id: 'access-review', rowType: 'autonomous-task-capability', role: 'Access Review', capabilityId: 'user_admin.access_review.start', assignable: false, policy: 'blocked_provider_or_runtime until durable AutonomousAgent lifecycle is enabled', traceId: 'trace-useradmin-access-review-blocked' }
     ],
     pageInfo: { totalKnownCount: 3 },
     emptyMessage: 'No role/capability rows are visible for this scoped AuthContext.',
@@ -1338,23 +1350,55 @@ export const userAdminRoleCapabilityMatrixSurface = envelope(
 );
 
 export const userAdminAccessReviewSurface = envelope(
-  'user-admin-access-review',
+  'surface-user-admin-access-review',
   'workflow-status',
   'User Admin access review',
   'agent-user-admin',
   {
-    workflowId: 'user-admin-access-review',
+    surfaceContract: 'user_admin.access_review_task.v1',
+    workflowId: 'task-access-review-acme-001',
+    taskId: 'task-access-review-acme-001',
     status: 'blocked_provider_or_runtime',
-    summary: 'Durable access-review investigation is unavailable until the governed AutonomousAgent task lifecycle, model provider, and tool boundary are enabled. This is a blocked surface, not fake progress.',
-    traceIds: ['trace-useradmin-access-review-blocked'],
+    summary: 'Start creates a durable access-review task record, but worker execution is blocked until governed AutonomousAgent provider/runtime configuration is enabled. This is a blocked surface, not fake progress.',
+    traceIds: ['trace-useradmin-access-review-blocked', 'trace-useradmin-access-review-task-001'],
     requiredCapabilityId: userAdminCapabilities.startAccessReviewTask,
+    initiatingCapabilityId: userAdminCapabilities.startAccessReviewTask,
+    taskKind: 'autonomous-agent-analysis',
+    scope: { scopeType: 'TENANT', tenantId: authContext.tenantId, customerId: authContext.customerId },
+    progress: [
+      { snapshotId: 'access-review-created', label: 'Durable task accepted by deterministic User Admin lifecycle', status: 'completed', traceId: 'trace-useradmin-access-review-task-001' },
+      { snapshotId: 'access-review-provider-blocked', label: 'Governed worker provider/runtime check failed closed', status: 'blocked_provider_or_runtime', traceId: 'trace-useradmin-access-review-blocked' }
+    ],
+    resultSummary: 'No model-backed recommendation is available while provider/runtime is blocked; no direct mutation occurred.',
+    accessReview: {
+      surfaceContract: 'user_admin.access_review_task.v1',
+      taskId: 'task-access-review-acme-001',
+      lifecycleState: 'blocked_provider_or_runtime',
+      progressPercent: 25,
+      blockers: [
+        { code: 'blocked_provider_or_runtime', message: 'Governed AutonomousAgent provider/runtime is not configured; the starter fails closed instead of returning model-less access-review recommendations.' }
+      ],
+      evidenceRefs: [
+        { refId: 'evidence-membership-stale-admin', label: 'Tenant admin membership age', summary: 'Scoped evidence reference only; row details remain backend redacted.', traceId: 'trace-useradmin-access-review-evidence-001' },
+        { refId: 'evidence-role-capability-delta', label: 'Role/capability basis', summary: 'Read through userAdminEvidence.read with tenant/customer scope.', traceId: 'trace-useradmin-access-review-evidence-002' }
+      ],
+      recommendations: [
+        { recommendationId: 'rec-review-admin-access', label: 'Review stale admin access', risk: 'medium', confidence: 'provider-blocked', summary: 'Recommendation content requires model-backed worker completion before human acceptance.' }
+      ],
+      providerFailures: ['blocked_provider_or_runtime'],
+      resultReviewState: 'pending_worker_result',
+      noDirectMutation: true,
+      safety: 'Access-review output cannot directly mutate memberships, invitations, roles, capabilities, authorization state, or provider configuration.',
+      traceIds: ['trace-useradmin-access-review-blocked', 'trace-useradmin-access-review-task-001']
+    },
     steps: [
-      { stepId: 'authorize-task-start', label: 'Authorize USERADMIN_START_ACCESS_REVIEW_TASK in selected AuthContext', status: 'blocked' },
-      { stepId: 'resolve-autonomous-agent', label: 'Resolve durable AutonomousAgent runtime and provider configuration', status: 'blocked' },
-      { stepId: 'emit-trace', label: 'Emit blocked-provider/runtime trace reference for the user', status: 'completed' }
+      { stepId: 'authorize-task-start', label: 'Authorize user_admin.access_review.start in selected AuthContext', status: 'completed' },
+      { stepId: 'resolve-autonomous-agent', label: 'Resolve durable AutonomousAgent runtime and provider configuration', status: 'blocked_provider_or_runtime' },
+      { stepId: 'emit-trace', label: 'Emit blocked-provider/runtime trace reference for the user', status: 'completed' },
+      { stepId: 'await-human-review', label: 'Accept/reject remains disabled until a model-backed result exists', status: 'waiting-for-human' }
     ]
   },
-  [userAdminSurfaceActions.startAccessReview, userAdminSurfaceActions.readAccessReview, userAdminSurfaceActions.cancelAccessReview, userAdminSurfaceActions.openAdminAudit]
+  [userAdminSurfaceActions.startAccessReview, userAdminSurfaceActions.readAccessReview, userAdminSurfaceActions.cancelAccessReview, userAdminSurfaceActions.acceptAccessReviewResult, userAdminSurfaceActions.rejectAccessReviewResult, userAdminSurfaceActions.openAdminAudit]
 );
 
 export const agentAdminCatalogSurface = envelope(

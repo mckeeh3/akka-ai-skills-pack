@@ -77,10 +77,11 @@ test('User Admin surface actions map to capability ids and trace or audit afford
     'USERADMIN_LIST_ROLES_CAPABILITIES',
     'USERADMIN_PREVIEW_ROLE_CHANGE',
     'USERADMIN_CHANGE_MEMBER_ROLES',
-    'USERADMIN_START_ACCESS_REVIEW_TASK',
-    'USERADMIN_VIEW_ACCESS_REVIEW_TASK',
-    'USERADMIN_CANCEL_ACCESS_REVIEW_TASK',
-    'USERADMIN_VIEW_ACCESS_REVIEW_RESULT',
+    'user_admin.access_review.start',
+    'user_admin.access_review.read',
+    'user_admin.access_review.cancel',
+    'user_admin.access_review.accept_result',
+    'user_admin.access_review.reject_result',
     'USERADMIN_VIEW_TRACE_REFERENCE'
   ]) {
     assert.match(surfaces, new RegExp(capabilityId));
@@ -99,7 +100,14 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /action-useradmin-preview-role-change/);
   assert.match(surfaces, /action-useradmin-change-member-roles/);
   assert.match(surfaces, /action-useradmin-start-access-review/);
+  assert.match(surfaces, /action-useradmin-read-access-review/);
+  assert.match(surfaces, /action-useradmin-cancel-access-review/);
+  assert.match(surfaces, /action-useradmin-accept-access-review-result/);
+  assert.match(surfaces, /action-useradmin-reject-access-review-result/);
+  assert.match(surfaces, /user_admin\.access_review_task\.v1/);
   assert.match(surfaces, /blocked_provider_or_runtime/);
+  assert.match(surfaces, /providerFailures/);
+  assert.match(surfaces, /noDirectMutation/);
   assert.match(surfaces, /must not fake progress|not fake progress/);
   assert.match(surfaces, /displayUserListActionResult/);
   assert.match(surfaces, /action-display-user-detail/);

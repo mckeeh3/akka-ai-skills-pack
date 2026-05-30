@@ -170,7 +170,7 @@
 
 ### TASK-FCSMB-UARW-01-004: Implement access-review frontend surfaces and actions
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/04-implement-access-review-frontend-surfaces.md
 - depends on: [TASK-FCSMB-UARW-01-003]
@@ -199,6 +199,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: render access review task surfaces`
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs` passed (118 tests).
+  - checks: required frontend `rg` proof and `git diff --check` passed.
+  - optional check: `cd templates/ai-first-saas-starter/frontend && npm run build` passed; generated static assets were not committed because this task changes frontend source/contracts only.
 
 ### TASK-FCSMB-UARW-01-005: Run integrated access-review validation
 
