@@ -148,12 +148,21 @@ Primary source paths:
 
 ### Slice 4 — Personal digest worker readiness decision
 
-Do not implement a successful model-backed personal digest worker until deterministic personal attention and trace refs are complete and a real durable worker runtime is intentionally selected.
+Decision from `TASK-FCSMB-MA-01-005`: defer the personal digest worker for this mini-project and do not expose a successful or blocked visible `my_account.personal_digest.*` action in the starter yet.
 
-Acceptable near-term outcome:
+Rationale:
 
-- expose only a typed blocked/readiness surface for `my_account.personal_digest.*`, or defer entirely with a queue note;
-- if later implemented, worker output can summarize authorized evidence only and must not update settings, switch context, open workstreams, grant authority, mutate policies, or bypass deterministic attention filtering.
+- deterministic personal attention aggregation and trace refs now exist as My Account dashboard/evidence inputs, and request/response `MyAccountAgent` can summarize those facts through governed `myAccountEvidence.read` when provider/model configuration is available;
+- the current starter has not selected a reusable personal-task `AutonomousAgent` lifecycle for digest history, scheduled notifications, cancellation/retry, progress snapshots, or human accept/reject review;
+- adding a visible digest start/read action now would imply worker product semantics that are not yet implemented and would risk teaching generated apps to accept model-less successful digest behavior;
+- My Account must keep deterministic ownership of attention filtering, trace redaction, authorization, context/profile/settings updates, and safe workstream navigation.
+
+Readiness state:
+
+- `my_account.personal_digest.start`, `my_account.personal_digest.read`, `my_account.personal_digest.cancel`, and `my_account.personal_digest.accept_result` remain unimplemented/deferred;
+- no top-level source task is appended for this worker in the current My Account group;
+- if a future product scope requires digest history or scheduled/background summary semantics, append a separate bounded worker mini-project/task that selects a real provider-backed `AutonomousAgent` or equivalent durable task runtime, adds typed workflow-status surfaces, and validates fail-closed provider/tool-boundary behavior;
+- future worker output may only summarize authorized evidence and must not update settings, switch context, open workstreams, grant authority, mutate policies, or bypass deterministic attention filtering/trace redaction.
 
 ## Target validation commands for implementation tasks
 

@@ -232,7 +232,7 @@
 
 ### TASK-FCSMB-MA-01-005: Decide My Account personal digest worker readiness
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-my-account/my-account-implementation-map.md
 - task brief: specs/full-core-smb-my-account/tasks/01-my-account/05-decide-personal-digest-readiness.md
 - depends on: [TASK-FCSMB-MA-01-004]
@@ -262,6 +262,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: decide my account digest readiness`
+  - decision: deferred; no visible `my_account.personal_digest.*` action is exposed in this task because no real reusable personal-task `AutonomousAgent`/durable lifecycle has been selected.
+  - checks: required `rg` proof and `git diff --check` passed; no backend/frontend source changes were made, so no targeted runtime tests were required.
 
 ### TASK-FCSMB-MA-01-006: Run integrated My Account validation
 
