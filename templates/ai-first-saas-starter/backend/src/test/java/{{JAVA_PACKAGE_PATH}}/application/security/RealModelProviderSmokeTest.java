@@ -47,6 +47,7 @@ class RealModelProviderSmokeTest extends TestKitSupport {
     assumeTrue(apiKey != null, "Skipping real model provider smoke because OPENAI_API_KEY is not set.");
 
     StarterSecurityComponents.startup();
+    StarterSecurityComponents.bindAkkaRuntime(componentClient);
     BootstrapAdminSeeder.seedConfiguredAdmins(StarterSecurityComponents.identityRepository(), null);
     StarterSecurityComponents.agentBehaviorSeedLoader()
         .importStarterDefaults(BootstrapAdminSeeder.DEFAULT_TENANT_ID, "real-provider-smoke", "corr-real-provider-seed");

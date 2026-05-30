@@ -29,12 +29,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class AgentBehaviorSeedLoaderTest {
-  private InMemoryAgentBehaviorRepository repository;
+  private LocalDemoAgentBehaviorRepository repository;
   private AgentBehaviorSeedLoader loader;
 
   @BeforeEach
   void setUp() {
-    repository = new InMemoryAgentBehaviorRepository();
+    repository = new LocalDemoAgentBehaviorRepository();
     loader = new AgentBehaviorSeedLoader(repository, Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
   }
 

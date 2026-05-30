@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentRuntimeService;
-import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.InMemoryAgentBehaviorRepository;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoAgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.WorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
@@ -34,19 +34,19 @@ import org.junit.jupiter.api.Test;
 
 class WorkstreamServiceTest {
   private LocalDemoIdentityRepository identityRepository;
-  private InMemoryAgentBehaviorRepository agentRepository;
+  private LocalDemoAgentBehaviorRepository agentRepository;
   private WorkstreamService service;
   private TrackingWorkstreamAgentRuntimeTestAdapter trackingRuntimeInvoker;
 
   @BeforeEach
   void setUp() {
     identityRepository = new LocalDemoIdentityRepository();
-    var invitationRepository = new InMemoryInvitationRepository();
+    var invitationRepository = new LocalDemoInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
     var meService = new MeService(resolver);
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
-    agentRepository = new InMemoryAgentBehaviorRepository();
+    agentRepository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"));
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
@@ -740,12 +740,12 @@ class WorkstreamServiceTest {
 
   @Test
   void auditTraceMessageFailsClosedWhenRuntimeProviderBoundaryIsMissing() {
-    var invitationRepository = new InMemoryInvitationRepository();
+    var invitationRepository = new LocalDemoInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
     var meService = new MeService(resolver);
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
-    var agentRepository = new InMemoryAgentBehaviorRepository();
+    var agentRepository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed-failclosed");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> {
       throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");

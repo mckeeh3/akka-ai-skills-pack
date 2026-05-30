@@ -8,7 +8,7 @@ import java.util.Optional;
  * Durable current-state projection for the starter invitation repository port.
  *
  * <p>This state backs the first Akka Key Value Entity replacement seam for the local/test
- * {@code InMemoryInvitationRepository}. It deliberately stores token hashes only; raw invitation
+ * {@code LocalDemoInvitationRepository}. It deliberately stores token hashes only; raw invitation
  * tokens remain confined to transient email outbox messages.
  */
 public record InvitationRepositoryState(

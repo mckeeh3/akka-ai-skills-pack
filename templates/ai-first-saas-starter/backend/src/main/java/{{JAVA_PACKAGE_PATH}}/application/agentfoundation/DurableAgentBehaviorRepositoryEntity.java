@@ -18,10 +18,11 @@ import java.util.Optional;
 /**
  * Durable Akka component seam for governed agent behavior repository state.
  *
- * <p>The scaffold keeps {@link InMemoryAgentBehaviorRepository} as the local/demo default, but
- * generated apps can bind {@link AkkaAgentBehaviorRepository} to this component without changing
- * seed import, prompt assembly, {@code readSkill(skillId)}, {@code readReferenceDoc(referenceId)},
- * or behavior proposal services. This Key Value Entity stores the current approved/active governed behavior records; later slices can
+ * <p>Normal endpoint and Akka Agent runtime wiring binds {@link AkkaAgentBehaviorRepository} to this
+ * component without changing seed import, prompt assembly, {@code readSkill(skillId)},
+ * {@code readReferenceDoc(referenceId)}, or behavior proposal services. The local/demo adapter is
+ * only for explicit local/demo or test execution. This Key Value Entity stores the current
+ * approved/active governed behavior records; later slices can
  * replace individual lifecycle-heavy artifacts with Event Sourced Entities and project the same port.
  */
 @Component(id = "starter-agent-behavior-repository")

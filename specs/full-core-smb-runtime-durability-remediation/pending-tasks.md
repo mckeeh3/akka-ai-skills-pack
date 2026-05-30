@@ -114,7 +114,7 @@
 
 ### TASK-FCSMB-DUR-01-003: Bind invitation, agent behavior, and runtime trace durable seams
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md
 - task brief: specs/full-core-smb-runtime-durability-remediation/tasks/01-remediation/03-bind-agent-invitation-durable-seams.md
 - depends on: [TASK-FCSMB-DUR-01-002]
@@ -144,6 +144,8 @@
   - governed Akka Agent runtime path and provider fail-closed behavior are preserved
   - task changes and queue update are committed
 - notes:
+  - normal endpoint wiring now binds invitations, governed-agent behavior, and agent runtime traces to Akka-backed repositories/sinks when `ComponentClient` is available; remaining local/demo adapters are explicitly named `LocalDemo*`
+  - validation: `git diff --check`; `rg -n "new InMemory(Invitation|AgentBehavior|AgentRuntimeTrace)|InMemory(Invitation|AgentBehavior)Repository|InMemoryAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java` (no matches); `tools/validate-ai-first-saas-starter-fullstack.sh --keep`
   - commit message: `full-core-smb: bind durable agent and invitation seams`
 
 ### TASK-FCSMB-DUR-01-004: Gate frontend fixtures and refresh static assets

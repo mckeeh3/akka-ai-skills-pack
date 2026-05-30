@@ -55,11 +55,11 @@ public final class AgentRuntimeService {
   private final Map<String, RollbackSnapshot> rollbackSnapshots = new HashMap<>();
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
-    this(repository, authContextResolver, clock, new OpenAiModelProviderClient(), new InMemoryAgentRuntimeTraceSink());
+    this(repository, authContextResolver, clock, new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
   }
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock, ModelProviderClient modelProviderClient) {
-    this(repository, authContextResolver, clock, modelProviderClient, new InMemoryAgentRuntimeTraceSink());
+    this(repository, authContextResolver, clock, modelProviderClient, new LocalDemoAgentRuntimeTraceSink());
   }
 
   public AgentRuntimeService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock, ModelProviderClient modelProviderClient, AgentRuntimeTraceSink traceSink) {

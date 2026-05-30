@@ -11,10 +11,9 @@ import java.util.Optional;
  * Akka-backed adapter for {@link InvitationRepository}.
  *
  * <p>This preserves the synchronous starter repository port while moving state into
- * {@link DurableInvitationRepositoryEntity}. The scaffolded static demo registry keeps the
- * in-memory adapter by default so the template remains simple to run without dependency injection;
- * production-ready generated apps should bind this adapter where a {@link ComponentClient} is
- * available.
+ * {@link DurableInvitationRepositoryEntity}. Normal endpoint wiring binds this adapter as soon as a
+ * {@link ComponentClient} is available; the local/demo adapter is retained only for explicit
+ * local/demo or test execution.
  */
 public final class AkkaInvitationRepository implements InvitationRepository {
   private final ComponentClient componentClient;

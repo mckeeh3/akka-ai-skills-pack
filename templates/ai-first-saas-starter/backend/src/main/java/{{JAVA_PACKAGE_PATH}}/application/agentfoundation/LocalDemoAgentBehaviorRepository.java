@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Test/local governed-agent store for the starter template. */
-public final class InMemoryAgentBehaviorRepository implements AgentBehaviorRepository {
+public final class LocalDemoAgentBehaviorRepository implements AgentBehaviorRepository {
   private final Map<String, AgentDefinition> agents = new ConcurrentHashMap<>();
   private final Map<String, PromptDocument> prompts = new ConcurrentHashMap<>();
   private final Map<String, SkillDocument> skills = new ConcurrentHashMap<>();

@@ -6,6 +6,7 @@ import akka.javasdk.annotations.JWT;
 import akka.javasdk.annotations.http.Get;
 import akka.javasdk.annotations.http.HttpEndpoint;
 import akka.javasdk.annotations.http.Post;
+import akka.javasdk.client.ComponentClient;
 import akka.javasdk.http.AbstractHttpEndpoint;
 import akka.javasdk.http.HttpResponses;
 import static akka.javasdk.http.HttpException.forbidden;
@@ -28,6 +29,10 @@ import java.util.List;
 @JWT(validate = JWT.JwtMethodMode.BEARER_TOKEN)
 @HttpEndpoint("/api/admin")
 public class AdminEndpoint extends AbstractHttpEndpoint {
+
+  public AdminEndpoint(ComponentClient componentClient) {
+    StarterSecurityComponents.bindAkkaRuntime(componentClient);
+  }
 
   @Get("/users")
   public HttpResponse users() {

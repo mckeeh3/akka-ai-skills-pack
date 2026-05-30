@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 class AgentRuntimeTraceSinkTest {
   @Test
   void runtimeServiceWritesPromptAssemblyTracesThroughInjectedDurableSinkBoundary() {
-    var repository = new InMemoryAgentBehaviorRepository();
+    var repository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     var sink = new CapturingTraceSink();
     var service = new AgentRuntimeService(
@@ -49,7 +49,7 @@ class AgentRuntimeTraceSinkTest {
 
   @Test
   void runtimeServiceWritesDeniedLoaderTracesThroughInjectedDurableSinkBoundary() {
-    var repository = new InMemoryAgentBehaviorRepository();
+    var repository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     var sink = new CapturingTraceSink();
     var service = new AgentRuntimeService(

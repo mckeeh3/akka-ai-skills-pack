@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 class InvitationAndUserAdminServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-20T10:15:30Z"), ZoneOffset.UTC);
   private LocalDemoIdentityRepository identityRepository;
-  private InMemoryInvitationRepository invitationRepository;
+  private LocalDemoInvitationRepository invitationRepository;
   private AuthContextResolver resolver;
   private InvitationService invitations;
   private UserAdminService userAdmin;
@@ -38,7 +38,7 @@ class InvitationAndUserAdminServiceTest {
   @BeforeEach
   void setUp() {
     identityRepository = new LocalDemoIdentityRepository();
-    invitationRepository = new InMemoryInvitationRepository();
+    invitationRepository = new LocalDemoInvitationRepository();
     resolver = new AuthContextResolver(identityRepository);
     invitations = new InvitationService(identityRepository, invitationRepository, clock);
     userAdmin = new UserAdminService(identityRepository, clock);

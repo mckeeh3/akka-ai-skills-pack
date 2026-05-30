@@ -12,11 +12,11 @@ import java.util.Optional;
 /**
  * Durable Akka component seam for the starter invitation repository port.
  *
- * <p>The scaffold still defaults to {@link InMemoryInvitationRepository} for local/demo construction,
- * but generated apps can bind {@link AkkaInvitationRepository} to this entity without changing
+ * <p>Normal endpoint wiring binds {@link AkkaInvitationRepository} to this entity without changing
  * {@link InvitationService} or the browser API contracts. This Key Value Entity stores current
  * invitation/outbox state; a later event-sourced invitation lifecycle slice can preserve full
- * historical facts and project the same read methods through views.
+ * historical facts and project the same read methods through views. The local/demo adapter is only
+ * for explicit local/demo or test execution.
  */
 @Component(id = "starter-invitation-repository")
 public class DurableInvitationRepositoryEntity extends KeyValueEntity<InvitationRepositoryState> {

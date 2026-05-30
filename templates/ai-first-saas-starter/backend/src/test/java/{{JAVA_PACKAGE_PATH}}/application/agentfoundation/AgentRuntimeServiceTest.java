@@ -33,13 +33,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class AgentRuntimeServiceTest {
-  private InMemoryAgentBehaviorRepository repository;
+  private LocalDemoAgentBehaviorRepository repository;
   private AgentRuntimeService service;
   private AuthContext tenantAdmin;
 
   @BeforeEach
   void setUp() {
-    repository = new InMemoryAgentBehaviorRepository();
+    repository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     service = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock());
     tenantAdmin = new AuthContext(

@@ -10,7 +10,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.GovernancePolicyService;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
-import {{JAVA_BASE_PACKAGE}}.application.security.InMemoryInvitationRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoInvitationRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView;
 import {{JAVA_BASE_PACKAGE}}.application.security.MyAccountService;
@@ -36,13 +36,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class AgentRuntimeToolResolverTest {
-  private InMemoryAgentBehaviorRepository repository;
+  private LocalDemoAgentBehaviorRepository repository;
   private AgentRuntimeToolResolver resolver;
   private AuthContext tenantAdmin;
 
   @BeforeEach
   void setUp() {
-    repository = new InMemoryAgentBehaviorRepository();
+    repository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock());
     resolver = new AgentRuntimeToolResolver(repository, runtimeService);
@@ -76,7 +76,7 @@ class AgentRuntimeToolResolverTest {
   void userAdminEvidenceToolReadsScopedRedactedEvidenceWithoutMutation() {
     var identityRepository = seededIdentityRepository();
     var userAdminService = new UserAdminService(identityRepository, fixedClock());
-    var invitationService = new InvitationService(identityRepository, new InMemoryInvitationRepository(), fixedClock());
+    var invitationService = new InvitationService(identityRepository, new LocalDemoInvitationRepository(), fixedClock());
     var tool = new UserAdminEvidenceTools(identityRepository, userAdminService, new InvitationView(invitationService), tenantAdmin, "corr-evidence");
 
     var beforeRoles = identityRepository.findMembership("membership-member").orElseThrow().roles();
@@ -259,7 +259,7 @@ class AgentRuntimeToolResolverTest {
   void userAdminEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
     var identityRepository = seededIdentityRepository();
     var userAdminService = new UserAdminService(identityRepository, fixedClock());
-    var invitationService = new InvitationService(identityRepository, new InMemoryInvitationRepository(), fixedClock());
+    var invitationService = new InvitationService(identityRepository, new LocalDemoInvitationRepository(), fixedClock());
     var noReadCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of("agent.user_admin.use"));
     var deniedCapabilityTool = new UserAdminEvidenceTools(identityRepository, userAdminService, new InvitationView(invitationService), noReadCapability, "corr-evidence-denied");
 

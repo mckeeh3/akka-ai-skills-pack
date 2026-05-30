@@ -19,9 +19,9 @@ import java.util.Optional;
  *
  * <p>This preserves the starter repository port while moving governed agent definitions into the
  * first-class {@link AgentDefinitionEntity}. The remaining governed records still use {@link
- * DurableAgentBehaviorRepositoryEntity} until their own first-class components are added. The static
- * demo wiring still uses the in-memory adapter so a scaffold runs immediately; production-ready
- * generated apps should bind this adapter where a {@link ComponentClient} is available.
+ * DurableAgentBehaviorRepositoryEntity} until their own first-class components are added. Normal
+ * endpoint and Akka Agent runtime wiring binds this adapter as soon as a {@link ComponentClient} is
+ * available; the local/demo adapter is retained only for explicit local/demo or test execution.
  */
 public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepository {
   private final ComponentClient componentClient;
