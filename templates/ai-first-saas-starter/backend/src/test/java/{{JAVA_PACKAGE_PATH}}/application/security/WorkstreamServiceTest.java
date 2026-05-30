@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 class WorkstreamServiceTest {
   private InMemoryIdentityRepository identityRepository;
+  private InMemoryAgentBehaviorRepository agentRepository;
   private WorkstreamService service;
   private TrackingWorkstreamAgentRuntimeTestAdapter trackingRuntimeInvoker;
 
@@ -45,7 +46,7 @@ class WorkstreamServiceTest {
     var meService = new MeService(resolver);
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
-    var agentRepository = new InMemoryAgentBehaviorRepository();
+    agentRepository = new InMemoryAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"));
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
@@ -212,6 +213,59 @@ class WorkstreamServiceTest {
         .orElseThrow()
         .requiredCapabilityIds()
         .contains("agent_admin.submit_turn"));
+  }
+
+  @Test
+  void agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted() {
+    var catalog = service.surface(identity(), "membership-admin", "surface-agent-admin-catalog", "corr-agent-catalog");
+    var detail = service.surface(identity(), "membership-admin", "surface-agent-admin-detail", "corr-agent-detail");
+    var prompt = service.surface(identity(), "membership-admin", "surface-agent-prompt-governance", "corr-agent-prompt");
+    var manifest = service.surface(identity(), "membership-admin", "surface-agent-skill-manifest-diff", "corr-agent-manifest");
+    var boundary = service.surface(identity(), "membership-admin", "surface-agent-tool-boundary-diff", "corr-agent-boundary");
+    var model = service.surface(identity(), "membership-admin", "surface-agent-model-refs", "corr-agent-model");
+    var seed = service.surface(identity(), "membership-admin", "surface-agent-seed-material", "corr-agent-seed-read");
+
+    assertEquals("agent_admin.catalog.v1", catalog.data().get("surfaceContract"));
+    assertEquals("agent-agent-admin", catalog.ownerFunctionalAgentId());
+    assertTrue(catalog.toString().contains("agent_admin.list_definitions"));
+    assertTrue(catalog.toString().contains("providerReadiness"));
+    assertTrue(catalog.toString().contains("seedMaterial"));
+    assertEquals("AgentDefinition", detail.data().get("recordKind"));
+    assertEquals(true, detail.data().get("noDirectMutation"));
+    assertEquals("agent_admin.prompt_version.v1", prompt.data().get("surfaceContract"));
+    assertTrue(prompt.toString().contains("redactedPreview"));
+    assertEquals(false, prompt.data().get("fullContentAvailableInBrowser"));
+    assertEquals("agent_admin.manifest.v1", manifest.data().get("surfaceContract"));
+    assertTrue(manifest.toString().contains("AgentSkillManifest+AgentReferenceManifest"));
+    assertEquals("agent_admin.tool_boundary.v1", boundary.data().get("surfaceContract"));
+    assertTrue(boundary.toString().contains("ToolPermissionBoundary"));
+    assertEquals("agent_admin.model_ref.v1", model.data().get("surfaceContract"));
+    assertTrue(model.toString().contains("[REDACTED]"));
+    assertEquals("agent_admin.seed_material.v1", seed.data().get("surfaceContract"));
+    for (var surface : List.of(catalog, detail, prompt, manifest, boundary, model, seed)) {
+      assertTrue(surface.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-agent")));
+      assertFalse(surface.toString().toLowerCase().contains("api_key="));
+      assertFalse(surface.toString().contains("sk-secret"));
+      assertFalse(surface.toString().contains("rawProviderCredential="));
+    }
+  }
+
+  @Test
+  void agentAdminReadSurfacesDenyMissingCapabilityBeforeArtifactLeakage() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.surface(memberIdentity(), "membership-member", "surface-agent-prompt-governance", "corr-member-agent-prompt"));
+
+    assertTrue(denied.reasonCode().contains("missing-capability:agent_admin.get_prompt_version"));
+  }
+
+  @Test
+  void agentAdminCatalogIsTenantScoped() {
+    new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-2", "bootstrap", "corr-agent-seed-tenant-2");
+
+    var catalog = service.surface(identity(), "membership-admin", "surface-agent-admin-catalog", "corr-agent-tenant-scope");
+
+    assertTrue(catalog.toString().contains("tenant:tenant-1"));
+    assertFalse(catalog.toString().contains("tenant:tenant-2"));
+    assertFalse(catalog.toString().contains("corr-agent-seed-tenant-2"));
   }
 
   @Test

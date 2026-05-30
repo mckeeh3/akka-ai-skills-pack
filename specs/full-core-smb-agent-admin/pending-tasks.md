@@ -98,7 +98,7 @@
 
 ### TASK-FCSMB-AA-01-002: Implement Agent Admin catalog and governed artifact reads
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
 - task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/02-implement-agent-admin-catalog-reads.md
 - depends on: [TASK-FCSMB-AA-01-001]
@@ -130,6 +130,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement agent admin reads`
+  - implemented deterministic `AgentAdminService` read facade, dynamic Agent Admin surface retrieval, explicit `agent_admin.*` capability visibility, and backend tests for catalog/detail/artifact reads, denial, redaction, traces, seed/provider readiness, and tenant scoping
+  - validation: source-template Maven command is blocked by placeholder `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent passed with `mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,WorkstreamServiceTest,AgentDefinitionEntityTest,AgentDefinitionViewIntegrationTest,ManifestBoundaryEntityTest,ManifestBoundaryViewTest`
+  - validation: required `rg` proof command and `git diff --check` passed
 
 ### TASK-FCSMB-AA-01-003: Implement Agent Admin behavior-change lifecycle
 
