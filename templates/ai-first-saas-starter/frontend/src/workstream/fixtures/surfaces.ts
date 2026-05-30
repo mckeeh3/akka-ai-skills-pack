@@ -1184,7 +1184,8 @@ export const userAdminListSearchSurface = envelope(
     userAdminSurfaceActions.revokeSupportAccess,
     userAdminSurfaceActions.extendSupportAccess,
     userAdminSurfaceActions.readAccessReview,
-    userAdminSurfaceActions.approveRiskyAccess,
+    userAdminSurfaceActions.acceptAccessReviewResult,
+    userAdminSurfaceActions.rejectAccessReviewResult,
     userAdminSurfaceActions.openAdminAudit
   ]
 );
@@ -1275,7 +1276,8 @@ export const userAdminDetailEditSurface = envelope(
     userAdminSurfaceActions.revokeSupportAccess,
     userAdminSurfaceActions.extendSupportAccess,
     userAdminSurfaceActions.readAccessReview,
-    userAdminSurfaceActions.approveRiskyAccess,
+    userAdminSurfaceActions.acceptAccessReviewResult,
+    userAdminSurfaceActions.rejectAccessReviewResult,
     userAdminSurfaceActions.openAdminAudit
   ]
 );
@@ -1356,8 +1358,8 @@ export const userAdminAccessReviewSurface = envelope(
   'agent-user-admin',
   {
     surfaceContract: 'user_admin.access_review_task.v1',
-    workflowId: 'task-access-review-acme-001',
-    taskId: 'task-access-review-acme-001',
+    workflowId: 'access-review-task-acme-001',
+    taskId: 'access-review-task-acme-001',
     status: 'blocked_provider_or_runtime',
     summary: 'Start creates a durable access-review task record, but worker execution is blocked until governed AutonomousAgent provider/runtime configuration is enabled. This is a blocked surface, not fake progress.',
     traceIds: ['trace-useradmin-access-review-blocked', 'trace-useradmin-access-review-task-001'],
@@ -1372,7 +1374,7 @@ export const userAdminAccessReviewSurface = envelope(
     resultSummary: 'No model-backed recommendation is available while provider/runtime is blocked; no direct mutation occurred.',
     accessReview: {
       surfaceContract: 'user_admin.access_review_task.v1',
-      taskId: 'task-access-review-acme-001',
+      taskId: 'access-review-task-acme-001',
       lifecycleState: 'blocked_provider_or_runtime',
       progressPercent: 25,
       blockers: [

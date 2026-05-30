@@ -243,7 +243,7 @@
 
 ### TASK-FCSMB-UARW-01-006: Fix access-review frontend typecheck blocker
 
-- status: pending
+- status: done
 - source: TASK-FCSMB-UARW-01-005 integrated validation blocker
 - task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/06-fix-access-review-frontend-typecheck.md
 - depends on: [TASK-FCSMB-UARW-01-005]
@@ -272,6 +272,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: fix access review frontend typecheck`
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm run typecheck` passed.
+  - checks: `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs` passed (118 tests).
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh` passed.
+  - checks: `git diff --check` passed.
 
 ### TASK-FCSMB-UARW-99-001: Verify access-review worker readiness
 
