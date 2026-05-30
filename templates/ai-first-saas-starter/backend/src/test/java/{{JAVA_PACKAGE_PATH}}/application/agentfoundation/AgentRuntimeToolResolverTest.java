@@ -10,6 +10,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.GovernancePolicyService;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoAuditTraceRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoGovernancePolicyRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoWorkstreamLogRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoInvitationRepository;
@@ -50,6 +51,7 @@ class AgentRuntimeToolResolverTest {
     var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock());
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
     StarterSecurityComponents.bindTestAuditTraceRepository(new LocalDemoAuditTraceRepository(runtimeService, new LocalDemoWorkstreamLogRepository()));
+    StarterSecurityComponents.bindTestGovernancePolicyRepository(new LocalDemoGovernancePolicyRepository());
     resolver = new AgentRuntimeToolResolver(repository, runtimeService);
     tenantAdmin = new AuthContext(
         "admin-1",

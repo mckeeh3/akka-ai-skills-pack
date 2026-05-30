@@ -165,7 +165,7 @@
 
 ### TASK-RUNTIME-01-004: Replace governance policy and access-review runtime with Akka components
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/04-replace-governance-access-review-runtime-with-akka-components.md
 - depends on: [TASK-RUNTIME-01-003]
@@ -201,6 +201,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: replace governance and access review with Akka components`
+  - completed: added Akka-backed governance policy and access-review repositories/entities, rebound normal `StarterSecurityComponents` runtime paths through `ComponentClient`, moved local-demo/fail-closed governance/access-review adapters to test source, and adjusted workstream idempotency for durable governance/access-review actions
+  - checks: `git diff --check`; rendered fullstack validation with `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh --keep --target /tmp/ai-first-saas-starter-runtime-task-01004-nosmoke-2`; required main-source governance/access-review substitute scan returned no matches
 
 ### TASK-RUNTIME-01-005: Harden agent, invitation, and trace Akka bindings
 

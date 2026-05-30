@@ -172,7 +172,7 @@ public final class WorkstreamService {
     if (action == null || !Objects.equals(action.capabilityId(), request.capabilityId())) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
     if (!isActionCapabilityVisible(actor, action.capabilityId())) throw new AuthorizationException(403, "CAPABILITY_FORBIDDEN");
     if (action.idempotency().required() && (request.idempotencyKey() == null || request.idempotencyKey().isBlank())) return new CapabilityActionResult("validation-error", "This action requires a client-generated idempotency key.", request.correlationId(), List.of("trace-validation-idempotency"), null);
-    var actionIdempotencyKey = action.idempotency().required() ? actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + request.actionId() + ":" + request.idempotencyKey() : null;
+    var actionIdempotencyKey = action.idempotency().required() && !durableActionOwnsIdempotency(request.actionId()) ? actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + request.actionId() + ":" + request.idempotencyKey() : null;
     if (actionIdempotencyKey != null && idempotentActionResults.containsKey(actionIdempotencyKey)) return idempotentActionResults.get(actionIdempotencyKey);
     if (action.disabled() != null) return new CapabilityActionResult("denied", action.disabled().message(), request.correlationId(), List.of("trace-denied-" + action.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
 
@@ -277,6 +277,17 @@ public final class WorkstreamService {
     if (result == null) result = new CapabilityActionResult("accepted", action.label() + " accepted by backend-authoritative starter capability.", request.correlationId(), List.of("trace-" + request.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
     if (actionIdempotencyKey != null) idempotentActionResults.put(actionIdempotencyKey, result);
     return result;
+  }
+
+  private boolean durableActionOwnsIdempotency(String actionId) {
+    return actionId != null && (actionId.startsWith("action-useradmin-start-access-review")
+        || actionId.startsWith("action-useradmin-read-access-review")
+        || actionId.startsWith("action-useradmin-cancel-access-review")
+        || actionId.startsWith("action-useradmin-accept-access-review")
+        || actionId.startsWith("action-useradmin-reject-access-review")
+        || actionId.startsWith("action-governance-policy-")
+        || "action-simulate-policy".equals(actionId)
+        || "action-commit-policy".equals(actionId));
   }
 
   public WorkstreamMessageResponse submitMessage(WorkosIdentity identity, String selectedContextId, WorkstreamMessageRequest request, String fallbackCorrelationId) {

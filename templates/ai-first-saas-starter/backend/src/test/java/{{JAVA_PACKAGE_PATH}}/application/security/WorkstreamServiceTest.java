@@ -667,7 +667,8 @@ class WorkstreamServiceTest {
 
     var duplicateDraft = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-governance-policy-draft-proposal", "governance.policy.propose", Map.of("rationale", "ignored duplicate"), "idem-gov-draft", "membership-admin", "surface-governance-policy-detail", "corr-gov-draft-duplicate"));
-    assertEquals(draft, duplicateDraft);
+    assertEquals("no-op", duplicateDraft.status());
+    assertEquals(draft.resultSurface().data().get("proposalId"), duplicateDraft.resultSurface().data().get("proposalId"));
 
     var proposalId = draft.resultSurface().data().get("proposalId").toString();
     var submitted = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(

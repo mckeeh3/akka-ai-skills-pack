@@ -15,9 +15,11 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoAgentBehaviorR
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoAgentRuntimeTraceSink;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.OpenAiModelProviderClient;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Customer;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Tenant;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
@@ -44,8 +46,10 @@ public final class StarterSecurityComponents {
   private static volatile AgentRuntimeToolResolver agentRuntimeToolResolver = new AgentRuntimeToolResolver(agentBehaviorRepository, agentRuntimeService);
   private static volatile InvitationService invitationService = new InvitationService(identityRepository, invitationRepository, CLOCK);
   private static volatile InvitationView invitationView = new InvitationView(invitationService);
+  private static volatile AccessReviewTaskRepository accessReviewTaskRepository = new UnboundAccessReviewTaskRepository();
+  private static volatile GovernancePolicyRepository governancePolicyRepository = new UnboundGovernancePolicyRepository();
   private static volatile AuditTraceService auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
-  private static volatile GovernancePolicyService governancePolicyService = new GovernancePolicyService(governancePolicyRepository(), authContextResolver, CLOCK);
+  private static volatile GovernancePolicyService governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
   private static volatile WorkstreamService workstreamService = workstreamService(workstreamLogRepository());
 
   static {
@@ -74,6 +78,8 @@ public final class StarterSecurityComponents {
     userAdminService = new UserAdminService(durableIdentity, CLOCK);
     BootstrapAdminSeeder.seedConfiguredAdmins(durableIdentity, System.getenv("ADMIN_USERS"));
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
+    var durableAccessReviews = new AkkaAccessReviewTaskRepository(componentClient);
+    var durableGovernancePolicy = new AkkaGovernancePolicyRepository(componentClient);
     var durableRuntime = new AgentRuntimeService(durableAgentBehavior, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, new AkkaAgentRuntimeTraceSink(componentClient));
     invitationRepository = durableInvitations;
     agentBehaviorRepository = durableAgentBehavior;
@@ -83,9 +89,11 @@ public final class StarterSecurityComponents {
     agentRuntimeToolResolver = new AgentRuntimeToolResolver(durableAgentBehavior, durableRuntime);
     invitationService = new InvitationService(durableIdentity, durableInvitations, CLOCK);
     invitationView = new InvitationView(invitationService);
+    accessReviewTaskRepository = durableAccessReviews;
+    governancePolicyRepository = durableGovernancePolicy;
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
-    governancePolicyService = new GovernancePolicyService(governancePolicyRepository(), authContextResolver, CLOCK);
-    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), governancePolicyRepository());
+    governancePolicyService = new GovernancePolicyService(durableGovernancePolicy, authContextResolver, CLOCK);
+    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy);
   }
 
   public static AuthContextResolver authContextResolver() {
@@ -135,8 +143,10 @@ public final class StarterSecurityComponents {
     invitationRepository = new LocalDemoInvitationRepository();
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK);
     invitationView = new InvitationView(invitationService);
+    accessReviewTaskRepository = new UnboundAccessReviewTaskRepository();
+    governancePolicyRepository = new UnboundGovernancePolicyRepository();
     auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
-    governancePolicyService = new GovernancePolicyService(governancePolicyRepository(), authContextResolver, CLOCK);
+    governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
     workstreamService = workstreamService(workstreamLogRepository());
   }
 
@@ -144,6 +154,20 @@ public final class StarterSecurityComponents {
   public static void bindTestAuditTraceRepository(AuditTraceRepository testRepository) {
     if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test audit trace repository binding");
     auditTraceService = new AuditTraceService(authContextResolver, testRepository);
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source governance policy adapters. */
+  public static void bindTestGovernancePolicyRepository(GovernancePolicyRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test governance policy repository binding");
+    governancePolicyRepository = testRepository;
+    governancePolicyService = new GovernancePolicyService(testRepository, authContextResolver, CLOCK);
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source access-review task adapters. */
+  public static void bindTestAccessReviewTaskRepository(AccessReviewTaskRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test access-review task repository binding");
+    accessReviewTaskRepository = testRepository;
+    workstreamService = workstreamService(workstreamLogRepository());
   }
 
   /** Test-only hook for unit tests that use explicit test-source governed-agent adapters. */
@@ -188,7 +212,7 @@ public final class StarterSecurityComponents {
   }
 
   private static AccessReviewTaskRepository accessReviewTaskRepository() {
-    return FailClosedFoundationRuntime.localDemoOrTestEnabled() ? new LocalDemoAccessReviewTaskRepository() : new FailClosedAccessReviewTaskRepository();
+    return accessReviewTaskRepository;
   }
 
   private static AuditTraceRepository auditTraceRepository() {
@@ -204,7 +228,28 @@ public final class StarterSecurityComponents {
   }
 
   private static GovernancePolicyRepository governancePolicyRepository() {
-    return FailClosedFoundationRuntime.localDemoOrTestEnabled() ? new LocalDemoGovernancePolicyRepository() : new FailClosedGovernancePolicyRepository();
+    return governancePolicyRepository;
+  }
+
+  private static final class UnboundAccessReviewTaskRepository implements AccessReviewTaskRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("AccessReviewTaskRepository");
+    }
+
+    public Optional<AccessReviewTask> find(String taskId) { throw unavailable(); }
+    public Optional<AccessReviewTask> findByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { throw unavailable(); }
+    public AccessReviewTask save(AccessReviewTask task) { throw unavailable(); }
+  }
+
+  private static final class UnboundGovernancePolicyRepository implements GovernancePolicyRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("GovernancePolicyRepository");
+    }
+
+    public Optional<GovernancePolicyProposal> findProposal(String tenantId, String customerId, String proposalId) { throw unavailable(); }
+    public Optional<GovernancePolicyProposal> findByIdempotencyKey(String tenantId, String customerId, String accountId, String idempotencyKey) { throw unavailable(); }
+    public GovernancePolicyProposal saveProposal(GovernancePolicyProposal proposal) { throw unavailable(); }
+    public List<GovernancePolicyProposal> listProposals(String tenantId, String customerId) { throw unavailable(); }
   }
 
   private static final class UnboundWorkstreamLogRepository implements WorkstreamLogRepository {
