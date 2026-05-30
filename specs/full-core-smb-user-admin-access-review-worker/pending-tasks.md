@@ -279,7 +279,7 @@
 
 ### TASK-FCSMB-UARW-99-001: Verify access-review worker readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/99-verification/01-verify-access-review-worker-readiness.md
 - depends on:
@@ -317,3 +317,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify access review worker readiness`
+  - verification: mini-project README done state, sprint/backlog goals, implementation map, completed task notes, and source evidence were compared; no additional bounded follow-up is required for this mini-project.
+  - checks: targeted access-review `rg` proof across `templates/ai-first-saas-starter` and this mini-project passed.
+  - checks: `tools/validate-ai-first-saas-starter-fullstack.sh` passed, including scaffolded backend tests (143 run, 1 provider-smoke skip), frontend tests (118 passed), frontend typecheck, frontend build, static asset secret scan, and optional real provider smoke.
+  - checks: `git diff --check` passed.
