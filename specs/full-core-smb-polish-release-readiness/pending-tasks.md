@@ -86,7 +86,7 @@
 
 ### TASK-FCSMB-REL-01-002: Run integrated full-core SMB validation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-polish-release-readiness/integrated-release-readiness-map.md
 - task brief: specs/full-core-smb-polish-release-readiness/tasks/01-release-readiness/02-run-integrated-validation.md
 - depends on: [TASK-FCSMB-REL-01-001]
@@ -115,6 +115,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: run integrated validation`
+  - validation found no release blockers; focused backend admin tests require rendered scaffold plus controlled `ADMIN_USERS` environment
 
 ### TASK-FCSMB-REL-01-003: Review visual UX and cross-workstream polish
 
