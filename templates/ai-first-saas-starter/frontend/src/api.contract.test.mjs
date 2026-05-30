@@ -4,14 +4,14 @@ import test from 'node:test';
 
 const types = readFileSync(new URL('./api/types.ts', import.meta.url), 'utf8');
 const apiClient = readFileSync(new URL('./api/ApiClient.ts', import.meta.url), 'utf8');
-const fixtureApi = readFileSync(new URL('./api/FixtureApiClient.ts', import.meta.url), 'utf8');
+const fixtureApi = readFileSync(new URL('./__tests__/fixtures/api/FixtureApiClient.ts', import.meta.url), 'utf8');
 const httpApi = readFileSync(new URL('./api/HttpApiClient.ts', import.meta.url), 'utf8');
 const realtime = readFileSync(new URL('./api/RealtimeClient.ts', import.meta.url), 'utf8');
-const fixtureRealtime = readFileSync(new URL('./api/FixtureRealtimeClient.ts', import.meta.url), 'utf8');
+const fixtureRealtime = readFileSync(new URL('./__tests__/fixtures/api/FixtureRealtimeClient.ts', import.meta.url), 'utf8');
 const workstreamApi = readFileSync(new URL('./api/WorkstreamApiClient.ts', import.meta.url), 'utf8');
-const fixtureWorkstreamApi = readFileSync(new URL('./api/FixtureWorkstreamApiClient.ts', import.meta.url), 'utf8');
+const fixtureWorkstreamApi = readFileSync(new URL('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts', import.meta.url), 'utf8');
 const workstreamRealtime = readFileSync(new URL('./api/WorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
-const fixtureWorkstreamRealtime = readFileSync(new URL('./api/FixtureWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
+const fixtureWorkstreamRealtime = readFileSync(new URL('./__tests__/fixtures/api/FixtureWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 const httpWorkstreamApi = readFileSync(new URL('./api/HttpWorkstreamApiClient.ts', import.meta.url), 'utf8');
 const httpWorkstreamRealtime = readFileSync(new URL('./api/HttpWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 

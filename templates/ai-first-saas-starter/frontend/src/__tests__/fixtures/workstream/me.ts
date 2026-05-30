@@ -1,4 +1,4 @@
-import type { AuthContext, MeResponse } from '../types';
+import type { AuthContext, MeResponse } from '../../../workstream/types';
 import { foundationFunctionalAgents } from './agents';
 
 const baseTimeZone = 'America/New_York';

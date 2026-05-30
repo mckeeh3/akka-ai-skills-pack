@@ -10,9 +10,9 @@ const workstreamShell = read('./workstream/shell/WorkstreamShell.tsx');
 const panel = read('./workstream/shell/WorkstreamPanel.tsx');
 const contextBar = read('./workstream/shell/ContextAuthorityBar.tsx');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
-const workstreamFixtures = read('./workstream/fixtures/workstream.ts');
-const surfaceFixtures = read('./workstream/fixtures/surfaces.ts');
-const workstreamEvents = read('./workstream/fixtures/events.ts');
+const workstreamFixtures = read('./__tests__/fixtures/workstream/workstream.ts');
+const surfaceFixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
+const workstreamEvents = read('./__tests__/fixtures/workstream/events.ts');
 const realtime = read('./workstream/realtime/workstreamEvents.ts');
 
 test('Mission Control legacy screen is quarantined while the app entry uses the workstream shell', () => {

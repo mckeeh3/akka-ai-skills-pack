@@ -1,4 +1,4 @@
-import type { WorkstreamItem } from '../types';
+import type { WorkstreamItem } from '../../../workstream/types';
 
 const createdAt = '2026-05-19T12:00:00.000Z';
 // The real API bootstrap and fixture bootstrap both start with exactly five core v0 starter markdown_response items.

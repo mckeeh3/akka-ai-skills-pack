@@ -4,9 +4,9 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-const meFixtures = read('./workstream/fixtures/me.ts');
-const agentFixtures = read('./workstream/fixtures/agents.ts');
-const surfaceFixtures = read('./workstream/fixtures/surfaces.ts');
+const meFixtures = read('./__tests__/fixtures/workstream/me.ts');
+const agentFixtures = read('./__tests__/fixtures/workstream/agents.ts');
+const surfaceFixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
 const authTypes = read('./workstream/types/auth.ts');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
 const rail = read('./workstream/rail/FunctionalAgentRail.tsx');

@@ -5,8 +5,8 @@ import test from 'node:test';
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 const main = read('./main.tsx');
-const surfaces = read('./workstream/fixtures/surfaces.ts');
-const workstream = read('./workstream/fixtures/workstream.ts');
+const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
+const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const decisionSurface = read('./workstream/surfaces/DecisionSurface.tsx');
 const governanceDiffSurface = read('./workstream/surfaces/GovernanceDiffSurface.tsx');

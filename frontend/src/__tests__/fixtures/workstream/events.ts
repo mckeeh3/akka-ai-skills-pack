@@ -1,4 +1,4 @@
-import type { MalformedSafeEvent, WorkstreamEvent } from '../types';
+import type { MalformedSafeEvent, WorkstreamEvent } from '../../../workstream/types';
 
 const base = {
   tenantId: 'tenant-acme',

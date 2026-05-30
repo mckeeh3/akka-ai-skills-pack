@@ -1,4 +1,4 @@
-import type { ApiClient } from './ApiClient';
+import type { ApiClient } from '../../../api/ApiClient';
 import type {
   AdminUser,
   ApiError,
@@ -11,7 +11,7 @@ import type {
   PolicySummary,
   TraceDetailResponse,
   TraceSummary
-} from './types';
+} from '../../../api/types';
 
 const tenantId = 'seed-tenant';
 

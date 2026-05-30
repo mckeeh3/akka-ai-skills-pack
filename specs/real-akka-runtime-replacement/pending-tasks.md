@@ -282,7 +282,7 @@
 
 ### TASK-RUNTIME-01-007: Quarantine frontend fixtures to tests
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/07-quarantine-frontend-fixtures-to-tests.md
 - depends on: [TASK-RUNTIME-01-006]
@@ -318,6 +318,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: quarantine frontend fixtures to tests`
+  - completed: moved frontend fixture API/realtime clients and workstream fixture data under test-only `src/__tests__/fixtures/**` in the template and root mirror, removed fixture exports from runtime API/workstream barrels, removed the main runtime fixture-mode query/env dynamic imports, updated contract tests to read test-only fixtures, and rebuilt static resources.
+  - checks: `git diff --check`; template frontend `npm test -- --run`, `npm run typecheck`, `npm run build`; root frontend `npm test -- --run`, `npm run typecheck`, `npm run build`; required template production-source fixture scan returned no matches.
 
 ### TASK-RUNTIME-01-008: Update doctrine and readiness for real Akka runtime replacement
 

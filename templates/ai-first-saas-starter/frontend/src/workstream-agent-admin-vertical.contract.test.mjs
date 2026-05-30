@@ -4,11 +4,11 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-const agents = read('./workstream/fixtures/agents.ts');
-const me = read('./workstream/fixtures/me.ts');
-const surfaces = read('./workstream/fixtures/surfaces.ts');
-const workstream = read('./workstream/fixtures/workstream.ts');
-const apiClient = read('./api/FixtureWorkstreamApiClient.ts');
+const agents = read('./__tests__/fixtures/workstream/agents.ts');
+const me = read('./__tests__/fixtures/workstream/me.ts');
+const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
+const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
+const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
 test('Agent Admin functional agent is visible and capability backed for v0 governed runtime', () => {
   assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'markdown_response'/);

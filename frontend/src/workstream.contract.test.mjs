@@ -10,11 +10,11 @@ const actionTypes = read('./workstream/types/actions.ts');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
 const workstreamTypes = read('./workstream/types/workstream.ts');
 const eventTypes = read('./workstream/types/events.ts');
-const meFixtures = read('./workstream/fixtures/me.ts');
-const agentFixtures = read('./workstream/fixtures/agents.ts');
-const surfaceFixtures = read('./workstream/fixtures/surfaces.ts');
-const workstreamFixtures = read('./workstream/fixtures/workstream.ts');
-const eventFixtures = read('./workstream/fixtures/events.ts');
+const meFixtures = read('./__tests__/fixtures/workstream/me.ts');
+const agentFixtures = read('./__tests__/fixtures/workstream/agents.ts');
+const surfaceFixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
+const workstreamFixtures = read('./__tests__/fixtures/workstream/workstream.ts');
+const eventFixtures = read('./__tests__/fixtures/workstream/events.ts');
 
 const allFixtures = [meFixtures, agentFixtures, surfaceFixtures, workstreamFixtures, eventFixtures].join('\n');
 

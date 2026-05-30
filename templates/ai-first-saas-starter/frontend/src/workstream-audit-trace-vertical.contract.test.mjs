@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-const fixtures = read('./workstream/fixtures/surfaces.ts');
+const fixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
 const types = read('./workstream/types/surfaces.ts');
 const timeline = read('./workstream/surfaces/AuditTimelineSurface.tsx');
 const detail = read('./workstream/surfaces/DetailEditSurface.tsx');
@@ -12,7 +12,7 @@ const decision = read('./workstream/surfaces/DecisionSurface.tsx');
 const list = read('./workstream/surfaces/ListSearchSurface.tsx');
 const dashboard = read('./workstream/surfaces/DashboardSurface.tsx');
 const traceLinks = read('./workstream/stream/TraceLinkList.tsx');
-const workstream = read('./workstream/fixtures/workstream.ts');
+const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 
 test('Audit/Trace v0 fixture exposes contract capabilities, surfaces, and backend-authoritative actions', () => {
   for (const capability of ['audit.trace.dashboard.read', 'audit.trace.search', 'audit.trace.detail.read', 'audit.trace.timeline.read', 'audit.trace.failureEvidence.read', 'audit.trace.investigationGuide.read']) {

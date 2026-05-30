@@ -1,6 +1,6 @@
-import type { WorkstreamClient, WorkstreamBootstrapResponse, WorkstreamMessageRequest, WorkstreamMessageResponse } from './WorkstreamApiClient';
-import type { ApiError, ApiResult } from './types';
-import type { CapabilityActionRequest, CapabilityActionResult, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem } from '../workstream/types';
+import type { WorkstreamClient, WorkstreamBootstrapResponse, WorkstreamMessageRequest, WorkstreamMessageResponse } from '../../../api/WorkstreamApiClient';
+import type { ApiError, ApiResult } from '../../../api/types';
+import type { CapabilityActionRequest, CapabilityActionResult, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem } from '../../../workstream/types';
 import {
   actionResultsByStatus,
   allSurfaceActions,
@@ -31,7 +31,7 @@ import {
   displayUserListActionResult,
   initialWorkstreamItems,
   meTenantAdmin
-} from '../workstream/fixtures';
+} from '../workstream';
 
 const fixtureMessageCapableAgentIds = ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy'];
 

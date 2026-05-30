@@ -4,12 +4,12 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-const fixtures = read('./workstream/fixtures/surfaces.ts');
-const me = read('./workstream/fixtures/me.ts');
-const workstream = read('./workstream/fixtures/workstream.ts');
+const fixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
+const me = read('./__tests__/fixtures/workstream/me.ts');
+const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const diff = read('./workstream/surfaces/GovernanceDiffSurface.tsx');
 const types = read('./workstream/types/surfaces.ts');
-const apiClient = read('./api/FixtureWorkstreamApiClient.ts');
+const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
 test('Governance/Policy v0 exposes contract capabilities, structured surfaces, and trace-linked actions', () => {
   for (const capability of [

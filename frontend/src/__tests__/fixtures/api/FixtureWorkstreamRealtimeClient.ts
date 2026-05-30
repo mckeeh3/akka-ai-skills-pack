@@ -1,6 +1,6 @@
-import type { WorkstreamRealtimeClient, WorkstreamRealtimeEventHandler, WorkstreamRealtimeStateHandler, WorkstreamRealtimeSubscription } from './WorkstreamRealtimeClient';
-import type { RealtimeConnectionState, WorkstreamEvent } from '../workstream/types';
-import { duplicateReplayEvent, outOfOrderEvent, workstreamEvents } from '../workstream/fixtures';
+import type { WorkstreamRealtimeClient, WorkstreamRealtimeEventHandler, WorkstreamRealtimeStateHandler, WorkstreamRealtimeSubscription } from '../../../api/WorkstreamRealtimeClient';
+import type { RealtimeConnectionState, WorkstreamEvent } from '../../../workstream/types';
+import { duplicateReplayEvent, outOfOrderEvent, workstreamEvents } from '../workstream';
 
 export class FixtureWorkstreamRealtimeClient implements WorkstreamRealtimeClient {
   private eventHandlers = new Set<WorkstreamRealtimeEventHandler>();

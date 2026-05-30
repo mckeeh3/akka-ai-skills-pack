@@ -1,5 +1,5 @@
-import type { RealtimeClient, RealtimeConnectionState, RealtimeEventHandler, RealtimeStateHandler, RealtimeSubscription } from './RealtimeClient';
-import type { RealtimeEvent, RealtimeTopic } from './types';
+import type { RealtimeClient, RealtimeConnectionState, RealtimeEventHandler, RealtimeStateHandler, RealtimeSubscription } from '../../../api/RealtimeClient';
+import type { RealtimeEvent, RealtimeTopic } from '../../../api/types';
 
 export class FixtureRealtimeClient implements RealtimeClient {
   private eventHandlers = new Set<RealtimeEventHandler>();

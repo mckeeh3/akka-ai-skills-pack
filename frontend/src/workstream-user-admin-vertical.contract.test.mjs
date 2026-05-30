@@ -4,11 +4,11 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-const agents = read('./workstream/fixtures/agents.ts');
-const me = read('./workstream/fixtures/me.ts');
-const surfaces = read('./workstream/fixtures/surfaces.ts');
-const workstream = read('./workstream/fixtures/workstream.ts');
-const apiClient = read('./api/FixtureWorkstreamApiClient.ts');
+const agents = read('./__tests__/fixtures/workstream/agents.ts');
+const me = read('./__tests__/fixtures/workstream/me.ts');
+const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
+const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
+const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 const httpApiClient = read('./api/HttpWorkstreamApiClient.ts');
 const main = read('./main.tsx');
 
@@ -134,7 +134,7 @@ test('workstream and API clients support five core markdown plus demo dashboard-
   assert.match(httpApiClient, /\/api\/workstream\/actions/);
   assert.match(httpApiClient, /X-Selected-Context-Id/);
   assert.match(main, /HttpWorkstreamApiClient/);
-  assert.match(main, /fixtureWorkstream/);
+  assert.doesNotMatch(main, /fixtureWorkstream/);
   assert.match(main, /result\.value\.resultSurface/);
   assert.match(main, /selectedSurfaceId: targetSurface\.surfaceId/);
 });

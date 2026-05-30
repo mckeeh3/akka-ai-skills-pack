@@ -30,8 +30,6 @@ import {
   type WorkstreamSelection
 } from './workstream';
 
-const fixtureWorkstreamEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_FIXTURE_WORKSTREAM === 'true';
-const useFixtureWorkstream = fixtureWorkstreamEnabled && new URLSearchParams(window.location.search).get('fixtureWorkstream') === '1';
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
 const hasConfiguredWorkosClient = typeof workosClientId === 'string' && workosClientId.startsWith('client_') && !workosClientId.includes('your_workos');
 
@@ -42,7 +40,7 @@ type BootstrapState =
   | { status: 'error'; message: string };
 
 const modeStorageKey = 'seed-ui-mode';
-// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · dev fixture client; Guarded · backend authority; production path uses HttpWorkstreamApiClient and WorkOS AuthKit getAccessToken.
+// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · backend configuration; Guarded · backend authority; runtime path uses HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, and WorkOS AuthKit getAccessToken.
 
 type WorkstreamAppProps = {
   tokenProvider?: TokenProvider;
@@ -565,28 +563,6 @@ function readStoredMode(): ModePreference {
 }
 
 
-function LocalInspectionWorkstreamApp() {
-  const [clients, setClients] = React.useState<WorkstreamAppProps['clients']>();
-  React.useEffect(() => {
-    let active = true;
-    Promise.all([
-      import('./api/FixtureWorkstreamApiClient'),
-      import('./api/FixtureWorkstreamRealtimeClient')
-    ]).then(([apiModule, realtimeModule]) => {
-      if (!active) return;
-      setClients({
-        workstream: new apiModule.FixtureWorkstreamApiClient(),
-        realtime: new realtimeModule.FixtureWorkstreamRealtimeClient()
-      });
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
-  if (!clients) return <main className="content workstream-panel"><p className="eyebrow">Local inspection client</p><h1>Loading workstream shell</h1></main>;
-  return <WorkstreamApp clients={clients} />;
-}
-
 function AuthenticatedRoot() {
   const { isLoading, user, signIn, signOut, getAccessToken } = useAuth();
   if (isLoading) return <div className="auth-gate"><p>Checking secure session…</p></div>;
@@ -596,7 +572,7 @@ function AuthenticatedRoot() {
         <h1>Sign in to continue</h1>
         <p>The AI-first SaaS workstream uses WorkOS/AuthKit for browser authentication. Backend capabilities remain authorized by local tenant membership and role state.</p>
         <button type="button" onClick={() => void signIn()}>Sign in with WorkOS</button>
-        <p className="auth-gate__hint">For frontend-only local inspection, run the Vite dev server and append the documented local inspection query. Production-like builds keep local inspection disabled unless explicitly enabled at build time.</p>
+        <p className="auth-gate__hint">The normal frontend runtime always uses real backend API and realtime clients. Fixture data and clients are test-only assets.</p>
       </div>
     );
   }
@@ -604,13 +580,12 @@ function AuthenticatedRoot() {
 }
 
 function Root() {
-  if (useFixtureWorkstream) return <LocalInspectionWorkstreamApp />;
   if (!hasConfiguredWorkosClient) {
     return (
       <div className="auth-gate">
         <h1>Configure WorkOS/AuthKit</h1>
         <p>Set <code>VITE_WORKOS_CLIENT_ID</code> and <code>VITE_WORKOS_REDIRECT_URI</code>, then rebuild the frontend to use real backend APIs.</p>
-        <p>For frontend-only local inspection, run the Vite dev server and append the documented local inspection query. Production-like builds keep local inspection disabled unless explicitly enabled at build time.</p>
+        <p>The normal frontend runtime does not provide a fixture mode. Tests keep fixture clients and data under test-only assets.</p>
       </div>
     );
   }

@@ -14,8 +14,8 @@ const readTemplateOrRenderedResource = (path) => {
   return read(`../../templates/ai-first-saas-starter/backend/src/main/resources/${path}`);
 };
 
-const surfaces = read('./workstream/fixtures/surfaces.ts');
-const workstream = read('./workstream/fixtures/workstream.ts');
+const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
+const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const seedManifest = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/manifest.properties');
 const expertiseBundle = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/user-admin-agent-expertise.yaml');

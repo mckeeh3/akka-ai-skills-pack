@@ -18,7 +18,7 @@ const shell = read('./workstream/shell/WorkstreamShell.tsx');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
 const agentTypes = read('./workstream/types/agents.ts');
-const agentFixtures = read('./workstream/fixtures/agents.ts');
+const agentFixtures = read('./__tests__/fixtures/workstream/agents.ts');
 const componentsCss = read('./styles/components.css');
 
 function loadTypeScriptExports(source) {

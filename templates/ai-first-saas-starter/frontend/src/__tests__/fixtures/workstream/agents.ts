@@ -1,4 +1,4 @@
-import type { FunctionalAgentSummary } from '../types';
+import type { FunctionalAgentSummary } from '../../../workstream/types';
 
 export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
   {

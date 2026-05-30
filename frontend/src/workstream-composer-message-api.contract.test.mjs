@@ -7,7 +7,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const main = read('./main.tsx');
 const apiContract = read('./api/WorkstreamApiClient.ts');
 const httpClient = read('./api/HttpWorkstreamApiClient.ts');
-const fixtureClient = read('./api/FixtureWorkstreamApiClient.ts');
+const fixtureClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const composer = read('./workstream/composer/WorkstreamComposer.tsx');
 const markdownSurface = read('./workstream/surfaces/MarkdownResponseSurface.tsx');

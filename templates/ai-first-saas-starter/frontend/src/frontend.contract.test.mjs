@@ -30,10 +30,10 @@ test('deep links select functional agents, stream items, and surfaces', () => {
 });
 
 test('workstream shell gates fixture contracts and uses capability action feedback', () => {
-  assert.match(main, /FixtureWorkstreamApiClient/);
-  assert.match(main, /fixtureWorkstreamEnabled/);
-  assert.match(main, /VITE_ENABLE_FIXTURE_WORKSTREAM/);
-  assert.match(main, /const useFixtureWorkstream = fixtureWorkstreamEnabled && new URLSearchParams/);
+  assert.doesNotMatch(main, /FixtureWorkstreamApiClient/);
+  assert.doesNotMatch(main, /fixtureWorkstreamEnabled/);
+  assert.doesNotMatch(main, /VITE_ENABLE_FIXTURE_WORKSTREAM/);
+  assert.doesNotMatch(main, /useFixtureWorkstream/);
   assert.doesNotMatch(main, /const ready = bootstrap\.status === 'ready' \? bootstrap : \{ status: 'ready'/);
   assert.match(main, /workstreamClient\.bootstrap\(\)/);
   assert.match(main, /handleSurfaceAction/);
@@ -46,7 +46,7 @@ test('workstream shell gates fixture contracts and uses capability action feedba
 });
 
 test('workstream entry gates fixture realtime client and wires stream state', () => {
-  assert.match(main, /FixtureWorkstreamRealtimeClient/);
+  assert.doesNotMatch(main, /FixtureWorkstreamRealtimeClient/);
   assert.match(main, /realtimeClient\.connect/);
   assert.match(main, /applyWorkstreamRealtimeEvent/);
   assert.match(main, /realtimeStatusLabel/);
@@ -104,7 +104,7 @@ test('status and command-strip components use tokenized semantic classes', () =>
   assert.match(components, /\.status-pill\.warning/);
   assert.match(components, /\.status-pill\.danger/);
   assert.match(main, /Ready .* workstream shell/);
-  assert.match(main, /Pending .* dev fixture client/);
+  assert.match(main, /Pending .* backend configuration/);
   assert.match(main, /Guarded .* backend authority/);
 });
 
