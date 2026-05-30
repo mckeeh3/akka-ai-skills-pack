@@ -32,6 +32,8 @@ test('Governance/Policy v0 exposes contract capabilities, structured surfaces, a
     'governancePolicyProposalSurface',
     'governancePolicySimulationSurface',
     'governancePolicyDecisionSurface',
+    'governancePolicyActivationBlockedSurface',
+    'governancePolicyRollbackBlockedSurface',
     'governancePolicyAnalysisTaskSurface',
     'governancePolicyDecisionTraceSurface'
   ]) {
@@ -74,10 +76,15 @@ test('Governance/Policy fixture client returns structured results for dashboard,
   assert.match(apiClient, /displayGovernancePolicyDashboardActionResult/);
   assert.match(apiClient, /displayGovernancePolicyInventoryActionResult/);
   assert.match(apiClient, /displayGovernancePolicySimulationActionResult/);
-  for (const actionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis']) {
+  for (const actionId of ['action-governance-policy-dashboard', 'action-governance-policy-list', 'action-governance-policy-draft-proposal', 'action-governance-policy-submit-proposal', 'action-governance-policy-simulate', 'action-governance-policy-decide', 'action-governance-policy-activate', 'action-governance-policy-rollback', 'action-governance-policy-start-impact-analysis']) {
     assert.match(fixtures, new RegExp(actionId));
   }
-  for (const routedActionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal']) {
+  for (const aliasActionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis', 'action-simulate-policy', 'action-commit-policy']) {
+    assert.match(fixtures, new RegExp(aliasActionId));
+  }
+  assert.match(fixtures, /surface-governance-policy-impact-analysis/);
+  assert.match(fixtures, /legacyAliasSurfaceId: 'surface-governance-policy-analysis-task'/);
+  for (const routedActionId of ['action-governance-policy-dashboard', 'action-governance-policy-list', 'action-governance-policy-draft-proposal', 'action-governance-policy-submit-proposal', 'action-governance-policy-simulate', 'action-governance-policy-decide', 'action-governance-policy-activate', 'action-governance-policy-rollback', 'action-governance-policy-start-impact-analysis', 'resolveGovernancePolicyActionId']) {
     assert.match(apiClient, new RegExp(routedActionId));
   }
 });

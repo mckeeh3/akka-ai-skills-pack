@@ -169,7 +169,7 @@
 
 ### TASK-FCSMB-GP-01-004: Align frontend Governance/Policy surfaces and actions
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
 - task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/04-align-frontend-governance-policy-surfaces.md
 - depends on: [TASK-FCSMB-GP-01-003]
@@ -198,6 +198,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: align governance policy frontend surfaces`
+  - completed: aligned Governance/Policy frontend action ids to backend runtime ids with legacy aliases, added proposal/decision/activation/rollback/impact-analysis action results and blocked system_message surfaces, updated fixture routing and vertical contract coverage.
+  - validation: frontend required npm contract command passed; targeted rg proof and git diff --check passed.
 
 ### TASK-FCSMB-GP-01-005: Implement GovernancePolicyAgent evidence tool and seed boundary
 
