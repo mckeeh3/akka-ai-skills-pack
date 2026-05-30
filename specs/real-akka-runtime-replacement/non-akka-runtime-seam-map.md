@@ -1,0 +1,91 @@
+# Non-Akka Normal-Runtime Seam Map
+
+Date: 2026-05-30
+
+## Decision applied
+
+The stricter replacement decision for this mini-project is: **normal generated-app runtime must use real Akka components for claimed starter workstream/foundation behavior.** Local-demo, fail-closed placeholder repositories, in-memory-style stores, fixture clients/data, mocks, fakes, canned/model-less success paths, and runtime switches that select them are allowed only in tests or explicitly test-only assets.
+
+This map is an inventory and follow-up-task refinement artifact. It does not implement the replacements.
+
+## Scan evidence
+
+Required broad scan:
+
+```bash
+rg -n "LocalDemo|InMemory|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" \
+  templates/ai-first-saas-starter/backend/src/main/java \
+  templates/ai-first-saas-starter/frontend/src \
+  templates/ai-first-saas-starter/README.md \
+  skills docs \
+  --glob '!**/node_modules/**' --glob '!**/target/**'
+```
+
+Required targeted listing:
+
+```bash
+find templates/ai-first-saas-starter/backend/src/main/java -type f \
+  \( -name 'LocalDemo*' -o -name 'FailClosed*' \) | sort
+find templates/ai-first-saas-starter/frontend/src -type f \
+  \( -iname '*Fixture*' -o -path '*/fixtures/*' \) | sort
+```
+
+The broad scan also found compliant doctrine/test guidance in `skills/**` and reference app-description examples. Those are not normal runtime seams unless noted in the documentation cleanup section.
+
+## Backend seam classification
+
+| Seam | Current source | Current normal-runtime risk | Classification | Akka replacement target | Follow-up task |
+|---|---|---|---|---|---|
+| Identity/account/profile/settings/membership/tenant/customer/admin-audit state | `LocalDemoIdentityRepository.java`, `FailClosedIdentityRepository.java`, `IdentityRepository.java`, `BootstrapAdminSeeder.java`, `AuthContextResolver.java`, `MeService.java`, `UserAdminService.java`, `InvitationService.java`, `StarterSecurityComponents.java` | `StarterSecurityComponents` owns a static `LocalDemoIdentityRepository`; `/api/me`, auth context resolution, user admin, invitation acceptance, and admin bootstrap depend on this local-demo state when allowed. `FailClosedIdentityRepository` is a placeholder, not an Akka replacement. | `replace-with-Akka-component`; delete/move local-demo/fail-closed adapters from main runtime after replacement | Add Akka-owned identity foundation: current-state Key Value Entities for `Account`, `UserProfile`, `UserSettings`, `Tenant`, `Customer`, `Membership`/role-capability assignments where only latest state is required; Event Sourced Entity or append-only entity for `AdminAuditEvent`; views for account by WorkOS subject/email, memberships by account/context, tenant/customer lookup, user directory, and audit search. Bind `AuthContextResolver`, `MeService`, `UserAdminService`, `InvitationService`, and bootstrap/admin import to these repositories through `ComponentClient`. | `TASK-RUNTIME-01-002` |
+| Admin bootstrap seeding | `BootstrapAdminSeeder.java`, `StarterSecurityComponents.seedDemoTenantAdmin()` | Seeds local-demo users into `LocalDemoIdentityRepository`; `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES` can create normal-looking local auth state. | `replace-with-Akka-component`; delete local-demo seed path from main runtime; keep test bootstrap in test source if needed | Replace with audited first-admin/bootstrap import capability writing through identity Akka components and audit entity. Missing `ADMIN_USERS` should fail closed for first-admin access without seeding demo identities. | `TASK-RUNTIME-01-002` |
+| Invitation state/outbox | `LocalDemoInvitationRepository.java`, `AkkaInvitationRepository.java`, `DurableInvitationRepositoryEntity.java`, `InvitationService.java`, `InvitationView.java`, `StarterSecurityComponents.java` | Akka seam exists, but default static field is `new LocalDemoInvitationRepository()` before binding; local-demo adapter remains importable/wirable in main source. | `replace-with-existing-Akka-component`; then move/delete local-demo adapter from main runtime | Make `AkkaInvitationRepository` + `DurableInvitationRepositoryEntity` the only normal binding. Add/keep views for invitation lookup/list/outbox status; consider Event Sourced Entity later if lifecycle history is claimed beyond current-state/outbox scope. | `TASK-RUNTIME-01-005`; final deletion in `TASK-RUNTIME-01-006` |
+| Workstream message log and surfaces | `LocalDemoWorkstreamLogRepository.java`, `FailClosedWorkstreamLogRepository.java`, `AkkaWorkstreamLogRepository.java`, `DurableWorkstreamLogEntity.java`, `WorkstreamLogRepository.java`, `WorkstreamService.java`, `StarterSecurityComponents.java` | `StarterSecurityComponents.workstreamLogRepository()` can select local-demo or fail-closed repository; `WorkstreamService` convenience constructors instantiate `LocalDemoWorkstreamLogRepository`. | `replace-with-existing-Akka-component`; delete/move local-demo/fail-closed adapters from main runtime after binding | Make `AkkaWorkstreamLogRepository` + `DurableWorkstreamLogEntity` the normal `ComponentClient` binding for message submission, idempotency, item history, and system surfaces. Add a WorkstreamLog view if current entity query methods are insufficient for list/search by tenant/context/functional agent. | `TASK-RUNTIME-01-003`; constructor cleanup in `TASK-RUNTIME-01-006` |
+| Audit/trace search/detail/timeline | `LocalDemoAuditTraceRepository.java`, `FailClosedAuditTraceRepository.java`, `AuditTraceRepository.java`, `AuditTraceService.java`, `WorkstreamService.java`, `StarterSecurityComponents.java`, agent trace sources | Local-demo repository synthesizes/searches traces from volatile workstream and agent trace stores; fail-closed adapter blocks instead of providing claimed audit surfaces. | `replace-with-Akka-component`; delete/move local-demo/fail-closed adapters from main runtime | Build an Akka-backed audit trace substrate: Event Sourced Entity or append-only event entity for audit/work trace facts; views for tenant/customer/correlation/trace id search, detail, and timeline. Project or compose durable `AgentRuntimeTraceEntity`, workstream log entries, identity/admin audit events, provider-blocked traces, and capability denials through `AuditTraceRepository`. | `TASK-RUNTIME-01-003` |
+| Agent runtime trace sink | `LocalDemoAgentRuntimeTraceSink.java`, `FailClosedAgentRuntimeTraceSink.java`, `AkkaAgentRuntimeTraceSink.java`, `AgentRuntimeTraceEntity.java`, `AgentRuntimeTraceView.java`, `AgentRuntimeService.java`, `StarterSecurityComponents.java` | `AgentRuntimeService` convenience constructors instantiate `LocalDemoAgentRuntimeTraceSink`; `StarterSecurityComponents.traceSinkBeforeAkkaBinding()` can return local-demo/fail-closed sink. | `replace-with-existing-Akka-component`; remove unsafe constructors or make test-only | Require an explicit durable `AgentRuntimeTraceSink` in normal service construction and bind `AkkaAgentRuntimeTraceSink` + `AgentRuntimeTraceEntity`/`AgentRuntimeTraceView` wherever `ComponentClient` exists. Keep local/demo sink only in test source if unit tests need it. | `TASK-RUNTIME-01-005`; constructor cleanup in `TASK-RUNTIME-01-006` |
+| Governed agent behavior records | `LocalDemoAgentBehaviorRepository.java`, `AkkaAgentBehaviorRepository.java`, `DurableAgentBehaviorRepositoryEntity.java`, individual behavior entities/views, `AgentBehaviorSeedLoader.java`, `AgentRuntimeService.java`, `AgentRuntimeToolResolver.java`, `StarterSecurityComponents.java` | Akka seams exist, but default static repository is `new LocalDemoAgentBehaviorRepository()` before binding; local-demo adapter remains production-importable. | `replace-with-existing-Akka-components`; delete/move local-demo adapter from main runtime | Make `AkkaAgentBehaviorRepository`, `DurableAgentBehaviorRepositoryEntity`, and the specialized AgentDefinition/Prompt/Skill/Reference/Manifest/ToolBoundary/Model views the only normal managed-agent behavior path. Seed defaults into Akka records during setup/bootstrap idempotently. | `TASK-RUNTIME-01-005`; final deletion in `TASK-RUNTIME-01-006` |
+| Workstream agent runtime invoker before ComponentClient binding | `FailClosedWorkstreamAgentRuntimeInvoker.java`, `DefaultWorkstreamAgentRuntimeInvoker.java`, `StarterSecurityComponents.workstreamService(...)`, `WorkstreamService` constructors | Fail-closed invoker is acceptable only as missing-ComponentClient/provider/security failure, but current service factory can produce a normal `WorkstreamService` with the fail-closed invoker and other non-Akka repositories. | `replace binding`; keep fail-closed only for explicit missing-provider/runtime denial, not as completed feature runtime | Normal endpoint setup should call the `ComponentClient` path and use `DefaultWorkstreamAgentRuntimeInvoker` with `WorkstreamRuntimeAgent`. Non-ComponentClient construction should be test-only or fail startup/readiness before claiming runtime success. | `TASK-RUNTIME-01-005`; cleanup in `TASK-RUNTIME-01-006` |
+| Access-review task lifecycle | `LocalDemoAccessReviewTaskRepository.java`, `FailClosedAccessReviewTaskRepository.java`, `AccessReviewTaskRepository.java`, `UserAdminAccessReviewService.java`, `UserAdminAccessReviewWorker.java`, `WorkstreamService.java`, `StarterSecurityComponents.java` | `WorkstreamService` constructors instantiate local-demo access-review repository; registry can select local-demo or fail-closed repository. Access-review surfaces can look durable without real Akka task state. | `replace-with-Akka-component`; delete/move local-demo/fail-closed adapters from main runtime | Add durable access-review task state: Key Value Entity for current task snapshot/idempotency at starter scope, or AutonomousAgent/Workflow plus Event Sourced Entity when real worker lifecycle/history is implemented. Add views for task by idempotency key and tenant-scoped task reads. | `TASK-RUNTIME-01-004` |
+| Governance policy proposal lifecycle | `LocalDemoGovernancePolicyRepository.java`, `FailClosedGovernancePolicyRepository.java`, `GovernancePolicyRepository.java`, `GovernancePolicyService.java`, `WorkstreamService.java`, `StarterSecurityComponents.java` | Registry can select local-demo/fail-closed policy repository; proposal/simulation/approval/rollback state is not Akka-backed. | `replace-with-Akka-component`; delete/move local-demo/fail-closed adapters from main runtime | Add Event Sourced Entity for proposal lifecycle if approval/activation/rollback history is part of the claim; use KVE only for current-state starter proposal snapshots with a separate audit event stream. Add views for proposals by tenant/customer/idempotency/status. | `TASK-RUNTIME-01-004` |
+| Idempotent capability action result cache | `WorkstreamService.idempotentActionResults = new ConcurrentHashMap<>()` | In-memory idempotency for workstream surface actions can lose idempotency on restart; coupled to normal runtime actions. | `replace-with-Akka-component` or fold into task/policy/invitation/workstream Akka state | Move idempotency to the owning Akka component per capability: invitation entity for invitation actions, access-review task entity for access-review starts/results, governance policy entity for policy actions, workstream log entity for message/surface system entries. | Covered by `TASK-RUNTIME-01-003` and `TASK-RUNTIME-01-004`; verify in `TASK-RUNTIME-99-001` |
+| Documentation comments in main backend source saying local/demo adapters are retained | `AkkaInvitationRepository.java`, `DurableInvitationRepositoryEntity.java`, `IdentityRepository.java`, `StarterSecurityComponents.java` | Comments normalize local/demo adapters as retained normal source assets. | `docs-only wording cleanup` plus source cleanup after replacement | After local-demo adapters move/delete, update comments to say test-only adapters live under test source and normal runtime binds Akka components. | `TASK-RUNTIME-01-008`; source deletion in `TASK-RUNTIME-01-006` |
+
+## Frontend seam classification
+
+| Seam | Current source | Current normal-runtime risk | Classification | Replacement target | Follow-up task |
+|---|---|---|---|---|---|
+| Fixture workstream mode switch | `templates/ai-first-saas-starter/frontend/src/main.tsx` | Runtime can dynamically import fixture workstream clients when `import.meta.env.DEV` or `VITE_ENABLE_FIXTURE_WORKSTREAM=true` and `?fixtureWorkstream=1`. Even though production-like builds disable it by default, it remains a runtime selection path in production source. | `move-to-test-only` | Remove fixture selection from production `main.tsx`. Keep local inspection in a separate dev/test entrypoint or test harness not imported by normal runtime. Normal root should use WorkOS/AuthKit + `HttpWorkstreamApiClient` + `HttpWorkstreamRealtimeClient` only. | `TASK-RUNTIME-01-007` |
+| Fixture API/realtime clients exported from production API index | `frontend/src/api/FixtureApiClient.ts`, `FixtureRealtimeClient.ts`, `FixtureWorkstreamApiClient.ts`, `FixtureWorkstreamRealtimeClient.ts`, `frontend/src/api/index.ts` | Fixture clients are exported by runtime index and can be imported by production code. | `move-to-test-only` | Move fixture clients under test fixtures or local-inspection-only module excluded from normal build exports. Remove exports from `src/api/index.ts`. | `TASK-RUNTIME-01-007` |
+| Fixture workstream data exported from production workstream index | `frontend/src/workstream/fixtures/**`, `frontend/src/workstream/index.ts` | `export * from './fixtures'` exposes fixture data from runtime workstream module; production imports can select fixture surfaces/items/me records. | `move-to-test-only` | Keep fixture data only under test assets or dev story/local inspection source; remove `export * from './fixtures'` from runtime index. Runtime surfaces/items must come from backend bootstrap/action/realtime APIs. | `TASK-RUNTIME-01-007` |
+| Fixture-copy and demo labels in fixture data | `frontend/src/workstream/fixtures/**/*.ts` | Acceptable only if fixtures become test-only. Not acceptable if bundled/exported in runtime. | `move-to-test-only` | Preserve as contract/test examples if still useful, but relocate or mark test-only. | `TASK-RUNTIME-01-007` |
+| Root frontend mirror | root `frontend/src/**` equivalents if mirror sync is needed | The template has a mirrored root frontend in this repository; if it still exports fixture runtime paths, template/root divergence can reintroduce fixture runtime behavior. | `move-to-test-only` if mirror is active; otherwise document no sync needed | Apply the same fixture quarantine to root `frontend/src/**` or record why it is not part of the maintained runtime mirror. | `TASK-RUNTIME-01-007` |
+
+## Documentation and skills scan classification
+
+| Area | Findings | Classification | Follow-up task |
+|---|---|---|---|
+| Starter README | Still describes explicit local/demo repositories, fail-closed foundation ports, and release-ready status under the prior compromise. It also says identity/access-review/audit/governance remain fail-closed unless local-demo is enabled. | `docs-only wording cleanup`; update after source replacement to the stricter bar | `TASK-RUNTIME-01-008` |
+| Skills doctrine | `skills/README.md`, `skills/app-description-readiness-assessment/SKILL.md`, `skills/app-description-ui/SKILL.md`, `skills/akka-agent-testing/SKILL.md`, and similar hits mostly already state mocks/fixtures are test-only and not completion proof. | `no replacement`; preserve, optionally align wording during doctrine cleanup | `TASK-RUNTIME-01-008` |
+| Testing skills | Consumer/view/agent testing skills mention mocked inputs/providers as test mechanics. | `test-only acceptable` | None unless wording implies runtime completion; scan did not show such implication. |
+| Reference app-description docs | Seed app-description examples use “demo/demonstrate” in reference context, not normal runtime adapters. | `reference/docs acceptable` | None. |
+
+## Follow-up task refinement
+
+The existing queue is accurate and bounded. No new task briefs are required from this map.
+
+Refinements for existing tasks:
+
+- `TASK-RUNTIME-01-002` should include a durable admin-audit/event target for identity foundation, not only account/profile/membership current-state records.
+- `TASK-RUNTIME-01-003` should treat `WorkstreamService.idempotentActionResults` as a non-Akka normal-runtime seam and move idempotency into owning Akka components.
+- `TASK-RUNTIME-01-004` should decide Event Sourced Entity vs Key Value Entity separately for governance proposals and access-review tasks; proposal approval/activation/rollback history likely justifies Event Sourced Entity.
+- `TASK-RUNTIME-01-005` should remove unsafe `AgentRuntimeService` constructors or make them test-only, not only rebind `StarterSecurityComponents`.
+- `TASK-RUNTIME-01-006` should fail the source scan if any `LocalDemo*` or `FailClosed*Repository`/`FailClosed*Sink` implementation remains under `backend/src/main/java` for claimed runtime state.
+- `TASK-RUNTIME-01-007` should remove fixture exports from runtime indexes and remove fixture dynamic imports from `main.tsx`; preserving fixture data is acceptable only under tests or a clearly excluded local-inspection entrypoint.
+- `TASK-RUNTIME-01-008` should supersede the prior `specs/full-core-smb-runtime-durability-remediation/` compromise language that allowed explicit local/demo repositories as release-ready normal source.
+
+## Replacement priority order
+
+1. Identity foundation and admin audit, because all authorization and `/api/me` behavior depends on it.
+2. Workstream log and audit trace, because user-visible workstream history and audit surfaces must survive through Akka state.
+3. Governance policy and access-review task state, because current normal source still models consequential work with local-demo/fail-closed repositories.
+4. Existing Akka-bound invitation, agent behavior, and runtime trace seams, because normal default constructors/static fields still allow local-demo paths despite existing Akka components.
+5. Backend cleanup scan, frontend fixture quarantine, doctrine/readiness cleanup, and terminal verification.

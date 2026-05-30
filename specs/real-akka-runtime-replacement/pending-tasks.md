@@ -49,7 +49,7 @@
 
 ### TASK-RUNTIME-01-001: Map non-Akka normal-runtime seams
 
-- status: pending
+- status: done
 - source: specs/real-akka-runtime-replacement/backlog/01-real-akka-runtime-replacement-build-backlog.md
 - task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/01-map-non-akka-runtime-seams.md
 - depends on: [TASK-RUNTIME-00-001]
@@ -79,6 +79,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `runtime: map non-Akka runtime seams`
+  - completed: wrote `specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md`; no new task briefs required; required scans recorded 588 broad matches plus targeted LocalDemo/FailClosed/fixture file listings for downstream replacement tasks
 
 ### TASK-RUNTIME-01-002: Replace identity foundation with Akka components
 
