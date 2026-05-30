@@ -119,7 +119,7 @@
 
 ### TASK-FCSMB-REL-01-003: Review visual UX and cross-workstream polish
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-polish-release-readiness/integrated-release-readiness-map.md
 - task brief: specs/full-core-smb-polish-release-readiness/tasks/01-release-readiness/03-review-visual-ux-polish.md
 - depends on: [TASK-FCSMB-REL-01-002]
@@ -147,6 +147,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: review visual release polish`
+  - visual review found no release blockers; one non-blocking manual viewport QA recommendation recorded
+  - checks passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `git diff --check`
 
 ### TASK-FCSMB-REL-01-004: Audit provider, trace, navigation, and secret boundaries
 
