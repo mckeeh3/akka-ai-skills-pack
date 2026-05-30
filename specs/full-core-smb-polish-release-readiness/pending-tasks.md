@@ -152,7 +152,7 @@
 
 ### TASK-FCSMB-REL-01-004: Audit provider, trace, navigation, and secret boundaries
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-polish-release-readiness/integrated-release-readiness-map.md
 - task brief: specs/full-core-smb-polish-release-readiness/tasks/01-release-readiness/04-audit-provider-trace-secret-boundaries.md
 - depends on: [TASK-FCSMB-REL-01-003]
@@ -180,6 +180,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: audit provider trace secret boundaries`
+  - audit found no release blockers; real-provider smoke skipped because `OPENAI_API_KEY` was intentionally unset; one non-blocking rendered production asset scan recommendation recorded
 
 ### TASK-FCSMB-REL-01-005: Update release docs and write handoff
 
