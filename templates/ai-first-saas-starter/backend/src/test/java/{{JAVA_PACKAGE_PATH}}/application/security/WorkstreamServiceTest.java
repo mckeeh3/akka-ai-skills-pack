@@ -549,6 +549,24 @@ class WorkstreamServiceTest {
     assertEquals("decision", guide.resultSurface().surfaceType());
     assertEquals("audit.trace.investigationGuide.v1", guide.resultSurface().data().get("surfaceContract"));
     assertTrue(guide.resultSurface().toString().contains("audit.trace.summaryTask.start"));
+    assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-start-summary-task")));
+  }
+
+  @Test
+  void auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists() {
+    var summary = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-start-summary-task", "audit.trace.summaryTask.start", Map.of("schedule", "weekly-owner-digest"), "idem-audit-summary", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-summary"));
+
+    assertEquals("blocked_provider_or_runtime", summary.status());
+    assertEquals("surface-audit-trace-summary-task", summary.resultSurface().surfaceId());
+    assertEquals("workflow-status", summary.resultSurface().surfaceType());
+    assertEquals("audit.trace.summaryTask.v1", summary.resultSurface().data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", summary.resultSurface().data().get("status"));
+    assertTrue(summary.resultSurface().toString().contains("AutonomousAgent"));
+    assertTrue(summary.resultSurface().toString().contains("noDirectMutation=true"));
+    assertTrue(summary.resultSurface().toString().contains("no model-less successful worker result"));
+    assertFalse(summary.resultSurface().toString().contains("completed"));
+    assertFalse(summary.resultSurface().toString().contains("acceptedResult"));
   }
 
   @Test

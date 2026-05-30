@@ -205,7 +205,7 @@
 
 ### TASK-FCSMB-AT-01-005: Decide Audit/Trace summary worker readiness
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
 - task brief: specs/full-core-smb-audit-trace/tasks/01-audit-trace/05-decide-audit-summary-worker-readiness.md
 - depends on:
@@ -237,6 +237,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: decide audit trace worker readiness`
+  - decision: Audit/Trace summary worker remains safely deferred/blocked for this mini-project; deterministic Audit/Trace foundations and AuditTraceAgent evidence tooling are present, but no real governed AutonomousAgent task runtime has been selected for scheduled audit summaries.
+  - implemented backend blocked readiness path for `audit.trace.summaryTask.start` returning `audit.trace.summaryTask.v1` `workflow-status` with `blocked_provider_or_runtime`, trace links, no-direct-mutation safety, and no model-less successful summary output.
+  - follow-up: create a separate bounded AutonomousAgent audit-summary worker mini-project if scheduled/durable summaries are still desired after integrated Audit/Trace validation.
+  - check note: targeted Maven command was attempted but the template POM still contains unresolved placeholders (`{{MAVEN_GROUP_ID}}`, `{{APP_SLUG}}`), so Maven cannot parse this uninstantiated template project; frontend targeted tests, required `rg` proof, and `git diff --check` completed.
 
 ### TASK-FCSMB-AT-01-006: Run integrated Audit/Trace validation
 
