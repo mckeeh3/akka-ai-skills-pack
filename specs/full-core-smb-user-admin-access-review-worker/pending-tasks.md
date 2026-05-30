@@ -205,7 +205,7 @@
 
 ### TASK-FCSMB-UARW-01-005: Run integrated access-review validation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/05-run-integrated-access-review-validation.md
 - depends on: [TASK-FCSMB-UARW-01-004]
@@ -235,6 +235,43 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: validate access review worker`
+  - checks: literal template backend Maven command is blocked by unreplaced `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}` placeholders.
+  - scaffolded backend equivalent passed (59 tests): `tools/scaffold-ai-first-saas-starter.sh --template-dir templates/ai-first-saas-starter --target /tmp/uarw-integrated-starter.t0bpeF --app-name "UARW Integrated Starter" --app-slug uarw-integrated-starter --base-package ai.first.uarw --maven-group-id ai.first --yes && cd /tmp/uarw-integrated-starter.t0bpeF && mvn test -Dtest=UserAdminAccessReviewServiceTest,UserAdminAccessReviewWorkerTest,WorkstreamServiceTest,InvitationAndUserAdminServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest`.
+  - checks: targeted frontend command passed (118 tests); required access-review `rg` proof passed.
+  - blocker: `tools/validate-ai-first-saas-starter-fullstack.sh` failed during frontend typecheck because `templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts` still references removed/renamed `userAdminSurfaceActions.approveRiskyAccess` at lines 1187 and 1278.
+  - follow-up appended before terminal verification: `TASK-FCSMB-UARW-01-006`.
+
+### TASK-FCSMB-UARW-01-006: Fix access-review frontend typecheck blocker
+
+- status: pending
+- source: TASK-FCSMB-UARW-01-005 integrated validation blocker
+- task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/06-fix-access-review-frontend-typecheck.md
+- depends on: [TASK-FCSMB-UARW-01-005]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-user-admin-access-review-worker/README.md
+  - specs/full-core-smb-user-admin-access-review-worker/conversation-capture.md
+  - specs/full-core-smb-user-admin-access-review-worker/sprints/01-access-review-worker-sprint.md
+  - specs/full-core-smb-user-admin-access-review-worker/backlog/01-access-review-worker-backlog.md
+  - specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+- skills:
+  - none; focused frontend validation-blocker fix
+- expected outputs:
+  - updated templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
+  - updated specs/full-core-smb-user-admin-access-review-worker/pending-tasks.md with check results
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-user-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/api.contract.test.mjs`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - frontend typecheck passes
+  - targeted frontend contract tests pass
+  - broad starter validation passes or any remaining blocker is captured with another bounded follow-up before terminal verification
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: fix access review frontend typecheck`
 
 ### TASK-FCSMB-UARW-99-001: Verify access-review worker readiness
 
@@ -247,6 +284,7 @@
   - TASK-FCSMB-UARW-01-003
   - TASK-FCSMB-UARW-01-004
   - TASK-FCSMB-UARW-01-005
+  - TASK-FCSMB-UARW-01-006
 - required reads:
   - AGENTS.md
   - skills/README.md
