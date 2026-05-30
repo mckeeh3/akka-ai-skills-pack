@@ -1,0 +1,388 @@
+# Pending Tasks: Real Akka Runtime Replacement
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `runtime: <short task title>`.
+
+## Tasks
+
+### TASK-RUNTIME-00-001: Create real Akka runtime replacement queue
+
+- status: done
+- source: user clarified all in-memory/defaults must be replaced with real Akka components; substitutes are allowed only in tests
+- task brief: specs/real-akka-runtime-replacement/tasks/00-planning/00-create-real-akka-runtime-replacement-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/pending-task-queue.md
+  - docs/pending-question-queue.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - specs/full-core-smb-runtime-durability-remediation/README.md
+  - specs/full-core-smb-runtime-durability-remediation/pending-tasks.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/conversation-capture.md
+  - specs/real-akka-runtime-replacement/pending-tasks.md
+  - specs/real-akka-runtime-replacement/sprints/*.md
+  - specs/real-akka-runtime-replacement/backlog/*.md
+  - specs/real-akka-runtime-replacement/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - terminal verification task exists
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: add real Akka replacement queue`
+
+### TASK-RUNTIME-01-001: Map non-Akka normal-runtime seams
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/backlog/01-real-akka-runtime-replacement-build-backlog.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/01-map-non-akka-runtime-seams.md
+- depends on: [TASK-RUNTIME-00-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/conversation-capture.md
+  - specs/real-akka-runtime-replacement/sprints/01-real-akka-runtime-replacement-sprint.md
+  - specs/real-akka-runtime-replacement/backlog/01-real-akka-runtime-replacement-build-backlog.md
+  - specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md
+  - templates/ai-first-saas-starter/README.md
+- skills:
+  - none; repository source-boundary inspection task
+- expected outputs:
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+  - updated specs/real-akka-runtime-replacement/pending-tasks.md if needed
+  - optional added task briefs for newly discovered bounded work
+- required checks:
+  - `git diff --check`
+  - `rg -n "LocalDemo|InMemory|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md skills docs --glob '!**/node_modules/**' --glob '!**/target/**'`
+  - targeted `find` listing backend main-source `LocalDemo*`, `FailClosed*`, and production fixture client files
+- done criteria:
+  - all remaining substitute paths in production-relevant source are classified
+  - each replacement has a named Akka component target or is explicitly test-only/delete/docs cleanup
+  - follow-up tasks are accurate and bounded
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: map non-Akka runtime seams`
+
+### TASK-RUNTIME-01-002: Replace identity foundation with Akka components
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/02-replace-identity-foundation-with-akka-components.md
+- depends on: [TASK-RUNTIME-01-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/IdentityRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/StarterSecurityComponents.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AuthContextResolver.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MeService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/UserAdminService.java
+- skills:
+  - akka-key-value-entity or akka-event-sourced-entity as selected by state/audit needs
+  - akka-view
+  - akka-http-endpoints when endpoint wiring changes
+- expected outputs:
+  - backend Akka entity/view/repository source for identity foundation
+  - updated `StarterSecurityComponents`/endpoint binding
+  - backend tests proving durable identity/membership `/api/me` and denial behavior
+  - updated queue notes
+- required checks:
+  - `git diff --check`
+  - rendered backend tests covering `MeService`, WorkOS resolver, user admin, tenant isolation, disabled user, role/scope denial
+  - `rg -n "LocalDemoIdentity|FailClosedIdentity|new LocalDemoIdentity|seedLocalDemoMember|AI_FIRST_SAAS_LOCAL_DEMO" templates/ai-first-saas-starter/backend/src/main/java`
+- done criteria:
+  - normal runtime identity foundation uses Akka components
+  - no main-source local-demo/fail-closed identity repository is wired or needed for claimed runtime behavior
+  - tests prove state survives through Akka component paths at the starter scope
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: replace identity foundation with Akka components`
+
+### TASK-RUNTIME-01-003: Replace workstream log and audit trace runtime with Akka components
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/03-replace-workstream-audit-runtime-with-akka-components.md
+- depends on: [TASK-RUNTIME-01-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamLogRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AkkaWorkstreamLogRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/DurableWorkstreamLogEntity.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AuditTraceRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AuditTraceService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+- skills:
+  - akka-event-sourced-entity or akka-key-value-entity as selected by trace/log history needs
+  - akka-view
+  - akka-http-endpoints
+- expected outputs:
+  - backend source updates for Akka-backed workstream log and audit trace repositories/views
+  - tests for message submission persistence, trace search/detail/timeline, cross-tenant denial, and provider fail-closed trace emission
+  - updated queue notes
+- required checks:
+  - `git diff --check`
+  - rendered backend tests covering WorkstreamService, workstream endpoints, audit trace entity/view/service, and agent runtime trace integration
+  - `rg -n "LocalDemoWorkstreamLog|FailClosedWorkstreamLog|LocalDemoAuditTrace|FailClosedAuditTrace|new LocalDemoWorkstreamLog|new LocalDemoAuditTrace" templates/ai-first-saas-starter/backend/src/main/java`
+- done criteria:
+  - workstream logs and audit traces use Akka components in normal runtime
+  - no normal-runtime local-demo/fail-closed log/trace repository remains in main source
+  - local runtime validation proves persisted workstream/audit behavior
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: replace workstream audit storage with Akka components`
+
+### TASK-RUNTIME-01-004: Replace governance policy and access-review runtime with Akka components
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/04-replace-governance-access-review-runtime-with-akka-components.md
+- depends on: [TASK-RUNTIME-01-003]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - docs/agent-component-selection-guide.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/GovernancePolicyRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/GovernancePolicyService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AccessReviewTaskRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/UserAdminAccessReviewService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/UserAdminAccessReviewWorker.java
+- skills:
+  - akka-event-sourced-entity or akka-key-value-entity as selected by lifecycle/audit needs
+  - akka-view
+  - akka-workflows or akka-autonomous-agents if durable task lifecycle requires them
+- expected outputs:
+  - backend Akka components/repositories/views for governance policy and access-review task state
+  - tests for proposal lifecycle, simulation, approval/rollback, access-review start/query/resolve, tenant isolation, idempotency, and trace behavior
+  - updated queue notes
+- required checks:
+  - `git diff --check`
+  - rendered backend tests covering GovernancePolicyService, WorkstreamService governance actions, UserAdminAccessReviewService/worker
+  - `rg -n "LocalDemoGovernancePolicy|FailClosedGovernancePolicy|LocalDemoAccessReview|FailClosedAccessReview|new LocalDemoGovernance|new LocalDemoAccessReview" templates/ai-first-saas-starter/backend/src/main/java`
+- done criteria:
+  - governance and access-review runtime state uses Akka components
+  - local-demo/fail-closed repositories are not wired in normal runtime
+  - tests prove capability-backed workstream actions read/write through Akka state
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: replace governance and access review with Akka components`
+
+### TASK-RUNTIME-01-005: Harden agent, invitation, and trace Akka bindings
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/05-harden-agent-invitation-trace-bindings.md
+- depends on: [TASK-RUNTIME-01-004]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AkkaInvitationRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/DurableInvitationRepositoryEntity.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AkkaAgentBehaviorRepository.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/DurableAgentBehaviorRepositoryEntity.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AkkaAgentRuntimeTraceSink.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/StarterSecurityComponents.java
+- skills:
+  - akka-key-value-entity
+  - akka-event-sourced-entity when lifecycle history gaps are found
+  - akka-view
+  - akka-agent-work-trace
+  - akka-agent-seed-documents
+- expected outputs:
+  - backend source updates for hard Akka bindings
+  - tests for seed import, invitation lifecycle/outbox, prompt/reference/skill loads, trace persistence/search, provider fail-closed behavior
+  - updated queue notes
+- required checks:
+  - `git diff --check`
+  - rendered backend tests for invitation, agent behavior seed loader, AgentRuntimeService, AgentRuntimeTraceSink, WorkstreamRuntimeAgent
+  - `rg -n "LocalDemo(Invitation|AgentBehavior|AgentRuntimeTrace)|FailClosedAgentRuntimeTrace|new LocalDemoAgentRuntimeTrace|new LocalDemoInvitation|new LocalDemoAgentBehavior" templates/ai-first-saas-starter/backend/src/main/java`
+- done criteria:
+  - normal runtime invitation, agent behavior, and agent trace paths are Akka-backed
+  - main-source default constructors cannot silently select local-demo/test storage
+  - tests use explicit test-only doubles or Akka test/runtime paths
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: harden agent invitation trace Akka bindings`
+
+### TASK-RUNTIME-01-006: Remove backend substitute adapters from main runtime
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/06-remove-backend-substitute-adapters-from-main-runtime.md
+- depends on: [TASK-RUNTIME-01-005]
+- required reads:
+  - AGENTS.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/StarterSecurityComponents.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java
+  - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
+- skills:
+  - none; focused source cleanup and test-quarantine task
+- expected outputs:
+  - deleted/moved backend substitute classes
+  - updated services/constructors/tests
+  - updated queue notes
+- required checks:
+  - `git diff --check`
+  - rendered backend test suite or targeted rendered backend tests covering changed areas
+  - `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|InMemory|FailClosed.*Repository|FailClosed.*Sink"` must return no production substitute adapters
+  - `rg -n "AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|new LocalDemo|new InMemory" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/README.md`
+- done criteria:
+  - main backend runtime source no longer contains substitute repository/sink implementations for claimed features
+  - tests still pass using Akka components or test-only fixtures
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: remove backend substitute adapters`
+
+### TASK-RUNTIME-01-007: Quarantine frontend fixtures to tests
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/07-quarantine-frontend-fixtures-to-tests.md
+- depends on: [TASK-RUNTIME-01-006]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - skills/app-description-ui/SKILL.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/api/index.ts
+  - templates/ai-first-saas-starter/frontend/src/api/FixtureWorkstreamApiClient.ts
+  - templates/ai-first-saas-starter/frontend/src/api/FixtureWorkstreamRealtimeClient.ts
+  - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/**
+  - root `frontend/src/**` equivalents if mirror sync is needed
+- skills:
+  - akka-web-ui-apps
+  - akka-web-ui-frontend-project
+- expected outputs:
+  - updated frontend entrypoint/client exports/tests
+  - moved or renamed fixture assets if needed
+  - updated static resources via build or cleaned stale output
+  - updated queue notes
+- required checks:
+  - `git diff --check`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build`
+  - root frontend checks if root mirror changes: `cd frontend && npm test -- --run && npm run typecheck && npm run build`
+  - `rg -n "fixtureWorkstream|FixtureWorkstream|FixtureApiClient|FixtureRealtimeClient|from './workstream/fixtures'|export \\* from './fixtures'" templates/ai-first-saas-starter/frontend/src --glob '!**/*.test.mjs' --glob '!**/__tests__/**'`
+- done criteria:
+  - production frontend runtime cannot use fixture clients/data
+  - fixtures are test-only and not exported from runtime indexes
+  - frontend checks pass
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: quarantine frontend fixtures to tests`
+
+### TASK-RUNTIME-01-008: Update doctrine and readiness for real Akka runtime replacement
+
+- status: pending
+- source: specs/real-akka-runtime-replacement/backlog/01-real-akka-runtime-replacement-build-backlog.md
+- task brief: specs/real-akka-runtime-replacement/tasks/01-runtime-replacement/08-update-doctrine-and-readiness-for-real-akka-runtime.md
+- depends on: [TASK-RUNTIME-01-007]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/minimum-ai-first-saas-app.md
+  - skills/app-description-readiness-assessment/SKILL.md
+  - skills/app-generate-app/SKILL.md
+  - skills/akka-prd-to-specs-backlog/SKILL.md
+  - skills/akka-do-next-pending-task/SKILL.md
+  - templates/ai-first-saas-starter/README.md
+  - specs/full-core-smb-runtime-durability-remediation/README.md
+  - specs/real-akka-runtime-replacement/README.md
+- skills:
+  - none; repository doctrine/readiness cleanup task
+- expected outputs:
+  - updated docs/skills/template README/specs as needed
+  - updated queue notes
+- required checks:
+  - `git diff --check`
+  - `rg -n "local/demo|in-memory adapter|default local|fixtureWorkstream|fixture client|mock runtime|optional hardening|replace .* in production" AGENTS.md pack/AGENTS.md skills docs templates/ai-first-saas-starter/README.md specs/full-core-smb-runtime-durability-remediation specs/real-akka-runtime-replacement --glob '!**/node_modules/**' --glob '!**/target/**'`
+- done criteria:
+  - guidance consistently says normal generated runtime uses real Akka components
+  - test-only substitutes remain allowed only in tests
+  - no docs imply local/demo runtime is acceptable for completed workstream features
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: update real Akka runtime doctrine`
+
+### TASK-RUNTIME-99-001: Verify real Akka runtime replacement
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/real-akka-runtime-replacement/tasks/99-verification/01-verify-real-akka-runtime-replacement.md
+- depends on:
+  - TASK-RUNTIME-01-001
+  - TASK-RUNTIME-01-002
+  - TASK-RUNTIME-01-003
+  - TASK-RUNTIME-01-004
+  - TASK-RUNTIME-01-005
+  - TASK-RUNTIME-01-006
+  - TASK-RUNTIME-01-007
+  - TASK-RUNTIME-01-008
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/real-akka-runtime-replacement/README.md
+  - specs/real-akka-runtime-replacement/conversation-capture.md
+  - specs/real-akka-runtime-replacement/pending-tasks.md
+  - specs/real-akka-runtime-replacement/sprints/01-real-akka-runtime-replacement-sprint.md
+  - specs/real-akka-runtime-replacement/backlog/01-real-akka-runtime-replacement-build-backlog.md
+  - specs/real-akka-runtime-replacement/tasks/**/*.md
+  - specs/real-akka-runtime-replacement/non-akka-runtime-seam-map.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - specs/real-akka-runtime-replacement/verification-notes.md
+  - updated specs/real-akka-runtime-replacement/pending-tasks.md
+  - optional new follow-up task briefs if verification finds gaps
+- required checks:
+  - `git diff --check`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - template frontend tests/typecheck/build
+  - root frontend tests/typecheck/build if root mirror changed
+  - scans proving no production runtime substitute paths remain
+- done criteria:
+  - mini-project goals and stricter user decision have been verified
+  - if incomplete, new bounded tasks and a new terminal verification task are appended
+  - if complete, verification notes record checks and no required follow-up work
+  - task changes and queue update are committed
+- notes:
+  - commit message: `runtime: verify real Akka runtime replacement`
