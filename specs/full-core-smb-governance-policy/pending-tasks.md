@@ -283,7 +283,7 @@
 
 ### TASK-FCSMB-GP-01-007: Run integrated Governance/Policy validation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
 - task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/07-run-governance-policy-integrated-validation.md
 - depends on: [TASK-FCSMB-GP-01-006]
@@ -317,6 +317,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: validate governance policy full core`
+  - completed: integrated Governance/Policy validation recorded; implementation group is ready for terminal verification with no new bounded follow-up tasks appended.
+  - validation: direct template Maven command is blocked by unresolved placeholders in `backend/pom.xml`; scaffolded targeted backend command runs `GovernancePolicyServiceTest` and `WorkstreamServiceTest` successfully, while isolated inclusion of `AdminEndpointIntegrationTest` still reproduces the pre-existing `no-local-account-or-invitation` selected-test blocker. Agent-runtime targeted backend tests passed. Frontend targeted contract command passed. Targeted `rg` proof and `git diff --check` passed. Broad `tools/validate-ai-first-saas-starter-fullstack.sh --keep` passed end-to-end, including scaffolded backend Maven tests, frontend tests/typecheck/build, static secret scan, and real provider smoke without provider-secret leaks.
 
 ### TASK-FCSMB-GP-99-001: Verify Governance/Policy full-core readiness
 
