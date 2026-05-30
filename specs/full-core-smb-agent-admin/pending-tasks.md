@@ -254,7 +254,7 @@
 
 ### TASK-FCSMB-AA-01-006: Validate integrated Agent Admin full-core slice and worker readiness
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
 - task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/06-validate-agent-admin-integration.md
 - depends on: [TASK-FCSMB-AA-01-005]
@@ -287,6 +287,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: validate agent admin integration`
+  - validation: direct source-template backend Maven command remains blocked by placeholder `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent targeted backend command passed with 94 tests, 0 failures/errors/skips.
+  - validation: required starter frontend contract command passed with 118 tests, 0 failures.
+  - validation: required Agent Admin/source proof `rg`, broad `tools/validate-ai-first-saas-starter-fullstack.sh`, and `git diff --check` passed; broad validation included backend Maven tests, frontend tests/typecheck/build, static secret scan, and real provider Akka Agent smoke.
+  - worker readiness decision: prompt-risk/behavior-review worker remains deferred for this mini-project completion path; deterministic Agent Admin reads/lifecycle/guidance are validated, but no durable Agent Admin worker normal success is claimed, and any future worker should be queued as a bounded follow-up that starts from governed task lifecycle, provider/tool-boundary readiness, and provider-blocked system_message semantics rather than a model-less success path.
 
 ### TASK-FCSMB-AA-99-001: Verify Agent Admin full-core readiness
 
