@@ -102,7 +102,7 @@
 
 ### TASK-FCSMB-GP-01-002: Implement deterministic backend Governance/Policy foundation
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
 - task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/02-implement-backend-governance-policy-foundation.md
 - depends on: [TASK-FCSMB-GP-01-001]
@@ -130,6 +130,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement governance policy backend foundation`
+  - completed: added deterministic GovernancePolicyService/repository/domain proposal foundation, WorkstreamService routing/dynamic surfaces, and service tests.
+  - validation: direct template Maven command is blocked by unresolved template placeholders in `backend/pom.xml`; scaffolded equivalent `mvn test -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest` passed. Scaffolded command including `AdminEndpointIntegrationTest` still fails in pre-existing AdminEndpoint tests with `no-local-account-or-invitation`, outside this task's Governance/Policy changes.
 
 ### TASK-FCSMB-GP-01-003: Implement Governance/Policy simulation and decision lifecycle
 

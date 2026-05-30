@@ -95,6 +95,7 @@ public final class WorkstreamService {
   private final AgentAdminService agentAdminService;
   private final AgentRuntimeService agentRuntimeService;
   private final AuditTraceService auditTraceService;
+  private final GovernancePolicyService governancePolicyService;
   private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
   private final WorkstreamLogRepository workstreamLogRepository;
   private final Map<String, CapabilityActionResult> idempotentActionResults = new ConcurrentHashMap<>();
@@ -148,6 +149,7 @@ public final class WorkstreamService {
     this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
     this.workstreamLogRepository = workstreamLogRepository;
     this.auditTraceService = new AuditTraceService(authContextResolver, new InMemoryAuditTraceRepository(agentRuntimeService, workstreamLogRepository));
+    this.governancePolicyService = new GovernancePolicyService(new InMemoryGovernancePolicyRepository(), authContextResolver, Clock.systemUTC());
   }
 
   public WorkstreamBootstrapResponse bootstrap(WorkosIdentity identity, String selectedContextId, String correlationId) {
@@ -263,12 +265,18 @@ public final class WorkstreamService {
       result = auditTraceReadResult(actor, "Investigation guidance returned backend-authorized next steps.", request.correlationId(), auditTraceInvestigationGuideSurface(actor, request.input(), request.correlationId()));
     } else if ("action-audit-trace-start-summary-task".equals(request.actionId())) {
       result = new CapabilityActionResult("blocked_provider_or_runtime", "Audit summary worker is deferred until a real governed AutonomousAgent task runtime, provider configuration, and tool-boundary lifecycle are implemented; no deterministic summary success was fabricated.", request.correlationId(), List.of("trace-audit-summary-worker-blocked"), auditTraceSummaryTaskBlockedSurface(actor, request.correlationId()));
-    } else if ("action-governance-policy-dashboard".equals(request.actionId()) || "action-governance-policy-list".equals(request.actionId()) || "action-governance-policy-read".equals(request.actionId())) {
-      result = governancePolicyReadResult(actor, "Governance/Policy evidence loaded for the selected AuthContext.", request.correlationId(), surfaceForAction(actor, request.actionId(), request.correlationId()));
+    } else if ("action-governance-policy-dashboard".equals(request.actionId())) {
+      result = governancePolicyReadResult(actor, "Governance/Policy dashboard loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDashboardSurface(actor, request.correlationId()));
+    } else if ("action-governance-policy-list".equals(request.actionId())) {
+      result = governancePolicyReadResult(actor, "Governance/Policy inventory loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyInventorySurface(actor, request.correlationId()));
+    } else if ("action-governance-policy-read".equals(request.actionId())) {
+      result = governancePolicyReadResult(actor, "Governance/Policy policy detail loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDetailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-governance-policy-draft-proposal".equals(request.actionId())) {
-      result = governancePolicyDraftProposal(actor, request);
+      var draft = governancePolicyService.draftProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
+      result = new CapabilityActionResult(draft.status(), draft.message(), request.correlationId(), draft.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), draft.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction())));
     } else if ("action-governance-policy-submit-proposal".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Policy proposal submitted for human review; no active authority changed.", request.correlationId(), List.of("trace-governance-policy-submit-" + stableSuffix(request.idempotencyKey())), governancePolicyProposalSurface(actor, request.correlationId(), "in_review", "Proposal is ready for an authorized governance approver."));
+      var submit = governancePolicyService.submitProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
+      result = new CapabilityActionResult(submit.status(), submit.message(), request.correlationId(), submit.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), submit.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction())));
     } else if ("action-governance-policy-simulate".equals(request.actionId()) || "action-simulate-policy".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Policy simulation completed deterministically; approval is still required before activation.", request.correlationId(), List.of("trace-governance-policy-simulate-" + stableSuffix(firstNonBlank(request.idempotencyKey(), request.correlationId()))), governancePolicySimulationSurface(actor, request.input(), request.correlationId()));
     } else if ("action-governance-policy-decide".equals(request.actionId())) {
@@ -502,8 +510,11 @@ public final class WorkstreamService {
   }
 
   private CapabilityActionResult governancePolicyReadResult(AuthContextResolver.ResolvedMe actor, String message, String correlationId, SurfaceEnvelope surface) {
-    authContextResolver.appendProtectedReadTrace(actor, GOVERNANCE_POLICY_READ_CAPABILITY, surface.surfaceId(), correlationId);
     return new CapabilityActionResult("accepted", message, correlationId, surface.traceIds(), surface);
+  }
+
+  private SurfaceEnvelope governancePolicyEnvelope(AuthContextResolver.ResolvedMe actor, String correlationId, GovernancePolicyService.SurfaceData surface, List<SurfaceAction> actions) {
+    return new SurfaceEnvelope(surface.surfaceId(), surface.surfaceType(), "v1", surface.title(), GOVERNANCE_POLICY_AGENT_ID, reusableAgentsForSurface(surface.surfaceId()), mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()), correlationId, surface.traceIds(), Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawInvitationToken", "rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload", "providerSecret")), surface.data(), actions, List.of(mapOf("label", "Open surface", "href", "/ui?surfaceId=" + surface.surfaceId(), "rel", "deep-link")));
   }
 
   private CapabilityActionResult governancePolicyDraftProposal(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request) {
@@ -520,20 +531,15 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope governancePolicySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    var traces = agentRuntimeService.traces().stream().filter(trace -> actor.selectedContext().tenantId().equals(trace.tenantId())).toList();
-    var proposals = agentRuntimeService.proposals().stream().filter(proposal -> actor.selectedContext().tenantId().equals(proposal.tenantId())).toList();
-    return envelope("surface-governance-policy-dashboard", "dashboard", "Governance/Policy dashboard", actor, correlationId,
-        mapOf("cards", List.of(mapOf("cardId", "card-active-policies", "label", "Active policy concepts", "value", 6, "severity", "info"), mapOf("cardId", "card-pending-proposals", "label", "Pending proposals", "value", proposals.size(), "severity", proposals.isEmpty() ? "info" : "warning"), mapOf("cardId", "card-runtime-traces", "label", "Policy/runtime traces", "value", traces.size(), "severity", traces.isEmpty() ? "info" : "warning")), "capabilityIds", List.of(GOVERNANCE_POLICY_READ_CAPABILITY, GOVERNANCE_POLICY_SIMULATE_CAPABILITY, GOVERNANCE_POLICY_PROPOSE_CAPABILITY, GOVERNANCE_POLICY_APPROVE_CAPABILITY, GOVERNANCE_POLICY_ACTIVATE_CAPABILITY, GOVERNANCE_POLICY_ROLLBACK_CAPABILITY), "attentionItems", List.of(mapOf("itemId", "provider-boundary", "label", "Provider/model boundary", "status", "fail-closed when unconfigured"), mapOf("itemId", "activation-gate", "label", "Activation gate", "status", "human approval required")), "traceLinks", traces.stream().limit(5).map(AgentRuntimeTrace::traceId).toList()),
-        List.of(governanceDashboardAction(), governanceListPoliciesAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), governanceStartImpactAnalysisAction(), openAuditAction()));
+    return governancePolicyDashboardSurface(actor, correlationId);
+  }
+
+  private SurfaceEnvelope governancePolicyDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.dashboard(actor, correlationId), List.of(governanceDashboardAction(), governanceListPoliciesAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), governanceStartImpactAnalysisAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope governancePolicyInventorySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return envelope("surface-governance-policy-inventory", "list-search", "Policy inventory", actor, correlationId,
-        mapOf("query", "tenant:" + actor.selectedContext().tenantId(), "rows", List.of(
-            governancePolicyRow("policy-agent-tool-boundary", "ToolPermissionBoundary grants", "active", "agent-governance-policy", List.of("agent.skills.read", "agent.references.read"), "trace-tool-boundary-governance"),
-            governancePolicyRow("policy-provider-fail-closed", "Provider fail-closed policy", "active", "starter-default-model-policy", List.of("agent.user_admin.use"), "trace-provider-fail-closed"),
-            governancePolicyRow("policy-human-approval", "Human approval for authority changes", "active", "governance-policy-workstream", List.of(GOVERNANCE_POLICY_APPROVE_CAPABILITY, GOVERNANCE_POLICY_ACTIVATE_CAPABILITY), "trace-human-approval")), "pageInfo", mapOf("totalKnownCount", 3), "redaction", "Prompt text, provider secrets, and raw tool payloads are omitted."),
-        List.of(governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), openAuditAction()));
+    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.inventory(actor, correlationId), List.of(governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), openAuditAction()));
   }
 
   private Map<String, Object> governancePolicyRow(String id, String name, String status, String source, List<String> capabilityIds, String traceId) {
@@ -541,17 +547,12 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope governancePolicyDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    validateGovernancePolicyInputScope(actor, input, correlationId);
-    var policyId = stringInput(input, "policyId", "policy-human-approval");
-    return envelope("surface-governance-policy-detail", "detail-edit", "Policy evidence detail", actor, correlationId,
-        mapOf("recordId", policyId, "recordLabel", policyId, "recordKind", "policy", "summary", "Browser-safe policy evidence for selected AuthContext only.", "fields", List.of(mapOf("fieldId", "status", "label", "Status", "value", "active", "editable", false), mapOf("fieldId", "authority", "label", "Authority source", "value", "backend AuthContext + ToolPermissionBoundary", "editable", false), mapOf("fieldId", "redaction", "label", "Redaction", "value", "raw prompts/provider secrets omitted", "editable", false)), "affectedCapabilityIds", List.of(GOVERNANCE_POLICY_READ_CAPABILITY, GOVERNANCE_POLICY_SIMULATE_CAPABILITY), "traceReferences", List.of("trace-" + policyId)),
-        List.of(governanceListPoliciesAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), openAuditAction()));
+    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.detail(actor, input, correlationId), List.of(governanceListPoliciesAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope governancePolicyProposalSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String state, String summary) {
-    return envelope("surface-governance-policy-proposal", "governance-diff", "Policy proposal", actor, correlationId,
-        mapOf("proposalId", "starter-governance-policy-review", "state", state, "summary", summary, "source", "backend-governance-policy-action", "risk", "medium", "requiredApproval", GOVERNANCE_POLICY_APPROVE_CAPABILITY, "beforeSummary", "Active policy remains unchanged.", "afterSummary", "Proposed governance change stays inert until approved and activated.", "changes", List.of(mapOf("path", "policy.activation", "before", "approved-only", "after", "backend activation command", "impact", "No authority changes before approval.")), "traceLinks", List.of(correlationId)),
-        List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction()));
+    var draft = governancePolicyService.draftProposal(actor, mapOf("rationale", summary, "title", "Governance policy proposal"), "surface-fallback-" + stableSuffix(correlationId + state), correlationId);
+    return governancePolicyEnvelope(actor, correlationId, draft.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope governancePolicySimulationSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
@@ -685,6 +686,11 @@ public final class WorkstreamService {
       case "surface-agent-behavior-proposal" -> agentBehaviorProposalSurface(actor, correlationId);
       case "surface-agent-admin-trace" -> agentAdminTraceSurface(actor, correlationId);
       case "surface-audit-trace-summary-task" -> auditTraceSummaryTaskBlockedSurface(actor, correlationId);
+      case "surface-governance-policy-dashboard" -> governancePolicyDashboardSurface(actor, correlationId);
+      case "surface-governance-policy-inventory" -> governancePolicyInventorySurface(actor, correlationId);
+      case "surface-governance-policy-detail" -> governancePolicyDetailSurface(actor, null, correlationId);
+      case "surface-governance-policy-proposal" -> governancePolicyProposalSurface(actor, correlationId, "draft", "Draft proposal is inert until review, simulation, approval, and activation.");
+      case "surface-governance-policy-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
       default -> null;
     };
   }
