@@ -49,4 +49,8 @@ public record AccessReviewTask(
   public AccessReviewTask withDecision(Status nextStatus, String nextDecision, String nextDecisionReason, List<String> nextTraceIds, Instant now) {
     return new AccessReviewTask(taskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, progressPercent, summary, blockerCode, nextDecision, nextDecisionReason, evidenceRefs, recommendationRefs, nextTraceIds, createdAt, now);
   }
+
+  public AccessReviewTask withWorkerUpdate(Status nextStatus, int nextProgressPercent, String nextSummary, String nextBlockerCode, List<String> nextEvidenceRefs, List<String> nextRecommendationRefs, List<String> nextTraceIds, Instant now) {
+    return new AccessReviewTask(taskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, nextProgressPercent, nextSummary, nextBlockerCode, decision, decisionReason, List.copyOf(nextEvidenceRefs == null ? List.of() : nextEvidenceRefs), List.copyOf(nextRecommendationRefs == null ? List.of() : nextRecommendationRefs), List.copyOf(nextTraceIds == null ? List.of() : nextTraceIds), createdAt, now);
+  }
 }

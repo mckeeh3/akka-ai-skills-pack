@@ -80,6 +80,20 @@ public final class UserAdminAccessReviewService {
     return cancelled;
   }
 
+  public AccessReviewTask recordWorkerResult(AuthContextResolver.ResolvedMe actor, String taskId, AccessReviewWorker.WorkerResult result, String correlationId) {
+    var task = task(actor, taskId);
+    userAdminService.requireAccessReviewManage(actor, task.scopeType(), task.tenantId(), task.customerId());
+    if (task.terminal()) {
+      userAdminService.auditAccessReview(actor, task, READ_CAPABILITY, AdminAuditEvent.Result.NO_OP, "worker-result-ignored-terminal", correlationId);
+      return task;
+    }
+    var status = result.status() == AccessReviewTask.Status.COMPLETED ? AccessReviewTask.Status.COMPLETED : AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME;
+    var updated = task.withWorkerUpdate(status, result.progressPercent(), result.summary(), result.blockerCode(), result.evidenceRefs(), result.recommendationRefs(), result.traceIds(), Instant.now(clock));
+    repository.save(updated);
+    userAdminService.auditAccessReview(actor, updated, READ_CAPABILITY, status == AccessReviewTask.Status.COMPLETED ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.DENIED, status == AccessReviewTask.Status.COMPLETED ? "worker-completed:no direct mutation" : "worker-blocked-fail-closed", correlationId);
+    return updated;
+  }
+
   public AccessReviewTask acceptResult(AuthContextResolver.ResolvedMe actor, String taskId, String reason, String correlationId) {
     return decide(actor, taskId, AccessReviewTask.Status.ACCEPTED, "accepted", reason, correlationId);
   }

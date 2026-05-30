@@ -129,7 +129,7 @@
 
 ### TASK-FCSMB-UARW-01-003: Implement governed access-review worker runtime
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-user-admin-access-review-worker/access-review-worker-implementation-map.md
 - task brief: specs/full-core-smb-user-admin-access-review-worker/tasks/01-access-review-worker/03-implement-governed-access-review-worker-runtime.md
 - depends on: [TASK-FCSMB-UARW-01-002]
@@ -164,6 +164,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: wire access review worker runtime`
+  - checks: literal template `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,UserAdminAccessReviewWorkerTest,WorkstreamServiceTest` is blocked by unreplaced `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}` placeholders.
+  - scaffolded check: `tools/scaffold-ai-first-saas-starter.sh --template-dir templates/ai-first-saas-starter --target /tmp/uarw-worker-starter.odOYdv --app-name "UARW Worker Starter" --app-slug uarw-worker-starter --base-package ai.first.uarw --maven-group-id ai.first --yes && cd /tmp/uarw-worker-starter.odOYdv && mvn test -Dtest=AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,UserAdminAccessReviewWorkerTest,WorkstreamServiceTest` passed (45 tests).
+  - required rg and `git diff --check` passed.
 
 ### TASK-FCSMB-UARW-01-004: Implement access-review frontend surfaces and actions
 
