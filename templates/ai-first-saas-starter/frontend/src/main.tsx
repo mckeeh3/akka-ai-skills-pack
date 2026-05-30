@@ -5,7 +5,12 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import { FixtureWorkstreamApiClient, FixtureWorkstreamRealtimeClient, HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, type ApiError, type TokenProvider, type WorkstreamClient, type WorkstreamRealtimeClient } from './api';
+import { HttpWorkstreamApiClient } from './api/HttpWorkstreamApiClient';
+import { HttpWorkstreamRealtimeClient } from './api/HttpWorkstreamRealtimeClient';
+import type { TokenProvider } from './api/HttpApiClient';
+import type { ApiError } from './api/types';
+import type { WorkstreamClient } from './api/WorkstreamApiClient';
+import type { WorkstreamRealtimeClient } from './api/WorkstreamRealtimeClient';
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
@@ -14,9 +19,6 @@ import { createWorkstreamVisualSessionKey, restoreOrCreateVisualSession, saveVis
 import { clearRailAttentionForAgent, defaultSelectableAgentId, recordUnseenRailResponse } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
-  canonicalSurfaceEnvelopes,
-  initialWorkstreamItems,
-  meTenantAdmin,
   type FunctionalAgentRailAttention,
   type FunctionalAgentRailAttentionStore,
   type MeResponse,
@@ -28,7 +30,8 @@ import {
   type WorkstreamSelection
 } from './workstream';
 
-const useFixtureWorkstream = new URLSearchParams(window.location.search).get('fixtureWorkstream') === '1';
+const fixtureWorkstreamEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_FIXTURE_WORKSTREAM === 'true';
+const useFixtureWorkstream = fixtureWorkstreamEnabled && new URLSearchParams(window.location.search).get('fixtureWorkstream') === '1';
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
 const hasConfiguredWorkosClient = typeof workosClientId === 'string' && workosClientId.startsWith('client_') && !workosClientId.includes('your_workos');
 
@@ -39,16 +42,17 @@ type BootstrapState =
   | { status: 'error'; message: string };
 
 const modeStorageKey = 'seed-ui-mode';
-// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · fixture client; Guarded · backend authority; production path uses HttpWorkstreamApiClient and WorkOS AuthKit getAccessToken.
+// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · dev fixture client; Guarded · backend authority; production path uses HttpWorkstreamApiClient and WorkOS AuthKit getAccessToken.
 
 type WorkstreamAppProps = {
   tokenProvider?: TokenProvider;
   onSignOut?: () => void;
+  clients?: { workstream: WorkstreamClient; realtime: WorkstreamRealtimeClient };
 };
 
-function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
-  const workstreamClient = React.useMemo<WorkstreamClient>(() => useFixtureWorkstream ? new FixtureWorkstreamApiClient() : new HttpWorkstreamApiClient(tokenProvider), [tokenProvider]);
-  const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => useFixtureWorkstream ? new FixtureWorkstreamRealtimeClient() : new HttpWorkstreamRealtimeClient(), []);
+function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps) {
+  const workstreamClient = React.useMemo<WorkstreamClient>(() => clients?.workstream ?? new HttpWorkstreamApiClient(tokenProvider), [clients, tokenProvider]);
+  const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => clients?.realtime ?? new HttpWorkstreamRealtimeClient(), [clients]);
   const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
@@ -101,9 +105,9 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
     };
   }, []);
 
-  const ready = bootstrap.status === 'ready' ? bootstrap : { status: 'ready' as const, me: meTenantAdmin, items: initialWorkstreamItems, surfaces: canonicalSurfaceEnvelopes as SurfaceEnvelope<unknown>[] };
-  const me = ready.me;
-  const selectedFunctionalAgentId = selection.selectedFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status);
+  const ready = bootstrap.status === 'ready' ? bootstrap : undefined;
+  const me = ready?.me;
+  const selectedFunctionalAgentId = me ? selection.selectedFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status) : undefined;
   const selectedFunctionalAgentIdRef = React.useRef<string | undefined>(selectedFunctionalAgentId);
 
   React.useEffect(() => {
@@ -111,23 +115,23 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }, [selectedFunctionalAgentId]);
 
   const selectedSessionKey = selectedFunctionalAgentId ? createWorkstreamVisualSessionKey({
-    accountId: me.account.accountId,
-    selectedContextId: me.selectedAuthContext.selectedContextId,
+    accountId: me?.account.accountId ?? 'bootstrap-loading',
+    selectedContextId: me?.selectedAuthContext.selectedContextId ?? 'bootstrap-loading',
     functionalAgentId: selectedFunctionalAgentId,
     workstreamId: selectedFunctionalAgentId
   }) : undefined;
   const currentVisualSession = selectedFunctionalAgentId ? restoreOrCreateVisualSession({
     store: visualSessionsByKey,
-    accountId: me.account.accountId,
-    selectedContextId: me.selectedAuthContext.selectedContextId,
+    accountId: me?.account.accountId ?? 'bootstrap-loading',
+    selectedContextId: me?.selectedAuthContext.selectedContextId ?? 'bootstrap-loading',
     functionalAgentId: selectedFunctionalAgentId,
     workstreamId: selectedFunctionalAgentId,
-    items: ready.items.filter((item) => item.functionalAgentId === selectedFunctionalAgentId)
+    items: ready?.items.filter((item) => item.functionalAgentId === selectedFunctionalAgentId) ?? []
   }) : undefined;
   const selectedSurfaceId = selection.selectedSurfaceId ?? currentVisualSession?.selectedSurfaceId;
   const selectedItems = buildVisibleWorkstreamItems(
-    ready.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId),
-    ready.surfaces,
+    ready?.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId) ?? [],
+    ready?.surfaces ?? [],
     selectedFunctionalAgentId,
     selectedSurfaceId
   );
@@ -181,21 +185,22 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   function sessionForAgent(functionalAgentId: string): WorkstreamVisualSession {
+    if (!ready || !me) throw new Error('Workstream session requested before backend bootstrap completed.');
     return restoreOrCreateVisualSession({
       store: visualSessionsByKey,
-      accountId: me.account.accountId,
-      selectedContextId: me.selectedAuthContext.selectedContextId,
+      accountId: me?.account.accountId ?? 'bootstrap-loading',
+      selectedContextId: me?.selectedAuthContext.selectedContextId ?? 'bootstrap-loading',
       functionalAgentId,
       workstreamId: functionalAgentId,
-      items: ready.items.filter((item) => item.functionalAgentId === functionalAgentId)
+      items: ready?.items.filter((item) => item.functionalAgentId === functionalAgentId) ?? []
     });
   }
 
   function setRequestScrollTargetForCurrentSession(targetId: string, functionalAgentId = selectedFunctionalAgentId) {
-    if (!functionalAgentId) return;
+    if (!functionalAgentId || !me) return;
     const sessionKey = createWorkstreamVisualSessionKey({
-      accountId: me.account.accountId,
-      selectedContextId: me.selectedAuthContext.selectedContextId,
+      accountId: me?.account.accountId ?? 'bootstrap-loading',
+      selectedContextId: me?.selectedAuthContext.selectedContextId ?? 'bootstrap-loading',
       functionalAgentId,
       workstreamId: functionalAgentId
     });
@@ -235,6 +240,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   function selectAgent(functionalAgentId: string) {
+    if (!ready) return;
     const restoredSession = sessionForAgent(functionalAgentId);
     const restoredSurface = restoredSession.selectedSurfaceId ?? surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
     clearRailAttention(functionalAgentId);
@@ -244,6 +250,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   function openSurface(surfaceId: string) {
+    if (!ready) return;
     const surface = ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
     if (!surface) return;
     appendSurfaceRequestAndResponse(surface, `Show ${surface.title}`);
@@ -287,6 +294,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   async function handleSurfaceAction(action: SurfaceAction, surfaceId: string) {
+    if (!ready || !me) return;
     const request = buildCapabilityActionRequest(action, {
       selectedContextId: me.selectedAuthContext.selectedContextId,
       surfaceId,
@@ -339,6 +347,7 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
   }
 
   async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
+    if (!ready) return false;
     const submittedAt = Date.now();
     const pendingItemId = `composer-submitting-${submittedAt}`;
     const correlationId = `corr-composer-${submittedAt.toString(36)}`;
@@ -434,6 +443,10 @@ function WorkstreamApp({ tokenProvider, onSignOut }: WorkstreamAppProps) {
 
   if (bootstrap.status === 'error') {
     return <main className="content workstream-panel"><p className="eyebrow">Real API client error</p><h1>Could not load workstream shell</h1><p>{bootstrap.message}</p></main>;
+  }
+
+  if (!ready || !me) {
+    return <main className="content workstream-panel"><p className="eyebrow">Real API client</p><h1>Loading workstream shell</h1></main>;
   }
 
   const currentRequestScrollTargetId = selectedSessionKey ? requestScrollTargetBySessionKey[selectedSessionKey] : undefined;
@@ -551,6 +564,29 @@ function readStoredMode(): ModePreference {
   return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
 }
 
+
+function LocalInspectionWorkstreamApp() {
+  const [clients, setClients] = React.useState<WorkstreamAppProps['clients']>();
+  React.useEffect(() => {
+    let active = true;
+    Promise.all([
+      import('./api/FixtureWorkstreamApiClient'),
+      import('./api/FixtureWorkstreamRealtimeClient')
+    ]).then(([apiModule, realtimeModule]) => {
+      if (!active) return;
+      setClients({
+        workstream: new apiModule.FixtureWorkstreamApiClient(),
+        realtime: new realtimeModule.FixtureWorkstreamRealtimeClient()
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+  if (!clients) return <main className="content workstream-panel"><p className="eyebrow">Local inspection client</p><h1>Loading workstream shell</h1></main>;
+  return <WorkstreamApp clients={clients} />;
+}
+
 function AuthenticatedRoot() {
   const { isLoading, user, signIn, signOut, getAccessToken } = useAuth();
   if (isLoading) return <div className="auth-gate"><p>Checking secure session…</p></div>;
@@ -560,7 +596,7 @@ function AuthenticatedRoot() {
         <h1>Sign in to continue</h1>
         <p>The AI-first SaaS workstream uses WorkOS/AuthKit for browser authentication. Backend capabilities remain authorized by local tenant membership and role state.</p>
         <button type="button" onClick={() => void signIn()}>Sign in with WorkOS</button>
-        <p className="auth-gate__hint">For frontend-only inspection, append <code>?fixtureWorkstream=1</code>.</p>
+        <p className="auth-gate__hint">For frontend-only local inspection, run the Vite dev server and append the documented local inspection query. Production-like builds keep local inspection disabled unless explicitly enabled at build time.</p>
       </div>
     );
   }
@@ -568,13 +604,13 @@ function AuthenticatedRoot() {
 }
 
 function Root() {
-  if (useFixtureWorkstream) return <WorkstreamApp />;
+  if (useFixtureWorkstream) return <LocalInspectionWorkstreamApp />;
   if (!hasConfiguredWorkosClient) {
     return (
       <div className="auth-gate">
         <h1>Configure WorkOS/AuthKit</h1>
         <p>Set <code>VITE_WORKOS_CLIENT_ID</code> and <code>VITE_WORKOS_REDIRECT_URI</code>, then rebuild the frontend to use real backend APIs.</p>
-        <p>Append <code>?fixtureWorkstream=1</code> to inspect the workstream UI without provider configuration.</p>
+        <p>For frontend-only local inspection, run the Vite dev server and append the documented local inspection query. Production-like builds keep local inspection disabled unless explicitly enabled at build time.</p>
       </div>
     );
   }

@@ -11,7 +11,9 @@ const components = readFileSync(new URL('./styles/components.css', import.meta.u
 test('frontend entry composes the canonical workstream shell instead of route pages', () => {
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /<WorkstreamStream/);
-  assert.match(main, /meTenantAdmin/);
+  assert.doesNotMatch(main, /meTenantAdmin/);
+  assert.doesNotMatch(main, /initialWorkstreamItems/);
+  assert.doesNotMatch(main, /canonicalSurfaceEnvelopes/);
   assert.doesNotMatch(main, /function RouteShell/);
   assert.doesNotMatch(main, /function SidebarNav/);
   assert.doesNotMatch(main, /from '.\/screens\//);
@@ -27,10 +29,12 @@ test('deep links select functional agents, stream items, and surfaces', () => {
   assert.match(main, /window\.history\.pushState/);
 });
 
-test('workstream shell uses fixture contracts and capability action feedback', () => {
+test('workstream shell gates fixture contracts and uses capability action feedback', () => {
   assert.match(main, /FixtureWorkstreamApiClient/);
-  assert.match(main, /canonicalSurfaceEnvelopes/);
-  assert.match(main, /initialWorkstreamItems/);
+  assert.match(main, /fixtureWorkstreamEnabled/);
+  assert.match(main, /VITE_ENABLE_FIXTURE_WORKSTREAM/);
+  assert.match(main, /const useFixtureWorkstream = fixtureWorkstreamEnabled && new URLSearchParams/);
+  assert.doesNotMatch(main, /const ready = bootstrap\.status === 'ready' \? bootstrap : \{ status: 'ready'/);
   assert.match(main, /workstreamClient\.bootstrap\(\)/);
   assert.match(main, /handleSurfaceAction/);
   assert.match(main, /runCapabilityAction/);
@@ -41,7 +45,7 @@ test('workstream shell uses fixture contracts and capability action feedback', (
   assert.match(main, /buildCapabilityActionRequest/);
 });
 
-test('workstream entry wires fixture realtime client into stream state', () => {
+test('workstream entry gates fixture realtime client and wires stream state', () => {
   assert.match(main, /FixtureWorkstreamRealtimeClient/);
   assert.match(main, /realtimeClient\.connect/);
   assert.match(main, /applyWorkstreamRealtimeEvent/);
@@ -100,7 +104,7 @@ test('status and command-strip components use tokenized semantic classes', () =>
   assert.match(components, /\.status-pill\.warning/);
   assert.match(components, /\.status-pill\.danger/);
   assert.match(main, /Ready .* workstream shell/);
-  assert.match(main, /Pending .* fixture client/);
+  assert.match(main, /Pending .* dev fixture client/);
   assert.match(main, /Guarded .* backend authority/);
 });
 

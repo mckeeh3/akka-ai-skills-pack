@@ -273,7 +273,7 @@
 }
 
 .notification-summary,
-.fixture-defer-note {
+.local-defer-note {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-soft);
@@ -282,7 +282,7 @@
   font-size: 0.875rem;
 }
 
-.fixture-defer-note {
+.local-defer-note {
   margin: 0;
   line-height: 1.45;
 }

@@ -18,8 +18,8 @@ const realtime = read('./workstream/realtime/workstreamEvents.ts');
 test('Mission Control legacy screen is quarantined while the app entry uses the workstream shell', () => {
   assert.ok(existsSync(new URL('./screens/briefing/BriefingPage.tsx', import.meta.url)));
   assert.match(main, /<WorkstreamShell/);
-  assert.match(main, /initialWorkstreamItems/);
-  assert.match(main, /canonicalSurfaceEnvelopes/);
+  assert.doesNotMatch(main, /initialWorkstreamItems/);
+  assert.doesNotMatch(main, /canonicalSurfaceEnvelopes/);
   assert.match(workstreamShell, /FunctionalAgentRail/);
   assert.match(workstreamShell, /WorkstreamComposer/);
   assert.match(panel, /Workstream interaction flow|workstream-flow/);

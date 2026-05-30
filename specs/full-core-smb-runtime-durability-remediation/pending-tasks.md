@@ -150,7 +150,7 @@
 
 ### TASK-FCSMB-DUR-01-004: Gate frontend fixtures and refresh static assets
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md
 - task brief: specs/full-core-smb-runtime-durability-remediation/tasks/01-remediation/04-gate-frontend-fixtures-and-static-assets.md
 - depends on: [TASK-FCSMB-DUR-01-003]
@@ -180,7 +180,41 @@
   - static resources match updated source or are intentionally cleaned
   - task changes and queue update are committed
 - notes:
+  - template frontend validation passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build`
+  - static resource scan passed with no matches: `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
+  - root frontend mirror was updated for gating, but root mirror validation remains blocked by pre-existing drift in root-only User Admin expertise/resource/type contracts; follow-up TASK-FCSMB-DUR-01-004A was appended before final validation
   - commit message: `full-core-smb: gate frontend fixtures`
+
+### TASK-FCSMB-DUR-01-004A: Resolve root frontend mirror check drift
+
+- status: pending
+- source: TASK-FCSMB-DUR-01-004 root frontend validation failure
+- task brief: specs/full-core-smb-runtime-durability-remediation/tasks/01-remediation/04a-resolve-root-frontend-mirror-check-drift.md
+- depends on: [TASK-FCSMB-DUR-01-004]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-runtime-durability-remediation/README.md
+  - specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md
+  - specs/full-core-smb-runtime-durability-remediation/tasks/01-remediation/04-gate-frontend-fixtures-and-static-assets.md
+  - frontend/src/workstream-user-admin-expertise.contract.test.mjs
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - frontend/src/workstream/fixtures/surfaces.ts
+  - frontend/src/workstream/types/actions.ts
+  - frontend/src/api/FixtureWorkstreamApiClient.ts
+- skills:
+  - none; focused repository source remediation task
+- expected outputs:
+  - updated root frontend source/tests or documented no-sync rationale
+  - updated specs/full-core-smb-runtime-durability-remediation/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `cd frontend && npm test -- --run && npm run typecheck && npm run build` or documented no-sync rationale
+- done criteria:
+  - root frontend mirror check failures from task 01-004 are resolved or explicitly removed from remediation scope with rationale
+  - follow-on validation dependencies are accurate
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: resolve root frontend mirror drift`
 
 ### TASK-FCSMB-DUR-01-005: Validate durability remediation and update release handoff
 
@@ -191,6 +225,7 @@
   - TASK-FCSMB-DUR-01-002
   - TASK-FCSMB-DUR-01-003
   - TASK-FCSMB-DUR-01-004
+  - TASK-FCSMB-DUR-01-004A
 - required reads:
   - AGENTS.md
   - specs/full-core-smb-runtime-durability-remediation/README.md
@@ -227,6 +262,7 @@
   - TASK-FCSMB-DUR-01-002
   - TASK-FCSMB-DUR-01-003
   - TASK-FCSMB-DUR-01-004
+  - TASK-FCSMB-DUR-01-004A
   - TASK-FCSMB-DUR-01-005
 - required reads:
   - AGENTS.md

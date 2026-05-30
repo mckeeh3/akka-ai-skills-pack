@@ -67,7 +67,7 @@ test('visual sessions are keyed by account, selected auth context, functional ag
 test('workstream shell restores per-workstream in-memory visual state on agent switch without browser or backend persistence', () => {
   assert.match(main, /useState<WorkstreamVisualSessionStore>\(\{\}\)/);
   assert.match(main, /requestScrollTargetBySessionKey/);
-  assert.match(main, /createWorkstreamVisualSessionKey\(\{\s*accountId: me\.account\.accountId,\s*selectedContextId: me\.selectedAuthContext\.selectedContextId,/s);
+  assert.match(main, /createWorkstreamVisualSessionKey\(\{\s*accountId: me\?\.account\.accountId \?\? 'bootstrap-loading',\s*selectedContextId: me\?\.selectedAuthContext\.selectedContextId \?\? 'bootstrap-loading',/s);
   assert.match(main, /restoreOrCreateVisualSession\(\{\s*store: visualSessionsByKey,/s);
   assert.match(main, /const restoredSession = sessionForAgent\(functionalAgentId\)/);
   assert.match(main, /const restoredSurface = restoredSession\.selectedSurfaceId \?\? surfaceForAgent/);

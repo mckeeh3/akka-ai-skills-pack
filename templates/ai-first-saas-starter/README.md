@@ -151,7 +151,7 @@ tools/smoke-ai-first-saas-starter-real-model.sh
 
 The starter's Akka model-provider config intentionally keeps `temperature` and `top-p` at OpenAI default-compatible values because some supported OpenAI models reject non-default sampling overrides. Keep any future sampling overrides model-specific.
 
-Then open the Akka-hosted frontend at `http://localhost:9000/` or `http://localhost:9000/ui` depending on the local Akka port. Use `?fixtureWorkstream=1` only to inspect the frontend fixture mode; normal starter testing should exercise `/api/workstream/...` backend APIs.
+Then open the Akka-hosted frontend at `http://localhost:9000/` or `http://localhost:9000/ui` depending on the local Akka port. Normal starter testing should exercise `/api/workstream/...` backend APIs. Frontend-only inspection data is available only through the Vite dev server, or through a build explicitly created with `VITE_ENABLE_FIXTURE_WORKSTREAM=true`; production-like static resources omit that local inspection path.
 
 ## Local environment and AuthKit bootstrap
 
