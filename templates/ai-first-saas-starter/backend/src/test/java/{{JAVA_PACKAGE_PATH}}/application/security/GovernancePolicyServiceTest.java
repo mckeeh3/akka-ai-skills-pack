@@ -95,6 +95,66 @@ class GovernancePolicyServiceTest {
   }
 
   @Test
+  void simulationDecisionActivationRollbackAreScopedIdempotentAndFailClosed() {
+    var actor = resolver.resolveMe(identity(), "membership-admin", "corr-gov-lifecycle");
+    var draft = service.draftProposal(actor, Map.of("rationale", "tighten approval copy", "proposedContent", "activate authority only after human approval"), "idem-gov-lifecycle-draft", "corr-gov-lifecycle-draft");
+    var proposalId = draft.surface().data().get("proposalId").toString();
+    var submitted = service.submitProposal(actor, Map.of("proposalId", proposalId), "idem-gov-lifecycle-submit", "corr-gov-lifecycle-submit");
+    assertEquals("in_review", submitted.surface().data().get("state"));
+
+    var simulation = service.simulateProposal(actor, Map.of("proposalId", proposalId), "corr-gov-lifecycle-sim");
+    assertEquals("accepted", simulation.status());
+    assertEquals("surface-governance-policy-simulation", simulation.surface().surfaceId());
+    assertTrue(simulation.surface().toString().contains("advisory deterministic simulation"));
+    assertTrue(simulation.surface().toString().contains("model cannot self-approve"));
+
+    var activationBeforeDecision = service.activateProposal(actor, Map.of("proposalId", proposalId, "rollbackReference", "rollback metadata v1"), "idem-gov-activate-early", "corr-gov-activate-early");
+    assertEquals("approval-required", activationBeforeDecision.status());
+    assertTrue(activationBeforeDecision.surface().toString().contains("rollback metadata"));
+
+    var decision = service.decideProposal(actor, Map.of("proposalId", proposalId, "decision", "approve", "rationale", "bounded human approval"), "idem-gov-decision", "corr-gov-decision");
+    assertEquals("accepted", decision.status());
+    assertEquals("approved", decision.surface().data().get("status"));
+    assertTrue(decision.surface().toString().contains("governance.policy.approve"));
+
+    var duplicateDecision = service.decideProposal(actor, Map.of("proposalId", proposalId, "decision", "reject", "rationale", "ignored replay"), "idem-gov-decision-2", "corr-gov-decision-replay");
+    assertEquals("no-op", duplicateDecision.status());
+    assertTrue(duplicateDecision.message().contains("idempotency/no-op"));
+
+    var activation = service.activateProposal(actor, Map.of("proposalId", proposalId, "rollbackReference", "rollback metadata v1"), "idem-gov-activate", "corr-gov-activate");
+    assertEquals("accepted", activation.status());
+    assertTrue(activation.surface().toString().contains("activated-with-rollback-metadata"));
+    assertFalse(activation.surface().toString().contains("api_key="));
+
+    var duplicateActivation = service.activateProposal(actor, Map.of("proposalId", proposalId, "rollbackReference", "ignored"), "idem-gov-activate-2", "corr-gov-activate-replay");
+    assertEquals("no-op", duplicateActivation.status());
+
+    var rollback = service.rollbackProposal(actor, Map.of("proposalId", proposalId), "idem-gov-rollback", "corr-gov-rollback");
+    assertEquals("accepted", rollback.status());
+    assertEquals("rolled_back", rollback.surface().data().get("status"));
+  }
+
+  @Test
+  void rejectionBlocksActivationAndRollbackRequiresActivatedProposal() {
+    var actor = resolver.resolveMe(identity(), "membership-admin", "corr-gov-reject");
+    var draft = service.draftProposal(actor, Map.of("rationale", "unsafe expansion", "proposedContent", "grant broad tool authority"), "idem-gov-reject-draft", "corr-gov-reject-draft");
+    var proposalId = draft.surface().data().get("proposalId").toString();
+    service.submitProposal(actor, Map.of("proposalId", proposalId), "idem-gov-reject-submit", "corr-gov-reject-submit");
+
+    var rejection = service.decideProposal(actor, Map.of("proposalId", proposalId, "decision", "reject", "rationale", "too broad"), "idem-gov-reject", "corr-gov-reject");
+    assertEquals("accepted", rejection.status());
+    assertEquals("rejected", rejection.surface().data().get("status"));
+
+    var activation = service.activateProposal(actor, Map.of("proposalId", proposalId, "rollbackReference", "rollback metadata v1"), "idem-gov-reject-activate", "corr-gov-reject-activate");
+    assertEquals("approval-required", activation.status());
+    assertTrue(activation.surface().toString().contains("Approved proposal"));
+
+    var rollback = service.rollbackProposal(actor, Map.of("proposalId", proposalId), "idem-gov-reject-rollback", "corr-gov-reject-rollback");
+    assertEquals("blocked-runtime", rollback.status());
+    assertTrue(rollback.surface().toString().contains("blocked-runtime"));
+  }
+
+  @Test
   void memberAndCrossTenantInputsAreDeniedBeforeEvidenceLeakage() {
     var member = resolver.resolveMe(memberIdentity(), "membership-member", "corr-member");
     var denied = assertThrows(AuthorizationException.class, () -> service.inventory(member, "corr-member-gov"));

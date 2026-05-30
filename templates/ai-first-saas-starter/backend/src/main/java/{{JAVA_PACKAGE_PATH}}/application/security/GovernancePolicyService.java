@@ -16,8 +16,10 @@ public final class GovernancePolicyService {
   public static final String PROPOSAL_DRAFT_CAPABILITY = "governance.policy.proposal.draft";
   public static final String PROPOSAL_SUBMIT_CAPABILITY = "governance.policy.proposal.submit";
   public static final String PROPOSAL_READ_CAPABILITY = "governance.policy.proposal.read";
+  public static final String SIMULATE_CAPABILITY = "governance.policy.simulate";
   public static final String LEGACY_PROPOSE_CAPABILITY = "governance.policy.propose";
   public static final String APPROVE_CAPABILITY = "governance.policy.approve";
+  public static final String REJECT_CAPABILITY = "governance.policy.reject";
   public static final String ACTIVATE_CAPABILITY = "governance.policy.activate";
   public static final String ROLLBACK_CAPABILITY = "governance.policy.rollback";
   private static final List<String> OMITTED_FIELDS = List.of("rawPrompt", "hiddenPromptText", "rawProviderCredential", "rawToolPayload", "providerSecret", "api_key");
@@ -99,12 +101,18 @@ public final class GovernancePolicyService {
         safe(rationale),
         safe(proposedContent),
         classifyRisk(proposedContent),
-        List.of(READ_CAPABILITY, "governance.policy.simulate", APPROVE_CAPABILITY, ACTIVATE_CAPABILITY),
+        List.of(READ_CAPABILITY, SIMULATE_CAPABILITY, APPROVE_CAPABILITY, ACTIVATE_CAPABILITY),
         List.of("governance-policy-workstream", "ToolPermissionBoundary", "AgentDefinition"),
         APPROVE_CAPABILITY,
         "rollback metadata required before activation; no direct mutation in draft or submit",
         idempotencyKey,
         correlationId,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         now,
         now);
@@ -127,9 +135,64 @@ public final class GovernancePolicyService {
   public SurfaceData readProposal(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     validateScope(actor, input, correlationId);
     requireRead(actor, PROPOSAL_READ_CAPABILITY, correlationId);
-    var proposalId = stringInput(input, "proposalId", null);
-    var proposal = proposalId == null ? repository.listProposals(actor.selectedContext().tenantId(), actor.selectedContext().customerId()).stream().findFirst() : repository.findProposal(actor.selectedContext().tenantId(), actor.selectedContext().customerId(), proposalId);
-    return proposal.map(value -> proposal(actor, value, correlationId)).orElseGet(() -> validation("proposalId", "No authorized proposal found for selected AuthContext.", correlationId).surface());
+    var proposal = findScopedProposal(actor, input);
+    return proposal == null ? validation("proposalId", "No authorized proposal found for selected AuthContext.", correlationId).surface() : proposal(actor, proposal, correlationId);
+  }
+
+  public ActionResult simulateProposal(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    validateScope(actor, input, correlationId);
+    requireVisible(actor, SIMULATE_CAPABILITY, correlationId);
+    authContextResolver.appendProtectedReadTrace(actor, SIMULATE_CAPABILITY, "governance policy simulation", correlationId);
+    var proposal = findScopedProposal(actor, input);
+    if (proposal == null) return validation("proposalId", "Simulation requires a tenant-scoped proposal; no direct mutation or model-owned authority is allowed.", correlationId);
+    return action("accepted", "Policy simulation completed deterministically; approval is still required before activation.", simulation(actor, proposal, correlationId), List.of(trace("simulation", correlationId)));
+  }
+
+  public ActionResult decideProposal(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
+    validateScope(actor, input, correlationId);
+    requireVisible(actor, APPROVE_CAPABILITY, correlationId);
+    if (idempotencyKey == null || idempotencyKey.isBlank()) return validation("idempotencyKey", "Governance decisions require a client-generated idempotency key.", correlationId);
+    var proposal = findScopedProposal(actor, input);
+    if (proposal == null) return validation("proposalId", "Approval or rejection requires a tenant-scoped submitted proposal.", correlationId);
+    var decision = stringInput(input, "decision", "approve").toLowerCase();
+    var rationale = safe(stringInput(input, "rationale", "Human governance review recorded."));
+    if (proposal.status() == GovernancePolicyProposal.Status.APPROVED || proposal.status() == GovernancePolicyProposal.Status.REJECTED) {
+      return action("no-op", "Governance decision was already recorded; idempotency/no-op preserved and no direct mutation occurred.", decision(actor, proposal, correlationId), List.of(trace("decision-noop", correlationId)));
+    }
+    if (proposal.status() != GovernancePolicyProposal.Status.IN_REVIEW) return action("approval-required", "Proposal must be submitted for review before approval or rejection.", systemMessage("approval-required", "approval-required", "Submitted proposal is required before a governance decision.", APPROVE_CAPABILITY, correlationId), List.of(trace("decision-blocked", correlationId)));
+    var decided = "reject".equals(decision) ? proposal.rejected(rationale, correlationId, Instant.now(clock)) : proposal.approved(rationale, correlationId, Instant.now(clock));
+    repository.saveProposal(decided);
+    authContextResolver.appendProtectedReadTrace(actor, APPROVE_CAPABILITY, "governance policy decision", correlationId);
+    return action("approved".equals(decided.decision()) ? "accepted" : "accepted", "Governance decision recorded as human approval/rejection evidence; activation remains a separate backend command.", decision(actor, decided, correlationId), List.of(trace("decision", correlationId)));
+  }
+
+  public ActionResult activateProposal(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
+    validateScope(actor, input, correlationId);
+    requireVisible(actor, ACTIVATE_CAPABILITY, correlationId);
+    if (idempotencyKey == null || idempotencyKey.isBlank()) return validation("idempotencyKey", "Activation requires a client-generated idempotency key.", correlationId);
+    var proposal = findScopedProposal(actor, input);
+    if (proposal == null) return action("approval-required", "Policy activation is blocked until an approved proposal, authority check, idempotency key, and rollback reference are present.", activationBlocked(correlationId, "No authorized proposal was found for activation."), List.of(trace("activation-blocked", correlationId)));
+    if (proposal.status() == GovernancePolicyProposal.Status.ACTIVATED) return action("no-op", "Policy activation was already recorded; idempotency/no-op preserved.", decision(actor, proposal, correlationId), List.of(trace("activation-noop", correlationId)));
+    var rollbackReference = stringInput(input, "rollbackReference", null);
+    if (proposal.status() != GovernancePolicyProposal.Status.APPROVED || rollbackReference == null || rollbackReference.isBlank()) {
+      return action("approval-required", "Policy activation is blocked until an approved proposal, authority check, idempotency key, and rollback reference are present.", activationBlocked(correlationId, "Approved proposal and rollback metadata are required before activation."), List.of(trace("activation-blocked", correlationId)));
+    }
+    var activated = repository.saveProposal(proposal.activated(safe(rollbackReference), correlationId, Instant.now(clock)));
+    authContextResolver.appendProtectedReadTrace(actor, ACTIVATE_CAPABILITY, "governance policy activation", correlationId);
+    return action("accepted", "Approved Governance/Policy proposal activated by backend-owned deterministic lifecycle with rollback metadata; no model or frontend state granted authority.", decision(actor, activated, correlationId), List.of(trace("activation", correlationId)));
+  }
+
+  public ActionResult rollbackProposal(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
+    validateScope(actor, input, correlationId);
+    requireVisible(actor, ROLLBACK_CAPABILITY, correlationId);
+    if (idempotencyKey == null || idempotencyKey.isBlank()) return validation("idempotencyKey", "Rollback requires a client-generated idempotency key.", correlationId);
+    var proposal = findScopedProposal(actor, input);
+    if (proposal == null || proposal.status() != GovernancePolicyProposal.Status.ACTIVATED || proposal.rollbackReference() == null || proposal.rollbackReference().isBlank()) {
+      return action("blocked-runtime", "Rollback requires an activated proposal with stored rollback metadata; this starter fails closed instead of fabricating rollback state.", rollbackBlocked(correlationId), List.of(trace("rollback-blocked", correlationId)));
+    }
+    var rolledBack = repository.saveProposal(proposal.rolledBack(correlationId, Instant.now(clock)));
+    authContextResolver.appendProtectedReadTrace(actor, ROLLBACK_CAPABILITY, "governance policy rollback", correlationId);
+    return action("accepted", "Governance/Policy rollback recorded through backend-owned deterministic lifecycle.", decision(actor, rolledBack, correlationId), List.of(trace("rollback", correlationId)));
   }
 
   private SurfaceData proposal(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
@@ -149,10 +212,67 @@ public final class GovernancePolicyService {
         "beforeSummary", "Active policy remains unchanged.",
         "afterSummary", "Proposed governance change stays inert until simulation, human approval, activation, and rollback metadata checks.",
         "changes", List.of(mapOf("path", proposal.targetPolicyId(), "before", "active policy unchanged", "after", proposal.proposedContent(), "impact", "No authority changes before approval.")),
-        "idempotency", mapOf("draftIdempotencyKey", proposal.idempotencyKey(), "submitIsNoOpWhenAlreadyInReview", true),
+        "idempotency", mapOf("draftIdempotencyKey", proposal.idempotencyKey(), "submitIsNoOpWhenAlreadyInReview", true, "decisionActivationRollbackNoOp", true),
+        "decision", mapOf("decision", proposal.decision(), "rationale", proposal.decisionRationale(), "decisionTraceId", proposal.decisionCorrelationId(), "activationTraceId", proposal.activationCorrelationId(), "rollbackReference", proposal.rollbackReference(), "rollbackTraceId", proposal.rollbackCorrelationId()),
         "traceLinks", List.of(trace("proposal", correlationId)),
         "redaction", mapOf("omittedFieldKeys", OMITTED_FIELDS, "browserSafe", true),
         "noDirectMutation", true));
+  }
+
+  private SurfaceData simulation(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
+    return surface("surface-governance-policy-simulation", "governance-diff", "Policy simulation", correlationId, mapOf(
+        "surfaceContract", "governance.policy.simulation.v1",
+        "simulationId", "sim-" + stableSuffix(correlationId),
+        "proposalId", proposal.proposalId(),
+        "tenantId", actor.selectedContext().tenantId(),
+        "customerId", actor.selectedContext().customerId(),
+        "state", "advisory",
+        "simulation", "advisory deterministic simulation; no direct mutation and no model-owned authority",
+        "affectedCapabilities", proposal.affectedCapabilityIds(),
+        "affectedArtifacts", proposal.affectedArtifactRefs(),
+        "expectedDenials", List.of("model cannot self-approve", "prompt text cannot grant tool access", "cross-tenant evidence is omitted", "activation denied until human approval and rollback metadata exist"),
+        "expectedAllows", List.of("authorized read-only policy inventory", "authorized simulation evidence", "human approval by actor with " + APPROVE_CAPABILITY),
+        "warnings", List.of("Activation still requires approved proposal, idempotency key, current proposal status, and rollback metadata.", "Simulation output is advisory and cannot grant authority."),
+        "confidence", "bounded-starter",
+        "evidenceTraceLinks", List.of(trace("simulation", correlationId), proposal.createdCorrelationId()),
+        "traceLinks", List.of(trace("simulation", correlationId)),
+        "noDirectMutation", true,
+        "redaction", "browser-safe simulation; provider secrets, hidden prompt text, and raw tool payloads omitted"));
+  }
+
+  private SurfaceData decision(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
+    return surface("surface-governance-policy-decision", "decision", "Governance decision", correlationId, mapOf(
+        "surfaceContract", "governance.policy.decision.v1",
+        "decisionId", "decision-" + stableSuffix(firstNonBlank(proposal.decisionCorrelationId(), correlationId)),
+        "proposalId", proposal.proposalId(),
+        "status", proposal.status().name().toLowerCase(),
+        "decision", proposal.decision(),
+        "actor", actor.account().accountId(),
+        "authorityBasis", APPROVE_CAPABILITY,
+        "rationale", proposal.decisionRationale(),
+        "result", proposal.status() == GovernancePolicyProposal.Status.ACTIVATED ? "activated-with-rollback-metadata" : proposal.status().name().toLowerCase(),
+        "rollback metadata", proposal.rollbackReference() == null ? "required before activation" : proposal.rollbackReference(),
+        "auditCorrelationId", correlationId,
+        "traceLinks", List.of(trace("decision", correlationId)),
+        "noDirectMutation", true));
+  }
+
+  private SurfaceData activationBlocked(String correlationId, String reason) {
+    return systemMessage("surface-governance-policy-activation-blocked", "approval-required", reason + " Approved proposal, current version, activation target, rollback metadata, backend authority, and idempotency are required.", ACTIVATE_CAPABILITY, correlationId);
+  }
+
+  private SurfaceData rollbackBlocked(String correlationId) {
+    return systemMessage("surface-governance-policy-rollback-blocked", "blocked-runtime", "Rollback requires an activated proposal with stored rollback metadata; no deterministic or model-less rollback success is fabricated.", ROLLBACK_CAPABILITY, correlationId);
+  }
+
+  private SurfaceData systemMessage(String surfaceId, String status, String message, String capability, String correlationId) {
+    return new SurfaceData(surfaceId, "system_message", "Governance/Policy " + status, List.of(trace(status, correlationId)), mapOf("surfaceContract", "governance.policy.system_message.v1", "status", status, "message", message, "severity", "warning", "requiredCapabilityId", capability, "system_message", true, "sideEffect", "none", "traceLinks", List.of(trace(status, correlationId)), "redaction", "browser-safe", "noDirectMutation", true));
+  }
+
+  private GovernancePolicyProposal findScopedProposal(AuthContextResolver.ResolvedMe actor, Object input) {
+    var proposalId = stringInput(input, "proposalId", null);
+    if (proposalId == null) return repository.listProposals(actor.selectedContext().tenantId(), actor.selectedContext().customerId()).stream().findFirst().orElse(null);
+    return repository.findProposal(actor.selectedContext().tenantId(), actor.selectedContext().customerId(), proposalId).orElse(null);
   }
 
   private void requireRead(AuthContextResolver.ResolvedMe actor, String capability, String correlationId) {
@@ -227,6 +347,11 @@ public final class GovernancePolicyService {
 
   private static String stableSuffix(String value) {
     return Integer.toUnsignedString(Objects.requireNonNullElse(value, "governance-policy").hashCode(), 36);
+  }
+
+  private static String firstNonBlank(String... values) {
+    for (var value : values) if (value != null && !value.isBlank()) return value;
+    return "governance-policy";
   }
 
   private static String trace(String label, String correlationId) {

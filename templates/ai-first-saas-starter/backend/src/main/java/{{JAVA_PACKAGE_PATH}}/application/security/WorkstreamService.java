@@ -278,13 +278,17 @@ public final class WorkstreamService {
       var submit = governancePolicyService.submitProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(submit.status(), submit.message(), request.correlationId(), submit.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), submit.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction())));
     } else if ("action-governance-policy-simulate".equals(request.actionId()) || "action-simulate-policy".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Policy simulation completed deterministically; approval is still required before activation.", request.correlationId(), List.of("trace-governance-policy-simulate-" + stableSuffix(firstNonBlank(request.idempotencyKey(), request.correlationId()))), governancePolicySimulationSurface(actor, request.input(), request.correlationId()));
+      var simulation = governancePolicyService.simulateProposal(actor, request.input(), request.correlationId());
+      result = new CapabilityActionResult(simulation.status(), simulation.message(), request.correlationId(), simulation.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), simulation.surface(), List.of(governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction())));
     } else if ("action-governance-policy-decide".equals(request.actionId())) {
-      result = new CapabilityActionResult("approval-required", "Governance decision recorded as human approval/rejection evidence; activation remains a separate backend command.", request.correlationId(), List.of("trace-governance-policy-decision-" + stableSuffix(request.idempotencyKey())), governancePolicyDecisionSurface(actor, request.input(), request.correlationId()));
+      var decision = governancePolicyService.decideProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
+      result = new CapabilityActionResult(decision.status(), decision.message(), request.correlationId(), decision.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), decision.surface(), List.of(governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction())));
     } else if ("action-governance-policy-activate".equals(request.actionId()) || "action-commit-policy".equals(request.actionId())) {
-      result = new CapabilityActionResult("approval-required", "Policy activation is blocked until an approved proposal, authority check, idempotency key, and rollback reference are present.", request.correlationId(), List.of("trace-governance-policy-activation-blocked-" + stableSuffix(request.idempotencyKey())), governancePolicyActivationBlockedSurface(actor, request.correlationId()));
+      var activation = governancePolicyService.activateProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
+      result = new CapabilityActionResult(activation.status(), activation.message(), request.correlationId(), activation.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), activation.surface(), List.of(governanceRollbackPolicyAction(), openAuditAction())));
     } else if ("action-governance-policy-rollback".equals(request.actionId())) {
-      result = new CapabilityActionResult("blocked-runtime", "Rollback requires an activated proposal with stored rollback metadata; this starter fails closed instead of fabricating rollback state.", request.correlationId(), List.of("trace-governance-policy-rollback-blocked-" + stableSuffix(request.idempotencyKey())), governancePolicyRollbackBlockedSurface(actor, request.correlationId()));
+      var rollback = governancePolicyService.rollbackProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
+      result = new CapabilityActionResult(rollback.status(), rollback.message(), request.correlationId(), rollback.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), rollback.surface(), List.of(governanceListPoliciesAction(), openAuditAction())));
     } else if ("action-governance-policy-start-impact-analysis".equals(request.actionId())) {
       result = new CapabilityActionResult("blocked-runtime", "Durable Governance/Policy impact analysis requires AutonomousAgent task lifecycle, provider, and tool-boundary configuration; this starter fails closed instead of faking progress.", request.correlationId(), List.of("trace-governance-policy-analysis-blocked"), governancePolicyImpactAnalysisBlockedSurface(actor, request.correlationId()));
     }
@@ -690,6 +694,10 @@ public final class WorkstreamService {
       case "surface-governance-policy-inventory" -> governancePolicyInventorySurface(actor, correlationId);
       case "surface-governance-policy-detail" -> governancePolicyDetailSurface(actor, null, correlationId);
       case "surface-governance-policy-proposal" -> governancePolicyProposalSurface(actor, correlationId, "draft", "Draft proposal is inert until review, simulation, approval, and activation.");
+      case "surface-governance-policy-simulation" -> governancePolicySimulationSurface(actor, null, correlationId);
+      case "surface-governance-policy-decision" -> governancePolicyDecisionSurface(actor, null, correlationId);
+      case "surface-governance-policy-activation-blocked" -> governancePolicyActivationBlockedSurface(actor, correlationId);
+      case "surface-governance-policy-rollback-blocked" -> governancePolicyRollbackBlockedSurface(actor, correlationId);
       case "surface-governance-policy-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
       default -> null;
     };

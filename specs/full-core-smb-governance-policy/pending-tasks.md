@@ -135,7 +135,7 @@
 
 ### TASK-FCSMB-GP-01-003: Implement Governance/Policy simulation and decision lifecycle
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-governance-policy/governance-policy-implementation-map.md
 - task brief: specs/full-core-smb-governance-policy/tasks/01-governance-policy/03-implement-governance-policy-decision-lifecycle.md
 - depends on: [TASK-FCSMB-GP-01-002]
@@ -164,6 +164,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement governance policy decision lifecycle`
+  - completed: added deterministic service-backed simulation, approve/reject, activation, rollback, blocked lifecycle surfaces, dynamic surface routing, domain lifecycle fields, and backend tests.
+  - validation: direct template Maven command remains blocked by unresolved template placeholders in `backend/pom.xml`; scaffolded `mvn test -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest` passed. Scaffolded required command including `AdminEndpointIntegrationTest` still fails in pre-existing AdminEndpoint tests with `no-local-account-or-invitation`, matching the prior task blocker and outside this Governance/Policy lifecycle change.
 
 ### TASK-FCSMB-GP-01-004: Align frontend Governance/Policy surfaces and actions
 

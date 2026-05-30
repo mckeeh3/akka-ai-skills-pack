@@ -23,6 +23,12 @@ public record GovernancePolicyProposal(
     String idempotencyKey,
     String createdCorrelationId,
     String submittedCorrelationId,
+    String decision,
+    String decisionRationale,
+    String decisionCorrelationId,
+    String activationCorrelationId,
+    String rollbackReference,
+    String rollbackCorrelationId,
     Instant createdAt,
     Instant updatedAt) {
   public enum Status {
@@ -54,7 +60,39 @@ public record GovernancePolicyProposal(
 
   public GovernancePolicyProposal submitted(String correlationId, Instant now) {
     if (status == Status.IN_REVIEW) return this;
-    if (status != Status.DRAFT) return new GovernancePolicyProposal(proposalId, tenantId, customerId, createdByAccountId, Status.BLOCKED, targetPolicyId, title, rationale, proposedContent, riskClassification, affectedCapabilityIds, affectedArtifactRefs, requiredApprovalCapabilityId, rollbackRequirement, idempotencyKey, createdCorrelationId, correlationId, createdAt, now);
-    return new GovernancePolicyProposal(proposalId, tenantId, customerId, createdByAccountId, Status.IN_REVIEW, targetPolicyId, title, rationale, proposedContent, riskClassification, affectedCapabilityIds, affectedArtifactRefs, requiredApprovalCapabilityId, rollbackRequirement, idempotencyKey, createdCorrelationId, correlationId, createdAt, now);
+    if (status != Status.DRAFT) return blocked(correlationId, now);
+    return copy(Status.IN_REVIEW, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, now);
+  }
+
+  public GovernancePolicyProposal approved(String rationale, String correlationId, Instant now) {
+    if (status == Status.APPROVED) return this;
+    if (status != Status.IN_REVIEW) return blocked(correlationId, now);
+    return copy(Status.APPROVED, submittedCorrelationId, "approve", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, now);
+  }
+
+  public GovernancePolicyProposal rejected(String rationale, String correlationId, Instant now) {
+    if (status == Status.REJECTED) return this;
+    if (status != Status.IN_REVIEW) return blocked(correlationId, now);
+    return copy(Status.REJECTED, submittedCorrelationId, "reject", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, now);
+  }
+
+  public GovernancePolicyProposal activated(String rollbackReference, String correlationId, Instant now) {
+    if (status == Status.ACTIVATED) return this;
+    if (status != Status.APPROVED || rollbackReference == null || rollbackReference.isBlank()) return blocked(correlationId, now);
+    return copy(Status.ACTIVATED, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, correlationId, rollbackReference, rollbackCorrelationId, now);
+  }
+
+  public GovernancePolicyProposal rolledBack(String correlationId, Instant now) {
+    if (status == Status.ROLLED_BACK) return this;
+    if (status != Status.ACTIVATED || rollbackReference == null || rollbackReference.isBlank()) return blocked(correlationId, now);
+    return copy(Status.ROLLED_BACK, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, correlationId, now);
+  }
+
+  public GovernancePolicyProposal blocked(String correlationId, Instant now) {
+    return copy(Status.BLOCKED, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId == null ? correlationId : rollbackCorrelationId, now);
+  }
+
+  private GovernancePolicyProposal copy(Status nextStatus, String nextSubmittedCorrelationId, String nextDecision, String nextDecisionRationale, String nextDecisionCorrelationId, String nextActivationCorrelationId, String nextRollbackReference, String nextRollbackCorrelationId, Instant now) {
+    return new GovernancePolicyProposal(proposalId, tenantId, customerId, createdByAccountId, nextStatus, targetPolicyId, title, rationale, proposedContent, riskClassification, affectedCapabilityIds, affectedArtifactRefs, requiredApprovalCapabilityId, rollbackRequirement, idempotencyKey, createdCorrelationId, nextSubmittedCorrelationId, nextDecision, nextDecisionRationale, nextDecisionCorrelationId, nextActivationCorrelationId, nextRollbackReference, nextRollbackCorrelationId, createdAt, now);
   }
 }

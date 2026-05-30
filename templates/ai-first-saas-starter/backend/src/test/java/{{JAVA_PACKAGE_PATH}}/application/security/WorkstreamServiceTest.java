@@ -618,20 +618,38 @@ class WorkstreamServiceTest {
         "action-governance-policy-draft-proposal", "governance.policy.propose", Map.of("rationale", "ignored duplicate"), "idem-gov-draft", "membership-admin", "surface-governance-policy-detail", "corr-gov-draft-duplicate"));
     assertEquals(draft, duplicateDraft);
 
+    var proposalId = draft.resultSurface().data().get("proposalId").toString();
+    var submitted = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-submit-proposal", "governance.policy.propose", Map.of("proposalId", proposalId), "idem-gov-submit", "membership-admin", "surface-governance-policy-proposal", "corr-gov-submit"));
+    assertEquals("accepted", submitted.status());
+    assertTrue(submitted.resultSurface().toString().contains("in_review"));
+
     var simulation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-governance-policy-simulate", "governance.policy.simulate", Map.of("proposalId", "starter-governance-policy-review"), null, "membership-admin", "surface-governance-policy-proposal", "corr-gov-sim"));
+        "action-governance-policy-simulate", "governance.policy.simulate", Map.of("proposalId", proposalId), null, "membership-admin", "surface-governance-policy-proposal", "corr-gov-sim"));
     assertEquals("accepted", simulation.status());
     assertTrue(simulation.resultSurface().toString().contains("model cannot self-approve"));
+    assertTrue(simulation.resultSurface().toString().contains("advisory deterministic simulation"));
 
     var decision = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-governance-policy-decide", "governance.policy.approve", Map.of("decision", "approve", "rationale", "bounded starter proof"), "idem-gov-decision", "membership-admin", "surface-governance-policy-simulation", "corr-gov-decision"));
-    assertEquals("approval-required", decision.status());
+        "action-governance-policy-decide", "governance.policy.approve", Map.of("proposalId", proposalId, "decision", "approve", "rationale", "bounded starter proof"), "idem-gov-decision", "membership-admin", "surface-governance-policy-simulation", "corr-gov-decision"));
+    assertEquals("accepted", decision.status());
     assertEquals("surface-governance-policy-decision", decision.resultSurface().surfaceId());
+    assertTrue(decision.resultSurface().toString().contains("rollback metadata"));
+
+    var activationBlocked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-activate", "governance.policy.activate", Map.of("proposalId", proposalId), "idem-gov-activate-blocked", "membership-admin", "surface-governance-policy-decision", "corr-gov-activate-blocked"));
+    assertEquals("approval-required", activationBlocked.status());
+    assertTrue(activationBlocked.resultSurface().toString().contains("sideEffect=none"));
 
     var activation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-governance-policy-activate", "governance.policy.activate", Map.of("proposalId", "starter-governance-policy-review"), "idem-gov-activate", "membership-admin", "surface-governance-policy-decision", "corr-gov-activate"));
-    assertEquals("approval-required", activation.status());
-    assertTrue(activation.resultSurface().toString().contains("sideEffect=none"));
+        "action-governance-policy-activate", "governance.policy.activate", Map.of("proposalId", proposalId, "rollbackReference", "rollback metadata v1"), "idem-gov-activate", "membership-admin", "surface-governance-policy-decision", "corr-gov-activate"));
+    assertEquals("accepted", activation.status());
+    assertTrue(activation.resultSurface().toString().contains("activated-with-rollback-metadata"));
+
+    var rollback = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-rollback", "governance.policy.rollback", Map.of("proposalId", proposalId), "idem-gov-rollback", "membership-admin", "surface-governance-policy-decision", "corr-gov-rollback"));
+    assertEquals("accepted", rollback.status());
+    assertTrue(rollback.resultSurface().toString().contains("rolled_back"));
 
     var analysis = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-governance-policy-start-impact-analysis", "governance.policy.analysis.start", Map.of("proposalId", "starter-governance-policy-review"), "idem-gov-analysis", "membership-admin", "surface-governance-policy-dashboard", "corr-gov-analysis"));
