@@ -218,7 +218,7 @@
 
 ### TASK-FCSMB-AA-01-005: Implement Agent Admin frontend runtime-aligned surfaces
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
 - task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/05-implement-agent-admin-frontend-surfaces.md
 - depends on: [TASK-FCSMB-AA-01-004]
@@ -247,6 +247,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: implement agent admin frontend`
+  - implemented runtime-aligned Agent Admin frontend fixtures/actions for catalog, definition detail, prompt/manifest/tool/model/seed reads, behavior-change lifecycle commands, no-side-effect test surface, provider-blocked AgentAdminAgent system_message, and trace timeline
+  - synchronized mirrored root `frontend/` fixture/test files with starter frontend changes
+  - validation: required starter frontend contract test command passed
+  - validation: required `rg` proof command and `git diff --check` passed
 
 ### TASK-FCSMB-AA-01-006: Validate integrated Agent Admin full-core slice and worker readiness
 

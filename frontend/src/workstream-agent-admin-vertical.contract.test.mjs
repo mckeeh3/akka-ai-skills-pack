@@ -16,9 +16,21 @@ test('Agent Admin functional agent is visible and capability backed for v0 gover
     'agent_admin.submit_turn',
     'agent_admin.list_definitions',
     'agent_admin.get_definition',
+    'agent_admin.get_prompt_version',
+    'agent_admin.get_skill_version',
+    'agent_admin.get_reference_version',
+    'agent_admin.get_manifest',
+    'agent_admin.get_tool_boundary',
     'agent_admin.draft_behavior_change',
+    'agent_admin.submit_behavior_change_for_review',
+    'agent_admin.approve_behavior_change',
+    'agent_admin.reject_behavior_change',
+    'agent_admin.activate_behavior_change',
+    'agent_admin.cancel_behavior_change',
+    'agent_admin.rollback_behavior_change',
     'agent_admin.simulate_tool_boundary',
-    'agent_admin.get_model_ref'
+    'agent_admin.get_model_ref',
+    'agent_admin.list_seed_material'
   ]) {
     assert.match(agents, new RegExp(capability.replaceAll('.', '\\.')));
     assert.match(me, new RegExp(capability.replaceAll('.', '\\.')));
@@ -35,8 +47,10 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
     'agentSkillManifestSurface',
     'agentToolBoundarySurface',
     'agentModelRefsSurface',
+    'agentSeedMaterialSurface',
     'agentTestConsoleSurface',
     'agentBehaviorProposalSurface',
+    'agentAdminAgentBlockedSystemMessageSurface',
     'agentAdminTraceSurface'
   ]) {
     assert.match(surfaces, new RegExp(fixture));
@@ -48,8 +62,10 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
     'surface-agent-skill-manifest-diff',
     'surface-agent-tool-boundary-diff',
     'surface-agent-model-refs',
+    'surface-agent-seed-material',
     'surface-agent-test-console',
     'surface-agent-behavior-proposal',
+    'surface-agent-admin-agent-provider-blocked',
     'surface-agent-admin-trace'
   ]) {
     assert.match(surfaces, new RegExp(surfaceId));
@@ -66,10 +82,23 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
     'MODEL_POLICY_DENIED',
     'TOOL_BOUNDARY_DENIED',
     'Provider secret values are never browser-visible',
+    'redactedPreview',
+    'agent_admin.catalog.v1',
+    'agent_admin.definition.v1',
+    'agent_admin.prompt_version.v1',
+    'agent_admin.manifest.v1',
+    'agent_admin.tool_boundary.v1',
+    'agent_admin.model_ref.v1',
+    'agent_admin.seed_material.v1',
+    'agent_admin.behavior_change_proposal.v1',
     'PromptAssemblyTrace',
     'SkillLoadTrace',
+    'ReferenceLoadTrace',
     'AgentWorkTrace',
+    'agentAdminEvidence.read',
     'readSkill(skillId)',
+    'readReferenceDoc(referenceId)',
+    'no direct mutation',
     'No-side-effect agent test console'
   ]) {
     assert.match(surfaces, new RegExp(marker.replace(/[()]/g, '\\$&')));
@@ -88,23 +117,36 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
     'action-propose-prompt-diff',
     'action-test-agent-prompt',
     'action-approve-skill-manifest',
+    'action-submit-behavior-change',
+    'action-reject-behavior-change',
+    'action-activate-behavior-change',
+    'action-cancel-behavior-change',
+    'action-rollback-behavior-change',
     'action-simulate-tool-boundary',
     'action-manage-model-ref',
+    'action-list-agent-seed-material',
     'action-open-agent-trace'
   ]) {
     assert.match(surfaces, new RegExp(actionId));
   }
   assert.match(surfaces, /displayAgentCatalogActionResult/);
   assert.match(surfaces, /displayAgentDetailActionResult/);
+  assert.match(surfaces, /displayAgentSeedMaterialActionResult/);
+  assert.match(surfaces, /displayAgentBehaviorProposalActionResult/);
   assert.match(apiClient, /displayAgentCatalogActionResult/);
   assert.match(apiClient, /displayAgentDetailActionResult/);
+  assert.match(apiClient, /displayAgentSeedMaterialActionResult/);
+  assert.match(apiClient, /displayAgentBehaviorProposalActionResult/);
   assert.match(apiClient, /agent_admin\.list_definitions/);
+  assert.match(apiClient, /agent_admin\.list_seed_material/);
 });
 
 test('Agent Admin defaults to five core v0 markdown and keeps richer governance surfaces demo-scoped', () => {
   assert.match(workstream, /item-v0-agent-admin-markdown/);
   assert.match(workstream, /kind: 'markdown_response'/);
   assert.match(workstream, /governed agent definitions, prompts, skills, tool boundaries, models, and traces/);
+  assert.match(surfaces, /Model-backed AgentAdminAgent guidance was blocked before a response was produced/);
+  assert.match(surfaces, /Guidance is read-only: no direct mutation, no approval, no activation, no rollback/);
   for (const surfaceId of [
     'surface-agent-admin-catalog',
     'surface-agent-admin-detail',

@@ -5,7 +5,16 @@ import {
   actionResultsByStatus,
   allSurfaceActions,
   canonicalSurfaceEnvelopes,
+  displayAgentAdminTraceActionResult,
+  displayAgentBehaviorProposalActionResult,
   displayAgentCatalogActionResult,
+  displayAgentDetailActionResult,
+  displayAgentManifestActionResult,
+  displayAgentModelRefsActionResult,
+  displayAgentPromptGovernanceActionResult,
+  displayAgentSeedMaterialActionResult,
+  displayAgentTestConsoleActionResult,
+  displayAgentToolBoundaryActionResult,
   displayMyAccountDashboardActionResult,
   displayMyAccountProfileActionResult,
   displayMyAccountSettingsActionResult,
@@ -15,7 +24,6 @@ import {
   userAdminMemberStatusActionSurface,
   userAdminRoleChangeActionSurface,
   userAdminRoleChangePreviewSurface,
-  displayAgentDetailActionResult,
   displayGovernancePolicyDashboardActionResult,
   displayGovernancePolicyInventoryActionResult,
   displayGovernancePolicySimulationActionResult,
@@ -141,8 +149,24 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
             ? updateMyAccountSettingsActionResult
             : request.actionId === 'action-display-user-detail'
       ? displayUserDetailActionResult
-      : request.actionId === 'action-display-agent-detail' || request.actionId === 'action-open-agent-detail'
+      : request.actionId === 'action-display-agent-detail' || request.actionId === 'action-open-agent-detail' || request.capabilityId === 'agent_admin.get_definition'
         ? displayAgentDetailActionResult
+        : request.actionId === 'action-list-agent-seed-material' || request.capabilityId === 'agent_admin.list_seed_material'
+          ? displayAgentSeedMaterialActionResult
+          : request.actionId === 'action-propose-prompt-diff' || request.capabilityId === 'agent_admin.draft_behavior_change'
+            ? displayAgentPromptGovernanceActionResult
+            : request.actionId === 'action-approve-skill-manifest' || request.capabilityId === 'agent_admin.approve_behavior_change'
+              ? displayAgentManifestActionResult
+              : request.actionId === 'action-simulate-tool-boundary' || request.capabilityId === 'agent_admin.simulate_tool_boundary'
+                ? displayAgentToolBoundaryActionResult
+                : request.actionId === 'action-manage-model-ref' || request.capabilityId === 'agent_admin.get_model_ref' || request.capabilityId === 'agent_admin.activate_behavior_change'
+                  ? displayAgentModelRefsActionResult
+                  : request.actionId === 'action-test-agent-prompt'
+                    ? displayAgentTestConsoleActionResult
+                    : ['action-submit-behavior-change', 'action-reject-behavior-change', 'action-activate-behavior-change', 'action-cancel-behavior-change', 'action-rollback-behavior-change'].includes(request.actionId)
+                      ? displayAgentBehaviorProposalActionResult
+                      : request.actionId === 'action-open-agent-trace'
+                        ? displayAgentAdminTraceActionResult
         : request.actionId === 'action-govpol-show-dashboard' || request.capabilityId === 'governance.policy.read'
           ? displayGovernancePolicyDashboardActionResult
           : request.actionId === 'action-govpol-show-policy-inventory'
