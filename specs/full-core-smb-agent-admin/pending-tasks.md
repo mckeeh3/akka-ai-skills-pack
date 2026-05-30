@@ -294,7 +294,7 @@
 
 ### TASK-FCSMB-AA-99-001: Verify Agent Admin full-core readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-agent-admin/tasks/99-verification/01-verify-agent-admin-readiness.md
 - depends on:
@@ -328,3 +328,6 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify agent admin readiness`
+  - verification compared README done state, sprint/backlog goals, implementation-map slices, completed source-edit task notes, shared SMB baseline contracts, and the Agent Admin v0 contract; no bounded follow-up task is required for this mini-project's stated scope.
+  - validation: required Agent Admin/source proof `rg`, broad `tools/validate-ai-first-saas-starter-fullstack.sh`, and `git diff --check` passed; broad validation included scaffolded backend Maven tests, frontend tests/typecheck/build, static secret scan, and real provider Akka Agent smoke.
+  - completion decision: Agent Admin SMB full-core vertical is ready at the implemented deterministic reads/lifecycle/guidance/frontend scope, with prompt-risk/behavior-review worker intentionally not claimed as complete and deferred to a future bounded mini-project if selected.
