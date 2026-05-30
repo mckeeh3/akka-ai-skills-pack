@@ -52,7 +52,7 @@
 
 ### TASK-FCSMB-AA-01-001: Define Agent Admin vertical slice contracts and implementation map
 
-- status: pending
+- status: done
 - source: specs/full-core-smb-agent-admin/backlog/01-agent-admin-full-core-backlog.md
 - task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/01-define-agent-admin-implementation-map.md
 - depends on: [TASK-FCSMB-AA-00-001]
@@ -94,6 +94,185 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: map agent admin full core`
+  - discovery commands and queue evidence search passed; source-edit tasks appended.
+
+### TASK-FCSMB-AA-01-002: Implement Agent Admin catalog and governed artifact reads
+
+- status: pending
+- source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+- task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/02-implement-agent-admin-catalog-reads.md
+- depends on: [TASK-FCSMB-AA-01-001]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-agent-admin/README.md
+  - specs/full-core-smb-agent-admin/conversation-capture.md
+  - specs/full-core-smb-agent-admin/sprints/01-agent-admin-full-core-sprint.md
+  - specs/full-core-smb-agent-admin/backlog/01-agent-admin-full-core-backlog.md
+  - specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/agent-admin-workstream-v0/workstream-contract.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
+- skills:
+  - akka-agent-tool-boundaries
+  - akka-agent-seed-documents
+- expected outputs:
+  - backend Agent Admin read/service/surface source edits under templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/
+  - backend Agent Admin read tests under templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/
+  - updated specs/full-core-smb-agent-admin/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,WorkstreamServiceTest,AgentDefinitionEntityTest,AgentDefinitionViewIntegrationTest,ManifestBoundaryEntityTest,ManifestBoundaryViewTest`
+  - `rg -n "agent_admin\.(list_definitions|get_definition|get_prompt_version|get_skill_version|get_reference_version|get_manifest|get_model_ref|get_tool_boundary|list_seed_material)|Agent Admin|AgentDefinition|ToolPermissionBoundary|AgentSkillManifest|AgentReferenceManifest|provider|system_message|PromptAssemblyTrace|AgentWorkTrace" templates/ai-first-saas-starter/backend/src --glob '!**/target/**'`
+  - `git diff --check`
+- done criteria:
+  - catalog/detail/artifact reads are tenant-scoped, capability-checked, redacted, trace-linked, and dynamically retrievable
+  - tests prove allowed/denied reads and no provider secret or hidden prompt leakage
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement agent admin reads`
+
+### TASK-FCSMB-AA-01-003: Implement Agent Admin behavior-change lifecycle
+
+- status: pending
+- source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+- task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/03-implement-agent-admin-behavior-lifecycle.md
+- depends on: [TASK-FCSMB-AA-01-002]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-agent-admin/README.md
+  - specs/full-core-smb-agent-admin/conversation-capture.md
+  - specs/full-core-smb-agent-admin/sprints/01-agent-admin-full-core-sprint.md
+  - specs/full-core-smb-agent-admin/backlog/01-agent-admin-full-core-backlog.md
+  - specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/agent-admin-workstream-v0/workstream-contract.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+- skills:
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - backend behavior-change lifecycle source edits under templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/
+  - backend lifecycle tests
+  - updated specs/full-core-smb-agent-admin/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentRuntimeServiceTest,WorkstreamServiceTest,DurableAgentBehaviorRepositoryStateTest,ManifestBoundaryEntityTest`
+  - `rg -n "agent_admin\.(draft_behavior_change|submit_behavior_change_for_review|approve_behavior_change|reject_behavior_change|activate_behavior_change|cancel_behavior_change|rollback_behavior_change|compare_versions|simulate_tool_boundary)|BehaviorChangeProposal|approval-required|activate|rollback|no direct mutation|ToolPermissionBoundary" templates/ai-first-saas-starter/backend/src --glob '!**/target/**'`
+  - `git diff --check`
+- done criteria:
+  - deterministic services own lifecycle, activation, rollback, idempotency, redaction, authorization, and traces
+  - model output and frontend state cannot activate behavior directly
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement agent admin lifecycle`
+
+### TASK-FCSMB-AA-01-004: Implement AgentAdminAgent governed guidance evidence path
+
+- status: pending
+- source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+- task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/04-implement-agent-admin-agent-guidance.md
+- depends on: [TASK-FCSMB-AA-01-003]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-agent-admin/README.md
+  - specs/full-core-smb-agent-admin/conversation-capture.md
+  - specs/full-core-smb-agent-admin/sprints/01-agent-admin-full-core-sprint.md
+  - specs/full-core-smb-agent-admin/backlog/01-agent-admin-full-core-backlog.md
+  - specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/agent-admin-workstream-v0/workstream-contract.md
+  - docs/agent-component-selection-guide.md
+  - skills/akka-agents/SKILL.md
+  - skills/akka-agent-tools/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-agent-seed-documents/SKILL.md
+- skills:
+  - akka-agents
+  - akka-agent-tools
+  - akka-agent-tool-boundaries
+  - akka-agent-seed-documents
+- expected outputs:
+  - Agent Admin seed/runtime/tool-boundary source edits under templates/ai-first-saas-starter/
+  - backend and frontend contract tests as needed
+  - updated specs/full-core-smb-agent-admin/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-agent-admin-vertical.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/workstream-surfaces.contract.test.mjs`
+  - `rg -n "AgentAdminAgent|agent-admin-system|agent-admin-starter-guidance|readSkill|readReferenceDoc|agentAdminEvidence\.read|ToolPermissionBoundary|PromptAssemblyTrace|SkillLoadTrace|ReferenceLoadTrace|AgentWorkTrace|provider|system_message|no direct mutation|proposal|activate|rollback" templates/ai-first-saas-starter --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - AgentAdminAgent normal path remains concrete model-backed Akka Agent invocation
+  - provider/runtime missing path fails closed with typed system_message and traces
+  - guidance cannot mutate or activate behavior directly
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement agent admin guidance`
+
+### TASK-FCSMB-AA-01-005: Implement Agent Admin frontend runtime-aligned surfaces
+
+- status: pending
+- source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+- task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/05-implement-agent-admin-frontend-surfaces.md
+- depends on: [TASK-FCSMB-AA-01-004]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-agent-admin/README.md
+  - specs/full-core-smb-agent-admin/conversation-capture.md
+  - specs/full-core-smb-agent-admin/sprints/01-agent-admin-full-core-sprint.md
+  - specs/full-core-smb-agent-admin/backlog/01-agent-admin-full-core-backlog.md
+  - specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/agent-admin-workstream-v0/workstream-contract.md
+- skills:
+  - none; frontend workstream implementation task
+- expected outputs:
+  - frontend Agent Admin runtime-aligned files under templates/ai-first-saas-starter/frontend/src/
+  - optional synchronized root frontend files if required
+  - updated specs/full-core-smb-agent-admin/pending-tasks.md
+- required checks:
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-agent-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "surface-agent-admin|surface-agent-prompt|surface-agent-skill|surface-agent-tool|surface-agent-model|surface-agent-test|surface-agent-behavior|action-(display-agent|open-agent|propose-prompt|test-agent|approve-skill|simulate-tool|manage-model)|agent_admin\.|system_message|blocked_provider_or_runtime|provider|redacted|trace|no direct mutation" templates/ai-first-saas-starter/frontend/src --glob '!**/node_modules/**'`
+  - `git diff --check`
+- done criteria:
+  - frontend Agent Admin surfaces/actions are typed, trace-linked, redacted, visually polished, and backend capability-aligned
+  - blocked and unauthorized states render as first-class safe surfaces
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: implement agent admin frontend`
+
+### TASK-FCSMB-AA-01-006: Validate integrated Agent Admin full-core slice and worker readiness
+
+- status: pending
+- source: specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+- task brief: specs/full-core-smb-agent-admin/tasks/01-agent-admin/06-validate-agent-admin-integration.md
+- depends on: [TASK-FCSMB-AA-01-005]
+- required reads:
+  - AGENTS.md
+  - specs/full-core-smb-agent-admin/README.md
+  - specs/full-core-smb-agent-admin/conversation-capture.md
+  - specs/full-core-smb-agent-admin/sprints/01-agent-admin-full-core-sprint.md
+  - specs/full-core-smb-agent-admin/backlog/01-agent-admin-full-core-backlog.md
+  - specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+  - specs/full-core-smb-baseline-and-ux/shared-baseline-contracts.md
+  - specs/agent-admin-workstream-v0/workstream-contract.md
+  - specs/full-core-smb-saas-hardening/agent-worker-opportunities.md
+  - docs/agent-component-selection-guide.md
+- skills:
+  - none; validation and queue update task
+- expected outputs:
+  - validation notes in pending queue or a small report if useful
+  - updated specs/full-core-smb-agent-admin/pending-tasks.md with completion path or bounded follow-up tasks
+- required checks:
+  - `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,WorkstreamServiceTest,AgentDefinitionEntityTest,AgentDefinitionViewIntegrationTest,ManifestBoundaryEntityTest,ManifestBoundaryViewTest,DurableAgentBehaviorRepositoryStateTest`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --runTestsByPath src/workstream-agent-admin-vertical.contract.test.mjs src/workstream-actions.contract.test.mjs src/workstream-surfaces.contract.test.mjs src/workstream-composer-message-api.contract.test.mjs src/api.contract.test.mjs`
+  - `rg -n "Agent Admin|AgentAdminAgent|AgentDefinition|ToolPermissionBoundary|AgentSkillManifest|AgentReferenceManifest|model ref|behavior change|proposal|activate|rollback|seed|provider|system_message|AgentWorkTrace|PromptAssemblyTrace|no direct mutation|agentAdminEvidence\.read" templates/ai-first-saas-starter specs/full-core-smb-agent-admin --glob '!**/node_modules/**'`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `git diff --check`
+- done criteria:
+  - implemented Agent Admin backend/frontend/runtime paths pass targeted validation or blockers are appended as bounded tasks
+  - broad starter validation passes or a concrete blocker/follow-up is recorded
+  - worker readiness is explicitly decided without claiming model-less durable worker success
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-smb: validate agent admin integration`
 
 ### TASK-FCSMB-AA-99-001: Verify Agent Admin full-core readiness
 
@@ -101,7 +280,7 @@
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-agent-admin/tasks/99-verification/01-verify-agent-admin-readiness.md
 - depends on:
-  - TASK-FCSMB-AA-01-001
+  - TASK-FCSMB-AA-01-006
 - required reads:
   - AGENTS.md
   - skills/README.md
