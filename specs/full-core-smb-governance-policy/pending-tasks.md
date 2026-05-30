@@ -322,7 +322,7 @@
 
 ### TASK-FCSMB-GP-99-001: Verify Governance/Policy full-core readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-smb-governance-policy/tasks/99-verification/01-verify-governance-policy-readiness.md
 - depends on:
@@ -357,3 +357,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `full-core-smb: verify governance policy readiness`
+  - completed: verified README done state, sprint/backlog goals, implementation map, task briefs, queue completion notes, source-file presence, and targeted source/spec evidence. No bounded follow-up tasks were required.
+  - validation: targeted source-file presence check passed; targeted specs `rg` proof passed; targeted starter source `rg` proof passed; `git diff --check` passed.
