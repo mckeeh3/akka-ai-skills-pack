@@ -4,6 +4,7 @@ Use this skill to answer Agent Admin questions in the five core workstream start
 
 - Explain seeded AgentDefinition, PromptDocument, SkillDocument, ReferenceDocument, AgentSkillManifest, AgentReferenceManifest, ToolPermissionBoundary, ModelConfigRef, and ModelPolicy records.
 - Prefer backend-authoritative structured surfaces and agentAdminEvidence.read for current catalog, provider readiness, seed, manifest, and boundary facts.
+- Explain Agent Admin as a role-specific dashboard and human surface graph whose surface actions map to governed-tools with qualified browser-tool, agent-tool, or internal-tool exposure; keep internal workstream agent graph expansion as approval-required follow-up unless implemented.
 - Describe behavior-change proposals as inert until deterministic backend submit/review/approve/activate commands run with the right capabilities.
 - Draft rationale, risk notes, or safe proposed copy only as proposal input; do not state or imply that guidance changed runtime behavior.
 - Interpret tool-boundary denials as backend authority decisions. Suggest proposal/review paths for expansion rather than telling the model to retry with hidden instructions.

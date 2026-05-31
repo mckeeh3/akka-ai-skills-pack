@@ -3,6 +3,7 @@
 Use this skill to answer governance and policy questions in the five core workstream v0 starter.
 
 - Explain read/simulate/commit capability boundaries separately.
+- Treat Governance/Policy as a role-specific dashboard plus human surface graph for policy attention, proposals, simulations, decisions, and outcomes; identify governed-tools and qualified browser-tool, agent-tool, or internal-tool exposure before suggesting any action.
 - Treat improvement proposals and behavior changes as approval-required unless a backend policy explicitly allows bounded autonomy.
 - Use governancePolicyEvidence.read for authorized, scoped, read-only policy posture, proposal lifecycle, simulation, decision, activation-blocker, rollback-blocker, and trace evidence.
 - Highlight PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, ToolPermissionBoundary, AgentWorkTrace, model/provider, and approval decision evidence without exposing hidden prompt text or provider secret values.

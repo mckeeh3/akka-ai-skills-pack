@@ -27,7 +27,7 @@ The installed pack uses `pack/AGENTS.md` as the source for `<agents-root>/AGENTS
 It also uses `pack/EXAMPLES-README.md` as the source for `<agents-root>/resources/examples/java/README.md`.
 Those installed files are for pack users and are distinct from the repository-internal maintainer guidance files.
 
-Installed-pack users should treat `docs/requirements-to-workstream-development-process.md` plus `docs/examples/requirements-to-workstream-mini-example.md` as the compact target architecture path for broad PRD/input processing. Legacy purchase-request examples remain mechanics reference material only.
+Installed-pack users should treat `docs/requirements-to-workstream-development-process.md` plus `docs/examples/requirements-to-workstream-mini-example.md` as the compact target architecture path for broad PRD/input processing. That path must preserve affected workstreams, role-specific dashboard attention, human surface graph nodes/edges, internal workstream agent graph candidates, workstream expertise, governed-tools in capability files and surface/action maps, and qualified browser-tool/agent-tool/internal-tool exposures. Legacy purchase-request examples remain mechanics reference material only.
 
 Important distinction for real development projects:
 - the installed pack under `<agents-root>/` provides skills, guidance, and examples
@@ -52,6 +52,7 @@ Installed layout:
     agent-workstream-design-review-checklist.md
     structured-surface-contracts.md
     capability-first-backend-architecture.md
+    workstream-expertise-model.md
     skills-pack-user-guide.md
     description-first-application-doctrine.md
     internal-app-description-architecture.md

@@ -535,7 +535,7 @@
 
 ### TASK-WGGT-05-001: Update installed-pack and starter-template graph guidance
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/final-verification.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/05-pack-template/01-update-installed-pack-and-starter-graph-guidance.md
 - depends on: [TASK-WGGT-99-001]
@@ -561,7 +561,9 @@
   - installed-pack entry guidance and starter template artifacts directly expose the graph/governed-tool model
   - pack/template searches no longer show zero coverage for canonical terms where relevant
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `wggt: update pack template graph guidance`
+  - completed: updated installed-pack guidance, pack docs/manifest references, starter template README/scaffold/app-description/spec seeds, and selected seeded agent guidance/expertise to expose role-specific dashboards, human surface graphs, internal workstream agent graph follow-up, workstream expertise, governed-tools, and qualified browser-tool/agent-tool/internal-tool exposures; checks: `git diff --check`; focused pack/template canonical-term search; focused ambiguous bare tool search over edited files
 
 ### TASK-WGGT-99-002: Verify workstream graph governed-tools completion after pack/template repair
 

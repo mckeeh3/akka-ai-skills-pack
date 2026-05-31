@@ -22,8 +22,8 @@
 - `backend/` — Akka Java SDK backend template source for the secure SaaS foundation, user administration, governed agent records, workstream API services, and static frontend hosting endpoint.
 - `frontend/` — React/Vite/TypeScript workstream frontend source, built into `src/main/resources/static-resources/`.
 - `.env.example` — local environment template for WorkOS/AuthKit, JWT, Resend, bootstrap admin, frontend public AuthKit values, and optional model-provider values.
-- `app-description/` — maintained app description seed for scaffold extension; identifies My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy as the initial five core v0 workstream set with `markdown_response` before full-core expansion.
-- `specs/` — starter planning/checklist seed and scaffold provenance destination; keeps five-core-v0 readiness separate from full-core follow-up work.
+- `app-description/` — maintained app description seed for scaffold extension; identifies My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy as the initial five core v0 workstream set with `markdown_response` before full-core expansion, plus the workstream graph contract for role-specific dashboard attention, human surface graph nodes/edges, internal workstream agent graph follow-up, workstream expertise, governed-tools, and qualified browser-tool/agent-tool/internal-tool exposures.
+- `specs/` — starter planning/checklist seed and scaffold provenance destination; keeps five-core-v0 readiness separate from full-core follow-up work and carries governed-tool/AuthContext/audit/runtime-validation context into implementation queues.
 
 ## Isolation rule
 

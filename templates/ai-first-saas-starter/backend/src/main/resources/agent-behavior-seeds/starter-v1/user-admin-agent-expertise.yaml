@@ -10,6 +10,12 @@ referenceManifestId: reference-manifest-user-admin
 toolBoundaryId: tool-boundary-user-admin
 governanceOwner: Tenant Admin or delegated Agent Steward
 authorityProfile: approval-required
+workstreamGraph:
+  roleSpecificDashboard: User Admin dashboard shows membership, invitation, access-review, support-access, and admin-audit attention for the selected AuthContext.
+  humanSurfaceGraph: Dashboard edges open invitation, role, membership, access-review, support-access, decision, workflow-status, system-message, and audit surfaces.
+  internalWorkstreamAgentGraph: Internal worker delegation is bounded to authorized evidence reads and proposal drafting unless a governed runtime worker is explicitly implemented and traced.
+  workstreamExpertise: Skills and references explain dashboard purpose, surface graph behavior, governed-tools, denials, and safe user-help semantics.
+  governedTools: Capability-backed operations are exposed only through qualified browser-tool, agent-tool, or internal-tool paths with audit/work trace obligations.
 compactManifest:
   includeFullBodies: false
   skillSection: Available internal skills
@@ -67,14 +73,17 @@ references:
 toolBoundary:
   grants:
     - toolId: readSkill
+      exposure: agent-tool
       category: READ_SKILL
       capabilityId: agent.skills.read
       trace: SkillLoadTrace
     - toolId: readReferenceDoc
+      exposure: agent-tool
       category: READ_REFERENCE
       capabilityId: agent.references.read
       trace: ReferenceLoadTrace
     - toolId: userAdminEvidence.read
+      exposure: agent-tool
       category: DATA_LOOKUP
       capabilityId: tenant.user.read
       trace: AgentWorkTrace
@@ -82,7 +91,7 @@ requiredDenials:
   - unassigned skill or reference id
   - inactive or cross-tenant skill or reference
   - missing read_skill or read_reference tool-boundary grant
-  - text claiming new roles, tenant scope, tool access, approval rights, or backend capabilities
+  - text claiming new roles, tenant scope, governed-tool access, approval rights, or backend capabilities
   - raw invitation token, provider secret, cross-customer data, or unredacted audit export request
 traces:
   - PromptAssemblyTrace
@@ -94,4 +103,4 @@ tests:
   - compact manifest omits full bodies
   - assigned skill and reference loads are authorized and traced
   - unassigned loads and missing boundary grants are denied and traced
-  - expertise text cannot expand capability, role, tenant, tool, or approval authority
+  - expertise text cannot expand capability, role, tenant, governed-tool, or approval authority

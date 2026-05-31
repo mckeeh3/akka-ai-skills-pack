@@ -505,6 +505,7 @@ content:
     - docs/agent-workstream-design-review-checklist.md
     - docs/structured-surface-contracts.md
     - docs/capability-first-backend-architecture.md
+    - docs/workstream-expertise-model.md
     - docs/core-ai-first-saas-foundation.md
     - docs/core-saas-identity-tenancy-admin.md
     - docs/core-saas-owner-tenant-billing.md

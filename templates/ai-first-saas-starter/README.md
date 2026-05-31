@@ -23,6 +23,14 @@ The first runnable starter target is intentionally narrower than full-core readi
 
 The scaffold must record follow-up work that distinguishes five-core-v0 readiness from full-core readiness: richer structured surfaces, complete invitation onboarding, support access, full governed agent document lifecycle, searchable audit/trace views, policy/governance workflows, security hardening, and only then app-specific domain workstreams.
 
+The five-core starter is also the initial workstream graph baseline:
+
+- each core workstream has a role-specific dashboard surface whose job is to answer what requires this actor's attention and what work can be done next;
+- the human surface graph starts at that dashboard, continues through `markdown_response` v1, `system_message`, list/detail/decision/audit/workflow/governance surfaces already present in the starter, and records surface actions as graph edges;
+- every protected surface action maps to a governed-tool inside an existing capability boundary and is exposed only through qualified browser-tool, agent-tool, or internal-tool paths as appropriate;
+- the internal workstream agent graph is intentionally bounded at v0: request-based functional agents can read authorized evidence, use governed loader tools, emit safe answers or system messages, and create human attention; durable internal/background worker nodes remain follow-up unless explicitly implemented with governed capabilities and tests;
+- workstream expertise comes from seeded prompt, skill, reference, manifest, and boundary records that explain each workstream's dashboard purpose, surface graph, governed-tools, denials, and safe user-help semantics.
+
 This template may contain broader full-core scaffold assets, but generated-app guidance must not claim five-core-v0 readiness unless normal workstream message submission uses the governed runtime path, resolves active configuration from managed records, invokes the `WorkstreamRuntimeAgent` Akka Agent component with `effects().tools(runtimeTools)`, and uses a configured backend model provider, and must not claim full-core readiness unless those follow-up gates are satisfied and tested. Direct `ModelProviderClient` or service-only provider calls are support seams, not a substitute for the user-facing Akka Agent runtime path.
 
 ## Base package policy

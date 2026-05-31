@@ -13,7 +13,7 @@ Security, the web UI, and AI-first managed agents are mandatory. Every generated
 
 AI-first SaaS means agents do bounded work while humans supervise, decide, approve, audit, teach, and own outcomes. First decide which durable goals/plans, bounded agents or agent teams, policy and approval controls, supervision surfaces, audit traces, and outcome loops the product needs; then model backend behavior as governed capabilities before applying only the justified Akka substrate components and exposure surfaces on top of the mandatory secure SaaS foundation.
 
-For broad product input or PRDs, use the requirements-to-workstream process as the normal path: input → workstreams → `what needs my attention?` categories → dashboard contracts → structured surfaces/actions → governed capabilities/APIs → Akka substrate → request-based workstream Agent turns and durable AutonomousAgent candidates where appropriate → events/notifications/projections → audit/work traces → implementation tasks. Use `docs/requirements-to-workstream-development-process.md` for the canonical rules and `docs/examples/requirements-to-workstream-mini-example.md` for the compact target architecture example. Purchase-request examples are mechanics reference material only, not the generated SaaS target architecture.
+For broad product input or PRDs, use the requirements-to-workstream process as the normal path: input → affected workstreams → role-specific dashboard surfaces → attention items → human surface graph nodes/edges → internal workstream agent graph candidates → workstream expertise needs → governed-tools in capability files and surface/action maps → qualified browser-tool, agent-tool, and internal-tool exposures → Akka substrate → request-based workstream Agent turns and durable AutonomousAgent candidates where appropriate → events/notifications/projections → audit/work traces → implementation tasks. Use `docs/requirements-to-workstream-development-process.md` for the canonical rules and `docs/examples/requirements-to-workstream-mini-example.md` for the compact target architecture example. Purchase-request examples are mechanics reference material only, not the generated SaaS target architecture.
 
 This pack supports a secure AI-first interpretation layer plus two complementary ways of working in a real development project:
 
@@ -24,7 +24,8 @@ This pack supports a secure AI-first interpretation layer plus two complementary
    - route through `skills/ai-first-saas/SKILL.md` and focused AI-first companion skills only as needed
 1. **capability-first backend modeling**
    - define named backend operations/queries with actors/AuthContext, tenant/customer scope, schemas, side effects, idempotency, audit/work traces, approval policy, selected exposure surfaces, and tests
-   - treat agent tools, MCP tools/resources, APIs, browser actions, workflow steps, timers, consumers, views, and component methods as selected surfaces of governed capabilities, not authorization controls
+   - treat each governed-tool as a semantic operation inside a capability boundary, then map it to qualified exposures such as browser-tool, agent-tool, internal-tool, workflow-tool, timer-tool, consumer-tool, or MCP-tool
+   - use capability files and surface/action maps to connect role-specific dashboard attention, human surface graph edges, internal workstream agent graph delegations/results, and workstream expertise to authorized backend behavior
    - route through `skills/capability-first-backend/SKILL.md` when backend capability contracts are not yet clear
 2. **description-first application maintenance**
    - maintain an authoritative internal app-description as the source of truth
@@ -73,13 +74,14 @@ Use this mode when the user is primarily describing or revising the app, asking 
 Recommended flow:
 1. read the user's input completely
 2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, tenant-isolation, and web UI foundations
-3. model governed backend capabilities before behavior, UI, security, observability, tests, or generation layers depend on them
-4. if the user is working description-first, start with `skills/app-descriptions/SKILL.md`
-5. bootstrap with `skills/app-description-bootstrap/SKILL.md` when no usable app-description tree exists yet
-6. normalize broad or mixed input with `skills/app-description-input-normalization/SKILL.md`
-7. route and maintain the smallest relevant app-description layer
-8. use readiness and review-summary skills before or around generation as needed
-9. realize outputs with `skills/app-generate-app/SKILL.md` only when generation is requested or accepted
+3. preserve the workstream graph contract: affected workstreams, role-specific dashboard attention, human surface graph nodes/actions, internal workstream agent graph delegations/results, workstream expertise, governed-tools, and browser-tool/agent-tool/internal-tool exposure semantics
+4. model governed backend capabilities before behavior, UI, security, observability, tests, or generation layers depend on them
+5. if the user is working description-first, start with `skills/app-descriptions/SKILL.md`
+6. bootstrap with `skills/app-description-bootstrap/SKILL.md` when no usable app-description tree exists yet
+7. normalize broad or mixed input with `skills/app-description-input-normalization/SKILL.md`
+8. route and maintain the smallest relevant app-description layer
+9. use readiness and review-summary skills before or around generation as needed
+10. realize outputs with `skills/app-generate-app/SKILL.md` only when generation is requested or accepted
 
 Important installed-pack rule:
 - the maintained app-description tree belongs to the **target project workspace**, not to `.agents/` itself, unless the user explicitly wants some other project-equivalent internal location
@@ -92,12 +94,13 @@ Use this mode when the user wants to derive the Akka solution shape and then imp
 Recommended flow:
 1. read the user's input completely
 2. apply secure AI-first SaaS interpretation first, including mandatory identity, tenancy, authorization, audit, tenant-isolation, and web UI foundations
-3. model governed backend capabilities with `skills/capability-first-backend/SKILL.md` when operation/query contracts are not clear
-4. if the Akka solution shape is still unclear, start with `skills/akka-solution-decomposition/SKILL.md`
-5. if one structural choice is still unresolved, use the focused decision skill such as `skills/akka-entity-type-selection/SKILL.md`
-6. if unresolved decisions would make tasks speculative, create `specs/pending-questions.md` with `skills/akka-pending-question-generation/SKILL.md` and work through it one question at a time with `skills/akka-do-next-pending-question/SKILL.md`
-7. once the architecture is clear, use `skills/README.md` to load only the smallest relevant implementation skill set
-8. generate code and tests component by component
+3. identify affected workstreams, role-specific dashboard attention, human surface graph nodes/actions, internal workstream agent graph candidates, workstream expertise, and governed-tools before choosing Akka components or UI pages
+4. model governed backend capabilities with `skills/capability-first-backend/SKILL.md` when operation/query contracts are not clear
+5. if the Akka solution shape is still unclear, start with `skills/akka-solution-decomposition/SKILL.md`
+6. if one structural choice is still unresolved, use the focused decision skill such as `skills/akka-entity-type-selection/SKILL.md`
+7. if unresolved decisions would make tasks speculative, create `specs/pending-questions.md` with `skills/akka-pending-question-generation/SKILL.md` and work through it one question at a time with `skills/akka-do-next-pending-question/SKILL.md`
+8. once the architecture is clear, use `skills/README.md` to load only the smallest relevant implementation skill set
+9. generate code and tests component by component
 
 Do not jump straight into a component family when the broader architecture is still unclear.
 
@@ -107,7 +110,7 @@ After installation, the main entry points are:
 - `AGENTS.md` — this installed-pack guidance file
 - `skills/README.md` — routing map across the installed skill library, including description-first and implementation paths
 - `skills/<skill-name>/SKILL.md` — focused implementation or routing guidance
-- `docs/` — selected pack-facing reference docs used by installed skills, including AI-first doctrine, `docs/minimum-ai-first-saas-app.md`, capability-first backend doctrine, core secure SaaS foundation docs, the AI-first SaaS seed app-description reference when packaged, and description-first mechanics examples
+- `docs/` — selected pack-facing reference docs used by installed skills, including AI-first doctrine, `docs/minimum-ai-first-saas-app.md`, requirements-to-workstream graph doctrine, structured-surface contracts, capability-first backend doctrine, workstream expertise guidance, core secure SaaS foundation docs, the AI-first SaaS seed app-description reference when packaged, and description-first mechanics examples
 - `resources/examples/java/` — exported Akka Java SDK substrate examples and tests for concrete component implementation patterns; these examples are not product-architecture templates
 - `resources/examples/frontend/` — exported React/Vite/TypeScript agent workstream UI reference, including `src/workstream/**` and contract tests for the generated SaaS workstream shell and User Admin vertical
 
