@@ -7,7 +7,7 @@ description: Model structured workstream surfaces in app descriptions, including
 
 Use this skill when maintaining `app-description/12-workstreams/surfaces-index.md`, `app-description/12-workstreams/surface-contracts/**`, or equivalent structured-surface artifacts for generated full-stack AI-first SaaS apps.
 
-A surface is a typed renderable artifact in an agent workstream. It is not a page, route, CRUD screen, chat message, or backend component. Surfaces belong to or are reused by functional agents, render in durable workstreams, and expose only actions that map to governed backend capabilities.
+A surface is a typed renderable artifact in an agent workstream. It is not a page, route, CRUD screen, chat message, or backend component. Surfaces belong to or are reused by functional agents, render in durable workstreams, form a human surface graph rooted in role-specific dashboard surfaces, and expose only actions that map to governed backend capabilities and governed-tools.
 
 ## Required reading
 
@@ -32,9 +32,10 @@ Read these first if present:
 ## Use this skill when
 
 The task asks to:
-- add, remove, split, or revise a dashboard, briefing, form, table, chart, decision card, approval card, diff, audit timeline, detail card, workflow status, evidence bundle, version card, exception card, or outcome panel;
+- add, remove, split, or revise a dashboard, briefing, form, table, chart, decision card, approval card, diff, audit timeline, detail card, workflow status, evidence bundle, version card, exception card, system-message surface, result surface, or outcome panel;
 - define what a functional agent renders in its workstream;
-- map surface actions to backend capabilities;
+- model surface graph nodes and edges from role-specific dashboard trunk to attention, evidence, decision, trace, progress, result, and denial surfaces;
+- map surface actions to backend capabilities and governed-tools, including browser-tools and surface-request actions;
 - specify reusable surfaces shared by multiple functional agents;
 - capture surface payload schemas, redaction, loading/error/forbidden/stale states, accessibility, responsive behavior, realtime updates, or rendering tests;
 - update app-description artifacts before workstream UI implementation.
@@ -91,12 +92,13 @@ For each surface, capture the fields below. Use `../../docs/structured-surface-c
 - stable surface id, display name, type, and version;
 - purpose and user outcome;
 - owning functional agent and reusable functional agents;
-- workstream placement: default entry dashboard, attention queue, embedded response, drill-in, modal, side panel, system-message surface, or deep-linkable surface;
+- workstream placement: default entry dashboard, attention queue, embedded response, drill-in, modal, side panel, system-message surface, result surface, or deep-linkable surface;
+- surface graph role: dashboard trunk, node type, incoming edges, outgoing edges, prompt-entered shortcuts, deep links, result/system-message transitions, and cross-workstream surface-request constraints;
 - attention contribution: category, severity, lifecycle state, target audience, My Account aggregation, left-rail count behavior, and when the surface opens/resolves/dismisses/escalates an attention item;
 - payload schema: required fields, optional fields, lists, nested records, field formats, correlation ids, trace ids, pagination, sorting, autonomous task ids, notification ids, and realtime event ids;
 - redaction and safe fields for user roles, support roles, auditors, functional agents, and internal agents;
 - data sources and read/evidence capabilities behind the payload;
-- allowed actions with labels, input payloads, confirmation requirements, idempotency keys, and linked backend capability ids, including surface-request actions such as `show_surface`, `open_workstream`, `refresh_surface`, and `open_attention_item` for buttons, links, cards, rows, My Account panels, rail entries, deep links, or icons that open another protected surface/workstream;
+- allowed actions with labels, input payloads, confirmation requirements, idempotency keys, linked backend capability ids, and linked governed-tool ids/exposure names, including browser-tools and surface-request actions such as `show_surface`, `open_workstream`, `refresh_surface`, and `open_attention_item` for buttons, links, cards, rows, My Account panels, rail entries, deep links, or icons that open another protected surface/workstream;
 - autonomous task bindings when applicable: start/query/cancel/result-read/external-complete/external-fail capabilities, task lifecycle states, snapshot/result payloads, progress notifications, dependencies, and escalation/attention rules;
 - action authority: AuthContext, tenant/customer scope, role/capability requirements, approval/policy gates, and denial behavior;
 - action side-effect visibility: success, pending, approval-needed, queued, workflow-started, no-op, and failed states;
@@ -125,6 +127,7 @@ Use this shape when adding or revising a surface:
 - reusable by:
 - workstream placement:
 - attention category / dashboard role:
+- surface graph node / incoming edges / outgoing edges:
 
 ## Payload contract
 - schema summary:
@@ -137,6 +140,7 @@ Use this shape when adding or revising a surface:
   - label:
   - input payload:
   - linked capability id:
+  - linked governed-tool id / exposure (`browser-tool`, `agent-tool`, `internal-tool`, etc.):
   - authority / AuthContext:
   - approval / policy gate:
   - idempotency / duplicate behavior:
@@ -175,14 +179,14 @@ Use this shape when adding or revising a surface:
 
 ## Modeling rules
 
-1. **Surfaces are structured artifacts.** Prefer typed payloads and explicit actions over free-text responses or page descriptions.
+1. **Surfaces are structured artifacts.** Prefer typed payloads and explicit actions over free-text responses or page descriptions, and place each important surface in the workstream surface graph.
 2. **Surfaces may be reused.** A surface can be owned by one functional agent and rendered by others when the same payload, action, auth, and trace contracts hold.
-3. **Surface actions are not authorization.** Every action maps to a governed backend capability; backend authorization remains authoritative even when an action is hidden or disabled in the UI. Controls that open protected surfaces or workstreams are governed surface-request actions, not frontend-only navigation. Surface-request actions use the shell request pipeline: canonical prompt feedback (`show surface <surface-id>` or `show workstream <workstream-id>`), honest origin metadata, target-workstream-only request rendering, and typed denial/system-message behavior.
+3. **Surface actions are not authorization.** Every action maps to a governed backend capability and executable governed-tool; backend authorization remains authoritative even when an action is hidden or disabled in the UI. Human-facing executable actions are `browser-tool` exposures. Controls that open protected surfaces or workstreams are governed surface-request actions, not frontend-only navigation. Surface-request actions use the shell request pipeline: canonical prompt feedback (`show surface <surface-id>` or `show workstream <workstream-id>`), honest origin metadata, target-workstream-only request rendering, and typed denial/system-message behavior.
 4. **Payloads are safe by contract.** Record redaction, role-dependent fields, support/auditor visibility, secret boundaries, and tenant/customer scoping.
 5. **Actions preserve capability semantics.** Carry AuthContext, validation, idempotency, side effects, policy/approval, audit, and denial semantics from the capability layer.
 6. **Routes are subordinate.** Pages and deep links may address a surface, but they do not replace the functional-agent/workstream/surface model.
 7. **States are part of the surface.** Loading, empty, error, forbidden, stale/reconnect, conflict, partial-data, autonomous task progress/result, and notification update behavior must be described before generation.
-8. **Attention and dashboards are governed projections.** Dashboard badges, My Account counts, and left-rail indicators derive from backend state/projections linked to surface actions and capability results, not frontend-only notification math.
+8. **Attention and dashboards are governed projections.** Role-specific dashboard badges, My Account counts, and left-rail indicators derive from backend state/projections linked to surface graph actions and capability/governed-tool results, not frontend-only notification math.
 9. **Tests are mandatory.** A surface contract is incomplete without rendering, action, authorization, tenant-isolation, denial, audit/trace, and relevant realtime tests.
 
 ## Change handling
@@ -213,7 +217,8 @@ Route onward as needed:
 Avoid:
 - treating a surface as a CRUD page or route-first screen;
 - using chat text where a typed decision card, approval, table, detail card, diff, timeline, dashboard, or workflow status is required;
-- exposing UI actions without capability ids;
+- flattening a workstream surface graph into an untyped page list;
+- exposing UI actions without capability ids and governed-tool ids/exposure names;
 - assuming hidden/disabled buttons enforce authorization;
 - duplicating the same surface under multiple functional agents instead of modeling reuse;
 - omitting redaction, tenant/customer scope, forbidden states, stale behavior, or tests;

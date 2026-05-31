@@ -193,7 +193,7 @@
 
 ### TASK-WGGT-02-003: Update functional-agent, surface, and capability modeling skills
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/02-app-description-model-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/02-app-description/03-update-modeling-skills.md
 - depends on: [TASK-WGGT-02-002]
@@ -222,6 +222,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update graph modeling skills`
+  - completed: updated functional-agent, surface, and capability modeling skills to maintain role-specific dashboards, human surface graphs, workstream expertise skills/references, internal workstream agent graphs, governed-tools, and qualified browser-tool/agent-tool/internal-tool exposure semantics; checks: `git diff --check`; focused graph/governed-tool term search over edited skills
 
 ### TASK-WGGT-02-004: Update impact, readiness, UI, and generation-adjacent skills
 
