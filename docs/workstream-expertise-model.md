@@ -8,12 +8,13 @@ A functional agent is not ready merely because it has a prompt, a chat surface, 
 
 ```text
 functional workstream
+→ role-specific dashboards and surface graph
 → workstream expert bundle
 → governed prompt, model binding, skills, and reference documents
 → compact per-agent expertise manifest
 → authorized readSkill/readReference loading
-→ capability and tool-boundary enforcement
-→ traces, review surfaces, and tests
+→ governed-tool and tool-boundary enforcement
+→ denials, user help, traces, review surfaces, and tests
 ```
 
 ## Definition: workstream expert bundle
@@ -34,11 +35,13 @@ A bundle must name:
 | Skill documents | Procedural guidance the model may load for how to perform workstream tasks. |
 | Reference documents | Durable policy/process/product/domain facts the model may cite or consult; not procedural skill instructions by default. |
 | Expertise manifest | Compact per-agent manifest entries for available skills and references, assembled into prompt context without full document bodies. |
+| Dashboard and surface graph | Role-specific dashboard purpose, attention categories, surface graph nodes/edges, system-message result surfaces, and prompt/surface-request shortcuts the agent should understand. |
 | Capability map | Governed backend capabilities the workstream may request, propose, or call. |
-| Tool boundary | ToolPermissionBoundary and model-facing tools allowed for this agent, including `readSkill` and any reference loaders. |
+| Governed-tool map | Governed-tools inside those capabilities, with exposure as browser-tools, agent-tools, workflow-tools, timer-tools, consumer-tools, MCP-tools, or internal-tools. |
+| Tool boundary | ToolPermissionBoundary and model-facing agent-tools allowed for this agent, including `readSkill` and any reference loaders. |
 | Authority profile | Read-only, proposal-only, approval-gated, or bounded autonomous authority per capability/tool. |
 | Surfaces | Structured surfaces the agent owns or reuses to show evidence, forms, decisions, diffs, traces, and outcomes. |
-| Escalation rules | Approval, exception, denial, safe recovery, and handoff behavior. |
+| Escalation and denial rules | Approval, exception, denial, safe recovery, user-help wording, and handoff behavior. |
 | Trace requirements | PromptAssemblyTrace, SkillLoadTrace, reference-load trace, AgentWorkTrace, data-access, decision, and audit events. |
 | Tests | Authorization, tenant isolation, assigned/unassigned loads, denied loads, tool-boundary denial, capability behavior, surface rendering, and trace emission. |
 | Governance owner | Steward/reviewer role responsible for approving prompt, skill, reference, manifest, and boundary changes. |
@@ -77,11 +80,20 @@ Reference content is also guidance/evidence only. Backend authorization and capa
 
 A capability is the backend operation or query contract. It defines actors/callers, AuthContext, schemas, validation, idempotency, side effects, approval, audit, exposure surfaces, and tests. A workstream expert bundle lists which capabilities the agent can request, propose, or call, but the capability itself remains owned by the capability layer.
 
-### Tool and tool boundary
+### Governed-tool and tool boundary
 
-A tool is an exposure channel for a capability or governed loader. `readSkill(skillId)` and `readReferenceDoc(referenceId)` are tools for loading approved guidance/evidence into a model turn. Other tools may query evidence, draft proposals, start workflows, or request side effects.
+A governed-tool is the semantic executable operation or query inside a capability. It defines actor/caller rules, AuthContext, input/output schemas, side effects, idempotency, approval/policy, audit/work trace, and implementation mapping. A capability groups related governed-tools; exposure channels decide where each governed-tool can be invoked.
 
-`ToolPermissionBoundary` is authoritative for what the agent may invoke. Prompt text, skill text, reference text, manifest labels, and UI rail visibility cannot expand tool authority.
+Use qualified exposure names:
+
+- `browser-tool` for structured surface actions and browser APIs;
+- `agent-tool` for model-facing `@FunctionTool`, component-tool, MCP, or facade exposures;
+- `internal-tool`, `workflow-tool`, `timer-tool`, or `consumer-tool` for backend-only execution paths;
+- `MCP-tool` for remote LLM-facing boundaries.
+
+`readSkill(skillId)` and `readReferenceDoc(referenceId)` are governed loader agent-tools for loading approved guidance/evidence into a model turn. Other agent-tools may query evidence, draft proposals, start workflows, or request side effects only when the capability, governed-tool, and `ToolPermissionBoundary` allow it.
+
+`ToolPermissionBoundary` is authoritative for what the agent may invoke. Prompt text, skill text, reference text, manifest labels, and UI rail visibility cannot expand governed-tool authority.
 
 ### Surface
 
@@ -131,7 +143,7 @@ app-description/12-workstreams/
     <functional-agent-id>.md
 ```
 
-Each `<functional-agent-id>.md` should capture the bundle contract: prompt intent, model binding, skills, references, manifests, capability map, tool boundary, surfaces, traces, governance owner, seed policy, and tests. Cross-layer files should link to it rather than redefining it:
+Each `<functional-agent-id>.md` should capture the bundle contract: role-specific dashboard semantics, surface graph help, prompt intent, model binding, skills, references, manifests, capability map, governed-tool map, tool boundary, surfaces, denials/user help, traces, governance owner, seed policy, and tests. Cross-layer files should link to it rather than redefining it:
 
 - `10-capabilities/**` owns detailed capability contracts.
 - `15-operating-model/**` owns governed runtime agent behavior and lifecycle rules.
@@ -150,8 +162,9 @@ A functional agent is not expertise-ready until:
 - [ ] prompt intent, governed prompt refs, model binding, skills, references, and compact manifest entries are listed;
 - [ ] model binding names an explicit `ModelConfigRef`/`ModelPolicy` pair or an explicit inherited governed default, including allowed modes, fallback/no-fallback behavior, provider secret boundary, and model-use trace facts;
 - [ ] references are distinguished from procedural skills;
-- [ ] assigned capabilities and exposure channels are mapped;
-- [ ] `ToolPermissionBoundary` covers loaders and all model-facing tools;
+- [ ] role-specific dashboard purpose, attention categories, and surface graph help are specified;
+- [ ] assigned capabilities, governed-tools, and exposure channels are mapped;
+- [ ] `ToolPermissionBoundary` covers loaders and all model-facing agent-tools;
 - [ ] denied unassigned skill/reference loads are specified;
 - [ ] SkillLoadTrace/reference-load trace and AgentWorkTrace obligations are specified;
 - [ ] surfaces expose manifest, evidence, denials, decisions, traces, or governance state where needed;
@@ -165,7 +178,7 @@ Workstream expertise tests should verify:
 - compact manifest assembly includes only assigned skill/reference ids and hints, not full bodies;
 - `readSkill(skillId)` allows assigned active skills and denies unassigned, inactive, cross-tenant, disabled-agent, oversized, or unauthorized mode loads;
 - reference loading follows the same authorization, redaction, denial, and trace pattern;
-- skill/reference text cannot grant a forbidden tool, capability, role, tenant scope, or approval right;
+- skill/reference text cannot grant a forbidden governed-tool, capability, role, tenant scope, or approval right;
 - side-effecting capabilities remain proposal/approval-gated unless policy grants bounded autonomy;
 - surfaces render manifest summaries, decisions, evidence, denials, and trace links safely;
 - traces are emitted for prompt assembly, model binding resolution/denial/fallback, allowed loads, denied loads, tool invocations, data access, decisions, and consequential work.

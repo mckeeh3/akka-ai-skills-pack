@@ -18,9 +18,22 @@ functional/context-area agent workstream placement
 → frontend rendering and tests
 ```
 
-For broad requirements, surfaces are discovered through the canonical process: workstream → attention categories → dashboard/`WorkstreamAttentionSummary` → structured surfaces/actions → capabilities/APIs → Akka substrate. Do not design surfaces as page-first or CRUD-first artifacts.
+For broad requirements, surfaces are discovered through the canonical process: workstream → attention categories → role-specific dashboard/`WorkstreamAttentionSummary` → human surface graph → structured surfaces/actions → governed backend capabilities and governed-tools → Akka substrate. Do not design surfaces as page-first or CRUD-first artifacts.
 
-Frontend action visibility is advisory only. The linked backend capability remains authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior.
+Frontend action visibility is advisory only. The linked backend capability and governed-tool contract remain authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior.
+
+## Surface graph contract
+
+A workstream's surfaces form a **surface graph** rather than a flat page list. The role-specific dashboard is usually the graph trunk: it summarizes attention, exposes the next safe actions, and links to evidence, detail, decision, workflow, trace, and system-message nodes.
+
+Define the graph explicitly enough that implementation can preserve navigation, authority, and traceability:
+
+- **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces.
+- **Edges:** surface actions, surface-request actions, deep links, prompt-entered requests, realtime refreshes, workflow/AutonomousAgent progress updates, and system-message results.
+- **Edge contract:** every edge maps to a governed backend capability and, when executable, to a governed-tool exposure such as a browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, or internal-tool.
+- **Result semantics:** an action should append a surface, update a surface, open another graph node, create a typed `system_message`, update dashboard attention, start/observe internal-agent work, or return a safe denial.
+- **Role variants:** dashboard and graph edges may differ by role and selected `AuthContext`; the backend capability remains authoritative for allowed traversal and data access.
+- **Tests:** graph tests must cover dashboard-to-node traversal, action result surfaces, denial/system-message surfaces, stale/reconnect behavior, audit/trace links, and tenant-isolated deep links.
 
 In app-description trees, surface ownership belongs in `12-workstreams/`: surface index and contracts, reusable functional-agent placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization of those contracts: shell placement, route/deep-link mappings, components, forms/interactions, frontend API contracts, state/realtime behavior, accessibility/responsive behavior, and style guide. Do not redefine surface purpose, authority, or capability semantics in `55-ui/`; link back to `12-workstreams/` and capability/security/test layers.
 
@@ -176,7 +189,7 @@ type SystemMessageData = {
 
 ## Surface action shape
 
-Each surface action is a UI exposure of a governed capability.
+Each surface action is a browser-tool or surface-request exposure of a governed capability. Use `governed-tool` for the semantic executable contract and qualified exposure terms (`browser-tool`, `agent-tool`, `workflow-tool`, `timer-tool`, `consumer-tool`, `MCP-tool`, `internal-tool`) when describing where it is exposed.
 
 ```ts
 type SurfaceAction = {
@@ -217,7 +230,7 @@ type SurfaceAction = {
 Action rules:
 
 - `capabilityId` is required for every action, including read/query actions and surface-request actions such as show surface, show dashboard, open workstream, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
-- The capability definition owns input validation, authorization, idempotency, side effects, policy/approval, audit, and denial shape.
+- The capability definition owns the governed-tool contract: input validation, authorization, idempotency, side effects, policy/approval, audit, and denial shape.
 - In browser realization, a surface action usually invokes a backend API; the API returns an accepted/denied/error result plus a new surface, updated surface, workstream item, workflow/progress surface, or `system_message` surface.
 - Side-effecting actions should default to proposal or approval flows unless a bounded autonomous policy is explicitly accepted.
 - Disabled/hidden actions must include a user-safe reason when visible; they must not be the only authorization control.

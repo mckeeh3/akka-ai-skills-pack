@@ -19,7 +19,7 @@ product intent
 
 Use `requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
 
-A capability is the backend design object. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for a capability.
+A capability is the backend design object. A capability may group one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for those governed-tools.
 
 ## Non-negotiable foundation
 
@@ -56,12 +56,35 @@ A capability definition should include:
 | Idempotency | Duplicate command behavior, retry safety, dedupe keys, and no-op semantics. |
 | Policy/approval | Autonomy level, approval gates, exception/escalation rules, risk/confidence thresholds, and human authority. |
 | Audit/trace | Audit event type, work-trace fields, policy citations, tool/data references, and retention/redaction expectations. |
-| Exposure channels | Selected workstream action, UI/API/tool/workflow/MCP/timer/consumer/internal channels, or explicit non-exposure. |
+| Governed-tools | One or more executable operations/queries within the capability, each with stable id, class, authority, schemas, side effects, idempotency, audit, and tests. |
+| Exposure channels | Selected workstream action, browser-tool, agent-tool, API, workflow-tool, MCP-tool, timer-tool, consumer-tool, internal-tool, view/query, or explicit non-exposure. |
 | Tests | Success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-channel tests. |
+
+## Capability, governed-tool, and exposure terms
+
+Use this hierarchy consistently:
+
+```text
+capability = product ability or grouping
+→ governed-tool = semantic executable operation/query inside the capability
+→ exposure channel = browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, internal-tool, API, view/query, or component method
+→ Akka substrate = entity, view, workflow, Agent, AutonomousAgent, consumer, timer, endpoint, or service code
+```
+
+A capability can contain one governed-tool when the operation is simple, or multiple governed-tools when a product ability includes related reads, commands, proposals, approvals, trace searches, scheduled checks, or internal worker operations. Keep the capability as the product grouping and make each governed-tool precise enough to implement, authorize, audit, and test independently.
+
+Use qualified exposure terms in architecture guidance:
+
+- **browser-tool:** governed-tool exposed to humans through structured surface actions and browser APIs.
+- **agent-tool:** governed-tool exposed to request-based or internal agents through Akka `@FunctionTool`, component tools, MCP, or an equivalent model-facing facade.
+- **internal-tool:** governed-tool used by workflows, timers, consumers, internal services, or internal worker agents without direct browser exposure.
+- **workflow-tool**, **timer-tool**, **consumer-tool**, and **MCP-tool:** qualified forms when the exposure boundary matters.
+
+Do not introduce a separate top-level governed-tool inventory when an app-description capability file and surface/action maps already own the contract. Instead, list governed-tools inside capability definitions and link each surface/action edge to the relevant governed-tool id.
 
 ## Capability is not agent tool
 
-An agent tool is one possible exposure channel for a capability. It is not the root abstraction.
+An agent-tool is one possible exposure channel for a capability's governed-tool. It is not the root abstraction.
 
 Official Akka agent tooling supports local `@FunctionTool` methods, external tool classes, Akka components as function tools, and remote MCP tools. See `../akka-context/sdk/agents/extending.html.md`, `../skills/akka-agent-tools/SKILL.md`, and `../skills/akka-agent-component-tools/SKILL.md`.
 
@@ -78,7 +101,7 @@ Default stance: expose read-only evidence capabilities to agents more readily th
 
 ## Capability exposure channels
 
-Select capability exposure after capability semantics are clear. Use `structured surface` for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths.
+Select governed-tool exposure after capability semantics are clear. Use `structured surface` for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths.
 
 | Channel | Use when | Capability rules |
 |---|---|---|

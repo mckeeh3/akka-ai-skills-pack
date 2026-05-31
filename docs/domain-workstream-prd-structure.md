@@ -9,9 +9,11 @@ domain intent
 → workstreams as root app units
 → exactly one backing functional/context-area agent per workstream
 → workstream-agent expertise for user assistance
-→ structured surfaces and system-message surfaces
+→ role-specific dashboard surfaces and attention items
+→ human surface graph and system-message surfaces
 → surface actions and surface requests
-→ governed backend capabilities
+→ governed backend capabilities containing governed-tools
+→ internal workstream agent graph where delegated work is needed
 → Akka/backend/frontend realization and tests
 ```
 
@@ -98,10 +100,12 @@ It must state:
 - backing functional/context-area agent; every workstream has exactly one;
 - authorized roles/capabilities and tenant/customer scope;
 - default dashboard, attention, or briefing surface;
-- required surfaces;
+- role-specific dashboards and the attention items each dashboard answers;
+- required surface graph nodes, edges, result surfaces, and system-message surfaces;
 - user intents the workstream agent must understand;
 - surface actions and surface-request actions;
-- capability inventory and exposure-channel summary;
+- capability inventory, governed-tool inventory, and exposure-channel summary;
+- internal workstream agent graph when background/delegated worker agents are part of the workstream;
 - audit/work-trace behavior;
 - escalation, approval, denial, and exception behavior;
 - readiness and not-ready conditions.
@@ -112,7 +116,7 @@ Required invariant text:
 This workstream is backed by exactly one functional/context-area agent.
 Surfaces are the only renderable workstream artifacts.
 System messages are typed surfaces.
-Every surface action, including read/query and surface-request actions, maps to a governed backend capability.
+Every surface action, including read/query and surface-request actions, maps to a governed backend capability and governed-tool contract.
 The workstream agent may request surfaces and guide users, but backend capabilities enforce authority.
 ```
 
@@ -158,12 +162,13 @@ Each surface file is a surface-level PRD. It is a behavioral contract, not a sta
 A surface file should define:
 
 - surface id, display name, type, and version;
+- surface graph role: dashboard trunk, attention node, detail node, form node, decision node, progress node, trace node, or system-message/result node;
 - owning workstream and reusable workstreams if any;
 - purpose and when it appears;
 - payload fields and redaction rules;
 - producing read/evidence capability;
 - available actions;
-- next surfaces or updates produced by actions;
+- graph edges: next surfaces, updates, dashboard attention changes, internal-agent work starts/results, or typed system-message surfaces produced by actions;
 - authority requirements and denial behavior;
 - loading, empty, ready, submitting, success, approval-needed, forbidden, error, conflict, stale/reconnect, and no-op states where relevant;
 - audit/work-trace fields and visible trace links;
@@ -197,22 +202,23 @@ System messages must not leak secrets, hidden privileged facts, prompt content, 
 
 ## `capabilities.md`
 
-Capabilities are governed backend contracts. APIs and tools are exposure forms over those contracts. Capabilities should not exist only as notes inside surface files.
+Capabilities are governed backend contracts. A capability is the product ability or grouping; governed-tools are the executable operations/queries inside that capability. APIs, browser-tools, agent-tools, workflow-tools, timer-tools, consumer-tools, MCP-tools, internal-tools, views, and component methods are exposure or realization forms over those governed-tool contracts. Capabilities should not exist only as notes inside surface files.
 
 The workstream `capabilities.md` should define every operation/query exposed by the workstream and its exposure channels:
 
 - stable capability id and purpose;
-- capability class: read/evidence, command, proposal, approval, workflow, governance, trace/audit, scheduled, reactive;
+- capability grouping semantics: which governed-tools belong together and why;
+- governed-tool ids and classes: read/evidence, command, proposal, approval, workflow, autonomous task, governance, trace/audit, scheduled, reactive, or internal;
 - actors/callers: humans, workstream agent, internal agents, workflows, services, timers, consumers, support roles;
 - AuthContext, tenant/customer scope, role/capability requirements, and denial behavior;
 - input/output schemas, validation, redaction, and idempotency;
 - data access and side effects;
 - policy/approval gates and escalation rules;
 - audit/work-trace fields;
-- exposure channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool/resource, view, or internal method;
+- exposure channels: surface action, browser API/browser-tool, workstream-agent agent-tool, internal-agent agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool/resource, view/query, or internal-tool;
 - tests.
 
-Surface files and workstream-agent skills reference capability ids from this file. The capability remains authoritative for backend behavior, security, side effects, idempotency, approval, audit, denial shape, and tests.
+Surface files and workstream-agent skills reference capability ids and governed-tool ids from this file. The capability grouping remains authoritative for product meaning; each governed-tool remains authoritative for backend behavior, security, side effects, idempotency, approval, audit, denial shape, exposure mapping, and tests.
 
 Exposure-channel rules:
 
@@ -263,11 +269,12 @@ Domain workstreams use the same pattern as core SaaS workstreams:
 ```text
 workstream
 → backing workstream agent
+→ role-specific dashboard and attention items
 → user intents
-→ surfaces
-→ surface actions / surface requests
-→ capabilities
-→ APIs/tools/workflows/views/entities/etc.
+→ surface graph nodes and edges
+→ surface actions / surface requests / system-message results
+→ capabilities and governed-tools
+→ browser-tools / agent-tools / internal-tools / workflows / views / entities / APIs
 → tests and traces
 ```
 

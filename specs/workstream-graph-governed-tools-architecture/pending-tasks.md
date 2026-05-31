@@ -77,7 +77,7 @@
 
 ### TASK-WGGT-01-002: Update surface, capability, domain, and expertise docs
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/01-doctrine-vocabulary-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/01-doctrine/02-update-surface-capability-domain-expertise-docs.md
 - depends on: [TASK-WGGT-01-001]
@@ -103,6 +103,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update graph vocabulary docs`
+  - completed: updated structured surface, capability-first backend, domain workstream PRD, and workstream expertise docs with surface graph, governed-tool, capability grouping, role-dashboard, internal workstream agent graph, denial, and user-help vocabulary; checks: `git diff --check`; focused graph/governed-tool term search over touched docs
 
 ### TASK-WGGT-01-003: Update routing map and terminology
 
