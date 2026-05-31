@@ -1,5 +1,7 @@
 # Akka Solution Plan
 
+> Conventional mechanics reference only. This plan demonstrates capability-to-component planning for a low-agentic approval workflow. It is not the canonical generated AI-first SaaS target architecture and must not replace the secure SaaS foundation, five-core workstream starter, structured surfaces, governed managed-agent runtime, or local runtime/API/UI validation requirements.
+
 ## Inputs
 
 - source:

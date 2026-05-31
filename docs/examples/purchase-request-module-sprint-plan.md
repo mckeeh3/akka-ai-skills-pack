@@ -1,5 +1,7 @@
 # Purchase Request Module/Sprint Planning Example
 
+> Conventional sprint-organization mechanics reference only. This example is not the canonical generated AI-first SaaS target architecture; do not copy its domain modules, request forms, or queue/list surfaces as the primary model for new generated SaaS apps.
+
 This is a compact reference example for `../module-sprint-planning.md`.
 
 It shows how a larger PRD output can be organized so each sprint completes a testable module increment across backend and frontend.

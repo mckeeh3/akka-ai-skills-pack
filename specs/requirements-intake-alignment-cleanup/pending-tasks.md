@@ -377,7 +377,7 @@
 
 ### TASK-RIAC-04-004: Demote or remove legacy examples from active intake guidance
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/04-docs-examples-ui-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/04-docs-examples-ui/04-demote-or-remove-legacy-examples.md
 - depends on: [TASK-RIAC-04-003]
@@ -402,6 +402,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: demote legacy examples`
+  - completed: added explicit mechanics-only warnings to purchase-request PRD/solution/sprint/queue/app-description examples and updated active example references to prefer the AI-first seed, requirements-to-workstream mini-example, and starter template for generated SaaS work
+  - checks: `git diff --check` over task-scoped files; focused legacy-example search reviewed remaining hits as mechanics-only references, component-level ShoppingCart examples, standalone anti-pattern/guardrail wording, or existing generated-SaaS guardrails
 
 ### TASK-RIAC-05-001: Whole-pack stale content pass
 

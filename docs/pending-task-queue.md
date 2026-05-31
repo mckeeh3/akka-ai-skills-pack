@@ -278,7 +278,7 @@ If a task discovers an unresolved design decision during execution, block the ta
 - `../skills/akka-prd-to-specs-backlog/SKILL.md`
 - `../skills/akka-slice-spec-to-backlog/SKILL.md`
 - `../skills/akka-backlog-item-to-task-brief/SKILL.md`
-- `examples/purchase-request-pending-tasks.md`
+- `examples/purchase-request-pending-tasks.md` — conventional queue mechanics only, not generated-SaaS architecture
 - `module-sprint-planning.md`
 - `solution-plan-to-implementation-queue.md`
 - `intent-driven-usage-flow.md`

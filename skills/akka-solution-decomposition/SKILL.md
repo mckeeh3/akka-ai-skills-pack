@@ -26,7 +26,7 @@ For the canonical broad-input planning shape, see:
 - `../../docs/examples/requirements-to-workstream-mini-example.md`
 
 Conventional mechanics-only examples, not canonical generated AI-first SaaS target architecture:
-- `../../docs/prd-to-akka-flow.md` until rewritten by the intake cleanup project
+- `../../docs/prd-to-akka-flow.md` conventional mechanics section
 - `../../docs/examples/purchase-request-prd.md`
 - `../../docs/examples/purchase-request-solution-plan.md`
 

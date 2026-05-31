@@ -1,5 +1,7 @@
 # Purchase Request App Description Example
 
+> Mechanics-only reference. This directory demonstrates app-description layer cross-linking for a low-agentic approval workflow; it is not the canonical generated AI-first SaaS target architecture.
+
 This directory is a concrete example of the internal app-description architecture defined in:
 - `../../internal-app-description-architecture.md`
 - `../../app-description-maintenance-flow.md`

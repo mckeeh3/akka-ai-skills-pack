@@ -1,5 +1,7 @@
 # Pending Tasks
 
+> Conventional queue-mechanics reference only. This file is not a generated AI-first SaaS task queue and must not be copied as a page/resource/component-first implementation plan for new SaaS apps.
+
 Example durable implementation queue for `purchase-request-prd.md` and `purchase-request-solution-plan.md`.
 
 This is a reference example for the queue contract in `../pending-task-queue.md`.

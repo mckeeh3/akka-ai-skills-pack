@@ -40,8 +40,9 @@ app-description/
 
 The exact root name may vary by project, but the harness should prefer one stable root rather than scattering description artifacts arbitrarily.
 
-Reference example:
-- `docs/examples/purchase-request-app-description/app-description/`
+Reference examples:
+- canonical generated SaaS seed: `docs/examples/ai-first-saas-seed-app-description/README.md`
+- mechanics-only cross-linking example: `docs/examples/purchase-request-app-description/app-description/`
 
 ## Architecture goals
 

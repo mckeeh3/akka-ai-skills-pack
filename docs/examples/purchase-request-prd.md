@@ -1,5 +1,7 @@
 # Purchase request approval PRD
 
+> Conventional mechanics reference only. This PRD is not the canonical generated AI-first SaaS target architecture. Use it only to study PRD-to-plan mechanics for a low-agentic approval workflow after applying current secure SaaS, workstream/surface/capability, managed-runtime, and runtime-completion doctrine from the canonical docs.
+
 ## Summary
 Build an internal service for employees to submit purchase requests for software or equipment and track them through approval and fulfillment.
 

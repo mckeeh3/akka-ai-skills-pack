@@ -12,7 +12,7 @@ Runnable generated-app baseline:
 
 Mechanics-only / conventional references:
 - `purchase-request-app-description/README.md` — compact low-agentic approval workflow for app-description mechanics and cross-linking only. Do not use it as generated AI-first SaaS target architecture.
-- `purchase-request-prd.md`, `purchase-request-solution-plan.md`, `purchase-request-module-sprint-plan.md`, and `purchase-request-pending-tasks.md` — conventional planning/queue mechanics examples only.
+- `purchase-request-prd.md`, `purchase-request-solution-plan.md`, `purchase-request-module-sprint-plan.md`, and `purchase-request-pending-tasks.md` — conventional planning/queue mechanics examples only. They must remain secondary to `requirements-to-workstream-mini-example.md`, the AI-first SaaS seed app-description, and the starter template for generated SaaS work.
 
 Review guardrails:
 - canonical doctrine: `../ai-first-saas-application-architecture.md`, `../agent-workstream-application-architecture.md`, `../structured-surface-contracts.md`, and `../capability-first-backend-architecture.md`

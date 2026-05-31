@@ -210,7 +210,8 @@ Avoid:
 
 ## Related skills and examples
 
-- `examples/purchase-request-module-sprint-plan.md`
+- `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
+- `examples/purchase-request-module-sprint-plan.md` — conventional module/sprint mechanics only, not generated-SaaS target architecture
 - `../skills/akka-prd-to-specs-backlog/SKILL.md`
 - `../skills/akka-slice-spec-to-backlog/SKILL.md`
 - `../skills/akka-backlog-to-pending-tasks/SKILL.md`
