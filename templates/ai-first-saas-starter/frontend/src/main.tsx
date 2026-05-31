@@ -27,7 +27,8 @@ import {
   type SurfaceEnvelope,
   type WorkstreamEvent,
   type WorkstreamItem,
-  type WorkstreamSelection
+  type WorkstreamSelection,
+  type WorkstreamShellRequest
 } from './workstream';
 
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
@@ -345,10 +346,60 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   }
 
   async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
-    if (!ready) return false;
+    if (!ready || !me) return false;
     const submittedAt = Date.now();
     const pendingItemId = `composer-submitting-${submittedAt}`;
     const correlationId = `corr-composer-${submittedAt.toString(36)}`;
+    const shellRequest = buildComposerShellRequest(request.prompt, request.functionalAgentId, me.selectedAuthContext.selectedContextId, correlationId);
+    if (shellRequest) {
+      const shellResult = await workstreamClient.runShellRequest(shellRequest);
+      if (!shellResult.ok) {
+        const safeError = safeComposerErrorCopy(shellResult.error);
+        const errorItem: WorkstreamItem = {
+          itemId: `composer-shell-error-${Date.now()}`,
+          functionalAgentId: request.functionalAgentId,
+          kind: 'system-notification',
+          createdAt: new Date().toISOString(),
+          correlationId,
+          traceIds: [],
+          title: safeError.title,
+          body: `${safeError.body} Correlation ${shellResult.error.correlationId}.`,
+          status: safeError.status
+        };
+        setBootstrap((current) => current.status === 'ready'
+          ? { ...current, items: pruneWorkstreamItems([...current.items, errorItem]) }
+          : current);
+        return false;
+      }
+      const targetSurface = shellResult.value.resultSurface;
+      const requestItem = shellResult.value.requestItem;
+      const surfaceResponseItem: WorkstreamItem = {
+        itemId: `composer-shell-response-${targetSurface.surfaceId}-${submittedAt}`,
+        functionalAgentId: targetSurface.ownerFunctionalAgentId,
+        kind: 'surface',
+        createdAt: new Date().toISOString(),
+        correlationId: shellResult.value.correlationId,
+        traceIds: targetSurface.traceIds,
+        surfaceId: targetSurface.surfaceId,
+        title: targetSurface.title,
+        status: 'ready'
+      };
+      setRequestScrollTargetForCurrentSession(requestItem.itemId, targetSurface.ownerFunctionalAgentId);
+      rememberVisualSession(sessionForAgent(targetSurface.ownerFunctionalAgentId), { anchorSurfaceId: requestItem.itemId, selectedSurfaceId: targetSurface.surfaceId, userHasManualScroll: false });
+      setBootstrap((current) => {
+        if (current.status !== 'ready') return current;
+        const nextSurfaces = current.surfaces.some((surface) => surface.surfaceId === targetSurface.surfaceId)
+          ? current.surfaces.map((surface) => surface.surfaceId === targetSurface.surfaceId ? targetSurface : surface)
+          : [...current.surfaces, targetSurface];
+        return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, requestItem, surfaceResponseItem]) };
+      });
+      if (isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
+        updateSelection({ selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId, selectedSurfaceId: targetSurface.surfaceId, surfacePlacement: 'inline' });
+      } else {
+        markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem.itemId, 'info');
+      }
+      return true;
+    }
     const userRequestItem: WorkstreamItem = {
       itemId: `composer-request-${submittedAt}`,
       functionalAgentId: request.functionalAgentId,
@@ -492,6 +543,33 @@ function isMaterialBackgroundEvent(eventType: WorkstreamEvent['eventType']): boo
     || eventType === 'surface.workflow.progressed'
     || eventType === 'surface.stale'
     || eventType === 'surface.reconnected';
+}
+
+function buildComposerShellRequest(prompt: string, functionalAgentId: string, selectedContextId: string, correlationId: string): WorkstreamShellRequest | undefined {
+  const normalized = prompt.trim().toLowerCase().replace(/[.!?]+$/g, '').replace(/\s+/g, ' ');
+  if (!['dashboard', 'show dashboard', 'open dashboard', 'refresh dashboard', 'show command center', 'open command center'].includes(normalized)) return undefined;
+  return {
+    requestType: normalized.startsWith('refresh') ? 'refresh_surface' : 'show_surface',
+    origin: 'user_prompt',
+    displayText: prompt.trim(),
+    canonicalPrompt: `show dashboard for ${functionalAgentId}`,
+    targetFunctionalAgentId: functionalAgentId,
+    targetSurfaceId: dashboardSurfaceIdForAgent(functionalAgentId),
+    sourceFunctionalAgentId: functionalAgentId,
+    scope: 'current_workstream',
+    correlationId,
+    selectedContextId
+  };
+}
+
+function dashboardSurfaceIdForAgent(functionalAgentId: string): string {
+  switch (functionalAgentId) {
+    case 'agent-my-account': return 'surface-my-account-dashboard';
+    case 'agent-agent-admin': return 'surface-agent-admin-catalog';
+    case 'agent-audit-trace': return 'surface-audit-trace-dashboard';
+    case 'agent-governance-policy': return 'surface-governance-policy-dashboard';
+    default: return 'surface-user-admin-dashboard';
+  }
 }
 
 function safeComposerErrorCopy(error: ApiError): { title: string; body: string; status: 'blocked' | 'failed' } {

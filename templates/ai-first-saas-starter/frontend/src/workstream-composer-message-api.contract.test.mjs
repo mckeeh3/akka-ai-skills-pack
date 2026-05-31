@@ -26,6 +26,15 @@ test('composer submits normal prompts through backend workstream message API', (
   assert.doesNotMatch(main, /showUserDetail|showUsers|requestedSurface/);
 });
 
+test('composer routes dashboard prompts through backend shell requests instead of model runtime', () => {
+  assert.match(main, /function buildComposerShellRequest\(prompt: string, functionalAgentId: string, selectedContextId: string, correlationId: string\): WorkstreamShellRequest \| undefined/);
+  assert.match(main, /'show dashboard'/);
+  assert.match(main, /workstreamClient\.runShellRequest\(shellRequest\)/);
+  assert.match(main, /dashboardSurfaceIdForAgent\(functionalAgentId\)/);
+  assert.match(main, /case 'agent-user-admin'|default: return 'surface-user-admin-dashboard'/);
+  assert.match(main, /const shellRequest = buildComposerShellRequest\(request\.prompt, request\.functionalAgentId, me\.selectedAuthContext\.selectedContextId, correlationId\)/);
+});
+
 test('composer response appends returned items and markdown_response surface', () => {
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
   assert.match(main, /traceableAgentItem/);
