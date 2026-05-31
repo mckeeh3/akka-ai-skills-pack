@@ -79,7 +79,7 @@
 
 ### TASK-RIAC-01-002: Define prune and rewrite criteria
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/01-inventory-and-prune-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/01-inventory/02-define-prune-rewrite-criteria.md
 - depends on: [TASK-RIAC-01-001]
@@ -102,6 +102,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: define cleanup criteria`
+  - completed: created `prune-and-rewrite-criteria.md` with keep/rewrite/remove/demote criteria, mechanics-only labeling, reference-update rules, and stale-term searches
 
 ### TASK-RIAC-02-001: Align bootstrap, normalization, router, and change-impact skills
 
