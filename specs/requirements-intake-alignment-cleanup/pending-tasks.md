@@ -467,7 +467,7 @@
 
 ### TASK-RIAC-99-001: Verify requirements intake alignment cleanup completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/99-verification/01-verify-requirements-intake-alignment-cleanup.md
 - depends on:
@@ -515,3 +515,71 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: verify requirements intake cleanup`
+  - completed: created `final-verification.md`, compared completed work against sprint goals and mini-project done state, recorded stale-term/reference searches, and found one bounded active-guidance drift batch
+  - result: incomplete; appended `TASK-RIAC-06-001` and new terminal `TASK-RIAC-99-002`
+  - checks: `git diff --check`; broad stale-term/reference searches recorded in `final-verification.md`; exact `User Admin workstream v0|User Admin-only` search returned no matches
+
+### TASK-RIAC-06-001: Repair final active-guidance drift findings
+
+- status: pending
+- source: specs/requirements-intake-alignment-cleanup/final-verification.md
+- task brief: specs/requirements-intake-alignment-cleanup/tasks/06-final-repair/01-repair-final-active-guidance-drift.md
+- depends on: [TASK-RIAC-99-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/requirements-intake-alignment-cleanup/README.md
+  - specs/requirements-intake-alignment-cleanup/final-verification.md
+  - specs/requirements-intake-alignment-cleanup/prune-and-rewrite-criteria.md
+  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - skills/app-description-capability-modeling/SKILL.md
+- skills:
+  - none; bounded repository cleanup task
+- expected outputs:
+  - updated docs/examples/ai-first-saas-seed-app-description/README.md
+  - updated skills/app-description-capability-modeling/SKILL.md
+  - updated skills/README.md if the pending-task mechanics reference remains
+  - updated specs/requirements-intake-alignment-cleanup/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "User Admin v0 minimum slice|Prefer these example references when present:|purchase-request-pending-tasks.md" docs/examples/ai-first-saas-seed-app-description/README.md skills/app-description-capability-modeling/SKILL.md skills/README.md`
+- done criteria:
+  - three final-verification drift findings are repaired or explicitly justified as no longer material
+  - task changes and queue update are committed
+- notes:
+  - commit message: `riac: repair final intake drift`
+
+### TASK-RIAC-99-002: Verify requirements intake alignment cleanup after final repair
+
+- status: pending
+- source: mini-project verification loop after TASK-RIAC-06-001
+- task brief: specs/requirements-intake-alignment-cleanup/tasks/99-verification/02-verify-requirements-intake-alignment-cleanup-after-repair.md
+- depends on: [TASK-RIAC-06-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/requirements-intake-alignment-cleanup/README.md
+  - specs/requirements-intake-alignment-cleanup/conversation-capture.md
+  - specs/requirements-intake-alignment-cleanup/pending-tasks.md
+  - specs/requirements-intake-alignment-cleanup/content-inventory.md
+  - specs/requirements-intake-alignment-cleanup/prune-and-rewrite-criteria.md
+  - specs/requirements-intake-alignment-cleanup/final-verification.md
+  - specs/requirements-intake-alignment-cleanup/tasks/06-final-repair/01-repair-final-active-guidance-drift.md
+  - docs/agent-workstream-design-review-checklist.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/requirements-intake-alignment-cleanup/pending-tasks.md
+  - verification artifact or queue notes recording completion/follow-up findings
+  - newly appended follow-up tasks if gaps remain
+- required checks:
+  - `git diff --check`
+  - stale-term searches recorded in verification artifact or queue notes
+  - reference checks for removed files when applicable
+- done criteria:
+  - current repair task and overall mini-project done state are assessed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - task changes and queue update are committed
+- notes:
+  - commit message: `riac: verify final repair`
