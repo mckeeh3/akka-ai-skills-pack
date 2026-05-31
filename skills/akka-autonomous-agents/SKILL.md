@@ -32,8 +32,9 @@ Read when API details are needed:
 
 Before implementation, the task/spec must supply:
 - internal/background or explicit functional placement; do not promote it to a left-rail workstream unless product intent says so;
-- task capability ids for starting, assigning, querying, completing/failing, suspending/resuming, terminating, and streaming notifications;
+- task capability ids and governed-tool ids for starting, assigning, querying, completing/failing, suspending/resuming, terminating, and streaming notifications;
 - caller `AuthContext`, tenant/customer scope, roles/capabilities, model policy, tool boundary, approval gates, trace requirements, and provider-secret boundary;
+- internal workstream agent graph placement, delegation source, result/escalation surface, and whether exposed operations are agent-tools, internal-tools, workflow-tools, timer-tools, or consumer-tools;
 - task input/result DTOs, instructions, attachments, dependency behavior, idempotency, cancellation/failure behavior, and tests.
 
 Block or repair the task if these are missing for generated-app work.
@@ -59,6 +60,7 @@ Akka autonomous `AgentDefinition` is the SDK builder result returned by `Autonom
 - task definitions are typed and small;
 - task start/query/result/notification surfaces enforce backend authorization;
 - model config, provider secrets, and dynamic setup fail closed when invalid;
-- protected tools are registered only after `ToolPermissionBoundary` enforcement;
+- protected governed-tools are registered only after `ToolPermissionBoundary` enforcement and with explicit agent-tool/internal-tool exposure labels;
+- task start/query/result/notification paths preserve the governed-tool contract across workflows, timers, consumers, and browser APIs;
 - normal runtime does not use deterministic/demo/model-less substitutes;
 - tests use `TestModelProvider.AutonomousAgentTools` only as test infrastructure.

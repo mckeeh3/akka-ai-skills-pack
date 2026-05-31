@@ -21,9 +21,9 @@ Generate or review timer code that is:
 
 In AI-first SaaS implementations, use timed actions for scheduled capabilities: deadlines, reminders, expiries, periodic digests, stale-work rechecks, retry nudges, replay/simulation schedules, policy-review cadences, and outcome-measurement windows.
 
-Treat each timer-backed operation as a selected execution surface for a named backend capability, not as hidden background logic. Before coding, identify the capability id, scheduler authority, system/service principal, tenant/customer scope, payload schema, idempotency key, approval or policy reference, retry budget, denial/no-op behavior, and audit/work-trace obligations.
+Treat each timer-backed operation as a selected timer-tool/internal-tool execution surface for a named governed-tool inside a backend capability, not as hidden background logic. Before coding, identify the capability id, governed-tool id, scheduler authority, system/service principal, tenant/customer scope, payload schema, idempotency key, approval or policy reference, retry budget, denial/no-op behavior, and audit/work-trace obligations.
 
-Timers should trigger bounded follow-up rather than make hidden consequential decisions. When a timer affects delegated work, approval SLAs, exceptions, policy changes, tenant/customer data, or outcome reporting, make the target command idempotent and ensure the authoritative entity or workflow records the actor or system principal, tenant/customer scope, authorization/approval reference, decision, timeout, escalation, and trace/outcome event.
+Timers should trigger bounded follow-up rather than make hidden consequential decisions. When a timer affects delegated work, approval SLAs, exceptions, policy changes, tenant/customer data, internal workstream agent graph follow-up, or outcome reporting, make the target command idempotent and ensure the authoritative entity or workflow records the actor or system principal, tenant/customer scope, authorization/approval reference, decision, timeout, escalation, and trace/outcome event.
 
 Pair AI-first timed actions with:
 - `akka-workflows` for approval deadlines, exception escalation, plan retries, and long-running automation checkpoints

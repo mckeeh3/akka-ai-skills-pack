@@ -22,7 +22,7 @@ Generate or review view code that is:
 
 In AI-first SaaS work, use Views for supervision and accountability read models: command centers, active goal/plan lists, agent activity feeds, approval and exception queues, decision-card indexes, policy catalogs, audit search, digest inputs, outcome dashboards, and first-slice admin read models such as UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView.
 
-In capability-first backend design, a View usually realizes a curated read/evidence capability: scoped lists, dashboards, queues, search results, audit lookups, decision evidence, and agent-safe context retrieval. Define the capability contract before coding the View: allowed actors/callers, AuthContext, tenant/customer filters, row redaction, query parameters, pagination/streaming behavior, denial shape, data-access audit expectations, and tests. Do not expose a raw projection just because the source component has data; expose only the query shape the UI, API, workflow, or agent tool is authorized to use.
+In capability-first backend design, a View usually realizes a curated read/evidence capability or governed-tool: scoped lists, role-specific dashboard attention sources, surface graph payloads, internal workstream agent graph evidence, queues, search results, audit lookups, decision evidence, and agent-safe context retrieval. Define the capability contract before coding the View: capability id, governed-tool id when exposed as a browser-tool/agent-tool/internal-tool, allowed actors/callers, AuthContext, tenant/customer filters, row redaction, query parameters, pagination/streaming behavior, denial shape, data-access audit expectations, and tests. Do not expose a raw projection just because the source component has data; expose only the query shape the UI, API, workflow, or agent-tool is authorized to use.
 
 Views are derived projections, not the source of authority. Keep consequential decisions, policies, traces, approvals, and outcomes in entities, workflows, topics, or authoritative integrations, then project them into views for review, filtering, streaming, and reporting. Generated SaaS view rows and queries must carry tenant/customer scope fields where data is scoped, and endpoints exposing views must filter by authorized AuthContext rather than by frontend state.
 
@@ -189,7 +189,7 @@ Before finishing, verify:
 - tests use `Awaitility` instead of assuming immediate view updates
 - scoped views include tenant/customer filters in queries and endpoint/tool/resource callers enforce AuthContext before querying or streaming
 - admin read models include required filters for actor, target user, tenant, customer, role, membership status, invitation status, delivery status, action type, risk, due/expiry time, and time range where relevant
-- tests cover no cross-tenant/customer leakage, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, audit trace completeness, and forbidden access for protected view APIs
+- tests cover no cross-tenant/customer leakage, cross-scope filtering, redaction, pagination, stale invite/access-review queue correctness, audit trace completeness, and forbidden access for protected view APIs, browser-tools, and agent-tools
 
 ## Response style
 

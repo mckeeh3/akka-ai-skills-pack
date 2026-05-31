@@ -453,7 +453,7 @@
 
 ### TASK-WGGT-04-003: Update agent, internal-agent, and component routing
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/04-examples-implementation-routing-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/04-examples-implementation/03-update-agent-and-component-routing.md
 - depends on: [TASK-WGGT-04-002]
@@ -483,6 +483,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update agent graph routing`
+  - completed: updated agent-workstream, AI-first SaaS, capability-first backend, Akka Agent, AutonomousAgent, HTTP endpoint, workflow, view, consumer, and timed-action skills so agent/component routing consumes governed-tool contracts, distinguishes browser-tool/agent-tool/internal-tool/workflow-tool/timer-tool/consumer-tool exposures, records internal workstream agent graph delegation/result/escalation semantics, and requires capability/governed-tool contracts before component coding; checks: `git diff --check`; focused graph/governed-tool term search over edited skills
 
 ### TASK-WGGT-99-001: Verify workstream graph governed-tools completion
 

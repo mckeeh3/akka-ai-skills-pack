@@ -20,13 +20,13 @@ Generate or review workflow code that is:
 
 ## Capability-first substrate role
 
-Use workflows when a governed capability is long-running, consequential, retryable, approval-gated, compensating, supervised, or coordinated across agents/components. The capability contract must exist before implementation: capability id, allowed actors/callers, AuthContext and tenant/customer scope, input/output schemas, side effects, idempotency strategy, approval/escalation rules, audit/work-trace obligations, and selected exposure surfaces.
+Use workflows when a governed capability or governed-tool is long-running, consequential, retryable, approval-gated, compensating, supervised, or coordinated across agents/components. The capability contract must exist before implementation: capability id, governed-tool id, allowed actors/callers, AuthContext and tenant/customer scope, input/output schemas, side effects, idempotency strategy, approval/escalation rules, audit/work-trace obligations, and selected exposure surfaces.
 
-A workflow is the durable carrier of that capability execution. It preserves progress, authorization basis, policy decisions, approval state, retry/compensation status, trace ids, and supervision state across restarts. Endpoints, UI actions, agent tools, timers, and consumers may start or advance the workflow, but they must all preserve the same capability semantics.
+A workflow is the durable carrier of that governed-tool/capability execution. It preserves progress, authorization basis, policy decisions, approval state, retry/compensation status, trace ids, and supervision state across restarts. Endpoints, UI actions, agent-tools, timer-tools, consumer-tools, and internal-tools may start or advance the workflow, but they must all preserve the same capability semantics.
 
 ## AI-first substrate role
 
-In AI-first SaaS implementations, use workflows as durable execution plans for long-running automation, approval routing, exceptions, retries, compensation, deadlines, and deterministic agent orchestration. Keep the workflow state explicit about actor, tenant/customer scope, selected AuthContext or membership reference, plan progress, human decisions, policy gates, evidence or risk summaries needed by later steps, and trace/outcome identifiers. Use request-based `Agent` for bounded model work inside explicit steps. Use `Workflow + AutonomousAgent` when the workflow must launch, supervise, or wait on a durable model-driven internal/background task while the workflow retains business process authority.
+In AI-first SaaS implementations, use workflows as durable execution plans for long-running automation, approval routing, exceptions, retries, compensation, deadlines, and deterministic agent orchestration. Keep the workflow state explicit about actor, tenant/customer scope, selected AuthContext or membership reference, plan progress, human decisions, policy gates, evidence or risk summaries needed by later steps, and trace/outcome identifiers. Use request-based `Agent` for bounded model work inside explicit steps. Use `Workflow + AutonomousAgent` when the workflow must launch, supervise, or wait on a durable model-driven internal/background task while the workflow retains business process authority and records internal workstream agent graph delegation/result/escalation edges.
 
 ## Required reading before coding
 

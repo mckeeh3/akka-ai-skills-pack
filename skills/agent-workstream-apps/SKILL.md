@@ -85,16 +85,16 @@ For each user-facing work area, define:
 - workstream icon metadata owned by the workstream definition: stable icon id, visual hint derived from the workstream name/responsibility, accent color token, tooltip, aria label, and optional approved asset reference; shell realization must render approved SVG/icon-library artwork or semantic SVG fallback, not letter initials;
 - default dashboard, attention, or briefing surface;
 - workstream semantics and retention expectations;
-- prompt intent, governed documents, skills, reference documents, skill/reference manifests, tools, and tool boundaries when LLM behavior is involved;
+- prompt intent, governed documents, skills, reference documents, skill/reference manifests, governed-tools exposed as agent-tools or browser-tools, and tool boundaries when LLM behavior is involved;
 - surfaces it can render or reuse;
-- capabilities it can call directly or through tools/workflows;
+- capabilities it can call directly or through governed-tool exposures such as agent-tools, browser-tools, workflow-tools, or internal-tools;
 - escalation, approval, denial, exception, audit, trace, and test needs.
 
 Common foundation functional agents include My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing.
 
 ### 3. Distinguish internal agents
 
-Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests.
+Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. Model them as nodes in the internal workstream agent graph: the functional agent or workflow owns the virtual dashboard view of work to be delegated, chooses bounded worker nodes, records delegation/result edges, and escalates unresolved or high-risk outcomes back to human surfaces. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, governed-tool exposure as agent-tools/internal-tools, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests.
 
 ### 4. Define structured surfaces
 
@@ -110,7 +110,7 @@ Canonical surface types include dashboards, forms, tables, charts, detail cards,
 
 ### 5. Route through capabilities before components
 
-For every workstream action, surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call, load `capability-first-backend` and define actors, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests. Buttons, links, cards, rows, and workstream icons that open protected surfaces or workstreams are governed surface-request actions such as `open_workstream`, not ad hoc frontend jumps.
+For every workstream action, surface action, governed-tool exposure, agent-tool, browser-tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call, load `capability-first-backend` and define actors, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests. Buttons, links, cards, rows, and workstream icons that open protected surfaces or workstreams are governed surface-request actions such as `open_workstream`, not ad hoc frontend jumps.
 
 Frontend gating, prompt text, and tool descriptions are never authorization controls. Backend capabilities remain authoritative.
 
@@ -120,10 +120,13 @@ Before choosing a downstream path, produce the handoff contract in this order:
 
 ```text
 functional agents
-→ internal agents where applicable
+→ role-specific dashboards and attention items
+→ human surface graph nodes/actions
+→ internal workstream agent graph nodes/delegations/results where applicable
 → initial workstreams
 → structured surfaces
 → surface action-to-capability mappings
+→ governed-tool inventory with browser-tool/agent-tool/internal-tool/workflow-tool/timer-tool/consumer-tool exposure labels
 → candidate horizontal Akka components and skills
 ```
 
@@ -156,6 +159,8 @@ When this skill is used for planning, hand downstream work a concise model conta
 - initial workstreams, universal workstream icon descriptors, and default surfaces;
 - structured surface contracts or required follow-up to create them;
 - surface action-to-capability mappings;
+- internal workstream agent graph handoffs, worker responsibilities, and result/escalation surfaces when applicable;
+- governed-tools and their qualified exposure labels: browser-tool, agent-tool, internal-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool;
 - retained human authority, approval, escalation, and denial behavior;
 - required audit/work traces;
 - horizontal Akka component candidates and exact skills to load next;

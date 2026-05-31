@@ -74,7 +74,7 @@ capability = named operation or query
   + tests
 ```
 
-Agent tools, HTTP/gRPC/MCP endpoints, browser actions, workflow steps, timer callbacks, consumer reactions, view queries, and internal component methods are exposure or realization choices for capabilities. They are not the root abstraction.
+Governed-tools are the executable semantic operations inside a capability boundary. Agent-tools, browser-tools, HTTP/gRPC/MCP endpoints, workflow-tools, timer-tools, consumer-tools, view queries, and internal component methods are exposure or realization choices for those governed-tools/capabilities. They are not the root abstraction.
 
 ## Interpretation workflow
 
@@ -97,8 +97,9 @@ If this context is missing for a generated full-stack SaaS request, route throug
 
 ### 3. Inventory capabilities
 
-For each workstream operation, structured surface action, payload-producing query, tool, workflow step, API, timer, consumer reaction, or internal operation, define:
+For each workstream operation, structured surface action, payload-producing query, governed-tool, agent-tool, browser-tool, workflow step, API, timer, consumer reaction, or internal operation, define:
 - stable capability id/name in product language;
+- stable governed-tool id/name when the capability contains multiple executable operations;
 - purpose and business outcome;
 - allowed actors/callers: humans, agents, workflows, services, timers, consumers, support roles;
 - AuthContext, tenant/customer scope, roles, permissions, and named capability grants;
@@ -173,8 +174,8 @@ When this skill is used directly, produce or hand off:
 - actors/callers and AuthContext rules;
 - input/output schemas and validation notes;
 - side effects, idempotency, policy/approval, audit/trace obligations;
-- selected capability exposure channels and explicit non-exposures;
-- capability-to-Akka substrate/component mapping;
+- selected capability exposure channels and explicit non-exposures, using qualified terms such as browser-tool, agent-tool, internal-tool, workflow-tool, timer-tool, consumer-tool, and MCP-tool;
+- capability-to-governed-tool-to-Akka substrate/component mapping;
 - downstream skill routing;
 - tests required per capability, structured surface, and exposure channel;
 - open questions only where implementation would otherwise guess workstream ownership, authority, risk, approval, audit, or scope.
@@ -183,8 +184,8 @@ When this skill is used directly, produce or hand off:
 
 Avoid:
 - jumping from product language directly to CRUD entities or endpoints;
-- treating an agent tool as the backend design root;
-- exposing all component methods as tools because Akka supports component tools;
+- treating an agent-tool, browser-tool, endpoint route, or component method as the backend design root;
+- exposing all component methods as agent-tools because Akka supports component tools;
 - relying on prompt-only security, frontend-only filtering, or UI-hidden actions;
 - returning raw state dumps when a scoped/redacted evidence capability is needed;
 - letting one capability exposure channel drift from the capability's shared auth, idempotency, approval, or audit contract.

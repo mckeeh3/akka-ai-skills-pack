@@ -25,7 +25,7 @@ In generated AI-first SaaS implementations, distinguish two agent placements bef
 - **Functional/context-area agents** are user-facing, role-authorized workstream verticals such as User Admin, Agent Admin, Governance, Audit/Trace, Procurement, Finance, Support, or Sales Pipeline. They own a visible workstream context, default surfaces, callable capabilities, prompt/skill intent, tool boundaries, authority indicators, escalation behavior, traces, and UI tests.
 - **Internal agents** are bounded backend workers invoked by workflows, functional agents, tools, consumers, timers, or services for classification, summarization, routing, proposal drafting, extraction, evaluation, replay, or governance review. They are not left-rail application navigation units, but still require governed `AgentDefinition`, authority, tool boundaries, traces, and tests.
 
-Use request-based agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or tool use when one prompt turn or stream is the right unit. Use `akka-autonomous-agents` instead for durable task-oriented internal/background work with task ids, lifecycle, dependencies, failure/cancellation, snapshots, notifications, or model-driven coordination. Before coding, make responsibility, non-responsibility, functional/internal placement, allowed tools/data, tenant/customer scope, required permissions/capabilities, autonomous authority, policy gates, approval thresholds, escalation thresholds, session/memory behavior, and audit/work-trace obligations explicit. Use `akka-agent-behavior-profiles` first when agents are managed runtime actors with durable definitions, lifecycle, owner/steward, authority level, model references, tool permission boundaries, or admin UI. Use workflows for deterministic durable orchestration, approvals, retries, timeouts, and progress tracking instead of chaining request-based agents informally.
+Use request-based agents as bounded operational workers for planning, classification, recommendation, summarization, evaluation, explanation, or governed-tool use when one prompt turn or stream is the right unit. Use `akka-autonomous-agents` instead for durable task-oriented internal/background work with task ids, lifecycle, dependencies, failure/cancellation, snapshots, notifications, or model-driven coordination. Before coding, make responsibility, non-responsibility, functional/internal placement, internal workstream agent graph role when applicable, allowed governed-tools/data, tenant/customer scope, required permissions/capabilities, autonomous authority, policy gates, approval thresholds, escalation thresholds, session/memory behavior, and audit/work-trace obligations explicit. Use `akka-agent-behavior-profiles` first when agents are managed runtime actors with durable definitions, lifecycle, owner/steward, authority level, model references, tool permission boundaries, or admin UI. Use workflows for deterministic durable orchestration, approvals, retries, timeouts, and progress tracking instead of chaining request-based agents informally.
 
 ## Required reading before coding
 
@@ -113,7 +113,7 @@ Use this matrix before reading every governance companion. Load the first matchi
 | First install, tenant bootstrap, or upgrade import of implementation-developed default AgentDefinitions, prompts, skills, manifests, or tool boundaries | `akka-agent-seed-documents` | `akka-agent-governed-documents`, prompt/skill/tool-boundary skills |
 | Prompt versions, prompt review/activation, effective prompt assembly, prompt test console, or `PromptAssemblyTrace` | `akka-agent-prompt-governance` | `akka-agent-governed-documents`, `akka-agent-behavior-editing` |
 | Runtime skills, compact `AgentSkillManifest`, `readSkill(skillId)`, skill-load denials, or `SkillLoadTrace` | `akka-agent-skill-governance` | `akka-agent-tool-boundaries`, `akka-agent-governed-documents` |
-| Tool registry/catalog, local/component/MCP/readSkill grants, data scope, side effects, approval-required tool expansion, or tool invocation denials | `akka-agent-tool-boundaries` | `akka-agent-tools`, `akka-agent-component-tools`, `akka-agent-mcp-tools`, `akka-agent-work-trace` |
+| Governed-tool registry/catalog, agent-tool exposure, local/component/MCP/readSkill grants, data scope, side effects, approval-required tool expansion, or tool invocation denials | `akka-agent-tool-boundaries` | `akka-agent-tools`, `akka-agent-component-tools`, `akka-agent-mcp-tools`, `akka-agent-work-trace` |
 | Model aliases, `ModelConfigRef`, fallback policy, provider secret boundaries, tenant/agent/task model selection, or model-use traces | `akka-agent-model-governance` | `akka-agent-behavior-profiles`, `akka-agent-work-trace` |
 | Prompt/skill/manifest/tool-boundary/policy/rubric changes drafted by an editing agent with proposed diffs and review routing | `akka-agent-behavior-editing` | affected governance skill, `ai-first-saas-decision-cards` |
 | Agent execution explainability, prompt/skill/model/tool/data references, correlation, redaction, investigation UI, or trace search | `akka-agent-work-trace` | `ai-first-saas-audit-trace`, capability/component skills producing traces |
@@ -336,7 +336,8 @@ Before finishing, verify:
 - session id strategy is explicit
 - prompt and response type match each other
 - memory behavior is intentional
-- tools have rich `@FunctionTool` descriptions when used
+- each agent-tool maps to a named governed-tool/capability contract before registration
+- tools have rich `@FunctionTool` descriptions when used, but descriptions are not authorization controls
 - harness-like skill tools are whitelisted and backed by packaged resources or MCP, not arbitrary filesystem reads
 - structured response records are small and descriptive
 - workflow orchestration is used instead of agent-to-agent tool chaining
@@ -347,8 +348,9 @@ Before finishing, verify:
 - functional agents have workstream, structured surface, capability, authority, trace, and UI-test contracts before implementation
 - internal agents are not presented as primary navigation/workstream units unless promoted to a functional agent by product intent
 - AI-first agents have explicit authority boundaries, tenant/customer scope, required permissions, policy/approval gates, escalation criteria, and trace obligations
-- agent tools map to named capabilities and enforce backend authorization and audit before consequential data access or side effects
-- tests replace real models with `TestModelProvider` and cover forbidden/unauthorized tool or action attempts when relevant
+- agent-tools map to named governed-tools/capabilities and enforce backend authorization and audit before consequential data access or side effects
+- internal agents participating in an internal workstream agent graph record delegation, result, escalation, and denial traces
+- tests replace real models with `TestModelProvider` and cover forbidden/unauthorized governed-tool or action attempts when relevant
 
 ## Response style
 
