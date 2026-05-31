@@ -11,7 +11,7 @@ Use this doc as a concise bridge from broad requirements to an Akka implementati
    Include WorkOS/AuthKit user auth, local authorization, tenant/customer boundaries, `/api/me`, invitations/email, audit, managed-agent runtime governance, and the workstream UI shell unless the task is explicitly non-SaaS or repository-maintenance-only.
 
 3. **Decide one-workstream vs multi-workstream shape.**
-   Large PRDs must explicitly decide whether they describe one workstream, multiple workstreams, or shared foundation/cross-workstream work. Incremental inputs must name affected existing workstream graph nodes, surface edges, governed-tools, expertise bundles, and task/backlog entries instead of replanning from scratch.
+   Large PRDs must explicitly decide whether they describe one workstream, multiple workstreams, or shared foundation/cross-workstream work. Incremental inputs must name affected existing workstream graph nodes, role-specific dashboard attention items, surface edges, internal workstream agent graph delegations/results, governed-tools, expertise bundles, and task/backlog entries instead of replanning from scratch.
 
 4. **Identify workstreams and agents.**
    Define core and domain-specific workstreams, each backed by one functional/context-area agent for authenticated consequential work. Evaluate internal/background agents only where durable delegated work is justified.
@@ -35,7 +35,7 @@ Use this doc as a concise bridge from broad requirements to an Akka implementati
    The plan should include workstream decomposition decision, role-dashboard and attention model, human surface graph, internal workstream agent graph, workstream expertise plan, capability/governed-tool inventory, selected components, why each component exists, skill routing, implementation order, required tests, UI/API/realtime exposure, audit/work traces, and local runtime validation.
 
 11. **Materialize durable follow-on work when needed.**
-   Use pending questions for blockers and pending tasks for implementation only after vertical workstream/surface/governed-tool/capability contracts are present.
+   Use pending questions for blockers and pending tasks for implementation only after vertical workstream/surface/internal-agent/governed-tool/capability contracts are present. Queue entries for incremental changes must state whether they add, modify, reuse, split, deprecate, or verify existing graph nodes, edges, governed-tools, or expertise bundles.
 
 ## Preferred generated-SaaS example
 

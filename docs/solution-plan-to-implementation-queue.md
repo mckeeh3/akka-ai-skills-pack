@@ -38,9 +38,10 @@ Deferrals are allowed only when they narrow or rename the goal, are marked as bl
 
 Take these sections from the solution plan:
 - AI-first interpretation: delegated work, retained authority, durable objects, policy/approval/exception needs, traces, mandatory UI surfaces, and outcomes
+- workstream graph decision: new vs incremental input, affected workstreams, role-specific dashboard attention categories, dashboard trunks, changed surface graph nodes/edges, internal workstream agent graph responsibilities, and reused or changed backlog/task entries
 - functional agents, internal agents, workstream attention categories, dashboard contracts, workstream events, structured surfaces, and surface actions
 - workstream expert bundles for functional agents with LLM behavior: prompt intent, `SkillDocument` and `ReferenceDocument` families, `AgentSkillManifest` and `AgentReferenceManifest`, `ToolPermissionBoundary`, `readSkill`/`readReferenceDoc`, `SkillLoadTrace`/`ReferenceLoadTrace`, seed/import behavior, governance UI, and tests
-- governed capability inventory: ids/classes, actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure channels, and tests
+- governed capability and governed-tool inventory: ids/classes, actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, qualified exposure channels (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP), and tests
 - chosen Akka substrate and frontend/API/realtime outputs
 - AutonomousAgent task candidates for durable internal/background model-driven work, including task lifecycle, result surfaces, notifications, dependencies, failure/cancellation, and authorization/tool-boundary constraints
 - events, notifications, projections, left-rail/My Account attention summaries, and audit/work trace obligations
@@ -87,6 +88,7 @@ For each queue item:
 For reliable follow-on work across sessions, first convert unresolved blocking decisions into `specs/pending-questions.md` and answer them with `akka-do-next-pending-question`. Then convert unblocked implementation work into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
 
 When requirements evolve after the queue exists:
+- reconcile the change against the current workstream graph before appending work: affected workstreams, role-specific dashboards/attention, surface graph nodes/edges, internal workstream agent graph, governed-tools, capabilities, expertise bundles, tests, and existing queued tasks
 - use `akka-change-request-to-spec-update` for bounded feature requests, bugs, issues, or implementation discoveries
 - use `akka-revised-prd-reconciliation` for revised/replacement PRDs
 - use `akka-pending-question-queue-maintenance` to audit stale, duplicate, blocked, answered-but-unreconciled, or superseded question entries

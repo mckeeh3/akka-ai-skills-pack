@@ -358,7 +358,7 @@
 
 ### TASK-WGGT-03-004: Update concise usage and planning docs
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/03-intake-planning-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/03-intake-planning/04-update-usage-planning-docs.md
 - depends on: [TASK-WGGT-03-003]
@@ -383,6 +383,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update graph planning docs`
+  - completed: updated concise usage/planning docs to teach incremental reconciliation against workstream graphs, role-specific dashboards, human surface graph nodes/edges, internal workstream agent graphs, governed-tools, qualified exposure terms, workstream expertise, queue handoffs, and vertical module/sprint planning; checks: `git diff --check`; focused graph/governed-tool term search over edited docs
 
 ### TASK-WGGT-04-001: Update canonical examples
 

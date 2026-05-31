@@ -14,15 +14,18 @@ Use this flow when a user provides a PRD, requirements doc, feature request, fix
    - Use `../docs/minimum-ai-first-saas-app.md`, `../docs/ai-first-saas-application-architecture.md`, and `../docs/agent-workstream-application-architecture.md` for foundation doctrine.
 
 3. **Model the application as workstreams before pages or components**
-   - Identify functional/context-area agents, core vs domain-specific workstreams, internal/background agents when justified, attention categories, default dashboard/briefing needs, and retained human authority.
+   - Identify functional/context-area agents, core vs domain-specific workstreams, internal/background agents when justified, attention categories, role-specific dashboard surfaces, and retained human authority.
+   - For incremental input, reconcile against the existing workstream graph: affected workstreams, changed dashboards/attention items, surface nodes/edges, internal agent graph delegations, governed-tools, expertise bundles, and pending tasks.
    - Do not start from page trees, CRUD modules, resource APIs, navigation bars, database tables, or Akka component lists.
    - Use `../docs/requirements-to-workstream-development-process.md` for the canonical process.
 
-4. **Define structured surfaces and actions**
-   - Capture dashboard/default surfaces, system-message surfaces, detail/decision/evidence surfaces, states, accessibility expectations, and actions.
-   - Map every protected button, link, prompt suggestion, browser action, agent tool, workflow step, timer, or consumer reaction to a governed backend capability.
+4. **Define the human surface graph and internal agent graph**
+   - Treat role-specific dashboards as graph trunks that answer what requires attention for each actor.
+   - Capture surface nodes, system-message surfaces, detail/decision/evidence surfaces, surface-request/action edges, edge effects, states, trace links, accessibility expectations, and realtime/refresh behavior.
+   - Capture the internal workstream agent graph where relevant: virtual dashboard-agent view, worker agents, delegation edges, stop/escalation rules, result/proposal surfaces, and human attention items.
+   - Map every protected button, link, prompt suggestion, browser action, agent-tool, workflow step, timer, or consumer reaction to a governed backend capability and governed-tool.
 
-5. **Model governed backend capabilities**
+5. **Model governed backend capabilities and governed-tools**
    - Record capability id/class, callers, AuthContext, tenant/customer scope, schemas, validation, idempotency, approval/policy, side effects, audit/work traces, exposure surfaces, and tests.
    - Use `../docs/capability-first-backend-architecture.md` before selecting Akka components.
 
@@ -64,11 +67,13 @@ Broad input becomes implementation-ready only after this chain is explicit:
 
 ```text
 secure SaaS foundation
-→ functional agents/workstreams
-→ attention/dashboard or briefing contract
-→ structured surfaces/actions
-→ governed capabilities
-→ Akka substrate and exposure channels
+→ affected workstreams and functional agents
+→ role-specific dashboards and attention categories
+→ human surface graph and actions
+→ internal workstream agent graph when delegated work exists
+→ governed capabilities and governed-tools
+→ qualified exposure channels (browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP)
+→ Akka substrate
 → tests and local runtime/API/UI validation
 ```
 
