@@ -13,6 +13,13 @@ Purpose:
 - describe a functional AI-first operating-model baseline: goals, plans, governed runtime agents, managed prompts/skills/manifests/tool boundaries, decisions, policy gates, traces, and outcomes
 - map the seed app description to Akka Java components and frontend/backend integration patterns without replacing the runnable starter template
 
+Canonical graph example:
+- `user-admin-dashboard` is the dashboard trunk for the User Admin workstream; invitation failures, stale/expired invitations, access-review risks, support-access expiry, last-admin risks, and admin-audit anomalies are attention cards.
+- Branches from that trunk open `user-admin-user-list`, `user-admin-user-account`, `decision-card`, and `audit-trace-explorer` surface nodes through capability-backed surface graph edges.
+- Browser actions map to qualified governed-tools such as `admin.users.dashboard.read`, `admin.users.search`, `admin.invitations.resend`, `admin.access_review.resolve`, and `admin.audit.read`; action hints never replace backend authorization.
+- The internal workstream agent graph includes bounded workers such as `AccessReviewAgent`, `AdminRiskAgent`, `InvitationDraftAgent`, `RoleRecommendationAgent`, `SupportAccessReviewAgent`, and `AdminAuditSummaryAgent`; their results become dashboard attention, proposals, decision-card facts, or traces rather than direct unauthorized side effects.
+- `12-workstreams/workstream-expertise/user-admin-agent.md` is the canonical expertise bundle showing how the functional agent learns dashboard purpose, surface graph behavior, governed-tool boundaries, invitation expiry/resend semantics, denials, and user-help examples.
+
 Example root:
 
 ```text

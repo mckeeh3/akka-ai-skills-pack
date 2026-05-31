@@ -10,6 +10,10 @@ This inventory is reference material for the skills pack's secure AI-first SaaS 
 | `frontend-shell-integration-patterns` | `04-frontend-shell-and-integration-patterns.md` | read/evidence, command | signed-in user, tenant/customer admin, supervisor, auditor | browser-safe AuthContext, memberships, capabilities, frontend route/deep-link permissions | authenticated React/Vite workstream shell, functional-agent rail, typed API client, realtime UI states, surface action gating |
 | `managed-agent-foundation` | `05-managed-agent-foundation.md` | command, read/evidence, policy/governance, approval, trace/audit | Agent Steward, Tenant Admin, Policy Owner, Reviewer, Auditor, AgentBehaviorEditorAgent, runtime agent invocation service | tenant/customer-scoped AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, AgentWorkTrace | Agent Admin workstream, agent governance surfaces, prompt/skill governance surfaces, manifest/tool-boundary management, editing-agent proposals, protected HTTP APIs, authorized `readSkill(skillId)`, trace views |
 
+## Governed-tool placement
+
+Governed-tools live inside these capability files and surface/action maps, not in a separate top-level app-description layer. For example, the User Admin surface graph maps dashboard cards and actions to `secure-tenant-user-foundation` governed-tools such as `admin.users.dashboard.read`, `admin.users.search`, `admin.invitations.resend`, `admin.access_review.resolve`, `admin.support_access.read`, and `admin.audit.read`. Each governed-tool records its qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer use), AuthContext, idempotency, audit/work trace, denial categories, and implementation substrate before code generation.
+
 ## Capability contract checklist
 
 Each capability file should include enough detail to prevent generation-time invention:

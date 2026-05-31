@@ -11,26 +11,27 @@
 Dashboard payload is owned by the User Admin frontend API contract and must include:
 
 - selected `AuthContext`, scope label, scope type, tenant/customer ids when applicable, and browser-safe actor capabilities;
-- counts and trend cards for active users, pending invitations, suspended/disabled users, expiring support access, access-review items, and recent denied admin actions;
-- queues for invitation delivery failures, stale invitations, dormant admins, support-access expiry, last-admin risks, and agent recommendations;
+- counts and trend cards for active users, pending invitations, expired invitations requiring cleanup/resend decision, suspended/disabled users, expiring support access, access-review items, and recent denied admin actions;
+- queues for invitation delivery failures, stale/expired invitations, dormant admins, support-access expiry, last-admin risks, and internal-agent recommendations;
 - navigation affordances to `user-admin-user-list` with prefilled filters and to `user-admin-user-account` only through scoped user ids returned by backend views;
 - trace links: `correlationId`, `surfaceTraceId`, per-card `traceId`, and audit event ids where available;
 - redaction markers for totals or queues hidden by policy.
 
-## Allowed actions
+## Surface graph edges and allowed actions
 
-| Action | Capability hint | Result surface |
-|---|---|---|
-| Refresh dashboard | `admin.users.dashboard.read` | reload `user-admin-dashboard` |
-| Open all users / filtered queue | `admin.users.search` | `user-admin-user-list` with filter context |
-| Create invitation | `admin.invitations.create` | invitation form or decision card when risky |
-| Resend/revoke invitation from queue | `admin.invitations.resend`, `admin.invitations.revoke` | dashboard queue refresh plus audit trace |
-| Open access-review item | `admin.access_review.read` | list/detail or decision card |
-| Resolve low-risk review item | `admin.access_review.resolve` | dashboard queue refresh plus audit trace |
-| Open support-access queue | `admin.support_access.read` | `user-admin-user-list` filtered to support users/grants |
-| Open admin audit | `admin.audit.read` | `audit-trace-explorer` |
+| Action | Capability hint | Qualified exposure | Result surface |
+|---|---|---|---|
+| Refresh dashboard | `admin.users.dashboard.read` | browser-tool, agent-tool | reload `user-admin-dashboard` |
+| Open all users / filtered queue | `admin.users.search` | browser-tool | `user-admin-user-list` with filter context |
+| Open failed/stale/expired invitation queue | `admin.users.search`, `admin.invitations.*` | browser-tool | `user-admin-user-list` filtered to invitation status |
+| Create invitation | `admin.invitations.create` | browser-tool; human-confirmed agent-tool | invitation form or decision card when risky |
+| Resend/revoke invitation from queue | `admin.invitations.resend`, `admin.invitations.revoke` | browser-tool; human-confirmed agent-tool | dashboard queue refresh plus audit trace |
+| Open access-review item | `admin.access_review.read` | browser-tool, agent-tool | list/detail or decision card |
+| Resolve low-risk review item | `admin.access_review.resolve` | browser-tool; approval-gated internal-tool when policy allows | dashboard queue refresh plus audit trace |
+| Open support-access queue | `admin.support_access.read` | browser-tool, agent-tool | `user-admin-user-list` filtered to support users/grants |
+| Open admin audit | `admin.audit.read` | browser-tool, agent-tool | `audit-trace-explorer` |
 
-Allowed actions are display hints only; backend authorization remains authoritative.
+Allowed actions are display hints only; backend authorization remains authoritative. Each edge records origin dashboard card, selected `AuthContext`, correlation id, capability id, stale/forbidden state, and result surface id so system-message surfaces and workstream-agent explanations can reference the same graph transition.
 
 ## States
 

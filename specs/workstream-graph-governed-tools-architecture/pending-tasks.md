@@ -387,7 +387,7 @@
 
 ### TASK-WGGT-04-001: Update canonical examples
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/04-examples-implementation-routing-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/04-examples-implementation/01-update-canonical-examples.md
 - depends on: [TASK-WGGT-03-004]
@@ -413,6 +413,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update graph examples`
+  - completed: updated the requirements-to-workstream mini example and secure AI-first SaaS seed app-description examples to show User Admin role-specific dashboard trunk behavior, human surface graph branches, governed-tool exposure, internal workstream agent graph delegation, workstream expertise, and expired-invitation attention/resend semantics; checks: `git diff --check`; focused term search over updated examples
 
 ### TASK-WGGT-04-002: Update UI/API and browser-tool routing
 

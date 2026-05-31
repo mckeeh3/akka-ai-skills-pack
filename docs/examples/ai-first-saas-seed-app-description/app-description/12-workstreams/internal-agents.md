@@ -1,6 +1,29 @@
 # Internal Agents
 
-Internal agents support workstreams and backend flows without becoming left-rail navigation units.
+Internal agents support workstreams and backend flows without becoming left-rail navigation units. Each workstream may maintain an internal workstream agent graph: a virtual internal dashboard that decides which bounded worker can inspect evidence, draft a proposal, classify risk, create a decision-card payload, or report a result back to human dashboard attention.
+
+## User Admin internal workstream agent graph
+
+```text
+user-admin-agent internal dashboard
+├─ AccessReviewAgent
+│  ├─ reads: scoped memberships, invitations, support grants, audit/access-review views
+│  └─ writes: review recommendations, dashboard attention, decision-card facts; no autonomous role removal
+├─ AdminRiskAgent
+│  ├─ reads: proposed admin action, actor AuthContext, target state, policy evidence
+│  └─ writes: risk/confidence labels and denial/approval-route advice; no side effects
+├─ InvitationDraftAgent
+│  ├─ reads: invitation policy, target scope, requested roles, expired/failed delivery evidence
+│  └─ writes: invite/resend rationale and email preview; no raw token exposure and no default send side effect
+├─ RoleRecommendationAgent
+│  └─ writes: least-privilege recommendation or decision-card facts
+├─ SupportAccessReviewAgent
+│  └─ writes: expiring-grant summary and proposed revoke/extend decision facts
+└─ AdminAuditSummaryAgent
+   └─ writes: redacted audit/work-trace summary linked to dashboard or audit-trace surface
+```
+
+Worker output becomes human-visible only through a governed surface graph edge, dashboard attention item, system-message surface, decision card, or audit trace link.
 
 | Internal agent | Invoked by | Responsibility | Authority boundary | Primary traces/tests |
 |---|---|---|---|---|

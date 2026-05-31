@@ -26,17 +26,47 @@ Do not start by listing pages, database tables, CRUD endpoints, or Akka componen
 | `user_admin` | pending invitation, failed delivery, disabled account, access-review risk, last-admin risk | `surface.user_admin.dashboard.v1` | count reflects authorized unresolved user-admin attention items |
 | `audit_trace` | sensitive-read anomaly, denied action spike, export approval, trace investigation result | `surface.audit.dashboard.v1` | count reflects audit items the current user may inspect or approve |
 
-## Surfaces and actions
+## Surface graph and actions
 
-| Surface/action | Governed capability/API | Notes |
-|---|---|---|
-| `action.user_admin.refresh_dashboard` | `user_admin.dashboard.summary` | read-only dashboard query with AuthContext and tenant/customer scope |
-| `action.user_admin.open_invitation_queue` | `user_admin.invitations.search` | surface-request action; opens filtered list from dashboard queue |
-| `action.user_admin.resend_invitation` | `user_admin.invitations.resend` | command with idempotency key, permission check, Resend/captured-outbox path, audit |
-| `action.user_admin.start_access_review` | `user_admin.access_review.start` | starts deterministic review workflow and may launch internal investigation task |
-| `action.audit.open_trace` | `audit.traces.view` | redacted evidence query with sensitive-read audit when required |
+The User Admin dashboard is the trunk of the human surface graph. Dashboard attention cards branch to list/detail/evidence surfaces; surface actions are graph edges that either open another surface, invoke a browser-tool, emit a system-message surface, start internal-agent work, or refresh dashboard attention.
 
-Every browser button, workstream-agent tool, and system-message suggestion maps to one of these capabilities or to a declared follow-up capability.
+```text
+surface.user_admin.dashboard.v1
+├─ failed invitation delivery card
+│  ├─ action.user_admin.open_invitation_queue → surface.user_admin.user_list.v1[filter=failed_invites]
+│  ├─ action.user_admin.resend_invitation → browser-tool admin.invitations.resend → dashboard queue refresh + audit trace
+│  └─ action.user_admin.open_trace → surface.audit.trace_explorer.v1
+├─ access-review risk card
+│  ├─ action.user_admin.open_access_review → surface.user_admin.user_account.v1 or decision-card.v1
+│  └─ action.user_admin.start_access_review → internal-agent delegation request
+└─ admin audit anomaly card
+   └─ action.audit.open_trace → surface.audit.dashboard.v1 / audit-trace-explorer
+```
+
+| Surface/action | Governed capability/API | Qualified exposure | Notes |
+|---|---|---|---|
+| `action.user_admin.refresh_dashboard` | `admin.users.dashboard.read` | browser-tool, agent-tool | read-only dashboard query with AuthContext and tenant/customer scope |
+| `action.user_admin.open_invitation_queue` | `admin.users.search` | browser-tool | surface-request action; opens filtered list from dashboard queue |
+| `action.user_admin.resend_invitation` | `admin.invitations.resend` | browser-tool; human-confirmed agent-tool | command with idempotency key, permission check, Resend/captured-outbox path, audit |
+| `action.user_admin.start_access_review` | `admin.access_review.read` then `admin.access_review.resolve` when confirmed | browser-tool, internal-tool | starts review workflow and may launch internal investigation task; resolution remains authorized/approved |
+| `action.audit.open_trace` | `admin.audit.read` / `audit.traces.view` | browser-tool, agent-tool | redacted evidence query with sensitive-read audit when required |
+
+Every browser button, workstream-agent governed-tool, and system-message suggestion maps to one of these capabilities or to a declared follow-up capability.
+
+## Internal workstream agent graph and expertise
+
+The User Admin functional agent uses a virtual internal dashboard before delegating work:
+
+```text
+UserAdminAgent internal dashboard
+├─ InvitationDraftAgent → draft invite/resend rationale; no raw token access; default no send side effect
+├─ AccessReviewAgent → identify stale invitations, dormant admins, orphaned customer admins, and last-admin risks
+├─ AdminRiskAgent → classify role escalation, last-admin, support-access, and bulk-operation risk
+├─ RoleRecommendationAgent → propose least-privilege roles with evidence and alternatives
+└─ AdminAuditSummaryAgent → summarize scoped AdminAuditEvent/AgentWorkTrace evidence with redaction
+```
+
+The workstream expertise bundle for `user_admin` must teach the agent the dashboard purpose, surface graph branches, governed-tools, denial categories, invitation expiry/resend behavior, and examples of safe user help. Internal worker results create dashboard attention only when unresolved, risky, failed, blocked, or decision-producing; they do not bypass capability checks or human approval gates.
 
 ## Akka substrate selection after capability contracts
 

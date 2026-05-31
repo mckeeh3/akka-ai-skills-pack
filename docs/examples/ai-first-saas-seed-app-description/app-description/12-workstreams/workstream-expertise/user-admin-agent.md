@@ -86,18 +86,22 @@ Prompt assembly for `user-admin-agent` includes only compact manifest entries:
 
 The model may request a listed id through `readSkill(skillId)` or `readReferenceDoc(referenceId)`. The loader returns full content only after tenant/customer scope, active agent, active manifest assignment, document status, token/redaction limits, and `ToolPermissionBoundary` checks pass.
 
-## Capability and tool boundary map
+## Dashboard, surface graph, and governed-tool map
 
-| Capability/tool group | Agent use | Boundary |
-|---|---|---|
-| `admin.users.dashboard.read`, `admin.users.search`, `admin.users.detail.read` | Read and explain dashboard/list/detail state. | Selected `AuthContext`, tenant/customer filter, redacted outputs, audit/trace correlation. |
-| `admin.audit.read`, `admin.access_review.read`, `admin.support_access.read` | Summarize evidence and explain risks. | Read-only; preserve redaction and support-access scope. |
-| `admin.invitations.create/resend/revoke` | Draft rationale and prepare human-confirmed action payloads. | No raw tokens; send/resend/revoke require explicit user confirmation and capability authorization. |
-| `admin.memberships.*`, `admin.roles.*`, `admin.users.disable/reactivate`, `admin.support_access.grant/revoke/extend`, `admin.access_review.resolve` | Recommend, compare alternatives, and create decision-card facts for risky cases. | No autonomous side effects; last-admin, role escalation, support-access expansion, bulk operations, and low-confidence cases require decision-card approval. |
-| `admin.users.profile.patch`, `admin.users.identity_relink.request/complete` | Explain and route exceptional identity/profile actions. | Human-confirmed or approval-gated; identity relink/reset is risky by default. |
-| `readSkill(skillId)` | Load assigned active procedural skill text. | Requires `read_skill` grant, manifest assignment, active document/version, token/redaction checks, and `SkillLoadTrace`. |
-| `readReferenceDoc(referenceId)` | Load assigned active reference text. | Requires `read_reference` grant, manifest assignment, active document/version, token/redaction checks, and `ReferenceLoadTrace`. |
-| email/Resend preview/send tools | Preview invitation email content where allowed; send only through invitation capability. | No provider secrets; send requires invitation capability authorization, idempotency, and audit. |
+The expertise bundle must teach the functional agent to treat `user-admin-dashboard` as the role-specific dashboard trunk and `user-admin-user-list`, `user-admin-user-account`, `decision-card`, and `audit-trace-explorer` as graph branches. The agent should explain attention cards and action availability in terms of selected `AuthContext`, capability ids, qualified governed-tools, stale/forbidden states, trace ids, and denial categories.
+
+Expired-invitation example: if the dashboard shows an expired invitation, the agent may explain expiry, open the filtered invitation queue, draft a resend/reinvite rationale, or route a risky role request to a decision card. It must not expose raw tokens, silently resend email, or infer cross-scope invitation existence.
+
+| Capability / governed-tool group | Agent use | Qualified exposure | Boundary |
+|---|---|---|---|
+| `admin.users.dashboard.read`, `admin.users.search`, `admin.users.detail.read` | Read and explain dashboard/list/detail state. | agent-tool, browser-tool | Selected `AuthContext`, tenant/customer filter, redacted outputs, audit/trace correlation. |
+| `admin.audit.read`, `admin.access_review.read`, `admin.support_access.read` | Summarize evidence and explain risks. | agent-tool, browser-tool | Read-only; preserve redaction and support-access scope. |
+| `admin.invitations.create/resend/revoke` | Draft rationale and prepare human-confirmed action payloads. | browser-tool; human-confirmed agent-tool | No raw tokens; send/resend/revoke require explicit user confirmation and capability authorization. |
+| `admin.memberships.*`, `admin.roles.*`, `admin.users.disable/reactivate`, `admin.support_access.grant/revoke/extend`, `admin.access_review.resolve` | Recommend, compare alternatives, and create decision-card facts for risky cases. | browser-tool, internal-tool, approval-gated workflow-tool | No autonomous side effects; last-admin, role escalation, support-access expansion, bulk operations, and low-confidence cases require decision-card approval. |
+| `admin.users.profile.patch`, `admin.users.identity_relink.request/complete` | Explain and route exceptional identity/profile actions. | browser-tool, approval-gated workflow-tool | Human-confirmed or approval-gated; identity relink/reset is risky by default. |
+| `readSkill(skillId)` | Load assigned active procedural skill text. | agent-tool | Requires `read_skill` grant, manifest assignment, active document/version, token/redaction checks, and `SkillLoadTrace`. |
+| `readReferenceDoc(referenceId)` | Load assigned active reference text. | agent-tool | Requires `read_reference` grant, manifest assignment, active document/version, token/redaction checks, and `ReferenceLoadTrace`. |
+| email/Resend preview/send governed-tools | Preview invitation email content where allowed; send only through invitation capability. | browser-tool; narrowly granted agent-tool | No provider secrets; send requires invitation capability authorization, idempotency, and audit. |
 
 ## Required denials and safe recovery
 

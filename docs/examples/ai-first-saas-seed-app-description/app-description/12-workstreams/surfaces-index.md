@@ -13,6 +13,30 @@ Structured surfaces are typed renderable artifacts in functional-agent workstrea
 | `decision-card` | decision-card/v1 | Mission Control, Governance/Policy, User Admin | `surface-contracts/05-decision-card.md` | approve/reject/counter/defer/escalate → `governance-decisions-audit` | action permissions, conflict after other reviewer acts, evidence rendering. |
 | `audit-trace-explorer` | audit-timeline+search/v1 | Audit/Trace, User Admin, Agent Admin | `surface-contracts/06-audit-trace-explorer.md` | search/export scoped traces, including User Admin PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and denied loader evidence → `governance-decisions-audit`, `managed-agent-foundation` | redaction, tenant/customer filters, export denial, expertise trace visibility. |
 
+## Canonical User Admin surface graph
+
+`user-admin-dashboard` is the dashboard trunk for the User Admin workstream. It answers what requires Tenant Admin, Customer Admin, Auditor, or support-role attention before the UI opens list/detail surfaces.
+
+```text
+user-admin-dashboard
+├─ pending/failed/expired invitation attention
+│  ├─ open filtered queue → user-admin-user-list
+│  ├─ resend/revoke invitation → governed browser-tool admin.invitations.resend/revoke
+│  └─ inspect delivery trace → audit-trace-explorer
+├─ access-review and last-admin risk attention
+│  ├─ open affected actor → user-admin-user-account
+│  ├─ resolve low-risk item → governed browser-tool admin.access_review.resolve
+│  └─ route risky item → decision-card
+├─ support-access expiry attention
+│  ├─ open support users/grants → user-admin-user-list
+│  └─ inspect support audit → audit-trace-explorer
+└─ internal-agent recommendation attention
+   ├─ open recommendation evidence → user-admin-user-account or audit-trace-explorer
+   └─ approve/reject/counter/defer → decision-card
+```
+
+Dashboard edges preserve origin metadata, selected `AuthContext`, trace ids, and capability ids so the workstream agent and frontend can explain why an action is shown, denied, hidden, stale, or approval-gated.
+
 ## Surface rules
 
 - Surfaces are the primary UI contracts; conventional routes deep-link to surfaces but do not replace this index.
