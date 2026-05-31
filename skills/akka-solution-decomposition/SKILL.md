@@ -97,19 +97,22 @@ Before any coding, produce a component plan with these sections:
 3. Scope label (`minimum starter`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope)
 4. AI-first interpretation
 5. Core secure SaaS foundation
-6. Agent workstream model (functional agents, internal agents, workstreams, retained human authority)
-7. Workstream attention and dashboard model (`what needs my attention?`, dashboard summary cards, My Account aggregate, left rail counts)
-8. Structured surfaces and surface actions (surface ids/types, payload-producing queries, actions, events, states, trace links)
-9. Surface/action-to-capability mapping
-10. Autonomous task candidates and notification/projection mapping, when internal/background model-driven work exists
-11. Capability summary
-12. Capability-to-component mapping
-13. Chosen components
-14. Why each component exists
-15. Skill routing
-16. Open questions and assumptions
-17. Recommended implementation order by vertical workstream/attention/dashboard/surface/capability increments
-18. Required tests
+6. Workstream decomposition decision (one-workstream vs multi-workstream, affected workstreams, split/merge rationale)
+7. Agent workstream model (functional agents, internal agents, workstreams, retained human authority)
+8. Workstream attention and role-specific dashboard model (`what needs my attention?`, dashboard summary cards, My Account aggregate, left rail counts)
+9. Human surface graph and surface actions (dashboard trunk, surface nodes, edge actions, payload-producing queries, events, states, trace links)
+10. Surface/action-to-capability and governed-tool mapping
+11. Internal workstream agent graph, when internal/background model-driven work exists
+12. Autonomous task candidates and notification/projection mapping, when durable internal/background work exists
+13. Workstream expertise plan (prompt intent, skill/reference families, manifests, tool boundaries, denials, user-help examples)
+14. Capability and governed-tool inventory
+15. Capability-to-component mapping
+16. Chosen components
+17. Why each component exists
+18. Skill routing
+19. Open questions and assumptions
+20. Recommended implementation order by vertical workstream/attention/dashboard/surface/governed-tool/capability increments
+21. Required tests
 
 For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not use `com.example` as the generated application package unless explicitly requested; `com.example` in local examples is only reference material.
 
@@ -164,12 +167,15 @@ If the product is clearly not agentic, say so and continue with secure foundatio
 ### 3. Model functional agents, workstreams, and structured surfaces
 
 For generated full-stack SaaS input, load or apply `agent-workstream-apps` before backend capability mapping. Identify:
+- whether the PRD is one workstream, multiple workstreams, or an incremental change to existing workstream graph nodes/edges/governed-tools; preserve split/merge rationale and shared foundation/cross-workstream concerns;
 - role-authorized functional/context-area agents and any internal agents;
 - durable workstreams, retained human authority, default dashboard/attention surfaces, and supervision or decision surfaces;
 - per-workstream attention categories that answer `what needs my attention?`, including audience, severity/lifecycle, dashboard cards, left rail count implications, and My Account aggregate behavior;
-- structured surfaces with ids/types, payload-producing queries, allowed actions/forms, events, UI states, trace links, and reusable placement;
-- action result behavior: append surface, update surface, open modal/side panel/deep link, start workflow, or request approval;
-- backend capability candidates behind each surface action, agent tool, workflow step, API call, timer, consumer reaction, or internal operation;
+- role-specific dashboard variants for each affected actor, including summary cards, attention item sources, hidden/zero/forbidden states, and authoritative projection/query needs;
+- the human surface graph: dashboard trunk, surface nodes, surface-request/action edges, system-message nodes, result surfaces, edge effects, realtime/refresh behavior, and trace links;
+- backend capability and governed-tool candidates behind each surface action, payload-producing query, browser-tool, agent-tool, workflow step, API call, timer, consumer reaction, or internal operation;
+- workstream expertise needs: prompt intent, procedural skills, factual/process references, compact manifests, tool boundaries, denied-load behavior, governance owner, seed/import expectations, user-help examples, and tests;
+- the internal workstream agent graph: virtual dashboard agent responsibility, internal worker agents, delegation edges, stop conditions, escalation/handoff rules, result/proposal surfaces, and governed-tools allowed to each worker;
 - internal/background model-driven worker candidates, defaulting to Akka `AutonomousAgent` when typed tasks, snapshots/results, dependencies, notification streams, failure/cancellation, delegation, handoff, teams, or moderation fit;
 - events, notifications, authoritative attention projections, and audit/work traces that connect workstream actions, autonomous task progress/results, dashboards, My Account, and left rail indicators.
 
@@ -177,9 +183,10 @@ If a generated SaaS plan lacks this inventory, stop and add it or record a block
 
 ### 4. Derive governed capabilities before component selection
 
-Build a capability inventory from the functional-agent workstreams, structured surface actions, payload-producing queries, tools, workflow steps, APIs, timers, consumers, and internal operations before deciding entities, workflows, views, endpoints, tools, timers, consumers, or UI actions. For each operation or query, capture:
+Build a capability and governed-tool inventory from the functional-agent workstreams, role-dashboard attention sources, human surface graph edges, payload-producing queries, browser-tools, agent-tools, workflow steps, APIs, timers, consumers, autonomous task lifecycle operations, and internal operations before deciding entities, workflows, views, endpoints, timers, consumers, or UI actions. For each operation or query, capture:
 - stable capability id/name in product language
-- capability class: read/evidence, command, proposal, approval, workflow, policy/governance, trace/audit, scheduled, or reactive
+- stable governed-tool id/name when the operation is executable, plus qualified exposure terms (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP exposure)
+- capability/governed-tool class: read/evidence, command, proposal, approval, workflow, policy/governance, trace/audit, scheduled, reactive, task lifecycle, projection read, or integration action
 - purpose, actors/callers, human operating roles, delegated work, retained authority, and outcome loops when AI-first concerns exist
 - required AuthContext, tenant/customer scope, roles, permissions, named capability grants, and denial shape
 - input schema, validation rules, idempotency key, correlation id, and safe defaults
@@ -188,7 +195,7 @@ Build a capability inventory from the functional-agent workstreams, structured s
 - side effects: state changes, workflow starts, external calls, topics, timers, emails, notifications, or integrations
 - policy, approval, escalation, risk/confidence/impact thresholds, supervision, and governance requirements
 - audit/work-trace obligations for access, denials, approvals, side effects, tool activity, and data references
-- selected capability exposure channels: browser UI, HTTP/gRPC, MCP, agent tool/component tool, workflow step, timer action, consumer reaction, view/query, or internal-only
+- selected exposure channels: browser UI/browser-tool, HTTP/gRPC, MCP-tool, agent-tool/component tool, workflow step, timer action, consumer reaction, view/query/projection read, or internal-tool/internal-only
 - browser UI needs, including functional agents, workstream shell regions, structured surfaces, surface actions/forms, route/deep-link details, frontend state, realtime behavior, accessibility, and responsive requirements
 - AI and LLM needs, if genuinely prompt-driven
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and surface-specific tests
@@ -631,26 +638,40 @@ Use this exact response shape whenever the task starts from requirements:
 - governed runtime agents: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals, agent catalog/detail UI, and prompt/skill/reference/manifest/tool-boundary UI
 - audit and security tests:
 
+## Workstream decomposition decision
+- one-workstream vs multi-workstream:
+- affected workstreams:
+- split/merge rationale:
+- shared foundation or cross-workstream concerns:
+
 ## Agent workstream model
 - functional agents:
 - internal agents:
 - workstreams:
 - retained human authority:
 
-## Workstream attention and dashboard model
-- <workstream-id>: attention categories; target audience; severity/lifecycle; default dashboard cards; My Account aggregate behavior; left rail count/highest-severity behavior; authoritative projection/query; tests
+## Workstream attention and role-specific dashboard model
+- <workstream-id>/<role-or-actor>: attention categories; target audience; severity/lifecycle; default dashboard cards; My Account aggregate behavior; left rail count/highest-severity behavior; authoritative projection/query; tests
 
-## Structured surfaces and surface actions
+## Human surface graph and surface actions
+- trunk: <workstream-id>/<dashboard-surface-id>
 - <surface-id> (<surface-type>): owner functional agent; dashboard/attention placement; payload-producing queries; actions/forms; events; states; trace links; tests
+- <surface-edge-id>: from <surface-id> via <action/query/request> to <surface/result/effect>; governed-tool/capability; attention/projection effect; audit/work trace
 
-## Surface/action-to-capability mapping
-- <surface-id>/<action-id or query> → <capability-id>: <authority, input/output, result-surface, attention/projection effect, audit/trace summary>
+## Surface/action-to-capability and governed-tool mapping
+- <surface-id>/<action-id or query> → <capability-id>/<governed-tool-id>: <qualified exposure: browser-tool|agent-tool|internal-tool|workflow/timer/consumer/MCP>; <authority, input/output, result-surface, attention/projection effect, audit/trace summary>
+
+## Internal workstream agent graph
+- <workstream-id>: virtual dashboard agent; worker agents; delegation edges; allowed governed-tools/tool boundaries; stop/escalation/handoff rules; result/proposal surfaces; trace obligations
 
 ## Autonomous task candidates and notification/projection mapping
 - <task-candidate-id>: why request-based Agent is insufficient or why no AutonomousAgent is needed; task start/result/read/notification capabilities; owning workstream; dashboard/result surfaces; notification-to-attention rules; audit/work traces; tests
 
-## Capability summary
-- <capability-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; capability exposure channels; required tests
+## Workstream expertise plan
+- <functional-agent-id>: prompt intent; workstream skill documents; reference document families; compact manifests; tool boundaries; denied-load behavior; governance owner; seed/import expectations; user-help examples; tests
+
+## Capability and governed-tool inventory
+- <capability-id>/<governed-tool-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; qualified exposure channels; required tests
 
 ## Capability-to-component mapping
 - <capability-id> → <ComponentName / structured surface / exposure channel>: <realization responsibility and preserved capability semantics>
@@ -669,8 +690,8 @@ Use this exact response shape whenever the task starts from requirements:
 - question:
 - assumption:
 
-## Recommended implementation order by vertical workstream/attention/dashboard/surface/capability increments
-1. <functional agent> / <attention category> / <dashboard or surface> / <surface action or query> / <capability> → <components, autonomous task candidate if any, notifications/projections, traces, and tests>
+## Recommended implementation order by vertical workstream/attention/dashboard/surface/governed-tool/capability increments
+1. <functional agent> / <attention category> / <role dashboard or surface graph edge> / <surface action or query> / <governed-tool> / <capability> → <components, autonomous task candidate if any, notifications/projections, traces, and tests>
 2. ...
 
 ## Required tests
@@ -718,11 +739,13 @@ Before moving from planning to coding, verify:
 - minimum-starter plans include the five core workstream v0 starter: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces, backend capability boundaries, audit/work trace substrate, starter tests, and follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitations/onboarding, governed agent documents, and full security coverage
 - full-core plans include My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests in capability summary, component mapping, implementation order, and test plan
 - delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
-- generated SaaS plans include functional agents, internal agents where needed, durable workstreams, attention categories, dashboard contracts, structured surfaces, surface actions/events, and retained human authority before capability mapping
+- generated SaaS plans include the one-workstream vs multi-workstream decision, functional agents, internal agents where needed, durable workstreams, attention categories, role-specific dashboard contracts, human surface graph nodes/edges, surface actions/events, and retained human authority before capability mapping
 - left rail and My Account attention summaries derive from governed backend projections, not frontend-only badge logic
+- internal workstream agent graphs identify virtual dashboard agent responsibilities, worker agents, delegation edges, result/proposal surfaces, and escalation/handoff rules before autonomous task selection
 - durable internal/background model-driven work has been evaluated for Akka `AutonomousAgent` task semantics, with request-based `Agent` retained for immediate user-facing workstream turns
+- workstream expertise planning covers prompt intent, skill/reference families, compact manifests, tool boundaries, authorized loaders, denials, user-help examples, governance, and tests for new or materially changed LLM-backed functional agents
 - notifications are progress signals tied to events/projections/capabilities and are not treated as authority or source of truth
-- governed capabilities were derived from workstream operations, structured surface payload queries/actions, tools, workflow steps, APIs, timers, consumers, autonomous task lifecycle actions, and internal operations before Akka component selection
+- governed capabilities and governed-tools were derived from workstream operations, surface graph payload queries/actions, browser-tools, agent-tools, workflow steps, APIs, timers, consumers, autonomous task lifecycle actions, and internal operations before Akka component selection
 - every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, capability exposure channels, and tests, or an explicit open question
 - the core foundation implementation order includes separate managed-agent work for behavior profiles, prompt governance, skill governance/manifests/readSkill, reference governance/manifests/readReferenceDoc, trace records, behavior editing agent proposals, agent governance UI, and tests before app-specific domain features
 - every structured surface action or payload-producing query maps to a capability or an explicit decision not to expose one

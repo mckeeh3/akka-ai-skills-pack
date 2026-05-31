@@ -259,7 +259,7 @@
 
 ### TASK-WGGT-03-001: Update solution decomposition and PRD planning
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/03-intake-planning-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/03-intake-planning/01-update-solution-and-prd-planning.md
 - depends on: [TASK-WGGT-02-004]
@@ -286,6 +286,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update prd graph planning`
+  - completed: updated solution decomposition and PRD-to-specs planning guidance plus concise PRD flow/process docs to require one-workstream vs multi-workstream decisions, role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tool inventories, vertical implementation handoffs, and graph-preserving pending tasks; checks: `git diff --check`; focused graph/governed-tool term search over edited skills/docs
 
 ### TASK-WGGT-03-002: Update incremental change planning skills
 
