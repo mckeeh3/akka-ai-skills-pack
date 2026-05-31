@@ -2,53 +2,63 @@
 
 ## Purpose
 
-This document shows a concrete end-to-end example of how a single user revision request should flow through the description-first skill stack.
+This document shows how a natural user revision should flow through the description-first skill stack for a generated secure AI-first SaaS app.
 
-It is a **process example**, not just a file-structure example.
-It demonstrates how the harness should:
-- interpret flexible user input
-- normalize it
-- route it
-- update the right description layers
-- analyze change impact
-- reassess readiness
-- optionally answer review questions without generating code
+It is a **process example**. It demonstrates how the harness should:
+- interpret flexible user input;
+- normalize it without forcing skill names on the user;
+- route to the smallest relevant description layers;
+- update workstreams, surfaces, capabilities, tests, security, and observability in the right order;
+- analyze change impact;
+- reassess readiness;
+- answer review questions without prematurely generating code.
 
 Use this together with:
 - `docs/description-first-application-doctrine.md`
 - `docs/internal-app-description-architecture.md`
 - `docs/app-description-maintenance-flow.md`
-- `docs/examples/purchase-request-app-description/README.md`
+- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `docs/requirements-to-workstream-development-process.md`
+
+Purchase-request app-description files are mechanics-only references for older cross-linking patterns; they are not the target architecture for this workflow.
 
 ## Example context
 
-Assume the repository already contains the example app-description tree under:
+Assume the maintained `app-description/` already follows the secure AI-first SaaS seed shape and includes the five core workstream v0 starter:
 
-```text
-docs/examples/purchase-request-app-description/app-description/
-```
+- `my_account` — current user's profile, context, settings, and cross-workstream attention.
+- `user_admin` — users, memberships, invitations, access review, support access, and admin audit.
+- `agent_admin` — managed AgentDefinition, prompts, skills, references, manifests, tool boundaries, and model/runtime policy.
+- `audit_trace` — audit/work trace search, evidence views, and investigation support.
+- `governance_policy` — policy, approvals, exceptions, decision cards, and authority review.
 
-The current example already includes:
-- purchase-request capability definition
-- submission and approval behavior
-- acceptance, regression, negative, and operational verification
-- initial auth/security
-- initial observability
-- a readiness status of `ready-with-assumptions`
+The description already has first-class layers for:
+- `12-workstreams/functional-agents.md`
+- `12-workstreams/surfaces-index.md`
+- `surface-contracts/**`
+- capability contracts
+- behavior
+- tests
+- auth/security
+- observability
+- readiness and traceability
+- `55-ui/` browser realization guidance
 
 ## Example user prompt
 
-> tighten security so only managers can approve purchase requests, add audit visibility for approvals, and once that is updated tell me if the description is ready to generate
+> Add an access review flow where tenant admins can ask the User Admin Agent to investigate risky memberships, show a decision card for proposed fixes, require human approval before disabling access, and then tell me if the description is ready to generate.
 
 This is a good example because it is **mixed**:
-- it changes production constraints
-- it implies verification changes
-- it asks for a readiness review
-- it does **not** explicitly ask for generation yet
+- it changes a functional-agent workstream;
+- it adds or refines structured surfaces and actions;
+- it introduces a governed capability and approval gate;
+- it may require durable internal/background agent work;
+- it changes tests, security, observability, and readiness;
+- it asks for a review, not immediate code generation.
 
-## Step 1. `app-description-input-normalization`
+## Step 1. Normalize input
 
-First, normalize the prompt into a stable envelope.
+Load `app-description-input-normalization` and convert the prompt into a stable envelope.
 
 Expected normalized result shape:
 
@@ -56,7 +66,7 @@ Expected normalized result shape:
 # Normalized App Description Input
 
 ## Raw input summary
-- tighten approval security, add approval audit visibility, and assess readiness afterward
+- add tenant-admin access review investigation, decision card, approval-gated remediation, and readiness review
 
 ## Primary intent
 - mixed
@@ -66,20 +76,30 @@ Expected normalized result shape:
 - review
 
 ## Confirmed deltas
+- workstreams:
+  - User Admin workstream gains an access-review investigation path
+- functional agents:
+  - User Admin Agent can guide the review and explain proposed fixes
+- surfaces:
+  - access-risk investigation result surface
+  - decision card for proposed disable-access fixes
 - capabilities:
-  - none explicitly changed
+  - start access review investigation
+  - approve proposed access fix
+  - apply approved access fix
 - behavior:
-  - approval action is restricted to managers
+  - risky membership investigation proposes fixes but cannot disable access without human approval
 - tests:
-  - approval authorization and audit-related verification are implied
+  - approval-required, forbidden, audit/trace, and local runtime/UI checks are implied
 - auth/security:
-  - only managers may approve purchase requests
+  - tenant admin authority is required; cross-tenant and disabled-user paths deny
 - observability:
-  - approval actions require audit visibility
+  - investigation, proposal, approval, and applied fix require audit/work traces
 
 ## Candidate inferred deltas
-- negative verification should deny non-manager approval attempts
-- readiness may need reassessment because production constraints changed
+- durable investigation may be an AutonomousAgent task candidate
+- User Admin Agent normal user-facing turns remain request-based Akka Agent calls through the governed runtime path
+- My Account and left rail attention may show pending access-review decisions
 
 ## Realization request
 - none
@@ -87,158 +107,177 @@ Expected normalized result shape:
 ## Review request
 - readiness
 
-## Constraints and preferences
-- perform readiness review after description updates
-
 ## Open questions
-- should rejection be restricted to managers under the same rule?
-- what exact audit fields are required for approval visibility?
+- which risk signals are in scope for the first review version?
+- should disabling access affect all memberships or only the selected tenant/customer context?
 ```
 
 Why this matters:
-- the user did not ask for code generation
-- the prompt mixes security, observability, testing, and review intent
-- normalization prevents the harness from collapsing everything into a vague behavior edit
+- the prompt is not a hidden generation request;
+- the harness keeps workstream, surface, capability, security, and runtime implications separate;
+- unresolved risk-signal scope becomes a bounded question instead of an invented implementation detail.
 
-## Step 2. `app-description-intake-router`
+## Step 2. Route the normalized input
 
-Next, route from the normalized envelope.
+Load `app-description-intake-router` and select the smallest safe sequence.
 
 Expected routing result:
-- primary intent: `mixed`
-- next skill sequence:
-  1. `app-description-auth-security`
-  2. `app-description-observability`
-  3. `app-description-test-specification`
-  4. `app-description-change-impact`
-  5. `app-description-readiness-assessment`
-  6. `app-description-readiness-summary`
+
+1. `app-description-functional-agent-modeling`
+2. `app-description-surface-modeling`
+3. `app-description-capability-modeling`
+4. `app-description-behavior-specification`
+5. `app-description-auth-security`
+6. `app-description-observability`
+7. `app-description-test-specification`
+8. `app-description-ui` if browser realization contracts must change
+9. `app-description-change-impact`
+10. `app-description-readiness-assessment`
+11. `app-description-readiness-summary`
 
 Why this route:
-- capability scope is not changing
-- the main semantic change is auth/security
-- observability is explicitly requested
-- tests are implied by the requested change
-- readiness review is explicitly requested
-- generation is not requested
+- functional-agent responsibility and workstream behavior changed;
+- structured surfaces/actions must exist before UI realization details;
+- protected actions must map to capabilities before code or endpoints;
+- security, traces, tests, and readiness are affected;
+- generation is not requested.
 
-## Step 3. `app-description-auth-security`
+## Step 3. Update functional-agent and workstream model
 
-Update the auth/security layer first because the user explicitly tightened approval permissions.
+Update `12-workstreams/functional-agents.md` and related workstream index material.
 
-Likely affected artifact:
-- `docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
+Expected additions:
+- User Admin Agent responsibility includes access-review risk investigation guidance.
+- Durable risk investigations are marked as internal/background agent work candidates when typed lifecycle, snapshots, result review, cancellation, or handoff are needed.
+- The User Admin workstream attention model includes pending access-review decisions, risky membership findings, blocked investigations, and failed remediation attempts.
+- Workstream icon metadata and shell placement remain stable unless the user requested visual changes.
 
-Current relevant rule already says:
-- manager may approve or reject submitted requests within their authorization scope
+Important rule:
+- request-based Akka `Agent` remains the default for immediate User Admin Agent turns;
+- durable investigation work may route to `AutonomousAgent`, but it does not bypass capability authority or approval gates.
 
-A refined update could make the rule more explicit, for example:
-- only authenticated managers may approve submitted purchase requests
-- approval denial behavior must be explicit for non-manager callers
-- approval access must not expose protected request details beyond allowed denial semantics
+## Step 4. Update structured surfaces and actions
 
-The skill should also record open questions if needed, such as:
-- does the same manager-only rule apply to rejection?
-- are there narrower approval scopes than simply “manager”?
+Update `12-workstreams/surfaces-index.md` and `surface-contracts/**`.
 
-## Step 4. `app-description-observability`
+Expected surface contracts:
 
-Update observability next because the user explicitly asked for audit visibility for approvals.
+| Surface/action | Meaning |
+|---|---|
+| `surface.user_admin.access_review.dashboard.v1` | summary of active reviews, risky findings, pending decisions, and failed actions |
+| `surface.user_admin.access_review.finding.v1` | evidence view for one risky membership or risk cluster |
+| `surface.user_admin.access_review.decision_card.v1` | proposed fix with evidence, risk, confidence, authority basis, and approval actions |
+| `action.user_admin.start_access_review` | request investigation for selected tenant/customer scope |
+| `action.user_admin.approve_access_fix` | approve a proposed remediation |
+| `action.user_admin.apply_approved_access_fix` | apply only after approval and policy checks |
 
-Likely affected artifact:
-- `docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
+Each action must declare loading, empty, forbidden, stale, and error states where relevant. Actions are not frontend-only jumps; they map to capabilities.
 
-Current relevant rules already say:
-- emit auditable decision records for manager actions
-- log approval or rejection outcome
+## Step 5. Update capability contracts
 
-A refined update could make approval audit visibility more explicit, for example:
-- approval audit records must include request id, approver identity, decision outcome, and decision time
-- failed unauthorized approval attempts may need security-audit visibility depending on later policy
+Update the capability layer before choosing components.
 
-This skill should avoid overcommitting if the user did not specify exact audit fields.
-Those remain open questions or reasonable follow-up candidates.
+Expected capability shapes:
 
-## Step 5. `app-description-test-specification`
+- `user_admin.access_review.start` (`command` or `task lifecycle action`)
+  - caller: tenant admin in selected tenant/customer context
+  - side effects: creates review record or task, emits audit/work trace, updates attention projections
+  - substrate candidate: Workflow and/or AutonomousAgent task depending on lifecycle needs
 
-Update the test layer to make the security and observability changes explicit and verifiable.
+- `user_admin.access_review.propose_fix` (`internal tool/result`)
+  - caller: governed internal worker or request-based User Admin Agent through permitted tools
+  - side effects: records proposal evidence and trace; does not disable access
+  - approval: human approval required before any protected mutation
 
-Likely affected artifacts:
-- `docs/examples/purchase-request-app-description/app-description/30-tests/negative/01-forbidden-actions.md`
-- `docs/examples/purchase-request-app-description/app-description/30-tests/operational/01-audit-and-diagnosability.md`
+- `user_admin.access_review.approve_fix` (`approval`)
+  - caller: authorized tenant admin, with last-admin and separation-of-duty checks
+  - side effects: approval decision trace and pending application action
 
-Expected additions or refinements:
+- `user_admin.membership.disable_approved` (`command`)
+  - caller: workflow step or protected backend operation after approval
+  - side effects: membership state change, audit event, attention update, notification/projection update
 
-### Negative verification
-- given a non-manager caller
-- when they attempt to approve a submitted request
-- then the action is denied
+Capability contracts must include AuthContext, tenant/customer isolation, idempotency, policy/approval, audit/work trace, exposure surfaces, and tests.
 
-### Operational verification
-- given an authorized approval decision
-- when a manager approves a request
-- then an audit record exists with the required approval visibility fields
+## Step 6. Update behavior, security, observability, and tests
 
-This step turns the requested policy change into explicit verification expectations rather than leaving it as prose.
+Behavior should state that investigation can recommend but not autonomously disable access.
 
-## Step 6. `app-description-change-impact`
+Auth/security should specify:
+- tenant admin authority required;
+- disabled users denied;
+- cross-tenant targets denied;
+- last-admin and support-access constraints enforced;
+- backend checks required even if the UI hides actions.
 
-Now analyze what else must move.
+Observability should specify:
+- AdminAuditEvent for protected access changes;
+- AgentWorkTrace for model-backed investigation and recommendation;
+- PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, and ToolPermissionBoundary decisions when governed runtime agents are involved;
+- trace links from decision card to evidence and final action.
+
+Tests should add or update:
+- authorized start review;
+- forbidden cross-tenant or disabled-user attempt;
+- proposal cannot directly disable access;
+- approval required before mutation;
+- denied approval path;
+- audit/work trace linkage;
+- UI decision-card action smoke;
+- local runtime/API/UI validation for the named scope.
+
+## Step 7. Update UI realization only after contracts exist
+
+If the browser realization changes, update `55-ui/` after workstream, surface, capability, security, observability, and test meaning is clear.
+
+Expected UI guidance:
+- User Admin rail/workstream entry shows access-review attention counts from backend projections.
+- The main workstream renders structured surfaces and decision cards, not ad hoc pages.
+- Composer suggestions can request investigation but protected actions still call backend capabilities.
+- Forbidden and stale states are explicit.
+- No frontend secret or authorization shortcut is introduced.
+
+## Step 8. Analyze change impact
+
+Load `app-description-change-impact`.
 
 Expected impact result:
 
 ### Impacted authoritative layers
-- behavior: approval authorization semantics are sharpened
-- tests: negative and operational verification must reflect the new rule
-- auth/security: approval access rules are explicitly narrowed
-- observability: approval audit visibility is more specific
+- `12-workstreams/functional-agents.md`
+- `12-workstreams/surfaces-index.md`
+- `surface-contracts/**`
+- capabilities
+- behavior
+- auth/security
+- observability
+- tests
+- `55-ui/` if browser realization changed
 
 ### Impacted derived layers
-- `70-traceability/behavior-to-tests-map.md`
-- `70-traceability/change-impact-map.md`
-- `00-system/readiness-status.md`
-- optionally `80-review/latest-change-summary.md`
-
-### Likely affected generated outputs
-- approval-facing access-control surfaces
-- denial-path tests
-- audit/log emission behavior
-- possibly endpoint authorization behavior depending on realized architecture
+- traceability maps
+- readiness status
+- latest change summary
+- generated outputs for User Admin workstream, capabilities, backend components, API, UI, tests, and traces
 
 ### Regeneration recommendation
-- likely `localized`
-- because the semantic change is narrow and centered on approval authorization and approval audit visibility
+- localized to the User Admin access-review vertical if all foundation layers already exist;
+- not ready for generation if risk signals, approval policy, or runtime validation requirements remain blocking.
 
-Why this step matters:
-- even a small policy change affects more than one layer
-- without this step, stale tests or stale regeneration maps may survive
+## Step 9. Reassess readiness
 
-## Step 7. `app-description-readiness-assessment`
+Load `app-description-readiness-assessment`.
 
-Now reassess readiness.
+Possible result:
+- `not-ready` if risk-signal scope, approval policy, surface contracts, capability contracts, managed-agent runtime path, security tests, or local validation are underspecified.
+- `ready-with-assumptions` only if remaining assumptions are explicit and do not undermine the named runtime behavior.
+- `ready` only when the selected generation scope can be implemented and validated through the intended local runtime/API/UI path.
 
-Possible outcome:
-- `ready-with-assumptions`
+Readiness must fail if the normal user-facing workstream turn would bypass the governed Akka `Agent` runtime, if an AutonomousAgent task is used without capability authority, or if approval-gated mutations can occur through deterministic/demo/model-less shortcuts.
 
-Why not necessarily `ready`?
-- exact audit record shape may still be underspecified
-- the rejection path may still need clarification if the same manager-only rule must apply there
+## Step 10. Answer the user with a readiness summary
 
-Why not `not-ready`?
-- only if the remaining assumptions are non-runtime and the generated scope is explicitly narrowed
-- core behavior is already mature in the example
-- the new change is localized
-- the description may still be good enough for a useful narrowed realization step, as long as assumptions are surfaced and no named runtime feature depends on them
-
-A good readiness result here would say:
-- behavior completeness: acceptable only for the named scope
-- test completeness: acceptable if negative, operational, and local runtime/manual validation cases were updated
-- auth/security completeness: acceptable only when role-scope rules are explicit enough for backend enforcement and denial tests
-- observability completeness: acceptable only when audit/work-trace behavior needed to prove the feature is specified; exact field refinements may remain non-runtime follow-up
-
-## Step 8. `app-description-readiness-summary`
-
-Because the user asked whether the description is ready to generate, the harness should answer directly in prompt/response form.
+Load `app-description-readiness-summary` and answer directly.
 
 Example summary shape:
 
@@ -246,66 +285,66 @@ Example summary shape:
 # App Description Readiness Summary
 
 ## Current state
-- ready-with-assumptions
+- not-ready for unrestricted generation
+- ready only for a narrowed design pass if risk-signal scope remains open
 
 ## Why
-- the purchase-request description is already structurally complete
-- the new revision tightened approval authorization and approval audit visibility without changing the broader capability set
-- linked negative and operational verification can be updated locally
+- the User Admin workstream, surfaces, capabilities, security, observability, and tests were updated for access review
+- protected remediation is approval-gated and traceable
+- generation still depends on confirmed risk signals and selected local validation scope
 
 ## Key gaps or assumptions
-- approval audit fields may still need one more pass if strict audit schema is required
-- confirm whether manager-only restriction applies equally to rejection
+- confirm first-version risk signals
+- confirm tenant/customer scope of disabled access
+- confirm whether durable investigation requires AutonomousAgent task lifecycle or a bounded request-based Agent turn is enough
 
 ## Recommendation
-- continue description work if any approval auth, rejection auth, audit/work-trace, denial, API/UI action, or local validation behavior is still needed to prove the named feature
-- otherwise the description is sufficient for a narrowed generated evaluation build whose completed features must run through the real local Akka/API/UI path
-
-## Suggested next step
-- if you want, explicitly ask to generate the app from the current description
+- answer the blocking questions or narrow the first implementation slice
+- generate only after readiness confirms workstream UI, governed agent runtime, capabilities, security, traces, and local runtime/API/UI validation are complete for the selected scope
 ```
 
-## Optional Step 9. User now asks for generation
+## Optional Step 11. User later asks for generation
 
 If the user then says:
 
-> ok, generate the app
+> ok, generate it
 
 then the next path is:
-1. `app-description-readiness-assessment` confirm current state
-2. `app-generate-app`
-3. optional run/test/evaluation steps
-4. generation summary
+1. reassess readiness for the selected scope;
+2. run `app-generate-app` only if readiness is sufficient or the user accepts a narrowed generation scope;
+3. materialize specs/backlog/pending tasks as needed;
+4. implement and validate through the intended local runtime/API/UI path.
 
-Important rule:
-- the harness should not treat the original prompt as a hidden generation request
-- generation begins only after explicit user request or accepted harness recommendation
+The original revision prompt must not be treated as an implicit generation request.
 
 ## What this example proves
 
 This workflow shows that a natural user revision can be handled without:
-- direct code editing
-- direct internal-doc editing by humans
-- premature generation
-- collapsing all changes into one vague “update the spec” step
+- direct code editing;
+- page-first or CRUD-first decomposition;
+- hidden generation;
+- bypassing governed capabilities;
+- treating agent recommendations as authority to mutate protected state;
+- losing audit/work trace or runtime validation obligations.
 
 It also shows the intended value of the skill stack:
-- normalization gives structure
-- routing chooses the smallest next steps
-- layer-specific skills update the right internal artifacts
-- change-impact prevents stale links and stale outputs
-- readiness produces a clear go/no-go judgment
-- review remains prompt/response oriented
+- normalization gives structure;
+- routing chooses minimal next skills;
+- workstream, surface, capability, and UI layers stay separate;
+- change-impact prevents stale maps and generated-output assumptions;
+- readiness gives a clear go/no-go/narrowing judgment.
 
 ## Minimal checklist for future workflow examples
 
 When creating additional workflow examples, show:
-1. the raw user prompt
-2. the normalized envelope
-3. the routing decision
-4. the layer-specific updates
-5. the change-impact result
-6. the readiness result
-7. the final review response
-
-That is the minimum path needed to validate the description-first operating model in practice.
+1. raw user prompt;
+2. normalized envelope;
+3. routing decision;
+4. functional-agent/workstream impact;
+5. surface/action impact;
+6. capability impact;
+7. security, observability, and test impact;
+8. UI realization impact, if any;
+9. change-impact result;
+10. readiness result;
+11. final review response.

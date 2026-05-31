@@ -1,84 +1,81 @@
 # PRD-to-Akka flow
 
-Use this mini-example set when you want a concrete pattern for planning mechanics. For generated SaaS architecture, start from the mandatory secure foundation, AI-first SaaS seed reference, and `requirements-to-workstream-development-process.md` before using these conventional examples.
+Use this doc as a concise bridge from broad requirements to an Akka implementation plan. For generated SaaS apps, the starting point is always the secure AI-first SaaS workstream model, not a conventional resource/API/component list.
 
-1. read a small requirements artifact
-2. apply the secure SaaS foundation and classify AI-first SaaS concerns before CRUD/page/component decomposition
-3. model workstreams, attention categories, dashboard contracts, structured surfaces, and surface actions
-4. map surface actions and workstream events to governed capability/API contracts
-5. select Akka substrate only after capability, AuthContext, approval/policy, audit/trace, notification/projection, and participant semantics are clear
-6. preserve request-based Agent turns for immediate workstream interactions and evaluate durable internal/background work as AutonomousAgent task candidates
-7. produce an Akka solution plan before coding
-8. route to the minimal focused skills
-9. implement bounded vertical increments in the recommended order
+## Canonical planning sequence
 
-## Generated SaaS process example
+1. **Read the PRD or input artifact completely.**
+   Preserve user domain language and identify explicit constraints, roles, outcomes, data boundaries, integrations, and delivery expectations.
 
-For installed-pack users, start with:
-- `examples/requirements-to-workstream-mini-example.md` — compact target architecture example showing input/PRD → workstreams → attention → dashboards → surfaces/actions → governed capabilities/APIs → selected Akka substrate → request-based Agents/AutonomousAgent candidates → events/notifications/projections → audit/work traces → task shape.
+2. **Apply the mandatory generated-SaaS foundation.**
+   Include WorkOS/AuthKit user auth, local authorization, tenant/customer boundaries, `/api/me`, invitations/email, audit, managed-agent runtime governance, and the workstream UI shell unless the task is explicitly non-SaaS or repository-maintenance-only.
 
-## Conventional mechanics reference pair
+3. **Identify workstreams and agents.**
+   Define core and domain-specific workstreams, each backed by one functional/context-area agent for authenticated consequential work. Evaluate internal/background agents only where durable delegated work is justified.
 
-Requirements input:
-- `examples/purchase-request-prd.md`
+4. **Break down attention and default surfaces.**
+   For each workstream, answer `what needs my attention?` and describe dashboard/briefing surfaces, system-message surfaces, detail/decision/evidence surfaces, left-rail indicators, and My Account aggregation.
 
-Resulting solution plan:
-- `examples/purchase-request-solution-plan.md`
+5. **Map actions to governed capabilities.**
+   Every browser action, surface request, prompt suggestion, request-based Agent tool, AutonomousAgent task operation, workflow step, timer, consumer reaction, and API endpoint must map to a capability contract with AuthContext, scope, schemas, side effects, idempotency, approval/policy, audit/work traces, and tests.
 
-Example pending task queue:
-- `examples/purchase-request-pending-tasks.md`
+6. **Select Akka substrate after capability contracts.**
+   Choose Entities, Workflows, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, request-based Agents, and AutonomousAgents based on capability semantics and participant lifecycle.
 
-Example module/sprint planning shape for larger PRDs:
-- `examples/purchase-request-module-sprint-plan.md`
+7. **Produce an implementation handoff.**
+   The plan should include capability summary, selected components, why each component exists, skill routing, implementation order, required tests, UI/API/realtime exposure, audit/work traces, and local runtime validation.
 
-These purchase-request files are a mechanics reference for planning shape only; they are not the generated SaaS target architecture.
+8. **Materialize durable follow-on work when needed.**
+   Use pending questions for blockers and pending tasks for implementation only after vertical workstream/surface/capability contracts are present.
 
-## How to use the pair
+## Preferred generated-SaaS example
 
-### As a learning example
-Read the PRD first, then compare it with the solution plan.
+Start with:
+- `examples/requirements-to-workstream-mini-example.md`
 
-### As a reusable prompt pattern
-Use a prompt like:
+That compact example shows the required chain:
 
 ```text
-read docs/examples/purchase-request-prd.md,
-then produce an Akka solution plan with:
-- full-stack secure AI-first SaaS interpretation, including mandatory foundation and UI surfaces
-- requirements-to-workstream chain: workstreams, attention/dashboard, surface action, capability, AutonomousAgent task candidate, notification/projection, and trace context
-- capability summary
-- chosen components
-- why each component exists
-- skill routing
-- implementation order
-- required tests
+input/PRD
+→ workstreams and functional agents
+→ attention and dashboards
+→ surfaces/actions
+→ governed capabilities/APIs
+→ Akka substrate
+→ Agent/AutonomousAgent choices
+→ events, projections, traces
+→ task shape
 ```
 
-### As a coding handoff
-Once the solution plan is accepted, treat it as the implementation contract.
-If AI-first concerns are present, preserve delegated authority, policy/approval rules, trace obligations, supervision UI, and outcome semantics in every downstream backlog or task. For generated SaaS, also preserve workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, AutonomousAgent task lifecycle when applicable, notifications/projections, and local validation path.
-Load only the Stage 3 skills named in the plan and generate code component by component, with corresponding tests for each component family.
-For reliable multi-session execution, materialize follow-on work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context. For larger PRDs, prefer module-oriented sprint planning with `specs/modules/` and `specs/sprints/` so each module increment can be built and tested full stack before the next sprint.
-For iterative changes after the initial plan, use `akka-change-request-to-spec-update`; for revised PRDs, use `akka-revised-prd-reconciliation`; for stale or large queues, use `akka-pending-task-queue-maintenance`.
-For queue templates, see `module-sprint-planning.md`, `solution-plan-to-implementation-queue.md`, and `pending-task-queue.md`.
+Use it with:
+- `requirements-to-workstream-development-process.md`
+- `ai-first-saas-application-architecture.md`
+- `capability-first-backend-architecture.md`
+- `examples/ai-first-saas-seed-app-description/README.md`
 
-## What the example demonstrates
+## Conventional mechanics references
 
-The example is not an AI-first SaaS target architecture; it intentionally stays close to a conventional approval workflow while demonstrating decomposition mechanics.
-For generated SaaS foundation structure, start with `examples/ai-first-saas-seed-app-description/README.md`.
+These files remain useful only for conventional planning mechanics such as comparing an input artifact to a solution plan, seeing queue formatting, or reviewing module/sprint file shape:
 
-The purchase-request example intentionally includes enough scope to justify multiple component families:
-- one write model
-- one durable orchestration flow
-- one read model
-- one timed behavior
-- one async integration bridge
-- one HTTP API surface
+- `examples/purchase-request-prd.md`
+- `examples/purchase-request-solution-plan.md`
+- `examples/purchase-request-pending-tasks.md`
+- `examples/purchase-request-module-sprint-plan.md`
 
-It is still small enough for future agents to load cheaply.
+They are **not** the canonical generated AI-first SaaS target architecture. Do not copy their page/resource/CRUD decomposition as the primary model for a generated app. If you use them, first apply the secure SaaS foundation, workstream/surface/capability chain, and runtime completion standard above.
 
-## Related docs
+## Prompt pattern for a direct solution plan
 
-- `intent-driven-usage-flow.md`
-- `../skills/README.md`
-- `../skills/akka-solution-decomposition/SKILL.md`
+```text
+Read <requirements-file> and produce an Akka solution plan that starts from:
+- mandatory secure AI-first SaaS foundation and five-core starter implications where applicable
+- workstreams, functional agents, attention categories, and default surfaces
+- structured surfaces/actions and governed capabilities with AuthContext, policy, audit/work traces, and tests
+- selected Akka substrate only after capability contracts are clear
+- request-based Agent vs AutonomousAgent choices where model-backed work is in scope
+- implementation order, focused skill routing, and local runtime/API/UI validation
+```
+
+## Coding handoff rule
+
+Once accepted, the solution plan is the implementation contract. Downstream backlog and task entries must preserve workstream id, attention category or surface/action, capability id/class, AuthContext/scope, selected substrate, API/frontend/realtime exposure, events/projections, audit/work traces, and validation path. If a task loses that context, repair the plan or queue before coding.

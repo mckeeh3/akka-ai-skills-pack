@@ -1,63 +1,75 @@
 # Intent-driven usage flow
 
-Use the repository in this sequence:
+Use this flow when a user provides a PRD, requirements doc, feature request, fix, adjustment, API sketch, UI brief, or other broad product input.
 
-1. **Read the input artifact first**
-   - PRD
-   - requirements doc
-   - user story
-   - process description
-   - API sketch
-   - UI brief
-   - other spec file
+## Default sequence
 
-2. **Apply AI-first interpretation when applicable**
-   - use `../skills/ai-first-saas/SKILL.md` before CRUD or component decomposition when the input involves delegated operational work, agents, approvals, exceptions, policy-controlled automation, supervision, audit, or outcome accountability
-   - identify delegated work, retained human authority, durable goals/plans, policies, decisions, traces, UI surfaces, and outcome loops only where the product intent justifies them
+1. **Read the input completely**
+   - Preserve the user's domain terms.
+   - Do not make the user name skills, stages, files, or architecture patterns.
 
-3. **Decompose before coding**
-   - start with `../skills/akka-solution-decomposition/SKILL.md`
-   - identify the Akka component set, boundaries, and delivery model
-   - preserve any AI-first operating-model context in the solution plan before mapping to entities, workflows, views, agents, endpoints, or UI
+2. **Apply the secure AI-first SaaS default**
+   - For generated applications, begin from the mandatory secure SaaS foundation unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
+   - Minimum/basic/starter/chatbot-like generated SaaS requests mean the five core workstream v0 starter: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+   - Use `../docs/minimum-ai-first-saas-app.md`, `../docs/ai-first-saas-application-architecture.md`, and `../docs/agent-workstream-application-architecture.md` for foundation doctrine.
 
-4. **Resolve focused structural decisions**
-   - use `../skills/akka-entity-type-selection/SKILL.md` when the remaining question is Event Sourced Entity vs Key Value Entity
-   - use other focused routing in `../skills/README.md` when the solution shape is partly known but one design choice is still open
+3. **Model the application as workstreams before pages or components**
+   - Identify functional/context-area agents, core vs domain-specific workstreams, internal/background agents when justified, attention categories, default dashboard/briefing needs, and retained human authority.
+   - Do not start from page trees, CRUD modules, resource APIs, navigation bars, database tables, or Akka component lists.
+   - Use `../docs/requirements-to-workstream-development-process.md` for the canonical process.
 
-5. **Queue unresolved decisions when needed**
-   - use `../skills/akka-pending-question-generation/SKILL.md` when open decisions should be answered before safe task generation or implementation
-   - include AI-first blockers when the harness would otherwise guess authority, approval gates, policy/risk thresholds, evidence, trace obligations, supervision UI, evaluation, or outcome metrics
-   - use `../skills/akka-do-next-pending-question/SKILL.md` to ask or reconcile one question at a time from `specs/pending-questions.md`
-   - use `../skills/akka-pending-question-queue-maintenance/SKILL.md` to audit stale, duplicate, blocked, or unreconciled questions
+4. **Define structured surfaces and actions**
+   - Capture dashboard/default surfaces, system-message surfaces, detail/decision/evidence surfaces, states, accessibility expectations, and actions.
+   - Map every protected button, link, prompt suggestion, browser action, agent tool, workflow step, timer, or consumer reaction to a governed backend capability.
 
-6. **Load only the focused implementation skills**
-   - use `../skills/README.md`
-   - read only the Stage 3 skills that match the chosen components
+5. **Model governed backend capabilities**
+   - Record capability id/class, callers, AuthContext, tenant/customer scope, schemas, validation, idempotency, approval/policy, side effects, audit/work traces, exposure surfaces, and tests.
+   - Use `../docs/capability-first-backend-architecture.md` before selecting Akka components.
 
-7. **Generate code and tests last**
-   - treat the accepted solution plan as the implementation contract for downstream work
-   - for durable multi-session work, materialize unresolved decisions as `specs/pending-questions.md` before blocked implementation tasks
-   - materialize follow-on tasks as `specs/pending-tasks.md` once blocking questions are resolved or explicitly deferred
-   - execute one pending task per fresh context with `../skills/akka-do-next-pending-task/SKILL.md`
-   - implement component by component
-   - use `../src/` examples and focused `../docs/` references as pattern support
+6. **Choose the planning path**
+   - Use `../skills/app-descriptions/SKILL.md` when the user is maintaining or reviewing an authoritative app description before realization.
+   - Use `../skills/akka-solution-decomposition/SKILL.md` when the user wants direct Akka solution shaping and the component set is not yet known.
+   - Use `../skills/akka-prd-to-specs-backlog/SKILL.md` when the user wants durable `specs/`, backlog, and pending-task artifacts.
 
-## Concrete example
+7. **Queue unresolved decisions when needed**
+   - Use `../skills/akka-pending-question-generation/SKILL.md` when missing security, workstream, surface, capability, approval, audit, runtime, or delivery decisions would force guessing.
+   - Use `../skills/akka-do-next-pending-question/SKILL.md` and `../skills/akka-pending-question-queue-maintenance/SKILL.md` for one-at-a-time question handling and queue repair.
 
-For a small canonical requirements-to-plan example, see:
+8. **Generate implementation tasks only after vertical contracts exist**
+   - Backlogs and pending tasks must preserve workstream, attention/surface/action, capability id/class, AuthContext/scope, selected substrate, API/frontend/realtime exposure, audit/work traces, and local validation path.
+   - Execute one implementation task per fresh context with `../skills/akka-do-next-pending-task/SKILL.md`.
+
+9. **Load focused implementation skills last**
+   - Use `../skills/README.md` to select only the Stage 3 skills needed for the accepted capability-aware plan.
+   - Implement component by component, but keep the workstream/surface/capability contract as the source of meaning.
+
+10. **Validate through the intended local runtime path**
+    - Named generated-app features are complete only when the intended local runtime/API/UI path works at the stated scope.
+    - Do not count deterministic/demo/mock/model-less normal runtime behavior as completion for auth, agents, tools, capabilities, traces, provider calls, or protected UI actions.
+
+## Quick example references
+
+Preferred generated-SaaS planning example:
+- `examples/requirements-to-workstream-mini-example.md`
+
+Conventional planning mechanics only:
 - `prd-to-akka-flow.md`
-- `examples/purchase-request-prd.md`
-- `examples/purchase-request-solution-plan.md`
+- purchase-request examples linked from that doc
+
+Purchase-request examples are not the canonical generated AI-first SaaS target architecture. Use them only for narrow mechanics such as solution-plan or queue shape after the secure AI-first SaaS workstream model is clear.
 
 ## Rule of thumb
 
-Code generation is a downstream phase.
-Do not start writing Akka components until AI-first applicability has been classified, decomposition is complete, and any key structural decisions are resolved.
-Use the accepted plan to drive the coding work queue.
-For reliable follow-on work across sessions, use `specs/pending-questions.md` for design blockers and `specs/pending-tasks.md` for implementation work. Answer one question at a time with `akka-do-next-pending-question`, then run one task at a time with `akka-do-next-pending-task`.
-When requirements change after the queue exists, update the maintained specs before coding: use `akka-change-request-to-spec-update` for bounded changes, `akka-revised-prd-reconciliation` for revised PRDs, `akka-pending-question-queue-maintenance` for clarification hygiene, and `akka-pending-task-queue-maintenance` for task queue hygiene.
+Broad input becomes implementation-ready only after this chain is explicit:
 
-For queue templates, see:
-- `solution-plan-to-implementation-queue.md`
-- `pending-question-queue.md`
-- `pending-task-queue.md`
+```text
+secure SaaS foundation
+→ functional agents/workstreams
+→ attention/dashboard or briefing contract
+→ structured surfaces/actions
+→ governed capabilities
+→ Akka substrate and exposure channels
+→ tests and local runtime/API/UI validation
+```
+
+If any link is missing, ask a bounded question, update the app description/specs, or repair the backlog before coding.

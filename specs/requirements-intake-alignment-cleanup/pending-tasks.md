@@ -280,7 +280,7 @@
 
 ### TASK-RIAC-04-001: Rewrite usage and app-description flow docs
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/04-docs-examples-ui-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/04-docs-examples-ui/01-rewrite-usage-and-app-description-flow-docs.md
 - depends on: [TASK-RIAC-03-003]
@@ -307,6 +307,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: rewrite intake flow docs`
+  - completed: rewrote intent-driven usage, PRD-to-Akka, and app-description workflow docs around secure AI-first SaaS, five-core starter, workstream/surface/capability sequencing, governed runtime, and local runtime/API/UI validation
+  - checks: `git diff --check`; focused stale-term search over edited docs (remaining hits reviewed as anti-pattern wording or mechanics-only purchase-request references); no docs were removed or renamed so reference-removal search was not applicable
 
 ### TASK-RIAC-04-002: Remove or rewrite stale app-description skill-plan doc
 
