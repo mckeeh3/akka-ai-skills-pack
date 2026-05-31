@@ -122,10 +122,10 @@ Do not bury new governance, audit, policy, approval, or outcome semantics only i
 ### 3. Update realization specs
 
 Update the smallest relevant `specs/` artifacts:
-- `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, requirements-to-workstream contract, workstream expertise foundation, authority boundaries, or global implementation order changed
+- `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, requirements-to-workstream contract, workstream expertise foundation, authority boundaries, minimum-starter/five-core/full-core readiness, or global implementation order changed
 - `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, expert bundle governance, prompt/skill/reference document governance, manifest/loader/boundary rules, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI style-guide decisions
 - `specs/slices/*.md` for business slice meaning, including workstream expertise responsibilities when a slice introduces or materially changes a functional agent
-- `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for expert bundle description, seed documents, skill/reference manifests, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task
+- `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for expert bundle description, seed documents, skill/reference manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task; repair or block CRUD/page/component-only backlog items that lack workstream/surface/capability context
 - `specs/tasks/**/*.md` when one task brief must change or a new leaf task is needed
 
 Preserve numbering and existing file names unless the user asks for a larger reorganization.
@@ -141,7 +141,7 @@ Rules:
 - mark obsolete pending/deferred/blocked tasks as `superseded` when a later spec change replaces them
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
 - update required reads and skills for affected pending tasks, preserving workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `akka-autonomous-agents` or focused governance/testing skills when the task changes durable AutonomousAgent task lifecycle, notifications, results, or tool authority; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI
-- block or decompose vague pending tasks such as `make the agent expert` or `agent governance` unless they have a self-contained scope for exactly which expert bundle, governed documents, manifests, loaders, boundaries, surfaces, traces, and tests are in or out
+- block or decompose stale/vague pending tasks such as CRUD/page/component-only work, `make the agent expert`, or `agent governance` unless they have a self-contained scope for the relevant workstream/surface/capability contract and exactly which expert bundle, governed documents, manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, boundaries, surfaces, traces, and tests are in or out
 - block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, workstream expertise, or outcome semantics are now ambiguous
 - block web UI tasks whose source spec has no selected style guide and add or update the pending style-selection question
 - block tasks whose source spec is now ambiguous

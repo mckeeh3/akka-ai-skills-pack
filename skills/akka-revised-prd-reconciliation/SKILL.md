@@ -148,7 +148,8 @@ Update existing files rather than replacing the whole tree:
 - modify existing slice specs when a slice remains valid
 - add new numbered slice specs for new capability areas
 - preserve or update requirements-to-workstream sections in solution plans, cross-cutting specs, slices, sprints, and backlogs when workstream identity, attention categories, dashboard contracts, surface actions, capability mappings, notifications/projections, AutonomousAgent task candidates, authority, policy, approval, audit, UI supervision, or outcome semantics changed
-- preserve or update workstream expertise sections/tasks when functional-agent competence changes, keeping prompt/skill/reference documents, manifests, loaders, tool boundaries, UI/governance surfaces, generation/seed assets, and tests as separate bounded work rather than one vague `agent governance` task
+- preserve or update minimum-starter/full-core readiness sections when the revised PRD changes foundation scope; minimum/basic/starter/chatbot-like generated SaaS still starts from the five-core workstream v0 shell, and any narrower User-Admin-only or page/chat-only task shape must be corrected, blocked, or explicitly marked non-SaaS/mechanics-only
+- preserve or update workstream expertise sections/tasks when functional-agent competence changes, keeping prompt/skill/reference documents, manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, tool boundaries, UI/governance surfaces, generation/seed assets, and tests as separate bounded work rather than one vague `agent governance` task
 - mark de-scoped behavior in specs explicitly rather than deleting context when useful
 - update matching backlog files
 - create new backlog files for new slices
@@ -164,7 +165,7 @@ Apply queue reconciliation rules:
 - do not reset `done` tasks to `pending`
 - append new tasks for new work
 - update pending tasks whose scope/read list/skills changed but still represent the same work, preserving workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior; add `akka-autonomous-agents` or governance/testing companions when durable AutonomousAgent task lifecycle is in scope; add `docs/workstream-expertise-model.md` and focused agent governance/testing skills when expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI are in scope
-- block or decompose vague pending tasks such as `make the agent expert` or `agent governance` unless they have a self-contained fresh-session scope for exactly which expert bundle, governed documents, manifests, loaders, boundaries, surfaces, traces, and tests are included
+- block or decompose stale task shapes such as CRUD/page/component-only work, `make the agent expert`, or `agent governance` unless they have a self-contained fresh-session scope for the relevant workstream/surface/capability contract and exactly which expert bundle, governed documents, manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, boundaries, surfaces, traces, and tests are included
 - mark obsolete non-done tasks as `superseded`
 - add follow-up tasks for completed work that must change
 - mark tasks `blocked` when the revised PRD creates unresolved decisions about delegation, authority, approvals, policy, evidence/risk, audit, supervision UI, workstream expertise, reference access, loader permission, or outcomes

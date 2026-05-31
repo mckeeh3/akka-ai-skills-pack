@@ -208,7 +208,7 @@
 
 ### TASK-RIAC-03-002: Align revised PRD, change request, and backlog skills
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/03-prd-spec-backlog-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/03-planning-queues/02-align-revision-and-backlog-skills.md
 - depends on: [TASK-RIAC-03-001]
@@ -239,6 +239,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: align backlog change flows`
+  - completed: aligned revised-PRD, change-request, slice-to-backlog, backlog-to-pending, and backlog-item brief skills with five-core starter/readiness checks, reference governance/readReferenceDoc/ReferenceLoadTrace coverage, and stale CRUD/page/component-only task blocking or repair
+  - checks: `git diff --check`; focused stale-term search over edited skills (remaining hits reviewed as intentional anti-pattern/blocking guidance, five-core readiness checks, or required reference-governance terms)
 
 ### TASK-RIAC-03-003: Align pending question and pending task execution flows
 
