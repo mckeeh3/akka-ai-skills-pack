@@ -3,11 +3,21 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const readTemplateOrRenderedBackend = (path) => {
+  for (const root of ['../../backend', '../..']) {
+    try {
+      return read(`${root}/${path}`);
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+  }
+  return read(`../../backend/${path}`);
+};
 
-const backendWorkstreamService = read('../../backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java');
-const backendMyAccountService = read('../../backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountService.java');
-const backendWorkstreamEndpoint = read('../../backend/src/main/java/{{JAVA_PACKAGE_PATH}}/api/workstream/WorkstreamEndpoint.java');
-const backendWorkstreamTest = read('../../backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java');
+const backendWorkstreamService = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java');
+const backendMyAccountService = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountService.java');
+const backendWorkstreamEndpoint = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/api/workstream/WorkstreamEndpoint.java');
+const backendWorkstreamTest = readTemplateOrRenderedBackend('src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java');
 const surfaceRenderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');

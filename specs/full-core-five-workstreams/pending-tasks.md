@@ -302,7 +302,8 @@
 
 ### TASK-FC5-99-001: Verify full-core five-workstreams completion
 
-- status: pending
+- status: done
+- completion note: Compared the completed contract/shared-runtime/five vertical tasks against the mini-project done state and doctrine, fixed the rendered-scaffold My Account contract test path so fullstack validation covers both template and scaffold layouts, and validated backend, frontend, typecheck, diff, and fullstack checks with provider smoke skipped when `OPENAI_API_KEY` is unset. No bounded follow-up tasks remain for this mini-project.
 - source: mini-project verification loop
 - task brief: specs/full-core-five-workstreams/tasks/08-validation/01-validate-full-core-five-workstreams.md
 - depends on:
