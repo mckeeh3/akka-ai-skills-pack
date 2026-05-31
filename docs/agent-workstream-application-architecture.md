@@ -28,19 +28,21 @@ The primary application model is not a conventional page tree, CRUD console, or 
 For generated SaaS requirements, preserve this vertical chain from the canonical requirements-to-workstream process:
 
 ```text
-input / PRD / feature request
-→ workstream inventory
+input / PRD / feature request / incremental change
+→ affected workstream inventory
 → per-workstream attention categories answering "what needs my attention?"
-→ dashboard and WorkstreamAttentionSummary contract
-→ structured surfaces and surface actions
-→ governed capabilities/APIs
+→ role-specific dashboard surfaces and WorkstreamAttentionSummary contracts
+→ human surface graph: dashboard trunk, surface nodes, surface-action edges
+→ internal workstream agent graph: virtual dashboard agent, worker agents, delegations, escalations
+→ governed-tools inside capability files and surface/action maps
+→ governed capabilities/APIs and exposure channels
 → Akka substrate and participants
 → request-based workstream Agent turns and AutonomousAgent task candidates
 → events/notifications/projections
 → audit/work traces and tests
 ```
 
-Default dashboard scoping is workstream-local: a dashboard should answer what is happening in that workstream, what needs the current user's attention, what is blocked/overdue/risky/failed/paused, which users/agents/workflows/AutonomousAgent tasks are participating, what decisions or approvals are pending, and what actions are authorized next. My Account is the main aggregate exception; its dashboard is the current user's cross-workstream attention inbox, with Profile/Settings shortcuts, personal queue items, and compact accessible-workstream status panels. Left rail attention indicators and My Account counts must come from governed backend attention projections, not frontend-only badge logic.
+Default dashboard scoping is workstream-local and role-specific: a dashboard should answer what is happening in that workstream for this actor/AuthContext, what needs the current user's attention, what is blocked/overdue/risky/failed/paused, which users/agents/workflows/AutonomousAgent tasks are participating, what decisions or approvals are pending, and what actions are authorized next. A dashboard is the trunk of the workstream's human surface graph, not a generic analytics page. My Account is the main aggregate exception; its dashboard is the current user's cross-workstream attention inbox, with Profile/Settings shortcuts, personal queue items, and compact accessible-workstream status panels. Left rail attention indicators and My Account counts must come from governed backend attention projections, not frontend-only badge logic.
 
 AutonomousAgent task progress/result surfaces are part of the workstream model when durable internal/background model-driven work exists. Task lifecycle events, notifications, snapshots, blocked states, rejected results, failures, and completion recommendations should update dashboards, attention items, traces, and governed surface actions; the task machinery never grants authority by itself.
 
@@ -82,7 +84,10 @@ A workstream is not production-ready just because fixture items render, a determ
 | Workstream | Root app unit for authenticated consequential work: a durable conversational and operational timeline backed by exactly one functional agent. It contains user requests, agent responses, tool/capability results, structured surfaces, system-message surfaces, decisions, workflow progress, traces, and follow-up actions. |
 | Workstream icon | Universal shell metadata for a workstream launcher/status button: a compact icon chosen from the workstream name/domain, with stable id, accessible label, tooltip text, accent color, and optional glyph/vector asset. Icons keep rails and status panels compact while preserving full workstream names for hover, focus, and screen readers. |
 | Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, system message, or outcome metric panel. |
-| Capability | Governed backend contract behind actions, queries, tools, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure channels, and tests. |
+| Surface graph | Human work tree for a workstream: the role-specific dashboard is the trunk, surface nodes are branches, and surface actions are edges that open surfaces, invoke browser-tools, create system-message surfaces, update attention, start internal-agent work, open traces, or route approvals/decisions. |
+| Internal workstream agent graph | Backend worker graph for a workstream: a virtual dashboard agent view determines agent attention, delegates bounded work to internal worker agents, collects results/proposals, updates attention/surfaces, and escalates to humans when required. |
+| Capability | Product-level backend ability or grouping behind related operations, queries, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure channels, and tests. |
+| Governed-tool | Executable semantic operation inside a capability boundary and surface/action map, with actor/caller rules, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Expose it only through qualified channels such as browser-tool, agent-tool, internal-tool, workflow/timer/consumer exposure, API, or MCP-tool. |
 | Horizontal implementation | Akka entities, workflows, views, consumers, timed actions, agents, endpoints, web UI code, auth/security, audit, and tests that implement capabilities for vertical functional agents and surfaces. |
 
 ## Agent workstream shell
@@ -159,13 +164,13 @@ A generated app grows by adding vertical workstreams. Each workstream is backed 
 
 - purpose and business responsibility;
 - authorized roles/capabilities and tenant/customer scope;
-- default dashboard, attention, or briefing surface;
+- role-specific dashboard, attention, or briefing surfaces;
 - durable workstream semantics and retention expectations;
 - user intents the workstream agent must understand, including help/how-to prompts, shorthand surface requests, read requests, proposals, approvals, and allowed commands;
 - prompt intent and a workstream expert bundle where LLM behavior is involved: governed prompt refs, skills, reference documents, compact expertise manifest, loader rules, tool boundaries, runtime tool bindings, and trace requirements;
-- surfaces the workstream can render or reuse;
-- surface actions, including command actions and query/surface-request actions;
-- capabilities it can call directly or through tools/workflows;
+- surfaces the workstream can render or reuse, arranged as a human surface graph;
+- surface actions, including command actions and query/surface-request actions, modeled as graph edges;
+- capabilities and governed-tools it can call directly or through browser-tools, agent-tools, internal-tools, workflows, timers, consumers, APIs, or MCP exposures;
 - escalation, approval, denial, and exception behavior;
 - audit/work trace requirements;
 - tests for authorization, surface rendering, capability invocation, tenant isolation, and audit.
@@ -196,6 +201,8 @@ Common internal agents:
 - replay/simulation analyst;
 - extraction, enrichment, or normalization agent;
 - escalation triage agent.
+
+Each workstream should also model an internal workstream agent graph when delegated backend AI work is possible. The virtual dashboard agent view asks what requires agent attention, what can be safely delegated, what result/proposal surface should be produced, and what must be escalated to humans. Internal worker agents execute bounded tasks through governed-tools, then resolve the work, produce results/proposals, or create human attention items.
 
 Internal agents still require governed managed-agent `AgentDefinition`, approved prompt/skill references, tool boundaries, model policy, AuthContext or service authority basis, trace emission, and deterministic tests where applicable. Akka autonomous `AgentDefinition` means the SDK definition returned by `AutonomousAgent.definition()` or supplied through `AgentSetup`; qualify that term whenever both meanings are in scope. Deterministic tests should use isolated test doubles; they do not replace the production-like local runtime path for model-backed or provider-backed behavior.
 
@@ -242,25 +249,26 @@ Surface actions include both state-changing actions and surface-request actions:
 - **Proposal/approval/workflow actions** draft changes, request approval, approve/reject, start long-running work, or show progress.
 - **Governance/trace actions** open diffs, simulations, trace details, audit timelines, or behavior-change review surfaces.
 
-Every surface action maps to a governed backend capability. In most browser realizations, that means the action invokes a backend API that enforces authorization and returns a result surface, updated surface, workstream item, or typed `system_message` surface. Frontend-only navigation between consequential work surfaces is not enough; even “show dashboard” and “view user details” are read/evidence capabilities when scoped protected data is involved.
+Every surface action maps to a governed backend capability and usually to a named governed-tool within that capability. In browser realizations, the surface action is a browser-tool exposed through a backend API that enforces authorization and returns a result surface, updated surface, workstream item, or typed `system_message` surface. Frontend-only navigation between consequential work surfaces is not enough; even “show dashboard” and “view user details” are read/evidence capabilities when scoped protected data is involved.
 
 ## Capabilities remain the backend contract
 
 Workstreams are the root application abstraction, but capabilities remain the backend contract. Workstreams do not make agents, tools, surfaces, UI controls, or routes the backend design root.
 
-For each operation or query exposed in a workstream, define the capability first:
+For each operation or query exposed in a workstream, define the capability and governed-tool first:
 
-- capability id and purpose;
+- capability id and product-level purpose;
+- governed-tool id, purpose, class, and whether it composes other governed-tools;
 - actors/callers, including functional agents, internal agents, humans, workflows, timers, consumers, services, or support roles;
 - AuthContext, tenant/customer scope, role/capability requirements, and denial behavior;
 - input/output schemas, validation, redaction, and idempotency;
 - data access and side effects;
 - policy, approval, escalation, and autonomy rules;
 - audit/work-trace fields;
-- exposure channels: surface/workstream action, browser API, workstream-agent tool, internal-agent tool, HTTP/gRPC/MCP endpoint, workflow step, timer, consumer, view, or internal call;
+- exposure channels: surface/workstream action as browser-tool, browser API, workstream-agent agent-tool, internal-agent agent-tool, HTTP/gRPC/MCP endpoint or MCP-tool, workflow step, timer-tool, consumer-tool, view, or internal-tool;
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and rendering/tool/API tests.
 
-Agent tools are optional capability exposure channels. Workstream-agent tools are conversational exposures of capabilities for the selected workstream; internal-agent tools are backend AI-worker exposures. Side-effecting agent tools require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
+Agent-tools are optional capability exposure channels. Workstream-agent agent-tools are conversational exposures of governed-tools for the selected workstream; internal-agent agent-tools are backend AI-worker exposures. Side-effecting agent-tools require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
 
 ## Horizontal Akka implementation
 
@@ -298,17 +306,19 @@ Allowed exceptions are narrow: public marketing/legal/static pages, direct deep 
 
 ## Incremental delivery pattern
 
-Build generated apps in vertical slices:
+Build generated apps and process incremental changes in vertical slices:
 
 ```text
-add or extend one workstream
+add or extend one affected workstream
 + exactly one backing functional agent
-+ default dashboard/attention surface
++ role-specific dashboard/attention surface
++ surface graph node/action-edge changes
++ internal workstream agent graph changes when delegated worker work exists
 + one or two useful user intents/actions
-+ governed capabilities
-+ Akka horizontals needed for those capabilities
++ governed capabilities and governed-tools
++ Akka horizontals needed for those capabilities/governed-tools
 + workstream UI rendering
-+ authorization, audit, tenant-isolation, and surface tests
++ authorization, audit, tenant-isolation, governed-tool, and surface tests
 ```
 
 Then repeat as the workstream gains more surfaces, skills, tools, workflows, internal-agent support, and outcome loops.

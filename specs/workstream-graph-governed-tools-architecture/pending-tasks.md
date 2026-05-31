@@ -45,7 +45,7 @@
 
 ### TASK-WGGT-01-001: Update core architecture docs
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/01-doctrine-vocabulary-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/01-doctrine/01-update-core-architecture-docs.md
 - depends on: [TASK-WGGT-00-001]
@@ -73,6 +73,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update core architecture docs`
+  - completed: updated core architecture docs with role-specific dashboards, surface graphs, internal workstream agent graphs, governed-tools, and incremental input handling; checks: `git diff --check`; focused canonical-term search over touched docs
 
 ### TASK-WGGT-01-002: Update surface, capability, domain, and expertise docs
 

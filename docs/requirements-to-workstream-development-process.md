@@ -16,19 +16,21 @@ Related doctrine:
 
 ## Core rule
 
-For generated secure AI-first SaaS apps, process broad requirements through workstreams before pages, CRUD resources, endpoint lists, database tables, event streams, or Akka component families.
+For generated secure AI-first SaaS apps, process broad requirements and incremental changes through workstreams before pages, CRUD resources, endpoint lists, database tables, event streams, or Akka component families. For an existing app, reconcile the input against the existing workstream graph: affected workstreams, role-specific dashboards, attention items, surface graph nodes/edges, governed-tools, internal workstream agent graph, workstream expertise, Akka substrate, UI/API, tests, and pending tasks.
 
 Default order:
 
 ```text
-input / PRD / feature request
+input / PRD / feature request / incremental change
 → secure SaaS foundation and tenant/customer/AuthContext assumptions
-→ workstream inventory
+→ affected workstream inventory
 → per-workstream attention breakdown: "what needs my attention?"
-→ default dashboard and attention summary contract
-→ structured surfaces, surface states, and surface actions
-→ governed capability/API contracts
-→ selected Akka substrate per capability
+→ role-specific dashboard surfaces and attention summary contracts
+→ human surface graph: dashboard trunk, surface nodes, surface-action edges
+→ internal workstream agent graph: virtual dashboard agent, worker agents, delegations, escalations
+→ governed-tools inside capability files and surface/action maps
+→ governed capability/API contracts and selected exposure channels
+→ selected Akka substrate per capability/governed-tool
 → request-based workstream Agent turns for immediate user-facing messages
 → internal/background worker candidates, usually AutonomousAgent tasks when durable lifecycle fits
 → events/messages/notifications
@@ -41,8 +43,10 @@ A planning output is implementation-ready only when each vertical slice can be t
 
 ```text
 workstream attention category
-→ dashboard or surface state/action
-→ governed capability/API
+→ role-specific dashboard state
+→ surface graph node/action edge
+→ governed capability/API and governed-tool
+→ exposure channel: browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP exposure, or API
 → selected Akka substrate and participant
 → events/notifications/projections
 → audit/work trace
@@ -75,9 +79,9 @@ Record:
 
 Attention is not merely notification. It is a scoped, authorized, actionable signal that a human or participant may need to inspect, decide, approve, correct, retry, escalate, acknowledge, or learn from something.
 
-### Dashboard contract
+### Role-specific dashboard contract
 
-A workstream dashboard is a situational-awareness surface scoped primarily to one workstream. It should answer:
+A workstream dashboard is a role-specific situational-awareness surface scoped primarily to one workstream and AuthContext. It is not a generic analytics dashboard; its primary objective is to show what requires this actor's attention and what work can or should be done next. The same workstream may have different dashboard variants for Tenant Admin, Customer Admin, Auditor, SaaS Owner support, or other authorized roles. It should answer:
 
 1. What is happening in this workstream?
 2. What needs my attention?
@@ -125,27 +129,47 @@ type WorkstreamAttentionSummary = {
 };
 ```
 
-### Structured surfaces and actions
+### Surface graph
 
-Record:
-- surface ids, types, payload summaries, empty/loading/error/forbidden/stale states, and accessibility expectations;
-- system-message surfaces when the request-based workstream Agent returns structured results;
-- actions available from each surface;
+Record the human work tree for each workstream:
+- the role-specific dashboard surface is the trunk;
+- surface ids, types, payload summaries, empty/loading/error/forbidden/stale states, and accessibility expectations are graph nodes;
+- system-message surfaces are graph nodes when the request-based workstream Agent or backend returns structured feedback;
+- actions available from each surface are graph edges;
 - governed surface-request actions such as `open_workstream`, `open_attention_item`, `request_approval`, `retry_failed_action`, `acknowledge`, `dismiss`, `escalate`, or `start_investigation`;
+- edge effects: show another surface, invoke a browser-tool, create a system-message surface, update dashboard attention, start internal-agent work, open traces, or route to approval/decision surfaces;
 - realtime or refresh behavior when events, notifications, task snapshots, or views change.
 
-Buttons, links, cards, rail items, and agent suggestions that perform protected work map to governed capabilities. They are not ad hoc frontend jumps.
+Buttons, links, cards, rail items, and agent suggestions that perform protected work map to governed capabilities and qualified governed-tools. They are not ad hoc frontend jumps.
 
-### Governed capabilities and APIs
+### Governed capabilities, governed-tools, and APIs
 
-For each surface action, agent tool, workflow step, API, timer, consumer reaction, projection read, or internal operation, record:
-- capability id and class: command, query, stream, tool, workflow action, task lifecycle action, projection read, or integration action;
-- callers and exposure surfaces: browser, workstream Agent tool, AutonomousAgent tool, Workflow step, Consumer, TimedAction, HTTP/gRPC/MCP endpoint, internal component call;
+Capabilities remain product-level abilities or groupings. A governed-tool is an executable semantic operation inside a capability boundary and surface/action map. Use qualified terms where ambiguity matters:
+- `governed-tool`: semantic executable operation with actor/caller rules, AuthContext, schemas, side effects, idempotency, approval/policy, audit/work trace, and implementation mapping;
+- `browser-tool`: governed-tool exposed to humans through protected surface actions and browser APIs;
+- `agent-tool`: governed-tool exposed to request-based workstream Agents or internal/AutonomousAgent workers through Akka `@FunctionTool`, MCP, component tools, or equivalent;
+- `internal-tool`: governed-tool used by workflows, timers, consumers, projections, or internal services without direct browser exposure.
+
+For each surface action, agent-tool, workflow step, API, timer, consumer reaction, projection read, or internal operation, record:
+- capability id and governed-tool id/class: command, query, stream, workflow action, task lifecycle action, projection read, or integration action;
+- callers and exposure surfaces: browser-tool, workstream Agent agent-tool, AutonomousAgent agent-tool, Workflow step, Consumer, TimedAction, HTTP/gRPC/MCP endpoint, internal component call;
 - input/output schemas and idempotency key rules;
 - AuthContext, role/scope checks, tenant/customer isolation, backend authorization, approval gates, policy checks, and fail-closed behavior;
 - side effects, emitted events/messages, audit/work trace records, and tests.
 
-Capabilities are the backend authority boundary. Events, notifications, frontend gating, prompt text, and tool descriptions must not bypass them.
+Capabilities and their governed-tools are the backend authority boundary. Events, notifications, frontend gating, prompt text, and tool descriptions must not bypass them.
+
+### Internal workstream agent graph
+
+Each workstream should also have an internal virtual dashboard agent view that asks what requires agent attention, what can be handled by internal workers, what should be delegated, and what must be escalated to humans. Record:
+- virtual dashboard agent responsibility and attention sources;
+- internal worker agents, usually modeled as AutonomousAgent task candidates when durable lifecycle fits;
+- delegation edges, inputs, outputs, stop conditions, escalation rules, and result/proposal surfaces;
+- governed-tools available to each internal worker and its `ToolPermissionBoundary`;
+- human handoff, approval, denial, and trace behavior;
+- how worker results update the role-specific dashboard, surface graph, My Account, left rail, events/projections, and audit/work traces.
+
+Internal agent graph design does not grant authority. Every worker action still maps to governed capabilities/governed-tools with AuthContext or service authority, tenant/customer scope, approval/policy checks, idempotency, and audit.
 
 ## Akka substrate selection
 
