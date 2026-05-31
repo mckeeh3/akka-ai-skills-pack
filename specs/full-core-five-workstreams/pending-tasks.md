@@ -124,7 +124,8 @@
 
 ### TASK-FC5-03-001: Implement My Account full-core vertical
 
-- status: pending
+- status: done
+- completion note: Added the My Account full-core context surface and refresh/context actions, strengthened backend tests for dashboard/profile/settings/context/attention/authorized navigation, added a frontend contract test for the typed dashboard/detail/system-message/action path, and validated backend/frontend/typecheck/diff checks.
 - source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
 - task brief: specs/full-core-five-workstreams/tasks/03-my-account/01-my-account-full-core.md
 - depends on: [TASK-FC5-02-001]

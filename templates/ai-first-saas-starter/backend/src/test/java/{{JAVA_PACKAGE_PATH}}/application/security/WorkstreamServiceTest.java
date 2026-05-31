@@ -403,6 +403,7 @@ class WorkstreamServiceTest {
     var dashboard = service.surface(identity(), "membership-admin", "surface-my-account-dashboard", "corr-my-account-dashboard");
     var profile = service.surface(identity(), "membership-admin", "surface-my-profile", "corr-my-account-profile");
     var settings = service.surface(identity(), "membership-admin", "surface-my-settings", "corr-my-account-settings");
+    var context = service.surface(identity(), "membership-admin", "surface-my-context", "corr-my-account-context");
 
     assertEquals("dashboard", dashboard.surfaceType());
     assertEquals("my_account.dashboard.v1", dashboard.data().get("surfaceContract"));
@@ -417,8 +418,14 @@ class WorkstreamServiceTest {
     assertEquals("agent-my-account", dashboard.ownerFunctionalAgentId());
     assertEquals("detail-edit", profile.surfaceType());
     assertEquals("detail-edit", settings.surfaceType());
+    assertEquals("detail-edit", context.surfaceType());
+    assertEquals("surface-my-context", context.surfaceId());
     assertTrue(profile.toString().contains("my_account.update_profile_settings"));
     assertTrue(settings.toString().contains("preferredColorMode"));
+    assertTrue(context.toString().contains("/api/me?selectedContextId=membership-admin"));
+    assertTrue(context.toString().contains("my_account.view_context"));
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-show-my-account-dashboard")));
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-show-my-context") && action.capabilityId().equals("my_account.view_context")));
   }
 
   @Test
