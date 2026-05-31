@@ -15,7 +15,7 @@ Its job is to convert messy input into a stable normalized representation that l
 Produce a normalized input result that:
 - preserves the user's intent in a structured form
 - separates description-change intent from generation and review intent
-- extracts candidate workstreams, attention needs, dashboards, structured surfaces/actions, governed capabilities, autonomous task candidates, events/notifications/traces, behavior, tests, auth/security, UI, and observability
+- extracts candidate workstream counts/boundaries, attention needs, role-specific dashboards, human surface graph nodes/actions, internal workstream agent graph candidates, governed capabilities, governed-tool/browser-tool/agent-tool/internal-tool candidates, autonomous task candidates, events/notifications/traces, behavior, tests, auth/security, UI, and observability
 - distinguishes confirmed statements from inferred assumptions
 - records ambiguity explicitly instead of hiding it
 - gives downstream skills a stable basis for routing and maintenance
@@ -84,11 +84,13 @@ A good normalized result:
 From user input, derive as applicable:
 - primary intent
 - secondary intents
-- functional-agent/workstream candidates, including owner roles, tenant/customer scope, and core-foundation vs domain-specific classification
-- attention needs per workstream: what needs my attention, target audience, severity/lifecycle, and whether the item contributes to My Account or left-rail counts
-- dashboard candidates: default summary cards, attention item surfaces, blocked/overdue/risky/failed/waiting states, participant visibility, and next authorized actions
-- structured surface/action candidates, including system-message surfaces, surface states, reusable placement, and surface-request actions such as `open_workstream`, `open_attention_item`, approval, retry, acknowledge, dismiss, escalate, or investigation start
+- functional-agent/workstream candidates, including count/boundary changes, owner roles, tenant/customer scope, and core-foundation vs domain-specific classification
+- attention needs per workstream: what needs my attention, target audience, severity/lifecycle, source/freshness expectations, and whether the item contributes to My Account or left-rail counts
+- role-specific dashboard candidates: actor-specific summary cards, attention item surfaces, blocked/overdue/risky/failed/waiting states, participant visibility, and next authorized actions
+- human surface graph candidates, including dashboard trunk, surface nodes, surface actions/edges, system-message surfaces, surface states, reusable placement, and surface-request actions such as `open_workstream`, `open_attention_item`, approval, retry, acknowledge, dismiss, escalate, or investigation start
 - capability or scope delta, including candidate actors/callers, AuthContext, schemas, side effects, idempotency, approval/policy, audit/trace, and exposure surfaces
+- governed-tool candidates inside capability/surface-action maps, including semantic operation ids plus browser-tool, agent-tool, and internal-tool exposure candidates
+- internal workstream agent graph candidates, including virtual dashboard agent attention, worker delegations, escalation/result/proposal surfaces, expertise skill/reference updates, and denial/help semantics
 - autonomous task candidates for durable internal/background model-driven work, including why Akka `AutonomousAgent` may fit typed lifecycle, snapshots/results, notifications, dependencies, failure/cancellation, delegation, handoff, teams, or moderation
 - event/notification/projection/trace implications, including attention projection and audit/work trace candidates
 - behavior delta
@@ -121,25 +123,32 @@ Use this normalized shape internally:
 ## Confirmed deltas
 - workstreams / functional agents:
   - workstreamId/name/responsibility:
+  - count/boundary change:
   - owner functional agent:
   - authorized actors/roles/scope:
   - core-foundation vs domain-specific:
-- attention / dashboard:
+- attention / role-specific dashboard:
   - attention categories and target audience:
-  - severity/lifecycle:
+  - severity/lifecycle/source/freshness:
   - My Account / left-rail contribution:
   - default dashboard summary and attention surfaces:
-- structured surfaces / surface actions:
+- human surface graph / surface actions:
+  - dashboard trunk and surface nodes:
   - surface ids/types/states:
   - surface-request actions:
-  - action-to-capability candidates:
-- capabilities:
+  - action-to-capability/governed-tool candidates:
+- capabilities / governed-tools:
   - scope/outcome:
   - actors/callers:
   - AuthContext/scope:
   - inputs/outputs:
   - side effects/idempotency:
   - approval/policy/audit/exposure surfaces:
+  - governed-tool ids and browser-tool/agent-tool/internal-tool exposure:
+- internal workstream agent graph:
+  - virtual dashboard agent attention:
+  - worker delegations and escalation/result/proposal surfaces:
+  - expertise skill/reference updates and denial/help semantics:
 - autonomous task candidates:
   - candidate background work:
   - AutonomousAgent fit signals:
@@ -152,9 +161,11 @@ Use this normalized shape internally:
 - observability:
 
 ## Candidate inferred deltas
-- workstream/attention/dashboard gaps:
-- surface/action gaps:
-- capability contract gaps:
+- workstream boundary/count gaps:
+- attention/role-specific dashboard gaps:
+- surface graph/action gaps:
+- capability/governed-tool contract gaps:
+- internal workstream agent graph or expertise gaps:
 - autonomous task fit or non-fit:
 - event/notification/projection/trace impacts:
 - linked behavior/tests/auth-security/UI/observability impacts:
@@ -186,14 +197,16 @@ Use `candidate inferred deltas` for plausible implications that still need confi
 ### 3. Preserve the requirements-to-workstream chain
 For broad generated-SaaS input, normalize in this order before code or component concepts:
 1. secure SaaS/AuthContext assumptions, including the five core workstream v0 starter when the prompt says minimum, starter, basic, smallest useful app, or chatbot-like SaaS
-2. workstream and functional-agent candidates
-3. attention needs and default dashboard implications
-4. structured surfaces, states, and surface actions
-5. governed capability/API candidates
-6. request-based workstream Agent turns for immediate user-facing messages
-7. autonomous task candidates for durable internal/background model-driven work
-8. events, notifications, projections, and audit/work traces
-9. behavior, tests, auth/security, UI, observability, realization, and review impacts
+2. workstream count/boundary and functional-agent candidates
+3. attention needs and role-specific dashboard implications
+4. human surface graph nodes, states, system-message surfaces, and surface actions
+5. governed capability/API candidates and governed-tool candidates in capability/surface-action maps
+6. browser-tool, agent-tool, and internal-tool exposure candidates for each governed-tool
+7. internal workstream agent graph candidates, worker delegations, escalation/result surfaces, and expertise skill/reference updates
+8. request-based workstream Agent turns for immediate user-facing messages
+9. autonomous task candidates for durable internal/background model-driven work
+10. events, notifications, projections, and audit/work traces
+11. behavior, tests, auth/security, UI, observability, realization, and review impacts
 
 ### 4. Preserve cross-layer separation
 Do not collapse these into one bucket:

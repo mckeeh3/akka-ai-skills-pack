@@ -17,8 +17,8 @@ Interpret flexible user input and produce a routing decision that:
 - detects AI-first/delegated operating-model semantics before routing to capability, behavior, UI, or generation work
 - detects when the user wants to generate the app or run it
 - consumes a normalized input envelope when available
-- extracts candidate workstream, attention/dashboard, surface/action, capability, autonomous task, event/notification/trace, behavior, test, security, UI, and observability deltas when normalization has not yet happened
-- identifies the smallest next focused skill sequence to load without skipping workstream-attention-dashboard preprocessing
+- extracts candidate workstream count/boundary, attention/role-specific dashboard, human surface graph, governed-tool/browser-tool/agent-tool/internal-tool, internal workstream agent graph, capability, autonomous task, event/notification/trace, behavior, test, security, UI, and observability deltas when normalization has not yet happened
+- identifies the smallest next focused skill sequence to load without skipping workstream-attention-dashboard-surface-graph preprocessing
 - asks only the minimum clarification needed to avoid an incorrect next step
 
 ## Required reading
@@ -52,7 +52,7 @@ Before selecting a focused description skill for broad product input, check for 
 
 If the prompt asks for a “minimum app,” “starter app,” “basic app,” “smallest useful app,” “initial chatbot,” or other chatbot-like generated SaaS, route to `minimum starter / not full core`: the five core workstream v0 set (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) with `markdown_response`, bootstrap AuthContext, durable workstream logs, backend capability boundaries, and audit/work traces. Do not route those prompts to a standalone chatbot, page shell, or single-workstream slice.
 
-For generated full-stack SaaS input, also run a workstream-attention-dashboard pre-check before capability or UI routing. If the user mentions dashboards, portals, work queues, admin consoles, command centers, agent/chat areas, browser actions, approvals, decisions, audit timelines, workflow status, forms, tables, blocked work, overdue work, failed actions, investigations, reviews, digests, notifications, or other work areas, identify candidate `12-workstreams/` functional agents, attention categories, default dashboard summaries, structured surfaces, surface actions, and surface-action capability candidates first. Then route to capability, UI, behavior, security, observability, or tests as linked follow-up work.
+For generated full-stack SaaS input, also run a workstream-attention-dashboard-surface-graph pre-check before capability or UI routing. If the user mentions dashboards, portals, work queues, admin consoles, command centers, agent/chat areas, browser actions, approvals, decisions, audit timelines, workflow status, forms, tables, blocked work, overdue work, failed actions, investigations, reviews, digests, notifications, or other work areas, identify candidate `12-workstreams/` functional agents, workstream boundary/count changes, role-specific attention categories, default dashboard summaries, human surface graph nodes/actions, system-message surfaces, surface-action capability candidates, and capability-contained governed-tool candidates first. Then route to capability, UI, behavior, security, observability, or tests as linked follow-up work.
 
 Internal/background model-driven work must be evaluated for autonomous task semantics before component routing. If the input implies durable investigation, review, evaluation, summary, monitoring/remediation, specialist follow-up, coordination, handoff, team, moderation, dependency, cancellation, notification, snapshot/result, or long-running work, preserve an autonomous task candidate and route toward Akka `AutonomousAgent` after capability authority is defined. Request-based Akka `Agent` remains the default for immediate user-facing workstream turns.
 
@@ -114,10 +114,12 @@ If the input contains both revision and generation requests:
 ## What this skill must extract
 
 From the user input or normalized input envelope, identify candidate deltas in these categories:
-- functional agents/workstreams: user-facing work areas, role workspace, rail placement, prompt intent, authority, callable capabilities, tenant/customer scope, and core-foundation vs domain-specific classification
-- attention/dashboard candidates: what needs my attention, target audience, severity/lifecycle, My Account and left-rail contribution, default dashboard summaries, blocked/overdue/risky/failed/waiting states, participant visibility, and next authorized actions
-- structured surfaces/actions: dashboards, forms, tables, decision cards, audit timelines, workflow status, reusable placement, payload/action candidates, system-message surfaces, surface-request actions, and action-to-capability candidates
+- functional agents/workstreams: user-facing work areas, workstream count/boundary changes, role workspace, rail placement, prompt intent, authority, callable capabilities, tenant/customer scope, and core-foundation vs domain-specific classification
+- attention/dashboard candidates: what needs my attention, target audience, severity/lifecycle/source/freshness, My Account and left-rail contribution, role-specific dashboard summaries, blocked/overdue/risky/failed/waiting states, participant visibility, and next authorized actions
+- human surface graph/actions: dashboard trunk, surface nodes, forms, tables, decision cards, audit timelines, workflow status, reusable placement, payload/action candidates, system-message surfaces, surface-request actions, and action-to-capability/governed-tool candidates
 - capability or scope, including actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, and exposure surfaces
+- governed-tool candidates: semantic operation ids in capability files and surface/action maps plus qualified browser-tool, agent-tool, and internal-tool exposure candidates
+- internal workstream agent graph candidates: virtual dashboard agent attention, worker delegations, escalation/result/proposal surfaces, expertise skill/reference updates, denial/help semantics, and human handoff points
 - autonomous task candidates: durable internal/background model-driven investigations, reviews, evaluations, summaries, monitoring/remediation, specialist follow-up, dependencies, notifications, failure/cancellation, delegation, handoff, teams, or moderation that may route to Akka `AutonomousAgent`
 - events/notifications/projections/traces: attention projections, workstream events/messages, task notifications, audit/work traces, and dashboard/My Account/left-rail read models
 - AI-first operating-model concerns: goals, delegated work, retained human authority, agents, policies, approvals, decisions, exceptions, evidence, traces, learning, and outcomes
@@ -168,7 +170,7 @@ Load next as applicable:
 - `app-description-surface-modeling` to preserve dashboard, attention item, system-message, form/table/card/timeline/status, surface state, and surface action contracts
 - then `app-description-capability-modeling` for governed operation/query contracts behind every surface action, agent tool, API, workflow step, timer, consumer reaction, or internal operation
 
-Use this route before direct UI, capability, component, endpoint, or page routing when ordinary user vocabulary names a dashboard, portal, work queue, admin console, command center, browser action, approval, decision, audit timeline, workflow status, form, table, blocked/overdue/risky/failed item, notification, investigation, digest, or agent/chat area. Buttons, links, rail badges, dashboard cards, and agent suggestions are routed as governed surface actions, not ad hoc frontend jumps.
+Use this route before direct UI, capability, component, endpoint, or page routing when ordinary user vocabulary names a dashboard, portal, work queue, admin console, command center, browser action, approval, decision, audit timeline, workflow status, form, table, blocked/overdue/risky/failed item, notification, investigation, digest, or agent/chat area. Buttons, links, rail badges, dashboard cards, and agent suggestions are routed as governed surface actions backed by capability-contained governed-tools, not ad hoc frontend jumps. Preserve browser-tool, agent-tool, and internal-tool exposure as qualified mappings after the governed-tool contract is clear.
 
 ### If the input changes capability contracts
 Load next:
@@ -253,10 +255,11 @@ Use this response shape internally or in structured notes:
 
 ## Candidate description deltas
 - functional agents:
-- structured surfaces/actions:
-- attention/dashboard:
+- attention / role-specific dashboard:
+- human surface graph / structured surfaces/actions:
 - surface-action capability candidates:
-- capabilities:
+- capabilities / governed-tools:
+- internal workstream agent graph:
 - autonomous task candidates:
 - events/notifications/projections/traces:
 - operating-model:
@@ -293,8 +296,8 @@ Avoid:
 Before finishing, verify:
 - the primary intent is explicit
 - generation is not assumed unless the user asked for it
-- candidate workstream, attention/dashboard, surface/action, capability, autonomous task, event/notification/projection/trace, operating-model, behavior, test, security, UI, and observability deltas are separated when present
-- capability changes are not treated as isolated when they imply workstream, attention/dashboard, surface/action, autonomous task, event/notification/projection/trace, behavior, auth/security, tests, UI, observability, or readiness impacts
+- candidate workstream boundary/count, attention/role-specific dashboard, human surface graph/action, governed-tool exposure, internal workstream agent graph, capability, autonomous task, event/notification/projection/trace, operating-model, behavior, test, security, UI, and observability deltas are separated when present
+- capability and governed-tool changes are not treated as isolated when they imply workstream, attention/dashboard, surface graph/action, internal workstream agent graph, autonomous task, event/notification/projection/trace, behavior, auth/security, tests, UI, observability, or readiness impacts
 - the next skill is the smallest focused skill that matches the request
 - clarification questions are minimal and justified
 

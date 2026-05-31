@@ -163,7 +163,7 @@
 
 ### TASK-WGGT-02-002: Update bootstrap, normalization, and router skills
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/02-app-description-model-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/02-app-description/02-update-bootstrap-normalization-router-skills.md
 - depends on: [TASK-WGGT-02-001]
@@ -189,6 +189,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update app intake graph skills`
+  - completed: updated bootstrap, input-normalization, and intake-router skills to extract workstream count/boundaries, role-specific dashboards, attention, human surface graphs, internal workstream agent graphs, governed-tools, qualified browser-tool/agent-tool/internal-tool exposure, and incremental reconciliation cues; checks: `git diff --check`; focused graph/governed-tool term search over edited skills
 
 ### TASK-WGGT-02-003: Update functional-agent, surface, and capability modeling skills
 
