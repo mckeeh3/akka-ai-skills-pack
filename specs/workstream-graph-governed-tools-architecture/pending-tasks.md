@@ -107,7 +107,7 @@
 
 ### TASK-WGGT-01-003: Update routing map and terminology
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/01-doctrine-vocabulary-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/01-doctrine/03-update-routing-map-and-terminology.md
 - depends on: [TASK-WGGT-01-002]
@@ -130,6 +130,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update routing terminology`
+  - completed: updated `skills/README.md` routing with affected workstreams, role-specific dashboards, surface graphs, internal workstream agent graphs, governed-tools, and qualified browser-tool/agent-tool exposure terminology; checks: `git diff --check`; focused graph/governed-tool term search over routing docs
 
 ### TASK-WGGT-02-001: Update app-description architecture docs
 
