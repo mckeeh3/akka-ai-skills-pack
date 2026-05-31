@@ -195,7 +195,8 @@
 
 ### TASK-FC5-05-001: Implement Agent Admin full-core vertical
 
-- status: pending
+- status: done
+- completion note: Verified and marked complete the Agent Admin full-core vertical: backend-authoritative catalog/detail/prompt/manifest/tool-boundary/model/seed/trace surfaces, governed capabilities/actions, AgentAdminAgent runtime evidence path, redaction/provider fail-closed behavior, frontend surface/action contracts, and backend/frontend/typecheck/diff validation are in place.
 - source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
 - task brief: specs/full-core-five-workstreams/tasks/05-agent-admin/01-agent-admin-full-core.md
 - depends on: [TASK-FC5-04-001]
