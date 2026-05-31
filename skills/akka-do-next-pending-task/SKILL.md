@@ -32,7 +32,7 @@ The skill must:
 - load only the task's required reads and listed skills
 - preserve any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
 - preserve any workstream-expertise/reference-governance constraints named by the task: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, seed/import behavior, and tests
-- require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, dashboard/surface/action, capability id/API exposure, selected Akka substrate, autonomous task/result/notification mapping when applicable, auth, traces, and tests
+- require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id and qualified exposure, capability id/API exposure, selected Akka substrate, internal workstream agent graph delegation/result mapping when applicable, autonomous task/result/notification mapping when applicable, auth, traces, and tests
 - generate or update the requested outputs
 - run the task's required checks and local/runtime validation path when the task implements app behavior
 - update the queue status before finishing
@@ -145,6 +145,8 @@ If a task is `superseded`, do not execute it unless the user explicitly asks to 
 If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. Treat unresolved AI-first authority, approval-gate, policy, evidence, risk-threshold, supervision UI, trace-obligation, evaluation, or outcome-metric questions as blockers for affected work. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
 
 If the target contains `specs/scaffold-report.md`, execute tasks as extensions of the scaffolded starter unless the task explicitly says otherwise. Preserve the scaffold report, rendered package paths, starter foundation components, workstream UI baseline, and existing queue history; do not replace the starter with a parallel generated app.
+
+If the selected task lacks or fails to inherit its vertical workstream contract, block it for queue/task-brief repair before coding. The repair target must name the affected workstream or internal/foundation scope, attention category or non-attention reason, role-specific dashboard purpose, human surface graph node/action edge or non-UI trigger, governed-tool id and qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP-tool), capability id/class, selected Akka substrate, internal workstream agent graph delegation/result surface when relevant, AuthContext, audit/work trace, and local validation path.
 
 If the selected task writes Java source and no selected Java base package is present in required reads, `specs/scaffold-report.md`, app-description, specs, Maven/Gradle configuration, or existing source package roots, block the task and add/update the base-package pending question instead of defaulting to `com.example`. The question is: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`.
 
@@ -288,7 +290,7 @@ Block instead of guessing when:
 - the task has unsatisfied dependencies
 - required architecture choices or blocking pending questions are unresolved
 - AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
-- a generated full-stack SaaS task is component-only, CRUD-only, page-only, or dashboard-only and lacks a vertical contract naming or inheriting workstream, attention category, surface action, capability id, API/exposure channel, selected Akka substrate, AuthContext, audit/work trace, and local validation path
+- a generated full-stack SaaS task is component-only, CRUD-only, page-only, or dashboard-only and lacks a vertical contract naming or inheriting workstream, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id/exposure, capability id, API/exposure channel, selected Akka substrate, internal workstream agent graph result handling when relevant, AuthContext, audit/work trace, and local validation path
 - an LLM-backed functional-agent task lacks or fails to inherit the workstream expert bundle, approved model binding, governed prompt/skill/reference documents, compact manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, ToolPermissionBoundary, load/work traces, expertise surfaces, seed/import behavior, or required tests
 - an AutonomousAgent or autonomous task is in scope but start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and lifecycle tests are missing
 - the task conflicts with current code or specs
@@ -325,7 +327,7 @@ Before finishing, verify:
 - required reads and skills were loaded narrowly
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
-- generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-action-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting
+- generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-graph-governed-tool-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting
 - LLM-backed functional-agent tasks carried workstream-expertise/reference-governance context, including model binding, manifests, `readReferenceDoc`, loader authorization, tool boundary, load traces, expertise surfaces, seed/import behavior, and tests when applicable
 - autonomous task work carried AutonomousAgent lifecycle, notification, result/progress surface, failure/cancellation attention, and test requirements when applicable
 - if the task was marked `done`, changes were committed or the reason not to commit was reported

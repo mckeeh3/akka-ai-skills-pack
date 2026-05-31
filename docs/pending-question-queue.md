@@ -26,15 +26,16 @@ This file belongs in the target project workspace, not inside the installed `.ag
 2. Preserve question IDs and history; do not renumber questions casually.
 3. Prefer questions that block architecture, specs, backlog, task generation, or safe implementation.
 4. For AI-first scope, add questions when work would otherwise guess delegated authority, human-only decisions, approval gates, policy/risk thresholds, evidence requirements, trace retention/visibility, supervision UI mode, evaluation/replay approach, or outcome metrics.
-5. For generated full-stack AI-first SaaS, add focused blocking questions when LLM-backed workstream-agent work would otherwise guess the workstream expert bundle: model binding, prompt/skill/reference ownership, compact expertise manifests, `readSkill`/`readReferenceDoc` loader authority, `ToolPermissionBoundary`, load traces, surfaces, or tests.
-6. For generated full-stack AI-first SaaS, if no style guide is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block web UI implementation/generation work until answered.
-7. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
-8. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
-9. Defer questions only when the plan can safely proceed without that answer.
-10. Mark questions `superseded` when later requirements or decisions make them irrelevant.
-11. Keep questions short enough to answer without rereading the full PRD.
-12. Include why the question matters and the expected design impact.
-13. At the end of planning responses, report the next pending or answered question that needs attention.
+5. For generated full-stack AI-first SaaS, add focused blocking questions when implementation or task generation would otherwise guess affected workstream boundaries, role-specific dashboard purpose, attention item lifecycle, human surface graph nodes/edges, surface action authority, internal workstream agent graph delegation/result handling, governed-tool identity/exposure, or workstream expertise ownership.
+6. For generated full-stack AI-first SaaS, add focused blocking questions when LLM-backed workstream-agent work would otherwise guess the workstream expert bundle: model binding, prompt/skill/reference ownership, compact expertise manifests, `readSkill`/`readReferenceDoc` loader authority, `ToolPermissionBoundary`, load traces, surfaces, or tests.
+7. For generated full-stack AI-first SaaS, if no style guide is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block web UI implementation/generation work until answered.
+8. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
+9. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
+10. Defer questions only when the plan can safely proceed without that answer.
+11. Mark questions `superseded` when later requirements or decisions make them irrelevant.
+12. Keep questions short enough to answer without rereading the full PRD.
+13. Include why the question matters and the expected design impact.
+14. At the end of planning responses, report the next pending or answered question that needs attention.
 
 ## Status values
 
@@ -96,7 +97,7 @@ Use this structure:
 
 - status: pending
 - priority: blocking
-- category: <workstream|workstream-expertise|model-binding|skill-governance|reference-governance|tool-boundary|attention|dashboard|surface-action|capability|api|autonomous-task-lifecycle|notification-visibility|task-result-surface|human-agent-worker-assignment|behavior|state-model|workflow|integration|security|authorization|policy-governance|approval|risk-evidence|audit-trace|outcomes|observability|testing|ui|data-retention|failure-handling|deployment>
+- category: <workstream|workstream-expertise|model-binding|skill-governance|reference-governance|tool-boundary|attention|dashboard|surface-graph|surface-action|governed-tool|capability|api|internal-agent-graph|autonomous-task-lifecycle|notification-visibility|task-result-surface|human-agent-worker-assignment|behavior|state-model|workflow|integration|security|authorization|policy-governance|approval|risk-evidence|audit-trace|outcomes|observability|testing|ui|data-retention|failure-handling|deployment>
 - depends on: []
 - blocks:
   - <artifact, decision, slice, backlog, or task generation area>
@@ -150,7 +151,7 @@ A pending task may reference a question in notes, for example:
   - depends on decision from Q-003
 ```
 
-If an implementation task discovers a missing decision, block the task and add or update a pending question instead of guessing. For AI-first work, missing authority, approval, policy, evidence, trace, supervision UI, evaluation, or outcome semantics are blockers for the affected work, not implementation details to invent. For generated full-stack AI-first SaaS, also create focused blocking questions when implementation would otherwise guess workstream responsibility, attention category lifecycle, dashboard scope, surface action authority, capability id/API exposure, AutonomousAgent lifecycle/result handling, notification visibility, task result/progress surfaces, or human-vs-agent worker assignment. For LLM-backed workstream-agent work, unresolved workstream expertise, reference-governance, `readReferenceDoc`, model-binding, manifest, loader authorization, tool-boundary, load-trace, or expertise-surface decisions block the affected task until answered or explicitly deferred with scope impact.
+If an implementation task discovers a missing decision, block the task and add or update a pending question instead of guessing. For AI-first work, missing authority, approval, policy, evidence, trace, supervision UI, evaluation, or outcome semantics are blockers for the affected work, not implementation details to invent. For generated full-stack AI-first SaaS, also create focused blocking questions when implementation would otherwise guess workstream responsibility, attention category lifecycle, role-specific dashboard scope, human surface graph node/edge behavior, surface action authority, governed-tool id/exposure channel, capability id/API exposure, internal workstream agent graph delegation/result handling, AutonomousAgent lifecycle/result handling, notification visibility, task result/progress surfaces, or human-vs-agent worker assignment. For LLM-backed workstream-agent work, unresolved workstream expertise, reference-governance, `readReferenceDoc`, model-binding, manifest, loader authorization, tool-boundary, load-trace, or expertise-surface decisions block the affected task until answered or explicitly deferred with scope impact.
 
 ## End-of-response reminder
 

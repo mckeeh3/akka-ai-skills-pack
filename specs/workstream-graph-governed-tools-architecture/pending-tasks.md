@@ -324,7 +324,7 @@
 
 ### TASK-WGGT-03-003: Update pending question/task queue flows
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/03-intake-planning-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/03-intake-planning/03-update-pending-queues.md
 - depends on: [TASK-WGGT-03-002]
@@ -354,6 +354,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update graph queue flows`
+  - completed: updated pending question/task queue docs and pending/do-next skills so queues preserve role-specific dashboards, human surface graph nodes/edges, internal workstream agent graph context, governed-tool exposure, workstream expertise, blockers, and vertical contract repair rules across fresh sessions; checks: `git diff --check`; focused graph/governed-tool term search over edited docs/skills
 
 ### TASK-WGGT-03-004: Update concise usage and planning docs
 

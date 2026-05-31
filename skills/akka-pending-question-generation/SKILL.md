@@ -7,7 +7,7 @@ description: Create or update specs/pending-questions.md from a PRD, app-descrip
 
 Use this skill when planning has discovered uncertainty that should be captured as a durable, one-question-at-a-time clarification queue instead of a large ad hoc question list.
 
-This is a planning and clarification skill. It does not implement application code. For generated secure AI-first SaaS, use questions to block only the specific missing link in the requirements-to-workstream chain: workstream, attention/dashboard, structured surface action, capability/API, Akka substrate, AutonomousAgent task lifecycle, notification/projection, audit/work trace, or local validation.
+This is a planning and clarification skill. It does not implement application code. For generated secure AI-first SaaS, use questions to block only the specific missing link in the requirements-to-workstream chain: workstream, role-specific dashboard attention, human surface graph node/edge, structured surface action, governed-tool identity/exposure, capability/API, Akka substrate, internal workstream agent graph delegation/result handling, AutonomousAgent task lifecycle, notification/projection, audit/work trace, or local validation.
 
 ## Goal
 
@@ -78,7 +78,7 @@ For new Java generation/scaffolding, ensure the Java base package is resolved be
 
 Create questions only when the answer can change one or more of:
 - AI-first operating model: delegated work, retained human authority, supervision mode, or outcome loop
-- requirements-to-workstream contract: workstream ownership, attention categories, dashboard summaries, left-rail/My Account attention behavior, structured surface actions, capability mapping, AutonomousAgent task lifecycle/results, notifications/projections, or audit/work trace linkage
+- requirements-to-workstream contract: workstream ownership, attention categories, role-specific dashboard summaries, left-rail/My Account attention behavior, human surface graph nodes/edges, structured surface actions, governed-tool ids and qualified exposure, capability mapping, internal workstream agent graph delegations/results, AutonomousAgent task lifecycle/results, notifications/projections, or audit/work trace linkage
 - workstream expertise contract: model binding, prompt intent, skill/reference document ownership, compact manifests, `readSkill`/`readReferenceDoc` loader authorization, `ToolPermissionBoundary`, SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace, expertise surfaces, seed policy, or tests
 - agent or agent-team authority: autonomous decisions, tool/data permissions, escalation rules, or memory/trace requirements
 - governance model: policies, clauses, guardrails, prompts, thresholds, approval gates, simulations, or human-governed commits
@@ -111,6 +111,9 @@ For AI-first SaaS inputs, prefer a small number of actionable blocker questions 
 - `category: observability` — which work, decision, policy, tool, data-access, approval, and outcome traces are required?
 - `category: testing` — which evaluations, replay/simulation checks, or threshold acceptance tests prove safe behavior?
 - `category: ui` — which supervision, command-center, dashboard, attention inbox, decision-card, governance, digest, or audit surface is required first?
+- `category: surface-graph` — which surface node, action edge, system-message surface, or dashboard transition should represent the work?
+- `category: governed-tool` — which semantic operation is being added or changed, and is it a browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP-tool, or multiple exposures?
+- `category: internal-agent-graph` — which internal worker delegation, result, proposal, escalation, or human attention item should the workstream agent graph produce?
 - `category: workflow` — which attention item lifecycle, notification/projection source, or AutonomousAgent task state should drive a dashboard or surface action?
 - `category: generation` — what Java base package should generated code use, defaulting to `ai.first` if the user defers?
 
@@ -164,7 +167,7 @@ If `specs/pending-questions.md` already exists:
 
 ## Relationship to pending tasks
 
-Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks. For AI-first plans, also check whether tasks depend on unresolved workstream identity, attention/dashboard contracts, surface actions, capability ids, delegation, authority, approval, policy, evidence, risk, AutonomousAgent lifecycle, notification/projection, trace, UI-supervision, evaluation, or outcome-metric decisions. For LLM-backed functional-agent work, also check for unresolved workstream expert bundle, model-binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool-boundary, load-trace, expertise-surface, and seed/test decisions.
+Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks. For AI-first plans, also check whether tasks depend on unresolved workstream identity, attention/dashboard contracts, human surface graph nodes/edges, surface actions, governed-tool ids/exposure, capability ids, internal workstream agent graph delegation/result behavior, authority, approval, policy, evidence, risk, AutonomousAgent lifecycle, notification/projection, trace, UI-supervision, evaluation, or outcome-metric decisions. For LLM-backed functional-agent work, also check for unresolved workstream expert bundle, model-binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool-boundary, load-trace, expertise-surface, and seed/test decisions.
 
 If blocking questions exist:
 - create or update `specs/pending-questions.md`
