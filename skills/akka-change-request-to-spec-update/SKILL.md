@@ -7,15 +7,15 @@ description: Convert an iterative feature request, bug report, issue, or impleme
 
 Use this skill when an Akka project already has app-description and/or `specs/` planning artifacts and the user introduces an incremental change.
 
-This is an **evolution skill**. It keeps the app meaning and implementation plan current before new code is written. For generated secure AI-first SaaS changes, keep the requirements-to-workstream chain intact: workstream → attention/dashboard → structured surface and surface action → governed capability/API → selected Akka substrate → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
+This is an **evolution skill**. It keeps the app meaning and implementation plan current before new code is written. For generated secure AI-first SaaS changes, reconcile against the existing workstream graph before adding work: workstream → role-specific dashboard attention → human surface graph node/action → internal workstream agent graph delegation/result → governed-tool inside a capability or surface/action map → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 
 ## Goal
 
 Turn a change request into a controlled planning delta that:
 - preserves the current app-description/spec structure
 - preserves AI-first operating-model meaning when delegated work, governance, decisions, audit, or outcomes are in scope
-- preserves workstream identity, attention categories, dashboard contracts, surface actions, capability ids, AutonomousAgent task candidates, notifications/projections, and audit/work traces when the change affects generated SaaS planning
-- preserves workstream expertise meaning when a functional agent's prompt intent, governed skills, references, expertise manifest, loaders, tool boundary, traces, or tests change
+- preserves workstream identity, role-specific dashboard contracts, attention items, surface graph nodes/edges, governed-tool ids, capability ids, internal workstream agent graph delegations/results, AutonomousAgent task candidates, notifications/projections, and audit/work traces when the change affects generated SaaS planning
+- preserves workstream expertise meaning when a functional agent's prompt intent, governed skills, references, expertise manifest, governed-tool help/denial guidance, loaders, tool boundary, traces, or tests change
 - updates only the affected authoritative description/spec artifacts
 - adds or revises verification expectations
 - identifies auth/security and observability impact
@@ -37,7 +37,7 @@ Use `akka-revised-prd-reconciliation` instead when the input is a full revised P
 
 Use `akka-do-next-pending-task` instead when the user wants to execute an existing queue item without changing the plan.
 
-Keep this skill local-delta oriented. It may update affected app-description/spec/backlog/task-brief/queue artifacts, but it must not rederive the whole PRD plan or regenerate the queue from scratch. Preserve existing queue IDs/statuses and existing Java base package, scaffold-report, style-guide, capability id, AuthContext/scope, approval, audit/trace, and test decisions unless the change request explicitly modifies them.
+Keep this skill local-delta oriented. It may update affected app-description/spec/backlog/task-brief/queue artifacts, but it must not rederive the whole PRD plan, regenerate the queue from scratch, or create a fresh parallel app. Preserve existing queue IDs/statuses and existing Java base package, scaffold-report, app-description location, style-guide, workstream id, dashboard/surface graph context, governed-tool id, capability id, AuthContext/scope, approval, audit/trace, and test decisions unless the change request explicitly modifies them. If `specs/scaffold-report.md` exists, treat the request as scaffold extension/repair, not replacement.
 
 ## Required reading
 
@@ -76,7 +76,7 @@ Classify the input as one or more of:
 - workstream expertise change: functional-agent prompt intent, `SkillDocument`/`ReferenceDocument` content, `AgentSkillManifest`/`AgentReferenceManifest` entries, `readSkill`/`readReferenceDoc` loader access, `ToolPermissionBoundary`, authority profile, seed/upgrade policy, governance owner, `PromptAssemblyTrace`/`SkillLoadTrace`/`ReferenceLoadTrace`/`AgentWorkTrace`, or expertise tests
 - integration contract change
 - UI/API surface change, including web UI style-guide selection or token changes
-- requirements-to-workstream change: workstream responsibility, attention category, dashboard summary, surface action, capability exposure, autonomous task candidate, notification/projection, or audit/work trace linkage
+- workstream graph change: workstream responsibility, role-specific dashboard summary, attention category/item, human surface graph node/edge, system-message surface, internal workstream agent graph delegation/result, governed-tool exposure, capability exposure, autonomous task candidate, notification/projection, or audit/work trace linkage
 - implementation discovery
 - de-scope/removal
 - unclear change requiring clarification
@@ -89,12 +89,13 @@ Ask the smallest clarifying question only when necessary to avoid changing the w
 
 Summarize:
 - change basis
-- affected workstreams, attention categories, dashboards, structured surfaces, and surface actions
+- affected workstreams, role-specific dashboards, attention categories/items, human surface graph nodes/edges, structured surfaces, system-message surfaces, surface actions, and governed-tools
 - affected capabilities
 - affected behavior
 - affected tests
 - affected AI-first semantics: durable goals/plans, agent authority, policy, approval, exception, trace, UI, or outcome implications
-- affected workstream expertise semantics: bundle scope, prompt/skill/reference docs, compact manifests, loader denials, tool boundaries, seed/import, governance owner, traces, UI/governance surfaces, and tests
+- affected internal workstream agent graph semantics: virtual dashboard agent attention, internal worker delegation, worker results/proposals, escalations, and human attention items created
+- affected workstream expertise semantics: bundle scope, prompt/skill/reference docs, compact manifests, governed-tool descriptions/denials, loader denials, tool boundaries, seed/import, governance owner, traces, UI/governance surfaces, and tests
 - likely affected Akka components
 - whether this is local, cross-slice, or foundational
 
@@ -125,7 +126,7 @@ Update the smallest relevant `specs/` artifacts:
 - `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, requirements-to-workstream contract, workstream expertise foundation, authority boundaries, minimum-starter/five-core/full-core readiness, or global implementation order changed
 - `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, expert bundle governance, prompt/skill/reference document governance, manifest/loader/boundary rules, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI style-guide decisions
 - `specs/slices/*.md` for business slice meaning, including workstream expertise responsibilities when a slice introduces or materially changes a functional agent
-- `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for expert bundle description, seed documents, skill/reference manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task; repair or block CRUD/page/component-only backlog items that lack workstream/surface/capability context
+- `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for affected role dashboards, attention sources, surface graph nodes/edges, governed-tools, internal-agent delegations/results, expert bundle description, seed documents, skill/reference manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task; repair or block CRUD/page/component-only backlog items that lack workstream/surface/governed-tool/capability context
 - `specs/tasks/**/*.md` when one task brief must change or a new leaf task is needed
 
 Preserve numbering and existing file names unless the user asks for a larger reorganization.
@@ -140,7 +141,7 @@ Rules:
 - append new tasks for new work
 - mark obsolete pending/deferred/blocked tasks as `superseded` when a later spec change replaces them
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
-- update required reads and skills for affected pending tasks, preserving workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `akka-autonomous-agents` or focused governance/testing skills when the task changes durable AutonomousAgent task lifecycle, notifications, results, or tool authority; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI
+- update required reads and skills for affected pending tasks, preserving workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, governed-tool id/class, capability id/class, internal-agent delegation/result context, AuthContext/scope, selected substrate/exposure channel, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `akka-autonomous-agents` or focused governance/testing skills when the task changes durable AutonomousAgent task lifecycle, notifications, results, or governed-tool authority; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI
 - block or decompose stale/vague pending tasks such as CRUD/page/component-only work, `make the agent expert`, or `agent governance` unless they have a self-contained scope for the relevant workstream/surface/capability contract and exactly which expert bundle, governed documents, manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, boundaries, surfaces, traces, and tests are in or out
 - block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, workstream expertise, or outcome semantics are now ambiguous
 - block web UI tasks whose source spec has no selected style guide and add or update the pending style-selection question

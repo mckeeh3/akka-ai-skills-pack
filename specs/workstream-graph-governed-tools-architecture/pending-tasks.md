@@ -290,7 +290,7 @@
 
 ### TASK-WGGT-03-002: Update incremental change planning skills
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/03-intake-planning-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/03-intake-planning/02-update-incremental-change-planning.md
 - depends on: [TASK-WGGT-03-001]
@@ -320,6 +320,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update incremental graph planning`
+  - completed: updated revised-PRD reconciliation, change-request spec update, slice-to-backlog, backlog-to-pending-tasks, and backlog-item-to-task-brief skills so incremental planning reconciles against existing workstream graphs, role-specific dashboards, surface graph nodes/edges, internal workstream agent graph delegations/results, governed-tools, workstream expertise, scaffold-extension assumptions, and queue history; checks: `git diff --check`; focused graph/governed-tool term search over edited skills
 
 ### TASK-WGGT-03-003: Update pending question/task queue flows
 

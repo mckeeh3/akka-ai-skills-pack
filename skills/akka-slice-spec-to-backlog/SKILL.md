@@ -13,7 +13,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 
 Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and is detailed enough to drive focused coding sessions.
 The backlog should end in bounded harness-sized task items, not just class lists and prose.
-For generated secure AI-first SaaS, each backlog item must preserve the vertical requirements-to-workstream chain: workstream → attention/dashboard → structured surface action or workstream event → capability id/class → selected Akka substrate → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
+For generated secure AI-first SaaS, each backlog item must preserve the vertical workstream graph chain from the source increment: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool id/class inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
 
 ## Use this skill when
@@ -84,16 +84,16 @@ produce the matching backlog file:
 Also create or update:
 - `specs/pending-tasks.md`
 
-This skill is a one-increment expansion step. Do not reinterpret the whole PRD or change unrelated slices/sprints while creating the backlog. The backlog and queue entries must inherit the selected Java base package, scaffold-extension assumptions, style-guide status, capability ids, AuthContext/scope, role/capability rules, approval gates, audit/trace obligations, and test expectations from the solution plan and source slice/sprint. If the source increment lacks those contracts, block or queue the narrow repair question instead of inventing implementation authority.
+This skill is a one-increment expansion step. Do not reinterpret the whole PRD, create a fresh parallel app, or change unrelated slices/sprints while creating the backlog. The backlog and queue entries must inherit the selected Java base package, scaffold-extension assumptions, style-guide status, workstream ids, role-specific dashboards, attention items, surface graph nodes/edges, internal-agent graph context, governed-tool ids, capability ids, AuthContext/scope, role/capability rules, approval gates, audit/trace obligations, and test expectations from the solution plan and source slice/sprint. If the source increment lacks those contracts, block or queue the narrow repair question instead of inventing implementation authority.
 
 ## Required backlog content
 
 The backlog file must include:
 1. Purpose
 2. Delivery goal
-3. Workstream/attention/dashboard contract: workstream id, functional agent, attention categories, dashboard summaries, left-rail/My Account contribution, and notification/projection expectations when in scope
-4. Structured surface/action and capability map: surface states/actions, capability ids/classes, AuthContext, approval/policy, audit/work trace, and exposure channel
-5. Autonomous task candidates: durable internal/background work that should use AutonomousAgent, plus task lifecycle/result/notification surfaces when applicable
+3. Workstream/attention/dashboard contract: workstream id, functional agent, role-specific dashboards, attention categories/items, left-rail/My Account contribution, and notification/projection expectations when in scope
+4. Human surface graph plus governed-tool/capability map: surface nodes, edges, states/actions, system-message surfaces, governed-tool ids/classes, capability ids/classes, AuthContext, approval/policy, audit/work trace, and exposure channel
+5. Internal workstream agent graph and autonomous task candidates: virtual dashboard agent attention, internal worker delegations/results/escalations, durable internal/background work that should use AutonomousAgent, plus task lifecycle/result/notification surfaces when applicable
 6. Recommended package layout additions
 7. Class-by-class file list
 8. Concrete endpoint list
@@ -113,7 +113,7 @@ When the target slice or sprint is the SaaS foundation, split the breakdown into
 
 Also split governed runtime agent foundation work into separate backlog and pending-task items by component/UI/test family: `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance with prompt assembly and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `ReferenceDocument`/`ReferenceVersion` governance, `AgentSkillManifest`/`AgentReferenceManifest`, authorized `readSkill(skillId)`/`readReferenceDoc(referenceId)` and `SkillLoadTrace`/`ReferenceLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents and proposed-diff approval, prompt/skill/reference/manifest/tool-boundary UI, trace UI, and security/admin/agent-governance tests. Do not produce one broad managed-agent or `agent governance` item that spans all of these.
 
-For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant workstream id, attention category/dashboard or surface action, source capability ids, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, selected Akka substrate, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
+For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
 If the slice or sprint goal names a feature such as sign-in, user auth, invitation onboarding, User Admin, Agent Admin, or an app-specific workflow, the backlog must include the backend, endpoint/API, frontend/workstream surface, authorization, audit/trace, tests, and local smoke/manual verification needed for that named feature to work at the stated scope. Deferrals that prevent that working state must narrow/rename the goal or block completion; they must not be counted as done.
 If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
 Preserve existing task IDs and statuses when updating an existing queue.
@@ -128,7 +128,7 @@ Preserve existing task IDs and statuses when updating an existing queue.
 
 ### AI-first context preservation
 
-When the source slice or sprint includes AI-first operating-model content, the backlog must carry that context into implementation tasks instead of reducing the work to generic CRUD/component tickets. Workstream attention, dashboard, surface action, capability, AutonomousAgent task, notification/projection, and trace context is required vertical context, not optional prose.
+When the source slice or sprint includes AI-first operating-model content, the backlog must carry that context into implementation tasks instead of reducing the work to generic CRUD/component tickets. Workstream attention, role-specific dashboard, human surface graph node/action, governed-tool, capability, internal workstream agent graph delegation/result, AutonomousAgent task, notification/projection, and trace context is required vertical context, not optional prose.
 
 Preserve, when present:
 - delegated work and retained human authority

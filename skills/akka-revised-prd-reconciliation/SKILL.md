@@ -24,7 +24,7 @@ Reconcile a revised PRD with the current project plan by identifying:
 - pending tasks that must be updated, blocked, deferred, or superseded
 - new queue tasks to append
 
-The output should preserve useful planning history and produce a trustworthy next implementation queue. For generated secure AI-first SaaS, reconciliation must preserve the requirements-to-workstream chain: workstreams → attention categories and dashboard contracts → structured surfaces and surface actions → governed capabilities/APIs → Akka substrate → request-based workstream Agent turns or durable AutonomousAgent task candidates → notifications/projections → audit/work traces.
+The output should preserve useful planning history and produce a trustworthy next implementation queue. For generated secure AI-first SaaS, reconciliation must preserve the existing workstream graph instead of starting a fresh parallel app plan: workstreams → role-specific dashboard attention contracts → human surface graph nodes and actions → internal workstream agent graph delegations/results → governed-tools inside capabilities and surface/action maps → Akka substrate/exposure channels → request-based workstream Agent turns or durable AutonomousAgent task candidates → notifications/projections → audit/work traces.
 
 ## Use this skill when
 
@@ -39,7 +39,7 @@ Use `akka-change-request-to-spec-update` for small feature requests, bug reports
 
 Use `akka-prd-to-specs-backlog` when no existing planning artifacts exist or the user explicitly wants a clean initial planning package.
 
-Use this skill as a reconciliation layer, not as a fresh planning generator: preserve existing app-description/spec/backlog/task-brief/queue IDs and statuses, supersede obsolete non-done tasks instead of deleting them, append follow-up tasks for completed work that must change, and carry forward capability ids, AuthContext/scope, approval gates, audit/trace obligations, workstream expertise decisions, tests, Java base package, scaffold-extension semantics, and style-guide decisions unless the revised PRD explicitly replaces them.
+Use this skill as a reconciliation layer, not as a fresh planning generator: preserve existing app-description/spec/backlog/task-brief/queue IDs and statuses, supersede obsolete non-done tasks instead of deleting them, append follow-up tasks for completed work that must change, and carry forward workstream ids, role-specific dashboards, attention items, surface graph nodes/edges, governed-tool ids, capability ids, internal-agent delegations, AuthContext/scope, approval gates, audit/trace obligations, workstream expertise decisions, tests, Java base package, scaffold-extension semantics, and style-guide decisions unless the revised PRD explicitly replaces them. If `specs/scaffold-report.md` exists or the app already has implementation artifacts, never generate a fresh parallel app, app-description tree, or queue; extend and reconcile the existing scaffold/app instead.
 
 ## Required reading
 
@@ -74,8 +74,9 @@ If an original PRD is available, read it only when needed for diff confidence. P
 
 Summarize the current baseline from maintained artifacts:
 - app identity and goals
-- workstream inventory, owner functional agents, attention categories, dashboard contracts, and left-rail/My Account attention summaries
-- structured surfaces, surface actions, and capability mappings
+- workstream inventory, owner functional agents, role-specific dashboards, attention categories/items, dashboard contracts, and left-rail/My Account attention summaries
+- human surface graph nodes/edges, structured surfaces, surface actions, system-message surfaces, and capability/governed-tool mappings
+- internal workstream agent graph nodes, delegations, worker results, escalations, and human attention items they create
 - capabilities
 - major behavior flows
 - current AI-first interpretation if present: delegated work, durable goals/plans, agent/team authority, approval/exception model, policies, traces, supervision surfaces, and outcome loops
@@ -113,6 +114,7 @@ Classify each meaningful difference as:
 - implementation detail only
 
 For each delta, identify likely affected:
+- existing workstream graph elements: workstream ownership, role-specific dashboards, attention sources/items, human surface graph nodes/edges, internal workstream agent graph delegations/results, governed-tools, workstream expertise docs, and capability mappings
 - app-description layers
 - `specs/akka-solution-plan.md`
 - cross-cutting specs
@@ -147,7 +149,7 @@ If the revised PRD conflicts with current app-description meaning, do not silent
 Update existing files rather than replacing the whole tree:
 - modify existing slice specs when a slice remains valid
 - add new numbered slice specs for new capability areas
-- preserve or update requirements-to-workstream sections in solution plans, cross-cutting specs, slices, sprints, and backlogs when workstream identity, attention categories, dashboard contracts, surface actions, capability mappings, notifications/projections, AutonomousAgent task candidates, authority, policy, approval, audit, UI supervision, or outcome semantics changed
+- preserve or update requirements-to-workstream sections in solution plans, cross-cutting specs, slices, sprints, and backlogs when workstream identity, role-specific dashboards, attention categories/items, human surface graph nodes/edges, governed-tool mappings, internal workstream agent graph delegations/results, capability mappings, notifications/projections, AutonomousAgent task candidates, authority, policy, approval, audit, UI supervision, or outcome semantics changed
 - preserve or update minimum-starter/full-core readiness sections when the revised PRD changes foundation scope; minimum/basic/starter/chatbot-like generated SaaS still starts from the five-core workstream v0 shell, and any narrower User-Admin-only or page/chat-only task shape must be corrected, blocked, or explicitly marked non-SaaS/mechanics-only
 - preserve or update workstream expertise sections/tasks when functional-agent competence changes, keeping prompt/skill/reference documents, manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, tool boundaries, UI/governance surfaces, generation/seed assets, and tests as separate bounded work rather than one vague `agent governance` task
 - mark de-scoped behavior in specs explicitly rather than deleting context when useful
@@ -164,7 +166,7 @@ Apply queue reconciliation rules:
 - do not delete completed tasks
 - do not reset `done` tasks to `pending`
 - append new tasks for new work
-- update pending tasks whose scope/read list/skills changed but still represent the same work, preserving workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior; add `akka-autonomous-agents` or governance/testing companions when durable AutonomousAgent task lifecycle is in scope; add `docs/workstream-expertise-model.md` and focused agent governance/testing skills when expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI are in scope
+- update pending tasks whose scope/read list/skills changed but still represent the same work, preserving workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, governed-tool id/class, capability id/class, internal-agent delegation/result context, AuthContext/scope, selected substrate/exposure channel, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when tasks implement agentic operating-model behavior; add `akka-autonomous-agents` or governance/testing companions when durable AutonomousAgent task lifecycle is in scope; add `docs/workstream-expertise-model.md` and focused agent governance/testing skills when expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI are in scope
 - block or decompose stale task shapes such as CRUD/page/component-only work, `make the agent expert`, or `agent governance` unless they have a self-contained fresh-session scope for the relevant workstream/surface/capability contract and exactly which expert bundle, governed documents, manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, boundaries, surfaces, traces, and tests are included
 - mark obsolete non-done tasks as `superseded`
 - add follow-up tasks for completed work that must change

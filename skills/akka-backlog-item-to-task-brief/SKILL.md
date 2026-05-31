@@ -85,14 +85,14 @@ The brief should normally correspond to:
 - one item from `Suggested harness task breakdown`
 - or one smaller child task split from an oversized backlog item
 
-For generated secure AI-first SaaS, the brief must preserve the vertical requirements-to-workstream chain for the focused work: workstream → attention/dashboard → structured surface action or workstream event → governed capability/API → selected Akka substrate → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
+For generated secure AI-first SaaS, the brief must preserve the vertical workstream graph chain for the focused work: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
 
 ## Required task brief content
 
 Each task brief must include:
 1. Purpose
 2. Reads
-3. Vertical context for generated SaaS: workstream id, attention category/dashboard or surface action, capability id/class, AuthContext/scope, selected substrate, notification/projection, audit/work trace, and AutonomousAgent task lifecycle/result semantics when applicable
+3. Vertical context for generated SaaS: workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, governed-tool id/class, capability id/class, internal-agent delegation/result context, AuthContext/scope, selected substrate/exposure channel, notification/projection, audit/work trace, and AutonomousAgent task lifecycle/result semantics when applicable
 4. Scope
 5. Non-goals
 6. Akka components involved
@@ -102,11 +102,11 @@ Each task brief must include:
 10. Local/runtime validation path when the task implements app behavior
 11. Done criteria
 
-The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant workstream id, attention category/dashboard or surface action, source capability ids, actor/caller, `AuthContext`, required scope/permission checks, approval gates, selected Akka substrate, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
+The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, required scope/permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
 
 ## AI-first context preservation
 
-When the backlog item includes AI-first operating-model semantics, the task brief must preserve only the context needed for this focused implementation run. Do not reduce attention/dashboard/surface-action/capability/autonomous-task context to a generic component task.
+When the backlog item includes AI-first operating-model semantics, the task brief must preserve only the context needed for this focused implementation run. Do not reduce role-specific dashboard attention, surface graph actions, governed-tools, capability, internal-agent delegation, or autonomous-task context to a generic component task.
 
 Carry forward, when applicable:
 - delegated work and retained human authority for the component boundary
@@ -131,7 +131,7 @@ Examples:
 - `specs/tasks/03-consumables-ordering/03-order-workflow-core.md`
 
 ### Scope preservation
-The task brief must not silently widen the backlog item.
+The task brief must not silently widen the backlog item or create a fresh parallel app/spec track. For scaffolded or existing apps, preserve scaffold-extension assumptions, existing app-description/spec locations, queue IDs/statuses, Java base package, and style decisions unless the source backlog explicitly replaces them.
 
 Allowed:
 - narrowing one backlog item into a smaller implementation contract
