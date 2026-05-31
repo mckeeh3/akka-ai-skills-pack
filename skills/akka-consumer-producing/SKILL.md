@@ -58,6 +58,8 @@ For service streams and topics, do not leak internal state or policy-only events
 
 ## Repository examples
 
+These are Akka substrate mechanics examples, not generated-product architecture templates.
+
 - `ShoppingCartEventsToTopicConsumer`
   - republishes internal shopping-cart events to a topic
   - preserves the cart id through `ce-subject`

@@ -58,6 +58,8 @@ Rules:
 
 ## Repository examples
 
+These are Akka substrate mechanics examples, not generated-product architecture templates.
+
 - `ShoppingCartCheckoutConsumer`
   - filters to `CheckedOut`
   - reads current cart state

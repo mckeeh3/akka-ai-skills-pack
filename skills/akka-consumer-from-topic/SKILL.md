@@ -57,6 +57,8 @@ For typed JSON messages, upstream publishers should provide:
 
 ## Repository example
 
+These are Akka substrate mechanics examples, not generated-product architecture templates.
+
 - `ShoppingCartCommandsTopicConsumer`
   - consumes typed command messages from `shopping-cart-commands`
   - uses `ce-subject` as the shopping-cart id

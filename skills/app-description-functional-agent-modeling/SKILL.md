@@ -173,7 +173,7 @@ Use this shape when adding or revising a functional agent:
 3. **Backend capabilities remain authoritative.** A functional agent can call or expose capabilities, but prompt text, rail visibility, and tool descriptions never authorize work.
 4. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, autonomous task progress/result cards, version cards, and outcome panels over free-text-only responses.
 5. **Autonomous task candidates stay governed.** Durable model-driven investigation, review, summary, monitoring/remediation, or specialist follow-up should be modeled as internal-agent/autonomous task candidates with lifecycle notifications and capability boundaries; request-based Akka `Agent` remains the default for immediate user-facing turns.
-6. **Foundation agents are scope-sensitive.** Minimum starter scope must include User Admin workstream v0 as a real role-authorized functional agent with bootstrap authority, `markdown_response`, a durable workstream log, trace links, capability/tool boundaries, denial behavior, and follow-up gaps to full core. Full generated core apps must include full User Admin and Agent Admin functional agents, plus access/profile, audit/trace, and governance/policy coverage as justified by scope. My Account remains launched from the lower-left signed-in user tile, not duplicated as a top-rail workstream icon. If deferred, record the narrower scope explicitly and never label it full-core ready.
+6. **Foundation agents are scope-sensitive.** Minimum starter scope must include the five core workstream v0 starter functional agents — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with bootstrap authority, `markdown_response`, durable workstream logs, trace links, capability/tool boundaries, denial behavior, and follow-up gaps to full core. Full generated core apps must expand those foundation agents into full User Admin and Agent Admin capabilities plus access/profile, audit/trace, and governance/policy coverage as justified by scope. If deferred, record the narrower scope explicitly and never label it full-core ready.
 7. **Keep internal agents separate.** Classifiers, summarizers, evaluators, proposal drafters, and governance reviewers may support a functional agent, but they do not become left-rail work areas unless they represent a user-facing responsibility boundary.
 8. **Record tool boundaries as governed behavior.** Side-effecting tools should default to proposal or approval flows unless accepted policy grants bounded autonomous authority.
 9. **Link tests immediately.** A functional agent is incomplete without authorization, surface, capability, prompt/tool-boundary, and trace tests.
@@ -211,7 +211,7 @@ Avoid:
 - listing tools without linking them to governed capabilities;
 - omitting tenant/customer scope or AuthContext;
 - leaving LLM-backed workstream agents with implicit, prompt-selected, or provider-secret-bearing model bindings;
-- treating a minimum starter as a generic chatbot instead of User Admin workstream v0;
+- treating a minimum starter as a generic chatbot or single-workstream admin slice instead of the five core workstream v0 starter;
 - leaving User Admin or Agent Admin out of full core SaaS scope without an explicit deferral;
 - allowing a functional agent to perform side effects without approval, policy, idempotency, and audit semantics.
 

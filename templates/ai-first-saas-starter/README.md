@@ -11,7 +11,7 @@ Reference distinction:
 
 ## Minimum-first scaffold path
 
-Natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “smallest useful app,” or chatbot-like initial SaaS must start from the canonical minimum doctrine in `docs/minimum-ai-first-saas-app.md`: the **five core v0 workstream set**, not a generic chatbot or a single User Admin-only slice.
+Natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “smallest useful app,” or chatbot-like initial SaaS must start from the canonical minimum doctrine in `docs/minimum-ai-first-saas-app.md`: the **five core v0 workstream set**, not a generic chatbot or single-workstream admin slice.
 
 The first runnable starter target is intentionally narrower than full-core readiness. It must provide bootstrap authorization, selected `AuthContext`, bounded AI-first managed functional agents, durable workstream log entries, real model-backed `markdown_response` v1 surfaces produced through a concrete Akka `Agent` component, active runtime configuration resolution, governed loader tools, `ToolPermissionBoundary` enforcement, `effects().tools(runtimeTools)` registration, backend capability boundaries, provider/configuration failure handling, and audit/work trace substrate for these five core v0 workstreams. My Account is launched only by clicking the signed-in user tile/email at the bottom of the left rail; it is not listed with the other top-rail workstreams:
 

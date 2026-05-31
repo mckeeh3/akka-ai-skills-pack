@@ -29,7 +29,7 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 ## API contract rules
 
 1. Define browser-facing DTOs intentionally; do not leak internal domain records by accident.
-2. Keep endpoint routes stable and human-readable: `/api/<resource>/...`.
+2. Keep endpoint routes stable and human-readable, but derive them from capability and structured-surface contracts; do not use generic `/api/<resource>/...` routes as the primary generated-SaaS decomposition.
 3. Represent validation errors with structured response bodies where useful.
 4. Normalize browser errors into a small union such as `network`, `unauthorized`, `forbidden`, `notFound`, `validation`, and `server`.
 5. Make loading and error states visible in UI state, not hidden in console logs.

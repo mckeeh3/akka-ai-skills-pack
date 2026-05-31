@@ -407,7 +407,7 @@
 
 ### TASK-RIAC-05-001: Whole-pack stale content pass
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/05-trim-and-repeat-review-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/05-trim-verification/01-whole-pack-stale-content-pass.md
 - depends on: [TASK-RIAC-04-004]
@@ -433,6 +433,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: run stale content pass`
+  - completed: recorded `stale-content-pass-01.md`, removed remaining `User Admin workstream v0` / User-Admin-only minimum-starter wording from active skills/docs/examples/templates, clarified capability-derived browser API route guidance, and labeled ShoppingCart consumer examples as substrate mechanics
+  - checks: `git diff --check`; broad stale-term search recorded; exact `User Admin workstream v0|User Admin-only` search returned no matches
 
 ### TASK-RIAC-05-002: Check package and reference consistency
 

@@ -115,14 +115,14 @@ Example AI-first core scenarios:
 
 ### Slice 0: minimum starter
 
-Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, starter app, or chatbot-like bootstrap shell. Slice 0 is the **User Admin workstream v0** defined in `minimum-ai-first-saas-app.md`; it is not full-core readiness and it is not a generic public chatbot.
+Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, starter app, or chatbot-like bootstrap shell. Slice 0 is the **five core workstream v0 starter** defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces. It is not full-core readiness, a User-Admin-only slice, or a generic public chatbot.
 
 Slice 0 must include all of these together:
 
 - bootstrap-authorized human user only; no public self-registration and no prompt- or UI-only privilege grant;
 - selected local `AuthContext` containing account/user identity, bootstrap scope, roles/capabilities, tenant/customer boundary when applicable, and actor metadata;
 - role/capability checks for protected workstream, surface, API, component, and agent-tool actions;
-- `UserAdminAgent` with bounded bootstrap authority that answers and guides within established admin scope, denies or defers unsupported full-core actions, and never expands privileges autonomously;
+- bounded core functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy that answer and guide within established bootstrap scope, deny or defer unsupported full-core actions, and never expand privileges autonomously;
 - durable workstream log for requests, `markdown_response` entries, capability/tool results, denials, correlation ids, and trace references;
 - audit/work trace substrate for identity, authorization, prompt/skill/tool use, capability checks, data access, denials, and response generation;
 - capability-first backend contracts before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
