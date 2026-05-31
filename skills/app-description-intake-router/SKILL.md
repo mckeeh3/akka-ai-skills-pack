@@ -28,6 +28,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
+- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS routing to the five core workstream v0 starter
 - `../../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
 - `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS workstream routing
 - `../../docs/structured-surface-contracts.md` for surface/action contract routing
@@ -49,6 +50,8 @@ If the user does **not** explicitly ask to generate code, run the app, execute t
 - **change only the app description**
 
 Before selecting a focused description skill for broad product input, check for AI-first signals: delegated operational work, agents, recommendations, policy-bound automation, approvals, exceptions, supervision, audit traces, learning, or outcome accountability. If present, route through AI-first interpretation and preserve `15-operating-model/` semantics instead of reducing the app to CRUD screens or a chatbot.
+
+If the prompt asks for a “minimum app,” “starter app,” “basic app,” “smallest useful app,” “initial chatbot,” or other chatbot-like generated SaaS, route to `minimum starter / not full core`: the five core workstream v0 set (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) with `markdown_response`, bootstrap AuthContext, durable workstream logs, backend capability boundaries, and audit/work traces. Do not route those prompts to a standalone chatbot, page shell, or single-workstream slice.
 
 For generated full-stack SaaS input, also run a workstream-attention-dashboard pre-check before capability or UI routing. If the user mentions dashboards, portals, work queues, admin consoles, command centers, agent/chat areas, browser actions, approvals, decisions, audit timelines, workflow status, forms, tables, blocked work, overdue work, failed actions, investigations, reviews, digests, notifications, or other work areas, identify candidate `12-workstreams/` functional agents, attention categories, default dashboard summaries, structured surfaces, surface actions, and surface-action capability candidates first. Then route to capability, UI, behavior, security, observability, or tests as linked follow-up work.
 
@@ -141,6 +144,15 @@ Load next:
 Load next:
 - `ai-first-saas`
 - then route to `app-description-bootstrap` if no usable description root exists, or update `15-operating-model/` plus the smallest affected app-description companion skills
+
+### If the input asks for a minimum, starter, basic, or chatbot-like generated SaaS app
+Load next:
+- `app-description-bootstrap` when no usable app-description root exists, using `minimum starter / not full core` scope with the five core workstream v0 set
+- `app-description-functional-agent-modeling` and `app-description-surface-modeling` when an existing description needs the five core v0 workstreams and `markdown_response` surfaces added or repaired
+- `app-description-capability-modeling` for the read/explain/deny capability boundaries behind those core workstream turns
+- `app-description-ui` for `55-ui` workstream shell, rail, composer, durable log, markdown rendering, trace links, and fail-closed/error states
+
+Record follow-up gaps to full-core readiness instead of treating the minimum starter as full production foundation.
 
 Use focused AI-first companion skills only for the concerns in scope:
 - `ai-first-saas-object-model`
@@ -267,6 +279,7 @@ Use this response shape internally or in structured notes:
 
 Avoid:
 - jumping straight to code generation on a vague prompt
+- routing minimum/starter/basic/chatbot-like generated SaaS prompts to a standalone chatbot, a generic page shell, or a single-workstream slice instead of the five core workstream v0 starter
 - converting agentic operational intent into CRUD screens before modeling workstreams, attention, dashboards, surfaces/actions, goals, authority, policies, decisions, traces, and outcomes
 - routing dashboard, portal, work queue, approval, decision, notification, or action language directly to UI pages or endpoints before preserving surface-action capability context
 - ignoring durable internal/background model-driven work that should be evaluated as an autonomous task / Akka `AutonomousAgent` candidate

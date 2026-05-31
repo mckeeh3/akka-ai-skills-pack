@@ -13,7 +13,7 @@ It helps the harness keep the internal app-description system consistent and dec
 ## Goal
 
 Analyze a requested or completed description change and produce an impact result that:
-- identifies impacted authoritative layers, including `12-workstreams/workstream-expertise/` and the required `15-operating-model/` for generated AI-first SaaS apps
+- identifies impacted authoritative layers, including `12-workstreams/functional-agents.md`, `12-workstreams/surfaces-index.md`, `12-workstreams/surface-contracts/**`, `12-workstreams/workstream-expertise/`, `55-ui/`, and the required `15-operating-model/` for generated AI-first SaaS apps
 - identifies impacted traceability artifacts
 - identifies whether readiness must be reassessed
 - identifies likely affected generated output areas
@@ -42,11 +42,16 @@ Read these first if present:
 - `../app-description-readiness-assessment/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the change involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 
-Prefer these example references when present:
-- `../../docs/examples/purchase-request-app-description/app-description/60-generation/regeneration-map.md`
-- `../../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
-- `../../docs/examples/purchase-request-app-description/app-description/70-traceability/behavior-to-tests-map.md`
-- `../../docs/examples/purchase-request-app-description/app-description/70-traceability/change-impact-map.md`
+Prefer these current generated-SaaS references when present:
+- `../../docs/examples/ai-first-saas-seed-app-description/README.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/regeneration-map.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-behavior-map.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/behavior-to-tests-map.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/change-impact-map.md`
+
+Use purchase-request traceability examples only as conventional mechanics references when the task specifically needs legacy cross-linking mechanics; they are not the canonical generated-SaaS target architecture.
 
 ## Use this skill when
 
@@ -89,7 +94,7 @@ For each change, determine as applicable:
 - which test artifacts are impacted
 - which auth/security artifacts are impacted, especially authority boundaries and permission enforcement
 - which observability artifacts are impacted, especially audit/work/decision traces, policy invocations, tool/data-access events, and outcome metrics
-- which UI artifacts are impacted, especially capability-backed browser actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
+- which UI artifacts are impacted, especially `55-ui` workstream shell, functional-agent rail, composer, structured surface rendering, capability-backed browser actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
 - which traceability maps must change, including functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
 - whether `00-system/readiness-status.md` must be updated
 - which generation surfaces are likely affected, including seeded prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
@@ -187,7 +192,7 @@ Route onward as needed:
 - to `app-description-test-specification` when verification impact exists
 - to `app-description-auth-security` when access, identity, boundary, or data-protection implications exist
 - to `app-description-observability` when logging, metrics, audit, trace, outcome, or diagnosability implications exist
-- to `app-description-ui` when supervision, decision, governance, digest, goal-to-execution, or audit UI implications exist
+- to `app-description-ui` when `55-ui` workstream shell, rail/composer, structured surface rendering, supervision, decision, governance, digest, goal-to-execution, or audit UI implications exist
 - to focused AI-first companion skills when operating-model semantics changed and need decomposition before app-description updates
 - to `app-description-readiness-assessment` when readiness likely changed
 - to `akka-change-request-to-spec-update` when existing specs/backlogs/pending tasks must be reconciled after a bounded change, especially when expertise changes require new or revised tasks for governed documents, manifests, loaders, boundaries, UI/governance surfaces, generation/seed assets, or tests

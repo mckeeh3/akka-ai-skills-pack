@@ -106,7 +106,7 @@
 
 ### TASK-RIAC-02-001: Align bootstrap, normalization, router, and change-impact skills
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/02-description-intake-skills-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/02-intake-skills/01-align-bootstrap-normalization-router-impact.md
 - depends on: [TASK-RIAC-01-002]
@@ -138,6 +138,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: align app description intake skills`
+  - completed: aligned bootstrap, input normalization, intake router, and change-impact guidance to five core workstream v0 starter, AI-first seed preference, surface/capability/55-ui handoffs, and mechanics-only legacy example treatment
+  - checks: `git diff --check`; focused stale-term search over edited files (remaining hits reviewed as mechanics-only references, canonical anti-patterns, or explicit non-target wording)
 
 ### TASK-RIAC-02-002: Align readiness, generation, and app-description orchestration
 

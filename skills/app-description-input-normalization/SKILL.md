@@ -27,6 +27,7 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
+- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream v0 with `markdown_response`, not a generic chatbot or single-workstream slice
 - `../../docs/agent-workstream-application-architecture.md` for functional-agent workstream semantics
 - `../../docs/structured-surface-contracts.md` for surface/action contracts
 - `../../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
@@ -37,7 +38,14 @@ Read these first if present:
 - `../app-description-bootstrap/SKILL.md`
 - `../app-description-intake-router/SKILL.md`
 
-Prefer these example references when present:
+Prefer these current generated-SaaS references when present:
+- `../../docs/examples/ai-first-saas-seed-app-description/README.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ui-index.md`
+
+Use these conventional mechanics references only when the task is specifically about normalization or cross-linking mechanics, not as the target generated-SaaS architecture:
 - `../../docs/examples/purchase-request-app-description/normalized-input-example.md`
 - `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
 - `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
@@ -178,7 +186,7 @@ Use `candidate inferred deltas` for plausible implications that still need confi
 
 ### 3. Preserve the requirements-to-workstream chain
 For broad generated-SaaS input, normalize in this order before code or component concepts:
-1. secure SaaS/AuthContext assumptions
+1. secure SaaS/AuthContext assumptions, including the five core workstream v0 starter when the prompt says minimum, starter, basic, smallest useful app, or chatbot-like SaaS
 2. workstream and functional-agent candidates
 3. attention needs and default dashboard implications
 4. structured surfaces, states, and surface actions
@@ -244,7 +252,7 @@ Use when more than one of the above clearly applies in one prompt.
 Route onward as needed:
 - to `app-description-bootstrap` when the normalized intent is `bootstrap`
 - to `app-description-intake-router` when routing is still needed after normalization
-- to `app-description-functional-agent-modeling` and `app-description-surface-modeling` before direct capability/UI routing when broad generated-SaaS input names work areas, dashboards, queues, command centers, approvals, decisions, audit timelines, workflow status, forms, tables, actions, or agent/chat areas
+- to `app-description-functional-agent-modeling` and `app-description-surface-modeling` before direct capability/UI routing when broad generated-SaaS input names work areas, dashboards, queues, command centers, approvals, decisions, audit timelines, workflow status, forms, tables, actions, or agent/chat areas; then route UI realization impacts to `app-description-ui`/`55-ui` only after surface/action meaning and capability backing are clear
 - to `app-description-capability-modeling` when capability scope, actors, AuthContext, schemas, side effects, idempotency, approval, audit, exposure surfaces, or intended outcomes are the dominant delta after workstream/surface context is preserved
 - to focused maintenance skills when normalization already isolates the dominant delta clearly, while preserving any linked workstream, attention, dashboard, surface action, autonomous task, event/notification/projection/trace, behavior, tests, auth/security, UI, observability, or readiness impacts
 - to `app-description-change-impact` when the input is explicitly asking about affected areas or regeneration scope
