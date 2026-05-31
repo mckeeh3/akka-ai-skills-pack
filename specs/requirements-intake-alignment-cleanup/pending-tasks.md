@@ -175,7 +175,7 @@
 
 ### TASK-RIAC-03-001: Align solution decomposition and PRD planning
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/03-prd-spec-backlog-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/03-planning-queues/01-align-solution-and-prd-planning.md
 - depends on: [TASK-RIAC-02-002]
@@ -203,6 +203,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: align prd planning flow`
+  - completed: aligned solution decomposition and PRD-to-specs planning to five core workstream v0 minimum starter, canonical requirements-to-workstream examples, full-core core-workstream coverage, and mechanics-only conventional PRD examples
+  - checks: `git diff --check`; focused stale-term search over edited files (remaining hits reviewed as mechanics-only references, anti-pattern guidance, review-checklist wording, or intentional full-core User Admin surface acceptance details)
 
 ### TASK-RIAC-03-002: Align revised PRD, change request, and backlog skills
 
