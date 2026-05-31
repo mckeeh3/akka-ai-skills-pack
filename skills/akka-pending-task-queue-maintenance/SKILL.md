@@ -22,6 +22,7 @@ The skill should:
 - detect pending tasks with missing dependencies, reads, skills, checks, or done criteria
 - detect tasks that are runnable only because unresolved pending questions were ignored
 - preserve AI-first operating-model context such as delegated authority, policies, decisions, traces, UI surfaces, evaluations, and outcomes across queue repairs
+- preserve workstream-expertise and reference-governance context for LLM-backed functional agents: model binding, prompt/skill/reference governance, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, seed policy, and tests
 - repair or block stale generated-SaaS tasks that have regressed into component-only, CRUD-only, page-only, or dashboard-only work without workstream, attention, surface action, capability id, API/exposure, Akka substrate, auth, traces, and tests
 - mark obsolete tasks as `superseded` when justified
 - append maintenance follow-up tasks only when needed
@@ -52,6 +53,7 @@ Read these first if present:
 - `../../docs/pending-task-queue.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../../docs/ai-first-saas-application-architecture.md` when the queue contains or references delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../../docs/workstream-expertise-model.md` when the queue contains or references LLM-backed functional agents, workstream expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
 - `../akka-do-next-pending-task/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`
 - target project `specs/README.md` if present
@@ -132,8 +134,9 @@ For non-done tasks sourced from AI-first slices, backlogs, task briefs, or app-d
 - decision-card, audit trace, work trace, tool/data-access, and outcome obligations
 - supervision, governance, digest, audit, or outcome UI surfaces
 - agent evaluation, replay, simulation, or outcome-metric checks
+- workstream expert bundle scope, model binding, governed prompt/skill/reference docs, compact manifests, authorized `readSkill`/`readReferenceDoc`, ToolPermissionBoundary, SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace, expertise UI surfaces, seed/import policy, and tests when an LLM-backed functional agent is in scope
 
-If source artifacts contain these obligations but the queue entry omits them, update required reads, skills, required checks, done criteria, or notes to preserve the vertical contract: workstream/functional agent or internal/foundation scope, attention category, dashboard/surface/action, capability id/API exposure, selected Akka substrate, events/notifications/projections, audit/work trace, and tests. If the omission hides an unresolved decision, block the affected task and reference or append the pending question instead of guessing. If an AutonomousAgent or autonomous task is in scope, require task start/query/result/lifecycle capabilities, progress/result surfaces, notification mapping, failure/cancellation attention behavior, and lifecycle tests before leaving it runnable.
+If source artifacts contain these obligations but the queue entry omits them, update required reads, skills, required checks, done criteria, or notes to preserve the vertical contract: workstream/functional agent or internal/foundation scope, attention category, dashboard/surface/action, capability id/API exposure, selected Akka substrate, events/notifications/projections, audit/work trace, and tests. If LLM-backed workstream expertise is in scope, preserve the model-binding, skill/reference-governance, `readReferenceDoc`, manifest, loader/boundary, trace, surface, seed, and test contract instead of collapsing it into a generic agent task. If the omission hides an unresolved decision, block the affected task and reference or append the pending question instead of guessing. If an AutonomousAgent or autonomous task is in scope, require task start/query/result/lifecycle capabilities, progress/result surfaces, notification mapping, failure/cancellation attention behavior, and lifecycle tests before leaving it runnable.
 
 ### 7. Review stale pending tasks
 
@@ -245,6 +248,7 @@ Before finishing, verify:
 - stale/duplicate tasks are blocked or superseded
 - AI-first task entries preserve authority, policy, decision, trace, UI-surface, evaluation, and outcome context when present in source artifacts
 - generated-SaaS task entries preserve or inherit workstream, attention category, dashboard/surface action, capability id, API/exposure, selected Akka substrate, autonomous task notification/result mapping, auth, traces, and tests
+- LLM-backed functional-agent task entries preserve or inherit workstream expertise, model binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool boundaries, load traces, expertise surfaces, seed/import policy, and tests
 - unresolved AI-first blockers are not left runnable
 - completed task history is preserved
 - no code was implemented

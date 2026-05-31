@@ -54,6 +54,7 @@ Read these first if present:
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and the provider-uncertainty rule
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/requirements-to-workstream-development-process.md` when unresolved decisions affect workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or task materialization
+- `../../docs/workstream-expertise-model.md` when unresolved decisions affect LLM-backed functional-agent expertise, model binding, skills, references, manifests, `readSkill`, `readReferenceDoc`, tool boundaries, traces, or expertise surfaces
 - `../../docs/pending-question-queue.md`
 - `../../docs/pending-task-queue.md`
 - `../../docs/intent-driven-usage-flow.md`
@@ -78,6 +79,7 @@ For new Java generation/scaffolding, ensure the Java base package is resolved be
 Create questions only when the answer can change one or more of:
 - AI-first operating model: delegated work, retained human authority, supervision mode, or outcome loop
 - requirements-to-workstream contract: workstream ownership, attention categories, dashboard summaries, left-rail/My Account attention behavior, structured surface actions, capability mapping, AutonomousAgent task lifecycle/results, notifications/projections, or audit/work trace linkage
+- workstream expertise contract: model binding, prompt intent, skill/reference document ownership, compact manifests, `readSkill`/`readReferenceDoc` loader authorization, `ToolPermissionBoundary`, SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace, expertise surfaces, seed policy, or tests
 - agent or agent-team authority: autonomous decisions, tool/data permissions, escalation rules, or memory/trace requirements
 - governance model: policies, clauses, guardrails, prompts, thresholds, approval gates, simulations, or human-governed commits
 - decision semantics: required evidence, risk/confidence/impact thresholds, alternatives, exception handling, or override behavior
@@ -100,6 +102,8 @@ For generated full-stack AI-first SaaS, if no selected style exists in `app-desc
 
 For AI-first SaaS inputs, prefer a small number of actionable blocker questions over broad product interviews. Queue a blocking question only when the harness cannot safely choose a default for a concrete implementation area. Good AI-first blocker patterns include:
 - `category: behavior` — what work is delegated to agents versus retained by humans?
+- `category: workstream-expertise` — which governed model binding, skills, references, manifests, `readSkill`/`readReferenceDoc` access, traces, and expertise surfaces make this functional agent ready for its workstream?
+- `category: reference-governance` — which reference documents may the agent load, cite, or show as evidence, and what redaction/denial/ReferenceLoadTrace behavior is required?
 - `category: authorization` — which actions, tools, data, or decisions may agents perform without approval?
 - `category: workflow` — which approval, escalation, pause/resume, retry, or compensation gates are mandatory?
 - `category: security` — which policy clauses, permissions, tenant boundaries, or redaction rules must be mechanically enforced beyond the mandatory core SaaS foundation?
@@ -160,7 +164,7 @@ If `specs/pending-questions.md` already exists:
 
 ## Relationship to pending tasks
 
-Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks. For AI-first plans, also check whether tasks depend on unresolved workstream identity, attention/dashboard contracts, surface actions, capability ids, delegation, authority, approval, policy, evidence, risk, AutonomousAgent lifecycle, notification/projection, trace, UI-supervision, evaluation, or outcome-metric decisions.
+Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks. For AI-first plans, also check whether tasks depend on unresolved workstream identity, attention/dashboard contracts, surface actions, capability ids, delegation, authority, approval, policy, evidence, risk, AutonomousAgent lifecycle, notification/projection, trace, UI-supervision, evaluation, or outcome-metric decisions. For LLM-backed functional-agent work, also check for unresolved workstream expert bundle, model-binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool-boundary, load-trace, expertise-surface, and seed/test decisions.
 
 If blocking questions exist:
 - create or update `specs/pending-questions.md`

@@ -95,6 +95,7 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - specs/backlog/01-<slice>-build-backlog.md
   - specs/tasks/01-<slice>/01-<task>.md
   - docs/ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
+  - docs/workstream-expertise-model.md when the task implements or changes an LLM-backed functional agent's workstream expertise, model binding, skills, references, manifests, loaders, tool boundaries, traces, or expertise surfaces
   - skills/akka-agent-behavior-profiles/SKILL.md when the task implements AgentDefinition, lifecycle, authority, agent catalog, or agent detail
   - skills/akka-agent-prompt-governance/SKILL.md when the task implements PromptDocument, PromptVersion, prompt assembly, PromptAssemblyTrace, or prompt governance UI
   - skills/akka-agent-skill-governance/SKILL.md when the task implements SkillDocument, SkillVersion, AgentSkillManifest, readSkill, SkillLoadTrace, or skill/manifest/tool-boundary UI
@@ -158,7 +159,7 @@ Each runnable task should state or inherit from its task brief/backlog:
 - frontend/API/realtime work when user-facing;
 - success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, local-run/manual-smoke checks as applicable, or an explicit non-runtime/internal-only reason.
 
-If this contract is missing, block the task for backlog/task-brief repair instead of guessing the missing workstream, attention semantics, dashboard/surface/action, capability id, authority, notification/projection behavior, autonomous task lifecycle, or component scope. If an AutonomousAgent is in scope, the task must state or inherit start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and tests before execution.
+If this contract is missing, block the task for backlog/task-brief repair instead of guessing the missing workstream, attention semantics, dashboard/surface/action, capability id, authority, notification/projection behavior, autonomous task lifecycle, or component scope. If an LLM-backed functional agent is in scope, also block when the task does not name or inherit the workstream expert bundle, approved model binding, skill/reference manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, `ToolPermissionBoundary`, prompt/skill/reference/work traces, expertise UI surfaces, and tests. If an AutonomousAgent is in scope, the task must state or inherit start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and tests before execution.
 
 ## Selection algorithm
 
@@ -243,7 +244,7 @@ Preserve useful prior notes when adding blocked, superseded, or completion notes
 
 Do not create or execute runnable implementation tasks for work blocked by unresolved `blocking` questions unless those questions have been explicitly deferred with an accepted default or limitation.
 
-For AI-first work, unresolved authority boundaries, approval gates, policy clauses, risk/confidence thresholds, evidence requirements, trace visibility/retention, supervision UI behavior, evaluation strategy, or outcome metrics should be represented as pending questions and referenced from affected tasks.
+For AI-first work, unresolved authority boundaries, approval gates, policy clauses, risk/confidence thresholds, evidence requirements, trace visibility/retention, supervision UI behavior, evaluation strategy, or outcome metrics should be represented as pending questions and referenced from affected tasks. For LLM-backed workstream-agent work, unresolved model binding, skill/reference governance, `readReferenceDoc` availability, manifest assignment, loader authorization, tool-boundary, trace, expertise-surface, or test decisions are blockers for the affected task.
 
 When a task is blocked by a question, record the question ID in `notes`, for example:
 

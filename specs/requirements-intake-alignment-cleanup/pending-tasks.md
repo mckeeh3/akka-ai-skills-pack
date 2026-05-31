@@ -244,7 +244,7 @@
 
 ### TASK-RIAC-03-003: Align pending question and pending task execution flows
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/03-prd-spec-backlog-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/03-planning-queues/03-align-pending-question-task-flows.md
 - depends on: [TASK-RIAC-03-002]
@@ -275,6 +275,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: align pending task flows`
+  - completed: aligned pending question/task queue docs plus question generation, question maintenance, task maintenance, do-next-question, and do-next-task skills to preserve workstream expertise, reference governance, `readReferenceDoc`, loader/tool-boundary, trace, expertise-surface, and runtime-completion blockers
+  - checks: `git diff --check`; focused stale-term search over edited files (remaining hits reviewed as intentional anti-pattern/blocking guidance, Java package guardrail, mechanics-only purchase-request queue link, or generic phrase usage)
 
 ### TASK-RIAC-04-001: Rewrite usage and app-description flow docs
 
