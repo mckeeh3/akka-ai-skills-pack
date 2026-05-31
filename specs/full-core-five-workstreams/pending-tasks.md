@@ -52,7 +52,8 @@
 
 ### TASK-FC5-01-001: Define full-core workstream/surface/agent/capability contract matrix
 
-- status: pending
+- status: done
+- completion note: Added the full-core contract matrix covering all five core workstreams with workstream IDs, functional agents, attention models, rich surface graphs, governed-tool/capability mappings, Akka substrate candidates, expertise bundles, traces, tests, and no new blocking splits.
 - source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
 - task brief: specs/full-core-five-workstreams/tasks/01-contracts/01-full-core-contract-matrix.md
 - depends on: [TASK-FC5-00-001]
