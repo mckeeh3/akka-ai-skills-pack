@@ -232,7 +232,8 @@
 
 ### TASK-FC5-06-001: Implement Audit/Trace full-core vertical
 
-- status: pending
+- status: done
+- completion note: Verified and marked complete the Audit/Trace full-core vertical: backend-authoritative dashboard/search/detail/timeline/failure-evidence/investigation-guide surfaces, governed capabilities/actions, scoped redaction and cross-tenant denial behavior, trace-read audit path, fail-closed summary worker behavior, frontend audit timeline/detail rendering contracts, and backend/frontend/typecheck/diff validation are in place.
 - source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
 - task brief: specs/full-core-five-workstreams/tasks/06-audit-trace/01-audit-trace-full-core.md
 - depends on: [TASK-FC5-05-001]
