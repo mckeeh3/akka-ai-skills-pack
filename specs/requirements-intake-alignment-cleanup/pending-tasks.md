@@ -343,7 +343,7 @@
 
 ### TASK-RIAC-04-003: Rewrite domain workstream and web UI docs
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/04-docs-examples-ui-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/04-docs-examples-ui/03-rewrite-domain-and-web-ui-docs.md
 - depends on: [TASK-RIAC-04-002]
@@ -372,6 +372,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: align workstream ui docs`
+  - completed: aligned domain workstream, web UI API, UX, frontend decomposition, and style guidance around functional-agent rail/workstream shell, structured surfaces, system-message surfaces, capability-backed actions, decision/governance/trace surfaces, and AutonomousAgent progress/result surfaces
+  - checks: `git diff --check`; focused stale-term search over edited docs (remaining hits reviewed as explicit legacy-taxonomy quarantine or anti-pattern wording)
 
 ### TASK-RIAC-04-004: Demote or remove legacy examples from active intake guidance
 

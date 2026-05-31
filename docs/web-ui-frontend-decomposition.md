@@ -8,7 +8,7 @@ For product UIs, use a standard frontend project such as React/Vite and route im
 
 Read `docs/web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
 
-For this skills-pack source repository, use `docs/workstream-ui-reference-architecture.md` and the reusable implementation under `frontend/src/workstream/**` as the canonical frontend reference. In an installed pack, use the same architecture doc under `docs/` and the exported frontend reference under `resources/examples/frontend/**`. The User Admin vertical fixtures and `frontend/src/workstream-user-admin-vertical.contract.test.mjs` demonstrate the foundation-admin dashboard → list/search → detail/edit flow through structured surfaces. Do not use legacy `frontend/src/screens/**` or page-route tests as the primary generated SaaS UI model.
+For this skills-pack source repository, use `docs/workstream-ui-reference-architecture.md` and the reusable implementation under `frontend/src/workstream/**` as the canonical frontend reference. In an installed pack, use the same architecture doc under `docs/` and the exported frontend reference under `resources/examples/frontend/**`. The foundation-admin vertical fixtures and `frontend/src/workstream-user-admin-vertical.contract.test.mjs` demonstrate structured surface flow through dashboard, attention queue, scoped search results, member detail cards, invitation actions, system messages, and trace links. Do not use legacy `frontend/src/screens/**` or page-route tests as the primary generated SaaS UI model.
 
 ## Required output
 
@@ -51,9 +51,12 @@ For each shell region, surface, or conventional route/deep-link, define:
 
 Prefer explicit route families:
 - UI shell/assets: `/ui...`
-- JSON APIs: `/api/...`
-- streams: explicit stream prefixes
-- WebSockets: `/websockets/...`
+- session bootstrap: `/api/me`
+- workstream/surface/action APIs: `/api/workstreams/...` or similarly explicit generated-app routes
+- streams: explicit workstream/surface stream prefixes
+- WebSockets: `/websockets/...` only when bidirectional browser/server messaging is central
+
+Conventional object paths, if present, are implementation aliases for capability-backed surface actions; they are not the planning starting point.
 
 ### 3. Data dependencies
 
@@ -213,4 +216,4 @@ A web UI decomposition is ready for implementation when a coding agent can answe
 - which style guide and CSS tokens drive the frontend styling?
 - which standard frontend project/framework conventions apply?
 - what frontend modules/components should be created or reused from the `frontend/src/workstream/**` reference?
-- what tests prove the browser app was delivered correctly, including shell/rail/composer/surface/action/deep-link/realtime and User Admin vertical contract coverage?
+- what tests prove the browser app was delivered correctly, including shell/rail/composer/surface/action/deep-link/realtime and foundation workstream vertical contract coverage?

@@ -54,19 +54,22 @@ ai-first-saas-core-app-domain/
     workstream-agent/
       prompt.md
       skills/
-        user-admin/
+        user-admin-overview/
           SKILL.md
-        user-list/
+        invitation-guidance/
           SKILL.md
-        user-edit/
+        role-governance/
           SKILL.md
 
     surfaces/
       dashboard.md
-      user-list.md
-      user-edit.md
+      access-review-queue.md
+      invitation-flow.md
+      member-detail-card.md
       system-messages.md
 ```
+
+The example uses User Admin because it is one required foundation workstream. Its surfaces are workstream contracts with capability-backed actions, not a page/resource decomposition to copy for unrelated domains.
 
 ## Domain `README.md`
 
@@ -144,7 +147,7 @@ Use them to capture user-assistance knowledge for the workstream agent, such as:
 - how to explain denials and recovery;
 - examples of supported user requests.
 
-Each `SKILL.md` should be scoped to one user-facing assistance topic. For example, User Admin may have skills for general user administration, user list/search, user edit, invitation guidance, role/capability guidance, or access review.
+Each `SKILL.md` should be scoped to one user-facing assistance topic. For example, User Admin may have skills for general user administration, invitation guidance, role/capability guidance, access review, denial recovery, or surface-specific help.
 
 If a generated app also stores runtime governed skills as `SkillDocument`/`SkillVersion` records, these files are seed/reference content that can be imported into governed storage with provenance, review, activation, and tenant-customization rules.
 
@@ -168,10 +171,11 @@ A surface file should define:
 
 Surface actions include:
 
-- read/query or surface-request actions, such as show dashboard, search users, view user, open audit timeline, row-click-to-open-detail, and refresh;
+- read/query or surface-request actions, such as show dashboard, open an attention item, search scoped members, open an evidence card, open audit timeline, and refresh;
 - command actions, such as invite, revoke, disable, save, resend, and update settings;
-- proposal/approval/workflow actions, such as draft change, request approval, approve/reject, start review, and show progress;
-- governance/trace actions, such as open diff, simulate, open trace, and view audit timeline.
+- proposal/approval/workflow actions, such as draft change, request approval, approve/reject, start review, and show workflow or AutonomousAgent progress/result surfaces;
+- decision-card actions, such as inspect evidence, compare alternatives, approve, reject, counter, defer, or escalate;
+- governance/trace actions, such as open diff, simulate policy impact, commit governed changes, open trace, and view audit timeline.
 
 Every action maps to a governed backend capability. In browser realization, actions usually invoke backend APIs that return a new surface, updated surface, workstream item, workflow/progress surface, or typed `system_message` surface.
 
@@ -225,7 +229,7 @@ Exposure-channel rules:
 
 - authorized success flows through intended surfaces;
 - user-intent handling by the workstream agent;
-- surface request flow, including dashboard/search/detail navigation;
+- surface request flow, including dashboards, scoped search results, detail/evidence cards, decision cards, and trace/governance surfaces;
 - form submission and result-surface behavior;
 - forbidden, disabled-user, missing-role, and tenant-isolation cases;
 - idempotent/no-op behavior;
@@ -267,4 +271,4 @@ workstream
 → tests and traces
 ```
 
-Do not decompose a domain first into pages, CRUD screens, entities, or agent tools. Use the workstream and surface model to preserve user intent and then map the required behavior to backend capabilities and Akka components.
+Do not decompose a domain first into pages, CRUD screens, resource APIs, entities, or agent tools. Use the workstream and surface model to preserve user intent and then map the required behavior to backend capabilities and Akka components. Conventional routes, route-backed regions, forms, and dense-data widgets are implementation/deep-link mechanics after the workstream and surface contracts are known.

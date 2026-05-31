@@ -32,7 +32,7 @@ Every app UI style guide should define:
 - visual direction: concise aesthetic point of view, tone, memorable motif, and forbidden generic patterns
 - light/dark/system mode policy
 - brand adaptations: app name, logo/icon treatment, product-specific accent allowances, forbidden copied demo names/logos
-- layout shell: sidebar/topbar/footer presence, max width, grid density, card density, navigation style
+- layout shell: functional-agent rail, context/authority bar, main workstream panel, persistent composer, surface grid density, and deep-link support
 - typography: font family, scale, weights, line heights, numeric/table conventions, and fallback strategy
 - color tokens: CSS variables for surfaces, text, borders, primary/accent colors, status colors, chart colors, focus rings, and shadows
 - spacing/radius/elevation tokens
@@ -80,7 +80,7 @@ Every app UI style guide should define:
   - focus:
 
 ## Component style rules
-- shell/navigation:
+- workstream shell and functional-agent rail:
 - AI command strip:
 - KPI summary cards:
 - decision/exception cards:
@@ -322,12 +322,13 @@ It must not change:
 
 ### App shell
 
-- left sidebar on desktop, approximately `--shell-sidebar-width`
+- left functional-agent rail on desktop, approximately `--shell-sidebar-width`
 - product logo at top
-- primary nav items first, then grouped sections such as Intelligence and Governance
-- notifications and current user profile pinned near the bottom
-- active item uses soft primary background plus primary icon/text color
-- unavailable sections are hidden or disabled based on capabilities; backend authorization remains authoritative
+- role-authorized functional agents first, then supporting governance/audit/status entries when represented as functional agents or capability-backed surfaces
+- attention, notifications, and current user profile/context controls pinned near the bottom where appropriate
+- active functional agent uses soft primary background plus primary icon/text color
+- unavailable workstreams are hidden or disabled based on capabilities; backend authorization remains authoritative
+- conventional routes and deep links select shell state; they are not the primary application model
 
 ### Main content
 
@@ -416,11 +417,12 @@ Required elements:
 
 Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashboards:
 
-- **Mission Control / Briefing:** surface framing, AI command strip, operational KPI band, agent execution timeline, needs-your-attention queue, agent teams/trust summary, trust controls, upcoming autonomous actions.
+- **Mission Control / Briefing:** surface framing, AI command strip, operational KPI band, agent execution timeline, needs-your-attention queue, agent teams/trust summary, trust controls, upcoming autonomous actions, and typed system-message surfaces.
 - **Goal Workbench:** objective form, success criteria, constraints, proposed execution plan, agent/team assignment, tool/data permissions, approval gates, launch simulation/review action.
 - **Decision Queue and Decision Detail:** filters by priority/policy/agent/due time, recommendation summary, evidence/risk, alternatives, approve/reject/counter/defer/escalate actions, trace and outcome links.
 - **Governance Center:** policy list and versions, thresholds, authority boundaries, proposed changes, simulations/replays, human-authorized commit flow, rollback and audit links.
 - **Audit Trace Explorer:** search/filter by goal, agent, decision, tool, user, policy, time; chronological trace entries; evidence/tool/data-access details; authorization and policy invocation details; outcome links.
+- **AutonomousAgent Progress / Result:** task status, dependency/blocked state, waiting-for-human state, progress evidence, result or rejection summary, retry/cancel/escalate actions, and trace links.
 
 ## Applying the style safely
 
