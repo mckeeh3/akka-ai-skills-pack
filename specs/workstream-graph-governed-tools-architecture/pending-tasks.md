@@ -417,7 +417,7 @@
 
 ### TASK-WGGT-04-002: Update UI/API and browser-tool routing
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/04-examples-implementation-routing-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/04-examples-implementation/02-update-ui-api-routing.md
 - depends on: [TASK-WGGT-04-001]
@@ -449,6 +449,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update browser tool routing`
+  - completed: updated web UI/API docs and web UI skills so role-specific dashboard attention sources, human surface graph edges, browser-tool invocations backed by governed-tools/capabilities, result/system-message surfaces, evidence/freshness display, and DTO/state/rendering contracts drive UI/API planning; checks: `git diff --check`; focused graph/governed-tool/browser-tool term search over edited docs/skills
 
 ### TASK-WGGT-04-003: Update agent, internal-agent, and component routing
 

@@ -10,8 +10,8 @@ Use this skill when implementing browser state, structured surface rendering, DO
 ## Generated SaaS input contract
 
 For generated full-stack AI-first SaaS state/rendering work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional agent, workstream region, structured surface id/type/version, surface action/event, and deep-link behavior;
-- governed capability id/class behind each consequential action/query and selected frontend/API/realtime exposure;
+- owning functional agent, workstream region, role-specific dashboard attention source, structured surface id/type/version, human surface graph edge, surface action/event, and deep-link behavior;
+- browser-tool exposure name plus governed-tool id/capability id/class behind each consequential action/query and selected frontend/API/realtime exposure;
 - `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden states, stale/reconnect behavior, and backend authorization boundary;
 - DTOs, redaction, idempotency/correlation ids, policy/approval/escalation states, audit/work trace links, and rendering/API/realtime tests.
 
@@ -58,7 +58,7 @@ Do not hide these states in booleans such as `isLoading` plus nullable data unle
 ## Workstream and deep-link state
 
 For generated full-stack AI-first SaaS apps:
-- define functional-agent ids, workstream item ids, surface ids, and route/deep-link names in the project's router/state structure
+- define functional-agent ids, workstream item ids, surface ids, surface graph edge ids, browser-tool ids, governed-tool ids, and route/deep-link names in the project's router/state structure
 - expose selected functional agent, AuthContext, and active surface state visibly
 - support meaningful URLs with hash or history routes when useful, but keep them as deep links into workstreams/surfaces
 - render not-found, forbidden, and unavailable-agent states for unknown or unauthorized deep links
@@ -66,7 +66,7 @@ For generated full-stack AI-first SaaS apps:
 ## Done criteria
 
 A state/rendering implementation is done when:
-- all planned workstream shell regions and structured surfaces render from explicit state
+- all planned workstream shell regions, role-specific dashboard attention sources, human surface graph nodes/edges, browser-tool action states, and structured surfaces render from explicit state
 - every data dependency has loading/empty/error behavior
 - AI-first supervision surfaces distinguish working, waiting-for-human, exception, policy-blocked, stale, trace-ready, and outcome-review states when applicable
 - action results update state without requiring a full page reload unless intentional

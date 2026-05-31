@@ -24,15 +24,17 @@ List:
 
 ### 2. Workstream shell regions, surfaces, and deep links
 
-For generated SaaS apps, define shell regions before route/deep-link details:
+For generated SaaS apps, define shell regions and the human surface graph before route/deep-link details. Treat the role-specific dashboard as the trunk surface for the selected functional agent; every table row action, card link, form submission, refresh, deep link, approval, trace link, or workstream switch is a surface graph edge that invokes a browser-tool backed by a governed-tool.
 - left rail functional agents: visible agents, hidden/denied agents, default selected agent, attention indicators, and role/capability basis
 - main workstream panel: stream item types, grouping, timeline/history behavior, status/progress items, trace links, and stale/reconnect states
 - persistent bottom composer: accepted request types, command shortcuts, uploads where allowed, disabled/forbidden states, and selected-agent context
 - context/authority indicators: selected account/tenant/customer, role/capability basis, support-access state, pending approvals, and recovery links
+- role-specific dashboard surfaces: attention items, attention source, evidence/freshness, allowed next browser-tools, and denied/hidden states
 - structured surfaces: dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status, evidence bundles, version cards, and outcome panels
+- surface graph edges: source surface, target/result/system-message surface, browser-tool name, governed-tool id, capability id, authorization basis, and trace/audit outcome
 - deep links: selected functional agent, important stream item, and direct surface URLs when required
 
-For each shell region, surface, or conventional route/deep-link, define:
+For each shell region, surface, surface graph edge, or conventional route/deep-link, define:
 - route or UI path, where routes are implementation/deep-link details
 - user goal
 - purpose
@@ -60,11 +62,12 @@ Conventional object paths, if present, are implementation aliases for capability
 
 ### 3. Data dependencies
 
-For each shell region, surface, or route/deep-link, list:
+For each shell region, dashboard attention source, surface, surface graph edge, browser-tool, or route/deep-link, list:
 - data needed on first render
+- attention source, freshness/stale rules, and evidence links when the surface is a role-specific dashboard or queue
 - query/filter/sort inputs
 - command/action endpoints
-- backend capability id for each consequential action or query
+- backend capability id and governed-tool id for each consequential action or query
 - polling, SSE, or WebSocket needs
 - cache/stale behavior if relevant
 
@@ -112,7 +115,7 @@ For each form/action, define:
 
 For each browser API, define:
 - route and method
-- capability id and allowed exposure surface
+- capability id, governed-tool id, browser-tool exposure name, and allowed exposure surface
 - request DTO
 - success response DTO
 - error response DTOs
@@ -209,7 +212,7 @@ A web UI decomposition is ready for implementation when a coding agent can answe
 - what should the user understand in the first five seconds of each shell region or surface?
 - what is the primary action and why?
 - what data does each surface need?
-- what user actions are possible?
+- what human surface graph edges and browser-tool invocations are possible?
 - what happens while loading, empty, failed, unauthorized, or submitting?
 - what UX copy appears for buttons, empty states, validation, errors, and success?
 - what backend endpoints are required?

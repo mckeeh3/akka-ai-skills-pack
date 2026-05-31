@@ -14,8 +14,8 @@ Use this skill before implementing details with `akka-web-ui-frontend-project` s
 ## Generated SaaS input contract
 
 For generated full-stack AI-first SaaS UX work, produce an implementation-ready UX plan only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agents, workstream regions, structured surface ids/types/versions, surface actions/events, and deep-link intent;
-- governed capability ids/classes behind consequential actions/queries and selected frontend/API/realtime exposure;
+- functional agents, workstream regions, role-specific dashboard attention sources, structured surface ids/types/versions, human surface graph edges, surface actions/events, and deep-link intent;
+- browser-tool exposure names, governed-tool ids, governed capability ids/classes behind consequential actions/queries, and selected frontend/API/realtime exposure;
 - `AuthContext`, tenant/customer scope, roles/capabilities, authority indicators, disabled/forbidden states, and retained-human-authority rules;
 - DTO/error states, redaction, idempotency/correlation, policy/approval/escalation states, audit/work trace links, style guide, accessibility, and required rendering/API/realtime tests.
 
@@ -29,7 +29,7 @@ Include these AI-first workstream/surface patterns for generated full-stack AI-f
 - **Functional-agent rail:** role-authorized work areas, attention indicators, hidden/denied agent recovery, and selected-agent context.
 - **Main workstream:** user intent, agent responses, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline.
 - **Persistent composer:** contextual natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden explanations, and submit progress.
-- **Command center surface:** active goals, plan progress, agent activity, exceptions, approval queues, material events, and stale/reconnect status.
+- **Role-specific dashboard / command center surface:** attention items, evidence, freshness, active goals, plan progress, agent activity, exceptions, approval queues, material events, and next browser-tools with stale/reconnect status.
 - **Decision card / deviation review surface:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
 - **Policy/governance center surface:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.
 - **Async digest surface:** compressed routine activity with material events, pending decisions, outcome deltas, and trace links.
@@ -74,7 +74,7 @@ For each workstream shell region, structured surface, or major region, define:
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
 14. **UX copy** — labels, button text, helper text, empty/error/success messages.
 15. **Style guide application** — how selected tokens support hierarchy and feedback.
-16. **Capability/action mapping** — which backend capability owns each consequential action and how forbidden/denied states are shown.
+16. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown.
 
 ## UX copy rules
 
@@ -115,10 +115,12 @@ Produce a concise UX handoff that downstream implementation can follow:
 
 Functional agent context:
 Surface type/version:
+Surface graph role: <dashboard trunk | branch | result | system-message | deep-link target>
 User goal:
 Primary action:
 Secondary actions:
-Capability/action mapping:
+Browser-tool/governed-tool/capability mapping:
+Attention source and freshness (for dashboards/queues):
 Information hierarchy:
 States:
 - loading:
@@ -162,4 +164,4 @@ Before coding or accepting UI work, verify:
 - selected style guide tokens are used to reinforce hierarchy, focus, and status
 - left rail, workstream panel, composer, and surface actions remain usable by keyboard and at narrow widths
 - AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope
-- consequential surface actions map to backend capabilities; UI gating is not treated as authorization
+- consequential surface actions map to browser-tool exposures backed by governed-tools and backend capabilities; UI gating is not treated as authorization

@@ -14,7 +14,8 @@ Pair with:
 
 1. **Workstream context first.** In the first five seconds, the user should know the selected functional agent, selected tenant/customer context, authority basis, current workstream state, and what needs attention.
 2. **Surfaces are the renderable contract.** Dashboards, decision cards, forms, tables, traces, progress panels, and system messages are structured surfaces with typed state and capability-backed actions.
-3. **Capability-backed actions are explicit.** Every consequential UI action, read/query action, surface request, deep link, or recovery action maps to a governed backend capability.
+3. **The dashboard starts the surface graph.** A role-specific dashboard shows attention items, evidence, freshness, and next browser-tools; each action moves through a human surface graph edge to a result, updated surface, progress surface, decision surface, or `system_message` surface.
+4. **Browser-tools are explicit.** Every consequential UI action, read/query action, surface request, deep link, or recovery action maps to a browser-tool exposure backed by a governed-tool inside a backend capability.
 4. **Primary action dominance.** The main next action should be visible, specific, and stronger than secondary actions.
 5. **Progressive disclosure.** Show decision-driving evidence first; defer diagnostics, raw ids, and rare actions.
 6. **Recoverability.** Users should know how to retry, correct validation errors, request approval, recover from stale state, or return to the workstream.
@@ -96,7 +97,7 @@ Avoid:
 
 ### Surface request actions
 
-Use for `show_dashboard`, `open_workstream`, `open_attention_item`, `refresh_surface`, row/card detail expansion, and deep-link recovery. They still require capability ids and backend authorization when protected data or cross-workstream state is involved.
+Use for `show_dashboard`, `open_workstream`, `open_attention_item`, `refresh_surface`, row/card detail expansion, and deep-link recovery. Model each as a human surface graph edge with source surface, target or result surface, browser-tool name, governed-tool id, capability id, and backend authorization. They still require capability ids and backend authorization when protected data or cross-workstream state is involved.
 
 ### Command and proposal actions
 
@@ -112,7 +113,7 @@ Governance and audit surfaces should make policy versions, proposed diffs, simul
 
 ## System-message surfaces
 
-System feedback is a structured surface, not a toast-only string. Define success, warning, validation, forbidden, approval-required, background-work-started, deferred-capability, stale/reconnect, no-op, and failure messages with:
+System feedback is a structured surface, not a toast-only string. Browser-tool results that do not navigate to a normal target surface should return or append a `system_message` surface. Define success, warning, validation, forbidden, approval-required, background-work-started, deferred-capability, stale/reconnect, no-op, and failure messages with:
 - severity and message code
 - user-safe title/body
 - related surface/action/capability ids
@@ -189,6 +190,8 @@ For narrow screens:
 
 Before coding, the agent should be able to state:
 - which functional agents appear in the rail and which are hidden or denied
+- which role-specific dashboard attention items appear, which sources/evidence/freshness they use, and which browser-tools they offer
+- which human surface graph nodes and edges exist, including result and system-message surfaces
 - what the user sees first in the selected workstream
 - how the composer behaves and when it is disabled
 - which structured surfaces can appear and which capabilities back their actions

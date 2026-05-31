@@ -15,13 +15,15 @@ Design browser APIs in this order:
 /api/me bootstrap
 → selected AuthContext
 → functional-agent rail and workstream shell
+→ role-specific dashboard attention sources
+→ human surface graph nodes and edges
 → structured surface envelopes and system-message surfaces
-→ surface/action requests
-→ governed backend capabilities
+→ surface/action requests as browser-tools
+→ governed backend capabilities/governed-tools
 → Akka components and persistence behind those capabilities
 ```
 
-Endpoints expose capabilities; they do not define authority. Every protected endpoint must enforce authentication, selected `AuthContext`, tenant/customer scope, role/capability checks, policy/approval gates, idempotency, audit/work traces, and frontend-safe redaction in the backend.
+Endpoints expose capabilities; they do not define authority. Browser APIs implement surface graph edges by carrying browser-tool invocations backed by governed-tools. Every protected endpoint must enforce authentication, selected `AuthContext`, tenant/customer scope, role/capability checks, policy/approval gates, idempotency, audit/work traces, and frontend-safe redaction in the backend.
 
 ## Canonical source locations
 
@@ -38,8 +40,8 @@ Prefer stable route families by purpose:
 - UI shell/assets: `/ui...`
 - session bootstrap: `/api/me`
 - workstream shell and surface APIs: `/api/workstreams/...`
-- surface action submission: `/api/surfaces/{surfaceId}/actions/{actionId}` or a similarly explicit action route
-- capability-specific APIs when a surface action needs a named backend path: `/api/capabilities/{capabilityId}/...` or a domain-specific alias that still records the capability id
+- surface action submission/browser-tool invocation: `/api/surfaces/{surfaceId}/actions/{actionId}` or a similarly explicit action route
+- capability-specific APIs when a surface action needs a named backend path: `/api/capabilities/{capabilityId}/...` or a domain-specific alias that still records the capability id and governed-tool id
 - SSE streams: `/api/workstream-streams/...`
 - WebSockets only when bidirectional browser/server messaging is central: `/websockets/...`
 
@@ -58,13 +60,13 @@ Use explicit surface envelopes with:
 - owning functional agent and reusable functional-agent ids
 - selected `AuthContext` summary and visible capability ids
 - redacted, frontend-safe `data`
-- allowed action descriptors with linked `capabilityId`
-- `correlationId`, trace ids, stale/reconnect metadata, and links
+- allowed action descriptors with linked `capabilityId`, `governedToolId`, browser-tool exposure name, and surface graph edge semantics
+- `correlationId`, trace ids, stale/reconnect metadata, attention-source freshness, evidence links, and links
 
 ### Action submission API
 
 Action requests should carry:
-- `actionId`, `capabilityId`, selected context, surface id, input, idempotency key, and correlation id
+- `actionId`, `capabilityId`, `governedToolId`, browser-tool exposure name, selected context, source/target surface ids when the action traverses the surface graph, input, idempotency key, and correlation id
 
 Action responses should return one of:
 - accepted result surface
@@ -100,6 +102,7 @@ The frontend client should normalize:
 ## Backend endpoint checklist
 
 For each browser API endpoint:
+- identify the owning workstream, source surface, surface graph edge, browser-tool exposure, governed-tool id, and capability id
 - use `@HttpEndpoint` and explicit `@Acl`
 - extract JWT/request context and selected `AuthContext`
 - enforce backend authorization, tenant/customer scoping, disabled-user handling, and support-access boundaries

@@ -28,7 +28,9 @@ Before implementation, make the UI contract explicit for:
 - traceability from action or decision back to goal, policy, tool/data access, approver, and outcome;
 - realtime or stale-state behavior for live supervision surfaces;
 - selected functional agent, available functional agents, denied/hidden agents, and workstream icon descriptors based on `/api/me` and backend capabilities;
-- structured surface type/version, payload, allowed actions including governed surface-request actions such as `open_workstream`, stale/reconnect behavior, and trace links.
+- role-specific dashboard attention sources, evidence/freshness display, and allowed next browser-tools;
+- human surface graph nodes/edges, including source surface, target/result/system-message surface, and deep-link behavior;
+- structured surface type/version, payload, allowed actions including governed surface-request actions such as `open_workstream`, browser-tool/governed-tool/capability ids, stale/reconnect behavior, and trace links.
 
 Pair AI-first web UI work with `agent-workstream-apps` and `ai-first-saas-ui-surfaces` when selecting functional agents and surfaces, then route to endpoint, view, workflow, agent, realtime, state-rendering, accessibility, and testing skills without duplicating their implementation guidance.
 
@@ -84,11 +86,11 @@ Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and pr
 2. Functional-agent left rail: visible agents, hidden/denied agents, default selected agent, unread/attention indicators, workstream icon descriptors rendered through an approved SVG/icon-library registry or semantic SVG fallback (not letters), My Account lower-left signed-in user tile behavior, and role/capability basis
 3. Main workstream panel: stream item types, grouping, history/retention behavior, status/progress items, trace links, and stale/reconnect states
 4. Persistent composer: accepted natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden states, and selected-agent context
-5. Structured surfaces: type/version, payload schema, information hierarchy, states, actions, and rendering tests for dashboards, forms, tables, charts, decisions, diffs, approvals, audit timelines, details, workflow status, and outcome panels
-6. UX handoff for each shell region and surface: primary action, information hierarchy, state behavior, UX copy, tooltip/aria-label behavior for icons, responsive behavior, and keyboard/focus path
+5. Structured surfaces and surface graph: type/version, payload schema, information hierarchy, states, source/result/system-message transitions, browser-tool actions, and rendering tests for dashboards, forms, tables, charts, decisions, diffs, approvals, audit timelines, details, workflow status, and outcome panels
+6. UX handoff for each shell region, role-specific dashboard, attention source, and surface: primary action, information hierarchy, evidence/freshness display, state behavior, UX copy, tooltip/aria-label behavior for icons, responsive behavior, and keyboard/focus path
 7. Deep-link and route plan for shell entry, selected functional agent, stream item, and direct surface URLs; route/page navigation is an implementation detail, not the primary model
 8. Data dependencies and API contracts
-9. Actions, forms, and validation rules, with each consequential action mapped to a governed capability
+9. Actions, forms, and validation rules, with each consequential action mapped to a browser-tool exposure, governed-tool id, and governed capability
 10. Frontend state model, including loading/empty/error/success/forbidden/stale states
 11. Real-time behavior, if any
 12. Frontend implementation shape: standard frontend project (for example React/Vite)
@@ -130,7 +132,7 @@ Always pair with Akka hosting/API skills as needed:
 ## Default implementation order
 
 1. Define UX handoff for the agent workstream shell: user goals, functional-agent rail, workstream icons, My Account lower-left launcher behavior, main stream, composer, context/authority indicators, structured surfaces, primary actions, information hierarchy, state behavior, UX copy, responsive behavior, and keyboard/focus path.
-2. Define structured surface contracts: payload schemas, capability-backed actions, realtime/update events, backend-authoritative auth, trace/audit fields, rendering states, deep links, and API contracts. Treat conventional pages/routes as implementation and deep-link details.
+2. Define structured surface graph contracts: dashboard attention sources, payload schemas, browser-tool actions backed by governed-tools/capabilities, realtime/update events, backend-authoritative auth, trace/audit fields, rendering states, result/system-message surfaces, deep links, and API contracts. Treat conventional pages/routes as implementation and deep-link details.
 3. Reuse or adapt the canonical workstream reference modules under `frontend/src/workstream/**`; use the User Admin dashboard → list/search → detail/edit vertical as the first generated foundation-admin example.
 4. Confirm frontend project framework/build tool and project conventions.
 5. Implement or adjust backend JSON/SSE/WebSocket endpoints.

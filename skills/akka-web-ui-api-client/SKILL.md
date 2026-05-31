@@ -11,8 +11,8 @@ Use this skill when a browser UI calls Akka HTTP JSON APIs.
 ## Generated SaaS input contract
 
 For generated full-stack AI-first SaaS UI work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional agent, workstream, structured surface id/type/version, and surface action or workstream event;
-- governed capability id/class, selected Akka substrate, frontend/API/realtime exposure, and required tests;
+- owning functional agent, workstream, role-specific dashboard attention source, structured surface id/type/version, human surface graph edge, and surface action or workstream event;
+- browser-tool exposure name, governed-tool id, governed capability id/class, selected Akka substrate, frontend/API/realtime exposure, and required tests;
 - `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden behavior, and backend authorization boundary;
 - input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and denial/error shapes.
 
@@ -29,7 +29,7 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 ## API contract rules
 
 1. Define browser-facing DTOs intentionally; do not leak internal domain records by accident.
-2. Keep endpoint routes stable and human-readable, but derive them from capability and structured-surface contracts; do not use generic `/api/<resource>/...` routes as the primary generated-SaaS decomposition.
+2. Keep endpoint routes stable and human-readable, but derive them from capability, governed-tool, browser-tool, and structured-surface graph contracts; do not use generic `/api/<resource>/...` routes as the primary generated-SaaS decomposition.
 3. Represent validation errors with structured response bodies where useful.
 4. Normalize browser errors into a small union such as `network`, `unauthorized`, `forbidden`, `notFound`, `validation`, and `server`.
 5. Make loading and error states visible in UI state, not hidden in console logs.
@@ -57,6 +57,7 @@ export async function submitRequest(input: SubmitRequest): Promise<ApiResult<Req
 
 For every browser API call, verify:
 - HTTP method and route
+- owning workstream/surface graph edge, browser-tool name, governed-tool id, and capability id
 - request DTO
 - success response DTO
 - validation error shape

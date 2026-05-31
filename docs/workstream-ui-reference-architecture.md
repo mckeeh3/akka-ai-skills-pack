@@ -32,9 +32,11 @@ Authenticated consequential UI is decomposed as:
 → selected AuthContext
 → role-authorized functional-agent rail
 → unified shell request pipeline for prompts, actions, rail/My Account selection, and deep links
+→ role-specific dashboard attention sources
 → continuous workstream shell
+→ human surface graph nodes and edges
 → typed stream items and structured surfaces
-→ capability-backed actions
+→ browser-tool actions backed by governed-tools/capabilities
 → realtime events / stale markers
 → conventional routes only as deep links
 ```
@@ -288,14 +290,18 @@ Canonical reusable surface components:
 
 Each surface renders loading, empty, ready, submitting, success, pending, approval-needed, error, forbidden, conflict, stale, reconnecting, partial-data, and no-op states where applicable.
 
-### Capability actions
+### Browser-tool / capability actions
 
-Every workstream surface action maps to a governed backend capability, including read/query actions and surface-request actions such as `show_surface`, `open_workstream`, show dashboard, search, open detail, refresh, or open trace. Frontend action availability is only a UX hint. Surface-request actions may carry `shellRequest` metadata so buttons, links, cards, rows, My Account panels, rail entries, and deep links use the same canonical prompt feedback and origin-aware request item rendering as composer-entered prompts.
+Every workstream surface action is a browser-tool exposure backed by a governed-tool inside a governed backend capability, including read/query actions and surface-request actions such as `show_surface`, `open_workstream`, show dashboard, search, open detail, refresh, or open trace. Frontend action availability is only a UX hint. Surface-request actions may carry `shellRequest` metadata so buttons, links, cards, rows, My Account panels, rail entries, and deep links use the same canonical prompt feedback and origin-aware request item rendering as composer-entered prompts. The action descriptor must identify the source surface, target/result/system-message surface behavior, browser-tool name, governed-tool id, capability id, authorization basis, idempotency, and audit/trace requirements.
 
 ```ts
 type CapabilityActionRequest = {
   actionId: string;
+  browserToolId: string;
+  governedToolId: string;
   capabilityId: string;
+  sourceSurfaceId?: string;
+  targetSurfaceId?: string;
   input: unknown;
   idempotencyKey?: string;
   selectedContextId: string;
@@ -392,7 +398,7 @@ The first implementation slice must include fixtures for:
 - visible, denied, hidden, disabled, and attention-bearing functional agents
 - initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, system-message surface, and system status
 - surface envelopes for every canonical surface type listed above
-- surface actions covering read, command, proposal, approval, workflow, governance, and trace intents
+- surface actions covering read, command, proposal, approval, workflow, governance, and trace intents, each with browser-tool/governed-tool/capability ids and source/result surface graph behavior
 - action results for accepted, denied, validation error, approval required, conflict, no-op, and failed outcomes
 - realtime events for created, updated, accepted, denied, workflow progressed, stale, reconnected, duplicate/replay, out-of-order, malformed-safe, and cross-context-denied cases
 
@@ -404,7 +410,7 @@ Focused contract tests should verify:
 - composer is persistent, selected-agent aware, and restores focus to the enabled prompt input after submission, workstream changes, browser refocus, and response completion so the next user input can be typed without clicking the field
 - context/authority indicators expose selected tenant/customer, role/capability basis, support-access state, pending approvals, and trace/recovery links
 - surface rendering uses envelope identity/type/version, payload, actions, stale markers, redaction, and trace ids
-- action controls preserve disabled/denied reasons, confirmation, idempotency, audit, trace, and result-surface mappings
+- action controls preserve disabled/denied reasons, confirmation, idempotency, browser-tool/governed-tool/capability mapping, audit, trace, and result/system-message surface mappings
 - realtime helpers dedupe and stale-mark without crashing on malformed or unauthorized events
 - direct deep links are secondary to workstream/surface state and render forbidden/not-found recovery states
 
