@@ -438,7 +438,7 @@
 
 ### TASK-RIAC-05-002: Check package and reference consistency
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/05-trim-and-repeat-review-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/05-trim-verification/02-package-reference-consistency.md
 - depends on: [TASK-RIAC-05-001]
@@ -462,6 +462,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: check package references`
+  - completed: created `package-reference-consistency.md`, verified removed plan-doc references are absent, verified `pack/manifest.yaml` references exist, and labeled package README purchase-request installed-layout entries as mechanics-only/conventional references
+  - checks: `git diff --check`; removed-doc reference search returned no matches; package purchase-reference search returned only labeled `pack/README.md` installed-layout entries; manifest existence check verified 21 references
 
 ### TASK-RIAC-99-001: Verify requirements intake alignment cleanup completion
 

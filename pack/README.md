@@ -93,10 +93,11 @@ Installed layout:
         08-module-audit-work-trace-prd.md
         09-module-evaluation-closed-loop-improvement-prd.md
         10-canonical-core-app-prd.md
-      purchase-request-app-description/
-      purchase-request-prd.md
-      purchase-request-solution-plan.md
-      purchase-request-pending-tasks.md
+      purchase-request-app-description/        # mechanics-only legacy app-description cross-linking reference
+      purchase-request-prd.md                 # conventional mechanics reference, not target architecture
+      purchase-request-solution-plan.md       # conventional mechanics reference, not target architecture
+      purchase-request-module-sprint-plan.md  # conventional mechanics reference, not target architecture
+      purchase-request-pending-tasks.md       # conventional queue mechanics reference
     ...
   manifests/
     akka-ai-skills-pack.yaml
