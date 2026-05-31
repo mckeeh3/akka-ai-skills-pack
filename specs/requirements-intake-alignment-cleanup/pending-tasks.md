@@ -143,7 +143,7 @@
 
 ### TASK-RIAC-02-002: Align readiness, generation, and app-description orchestration
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/02-description-intake-skills-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/02-intake-skills/02-align-readiness-generation-orchestration.md
 - depends on: [TASK-RIAC-02-001]
@@ -170,6 +170,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: align app generation readiness`
+  - completed: aligned app-description orchestration, readiness assessment, and generation guidance to the five core workstream v0 minimum starter, mandatory `12-workstreams`/`55-ui`/managed-runtime readiness gates, canonical workstream UI generation path, and mechanics-only legacy references
+  - checks: `git diff --check`; focused stale-term search over edited files (remaining hits reviewed as explicit mechanics-only legacy references or intentional anti-pattern/blocking guidance)
 
 ### TASK-RIAC-03-001: Align solution decomposition and PRD planning
 

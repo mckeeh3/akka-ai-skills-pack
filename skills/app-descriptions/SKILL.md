@@ -27,23 +27,25 @@ Read these first if present:
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/capability-first-backend-architecture.md` for governed capability inventory fields before Akka components or exposure surfaces
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation that every new app description, readiness review, and generation flow must preserve
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
-- `../../docs/app-description-end-to-end-workflow-example.md`
+- `../../docs/app-description-end-to-end-workflow-example.md` only as description-maintenance mechanics; do not treat its purchase-request scenario as generated SaaS target architecture
+- `../../docs/app-description-skills-plan-backlog.md` only when auditing legacy planning history; do not use it as current routing or readiness doctrine
 - `../ai-first-saas/SKILL.md` when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - `../../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
 
 Prefer these local examples and references:
-- `../../docs/examples/ai-first-saas-seed-app-description/README.md` for secure AI-first SaaS foundation shape
-- `../../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
-- `../../docs/examples/purchase-request-app-description/normalized-input-example.md`
-- `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
-- `../../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
-- `../../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
-- `../../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
-- `../../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
-- `../../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/README.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
+- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope
+- Purchase-request description examples only for description-layer mechanics, never target architecture doctrine:
+  - `../../docs/examples/purchase-request-app-description/README.md`
+  - `../../docs/examples/purchase-request-app-description/normalized-input-example.md`
+  - `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
+  - `../../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
+  - `../../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
+  - `../../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
+  - `../../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
+  - `../../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
 
 ## Use this skill when
 
@@ -128,7 +130,7 @@ Prefer this sequence unless the task is already narrowly scoped:
 
 1. apply `ai-first-saas` interpretation when broad input involves delegated work, agents, policy-bound decisions, approvals, supervision, audit, learning, or outcomes
 2. apply `core-saas-foundation` for every new SaaS app description so Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin, and tenant isolation are seeded before app-specific features
-3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `12-workstreams/`, `15-operating-model/`, and `55-ui/` for generated full-stack AI-first SaaS apps; for minimum/starter/basic app requests, bootstrap the `minimum starter / not full core` User Admin workstream v0 with `markdown_response`, durable workstream log, trace substrate, bootstrap auth/security, capability boundary, and explicit full-core follow-up gaps
+3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `12-workstreams/`, `15-operating-model/`, and `55-ui/` for generated full-stack AI-first SaaS apps; for minimum/starter/basic/chatbot-like app requests, bootstrap the `minimum starter / not full core` five core workstream v0 set from `../../docs/minimum-ai-first-saas-app.md` — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, durable workstream logs, trace substrate, bootstrap auth/security, governed managed-agent/runtime boundary, capability boundary, and explicit full-core follow-up gaps
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`
 6. model role-authorized user-facing functional agents with `app-description-functional-agent-modeling` when work areas, left-rail agents, prompt intent, skills, reference documents, expertise manifests, tool boundaries/loaders, surfaces, callable capabilities, authority, traces, or tests changed
