@@ -567,7 +567,7 @@
 
 ### TASK-WGGT-99-002: Verify workstream graph governed-tools completion after pack/template repair
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-WGGT-99-001 follow-up
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/99-verification/02-verify-workstream-graph-governed-tools.md
 - depends on: [TASK-WGGT-05-001]
@@ -594,4 +594,6 @@
   - if complete, completion is recorded with no new required tasks
   - if incomplete, new bounded tasks are appended before a new terminal verification task
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `wggt: verify graph repair completion`
+  - completed: verified the pack/template repair propagated canonical graph/governed-tool vocabulary into installed-pack and starter-template entry points; recorded required-term, repaired-scope, repaired-file, and bare-tool searches in `final-verification-after-pack-template-repair.md`; no follow-up tasks appended; checks: `git diff --check`
