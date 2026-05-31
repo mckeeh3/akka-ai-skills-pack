@@ -553,7 +553,7 @@
 
 ### TASK-RIAC-99-002: Verify requirements intake alignment cleanup after final repair
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-RIAC-06-001
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/99-verification/02-verify-requirements-intake-alignment-cleanup-after-repair.md
 - depends on: [TASK-RIAC-06-001]
@@ -585,3 +585,6 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: verify final repair`
+  - completed: created `final-verification-after-repair.md`, assessed the final repair task and overall mini-project done state, recorded focused/broad stale-term and removed-file reference searches, and found no material active-guidance drift requiring follow-up tasks
+  - result: complete; no next runnable task
+  - checks: `git diff --check`; focused final repair drift check returned only the explicitly mechanics-only `purchase-request-pending-tasks.md` reference in `skills/README.md`; exact `User Admin workstream v0|User Admin-only` and removed-doc reference checks returned no matches; broad stale-term pass reviewed as mechanics-only references, anti-pattern warnings, component/substrate examples, canonical seed/template ids, or legacy quarantine wording
