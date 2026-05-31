@@ -487,7 +487,7 @@
 
 ### TASK-WGGT-99-001: Verify workstream graph governed-tools completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/99-verification/01-verify-workstream-graph-governed-tools.md
 - depends on:
@@ -531,3 +531,65 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: verify graph architecture`
+  - completed: verified active docs, skills, and examples have broad graph/governed-tool coverage; recorded required-term, primary-file, bare-tool, and pack/template searches in `final-verification.md`; found a material installed-pack/starter-template propagation gap, appended `TASK-WGGT-05-001` plus new terminal verification `TASK-WGGT-99-002`; checks: `git diff --check`
+
+### TASK-WGGT-05-001: Update installed-pack and starter-template graph guidance
+
+- status: pending
+- source: specs/workstream-graph-governed-tools-architecture/final-verification.md
+- task brief: specs/workstream-graph-governed-tools-architecture/tasks/05-pack-template/01-update-installed-pack-and-starter-graph-guidance.md
+- depends on: [TASK-WGGT-99-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-graph-governed-tools-architecture/README.md
+  - specs/workstream-graph-governed-tools-architecture/final-verification.md
+  - pack/AGENTS.md
+  - pack/README.md
+  - pack/manifest.yaml
+  - templates/ai-first-saas-starter/README.md
+  - relevant starter app-description/spec/seed files discovered by focused search
+- skills:
+  - none; packaging/template docs task
+- expected outputs:
+  - updated installed-pack guidance and starter-template graph guidance
+- required checks:
+  - `git diff --check`
+  - focused search over `pack/` and `templates/ai-first-saas-starter/` for `surface graph`, `role-specific dashboard`, `internal workstream agent graph`, `workstream expertise`, `governed-tool`, `browser-tool`, `agent-tool`, and `internal-tool`
+  - focused ambiguous bare `tool` search in edited files
+- done criteria:
+  - installed-pack entry guidance and starter template artifacts directly expose the graph/governed-tool model
+  - pack/template searches no longer show zero coverage for canonical terms where relevant
+  - task changes and queue update are committed
+- notes: []
+
+### TASK-WGGT-99-002: Verify workstream graph governed-tools completion after pack/template repair
+
+- status: pending
+- source: mini-project verification loop after TASK-WGGT-99-001 follow-up
+- task brief: specs/workstream-graph-governed-tools-architecture/tasks/99-verification/02-verify-workstream-graph-governed-tools.md
+- depends on: [TASK-WGGT-05-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-graph-governed-tools-architecture/README.md
+  - specs/workstream-graph-governed-tools-architecture/conversation-capture.md
+  - specs/workstream-graph-governed-tools-architecture/pending-tasks.md
+  - specs/workstream-graph-governed-tools-architecture/final-verification.md
+  - specs/workstream-graph-governed-tools-architecture/tasks/05-pack-template/01-update-installed-pack-and-starter-graph-guidance.md
+  - docs/agent-workstream-design-review-checklist.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - new verification artifact
+  - updated specs/workstream-graph-governed-tools-architecture/pending-tasks.md
+  - newly appended follow-up tasks if gaps remain
+- required checks:
+  - `git diff --check`
+  - recorded searches for required and stale terms across repaired scope
+- done criteria:
+  - current task group and overall mini-project done state assessed
+  - if complete, completion is recorded with no new required tasks
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - task changes and queue update are committed
+- notes: []
