@@ -161,9 +161,13 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
   assert.match(composer, /function focusComposerInput/);
   assert.match(composer, /input\.focus\(\{ preventScroll: true \}\)/);
   assert.match(composer, /useEffect\(\(\) => \{\s*focusComposerInput\(\);\s*\}, \[selectedAgent\?\.functionalAgentId, disabledReason, isSubmitting\]\)/);
-  assert.match(composer, /window\.addEventListener\('focus', focusComposerInput\)/);
+  assert.match(composer, /window\.addEventListener\('focus', restoreComposerFocus\)/);
   assert.match(composer, /document\.addEventListener\('visibilitychange', refocusVisibleComposer\)/);
   assert.match(composer, /shouldRestoreComposerFocus/);
+  assert.match(composer, /pointerStartedInSelectableSurfaceRef/);
+  assert.match(composer, /hasActiveTextSelection/);
+  assert.match(composer, /isWorkstreamSelectableSurfaceTarget/);
+  assert.match(composer, /document\.addEventListener\('pointerdown', recordSelectableSurfacePointer, true\)/);
   assert.match(composer, /activeElement\.closest\('input, textarea, select, \[contenteditable="true"\]'\)/);
   assert.match(composer, /window\.requestAnimationFrame\(\(\) => \{/);
   assert.match(composer, /if \(shouldRestoreComposerFocus\(document\.activeElement\)\) focusComposerInput\(\)/);
@@ -174,6 +178,7 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
   assert.match(composer, /event\.currentTarget\.form\?\.requestSubmit\(\)/);
   assert.match(composer, /workstream-send-prompt-tooltip/);
   assert.match(componentsCss, /\.workstream-composer-region \{[\s\S]*?overflow: visible;[\s\S]*?pointer-events: none;/);
+  assert.match(componentsCss, /\.workstream-flow-entry,[\s\S]*?\.surface-frame \*[\s\S]*?user-select: text;/);
   assert.match(componentsCss, /\.workstream-composer \{[\s\S]*?overflow: visible;[\s\S]*?grid-template-columns/);
   assert.match(componentsCss, /\.send-prompt-button \{[\s\S]*?overflow: visible;/);
   assert.match(componentsCss, /\.workstream-send-prompt-tooltip \{[\s\S]*?position: absolute;[\s\S]*?bottom: calc\(100% \+ var\(--space-2\)\)/);

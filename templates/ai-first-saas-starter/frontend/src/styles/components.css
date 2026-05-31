@@ -933,6 +933,19 @@
   margin-inline: auto;
 }
 
+.workstream-flow-entry,
+.workstream-item,
+.structured-surface,
+.surface-frame,
+.markdown-response-content,
+.system-message-surface,
+.audit-evidence-panel,
+.trace-link-list,
+.surface-frame * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 .workstream-flow-entry {
   display: grid;
   gap: var(--space-3);

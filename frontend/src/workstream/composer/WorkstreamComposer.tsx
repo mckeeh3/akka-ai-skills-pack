@@ -18,6 +18,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
   const disabledReason = availability.status === 'disabled' ? availability.reason : undefined;
   const submitDisabled = isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability);
   const helperId = 'workstream-composer-helper';
+  const pointerStartedInSelectableSurfaceRef = useRef(false);
 
   function focusComposerInput() {
     const input = inputRef.current;
@@ -26,6 +27,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
   }
 
   function shouldRestoreComposerFocus(activeElement: Element | null) {
+    if (pointerStartedInSelectableSurfaceRef.current || hasActiveTextSelection()) return false;
     if (!(activeElement instanceof HTMLElement)) return true;
     const editableElement = activeElement.closest('input, textarea, select, [contenteditable="true"]');
     return !editableElement;
@@ -50,14 +52,32 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
 
   useEffect(() => {
     function refocusVisibleComposer() {
-      if (document.visibilityState === 'visible') focusComposerInput();
+      if (document.visibilityState === 'visible' && shouldRestoreComposerFocus(document.activeElement)) focusComposerInput();
     }
 
-    window.addEventListener('focus', focusComposerInput);
+    function recordSelectableSurfacePointer(event: PointerEvent) {
+      pointerStartedInSelectableSurfaceRef.current = isWorkstreamSelectableSurfaceTarget(event.target);
+    }
+
+    function clearSelectableSurfacePointer() {
+      pointerStartedInSelectableSurfaceRef.current = false;
+    }
+
+    function restoreComposerFocus() {
+      if (shouldRestoreComposerFocus(document.activeElement)) focusComposerInput();
+    }
+
+    window.addEventListener('focus', restoreComposerFocus);
     document.addEventListener('visibilitychange', refocusVisibleComposer);
+    document.addEventListener('pointerdown', recordSelectableSurfacePointer, true);
+    document.addEventListener('pointerup', clearSelectableSurfacePointer, true);
+    document.addEventListener('pointercancel', clearSelectableSurfacePointer, true);
     return () => {
-      window.removeEventListener('focus', focusComposerInput);
+      window.removeEventListener('focus', restoreComposerFocus);
       document.removeEventListener('visibilitychange', refocusVisibleComposer);
+      document.removeEventListener('pointerdown', recordSelectableSurfacePointer, true);
+      document.removeEventListener('pointerup', clearSelectableSurfacePointer, true);
+      document.removeEventListener('pointercancel', clearSelectableSurfacePointer, true);
     };
   }, [disabledReason, isSubmitting, selectedAgent?.functionalAgentId]);
 
@@ -102,4 +122,13 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
       </button>
     </form>
   );
+}
+
+function hasActiveTextSelection(): boolean {
+  const selection = window.getSelection?.();
+  return Boolean(selection && selection.type === 'Range' && selection.toString().length > 0);
+}
+
+function isWorkstreamSelectableSurfaceTarget(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && Boolean(target.closest('.workstream-item, .structured-surface, .surface-frame, [data-surface-id]'));
 }
