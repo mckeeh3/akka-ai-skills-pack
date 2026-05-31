@@ -158,7 +158,8 @@
 
 ### TASK-FC5-04-001: Implement User Admin full-core vertical
 
-- status: pending
+- status: done
+- completion note: Extended the protected User Admin API surface with invitation list/resend/revoke and membership role/status actions backed by existing backend-authoritative services, added integration coverage for the concrete API paths and idempotency/status behavior, and validated backend/frontend/typecheck/diff checks.
 - source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
 - task brief: specs/full-core-five-workstreams/tasks/04-user-admin/01-user-admin-full-core.md
 - depends on: [TASK-FC5-03-001]

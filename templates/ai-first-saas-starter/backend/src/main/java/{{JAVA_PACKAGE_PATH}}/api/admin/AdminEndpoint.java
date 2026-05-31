@@ -14,11 +14,13 @@ import static akka.javasdk.http.HttpException.notFound;
 import static akka.javasdk.http.HttpException.unauthorized;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
+import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView.InvitationRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService.UserDirectoryRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
+import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -46,16 +48,23 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     });
   }
 
+  @Get("/invitations")
+  public HttpResponse invitations() {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var invites = StarterSecurityComponents.invitationView()
+          .list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId())
+          .stream()
+          .map(InvitationApiResponse::from)
+          .toList();
+      return HttpResponses.ok(new InvitationsApiResponse(invites, correlationId));
+    });
+  }
+
   @Post("/invitations")
   public HttpResponse createInvitation(CreateInvitationApiRequest request) {
-    var idempotencyKey = request == null ? null : request.idempotencyKey();
-    if (idempotencyKey == null || idempotencyKey.isBlank()) {
-      idempotencyKey = requestContext().requestHeader("X-Idempotency-Key").map(header -> header.value()).orElse(null);
-    }
-    if (idempotencyKey == null || idempotencyKey.isBlank()) {
-      return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
-    }
-    var stableIdempotencyKey = idempotencyKey;
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
       var invite = StarterSecurityComponents.invitationService().createInvitation(
@@ -71,7 +80,50 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
               Instant.now().plus(7, ChronoUnit.DAYS),
               "admin-api",
               correlationId));
-      return HttpResponses.ok(new InvitationApiResponse(invite.invitationId(), invite.normalizedEmail(), invite.status().name().toLowerCase(), invite.deliveryStatus().name().toLowerCase(), correlationId));
+      return HttpResponses.ok(InvitationApiResponse.from(invite, correlationId));
+    });
+  }
+
+  @Post("/invitations/{invitationId}/resend")
+  public HttpResponse resendInvitation(String invitationId, InvitationActionApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var invite = StarterSecurityComponents.invitationService().resend(actor, invitationId, stableIdempotencyKey, textOr(request == null ? null : request.reason(), "admin-api-resend"), correlationId);
+      return HttpResponses.ok(InvitationApiResponse.from(invite, correlationId));
+    });
+  }
+
+  @Post("/invitations/{invitationId}/revoke")
+  public HttpResponse revokeInvitation(String invitationId, InvitationActionApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var invite = StarterSecurityComponents.invitationService().revoke(actor, invitationId, textOr(request == null ? null : request.reason(), "admin-api-revoke"), correlationId);
+      return HttpResponses.ok(InvitationApiResponse.from(invite, correlationId));
+    });
+  }
+
+  @Post("/memberships/{membershipId}/roles")
+  public HttpResponse changeMembershipRoles(String membershipId, ChangeRolesApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.userAdminService().changeMemberRoles(actor, membershipId, rolesOrDefault(request == null ? null : request.roles()), textOr(request == null ? null : request.reason(), "admin-api-role-change"), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(new MembershipActionApiResponse(result.status(), result.message(), result.membership().membershipId(), result.membership().accountId(), result.membership().roles().stream().map(Enum::name).toList(), result.membership().status().name().toLowerCase(), result.traceId(), correlationId));
+    });
+  }
+
+  @Post("/memberships/{membershipId}/status")
+  public HttpResponse updateMembershipStatus(String membershipId, ChangeMembershipStatusApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var targetStatus = MembershipStatus.valueOf(requireText(request == null ? null : request.status(), "status").toUpperCase());
+      var result = StarterSecurityComponents.userAdminService().updateMemberStatus(actor, membershipId, targetStatus, textOr(request == null ? null : request.reason(), "admin-api-status-change"), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(new MembershipActionApiResponse(result.status(), result.message(), result.membership().membershipId(), result.membership().accountId(), result.membership().roles().stream().map(Enum::name).toList(), result.membership().status().name().toLowerCase(), result.traceId(), correlationId));
     });
   }
 
@@ -115,6 +167,13 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     return value == null || value.isBlank() ? fallback : value;
   }
 
+  private String idempotencyKey(String bodyValue) {
+    var key = bodyValue == null || bodyValue.isBlank()
+        ? requestContext().requestHeader("X-Idempotency-Key").map(header -> header.value()).orElse(null)
+        : bodyValue;
+    return key == null || key.isBlank() ? null : key;
+  }
+
   private static List<FoundationRole> rolesOrDefault(List<String> roles) {
     if (roles == null || roles.isEmpty()) {
       return List.of(FoundationRole.TENANT_EMPLOYEE);
@@ -133,7 +192,20 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     }
   }
   public record CreateInvitationApiRequest(String email, String displayName, List<String> roles, String idempotencyKey) {}
-  public record InvitationApiResponse(String invitationId, String email, String status, String deliveryStatus, String correlationId) {}
+  public record InvitationActionApiRequest(String reason, String idempotencyKey) {}
+  public record ChangeRolesApiRequest(List<String> roles, String reason, String idempotencyKey) {}
+  public record ChangeMembershipStatusApiRequest(String status, String reason, String idempotencyKey) {}
+  public record InvitationsApiResponse(List<InvitationApiResponse> invitations, String correlationId) {}
+  public record InvitationApiResponse(String invitationId, String email, String status, String deliveryStatus, int deliveryAttempts, int resendCount, boolean canResend, boolean canRevoke, String expiresAt, String correlationId) {
+    static InvitationApiResponse from(InvitationRow invite) {
+      return new InvitationApiResponse(invite.invitationId(), invite.targetEmail(), invite.status().name().toLowerCase(), invite.deliveryStatus().name().toLowerCase(), invite.deliveryAttempts(), invite.resendCount(), invite.canResend(), invite.canRevoke(), invite.expiresAt().toString(), null);
+    }
+
+    static InvitationApiResponse from({{JAVA_BASE_PACKAGE}}.domain.security.Invitation invite, String correlationId) {
+      return new InvitationApiResponse(invite.invitationId(), invite.normalizedEmail(), invite.status().name().toLowerCase(), invite.deliveryStatus().name().toLowerCase(), invite.deliveryAttempts(), invite.resendCount(), invite.resendable(), !invite.terminal(), invite.expiresAt().toString(), correlationId);
+    }
+  }
+  public record MembershipActionApiResponse(String status, String message, String membershipId, String accountId, List<String> roles, String membershipStatus, String traceId, String correlationId) {}
   public record AdminAuditEventsResponse(List<AdminAuditEventResponse> events, String correlationId) {}
   public record AdminAuditEventResponse(String eventId, String occurredAt, String correlationId, String actorAccountId, String actionType, String result, String reasonCode, String tenantId, String customerId, String targetAccountId, String targetMembershipId) {
     static AdminAuditEventResponse from(AdminAuditEvent event) {

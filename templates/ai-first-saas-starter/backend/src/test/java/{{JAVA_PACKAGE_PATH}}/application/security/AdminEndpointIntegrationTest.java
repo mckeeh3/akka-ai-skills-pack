@@ -9,8 +9,13 @@ import akka.javasdk.JsonSupport;
 import akka.javasdk.testkit.TestKitSupport;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AdminAuditEventsResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AdminUsersResponse;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.ChangeMembershipStatusApiRequest;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.ChangeRolesApiRequest;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.CreateInvitationApiRequest;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationActionApiRequest;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationApiResponse;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationsApiResponse;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.MembershipActionApiResponse;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +82,55 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
     assertEquals(first.body().invitationId(), replay.body().invitationId());
     assertEquals("pending_delivery", first.body().status());
     assertNotNull(first.body().deliveryStatus());
+
+    var listed = httpClient
+        .GET("/api/admin/invitations")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .responseBodyAs(InvitationsApiResponse.class)
+        .invoke();
+    assertTrue(listed.body().invitations().stream().anyMatch(invitation -> invitation.invitationId().equals(first.body().invitationId())));
+
+    var resent = httpClient
+        .POST("/api/admin/invitations/" + first.body().invitationId() + "/resend")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .withRequestBody(new InvitationActionApiRequest("repair delivery", "idem-api-resend"))
+        .responseBodyAs(InvitationApiResponse.class)
+        .invoke();
+    assertEquals(1, resent.body().resendCount());
+
+    var revoked = httpClient
+        .POST("/api/admin/invitations/" + first.body().invitationId() + "/revoke")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .withRequestBody(new InvitationActionApiRequest("wrong recipient", null))
+        .responseBodyAs(InvitationApiResponse.class)
+        .invoke();
+    assertEquals("revoked", revoked.body().status());
+  }
+
+  @Test
+  void adminCanUseConcreteMembershipRoleAndStatusApiActions() throws Exception {
+    var roleChange = httpClient
+        .POST("/api/admin/memberships/membership-member@example.test/roles")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-admin-role-change")
+        .withRequestBody(new ChangeRolesApiRequest(List.of("TENANT_EMPLOYEE"), "least privilege replay", "idem-api-role"))
+        .responseBodyAs(MembershipActionApiResponse.class)
+        .invoke();
+    assertTrue(roleChange.status().isSuccess());
+    assertEquals("no-op", roleChange.body().status());
+    assertEquals("membership-member@example.test", roleChange.body().membershipId());
+    assertTrue(roleChange.body().traceId().contains("trace-useradmin-change-member-roles"));
+
+    var disabled = httpClient
+        .POST("/api/admin/memberships/membership-member@example.test/status")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-admin-member-disable")
+        .withRequestBody(new ChangeMembershipStatusApiRequest("SUSPENDED", "offboarding", "idem-api-disable"))
+        .responseBodyAs(MembershipActionApiResponse.class)
+        .invoke();
+    assertTrue(disabled.status().isSuccess());
+    assertEquals("accepted", disabled.body().status());
+    assertEquals("suspended", disabled.body().membershipStatus());
   }
 
   @Test
