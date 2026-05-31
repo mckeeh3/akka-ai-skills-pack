@@ -1,0 +1,341 @@
+# Pending Tasks: Full-Core Five Workstreams
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Reference the current skills-pack decomposition doctrine: requirements → workstreams → attention → dashboards → surface graph → internal workstream agent graph → governed-tools → capabilities → Akka substrate → UI/API → traces/tests/local validation.
+- Keep the v0 bootstrap to five initial `markdown_response` surfaces; rich surfaces/actions must be explicit full-core requests/actions/APIs.
+- Normal runtime behavior must use real backend/Akka paths. Do not satisfy workstream agents, auth, protected capabilities, audit/work traces, provider calls, or UI actions with fixture-only, deterministic, mock, simulated, model-less, or service-only-provider-bypass behavior.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- Commit message format: `fc5: <short task title>`.
+
+## Tasks
+
+### TASK-FC5-00-001: Create full-core five-workstreams planning scaffold
+
+- status: done
+- completion note: Created the full-core five-workstreams mini-project with doctrine-linked README, conversation capture, sprint sequence, backlog, task briefs, executable pending queue, and terminal verification loop.
+- source: user request to proceed with full implementations of the five core workstreams and reference the realigned workstream/surface/agents skills-pack doctrine as THE WAY
+- task brief: specs/full-core-five-workstreams/tasks/00-planning/00-create-full-core-five-workstreams-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/pending-task-queue.md
+  - docs/requirements-to-workstream-development-process.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+  - docs/ai-first-saas-application-architecture.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/full-core-five-workstreams/README.md
+  - specs/full-core-five-workstreams/conversation-capture.md
+  - specs/full-core-five-workstreams/pending-tasks.md
+  - specs/full-core-five-workstreams/sprints/*.md
+  - specs/full-core-five-workstreams/backlog/*.md
+  - specs/full-core-five-workstreams/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+  - `rg -n "requirements-to-workstream|surface graph|governed-tool|functional agent|full-core|markdown_response" specs/full-core-five-workstreams`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `fc5: add full core workstream queue`
+
+### TASK-FC5-01-001: Define full-core workstream/surface/agent/capability contract matrix
+
+- status: pending
+- source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+- task brief: specs/full-core-five-workstreams/tasks/01-contracts/01-full-core-contract-matrix.md
+- depends on: [TASK-FC5-00-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/full-core-five-workstreams/README.md
+  - specs/full-core-five-workstreams/conversation-capture.md
+  - specs/full-core-five-workstreams/sprints/01-contracts-and-shared-runtime.md
+  - specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+  - specs/full-core-five-workstreams/tasks/01-contracts/01-full-core-contract-matrix.md
+  - docs/requirements-to-workstream-development-process.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+  - docs/workstream-expertise-model.md
+- skills:
+  - agent-workstream-apps
+  - capability-first-backend
+  - ai-first-saas
+- expected outputs:
+  - specs/full-core-five-workstreams/full-core-contract-matrix.md
+  - any bounded follow-up tasks discovered from contract gaps
+- required checks:
+  - `git diff --check`
+  - `rg -n "workstreamId|surfaceId|governedToolId|capabilityId|AgentDefinition|ToolPermissionBoundary|PromptAssemblyTrace|AgentWorkTrace" specs/full-core-five-workstreams/full-core-contract-matrix.md specs/full-core-five-workstreams/pending-tasks.md`
+- done criteria:
+  - all five workstreams have implementation-ready vertical contracts preserving THE WAY decomposition chain
+  - a focused commit exists
+- notes:
+  - vertical contract: cross-workstream contract task; no runtime feature claim yet
+
+### TASK-FC5-02-001: Add shared rich surface/action runtime path
+
+- status: pending
+- source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+- task brief: specs/full-core-five-workstreams/tasks/02-shared-runtime/01-rich-surface-action-runtime.md
+- depends on: [TASK-FC5-01-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/full-core-five-workstreams/full-core-contract-matrix.md
+  - specs/full-core-five-workstreams/sprints/01-contracts-and-shared-runtime.md
+  - specs/full-core-five-workstreams/tasks/02-shared-runtime/01-rich-surface-action-runtime.md
+  - docs/structured-surface-contracts.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+- skills:
+  - akka-http-endpoints
+  - akka-web-ui-apps
+  - capability-first-backend
+- expected outputs:
+  - shared backend/frontend rich surface and action envelopes
+  - explicit shell request/action API behavior
+  - system-message denial/deferred/error surfaces
+  - tests proving bootstrap remains five v0 `markdown_response` surfaces
+- required checks:
+  - `mvn test`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `git diff --check`
+- done criteria:
+  - rich typed surfaces/actions traverse real backend/API/frontend paths only when explicitly requested
+  - a focused commit exists
+- notes:
+  - vertical contract: shared foundation/runtime scope; surface-request actions and system_message surfaces; not a single workstream feature
+
+### TASK-FC5-03-001: Implement My Account full-core vertical
+
+- status: pending
+- source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+- task brief: specs/full-core-five-workstreams/tasks/03-my-account/01-my-account-full-core.md
+- depends on: [TASK-FC5-02-001]
+- required reads:
+  - specs/full-core-five-workstreams/full-core-contract-matrix.md
+  - specs/full-core-five-workstreams/sprints/02-five-core-workstream-verticals.md
+  - specs/full-core-five-workstreams/tasks/03-my-account/01-my-account-full-core.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+- skills:
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-key-value-entities
+  - akka-views
+  - akka-http-endpoints
+  - akka-web-ui-apps
+- expected outputs:
+  - My Account profile/settings/context/personal attention surfaces, backend capabilities, UI, tests, and local smoke notes
+- required checks:
+  - `mvn test`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `git diff --check`
+- done criteria:
+  - My Account full-core named feature works through local runtime/API/UI at stated scope
+  - a focused commit exists
+- notes:
+  - vertical contract: workstreamId `my-account`; functional agent My Account Agent; surfaces profile/settings/context/attention; capabilities profile/settings/context/attention; browser-tools and request-based Agent guidance; audit/work traces required
+
+### TASK-FC5-04-001: Implement User Admin full-core vertical
+
+- status: pending
+- source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+- task brief: specs/full-core-five-workstreams/tasks/04-user-admin/01-user-admin-full-core.md
+- depends on: [TASK-FC5-03-001]
+- required reads:
+  - specs/full-core-five-workstreams/full-core-contract-matrix.md
+  - specs/full-core-five-workstreams/sprints/02-five-core-workstream-verticals.md
+  - specs/full-core-five-workstreams/tasks/04-user-admin/01-user-admin-full-core.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+- skills:
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-saas-invitation-onboarding
+  - akka-resend-email-service
+  - akka-workflows
+  - akka-views
+  - akka-http-endpoints
+  - akka-web-ui-apps
+- expected outputs:
+  - User Admin dashboard/table/detail/invitation/access-review surfaces, capabilities, agent expertise, UI, tests, and local smoke notes
+- required checks:
+  - `mvn test`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `git diff --check`
+- done criteria:
+  - User Admin full-core named feature works through local runtime/API/UI at stated scope
+  - a focused commit exists
+- notes:
+  - vertical contract: workstreamId `user-admin`; functional agent User Admin Agent; surfaces users/invitations/roles/access-review; capabilities user admin and invitation lifecycle; browser-tools, agent-tools, workflows/views; audit/work traces required
+
+### TASK-FC5-05-001: Implement Agent Admin full-core vertical
+
+- status: pending
+- source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+- task brief: specs/full-core-five-workstreams/tasks/05-agent-admin/01-agent-admin-full-core.md
+- depends on: [TASK-FC5-04-001]
+- required reads:
+  - specs/full-core-five-workstreams/full-core-contract-matrix.md
+  - specs/full-core-five-workstreams/sprints/02-five-core-workstream-verticals.md
+  - specs/full-core-five-workstreams/tasks/05-agent-admin/01-agent-admin-full-core.md
+  - docs/workstream-expertise-model.md
+  - docs/agent-runtime-invocation-pattern.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+- skills:
+  - agent-workstream-apps
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-reference-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+  - akka-web-ui-apps
+- expected outputs:
+  - Agent Admin catalog/detail/governance surfaces, managed-agent capabilities, expertise/tool boundaries, UI, tests, and local smoke notes
+- required checks:
+  - `mvn test`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `git diff --check`
+- done criteria:
+  - Agent Admin full-core named feature works through local runtime/API/UI at stated scope
+  - a focused commit exists
+- notes:
+  - vertical contract: workstreamId `agent-admin`; managed-agent foundation scope; surfaces AgentDefinition/prompt/skill/reference/manifest/tool-boundary/diff/test console; PromptAssemblyTrace/SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace required
+
+### TASK-FC5-06-001: Implement Audit/Trace full-core vertical
+
+- status: pending
+- source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+- task brief: specs/full-core-five-workstreams/tasks/06-audit-trace/01-audit-trace-full-core.md
+- depends on: [TASK-FC5-05-001]
+- required reads:
+  - specs/full-core-five-workstreams/full-core-contract-matrix.md
+  - specs/full-core-five-workstreams/sprints/02-five-core-workstream-verticals.md
+  - specs/full-core-five-workstreams/tasks/06-audit-trace/01-audit-trace-full-core.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+- skills:
+  - ai-first-saas-audit-trace
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-views
+  - akka-http-endpoints
+  - akka-web-ui-apps
+- expected outputs:
+  - Audit/Trace search/timeline/detail surfaces, trace capabilities, agent expertise, UI, tests, and local smoke notes
+- required checks:
+  - `mvn test`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `git diff --check`
+- done criteria:
+  - Audit/Trace full-core named feature works through local runtime/API/UI at stated scope
+  - a focused commit exists
+- notes:
+  - vertical contract: workstreamId `audit-trace`; surfaces audit dashboard/search/timeline/detail; capabilities trace/audit read/explain/export request; views/API/browser-tools/agent-tools; redaction and access audit required
+
+### TASK-FC5-07-001: Implement Governance/Policy full-core vertical
+
+- status: pending
+- source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
+- task brief: specs/full-core-five-workstreams/tasks/07-governance-policy/01-governance-policy-full-core.md
+- depends on: [TASK-FC5-06-001]
+- required reads:
+  - specs/full-core-five-workstreams/full-core-contract-matrix.md
+  - specs/full-core-five-workstreams/sprints/02-five-core-workstream-verticals.md
+  - specs/full-core-five-workstreams/tasks/07-governance-policy/01-governance-policy-full-core.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+- skills:
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-event-sourced-entities
+  - akka-workflows
+  - akka-views
+  - akka-web-ui-apps
+- expected outputs:
+  - Governance/Policy registry/detail/simulation/proposal/decision surfaces, capabilities, agent expertise, UI, tests, and local smoke notes
+- required checks:
+  - `mvn test`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `git diff --check`
+- done criteria:
+  - Governance/Policy full-core named feature works through local runtime/API/UI at stated scope
+  - a focused commit exists
+- notes:
+  - vertical contract: workstreamId `governance-policy`; surfaces policy registry/detail/simulation/proposal/decision card; capabilities governance/proposal/approval/trace; workflows/event-sourced state/views; audit/work traces required
+
+### TASK-FC5-99-001: Verify full-core five-workstreams completion
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/full-core-five-workstreams/tasks/08-validation/01-validate-full-core-five-workstreams.md
+- depends on:
+  - TASK-FC5-01-001
+  - TASK-FC5-02-001
+  - TASK-FC5-03-001
+  - TASK-FC5-04-001
+  - TASK-FC5-05-001
+  - TASK-FC5-06-001
+  - TASK-FC5-07-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/full-core-five-workstreams/README.md
+  - specs/full-core-five-workstreams/conversation-capture.md
+  - specs/full-core-five-workstreams/pending-tasks.md
+  - specs/full-core-five-workstreams/sprints/*.md
+  - specs/full-core-five-workstreams/backlog/*.md
+  - specs/full-core-five-workstreams/tasks/**/*.md
+  - docs/requirements-to-workstream-development-process.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/structured-surface-contracts.md
+  - docs/capability-first-backend-architecture.md
+  - docs/ai-first-saas-application-architecture.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/full-core-five-workstreams/pending-tasks.md
+  - readiness/release handoff or appended follow-up tasks plus a new terminal verification task
+- required checks:
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - `mvn test`
+  - `cd templates/ai-first-saas-starter/frontend && npm test -- --run`
+  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
+  - `git diff --check`
+- done criteria:
+  - task group/sprint goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - unresolved questions/blockers have been reviewed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+- notes:
+  - commit message: `fc5: verify full core workstreams`
