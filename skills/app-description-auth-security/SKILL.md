@@ -29,7 +29,6 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/capability-first-backend-architecture.md` for protected capability AuthContext, permission, scope, exposure, and audit semantics
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation semantics

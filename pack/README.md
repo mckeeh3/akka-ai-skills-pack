@@ -54,7 +54,6 @@ Installed layout:
     capability-first-backend-architecture.md
     skills-pack-user-guide.md
     description-first-application-doctrine.md
-    app-description-skills-plan-backlog.md
     internal-app-description-architecture.md
     app-description-maintenance-flow.md
     app-description-end-to-end-workflow-example.md

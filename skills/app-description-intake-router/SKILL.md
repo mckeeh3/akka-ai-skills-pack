@@ -33,7 +33,6 @@ Read these first if present:
 - `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS workstream routing
 - `../../docs/structured-surface-contracts.md` for surface/action contract routing
 - `../../docs/capability-first-backend-architecture.md` for capability contract routing before behavior, surfaces, or components
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-input-normalization/SKILL.md`

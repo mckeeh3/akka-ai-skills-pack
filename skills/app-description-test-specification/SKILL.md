@@ -29,7 +29,6 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/capability-first-backend-architecture.md` for capability-level success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-surface test expectations
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation verification expectations

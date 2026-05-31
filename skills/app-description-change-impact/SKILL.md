@@ -32,7 +32,6 @@ Read these first if present:
 - `../../docs/workstream-expertise-model.md` for tracing per-functional-agent expert bundle changes across skills, references, manifests, boundaries, traces, and tests
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 - `../app-description-test-specification/SKILL.md`

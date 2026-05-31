@@ -25,7 +25,6 @@ Read these first if present:
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-readiness-assessment/SKILL.md`

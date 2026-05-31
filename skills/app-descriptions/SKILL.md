@@ -30,7 +30,6 @@ Read these first if present:
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../../docs/app-description-end-to-end-workflow-example.md` only as description-maintenance mechanics; do not treat its purchase-request scenario as generated SaaS target architecture
-- `../../docs/app-description-skills-plan-backlog.md` only when auditing legacy planning history; do not use it as current routing or readiness doctrine
 - `../ai-first-saas/SKILL.md` when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - `../../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
 

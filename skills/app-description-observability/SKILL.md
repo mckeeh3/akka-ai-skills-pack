@@ -28,7 +28,6 @@ Read these first if present:
 - `../../AGENTS.md`
 - `../README.md`
 - `../../docs/description-first-application-doctrine.md`
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/capability-first-backend-architecture.md` for capability audit/trace, data-access, approval, side-effect, and exposure-surface evidence requirements
 - `../../docs/internal-app-description-architecture.md`

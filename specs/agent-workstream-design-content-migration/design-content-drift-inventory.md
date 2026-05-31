@@ -110,7 +110,7 @@ Ownership target:
 |---|---|---|---|
 | `docs/app-description-maintenance-flow.md` | Mostly aligned | Maintains ordering through AI-first/capabilities/UI and includes mandatory UI/style-guide language. Later migration can link the design review checklist. | candidate for later task |
 | `docs/description-first-application-doctrine.md` | Mostly aligned | Anti-patterns include CRUD screens plus chatbot; not central to file-set drift. | leave unchanged unless checklist references needed |
-| `docs/app-description-end-to-end-workflow-example.md`, `docs/app-description-skills-plan-backlog.md` | Not fully inspected for this inventory beyond targeted scans | No high-priority drift surfaced in targeted searches, but follow-up checklist task may decide whether they need links. | candidate for later verification |
+| `docs/app-description-end-to-end-workflow-example.md`; removed app-description skill-plan backlog | Not fully inspected for this inventory beyond targeted scans | No high-priority drift surfaced in targeted searches, but follow-up checklist task may decide whether the remaining workflow example needs links. | candidate for later verification |
 | `skills/akka-prd-to-specs-backlog/SKILL.md`, `skills/akka-slice-spec-to-backlog/SKILL.md` | Mostly aligned | Preserve capability ids and style-guide questions; no immediate workstream design conflict found. | leave unchanged now |
 
 ## Files likely to edit in follow-on tasks

@@ -33,7 +33,6 @@ Read these first if present:
 - `../../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-bootstrap/SKILL.md`
 - `../app-description-intake-router/SKILL.md`

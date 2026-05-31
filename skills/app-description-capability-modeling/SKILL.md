@@ -32,7 +32,6 @@ Read these first if present:
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/requirements-to-workstream-development-process.md` for workstream attention/dashboard/surface-action/autonomous task provenance before component selection
 - `../../docs/capability-first-backend-architecture.md`
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-bootstrap/SKILL.md`

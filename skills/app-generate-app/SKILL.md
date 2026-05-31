@@ -33,7 +33,6 @@ Read these first if present:
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation readiness before generation
 - `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-skills-plan-backlog.md` only when auditing legacy planning history; do not use it as current generation doctrine
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-readiness-assessment/SKILL.md`

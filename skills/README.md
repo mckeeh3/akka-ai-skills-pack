@@ -145,7 +145,6 @@ Default description-first flow:
 Reference docs:
 - `../docs/examples/ai-first-saas-seed-app-description/README.md` — preferred secure AI-first SaaS seed app-description reference
 - `../docs/description-first-application-doctrine.md`
-- `../docs/app-description-skills-plan-backlog.md`
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
 - `../docs/app-description-end-to-end-workflow-example.md`

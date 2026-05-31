@@ -32,7 +32,6 @@ Read these first if present:
 - `../../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
 - `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream v0 with `markdown_response`, not a single-workstream or generic chatbot slice
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must seed
-- `../../docs/app-description-skills-plan-backlog.md`
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`

@@ -9,7 +9,6 @@ Reviewed description-first and direct decomposition paths for stale content afte
 - `docs/internal-app-description-architecture.md`
 - `docs/app-description-maintenance-flow.md`
 - `docs/description-first-application-doctrine.md`
-- `docs/app-description-skills-plan-backlog.md`
 - `docs/prd-to-akka-flow.md`
 - `docs/examples/purchase-request-solution-plan.md`
 - `docs/examples/purchase-request-app-description/README.md`
@@ -26,8 +25,8 @@ Reviewed description-first and direct decomposition paths for stale content afte
 1. `skills/app-description-intake-router/SKILL.md` still described AI-first detection before routing to "CRUD, behavior, or generation work".
    - Fix: changed this to route to capability, behavior, UI, or generation work so broad input does not imply a CRUD-first description path.
 
-2. `docs/app-description-skills-plan-backlog.md` still summarized `app-description-capability-modeling` as broad capability names/goals/actors only.
-   - Fix: expanded the capability-modeling contract to include stable capability ids/classes, AuthContext/scope, schemas, idempotency, policy/approval, audit/work-trace obligations, exposure surfaces, and links to UI/readiness/traceability.
+2. The now-removed app-description skill-plan backlog still summarized `app-description-capability-modeling` as broad capability names/goals/actors only.
+   - Fix at the time: expanded the capability-modeling contract to include stable capability ids/classes, AuthContext/scope, schemas, idempotency, policy/approval, audit/work-trace obligations, exposure surfaces, and links to UI/readiness/traceability.
 
 3. The purchase-request app-description mechanics example had a very thin capability layer that did not demonstrate the capability-first contract fields now required by the app-description path.
    - Fix: updated the capability index and capability file to show capability ids/classes, actors/callers, AuthContext/scope, validation, outputs/denials, side effects, idempotency, approval, audit/trace, selected surfaces, tests, and linked artifacts while preserving the example's conventional/reference-material status.

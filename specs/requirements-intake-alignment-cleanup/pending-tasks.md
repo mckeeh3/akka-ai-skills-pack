@@ -312,7 +312,7 @@
 
 ### TASK-RIAC-04-002: Remove or rewrite stale app-description skill-plan doc
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/04-docs-examples-ui-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/04-docs-examples-ui/02-remove-or-rewrite-stale-app-description-plan-doc.md
 - depends on: [TASK-RIAC-04-001]
@@ -338,6 +338,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: clean app description plan doc`
+  - completed: removed obsolete `docs/app-description-skills-plan-backlog.md` and removed/updated active references in docs, skills, pack README, and historical specs
+  - checks: `git diff --check` over task-scoped files; `rg -n "app-description-skills-plan-backlog" . --glob '!specs/requirements-intake-alignment-cleanup/**'` returned no matches
 
 ### TASK-RIAC-04-003: Rewrite domain workstream and web UI docs
 

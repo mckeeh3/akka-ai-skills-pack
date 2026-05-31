@@ -333,7 +333,6 @@ Avoid:
 Use this document together with:
 - `docs/description-first-application-doctrine.md`
 - `docs/internal-app-description-architecture.md`
-- `docs/app-description-skills-plan-backlog.md`
 
 The doctrine defines the why.
 The architecture doc defines the artifact structure.
