@@ -23,12 +23,13 @@ The primary generated-app model is:
 
 ```text
 functional agents and internal agents
-→ workstreams and structured surfaces
-→ governed backend capabilities
-→ horizontal Akka implementation maps
+→ workstreams, role-specific dashboards, and human surface graphs
+→ internal workstream agent graphs and workstream expertise bundles
+→ governed backend capabilities with governed-tools
+→ horizontal Akka implementation maps and exposure channels
 ```
 
-Do not reduce agentic product intent to CRUD objects, page trees, screen hierarchies, or chatbot panels, and do not let generation invent missing security semantics.
+Do not reduce agentic product intent to CRUD objects, page trees, screen hierarchies, or chatbot panels, and do not let generation invent missing security semantics. Do not create a separate top-level governed-tool directory by default; governed-tools live in existing capability files and `12-workstreams/` surface/action maps.
 
 ## Default root
 
@@ -209,6 +210,7 @@ For generated SaaS apps, the first capability must be `01-secure-tenant-user-fou
 
 This layer answers:
 - what business or user-visible capabilities exist?
+- what governed-tools belong inside each capability boundary?
 - what is in scope?
 - what is explicitly out of scope?
 - who may invoke each operation or query?
@@ -218,14 +220,16 @@ This layer answers:
 
 Each capability file should be narrowly focused and should include or link to:
 - purpose and in-scope/out-of-scope outcomes;
+- governed-tool ids and names for executable semantic operations inside the capability boundary;
 - actors/callers, AuthContext, tenant/customer scope, roles, permissions, and named capability grants;
 - input and output schemas, validation, safe denial/error shape, redaction rules, idempotency key, and correlation id expectations;
 - data access boundaries, side effects, policy/approval/escalation rules, and autonomy level;
 - audit/work-trace event requirements, retention/redaction expectations, and outcome/evidence links;
-- selected exposure surfaces such as UI action, HTTP/gRPC API, agent tool, MCP, workflow step, view/query, timer, consumer, or internal-only method;
+- selected exposure surfaces such as browser-tool through a UI action, HTTP/gRPC API, agent-tool, MCP-tool, workflow-tool, view/query, timer-tool, consumer-tool, or internal-tool;
+- source workstream, role-specific dashboard, surface node/action, internal workstream agent graph node, or internal-only caller that motivates the governed-tool;
 - linked operating-model, behavior, tests, auth/security, observability, UI, and traceability artifacts.
 
-Do not treat endpoints, agent tools, workflows, or entities as the capability inventory root. They are downstream realization or exposure choices for these capability contracts.
+Do not treat endpoints, agent-tools, workflows, or entities as the capability inventory root. They are downstream realization or exposure choices for these capability contracts. Avoid ambiguous bare `tool` language in architecture artifacts; use qualified terms such as governed-tool, browser-tool, agent-tool, internal-tool, workflow-tool, timer-tool, consumer-tool, or MCP-tool.
 
 ## `12-workstreams/`
 Agent workstream vertical model.
@@ -234,19 +238,23 @@ Include this layer for every generated full-stack AI-first SaaS app. It captures
 
 This layer answers:
 - which role-authorized functional agents appear in the authenticated shell?
-- which internal agents support workflows, tools, timers, consumers, evaluation, summarization, extraction, routing, or governance without becoming left-rail work areas?
+- which role-specific dashboard surfaces answer what needs attention for each actor and AuthContext?
+- what human surface graph starts from each dashboard, which surface nodes exist, and which surface actions form graph edges?
+- which internal agents support workflows, governed-tools, timers, consumers, evaluation, summarization, extraction, routing, or governance without becoming left-rail work areas?
+- what internal workstream agent graph exists for delegated work, internal worker handoff, internal virtual dashboard attention, escalation, and result/proposal return?
 - what durable workstreams exist for each functional agent, and what retention, replay, trace, and follow-up semantics apply?
+- which workstream expertise bundles teach each LLM-enabled workstream its dashboards, surface graph, governed-tools, denials, authority, and user-help semantics?
 - which structured surfaces are rendered in workstreams, and which agents may reuse them?
-- which surface actions map to governed backend capabilities?
+- which surface actions map to governed backend capabilities and governed-tools?
 - which denial, approval, escalation, empty, loading, stale, error, and trace-link states are visible?
 
 Default files:
-- `functional-agents.md` for user-facing context-area agents, role/capability authorization, tenant/customer scope, default briefing/dashboard surfaces, prompt intent where applicable, available surfaces, callable capabilities, approval/escalation behavior, trace obligations, and tests
-- `internal-agents.md` for non-navigation agents with governed definitions, prompt/skill references, tool boundaries, service or AuthContext authority basis, model policy, traces, and tests
+- `functional-agents.md` for user-facing context-area agents, role/capability authorization, tenant/customer scope, role-specific dashboard surfaces, prompt intent where applicable, available surfaces, callable capabilities/governed-tools, approval/escalation behavior, trace obligations, and tests
+- `internal-agents.md` for non-navigation agents with governed definitions, prompt/skill references, tool boundaries, service or AuthContext authority basis, model policy, internal workstream agent graph placement, traces, and tests
 - `workstreams-and-retention.md` for timeline semantics, persistence, replay, summarization, correlation ids, attachments, follow-up handling, and retention/redaction rules
-- `surfaces-index.md` for stable surface ids, surface type/version, owning or reusable functional agents, payload schema location, allowed actions, linked capabilities, and rendering tests
-- `workstream-expertise/` for one workstream expert bundle contract per LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, capability map, tool boundary, surfaces, traces, governance owner, seed/upgrade policy, and tests
-- `surface-contracts/` for individual structured surface contracts such as dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status cards, evidence bundles, prompt/skill version cards, and outcome panels
+- `surfaces-index.md` for stable surface ids, surface type/version, owning or reusable functional agents, role-specific dashboard designation, payload schema location, allowed actions, linked capabilities/governed-tools, and rendering tests
+- `workstream-expertise/` for one workstream expert bundle contract per LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, dashboard and surface graph summary, capability/governed-tool map, tool boundary, denials, user-help examples, surfaces, traces, governance owner, seed/upgrade policy, and tests
+- `surface-contracts/` for individual structured surface contracts such as role-specific dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status cards, evidence bundles, prompt/skill version cards, outcome panels, and system-message surfaces
 
 A page, route, or screen may deep-link to a surface, but it must not replace the functional-agent/workstream/surface model as the primary description root.
 
@@ -424,7 +432,7 @@ Default ownership should be:
 - `app-description-capability-modeling`
   - primarily owns `10-capabilities/`
   - maintains capability boundaries and links to downstream layers
-  - links capabilities to `12-workstreams/` when functional agents, workstream expert bundles, surface actions, agent tools, workstream actions, or internal-agent calls expose them
+  - links capabilities to `12-workstreams/` when functional agents, workstream expert bundles, surface actions, agent-tools, workstream actions, or internal-agent calls expose them
   - links AI-first capabilities to `15-operating-model/` when they depend on delegated work, goals, policies, decisions, or outcomes
 
 - `app-description-behavior-specification`
@@ -475,7 +483,7 @@ The harness should maintain these invariants:
 1. Every generated SaaS app must include the secure tenant/user foundation capability, agent workstream model, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
 2. Every generated full-stack AI-first SaaS app must model authenticated consequential work as role-authorized functional agents, governed internal agents where needed, durable workstreams, and structured surfaces rather than as a primary page/screen hierarchy.
 3. Every LLM-enabled functional agent must have a `12-workstreams/workstream-expertise/<functional-agent-id>.md` expert bundle or an explicit readiness deferral that prevents that agent/workstream from being reported implemented; the bundle owns prompt intent, skill/reference assignments, compact expertise manifest, tool boundary, capability map, trace obligations, governance owner, seed/upgrade policy, and tests for that workstream.
-4. Every surface action, agent tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call must map to a governed capability.
+4. Every surface action, browser-tool, agent-tool, workflow step, timer-tool, consumer-tool, API, MCP-tool/resource, or internal-tool must map to a governed capability and, when executable, a governed-tool in the relevant capability and surface/action map.
 5. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
 6. Every in-scope capability must link to at least one behavior artifact.
 7. Every AI-first capability must link to operating-model artifacts that define goals, delegation, retained human authority, policies, decisions, traces, and outcomes as applicable.
@@ -527,17 +535,18 @@ Examples:
 ## Artifact update rules
 
 When a change request arrives, the harness should:
-1. identify impacted capabilities
-2. update `12-workstreams/` when functional agents, internal agents, workstreams, surfaces, or surface actions are affected
-3. update AI-first operating-model semantics when delegated work, agents, policies, decisions, traces, or outcomes are affected
-4. update behavior semantics
-5. update linked test semantics
-6. update linked auth/security semantics if needed
-7. update linked observability semantics if needed
-8. update linked UI semantics, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS apps
-9. update traceability links, including functional-agent/surface/capability/horizontal maps
-10. reassess readiness
-11. generate outputs only if requested or accepted
+1. reconcile against the existing workstream graph before creating parallel structures: affected workstreams, role-specific dashboards, attention items, surface graph nodes/edges, internal workstream agent graph nodes, workstream expertise bundles, and governed-tools
+2. identify impacted capabilities and whether governed-tools are added, changed, reused, deprecated, split, or moved between exposure channels
+3. update `12-workstreams/` when functional agents, internal agents, workstreams, role-specific dashboards, surfaces, surface graph edges, or surface actions are affected
+4. update AI-first operating-model semantics when delegated work, agents, policies, decisions, traces, or outcomes are affected
+5. update behavior semantics
+6. update linked test semantics
+7. update linked auth/security semantics if needed
+8. update linked observability semantics if needed
+9. update linked UI semantics, including `55-ui/style-guide.md`, for generated full-stack AI-first SaaS apps
+10. update traceability links, including functional-agent/surface/capability/governed-tool/horizontal maps
+11. reassess readiness
+12. generate outputs only if requested or accepted
 
 ## What is authoritative vs derived
 
@@ -609,7 +618,8 @@ Then expand into the full structure as complexity grows. For generated AI-first 
 
 For the canonical `minimum starter / not full core`, the small tree must additionally make these semantics explicit, even if they live in the compact files above rather than in many separate files:
 - `12-workstreams/functional-agents.md` names the five core workstream v0 starter functional agents — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — not a generic chatbot or single-workstream substitute.
-- `12-workstreams/surfaces-index.md` and/or `surface-contracts/01-markdown-response.md` define `markdown_response` as a typed, sanitized, trace-linked structured surface.
+- `12-workstreams/surfaces-index.md` and/or `surface-contracts/01-markdown-response.md` define `markdown_response` as a typed, sanitized, trace-linked structured surface, and identify any role-specific dashboard surface semantics used by the starter.
+- `12-workstreams/` records the initial human surface graph and any intentionally deferred internal workstream agent graph or workstream expertise details instead of leaving them implicit.
 - `20-behavior/flows/01-secure-foundation-access-flow.md` or equivalent records bootstrap auth, selected AuthContext, request/response timeline, denials, and follow-up handoff behavior.
 - `40-auth-security/` records bootstrap-only access, no public self-registration, backend authorization for every protected workstream/API/tool/action, and no prompt- or frontend-only authority.
 - `50-observability/` records durable workstream log and audit/work trace expectations for requests, responses, tool/capability checks, denials, and trace references.

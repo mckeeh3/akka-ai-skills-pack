@@ -41,7 +41,7 @@ The internal description fully defines the app.
 If the description is complete, the app can be regenerated.
 If the app cannot be regenerated from the description, the description is incomplete.
 
-For AI-first SaaS apps, the description must define the operating model as well as domain behavior: durable goals, delegated work, retained human authority, agent/team responsibilities, policies, approvals, exceptions, evidence, traces, learning loops, and outcomes.
+For AI-first SaaS apps, the description must define the operating model as well as domain behavior: durable goals, delegated work, retained human authority, agent/team responsibilities, role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tools, policies, approvals, exceptions, evidence, traces, learning loops, and outcomes.
 
 ### 2. Code is a disposable projection
 Source code is an output artifact, not the definition of the system.
@@ -78,6 +78,9 @@ It is a layered, interconnected collection of internal artifacts that together d
 - intended behavior
 - constraints
 - interfaces
+- role-specific dashboard surfaces, human surface graph nodes/actions, and structured workstream surfaces
+- internal workstream agent graph nodes, delegations, escalations, and result/proposal return paths
+- governed capabilities and governed-tools, with qualified exposure as browser-tools, agent-tools, internal-tools, workflow-tools, timer-tools, consumer-tools, or MCP-tools
 - tests
 - operational requirements
 - AI-first operating-model requirements when delegated work or agents are in scope
@@ -177,10 +180,11 @@ All app evolution occurs through input to the harness.
 
 The harness is responsible for:
 1. interpreting the requested change
-2. updating the internal description system
-3. determining impact
-4. regenerating affected outputs when requested or appropriate
-5. validating consistency against the updated description
+2. reconciling it against the existing workstream graph instead of creating parallel functional-agent, dashboard, surface, capability, or governed-tool structures
+3. updating the internal description system
+4. determining impact
+5. regenerating affected outputs when requested or appropriate
+6. validating consistency against the updated description
 
 A bug fix is not fundamentally a code patch.
 It is a correction to the authoritative description, plus regeneration of affected outputs.
@@ -213,6 +217,7 @@ This doctrine rejects the following assumptions:
 
 An application description is sufficiently complete when it is precise enough for the harness to reliably:
 - update and maintain the description
+- preserve role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, and governed-tool mappings without generation-time invention
 - generate the app
 - generate and run validating tests
 - explain the app’s behavior

@@ -134,7 +134,7 @@
 
 ### TASK-WGGT-02-001: Update app-description architecture docs
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/02-app-description-model-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/02-app-description/01-update-app-description-architecture-docs.md
 - depends on: [TASK-WGGT-01-003]
@@ -159,6 +159,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update app description architecture`
+  - completed: updated app-description architecture, maintenance-flow, and doctrine docs to locate role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, and governed-tools in existing `12-workstreams/` and `10-capabilities/` layers; checks: `git diff --check`; focused graph/governed-tool term search over touched docs
 
 ### TASK-WGGT-02-002: Update bootstrap, normalization, and router skills
 

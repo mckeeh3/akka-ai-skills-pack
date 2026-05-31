@@ -47,10 +47,10 @@ Prefer this default sequence:
 1. bootstrap the internal app-description tree if no usable root exists yet, seeding the secure SaaS foundation capability, governed runtime agent foundation, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces; for minimum/starter/basic app requests, seed a `minimum starter / not full core` five core workstream v0 set (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, capability boundaries, and explicit full-core follow-up gaps
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
-4. identify impacted description layers
-5. for generated full-stack SaaS user-facing changes, update or verify `12-workstreams/` ownership first: functional agents, internal-agent support where relevant, durable workstreams, workstream icon descriptors, workstream expert bundles under `workstream-expertise/**`, structured surfaces, surface actions, and action-to-capability candidates
-6. update `10-capabilities/` with governed capability contracts before implementation choices: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, tests, and links back to source functional agents/surfaces/actions for user-facing exposure
-7. update `12-workstreams/` again if capability modeling changes surface payloads, actions, authority, or traceability; capability and surface modeling may iterate, but neither layer is complete without the other for user-facing actions
+4. identify impacted description layers by reconciling against the existing workstream graph rather than generating parallel structures
+5. for generated full-stack SaaS user-facing changes, update or verify `12-workstreams/` ownership first: functional agents, role-specific dashboard surfaces, attention items, human surface graph nodes/edges, internal-agent support and internal workstream agent graph where relevant, durable workstreams, workstream icon descriptors, workstream expert bundles under `workstream-expertise/**`, structured surfaces, surface actions, and action-to-capability/governed-tool candidates
+6. update `10-capabilities/` with governed capability contracts and governed-tool definitions before implementation choices: governed-tool ids, actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, tests, and links back to source functional agents/surfaces/actions or internal-agent graph nodes for user-facing/internal exposure
+7. update `12-workstreams/` again if capability modeling changes surface payloads, actions, authority, governed-tool mapping, or traceability; capability and surface modeling may iterate, but neither layer is complete without the other for user-facing actions
 8. update `15-operating-model/` for generated AI-first SaaS operating semantics
 9. update behavior-level meaning
 10. update verification expectations
@@ -84,9 +84,12 @@ Use `app-description-functional-agent-modeling` and `app-description-surface-mod
 
 Capture or verify:
 - source `12-workstreams/functional-agents.md` ownership, including workstream icon metadata (`WorkstreamIconDescriptor` semantics: stable icon id, visual hint derived from workstream responsibility, accent color token, tooltip, aria label, optional asset reference; rendered by the shell as approved SVG/icon-library artwork or semantic SVG fallback, not letters);
-- workstream expertise ownership under `12-workstreams/workstream-expertise/<functional-agent-id>.md` for each LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, capability map, tool boundary, surfaces, traces, governance owner, seed/upgrade policy, and tests;
+- role-specific dashboard surfaces for each affected actor/AuthContext and the attention items they must surface;
+- the human surface graph: dashboard trunk, surface nodes, action edges, system-message surfaces, trace links, denial/recovery edges, and deep-link/open-workstream edges;
+- the internal workstream agent graph when delegated/internal work is affected: virtual dashboard attention, worker nodes, governed-tools used, escalation rules, result/proposal return, and human attention items created;
+- workstream expertise ownership under `12-workstreams/workstream-expertise/<functional-agent-id>.md` for each LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, dashboard/surface graph summary, capability/governed-tool map, tool boundary, denials, user-help examples, traces, governance owner, seed/upgrade policy, and tests;
 - structured surface ids, payload/action candidates, states, traces, and tests;
-- surface action-to-capability candidates, including governed surface-request actions such as `open_workstream` for buttons, links, icons, cards, rows, and status panels that open protected surfaces/workstreams;
+- surface action-to-capability/governed-tool candidates, including governed surface-request actions such as `open_workstream` for buttons, links, icons, cards, rows, and status panels that open protected surfaces/workstreams;
 - which changes are browser realization details for `55-ui/` rather than application meaning, including icon rendering while `12-workstreams/` owns icon semantics.
 
 ### Step 4. Update capabilities when scope changed
@@ -95,14 +98,15 @@ For AI-first apps, connect capabilities to durable goals, delegated work, agent/
 
 Each affected capability should record enough backend contract detail to prevent generation-time invention:
 - capability id/name and class;
+- governed-tool ids/names and whether each governed-tool is exposed as a browser-tool, agent-tool, MCP-tool, workflow-tool, timer-tool, consumer-tool, or internal-tool;
 - actors/callers and AuthContext with tenant/customer scope, role, permission, or named capability grants;
 - typed inputs/outputs, validation, safe denial/error shape, redaction, idempotency, and correlation expectations;
 - data access, side effects, policy/approval/escalation rules, and autonomy level;
 - audit/work-trace obligations;
-- selected exposure surfaces such as UI action, HTTP/gRPC API, agent tool, MCP, workflow, view/query, timer, consumer, or internal-only method;
+- selected exposure surfaces such as UI action, HTTP/gRPC API, agent-tool, MCP-tool, workflow step, view/query, timer-tool, consumer-tool, or internal-only method;
 - linked success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
 
-For user-facing generated SaaS capabilities, record the source functional agent, source surface/action, and surface-to-capability map entry, or explicitly mark the capability internal-only.
+For user-facing generated SaaS capabilities, record the source functional agent, role-specific dashboard or surface/action, governed-tool mapping, and surface-to-capability map entry, or explicitly mark the capability internal-only. For internal delegated work, record the internal workstream agent graph node and service/AuthContext authority basis.
 
 ### Step 5. Update operating model when agentic semantics changed
 
@@ -212,8 +216,9 @@ This keeps workstream/surface ownership and governed capability contracts ahead 
 Every description change should trigger a mental or explicit change-impact pass.
 
 The harness should ask:
-- which `12-workstreams/` functional agents, workstream icon descriptors, workstream expert bundles, internal agents, structured surfaces, surface actions, and surface-to-capability maps changed?
+- which affected workstreams, role-specific dashboards, attention items, human surface graph nodes/edges, workstream icon descriptors, workstream expert bundles, internal agents, internal workstream agent graph nodes, structured surfaces, surface actions, and surface-to-capability maps changed?
 - which capabilities changed?
+- which governed-tools were added, changed, reused, deprecated, split, or remapped to browser-tool, agent-tool, internal-tool, workflow-tool, timer-tool, consumer-tool, or MCP-tool exposure?
 - did any capability contract fields change: actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, or tests?
 - which behavior artifacts changed?
 - which AI-first operating-model artifacts changed: goals, delegated work, retained authority, agents, governed runtime behavior artifacts, policies, approvals, decisions, exceptions, traces, learning, or outcomes?
