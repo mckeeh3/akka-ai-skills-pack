@@ -17,6 +17,7 @@ Create or update behavior-oriented app-description artifacts that:
 - capture capabilities and scope clearly
 - express user-visible and system-visible behavior
 - preserve AI-first operating semantics when behavior involves delegated work, agent judgment, human governance, or outcome loops
+- capture behavior changes to role-specific dashboard attention, human surface graph edges, internal workstream agent graph delegation, and governed-tools instead of hiding them as UI or implementation details
 - define state changes, transitions, and invariants
 - make forbidden behavior explicit
 - separate confirmed facts from assumptions
@@ -78,7 +79,8 @@ For each requested change, identify and describe as applicable:
 - linked capability id/class or business purpose
 - actors or callers
 - delegated work and retained human authority
-- triggers, commands, requests, agent actions, approvals, exceptions, or scheduled checks
+- triggers, commands, requests, agent actions, approvals, exceptions, scheduled checks, surface actions, browser-tool invocations, agent-tool invocations, or internal-tool calls
+- dashboard attention changes, surface graph node/edge changes, and internal workstream agent graph delegation/result/escalation behavior
 - stateful concepts and lifecycle states, including goals, plans, tasks, decisions, policy proposals, traces, or outcomes for generated AI-first SaaS
 - valid transitions
 - invalid transitions
@@ -89,8 +91,8 @@ For each requested change, identify and describe as applicable:
 - ordering or timing assumptions
 - evidence, risk, confidence, impact, and alternative requirements for decisions when applicable
 - learning, feedback, replay, simulation, or outcome-loop behavior when applicable
-- whether the behavior changes the capability contract: actors/callers, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, or exposure surfaces
-- dependencies on operating-model, security, UI, test, readiness, or observability layers
+- whether the behavior changes the capability or governed-tool contract: actors/callers, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, or browser-tool/agent-tool/internal-tool mappings
+- dependencies on operating-model, workstream expertise, security, UI, test, readiness, or observability layers
 
 ## Output contract
 

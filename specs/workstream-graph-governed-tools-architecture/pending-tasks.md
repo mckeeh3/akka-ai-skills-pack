@@ -226,7 +226,7 @@
 
 ### TASK-WGGT-02-004: Update impact, readiness, UI, and generation-adjacent skills
 
-- status: pending
+- status: done
 - source: specs/workstream-graph-governed-tools-architecture/backlog/02-app-description-model-build-backlog.md
 - task brief: specs/workstream-graph-governed-tools-architecture/tasks/02-app-description/04-update-impact-readiness-ui-generation-skills.md
 - depends on: [TASK-WGGT-02-003]
@@ -255,6 +255,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update graph readiness skills`
+  - completed: updated behavior, change-impact, readiness, UI, and generation skills so role-specific dashboard attention, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tools, and browser-tool/agent-tool/internal-tool mappings drive impact, readiness, UI realization, generation gates, and runtime validation; checks: `git diff --check`; focused graph/governed-tool term search over edited skills
 
 ### TASK-WGGT-03-001: Update solution decomposition and PRD planning
 

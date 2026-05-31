@@ -7,9 +7,9 @@ description: Maintain authoritative frontend/UI descriptions for description-fir
 
 Use this skill for the mandatory browser frontend of generated full-stack AI-first SaaS apps, and for any description-first work that changes UI meaning.
 
-This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, per-workstream attention/dashboard summaries, and structured surfaces. Preserve supervision, decision, governance, digest, audit, autonomous task progress/result, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
+This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, per-workstream role-specific dashboard/attention summaries, and structured surfaces connected as a human surface graph. Preserve supervision, decision, governance, digest, audit, autonomous task progress/result, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
 
-High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, attention/dashboard contracts, workstream icon descriptors, structured surfaces, surface actions, autonomous task/result surfaces, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, attention indicators, workstream icon assignments, surfaces, or actions must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
+High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, role-specific dashboard/attention contracts, workstream icon descriptors, human surface graph nodes/edges, structured surfaces, surface actions, autonomous task/result surfaces, internal workstream agent graph effects, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, attention indicators, workstream icon assignments, surfaces, surface graph edges, browser-tool actions, or governed-tool exposure must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
 
 ## Required reading
 
@@ -119,13 +119,16 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - submit/success/failure behavior
 - duplicate-submit/idempotency expectations
 
-### Capability-backed actions and frontend API contracts
-- linked capability id/class for each protected browser action or query
+### Surface graph, browser-tool actions, and frontend API contracts
+- dashboard root surfaces, surface graph nodes, and surface-action edges that the browser must render, including prompt-entered, deep-link, row/card/button, denial/recovery, and cross-workstream surface requests
+- linked capability id/class and governed-tool id for each protected browser action or query
+- browser-tool exposure name when a governed-tool is invoked from a surface action
 - browser API route and method as an exposure surface, when selected
 - request DTO and idempotency/correlation fields where applicable
 - success response DTO and redaction rules
 - error/denial response DTO
 - required AuthContext, capability grant, and tenant/customer scope
+- denial/system-message surface behavior for unauthorized, stale, unresolved, or cross-workstream actions
 - governed agent artifact ids when the action reads or changes `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `ToolPermissionBoundary`, editing agent proposal, `PromptAssemblyTrace`, `SkillLoadTrace`, or `AgentWorkTrace`
 - audit/trace expectation visible to users, supervisors, admins, or auditors when applicable
 
@@ -165,8 +168,8 @@ Cosmetic style work may improve visual quality only within already-authoritative
 For any UI change, update:
 1. affected UI description files, including `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `ai-first-surfaces.md` when delegated work surfaces change, the managed-agent UI files when full-core agent behavior governance changes, and `style-guide.md` when style system, branding, density, tokens, icon rendering, or component styling change
 2. `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling` when a UI change adds, removes, or changes a user-facing functional agent, workstream icon assignment/meaning, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
-3. `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling` when a UI change adds, removes, or changes structured surfaces, dashboard/attention surfaces, autonomous task result/progress surfaces, payload schemas, reusable placement, allowed actions, states, notification/realtime behavior, trace links, or rendering tests
-4. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, AuthContext, schema, side effect, approval, audit, idempotency, notification/projection output, or autonomous task lifecycle semantics
+3. `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling` when a UI change adds, removes, or changes structured surfaces, role-specific dashboard/attention surfaces, human surface graph nodes/edges, autonomous task result/progress surfaces, payload schemas, reusable placement, allowed actions, states, notification/realtime behavior, trace links, or rendering tests
+4. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, governed-tool id, browser-tool mapping, AuthContext, schema, side effect, approval, audit, idempotency, notification/projection output, or autonomous task lifecycle semantics
 5. behavior flows if user-visible behavior changes
 6. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
 7. auth/security if route visibility, shell request resolution, cross-workstream surface discovery, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes

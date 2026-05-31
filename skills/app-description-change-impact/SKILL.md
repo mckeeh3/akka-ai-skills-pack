@@ -17,6 +17,7 @@ Analyze a requested or completed description change and produce an impact result
 - identifies impacted traceability artifacts
 - identifies whether readiness must be reassessed
 - identifies likely affected generated output areas
+- treats role-specific dashboard attention, human surface graph nodes/edges, internal workstream agent graph delegation, workstream expertise, and governed-tool exposure mappings as first-class impact drivers
 - identifies whether existing specs, backlogs, task briefs, or pending tasks need reconciliation
 - recommends localized or broader regeneration scope
 - prevents stale description links, stale planning artifacts, or stale generated outputs from surviving a semantic change
@@ -86,15 +87,16 @@ A one-line behavior change may still require:
 ## What this skill must determine
 
 For each change, determine as applicable:
-- which capability artifacts are impacted, including changes to actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, or selected exposure surfaces
-- which `12-workstreams/workstream-expertise/` artifacts are impacted: bundle scope, prompt intent, skill/reference ids, compact manifest entries, capability map, `ToolPermissionBoundary`, authority profile, loader denials, trace obligations, governance owner, seed/upgrade behavior, or tests
+- which capability artifacts are impacted, including changes to governed-tool ids, actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, or browser-tool/agent-tool/internal-tool mappings
+- which workstream graph artifacts are impacted: role-specific dashboard surfaces, attention categories, human surface graph nodes/edges, system-message surfaces, cross-workstream surface requests, internal workstream agent graph nodes/delegations/results/escalations, or notification/projection effects
+- which `12-workstreams/workstream-expertise/` artifacts are impacted: bundle scope, prompt intent, skill/reference ids, compact manifest entries, capability map, `ToolPermissionBoundary`, authority profile, loader denials, governed-tool explanations, trace obligations, governance owner, seed/upgrade behavior, or tests
 - which `15-operating-model/` artifacts are impacted for generated AI-first SaaS: goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, evidence, traces, learning, or outcomes
 - which behavior artifacts are impacted
 - which test artifacts are impacted
 - which auth/security artifacts are impacted, especially authority boundaries and permission enforcement
 - which observability artifacts are impacted, especially audit/work/decision traces, policy invocations, tool/data-access events, and outcome metrics
-- which UI artifacts are impacted, especially `55-ui` workstream shell, functional-agent rail, composer, structured surface rendering, capability-backed browser actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
-- which traceability maps must change, including functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
+- which UI artifacts are impacted, especially `55-ui` workstream shell, functional-agent rail, composer, structured surface rendering, human surface graph realization, capability-backed browser-tool actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
+- which traceability maps must change, including functional-agent-to-dashboard, surface-to-capability/governed-tool, functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
 - whether `00-system/readiness-status.md` must be updated
 - which generation surfaces are likely affected, including seeded prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
 - which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
@@ -155,7 +157,7 @@ Any important change in behavior, security, observability, UI supervision, or AI
 Behavior or operating-model changes may force security, observability, and UI updates even when the user did not explicitly ask for them.
 
 ### 5. Reassess readiness when meaning changed materially
-If the change alters core behavior, failure semantics, delegated authority, workstream expert bundles, skill/reference manifests, tool boundaries, policies, approvals, decisions, traces, outcomes, production constraints, UI supervision surfaces, or test coverage expectations, readiness should usually be revisited.
+If the change alters core behavior, failure semantics, role-specific dashboard attention, human surface graph edges, internal workstream agent graph delegation, governed-tools, browser-tool/agent-tool/internal-tool exposure, delegated authority, workstream expert bundles, skill/reference manifests, tool boundaries, policies, approvals, decisions, traces, outcomes, production constraints, UI supervision surfaces, or test coverage expectations, readiness should usually be revisited.
 
 ### 6. Prefer localized regeneration only when the dependency chain is clear
 If the harness cannot confidently bound the affected outputs, recommend broad or full regeneration instead.
