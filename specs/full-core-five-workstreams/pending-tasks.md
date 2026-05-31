@@ -266,7 +266,8 @@
 
 ### TASK-FC5-07-001: Implement Governance/Policy full-core vertical
 
-- status: pending
+- status: done
+- completion note: Verified and marked complete the Governance/Policy full-core vertical: backend-authoritative policy dashboard/inventory/detail/proposal/simulation/decision/activation-blocked/rollback-blocked/impact-analysis surfaces, governed proposal/approval/activation/rollback lifecycle, scoped redaction and cross-tenant denial behavior, fail-closed impact-analysis worker behavior, frontend governance-diff/action contracts, and backend/frontend/typecheck/diff validation are in place.
 - source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
 - task brief: specs/full-core-five-workstreams/tasks/07-governance-policy/01-governance-policy-full-core.md
 - depends on: [TASK-FC5-06-001]
