@@ -359,7 +359,7 @@ This is the manual queue-consumption skill for downstream implementation work. I
 
 References:
 - `../docs/pending-task-queue.md`
-- `../docs/examples/purchase-request-pending-tasks.md`
+- `../docs/examples/purchase-request-pending-tasks.md` — conventional mechanics-only queue-format reference; not the canonical generated AI-first SaaS target architecture
 
 ### Iterative planning quick routing
 

@@ -58,7 +58,7 @@ five core workstream v0 starter
 → app-specific functional agents, surfaces, capabilities, and outcomes
 ```
 
-Do not use this seed README to justify a generic public chatbot, unauthenticated assistant, page-first CRUD console, or app-specific domain workstream before the User Admin v0 minimum slice and full-core progression gates are visible.
+Do not use this seed README to justify a generic public chatbot, unauthenticated assistant, page-first CRUD console, or app-specific domain workstream before the five core workstream v0 starter/minimum scope and full-core progression gates are visible.
 
 The seed app UI docs below describe functional agents, workstreams, structured surfaces, and deep links. They are not a page-first route/screen template. Older page/screen examples in the repository are legacy or mechanics references only.
 

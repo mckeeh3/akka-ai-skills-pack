@@ -521,7 +521,7 @@
 
 ### TASK-RIAC-06-001: Repair final active-guidance drift findings
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/final-verification.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/06-final-repair/01-repair-final-active-guidance-drift.md
 - depends on: [TASK-RIAC-99-001]
@@ -548,6 +548,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: repair final intake drift`
+  - completed: repaired the final active-guidance drift batch by replacing User-Admin-only seed wording with five-core workstream v0 starter/minimum scope, making AI-first seed capability examples preferred, and labeling the purchase-request pending-task reference as mechanics-only
+  - checks: `git diff --check`; focused drift search returned only the explicitly mechanics-only `purchase-request-pending-tasks.md` reference in `skills/README.md`
 
 ### TASK-RIAC-99-002: Verify requirements intake alignment cleanup after final repair
 

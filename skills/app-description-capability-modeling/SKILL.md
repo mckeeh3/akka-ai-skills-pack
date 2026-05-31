@@ -40,7 +40,14 @@ Read these first if present:
 - `../app-description-ui/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 
-Prefer these example references when present:
+Prefer these AI-first SaaS seed capability references when present:
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/capabilities-index.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/02-ai-first-work-management.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/03-governance-decisions-and-audit.md`
+- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/05-managed-agent-foundation.md`
+
+Conventional mechanics-only references, not canonical generated AI-first SaaS target architecture:
 - `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md`
 - `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
 - `../../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
