@@ -132,7 +132,7 @@ public final class AuditTraceService {
     return new SurfaceData("surface-audit-trace-investigation-guide", "decision", "Investigation guidance", List.of("trace-audit-guide-" + stableSuffix(correlationId)), mapOf(
         "surfaceContract", "audit.trace.investigationGuide.v1",
         "recommendation", "Continue only with backend-authorized, tenant-scoped evidence.",
-        "allowedActions", List.of(mapOf("actionId", "action-audit-trace-search", "label", "Refine search", "capabilityId", SEARCH_CAPABILITY), mapOf("actionId", "action-audit-trace-timeline", "label", "Open timeline", "capabilityId", TIMELINE_CAPABILITY)),
+        "allowedActions", List.of(mapOf("actionId", "action-audit-trace-search", "label", "Refine search", "browserToolId", "action-audit-trace-search", "governedToolId", SEARCH_CAPABILITY, "capabilityId", SEARCH_CAPABILITY), mapOf("actionId", "action-audit-trace-timeline", "label", "Open timeline", "browserToolId", "action-audit-trace-timeline", "governedToolId", TIMELINE_CAPABILITY, "capabilityId", TIMELINE_CAPABILITY)),
         "disabledActions", List.of(mapOf("actionId", "action-audit-trace-start-summary-task", "capabilityId", "audit.trace.summaryTask.start", "reason", "Autonomous audit summary tasks are deferred until task lifecycle/provider/tool-boundary runtime is implemented.")),
         "risk", "low",
         "traceLinks", List.of(correlationId),

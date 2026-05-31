@@ -27,7 +27,12 @@ test('workstream types define /api/me, AuthContext, functional agents, workstrea
   assert.match(workstreamTypes, /export type WorkstreamItem/);
   assert.match(surfaceTypes, /export type SurfaceEnvelope/);
   assert.match(actionTypes, /export type CapabilityActionRequest/);
+  assert.match(actionTypes, /browserToolId: string/);
+  assert.match(actionTypes, /governedToolId: string/);
   assert.match(actionTypes, /export type CapabilityActionResult/);
+  assert.match(actionTypes, /export type WorkstreamShellRequest/);
+  assert.match(actionTypes, /refresh_surface/);
+  assert.match(actionTypes, /open_attention_item/);
   assert.match(eventTypes, /export type WorkstreamEvent/);
   assert.match(eventTypes, /export type RealtimeConnectionState/);
 });

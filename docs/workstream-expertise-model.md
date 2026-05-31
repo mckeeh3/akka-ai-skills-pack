@@ -4,7 +4,7 @@
 
 This is the canonical doctrine for making a user-facing functional agent an expert in its workstream. It sits below `agent-workstream-application-architecture.md` and `capability-first-backend-architecture.md`, and above runtime agent, skill-governance, app-description, seed, and testing guidance.
 
-A functional agent is not ready merely because it has a prompt, a chat surface, or a list of tools. It is workstream-ready only when its expertise is explicit, governed, loadable, bounded, traceable, and tested.
+A functional agent is not ready merely because it has a prompt, a chat surface, or a list of agent-tools/internal-tools. It is workstream-ready only when its expertise is explicit, governed, loadable, bounded, traceable, and tested.
 
 ```text
 functional workstream
@@ -21,7 +21,7 @@ functional workstream
 
 A **workstream expert bundle** is the app-defined, tenant-governed set of behavior, knowledge, capabilities, boundaries, and evidence that makes one functional agent competent for one workstream.
 
-Define one bundle per functional agent/workstream pair unless two workstreams intentionally share the same authority, lifecycle, steward, prompt, skills, references, tools, surfaces, traces, and tests.
+Define one bundle per functional agent/workstream pair unless two workstreams intentionally share the same authority, lifecycle, steward, prompt, skills, references, governed-tool exposures, surfaces, traces, and tests.
 
 A bundle must name:
 
@@ -39,7 +39,7 @@ A bundle must name:
 | Capability map | Governed backend capabilities the workstream may request, propose, or call. |
 | Governed-tool map | Governed-tools inside those capabilities, with exposure as browser-tools, agent-tools, workflow-tools, timer-tools, consumer-tools, MCP-tools, or internal-tools. |
 | Tool boundary | ToolPermissionBoundary and model-facing agent-tools allowed for this agent, including `readSkill` and any reference loaders. |
-| Authority profile | Read-only, proposal-only, approval-gated, or bounded autonomous authority per capability/tool. |
+| Authority profile | Read-only, proposal-only, approval-gated, or bounded autonomous authority per capability/governed-tool. |
 | Surfaces | Structured surfaces the agent owns or reuses to show evidence, forms, decisions, diffs, traces, and outcomes. |
 | Escalation and denial rules | Approval, exception, denial, safe recovery, user-help wording, and handoff behavior. |
 | Trace requirements | PromptAssemblyTrace, SkillLoadTrace, reference-load trace, AgentWorkTrace, data-access, decision, and audit events. |
@@ -59,7 +59,7 @@ Examples for User Admin:
 - `invitation-drafting` — how to draft safe invite explanations.
 - `role-recommendation` — how to recommend roles without granting them.
 
-Skill text is guidance only. It cannot grant data access, tool authority, role permissions, approval rights, or tenant scope.
+Skill text is guidance only. It cannot grant data access, governed-tool authority, role permissions, approval rights, or tenant scope.
 
 ### Reference document
 
@@ -78,11 +78,11 @@ Reference content is also guidance/evidence only. Backend authorization and capa
 
 ### Capability
 
-A capability is the backend operation or query contract. It defines actors/callers, AuthContext, schemas, validation, idempotency, side effects, approval, audit, exposure surfaces, and tests. A workstream expert bundle lists which capabilities the agent can request, propose, or call, but the capability itself remains owned by the capability layer.
+A capability is the product-level backend ability or grouping owned by the capability layer. A workstream expert bundle may list which capabilities the agent can explain, request, propose, or call through governed-tool exposures, but expertise content never owns the capability or grants authority.
 
 ### Governed-tool and tool boundary
 
-A governed-tool is the semantic executable operation or query inside a capability. It defines actor/caller rules, AuthContext, input/output schemas, side effects, idempotency, approval/policy, audit/work trace, and implementation mapping. A capability groups related governed-tools; exposure channels decide where each governed-tool can be invoked.
+A governed-tool is the semantic executable operation or query inside a capability. It defines actor/caller rules, AuthContext, input/output schemas, validation, side effects, idempotency, approval/policy, audit/work trace, tests, and implementation mapping. A capability groups related governed-tools; exposure channels decide where each governed-tool can be invoked.
 
 Use qualified exposure names:
 
@@ -109,7 +109,7 @@ resolve AuthContext and active AgentDefinition
 → resolve explicit ModelConfigRef/ModelPolicy or inherited governed default model binding
 → resolve active workstream expert bundle and compact expertise manifest
 → assemble prompt with compact skill/reference entries only
-→ register readSkill/readReferenceDoc and other allowed tools
+→ register readSkill/readReferenceDoc and other allowed agent-tools/internal-tools
 → model requests skill/reference ids from the compact manifest
 → loader authorizes tenant, agent, manifest, document status, version, mode, token/redaction limits, and ToolPermissionBoundary
 → allowed loads return full content with checksum and authority note
@@ -117,7 +117,7 @@ resolve AuthContext and active AgentDefinition
 → emit load traces and AgentWorkTrace
 ```
 
-The model must not receive all skill/reference bodies by default. Full content is loaded on demand through authorized tools using stable ids, never filesystem paths or model-supplied resource paths.
+The model must not receive all skill/reference bodies by default. Full content is loaded on demand through authorized loader agent-tools using stable ids, never filesystem paths or model-supplied resource paths.
 
 ## Governance rules
 
@@ -181,7 +181,7 @@ Workstream expertise tests should verify:
 - skill/reference text cannot grant a forbidden governed-tool, capability, role, tenant scope, or approval right;
 - side-effecting capabilities remain proposal/approval-gated unless policy grants bounded autonomy;
 - surfaces render manifest summaries, decisions, evidence, denials, and trace links safely;
-- traces are emitted for prompt assembly, model binding resolution/denial/fallback, allowed loads, denied loads, tool invocations, data access, decisions, and consequential work.
+- traces are emitted for prompt assembly, model binding resolution/denial/fallback, allowed loads, denied loads, agent-tool/internal-tool invocations, data access, decisions, and consequential work.
 
 ## Routing implications
 
@@ -189,6 +189,6 @@ Workstream expertise tests should verify:
 - Use `akka-agent-model-governance` for governed `ModelConfigRef`, `ModelPolicy`, explicit fallback/no-fallback behavior, provider secret boundaries, and model-use trace facts.
 - Use `akka-agent-skill-governance` for governed `SkillDocument`, `SkillVersion`, `AgentSkillManifest`, `readSkill`, and `SkillLoadTrace` implementation guidance.
 - Use `akka-agent-reference-governance` for `ReferenceDocument`, `ReferenceVersion`, `AgentReferenceManifest`, `readReferenceDoc(referenceId)`, denied-load semantics, and ReferenceLoadTrace; do not silently collapse references into generic prompts or procedural skills.
-- Use `akka-agent-tool-boundaries` for enforcing loader/tool permissions.
+- Use `akka-agent-tool-boundaries` for enforcing loader agent-tool and governed-tool permissions.
 - Use `akka-agent-seed-documents` for default prompt/skill/reference/manifest/boundary seed import.
 - Use `akka-agent-testing` and `akka-agent-work-trace` for expertise runtime and trace tests.

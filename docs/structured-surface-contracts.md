@@ -196,6 +196,8 @@ type SurfaceAction = {
   actionId: string;
   label: string;
   intent: "read" | "surface-request" | "command" | "proposal" | "approval" | "workflow" | "governance" | "trace";
+  browserToolId: string;
+  governedToolId: string;
   capabilityId: string;
   inputSchemaRef?: string;
   requiresConfirmation?: boolean;
@@ -229,7 +231,8 @@ type SurfaceAction = {
 
 Action rules:
 
-- `capabilityId` is required for every action, including read/query actions and surface-request actions such as show surface, show dashboard, open workstream, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
+- `browserToolId`, `governedToolId`, and `capabilityId` are required for every action, including read/query actions and surface-request actions such as show surface, show dashboard, open workstream, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
+- `browserToolId` identifies the human-facing surface-action exposure, `governedToolId` identifies the executable semantic operation, and `capabilityId` identifies the product-level capability grouping that owns the governed-tool contract.
 - The capability definition owns the governed-tool contract: input validation, authorization, idempotency, side effects, policy/approval, audit, and denial shape.
 - In browser realization, a surface action usually invokes a backend API; the API returns an accepted/denied/error result plus a new surface, updated surface, workstream item, workflow/progress surface, or `system_message` surface.
 - Side-effecting actions should default to proposal or approval flows unless a bounded autonomous policy is explicitly accepted.

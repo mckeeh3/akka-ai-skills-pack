@@ -5,7 +5,7 @@ description: Model backend behavior as governed capabilities before choosing Akk
 
 # Capability-First Backend
 
-Use this skill after secure AI-first SaaS interpretation and before selecting entities, workflows, endpoints, agent tools, MCP tools, timers, consumers, or UI actions.
+Use this skill after secure AI-first SaaS interpretation and before selecting entities, workflows, endpoints, agent-tools, MCP-tools, timers, consumers, or UI actions.
 
 This is a routing and framing skill. It does not replace `core-saas-foundation`, `ai-first-saas`, app-description skills, `akka-solution-decomposition`, PRD/spec/backlog skills, or focused Stage 3 component skills.
 
@@ -28,10 +28,10 @@ Use this skill for broad product, feature, PRD, spec, backlog, app-description, 
 
 Especially use it when the request involves:
 - operations or queries that need explicit actors, authorization, tenant/customer scope, schemas, side effects, or audit;
-- agent-accessible tools or component tools;
+- agent-tool or component-tool exposures;
 - browser/API/MCP exposure choices;
 - approval-gated, long-running, scheduled, or event-reactive work;
-- shared semantics across UI actions, APIs, workflows, timers, consumers, and tools.
+- shared semantics across UI actions, APIs, workflows, timers, consumers, and qualified governed-tool exposure channels.
 
 ## Do not use when
 
@@ -51,30 +51,32 @@ secure SaaS foundation
 → functional/context-area agents
 → durable workstreams
 → typed structured surfaces and actions
-→ governed backend capabilities
-→ selected capability exposure channels
+→ governed backend capabilities as product-level groupings
+→ governed-tools inside those capabilities
+→ selected qualified exposure channels
 → Akka components
 ```
 
-Functional agents, workstreams, and structured surfaces define the user-facing application model. Capabilities define the backend authority and behavior contract behind every surface action, tool, workflow step, API, timer, consumer, or internal call. Do not use capability-first modeling to bypass functional-agent and surface modeling for generated SaaS apps.
+Functional agents, workstreams, and structured surfaces define the user-facing application model. Capabilities define product-level backend abilities or groupings. Governed-tools are the executable semantic operations or queries inside those capabilities and carry the authority/behavior contract behind every surface action, agent-tool, browser-tool, workflow step, API, timer, consumer, or internal call. Do not use capability-first modeling to bypass functional-agent and surface modeling for generated SaaS apps.
 
-A backend capability is the root backend design object:
+A backend capability groups one or more governed-tools:
 
 ```text
-capability = named operation or query
-  + actors/callers
-  + AuthContext and scope
-  + typed inputs/outputs
-  + data access and redaction
-  + side effects
-  + idempotency
-  + policy/approval rules
-  + audit/trace obligations
-  + selected capability exposure channels
-  + tests
+capability = product ability or grouping
+  → governed-tool = executable operation/query
+    + actors/callers
+    + AuthContext and scope
+    + typed inputs/outputs
+    + data access and redaction
+    + side effects
+    + idempotency
+    + policy/approval rules
+    + audit/trace obligations
+    + selected qualified exposure channels
+    + tests
 ```
 
-Governed-tools are the executable semantic operations inside a capability boundary. Agent-tools, browser-tools, HTTP/gRPC/MCP endpoints, workflow-tools, timer-tools, consumer-tools, view queries, and internal component methods are exposure or realization choices for those governed-tools/capabilities. They are not the root abstraction.
+Agent-tools, browser-tools, HTTP/gRPC/MCP endpoints, workflow-tools, timer-tools, consumer-tools, view queries, and internal component methods are exposure or realization choices for governed-tools. They are not the backend design root.
 
 ## Interpretation workflow
 
@@ -82,7 +84,7 @@ Governed-tools are the executable semantic operations inside a capability bounda
 
 For generated SaaS apps, verify `core-saas-foundation` has been applied and keep its rules in force while modeling capabilities. The upstream handoff should already identify functional agents, workstreams, and structured surfaces; represent foundation work as protected capabilities behind those surfaces, not as unauthenticated object access. Every protected capability must enforce authenticated account, selected `AuthContext`, active membership, tenant/customer scope, role/permission/capability authorization, backend checks, audit, and tenant-isolation tests.
 
-Prompt text, tool descriptions, frontend navigation, and hidden fields are never authorization controls.
+Prompt text, agent-tool descriptions, frontend navigation, and hidden fields are never authorization controls.
 
 ### 2. Preserve workstream and surface context
 
@@ -91,15 +93,15 @@ For generated SaaS apps, first identify or load the upstream workstream model be
 - durable workstreams and retained human authority for each functional agent;
 - structured surfaces, payload-producing queries, allowed actions, events, and trace links;
 - surface/action placement, reusable functional-agent placement, and denial/recovery states;
-- candidate action-to-capability mappings from each surface action, agent tool, workflow step, API call, timer, consumer reaction, or internal operation.
+- candidate action-to-governed-tool/capability mappings from each surface action, agent-tool, browser-tool, workflow-tool, API call, timer-tool, consumer-tool, or internal-tool.
 
 If this context is missing for a generated full-stack SaaS request, route through `agent-workstream-apps` or record the gap before selecting capabilities or Akka components.
 
 ### 3. Inventory capabilities
 
 For each workstream operation, structured surface action, payload-producing query, governed-tool, agent-tool, browser-tool, workflow step, API, timer, consumer reaction, or internal operation, define:
-- stable capability id/name in product language;
-- stable governed-tool id/name when the capability contains multiple executable operations;
+- stable capability id/name in product language for the product ability or grouping;
+- stable governed-tool id/name for each executable operation/query inside the capability;
 - purpose and business outcome;
 - allowed actors/callers: humans, agents, workflows, services, timers, consumers, support roles;
 - AuthContext, tenant/customer scope, roles, permissions, and named capability grants;
@@ -109,29 +111,29 @@ For each workstream operation, structured surface action, payload-producing quer
 - side effects: state changes, external calls, topics, timers, emails, notifications, workflow starts;
 - policy, approval, escalation, risk/confidence/impact thresholds, and autonomy level;
 - audit/work-trace fields and retention/redaction expectations;
-- selected capability exposure channels or explicit non-exposure;
+- selected qualified governed-tool exposure channels or explicit non-exposure;
 - success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
 
 ### 4. Classify capability shape
 
 Use the shape to choose the Akka substrate later:
-- read/evidence capability → curated `View`, direct safe query, endpoint/tool/resource exposure as needed;
-- command capability → entity/workflow command with validation, idempotency, auth, audit;
-- proposal capability → agent or human drafts change without committing side effects;
-- approval capability → human or policy-governed decision commits/rejects/delegates;
-- workflow capability → long-running, retryable, approval-gated, or compensating process;
-- policy/governance capability → versioned policy, prompt, skill, threshold, simulation, activation, rollback;
-- trace/audit capability → record, search, explain, redact, or export history;
-- scheduled capability → timer-backed expiry, reminder, digest, replay, recheck, retention;
-- reactive capability → consumer-backed event reaction, enrichment, publication, or integration.
+- read/evidence governed-tool in a capability → curated `View`, direct safe query, endpoint/browser-tool/agent-tool/resource exposure as needed;
+- command governed-tool in a capability → entity/workflow command with validation, idempotency, auth, audit;
+- proposal governed-tool in a capability → agent or human drafts change without committing side effects;
+- approval governed-tool in a capability → human or policy-governed decision commits/rejects/delegates;
+- workflow governed-tool in a capability → long-running, retryable, approval-gated, or compensating process;
+- policy/governance governed-tool in a capability → versioned policy, prompt, skill, threshold, simulation, activation, rollback;
+- trace/audit governed-tool in a capability → record, search, explain, redact, or export history;
+- scheduled governed-tool in a capability → timer-backed expiry, reminder, digest, replay, recheck, retention;
+- reactive governed-tool in a capability → consumer-backed event reaction, enrichment, publication, or integration.
 
 ### 5. Select capability exposure channels after semantics
 
-Choose only the capability exposure channels the capability needs. Use `structured surface` only for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths:
+Choose only the capability exposure channels the capability needs. Use `structured surface` only for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP-tool/workflow-tool/timer-tool/consumer-tool/view/internal-tool paths:
 - browser UI action;
 - HTTP or gRPC API;
-- agent tool or component tool;
-- MCP tool/resource/prompt;
+- agent-tool or component-tool;
+- MCP-tool/resource/prompt;
 - workflow step;
 - view/query;
 - timer action;
@@ -185,7 +187,7 @@ When this skill is used directly, produce or hand off:
 Avoid:
 - jumping from product language directly to CRUD entities or endpoints;
 - treating an agent-tool, browser-tool, endpoint route, or component method as the backend design root;
-- exposing all component methods as agent-tools because Akka supports component tools;
+- exposing all component methods as agent-tools because Akka supports component-tool exposure;
 - relying on prompt-only security, frontend-only filtering, or UI-hidden actions;
 - returning raw state dumps when a scoped/redacted evidence capability is needed;
 - letting one capability exposure channel drift from the capability's shared auth, idempotency, approval, or audit contract.

@@ -1,6 +1,6 @@
 import type { WorkstreamClient, WorkstreamBootstrapResponse, WorkstreamMessageRequest, WorkstreamMessageResponse } from '../../../api/WorkstreamApiClient';
 import type { ApiError, ApiResult } from '../../../api/types';
-import type { CapabilityActionRequest, CapabilityActionResult, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem } from '../../../workstream/types';
+import type { CapabilityActionRequest, CapabilityActionResult, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem, WorkstreamShellRequest, WorkstreamShellResponse } from '../../../workstream/types';
 import {
   actionResultsByStatus,
   allSurfaceActions,
@@ -133,6 +133,28 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     this.items = [...this.items, userItem, agentItem];
     this.surfaces = [...this.surfaces.filter((candidate) => candidate.surfaceId !== surface.surfaceId), surface];
     return delayedOk({ correlationId, idempotencyKey: request.idempotencyKey, userItem, agentItem, surface });
+  }
+
+  runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>> {
+    const targetSurfaceId = request.targetSurfaceId ?? (request.targetFunctionalAgentId === 'agent-agent-admin' ? 'surface-agent-admin-catalog' : request.targetFunctionalAgentId === 'agent-my-account' ? 'surface-my-account-dashboard' : 'surface-user-admin-dashboard');
+    const surface = this.surfaces.find((candidate) => candidate.surfaceId === targetSurfaceId);
+    if (!surface) return delayedError('not_found', 'The requested shell surface is not available in this context.');
+    const now = new Date().toISOString();
+    const canonicalPrompt = request.canonicalPrompt ?? (request.requestType === 'open_workstream' ? `show workstream ${surface.ownerFunctionalAgentId}` : `${request.requestType.replace('_', ' ')} ${surface.surfaceId}`);
+    const requestItem: WorkstreamItem = {
+      itemId: `fixture-shell-${Math.abs(hashText(`${request.correlationId}:${canonicalPrompt}`)).toString(36)}`,
+      functionalAgentId: surface.ownerFunctionalAgentId,
+      kind: 'user-request',
+      createdAt: now,
+      correlationId: request.correlationId,
+      traceIds: [`trace-shell-${Math.abs(hashText(request.correlationId)).toString(36)}`],
+      surfaceId: surface.surfaceId,
+      title: canonicalPrompt,
+      body: request.displayText,
+      status: 'ready'
+    };
+    this.items = [...this.items, requestItem];
+    return delayedOk({ request: { ...request, canonicalPrompt, targetFunctionalAgentId: surface.ownerFunctionalAgentId, targetSurfaceId: surface.surfaceId }, status: 'accepted', message: 'Shell request resolved through fixture backend-equivalent surface path.', correlationId: request.correlationId, traceIds: surface.traceIds, requestItem, resultSurface: surface });
   }
 
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>> {

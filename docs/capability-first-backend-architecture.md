@@ -19,7 +19,7 @@ product intent
 
 Use `requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
 
-A capability is the backend design object. A capability may group one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent tools are implementation or exposure choices for those governed-tools.
+A capability is the product-level backend ability or grouping. A capability owns one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent-tools are implementation or exposure choices for those governed-tools.
 
 ## Non-negotiable foundation
 
@@ -32,32 +32,32 @@ Every protected capability must mechanically enforce:
 - role, permission, scope, or named capability authorization;
 - tenant/customer isolation on all reads and writes;
 - backend authorization independent of frontend navigation or prompt instructions;
-- audit/work-trace records for denials, data access, approvals, side effects, policy decisions, and consequential AI/tool activity;
+- audit/work-trace records for denials, data access, approvals, side effects, policy decisions, and consequential AI/governed-tool activity;
 - security tests for cross-tenant access, disabled users, denied roles/scopes, audit creation, and frontend secret boundaries where applicable.
 
-Prompt text, skill content, tool descriptions, UI copy, route names, and hidden form fields are never authorization controls. Generated AI-first SaaS foundations must use governed runtime agent artifacts (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`) as behavior configuration only; authority still comes from AuthContext, permissions/capabilities, approval policy, and backend checks. Prompt assembly and skill loading must emit `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
+Prompt text, skill content, agent-tool descriptions, UI copy, route names, and hidden form fields are never authorization controls. Generated AI-first SaaS foundations must use governed runtime agent artifacts (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`) as behavior configuration only; authority still comes from AuthContext, permissions/capabilities, approval policy, and backend checks. Prompt assembly and skill loading must emit `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
 
-## Definition: backend capability
+## Definition: backend capability and governed-tool
 
-A backend capability is a named, intentional domain operation or query with explicit semantics. It may be read-only, side-effecting, long-running, scheduled, event-reactive, human-approved, agent-assisted, or internal-only.
+A backend capability is a named product ability or grouping with explicit semantics. It may contain one governed-tool for a simple operation, or multiple governed-tools for related reads, commands, proposals, approvals, scheduled checks, agent work, or internal work.
 
 A capability definition should include:
 
 | Field | Required meaning |
 |---|---|
-| Capability id/name | Stable operation or query name, expressed in product language. |
+| Capability id/name | Stable product ability or grouping name, expressed in product language. |
 | Purpose | Business outcome and why the operation exists. |
 | Actors/callers | Human roles, agents, workflows, services, timers, consumers, or support roles allowed to request it. |
 | Auth context | Required account, tenant/customer, membership, role/scope, and selected context. |
-| Inputs | Typed command/query schema, validation, idempotency key, correlation id, and safe defaults. |
-| Outputs | Typed response schema, redaction rules, user/agent-safe fields, errors, and denial shape. |
-| Data access | Records/views/components read, tenant/customer filters, evidence boundaries, and PII/secret handling. |
-| Side effects | State changes, external calls, topic publications, timers, emails, notifications, or workflow starts. |
+| Governed-tools | One or more executable operations/queries within the capability, each with stable governed-tool id, class, authority, schemas, side effects, idempotency, audit, and tests. |
+| Inputs | Typed command/query schemas for each governed-tool, validation, idempotency key, correlation id, and safe defaults. |
+| Outputs | Typed response schemas for each governed-tool, redaction rules, user/agent-safe fields, errors, and denial shape. |
+| Data access | Records/views/components read by each governed-tool, tenant/customer filters, evidence boundaries, and PII/secret handling. |
+| Side effects | State changes, external calls, topic publications, timers, emails, notifications, or workflow starts caused by each governed-tool. |
 | Idempotency | Duplicate command behavior, retry safety, dedupe keys, and no-op semantics. |
 | Policy/approval | Autonomy level, approval gates, exception/escalation rules, risk/confidence thresholds, and human authority. |
 | Audit/trace | Audit event type, work-trace fields, policy citations, tool/data references, and retention/redaction expectations. |
-| Governed-tools | One or more executable operations/queries within the capability, each with stable id, class, authority, schemas, side effects, idempotency, audit, and tests. |
-| Exposure channels | Selected workstream action, browser-tool, agent-tool, API, workflow-tool, MCP-tool, timer-tool, consumer-tool, internal-tool, view/query, or explicit non-exposure. |
+| Exposure channels | Selected workstream action, browser-tool, agent-tool, API, workflow-tool, MCP-tool, timer-tool, consumer-tool, internal-tool, view/query, or explicit non-exposure for each governed-tool. |
 | Tests | Success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-channel tests. |
 
 ## Capability, governed-tool, and exposure terms
@@ -76,39 +76,39 @@ A capability can contain one governed-tool when the operation is simple, or mult
 Use qualified exposure terms in architecture guidance:
 
 - **browser-tool:** governed-tool exposed to humans through structured surface actions and browser APIs.
-- **agent-tool:** governed-tool exposed to request-based or internal agents through Akka `@FunctionTool`, component tools, MCP, or an equivalent model-facing facade.
+- **agent-tool:** governed-tool exposed to request-based or internal agents through Akka `@FunctionTool`, component-tool exposure, MCP, or an equivalent model-facing facade.
 - **internal-tool:** governed-tool used by workflows, timers, consumers, internal services, or internal worker agents without direct browser exposure.
 - **workflow-tool**, **timer-tool**, **consumer-tool**, and **MCP-tool:** qualified forms when the exposure boundary matters.
 
 Do not introduce a separate top-level governed-tool inventory when an app-description capability file and surface/action maps already own the contract. Instead, list governed-tools inside capability definitions and link each surface/action edge to the relevant governed-tool id.
 
-## Capability is not agent tool
+## Capability is not agent-tool
 
 An agent-tool is one possible exposure channel for a capability's governed-tool. It is not the root abstraction.
 
-Official Akka agent tooling supports local `@FunctionTool` methods, external tool classes, Akka components as function tools, and remote MCP tools. See `../akka-context/sdk/agents/extending.html.md`, `../skills/akka-agent-tools/SKILL.md`, and `../skills/akka-agent-component-tools/SKILL.md`.
+Official Akka agent tooling supports local `@FunctionTool` methods, external agent-tool classes, Akka component-tool exposure, and remote MCP-tools. See `../akka-context/sdk/agents/extending.html.md`, `../skills/akka-agent-tools/SKILL.md`, and `../skills/akka-agent-component-tools/SKILL.md`.
 
 Capability-first interpretation of those tools:
 
-- `@FunctionTool` exposes a capability operation to an agent for model-selected invocation.
-- Local/external `@FunctionTool` classes may act as non-component capability facades backed by `ComponentClient`; use them when one model-facing tool should compose multiple component calls, hide component layout, enforce policy/scope/redaction, or return a computed agent-safe DTO.
-- `.tools(ComponentClass.class)` exposes selected component command/query handlers as tools; it does not make the component itself the product boundary.
-- MCP tools expose capabilities across an explicit remote boundary and must preserve service ACLs, allowed-tool filtering, tenant scope, and audit.
-- Tool descriptions and loaded skill text should communicate impact and required inputs to the model, but capability enforcement must happen in backend code.
-- Not every capability should be exposed as a tool. Many capabilities remain browser-only, workflow-only, timer-only, consumer-only, service-only, or internal-only.
+- `@FunctionTool` exposes a governed-tool to an agent for model-selected invocation.
+- Local/external `@FunctionTool` classes may act as non-component governed-tool facades backed by `ComponentClient`; use them when one model-facing agent-tool should compose multiple component calls, hide component layout, enforce policy/scope/redaction, or return a computed agent-safe DTO.
+- `.tools(ComponentClass.class)` exposes selected component command/query handlers as agent-tools; it does not make the component itself the product boundary.
+- MCP-tools expose governed-tools across an explicit remote boundary and must preserve service ACLs, allowed-tool filtering, tenant scope, and audit.
+- Agent-tool descriptions and loaded skill text should communicate impact and required inputs to the model, but governed-tool enforcement must happen in backend code.
+- Not every governed-tool should be exposed as an agent-tool. Many governed-tools remain browser-only, workflow-only, timer-only, consumer-only, service-only, or internal-only.
 
-Default stance: expose read-only evidence capabilities to agents more readily than side-effecting capabilities. Consequential side effects should default to recommendation, proposal, or approval-request capabilities unless an accepted policy grants bounded autonomous authority.
+Default stance: expose read-only evidence governed-tools to agents more readily than side-effecting governed-tools. Consequential side effects should default to recommendation, proposal, or approval-request governed-tools unless an accepted policy grants bounded autonomous authority.
 
 ## Capability exposure channels
 
-Select governed-tool exposure after capability semantics are clear. Use `structured surface` for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths.
+Select governed-tool exposure after capability semantics are clear. Use `structured surface` for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP-tool/workflow-tool/timer-tool/consumer-tool/view/internal-tool paths.
 
 | Channel | Use when | Capability rules |
 |---|---|---|
 | Browser UI action | Humans directly initiate or supervise work, including prompt/action/deep-link shell requests such as `show_surface` and `open_workstream`. | Backend still enforces auth; UI shows allowed actions from `/api/me`/capabilities but never decides authorization alone. Shell request resolution must scope targets, audit origin metadata, and return safe denial/system-message surfaces for unauthorized workstreams or surfaces. |
 | HTTP/gRPC API | External clients, browser APIs, or services need a stable contract. | Validate tokens/context, scope every command/query, return safe denial/errors, audit protected access. |
-| Agent tool | A bounded agent may choose to read evidence, draft recommendations, or request/perform allowed work. | Tool receives or resolves AuthContext, enforces permission/scope, limits side effects, records tool/data/work traces. |
-| MCP tool/resource/prompt | Capabilities are shared with remote AI clients or other services. | Expose only selected tools/resources/prompts, use ACL/JWT/service identity, filter allowed tools, audit remote access. |
+| Agent-tool | A bounded agent may choose to read evidence, draft recommendations, or request/perform allowed work. | Agent-tool receives or resolves AuthContext, enforces permission/scope, limits side effects, records governed-tool/data/work traces. |
+| MCP-tool/resource/prompt | Capabilities are shared with remote AI clients or other services. | Expose only selected MCP-tools/resources/prompts, use ACL/JWT/service identity, filter allowed MCP-tools, audit remote access. |
 | Workflow step | Work is long-running, retryable, approval-gated, compensating, or multi-component. | Persist progress, approval state, retries, denials, and trace links. |
 | View/query | Capability provides curated evidence, lists, dashboards, attention summaries, My Account aggregate panels, or search. | Return scoped and redacted read models, not raw state dumps by default. |
 | Timer action | Deadlines, reminders, expiry, periodic checks, or scheduled governance work. | Store authority basis and audit scheduled actions; ensure idempotent retry behavior. |
@@ -149,7 +149,7 @@ For broad product input or implementation planning:
 8. Select Akka components that realize the capability semantics. Use `agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
 9. Generate code/tests component by component while preserving the capability contract.
 
-Do not jump from a product request directly to an entity, endpoint, or agent tool unless the capability contract is already clear enough.
+Do not jump from a product request directly to an entity, endpoint, or agent-tool unless the capability contract is already clear enough.
 
 ## Capability classes
 
@@ -171,7 +171,7 @@ Use these classes to decompose a product safely:
 Use conservative defaults unless accepted product specs say otherwise:
 
 - Read-only scoped evidence may be agent-accessible when it is redacted and audited appropriately.
-- Side-effecting agent tools require explicit permission and should prefer proposal/approval flows.
+- Side-effecting agent-tools require explicit permission and should prefer proposal/approval flows.
 - `readSkill(skillId)` is a governed guidance-loading capability, not an authorization grant; it must check tenant, active governed managed-agent `AgentDefinition`, AgentSkillManifest assignment, skill version/status, mode, AuthContext, and trace allowed or denied loads. Do not confuse that managed-agent domain record with Akka autonomous `AgentDefinition`, the SDK definition returned by `AutonomousAgent.definition()` or dynamic `AgentSetup`.
 - High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, email-send, or external-side-effect capabilities require human approval or a documented autonomous policy boundary. Generated app email capabilities use Resend through the shared email service; agent access must be a governed `@FunctionTool` or equivalent capability exposure channel with tool-boundary enforcement and traces.
 - Agents may recommend governance changes; humans approve activation unless a narrow safe boundary is explicitly defined.

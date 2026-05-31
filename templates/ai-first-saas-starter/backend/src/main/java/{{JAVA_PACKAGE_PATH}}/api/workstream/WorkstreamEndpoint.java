@@ -22,6 +22,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.CapabilityActionRequest;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.WorkstreamMessageRequest;
+import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamService.WorkstreamShellRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 
 /** Workstream shell API endpoints for User Admin structured surfaces and capability actions. */
@@ -59,6 +60,11 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
   @Post("/actions")
   public HttpResponse action(CapabilityActionRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(workstreamService.runAction(identity, selectedContextId, request)));
+  }
+
+  @Post("/shell-requests")
+  public HttpResponse shellRequest(WorkstreamShellRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(workstreamService.runShellRequest(identity, selectedContextId, request)));
   }
 
   @Post("/messages")

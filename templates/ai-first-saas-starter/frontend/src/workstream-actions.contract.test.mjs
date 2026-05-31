@@ -9,6 +9,8 @@ const panel = read('./workstream/actions/CapabilityActionPanel.tsx');
 const state = read('./workstream/actions/capabilityActionState.ts');
 const actionsIndex = read('./workstream/actions/index.ts');
 const workstreamIndex = read('./workstream/index.ts');
+const apiClient = read('./api/WorkstreamApiClient.ts');
+const httpClient = read('./api/HttpWorkstreamApiClient.ts');
 
 test('capability action components preserve disabled, denied, approval, confirmation, trace, and audit affordances', () => {
   assert.match(button, /function CapabilityActionButton/);
@@ -25,6 +27,8 @@ test('capability action components preserve disabled, denied, approval, confirma
 test('capability action helpers build governed requests with idempotency and selected auth context', () => {
   assert.match(state, /buildCapabilityActionRequest/);
   assert.match(state, /selectedContextId: options\.selectedContextId/);
+  assert.match(state, /browserToolId: action\.browserToolId/);
+  assert.match(state, /governedToolId: action\.governedToolId/);
   assert.match(state, /capabilityId: action\.capabilityId/);
   assert.match(state, /resolveIdempotencyKey/);
   assert.match(state, /defaultClientIdempotencyKey/);
@@ -40,6 +44,12 @@ test('capability action result mapping supports append, update, open, and feedba
   assert.match(state, /feedback-only/);
   assert.match(state, /capabilityActionResultToWorkstreamItem/);
   assert.match(state, /kind: 'action-feedback'/);
+});
+
+test('workstream API clients expose explicit shell request path for rich surface requests', () => {
+  assert.match(apiClient, /runShellRequest\(request: WorkstreamShellRequest\)/);
+  assert.match(httpClient, /runShellRequest\(request: WorkstreamShellRequest\)/);
+  assert.match(httpClient, /\/api\/workstream\/shell-requests/);
 });
 
 test('capability action panel exports reusable action controls from the workstream library', () => {

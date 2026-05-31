@@ -88,7 +88,8 @@
 
 ### TASK-FC5-02-001: Add shared rich surface/action runtime path
 
-- status: pending
+- status: done
+- completion note: Added backend and frontend full-core rich surface/action contracts with browser/governed-tool identifiers, explicit `/api/workstream/shell-requests` support for `show_surface`, `open_workstream`, `refresh_surface`, and `open_attention_item`, safe system-message denials, preserved five-surface `markdown_response` bootstrap guard, and scaffold/local tests for the shared runtime path.
 - source: specs/full-core-five-workstreams/backlog/01-full-core-five-workstreams-build-backlog.md
 - task brief: specs/full-core-five-workstreams/tasks/02-shared-runtime/01-rich-surface-action-runtime.md
 - depends on: [TASK-FC5-01-001]

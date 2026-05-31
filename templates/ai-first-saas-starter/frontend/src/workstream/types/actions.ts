@@ -1,6 +1,8 @@
 import type { SurfaceEnvelope } from './surfaces';
 
 export type SurfaceActionIntent = 'read' | 'surface-request' | 'command' | 'proposal' | 'approval' | 'workflow' | 'governance' | 'trace';
+export type ShellRequestType = 'show_surface' | 'open_workstream' | 'refresh_surface' | 'open_attention_item';
+export type ShellRequestOrigin = 'user_prompt' | 'surface_action' | 'deep_link' | 'my_account_panel' | 'system_suggestion';
 export type IdempotencyKeySource = 'client-generated' | 'surface-item' | 'server-issued';
 export type ResultSurfacePlacement = 'inline' | 'modal' | 'side-panel' | 'deep-link';
 
@@ -13,11 +15,14 @@ export type SurfaceAction = {
   actionId: string;
   label: string;
   intent: SurfaceActionIntent;
+  browserToolId: string;
+  governedToolId: string;
   capabilityId: string;
   shellRequest?: {
-    requestType: 'show_surface' | 'open_workstream';
-    targetFunctionalAgentId: string;
-    targetSurfaceId: string;
+    requestType: ShellRequestType;
+    targetFunctionalAgentId?: string;
+    targetSurfaceId?: string;
+    targetItemId?: string;
     displayText: string;
   };
   inputSchemaRef?: string;
@@ -41,6 +46,8 @@ export type SurfaceAction = {
 
 export type CapabilityActionRequest = {
   actionId: string;
+  browserToolId: string;
+  governedToolId: string;
   capabilityId: string;
   input: unknown;
   idempotencyKey?: string;
@@ -57,4 +64,30 @@ export type CapabilityActionResult = {
   correlationId: string;
   traceIds: string[];
   resultSurface?: SurfaceEnvelope<unknown>;
+};
+
+export type WorkstreamShellRequest = {
+  requestType: ShellRequestType;
+  origin: ShellRequestOrigin;
+  displayText: string;
+  canonicalPrompt?: string;
+  targetFunctionalAgentId?: string;
+  targetSurfaceId?: string;
+  targetItemId?: string;
+  sourceFunctionalAgentId?: string;
+  sourceSurfaceId?: string;
+  sourceActionId?: string;
+  scope: 'current_workstream' | 'authorized_cross_workstream';
+  correlationId: string;
+  selectedContextId: string;
+};
+
+export type WorkstreamShellResponse = {
+  request: WorkstreamShellRequest;
+  status: 'accepted' | 'denied' | 'validation-error';
+  message: string;
+  correlationId: string;
+  traceIds: string[];
+  requestItem: import('./workstream').WorkstreamItem;
+  resultSurface: SurfaceEnvelope<unknown>;
 };

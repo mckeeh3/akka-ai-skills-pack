@@ -5,7 +5,9 @@ import type {
   FunctionalAgentSummary,
   MeResponse as WorkstreamMeResponse,
   SurfaceEnvelope,
-  WorkstreamItem
+  WorkstreamItem,
+  WorkstreamShellRequest,
+  WorkstreamShellResponse
 } from '../workstream/types';
 import type { ApiResult } from './types';
 
@@ -35,5 +37,6 @@ export type WorkstreamClient = {
   listWorkstreamItems(functionalAgentId?: string): Promise<ApiResult<WorkstreamItem[]>>;
   getSurface(surfaceId: string): Promise<ApiResult<SurfaceEnvelope<unknown>>>;
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>>;
+  runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>>;
   submitWorkstreamMessage(request: WorkstreamMessageRequest): Promise<ApiResult<WorkstreamMessageResponse>>;
 };

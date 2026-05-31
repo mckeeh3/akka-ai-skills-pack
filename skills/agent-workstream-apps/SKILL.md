@@ -17,6 +17,7 @@ Read these first when using this skill:
 - `../../docs/agent-workstream-application-architecture.md`
 - `../../docs/structured-surface-contracts.md`
 - `../../docs/capability-first-backend-architecture.md`
+- `../../docs/workstream-expertise-model.md` when LLM-backed workstreams, workstream help/explanation, governed skills/references, or user-facing workstream guidance are in scope
 
 For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../../docs/minimum-ai-first-saas-app.md` before applying the minimum starter routing rule.
 
@@ -26,9 +27,10 @@ For high-level product input, also read `../../docs/ai-first-saas-application-ar
 
 Use this skill when the task involves a generated full-stack AI-first SaaS app and any of these are in scope:
 - broad product, PRD, spec, backlog, or app-description planning;
+- incremental feature requests, fixes, revised PRDs, support findings, or app-description changes that must reconcile against existing workstream graphs, role-specific dashboards, surface graph nodes/edges, internal workstream agent graph delegations, governed-tools, or workstream expertise;
 - authenticated browser application shape;
 - functional areas, work queues, command centers, admin consoles, supervision, decisions, governance, audit, or outcomes;
-- user-facing agents, context-area agents, internal agents, agent tools, or work traces;
+- user-facing agents, context-area agents, internal agents, agent-tools, or work traces;
 - web UI surfaces such as dashboards, forms, tables, charts, decision cards, diffs, approvals, workflow status, audit timelines, or outcome panels.
 
 ## Do not use when
@@ -67,7 +69,7 @@ The correct first runnable target is the **five core workstream v0 set**:
 - first structured surface type `markdown_response`, rendered as sanitized HTML;
 - no public self-registration, autonomous privilege expansion, generic unauthenticated chatbot, or page-first CRUD admin app.
 
-Treat this as a narrower starter readiness state, not full-core SaaS readiness. Record follow-up work for richer My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed behavior documents, and security completeness. Even in the minimum slice, route every backend action, surface action, browser API, and agent tool through capability-first modeling before selecting Akka components.
+Treat this as a narrower starter readiness state, not full-core SaaS readiness. Record follow-up work for richer My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed behavior documents, and security completeness. Even in the minimum slice, route every backend action, surface action, browser API, and agent-tool through capability-first modeling before selecting Akka components.
 
 ## Interpretation workflow
 
@@ -85,7 +87,8 @@ For each user-facing work area, define:
 - workstream icon metadata owned by the workstream definition: stable icon id, visual hint derived from the workstream name/responsibility, accent color token, tooltip, aria label, and optional approved asset reference; shell realization must render approved SVG/icon-library artwork or semantic SVG fallback, not letter initials;
 - default dashboard, attention, or briefing surface;
 - workstream semantics and retention expectations;
-- prompt intent, governed documents, skills, reference documents, skill/reference manifests, governed-tools exposed as agent-tools or browser-tools, and tool boundaries when LLM behavior is involved;
+- prompt intent and workstream expertise: governed workstream skills/reference documents that describe role-specific dashboard behavior, surface graph nodes/edges, available governed-tools, denials, examples, and what users can do in the workstream;
+- governed documents, skill/reference manifests, governed-tools exposed as agent-tools or browser-tools, and tool boundaries when LLM behavior is involved;
 - surfaces it can render or reuse;
 - capabilities it can call directly or through governed-tool exposures such as agent-tools, browser-tools, workflow-tools, or internal-tools;
 - escalation, approval, denial, exception, audit, trace, and test needs.
@@ -110,9 +113,9 @@ Canonical surface types include dashboards, forms, tables, charts, detail cards,
 
 ### 5. Route through capabilities before components
 
-For every workstream action, surface action, governed-tool exposure, agent-tool, browser-tool, workflow step, timer, consumer reaction, API, MCP tool/resource, or internal call, load `capability-first-backend` and define actors, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests. Buttons, links, cards, rows, and workstream icons that open protected surfaces or workstreams are governed surface-request actions such as `open_workstream`, not ad hoc frontend jumps.
+For every workstream action, surface action, governed-tool exposure, agent-tool, browser-tool, workflow step, timer, consumer reaction, API, MCP-tool/resource, or internal call, load `capability-first-backend` and define actors, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests. Buttons, links, cards, rows, and workstream icons that open protected surfaces or workstreams are governed surface-request actions such as `open_workstream`, not ad hoc frontend jumps.
 
-Frontend gating, prompt text, and tool descriptions are never authorization controls. Backend capabilities remain authoritative.
+Frontend gating, prompt text, and agent-tool descriptions are never authorization controls. Backend capabilities remain authoritative.
 
 ## Downstream routing
 
@@ -132,7 +135,7 @@ functional agents
 
 Choose the smallest next path:
 
-- `app-descriptions` when maintaining or reviewing the authoritative app description. Capture functional agents, internal agents, workstreams, surfaces, capabilities, auth/security, observability, UI, tests, readiness, and horizontal implementation notes.
+- `app-descriptions` when maintaining or reviewing the authoritative app description. Capture functional agents, internal agents, workstreams, role-specific dashboards, human surface graph nodes/edges, internal workstream agent graph delegations/results, workstream expertise skills/references, governed-tools, capabilities, auth/security, observability, UI, tests, readiness, and horizontal implementation notes. For incremental inputs against an existing app, reconcile the change with the existing graph and governed-tool inventory before adding parallel surfaces, tools, or workstreams.
 - `capability-first-backend` when backend operations/queries are not yet explicit enough for decomposition or implementation.
 - `akka-solution-decomposition` when the user wants a direct Akka component plan from the accepted workstream/capability model.
 - `akka-prd-to-specs-backlog` when creating repo-ready specs, backlogs, sprints, slices, or pending tasks.
@@ -147,7 +150,7 @@ For design-content review, use `../../docs/agent-workstream-design-review-checkl
 When revising existing docs, specs, examples, or skills:
 - replace page-first, CRUD-first, dashboard-with-chat, or chatbot-bolt-on defaults with the workstream model;
 - keep conventional routes/pages as implementation/deep-link details, not the primary decomposition;
-- keep agent tools as capability exposure surfaces, not backend design roots;
+- keep agent-tools as capability exposure surfaces, not backend design roots;
 - do not make user administration, agent administration, audit, or security optional for full generated core SaaS scope;
 - do not rewrite unrelated focused component guidance unless the task explicitly calls for that scope.
 
@@ -155,6 +158,8 @@ When revising existing docs, specs, examples, or skills:
 
 When this skill is used for planning, hand downstream work a concise model containing:
 - selected functional agents and their roles/capabilities;
+- workstream expertise skills/references needed to let the workstream agent explain role-specific dashboards, surface graph behavior, available governed-tools, denials, and examples of what users can do;
+- incremental-change reconciliation notes when the app already has workstreams, dashboards, surface graph nodes/edges, internal workstream agent graph delegations, governed-tools, or workstream expertise that must be updated rather than duplicated;
 - internal agents when applicable, clearly separated from left-rail functional agents;
 - initial workstreams, universal workstream icon descriptors, and default surfaces;
 - structured surface contracts or required follow-up to create them;

@@ -26,7 +26,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
         {envelope.data.allowedActions && (
           <section aria-label="Backend-authorized investigation actions">
             <h4>Allowed actions</h4>
-            <ul>{envelope.data.allowedActions.map((action) => <li key={action.actionId}>{action.label} · {action.capabilityId}</li>)}</ul>
+            <ul>{envelope.data.allowedActions.map((action) => <li key={action.actionId}>{action.label} · {action.browserToolId} · {action.governedToolId} · {action.capabilityId}</li>)}</ul>
           </section>
         )}
         {envelope.data.disabledActions && (

@@ -188,7 +188,7 @@ export type DecisionSurfaceData = {
   riskScore?: number | string;
   confidenceScore?: number | string;
   evidence?: Array<{ evidenceId: string; label: string; summary: string }>;
-  allowedActions?: Array<{ actionId: string; label: string; capabilityId: string }>;
+  allowedActions?: Array<{ actionId: string; label: string; browserToolId: string; governedToolId: string; capabilityId: string }>;
   disabledActions?: Array<{ actionId: string; reason: string }>;
   risk?: string;
   traceLinks?: string[];
