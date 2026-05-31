@@ -47,7 +47,7 @@
 
 ### TASK-RIAC-01-001: Audit active intake content
 
-- status: pending
+- status: done
 - source: specs/requirements-intake-alignment-cleanup/backlog/01-inventory-and-prune-build-backlog.md
 - task brief: specs/requirements-intake-alignment-cleanup/tasks/01-inventory/01-audit-active-intake-content.md
 - depends on: [TASK-RIAC-00-001]
@@ -75,6 +75,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `riac: audit intake content`
+  - completed: created `content-inventory.md` and verified all high-priority conversation-capture paths are covered
 
 ### TASK-RIAC-01-002: Define prune and rewrite criteria
 
