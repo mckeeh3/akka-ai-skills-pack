@@ -40,16 +40,16 @@ Interpretation for this checklist:
 | Provider/fail-closed behavior | Missing provider/model/security configuration fails closed with actionable blocked attention or errors; no deterministic/model-less normal runtime success is used to satisfy model-backed work. | Automated + Manual | Backend tests/source checks for blocked provider states and manual/runtime note if provider config is absent. |
 | Frontend-only authority guardrail | `railAttentionState` and unseen-response/background indicators remain transient UI state only and are never authoritative for actionable attention. | Automated | Focused `rg` and frontend tests proving actionable counts come from backend summaries/items. |
 | Redaction and browser-safe payloads | Browser payloads expose only browser-safe attention metadata, capability ids, surface refs, and trace refs; secrets/provider config remain server-side. | Automated | Frontend secret-boundary/source check and backend API payload review. |
-| Docs/handoff accuracy | Release notes distinguish implemented v1 backbone and bounded v2 producers/update delivery from future event backbone, SSE/push, digest, and notification work. | Automated | Focused `rg` over docs/specs for stale “attention missing/not implemented” claims and future-work boundaries. |
+| Docs/handoff accuracy | Release notes distinguish implemented v1 backbone, bounded v2 producers/update delivery, later bounded v3 event backbone handoff, and future SSE/push, digest, notification, and AutonomousAgent runtime work. | Automated | Focused `rg` over docs/specs for stale “attention missing/not implemented” claims and future-work boundaries. |
 
 ## Not required for current release-ready claim
 
 These are useful future improvements but are **N/A for v1/v2 release readiness** unless a later task promotes them into scope:
 
-- generic Workstream Event Backbone v3;
-- all possible domain events converted to attention producers;
+- bounded v3 event backbone is documented separately and is not part of the v1/v2 release-ready claim;
+- all possible domain events converted to attention producers or v3 event consumers;
 - enterprise notification center, digest, or subscription infrastructure;
-- SSE/push realtime delivery beyond the implemented backend refresh/update path;
+- SSE/push realtime delivery beyond backend-derived refresh/update hints;
 - AutonomousAgent task notification integration beyond the bounded worker/task attention currently implemented.
 
 ## Minimum evidence bundle for release handoff

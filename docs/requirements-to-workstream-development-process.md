@@ -130,7 +130,8 @@ Planning and implementation artifacts should distinguish current starter coverag
 
 - v1 backbone: shared backend-owned attention items, scoped reads, redaction, lifecycle operations, and traces;
 - v2 producers: bounded service/timer/task producers with stable producer ids, idempotency, upsert/resolve behavior, and backend-derived refresh/update delivery;
-- future extensions: full event/message backbone consumers, enterprise notification preferences, digests, and broader AutonomousAgent task notification streams.
+- v3 event backbone: typed `WorkstreamEventEnvelope`/source refs, bounded starter invitation and access-review lifecycle event publication, idempotent event-to-attention consumption, and backend-derived projection-refresh hints;
+- future extensions: broader generated-app event coverage, enterprise notification preferences, digests, and real AutonomousAgent durable task notification/lifecycle streams over the governed runtime path.
 
 Initial summary shape:
 

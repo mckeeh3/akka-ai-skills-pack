@@ -35,12 +35,13 @@ Rendered guidance must also preserve the workstream graph vocabulary: role-speci
 
 Scaffolded app-description and specs placeholders must keep full-core follow-up work explicit. Five-core-v0 readiness is not full-core readiness; richer structured surfaces, support access, full governed agent document lifecycle, searchable audit/trace views, deeper policy/governance workflows, security hardening, and app-specific domain workstreams remain follow-up until implemented and tested.
 
-## Attention backbone and producers
+## Attention backbone, producers, and event backbone
 
-The starter includes a v1 shared backend-owned attention backbone and v2 bounded producers. Guidance for generated apps must distinguish:
+The starter includes v1 shared backend-owned attention, v2 bounded producers, and a bounded v3 governed workstream event backbone. Guidance for generated apps must distinguish:
 
 - **implemented v1 starter scope:** actionable `AttentionItem` lifecycle state, scoped workstream dashboard reads, My Account aggregate attention, left-rail summaries from backend projections, redaction, and audit/work traces;
 - **implemented v2 starter scope:** producer ids/idempotency for invitation delivery, governance approval state, timed invitation checks, worker/task blocked or review-needed states, and backend-derived refresh after producer-affecting actions;
-- **future work unless explicitly implemented:** full event/message backbone consumers, broad notification streams, digests, enterprise notification preferences, and arbitrary AutonomousAgent task notifications.
+- **implemented v3 starter scope:** typed browser-safe `WorkstreamEventEnvelope`/`WorkstreamEventSourceRef`, Akka-backed event repository seam, bounded invitation and access-review lifecycle event publication, an idempotent allow-listed event-to-attention consumer, and backend-derived `projection.refresh.available` update hints that require clients to reload backend-owned projections;
+- **future work unless explicitly implemented:** broad AutonomousAgent durable task lifecycle integration over v3 events, event coverage for arbitrary generated-app domains, provider readiness restored events without a real readiness source, broad notification streams, digest infrastructure, enterprise notification preferences, and arbitrary AutonomousAgent task notifications.
 
-Do not describe frontend-only badges or fixture/demo data as authoritative attention behavior. Normal runtime attention claims must be backed by backend attention state and local validation through the rendered starter paths.
+Do not describe frontend-only badges, fixture/demo data, or event-stream hints as authoritative attention behavior. Normal runtime attention and event-backed projection claims must be backed by backend attention/event state and local validation through the rendered starter paths.

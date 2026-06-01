@@ -20,7 +20,7 @@ Interpretation:
 - backend-derived left-rail attention appears usable in manual testing;
 - dashboard/surface attention rendering appears improved;
 - no immediate user-reported blocker in the core visible attention experience;
-- remaining release-readiness work should verify edge cases, repeatability, security, docs, and handoff rather than start a larger v3 event backbone.
+- remaining release-readiness work should verify edge cases, repeatability, security, docs, and handoff rather than start a larger event-backbone effort inside the v1/v2 release-readiness queue. Later bounded v3 event-backbone work is documented separately under `specs/workstream-event-backbone-v3/`.
 
 ## Scope
 
@@ -61,5 +61,5 @@ The mini-project is complete when:
 - a fresh scaffold validates backend and frontend attention checks;
 - local/manual or documented smoke evidence covers left rail, My Account, dashboards/surfaces, producer-driven updates, lifecycle resolution, and denial/redaction at v1/v2 scope;
 - provider/fail-closed and frontend-only-authority guardrails are checked;
-- docs/handoff accurately distinguish release-ready attention behavior from future v3 event backbone work;
+- docs/handoff accurately distinguish release-ready v1/v2 attention behavior from later bounded v3 event-backbone work and future broader event/AutonomousAgent/notification initiatives;
 - any blockers are either fixed in bounded tasks or explicitly recorded as release blockers.

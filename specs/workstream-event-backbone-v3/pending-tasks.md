@@ -190,7 +190,7 @@
 
 ### TASK-WEB3-05-001: Update event backbone docs and handoff
 
-- status: pending
+- status: done
 - source: specs/workstream-event-backbone-v3/backlog/01-workstream-event-backbone-v3-build-backlog.md
 - task brief: specs/workstream-event-backbone-v3/tasks/05-docs/01-update-event-backbone-docs-and-handoff.md
 - depends on:
@@ -217,6 +217,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `event-backbone: update docs handoff`
+  - completed with `specs/workstream-event-backbone-v3/event-backbone-v3-handoff.md` plus starter/scaffold and attention/doctrine handoff updates distinguishing v1 attention, v2 producers/update delivery, bounded v3 event backbone, and future AutonomousAgent runtime integration
+  - checks: `git diff --check`; `rg -n "v1 attention|v1 backbone|v2 producer|v2 attention|v3 event|v3 governed|future AutonomousAgent|AutonomousAgent runtime|projection.refresh.available|WorkstreamEventEnvelope" docs templates/ai-first-saas-starter specs/workstream-event-backbone-v3 specs/workstream-attention-backbone-v1 specs/workstream-attention-event-producers-v2 specs/attention-release-readiness-dogfood --glob '*.md' --glob '!**/node_modules/**' --glob '!**/pending-tasks.md' --glob '!**/tasks/**'`; `! rg -n "generic Workstream Event Backbone v3|full event/message backbone consumers|full event-message backbone|event backbone is missing|missing event backbone" docs templates/ai-first-saas-starter specs/workstream-event-backbone-v3 specs/workstream-attention-backbone-v1 specs/workstream-attention-event-producers-v2 specs/attention-release-readiness-dogfood --glob '*.md' --glob '!**/node_modules/**' --glob '!**/pending-tasks.md' --glob '!**/tasks/**'`
 
 ### TASK-WEB3-99-001: Verify workstream event backbone v3 completion
 

@@ -8,7 +8,7 @@ This handoff covers the starter template attention behavior delivered by:
 - `specs/workstream-attention-event-producers-v2/` — bounded producer/update-delivery paths for starter service state, including invitations, governance proposals/decisions, timed checks, worker/task blocked states, and frontend refresh delivery.
 - `specs/attention-release-readiness-dogfood/` — dogfood evidence, fresh scaffold validation, runtime-edge review, and this release handoff.
 
-The claim is intentionally bounded to v1/v2 starter scope. It does not claim a generic Workstream Event Backbone v3, full notification infrastructure, enterprise digesting, or broad AutonomousAgent task notification integration.
+The release claim remains intentionally bounded to v1/v2 starter attention scope. Later `specs/workstream-event-backbone-v3/` work adds a bounded governed event backbone over selected starter state changes; that later v3 scope is documented separately in `specs/workstream-event-backbone-v3/event-backbone-v3-handoff.md`. Neither handoff claims full notification infrastructure, enterprise digesting, or broad AutonomousAgent task notification integration.
 
 ## Release-readiness assessment
 
@@ -57,11 +57,10 @@ From `manual-runtime-edge-review.md` fresh scaffold `/tmp/attention-dogfood-runt
 
 ## Known limitations / non-blocking future work
 
-These are outside the current release-ready claim and should remain future work unless promoted into a new queue:
+These are outside the v1/v2 release-ready claim and should remain future work unless promoted into a new queue:
 
-- generic Workstream Event Backbone v3;
-- broader event consumers for every possible domain state change;
-- SSE/push delivery beyond the current backend refresh/update path;
+- event consumers for every possible generated-app domain state change beyond the bounded v3 starter event families;
+- SSE/push delivery beyond backend-derived refresh/update hints;
 - enterprise notification center and digest infrastructure;
 - richer audit/provider-readiness producers beyond current bounded starter flows;
 - broader model-backed AutonomousAgent worker notification integration beyond the current access-review/task blocked-state coverage.
@@ -70,9 +69,9 @@ These are outside the current release-ready claim and should remain future work 
 
 - Do not report the starter attention backbone as missing after the v1/v2 work; it exists as a shared backend attention backbone with scoped projections and lifecycle operations.
 - Do not overclaim realtime/event-notification infrastructure; v1/v2 readiness is based on backend-derived summaries/items, bounded producers, lifecycle behavior, frontend refresh/update delivery, and tested fail-closed/security behavior.
-- Treat future event backbone, SSE/push, notification center, digests, and broader AutonomousAgent task notification work as new bounded initiatives, not as blockers for this v1/v2 release-ready state.
+- Treat the bounded v3 event backbone as implemented separately from this v1/v2 release handoff; treat broader event coverage, SSE/push, notification center, digests, and broader AutonomousAgent task notification work as new bounded initiatives, not as blockers for this v1/v2 release-ready state.
 - Preserve the runtime completion doctrine: provider/model-backed paths must fail closed or invoke the governed runtime path; deterministic/demo/model-less normal runtime behavior must not be used to mark future generated-app features complete.
 
 ## Documentation scan
 
-A focused scan was run over attention docs/handoff areas for stale missing-backbone or overclaim language. Findings were compatible with the bounded handoff: v1/v2 documents describe implemented attention backbone and bounded producer/update delivery, while v3 event backbone, SSE/push, notification, digest, and broader AutonomousAgent integration remain explicitly future/non-goal work.
+A focused scan was run over attention docs/handoff areas for stale missing-backbone or overclaim language. Findings are compatible with the bounded handoff: v1/v2 documents describe implemented attention backbone and bounded producer/update delivery, later v3 docs describe the bounded event backbone separately, while broader event coverage, SSE/push, notification, digest, and broader AutonomousAgent integration remain explicitly future/non-goal work.

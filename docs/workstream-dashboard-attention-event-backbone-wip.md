@@ -10,7 +10,8 @@ Implementation status for starter/reference assets:
 
 - v1 shared attention backbone is implemented at starter scope: backend-owned `AttentionItem` lifecycle, scoped workstream/My Account/rail projections, redaction, and audit/work traces.
 - v2 bounded attention producers are implemented at starter scope: invitation delivery, governance approval, timed invitation checks, worker/task blocked or review-needed states, and backend-derived refresh/update delivery.
-- This WIP may still discuss broader conceptual event/message backbones, notifications, digests, and AutonomousAgent task streams. Treat those as future work unless a current starter contract or test proves the specific runtime path.
+- v3 governed event backbone is implemented at bounded starter scope: typed `WorkstreamEventEnvelope`/`WorkstreamEventSourceRef`, Akka-backed event repository seam, event publication for starter invitation and access-review lifecycle states, idempotent event-to-attention consumer behavior, and backend-derived projection-refresh hints.
+- This WIP may still discuss broader conceptual event/message backbones, notifications, digests, and AutonomousAgent task streams. Treat those as future work unless a current starter contract or test proves the specific runtime path. In particular, broad real AutonomousAgent durable task runtime integration remains the recommended next initiative after v3.
 
 Related current doctrine:
 - `docs/requirements-to-workstream-development-process.md`

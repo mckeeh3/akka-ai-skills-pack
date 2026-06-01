@@ -114,7 +114,8 @@ No release blockers were found in this review.
 
 Non-blocking future work remains outside the v1/v2 release-ready claim:
 
-- generic Workstream Event Backbone v3;
-- SSE/push notification delivery beyond current refresh/update paths;
+- bounded v3 event backbone status is documented separately in `specs/workstream-event-backbone-v3/event-backbone-v3-handoff.md`;
+- broader generated-app event coverage beyond the v3 starter event families;
+- SSE/push notification delivery beyond current backend-derived refresh/update hints;
 - enterprise notification center/digest infrastructure;
 - broader model-backed AutonomousAgent worker enablement for deferred audit/governance analysis tasks.

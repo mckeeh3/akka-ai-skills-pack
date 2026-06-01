@@ -50,6 +50,10 @@ Execute one task per fresh harness context. Each task must update `pending-tasks
 5. **Docs/handoff** — update doctrine/starter docs to distinguish v1 attention, v2 producers, v3 event backbone, and future AutonomousAgent runtime integration.
 6. **Verification** — prove v3 done state or append bounded follow-ups.
 
+## Current implementation status
+
+Tasks 01–04 have implemented the bounded starter/reference v3 runtime path: the contract exists, the starter includes typed event envelope/source-ref records, an Akka-backed event repository seam, event publication for invitation delivery and access-review lifecycle states, idempotent event-to-attention consumer behavior, backend-derived projection refresh hints, and targeted backend/frontend tests. See `event-backbone-v3-handoff.md` for the docs handoff that distinguishes v1, v2, v3, and future AutonomousAgent runtime work.
+
 ## Done state
 
 The mini-project is complete when the starter/reference assets have:

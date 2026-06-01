@@ -243,10 +243,10 @@ A consumer/projection must:
 - Frontend/SSE/update streams are refresh surfaces only; backend projections remain authoritative.
 - Model-backed worker success requires the real governed runtime path. Missing provider/configuration yields blocked/fail-closed events and attention, not canned success.
 
-## Gaps and blockers
+## Post-implementation gaps and blockers
 
-- There is no starter `WorkstreamEventEnvelope` domain record or repository seam yet.
-- Existing v2 producers write attention directly; v3 needs event publication plus an idempotent consumer/projection layer before producer logic can be retired.
-- Existing `WorkstreamService.WorkstreamEvent` stream examples are presentation-oriented and do not carry the full envelope, source refs, idempotency, capability refs, or redaction hints.
+- Starter `WorkstreamEventEnvelope`, source refs, an Akka-backed repository seam, bounded publisher paths, and an idempotent event-to-attention consumer now exist for the selected v3 starter scope.
+- v2 producers are not fully retired; v3 currently wraps selected invitation and access-review lifecycle states while existing producer services remain the authoritative bounded attention mapping for other starter cases.
+- Existing `WorkstreamService.WorkstreamEvent` stream examples remain presentation-oriented. The added `projection.refresh.available` events are backend-derived refresh hints carrying event/source/idempotency evidence, but they still tell clients to reload backend projections rather than acting as authoritative state.
 - Provider readiness events need a real backend readiness source. Do not add restored/ready events until such a source exists.
 - Broad AutonomousAgent task runtime integration is intentionally deferred until after v3; the next mini-project should wire real AutonomousAgent lifecycle events into this backbone.

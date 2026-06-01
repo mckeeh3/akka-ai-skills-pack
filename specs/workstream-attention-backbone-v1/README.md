@@ -4,7 +4,7 @@
 
 Completed at the starter/reference scope. The AI-first SaaS starter now includes a shared backend-owned attention backbone with `AttentionItem` lifecycle state, scoped workstream/My Account/rail reads, safe redaction, audit/work traces, and frontend rendering from backend-derived summaries. This README preserves the original planning rationale and done-state contract; do not use the historical source discussion below to claim the backbone is still missing.
 
-Follow-on `workstream-attention-event-producers-v2` work adds bounded event/service/timer/task producers and backend-derived update delivery. Full event-message backbone, broad notification infrastructure, and digest/enterprise notification flows remain future work unless a later task implements and validates them.
+Follow-on `workstream-attention-event-producers-v2` work adds bounded event/service/timer/task producers and backend-derived update delivery. Later `workstream-event-backbone-v3` work adds a bounded governed event backbone with typed event envelopes/source refs, starter invitation/access-review lifecycle publication, idempotent event-to-attention consumption, and backend-derived projection-refresh hints. Broad generated-app event coverage, full notification infrastructure, digest/enterprise notification flows, and broad AutonomousAgent runtime task integration remain future work unless a later task implements and validates them.
 
 ## Purpose
 

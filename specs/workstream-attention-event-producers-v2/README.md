@@ -71,6 +71,8 @@ The mini-project is complete when the starter/reference assets have:
 - docs/guidance updated so future agents know v1 exists and v2 handles producers/notifications; and
 - no normal runtime path that treats frontend-only state, demo fixtures, or fake worker success as authoritative attention behavior.
 
+Follow-on `workstream-event-backbone-v3` has since added a bounded governed event backbone over selected starter invitation/access-review lifecycle events and backend-derived projection-refresh hints. v2 remains the producer/update-delivery contract; v3 is the typed event envelope/source-ref and consumer layer above it. Broad generated-app event coverage, enterprise notifications/digests, and real AutonomousAgent durable task runtime integration remain future initiatives unless separately implemented and verified.
+
 ## Open concerns
 
 - If the starter lacks a suitable event publication mechanism for a producer, a task may implement a narrow service-level producer first and record a follow-up recommendation for richer Akka Consumers.
