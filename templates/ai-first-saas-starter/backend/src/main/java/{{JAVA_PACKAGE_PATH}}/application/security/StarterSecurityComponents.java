@@ -48,7 +48,7 @@ public final class StarterSecurityComponents {
 
   private static volatile IdentityRepository identityRepository = new UnboundIdentityRepository();
   private static volatile AuthContextResolver authContextResolver = new AuthContextResolver(identityRepository);
-  private static volatile MeService meService = new MeService(authContextResolver);
+  private static volatile MeService meService;
   private static volatile UserAdminService userAdminService = new UserAdminService(identityRepository, CLOCK);
   private static volatile InvitationRepository invitationRepository = new UnboundInvitationRepository();
   private static volatile AgentBehaviorRepository agentBehaviorRepository = new UnboundAgentBehaviorRepository();
@@ -63,6 +63,9 @@ public final class StarterSecurityComponents {
   private static volatile GovernancePolicyService governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
   private static volatile AttentionRepository attentionRepository = new UnboundAttentionRepository();
   private static volatile AttentionService attentionService = new AttentionService(attentionRepository, authContextResolver, CLOCK);
+  static {
+    meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
+  }
   private static volatile WorkstreamService workstreamService = unboundWorkstreamService();
 
   static {
@@ -84,7 +87,7 @@ public final class StarterSecurityComponents {
     var durableAgentBehavior = new AkkaAgentBehaviorRepository(componentClient);
     identityRepository = durableIdentity;
     authContextResolver = new AuthContextResolver(durableIdentity);
-    meService = new MeService(authContextResolver);
+    meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(durableIdentity, CLOCK);
     BootstrapAdminSeeder.seedConfiguredAdmins(durableIdentity, System.getenv("ADMIN_USERS"));
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
@@ -106,7 +109,7 @@ public final class StarterSecurityComponents {
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
     governancePolicyService = new GovernancePolicyService(durableGovernancePolicy, authContextResolver, CLOCK);
     attentionService = new AttentionService(durableAttention, authContextResolver, CLOCK);
-    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy);
+    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy, attentionService);
   }
 
   public static AuthContextResolver authContextResolver() {
@@ -123,7 +126,7 @@ public final class StarterSecurityComponents {
 
   public static WorkstreamService workstreamService(ComponentClient componentClient, WorkstreamLogRepository workstreamLogRepository) {
     bindAkkaRuntime(componentClient);
-    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository());
+    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository(), attentionService());
   }
 
   public static InvitationService invitationService() {
@@ -147,7 +150,7 @@ public final class StarterSecurityComponents {
     if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test identity repository binding");
     identityRepository = testRepository;
     authContextResolver = new AuthContextResolver(testRepository);
-    meService = new MeService(authContextResolver);
+    meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(testRepository, CLOCK);
     invitationRepository = new UnboundInvitationRepository();
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK);
@@ -156,6 +159,17 @@ public final class StarterSecurityComponents {
     governancePolicyRepository = new UnboundGovernancePolicyRepository();
     auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
     governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
+    attentionService = new AttentionService(attentionRepository, authContextResolver, CLOCK);
+    meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
+    workstreamService = unboundWorkstreamService();
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source attention adapters. */
+  public static void bindTestAttentionRepository(AttentionRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test attention repository binding");
+    attentionRepository = testRepository;
+    attentionService = new AttentionService(testRepository, authContextResolver, CLOCK);
+    meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     workstreamService = unboundWorkstreamService();
   }
 
@@ -237,7 +251,7 @@ public final class StarterSecurityComponents {
 
   private static WorkstreamService unboundWorkstreamService() {
     var workstreamLogRepository = new UnboundWorkstreamLogRepository();
-    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), workstreamLogRepository, accessReviewTaskRepository(), auditTraceRepository(workstreamLogRepository), governancePolicyRepository());
+    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), workstreamLogRepository, accessReviewTaskRepository(), auditTraceRepository(workstreamLogRepository), governancePolicyRepository(), attentionService());
   }
 
   private static AccessReviewTaskRepository accessReviewTaskRepository() {

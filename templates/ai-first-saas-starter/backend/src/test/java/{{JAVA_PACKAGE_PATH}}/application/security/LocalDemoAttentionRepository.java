@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** Unit-test/local adapter for shared attention backbone tests; production binds AkkaAttentionRepository. */
-final class LocalDemoAttentionRepository implements AttentionRepository {
+public final class LocalDemoAttentionRepository implements AttentionRepository {
   private AttentionRepositoryState state = AttentionRepositoryState.empty();
 
   public synchronized AttentionItem upsert(AttentionItem item) {

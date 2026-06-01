@@ -118,7 +118,7 @@
 
 ### TASK-WAB-03-001: Wire core workstreams to shared attention
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-backbone-v1/backlog/01-attention-backbone-v1-build-backlog.md
 - task brief: specs/workstream-attention-backbone-v1/tasks/03-integration/01-wire-core-workstreams-to-attention.md
 - depends on:
@@ -152,6 +152,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: five core workstreams; attention categories include invitation delivery, provider blocked/readiness, governance approval, audit failure evidence; surfaces include My Account dashboard and workstream dashboards; exposure channels include browser API/surface action/internal service; audit/work trace required
+  - validation: direct source-template Maven command is blocked by unresolved template placeholders; scaffolded equivalent passed with `tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --template-dir templates/ai-first-saas-starter --app-name "WAB Integration Check" --app-slug wab-integration-check --base-package ai.first --maven-group-id ai.first --yes` then `mvn -q -Dtest=AttentionServiceTest,WorkstreamServiceTest,AgentRuntimeToolResolverTest test`
+  - rg proof: no `personal-attention-*` hard-coded item ids remain in starter backend source/tests; shared attention reads/upserts are present for My Account, workstream dashboards, and `attention.open_attention_item`
   - commit message: `attention-backbone: wire core workstreams`
 
 ### TASK-WAB-04-001: Wire frontend attention surfaces to backend-derived data

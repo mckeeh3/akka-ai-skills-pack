@@ -12,6 +12,7 @@ import {{JAVA_BASE_PACKAGE}}.application.security.GovernancePolicyService;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoAuditTraceRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoGovernancePolicyRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoIdentityRepository;
+import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoAttentionRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoWorkstreamLogRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.LocalDemoInvitationRepository;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
@@ -50,6 +51,7 @@ class AgentRuntimeToolResolverTest {
     var identityRepository = new LocalDemoIdentityRepository();
     var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock(), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
+    StarterSecurityComponents.bindTestAttentionRepository(new LocalDemoAttentionRepository());
     StarterSecurityComponents.bindTestAuditTraceRepository(new LocalDemoAuditTraceRepository(runtimeService, new LocalDemoWorkstreamLogRepository()));
     StarterSecurityComponents.bindTestGovernancePolicyRepository(new LocalDemoGovernancePolicyRepository());
     resolver = new AgentRuntimeToolResolver(repository, runtimeService);
@@ -108,7 +110,7 @@ class AgentRuntimeToolResolverTest {
     assertEquals(List.of("myAccountEvidence.read", "readReferenceDoc", "readSkill"), resolved.grantedToolIds());
     assertTrue(resolved.runtimeTools().stream().anyMatch(MyAccountEvidenceTools.class::isInstance));
     var identityRepository = seededIdentityRepository();
-    var tool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository)), tenantAdmin, "corr-my-account-evidence");
+    var tool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository), StarterSecurityComponents.attentionService()), tenantAdmin, "corr-my-account-evidence");
     var beforeSettings = identityRepository.settings("admin-1").uiMode();
 
     var evidence = tool.read("summarize current tenantId=tenant-1 My Account selected context authority personal attention trace refs provider system_message no direct mutation evidence");
@@ -239,12 +241,12 @@ class AgentRuntimeToolResolverTest {
   void myAccountEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
     var identityRepository = seededIdentityRepository();
     var noReadCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of(AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY));
-    var deniedCapabilityTool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository)), noReadCapability, "corr-my-account-evidence-denied");
+    var deniedCapabilityTool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository), StarterSecurityComponents.attentionService()), noReadCapability, "corr-my-account-evidence-denied");
 
     var missingCapability = assertThrows(AuthorizationException.class, () -> deniedCapabilityTool.read("summarize"));
     assertTrue(missingCapability.getMessage().contains("missing-capability:" + MyAccountService.VIEW_SUMMARY_CAPABILITY));
 
-    var tool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository)), tenantAdmin, "corr-my-account-evidence-cross-tenant");
+    var tool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository), StarterSecurityComponents.attentionService()), tenantAdmin, "corr-my-account-evidence-cross-tenant");
     var crossTenant = assertThrows(AuthorizationException.class, () -> tool.read("tenantId=tenant-other"));
     assertTrue(crossTenant.getMessage().contains("my-account-evidence-tenant-mismatch"));
   }

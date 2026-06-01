@@ -44,7 +44,8 @@ class WorkstreamServiceTest {
     identityRepository = new LocalDemoIdentityRepository();
     var invitationRepository = new LocalDemoInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
-    var meService = new MeService(resolver);
+    var attentionService = new AttentionService(new LocalDemoAttentionRepository(), resolver, Clock.systemUTC());
+    var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
     agentRepository = new LocalDemoAgentBehaviorRepository();
@@ -52,7 +53,7 @@ class WorkstreamServiceTest {
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"), new LocalDemoAgentRuntimeTraceSink());
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
     var workstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository());
+    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
@@ -411,7 +412,7 @@ class WorkstreamServiceTest {
     assertTrue(dashboard.toString().contains("authorityBasis"));
     assertTrue(dashboard.toString().contains("my_account.view_context"));
     assertTrue(dashboard.toString().contains("traceRefs"));
-    assertTrue(dashboard.toString().contains("personal-attention-agent-admin-provider"));
+    assertTrue(dashboard.toString().contains("attention-agent-admin-readiness"));
     assertTrue(dashboard.toString().contains("my_account.list_personal_attention"));
     assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
     assertTrue(dashboard.toString().contains("not_found_or_redacted"));
@@ -793,7 +794,8 @@ class WorkstreamServiceTest {
   void auditTraceMessageFailsClosedWhenRuntimeProviderBoundaryIsMissing() {
     var invitationRepository = new LocalDemoInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
-    var meService = new MeService(resolver);
+    var attentionService = new AttentionService(new LocalDemoAttentionRepository(), resolver, Clock.systemUTC());
+    var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
     var agentRepository = new LocalDemoAgentBehaviorRepository();
@@ -802,7 +804,7 @@ class WorkstreamServiceTest {
       throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
     }, new LocalDemoAgentRuntimeTraceSink());
     var failClosedWorkstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, agentRuntimeService::invokeWorkstreamAgent, failClosedWorkstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, failClosedWorkstreamLogRepository), new LocalDemoGovernancePolicyRepository());
+    var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, agentRuntimeService::invokeWorkstreamAgent, failClosedWorkstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, failClosedWorkstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService);
 
     var response = failClosedService.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-audit-trace", "Explain this provider failure", "corr-audit-failclosed", "idem-audit-failclosed"), "corr-header");

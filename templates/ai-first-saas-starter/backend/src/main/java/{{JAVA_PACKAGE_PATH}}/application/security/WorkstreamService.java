@@ -9,6 +9,12 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentRuntimeTrace;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.BehaviorChangeProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItemStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSeverity;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSurfaceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
@@ -98,6 +104,7 @@ public final class WorkstreamService {
   private final AgentRuntimeService agentRuntimeService;
   private final AuditTraceService auditTraceService;
   private final GovernancePolicyService governancePolicyService;
+  private final AttentionService attentionService;
   private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
   private final WorkstreamLogRepository workstreamLogRepository;
   private final Map<String, CapabilityActionResult> idempotentActionResults = new ConcurrentHashMap<>();
@@ -115,10 +122,12 @@ public final class WorkstreamService {
       WorkstreamLogRepository workstreamLogRepository,
       AccessReviewTaskRepository accessReviewTaskRepository,
       AuditTraceRepository auditTraceRepository,
-      GovernancePolicyRepository governancePolicyRepository) {
+      GovernancePolicyRepository governancePolicyRepository,
+      AttentionService attentionService) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
-    this.myAccountService = new MyAccountService(authContextResolver);
+    this.attentionService = Objects.requireNonNull(attentionService);
+    this.myAccountService = new MyAccountService(authContextResolver, attentionService);
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
@@ -171,7 +180,18 @@ public final class WorkstreamService {
     if (!Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
     var correlationId = firstNonBlank(request.correlationId(), "shell-request");
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
-    var targetAgentId = firstNonBlank(request.targetFunctionalAgentId(), request.sourceFunctionalAgentId(), MY_ACCOUNT_AGENT_ID);
+    seedStarterCoreAttention(actor, correlationId);
+    var attentionOpen = "open_attention_item".equals(firstNonBlank(request.requestType(), "show_surface"))
+        ? attentionService.openAttentionItem(actor, request.targetItemId(), correlationId)
+        : null;
+    if (attentionOpen != null && !"accepted".equals(attentionOpen.status())) {
+      var denied = shellSystemMessageSurface(actor, MY_ACCOUNT_AGENT_ID, "TARGET_NOT_FOUND_OR_FORBIDDEN", "The requested attention item is unavailable in the selected context.", correlationId);
+      var item = shellRequestItem(MY_ACCOUNT_AGENT_ID, request, correlationId, denied.surfaceId(), "blocked");
+      return new WorkstreamShellResponse(normalizeShellRequest(request, MY_ACCOUNT_AGENT_ID, null, correlationId), "denied", "The requested attention item is unavailable.", correlationId, denied.traceIds(), item, denied);
+    }
+    var targetAgentId = attentionOpen != null && attentionOpen.targetFunctionalAgentId() != null
+        ? attentionOpen.targetFunctionalAgentId()
+        : firstNonBlank(request.targetFunctionalAgentId(), request.sourceFunctionalAgentId(), MY_ACCOUNT_AGENT_ID);
     var targetAgent = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
         .filter(agent -> targetAgentId.equals(agent.functionalAgentId()))
         .findFirst()
@@ -183,7 +203,9 @@ public final class WorkstreamService {
       var item = shellRequestItem(targetAgentId, request, correlationId, denied.surfaceId(), "blocked");
       return new WorkstreamShellResponse(normalizeShellRequest(request, targetAgentId, null, correlationId), "denied", "The requested workstream or surface is unavailable.", correlationId, denied.traceIds(), item, denied);
     }
-    var targetSurfaceId = shellTargetSurfaceId(requestType, targetAgentId, request.targetSurfaceId());
+    var targetSurfaceId = attentionOpen != null && attentionOpen.surfaceRef() != null
+        ? attentionOpen.surfaceRef().targetSurfaceId()
+        : shellTargetSurfaceId(requestType, targetAgentId, request.targetSurfaceId());
     var surface = dynamicSurface(actor, targetSurfaceId, correlationId);
     if (surface == null && "refresh_surface".equals(requestType)) surface = surface(identity, selectedContextId, targetSurfaceId, correlationId);
     if (surface == null) {
@@ -413,6 +435,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope myAccountDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    seedStarterCoreAttention(actor, correlationId);
     var dashboard = myAccountService.dashboardData(actor, correlationId);
     return envelope("surface-my-account-dashboard", "dashboard", "My Account", actor, correlationId,
         mapOf("surfaceContract", dashboard.surfaceContract(), "cards", dashboard.cards(), "sections", dashboard.sections(), "attentionItems", dashboard.attentionItems(), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention only includes authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
@@ -448,8 +471,10 @@ public final class WorkstreamService {
     var users = userDirectoryView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
     var invites = invitationView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
     var failedInvites = invites.stream().filter(invite -> invite.deliveryStatus().name().equals("FAILED")).count();
+    seedUserAdminInvitationAttention(actor, failedInvites, correlationId);
+    var attentionItems = attentionMaps(attentionService.listWorkstreamItems(actor, USER_ADMIN_AGENT_ID, correlationId));
     return envelope("surface-user-admin-dashboard", "dashboard", "User Admin command center", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.dashboard.v1", "readiness", mapOf("directory", "backend-derived", "invitationOutbox", "backend-derived", "accessReviewWorker", "blocked_provider_or_runtime"), "cards", List.of(mapOf("cardId", "card-pending-invitations", "label", "Pending invitations", "value", invites.size(), "severity", invites.isEmpty() ? "info" : "warning"), mapOf("cardId", "card-active-users", "label", "Active users", "value", users.size(), "severity", "info"), mapOf("cardId", "card-failed-invitations", "label", "Failed invitation delivery", "value", failedInvites, "severity", failedInvites == 0 ? "info" : "warning"), mapOf("cardId", "card-access-review", "label", "Access review items", "value", 0, "severity", "blocked_provider_or_runtime")), "attentionItems", List.of(mapOf("itemId", "invitation-delivery", "label", "Invitation delivery", "status", failedInvites == 0 ? "clear" : "needs-review"), mapOf("itemId", "trace-useradmin-dashboard", "label", "Trace", "status", "available")), "capabilityIds", List.of(USERADMIN_VIEW_OVERVIEW, USERADMIN_LIST_MEMBERS, USERADMIN_LIST_INVITATIONS, USERADMIN_SEND_INVITATION, USERADMIN_RESEND_INVITATION, USERADMIN_REVOKE_INVITATION, USERADMIN_LIST_ROLES_CAPABILITIES, USERADMIN_UPDATE_MEMBER_STATUS, USERADMIN_ACCESS_REVIEW_START, USERADMIN_ACCESS_REVIEW_READ, USERADMIN_ACCESS_REVIEW_CANCEL, USERADMIN_ACCESS_REVIEW_ACCEPT_RESULT, USERADMIN_ACCESS_REVIEW_REJECT_RESULT)),
+        mapOf("surfaceContract", "user_admin.dashboard.v1", "readiness", mapOf("directory", "backend-derived", "invitationOutbox", "backend-derived", "accessReviewWorker", "blocked_provider_or_runtime"), "cards", List.of(mapOf("cardId", "card-pending-invitations", "label", "Pending invitations", "value", invites.size(), "severity", invites.isEmpty() ? "info" : "warning"), mapOf("cardId", "card-active-users", "label", "Active users", "value", users.size(), "severity", "info"), mapOf("cardId", "card-failed-invitations", "label", "Failed invitation delivery", "value", failedInvites, "severity", failedInvites == 0 ? "info" : "warning"), mapOf("cardId", "card-access-review", "label", "Access review items", "value", 0, "severity", "blocked_provider_or_runtime")), "attentionItems", attentionItems, "attentionSource", AttentionService.LIST_WORKSTREAM_ITEMS_TOOL, "capabilityIds", List.of(USERADMIN_VIEW_OVERVIEW, USERADMIN_LIST_MEMBERS, USERADMIN_LIST_INVITATIONS, USERADMIN_SEND_INVITATION, USERADMIN_RESEND_INVITATION, USERADMIN_REVOKE_INVITATION, USERADMIN_LIST_ROLES_CAPABILITIES, USERADMIN_UPDATE_MEMBER_STATUS, USERADMIN_ACCESS_REVIEW_START, USERADMIN_ACCESS_REVIEW_READ, USERADMIN_ACCESS_REVIEW_CANCEL, USERADMIN_ACCESS_REVIEW_ACCEPT_RESULT, USERADMIN_ACCESS_REVIEW_REJECT_RESULT)),
         List.of(displayListAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), previewRoleChangeAction(), startAccessReviewAction(), traceAction()));
   }
 
@@ -493,7 +518,9 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope auditTraceDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    seedStarterCoreAttention(actor, correlationId);
     var surface = auditTraceService.dashboard(actor, correlationId);
+    surface = new AuditTraceService.SurfaceData(surface.surfaceId(), surface.surfaceType(), surface.title(), surface.traceIds(), withAttentionItems(surface.data(), actor, AUDIT_TRACE_AGENT_ID, correlationId));
     return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceSearchAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
   }
 
@@ -577,7 +604,10 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope governancePolicyDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.dashboard(actor, correlationId), List.of(governanceDashboardAction(), governanceListPoliciesAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), governanceStartImpactAnalysisAction(), openAuditAction()));
+    seedStarterCoreAttention(actor, correlationId);
+    var surface = governancePolicyService.dashboard(actor, correlationId);
+    surface = new GovernancePolicyService.SurfaceData(surface.surfaceId(), surface.surfaceType(), surface.title(), surface.traceIds(), withAttentionItems(surface.data(), actor, GOVERNANCE_POLICY_AGENT_ID, correlationId));
+    return governancePolicyEnvelope(actor, correlationId, surface, List.of(governanceDashboardAction(), governanceListPoliciesAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), governanceStartImpactAnalysisAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope governancePolicyInventorySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -646,7 +676,8 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope agentAdminCatalogSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return envelope("surface-agent-admin-catalog", "list-search", "Agent Admin catalog", actor, correlationId, agentAdminService.catalog(actor, correlationId), List.of(displayAgentCatalogAction(), openAgentDetailAction(), listAgentSeedMaterialAction(), openAgentTraceAction()));
+    seedStarterCoreAttention(actor, correlationId);
+    return envelope("surface-agent-admin-catalog", "list-search", "Agent Admin catalog", actor, correlationId, withAttentionItems(agentAdminService.catalog(actor, correlationId), actor, AGENT_ADMIN_AGENT_ID, correlationId), List.of(displayAgentCatalogAction(), openAgentDetailAction(), listAgentSeedMaterialAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentAdminDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -749,6 +780,74 @@ public final class WorkstreamService {
       case "surface-governance-policy-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
       default -> null;
     };
+  }
+
+  private void seedStarterCoreAttention(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    if (actor.selectedContext().capabilities().contains(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY)) {
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-agent-admin-readiness", AGENT_ADMIN_AGENT_ID, "Agent Admin provider readiness is blocked", "Model/runtime provider readiness is blocked until governed provider configuration is available.", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.BLOCKED, AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, "surface-agent-admin-catalog", "agent-admin-provider-readiness", correlationId), correlationId);
+    }
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_READ_CAPABILITY)) {
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-governance-policy-approval", GOVERNANCE_POLICY_AGENT_ID, "Governance policy decision awaits authorized review", "Governance/Policy has reviewable policy approval evidence for this selected context.", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT, GOVERNANCE_POLICY_READ_CAPABILITY, "surface-governance-policy-dashboard", "governance-policy-approval", correlationId), correlationId);
+    }
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) {
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-audit-trace-failure-evidence", AUDIT_TRACE_AGENT_ID, "Audit/Trace has provider failure evidence available", "Audit/Trace has provider failure or denial evidence available for authorized investigation.", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, AUDIT_TRACE_READ_CAPABILITY, "surface-audit-trace-dashboard", "audit-trace-failure-evidence", correlationId), correlationId);
+    }
+  }
+
+  private void seedUserAdminInvitationAttention(AuthContextResolver.ResolvedMe actor, long failedInvites, String correlationId) {
+    if (failedInvites <= 0 || !actor.selectedContext().capabilities().contains(USER_ADMIN_CAPABILITY)) return;
+    attentionService.upsertItem(actor, attentionItem(actor, "attention-user-admin-invitation-delivery", USER_ADMIN_AGENT_ID, "User Admin invitation delivery needs review", failedInvites + " invitation delivery attempt(s) need authorized review.", AttentionCategory.INVITATION_DELIVERY, AttentionSeverity.WARNING, USER_ADMIN_CAPABILITY, "surface-user-admin-invitation-panel", "user-admin-invitation-delivery", correlationId), correlationId);
+  }
+
+  private AttentionItem attentionItem(AuthContextResolver.ResolvedMe actor, String itemId, String workstreamId, String title, String summary, AttentionCategory category, AttentionSeverity severity, String capabilityId, String surfaceId, String sourceId, String correlationId) {
+    var now = Instant.now();
+    return new AttentionItem(
+        itemId,
+        actor.selectedContext().tenantId(),
+        actor.selectedContext().customerId(),
+        workstreamId,
+        title,
+        summary,
+        category,
+        severity,
+        AttentionItemStatus.OPEN,
+        AttentionItem.AssigneeKind.CAPABILITY,
+        capabilityId,
+        capabilityId,
+        new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, AttentionService.OPEN_ATTENTION_ITEM_TOOL, capabilityId),
+        List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)),
+        null,
+        now,
+        now,
+        now,
+        null,
+        null,
+        null,
+        null,
+        correlationId);
+  }
+
+  private Map<String, Object> withAttentionItems(Map<String, Object> data, AuthContextResolver.ResolvedMe actor, String workstreamId, String correlationId) {
+    var copy = new LinkedHashMap<>(data);
+    copy.put("attentionItems", attentionMaps(attentionService.listWorkstreamItems(actor, workstreamId, correlationId)));
+    copy.put("attentionSource", AttentionService.LIST_WORKSTREAM_ITEMS_TOOL);
+    return copy;
+  }
+
+  private List<Map<String, Object>> attentionMaps(List<AttentionItem> items) {
+    return items.stream().map(item -> mapOf(
+        "itemId", item.itemId(),
+        "label", item.title(),
+        "summary", item.summary(),
+        "status", item.status().name().toLowerCase(),
+        "severity", item.severity().name().toLowerCase(),
+        "category", item.category().name().toLowerCase(),
+        "capabilityId", item.requiredCapabilityId(),
+        "governedToolId", AttentionService.OPEN_ATTENTION_ITEM_TOOL,
+        "traceId", item.sourceRefs().stream().map(AttentionSourceRef::traceId).filter(Objects::nonNull).findFirst().orElse(item.correlationId()),
+        "sourceWorkstreamId", item.owningWorkstreamId(),
+        "surfaceRef", item.surfaceRef(),
+        "redaction", item.redactionLevel().name().toLowerCase())).toList();
   }
 
   private String shellTargetSurfaceId(String requestType, String targetAgentId, String requestedSurfaceId) {

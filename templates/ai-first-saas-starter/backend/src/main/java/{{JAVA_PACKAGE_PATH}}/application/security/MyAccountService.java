@@ -1,6 +1,13 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItemStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSeverity;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSurfaceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -16,9 +23,15 @@ public final class MyAccountService {
   public static final String VIEW_OWN_TRACE_REFS_CAPABILITY = "my_account.view_own_trace_refs";
 
   private final AuthContextResolver authContextResolver;
+  private final AttentionService attentionService;
 
   public MyAccountService(AuthContextResolver authContextResolver) {
+    this(authContextResolver, StarterSecurityComponents.attentionService());
+  }
+
+  public MyAccountService(AuthContextResolver authContextResolver, AttentionService attentionService) {
     this.authContextResolver = authContextResolver;
+    this.attentionService = attentionService;
   }
 
   public Summary summary(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -87,14 +100,43 @@ public final class MyAccountService {
 
   public List<Map<String, Object>> personalAttention(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), LIST_PERSONAL_ATTENTION_CAPABILITY);
-    var capabilities = actor.selectedContext().capabilities();
-    var items = new java.util.ArrayList<Map<String, Object>>();
-    if (capabilities.contains("secure-tenant-user-foundation")) items.add(mapOf("itemId", "personal-attention-user-admin-invitations", "label", "User Admin invitation delivery needs review", "status", "needs-review", "severity", "warning", "capabilityId", "secure-tenant-user-foundation", "traceId", "trace-my-account-attention-user-admin", "sourceWorkstreamId", "agent-user-admin"));
-    if (capabilities.contains("agent_admin.list_definitions")) items.add(mapOf("itemId", "personal-attention-agent-admin-provider", "label", "Agent Admin provider readiness is blocked", "status", "blocked_provider_or_runtime", "severity", "critical", "capabilityId", "agent_admin.list_definitions", "traceId", "trace-my-account-attention-agent-admin", "sourceWorkstreamId", "agent-agent-admin"));
-    if (capabilities.contains("governance.policy.read")) items.add(mapOf("itemId", "personal-attention-governance-policy", "label", "Governance policy decision awaits authorized review", "status", "approval-needed", "severity", "critical", "capabilityId", "governance.policy.read", "traceId", "trace-my-account-attention-governance", "sourceWorkstreamId", "agent-governance-policy"));
-    if (capabilities.contains("audit.trace.read")) items.add(mapOf("itemId", "personal-attention-audit-trace", "label", "Audit/Trace has provider failure evidence available", "status", "ready", "severity", "info", "capabilityId", "audit.trace.read", "traceId", "trace-my-account-attention-audit", "sourceWorkstreamId", "agent-audit-trace"));
-    authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_LIST_PERSONAL_ATTENTION", "authorized personal attention", correlationId);
-    return items;
+    seedStarterCoreAttention(actor, correlationId);
+    var summary = attentionService.listMyAccountItems(actor, correlationId);
+    return summary.personalQueue().stream().map(this::attentionItemMap).toList();
+  }
+
+  private void seedStarterCoreAttention(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    if (actor.selectedContext().capabilities().contains("agent_admin.list_definitions")) {
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-agent-admin-readiness", "agent-agent-admin", "Agent Admin provider readiness is blocked", "Model/runtime provider readiness is blocked until governed provider configuration is available.", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.BLOCKED, "agent_admin.list_definitions", "surface-agent-admin-catalog", "agent-admin-provider-readiness", correlationId), correlationId);
+    }
+    if (actor.selectedContext().capabilities().contains("governance.policy.read")) {
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-governance-policy-approval", "agent-governance-policy", "Governance policy decision awaits authorized review", "Governance/Policy has reviewable policy approval evidence for this selected context.", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT, "governance.policy.read", "surface-governance-policy-dashboard", "governance-policy-approval", correlationId), correlationId);
+    }
+    if (actor.selectedContext().capabilities().contains("audit.trace.read")) {
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-audit-trace-failure-evidence", "agent-audit-trace", "Audit/Trace has provider failure evidence available", "Audit/Trace has provider failure or denial evidence available for authorized investigation.", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "audit.trace.read", "surface-audit-trace-dashboard", "audit-trace-failure-evidence", correlationId), correlationId);
+    }
+  }
+
+  private AttentionItem attentionItem(AuthContextResolver.ResolvedMe actor, String itemId, String workstreamId, String title, String summary, AttentionCategory category, AttentionSeverity severity, String capabilityId, String surfaceId, String sourceId, String correlationId) {
+    var now = Instant.now();
+    return new AttentionItem(itemId, actor.selectedContext().tenantId(), actor.selectedContext().customerId(), workstreamId, title, summary, category, severity, AttentionItemStatus.OPEN, AttentionItem.AssigneeKind.CAPABILITY, capabilityId, capabilityId, new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, AttentionService.OPEN_ATTENTION_ITEM_TOOL, capabilityId), List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)), null, now, now, now, null, null, null, null, correlationId);
+  }
+
+  private Map<String, Object> attentionItemMap(AttentionItem item) {
+    var traceId = item.sourceRefs().stream().map(ref -> ref.traceId()).filter(value -> value != null && !value.isBlank()).findFirst().orElse(item.correlationId());
+    return mapOf(
+        "itemId", item.itemId(),
+        "label", item.title(),
+        "summary", item.summary(),
+        "status", item.status().name().toLowerCase(Locale.ROOT),
+        "severity", item.severity().name().toLowerCase(Locale.ROOT),
+        "category", item.category().name().toLowerCase(Locale.ROOT),
+        "capabilityId", item.requiredCapabilityId(),
+        "governedToolId", AttentionService.OPEN_ATTENTION_ITEM_TOOL,
+        "traceId", traceId,
+        "sourceWorkstreamId", item.owningWorkstreamId(),
+        "surfaceRef", item.surfaceRef(),
+        "redaction", item.redactionLevel().name().toLowerCase(Locale.ROOT));
   }
 
   public List<Map<String, Object>> nextSteps(AuthContextResolver.ResolvedMe actor) {

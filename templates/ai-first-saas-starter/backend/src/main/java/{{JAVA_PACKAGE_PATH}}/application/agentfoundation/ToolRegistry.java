@@ -148,7 +148,7 @@ public final class ToolRegistry {
     public MyAccountEvidenceTools myAccountEvidenceTools() {
       return new MyAccountEvidenceTools(
           StarterSecurityComponents.identityRepository(),
-          new MyAccountService(StarterSecurityComponents.authContextResolver()),
+          new MyAccountService(StarterSecurityComponents.authContextResolver(), StarterSecurityComponents.attentionService()),
           authContext,
           correlationId);
     }
