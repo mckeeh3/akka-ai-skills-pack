@@ -139,7 +139,7 @@
 
 ### TASK-GPIA-04-001: Run Governance/Policy impact validation
 
-- status: pending
+- status: done
 - source: specs/governance-policy-impact-autonomous-agent/backlog/01-governance-impact-agent-build-backlog.md
 - task brief: specs/governance-policy-impact-autonomous-agent/tasks/04-validation/01-run-governance-impact-validation.md
 - depends on:
@@ -162,6 +162,13 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `governance-impact-agent: validate runtime path`
+  - completed: added `specs/governance-policy-impact-autonomous-agent/validation.md` with fresh scaffold validation evidence, manual/local smoke notes, and blocker status.
+  - validation: targeted scaffolded backend checks passed with `mvn test -Dtest=GovernancePolicyImpactServiceTest,WorkstreamEventBackboneServiceTest` from `/tmp/gpia-validation`.
+  - validation: full scaffolded `mvn test` was attempted and remains blocked by the existing unrelated `WorkstreamServiceTest.auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists` assertion expecting `audit.trace.summaryTask.v1` while source returns `audit.trace.summaryProgress.v1`; Governance/Policy impact tests passed in that run.
+  - validation: after `npm ci`, frontend contract tests passed with `npm test -- workstream-governance-policy-vertical.contract.test.mjs` from `/tmp/gpia-validation/frontend`.
+  - validation: frontend typecheck/build passed with `npm run typecheck` and `npm run build` from `/tmp/gpia-validation/frontend`.
+  - validation: focused `rg` over scaffolded backend/frontend sources found Governance/Policy impact capabilities, v3 events, attention/surfaces, AutonomousAgent references, ToolPermissionBoundary/redaction/human-review/no-fake-analysis guardrails.
+  - validation: `git diff --check` passed.
 
 ### TASK-GPIA-05-001: Update Governance/Policy impact AutonomousAgent docs
 
