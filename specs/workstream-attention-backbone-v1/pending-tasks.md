@@ -197,7 +197,7 @@
 
 ### TASK-WAB-99-001: Verify attention backbone v1 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/workstream-attention-backbone-v1/tasks/99-verification/01-verify-attention-backbone-v1.md
 - depends on:
@@ -231,4 +231,7 @@
   - if incomplete, new bounded tasks are appended before a new terminal verification task
   - task changes and queue update are committed
 - notes:
+  - sprint/done-state assessment: complete at v1 scope; shared backend-owned attention item lifecycle, scoped workstream/My Account/rail projections, core producer derivations, backend-derived frontend rendering, redaction/authorization, audit traces, and lifecycle tests are present.
+  - verification checks passed: `git diff --check`; `rg -n "AttentionItem|attention summary|list_personal_attention|open_attention_item|railAttentionState|personalAttention" templates/ai-first-saas-starter specs/workstream-attention-backbone-v1`; `cd templates/ai-first-saas-starter/frontend && npm test -- --runInBand`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && npm run build`; scaffolded backend equivalent with `tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --template-dir templates/ai-first-saas-starter --app-name "WAB Verification Check" --app-slug wab-verification-check --base-package ai.first --maven-group-id ai.first --yes` then `cd "$tmp" && mvn -q -Dtest=AttentionServiceTest,MyAccountServiceTest,WorkstreamServiceTest,DurableAttentionRepositoryEntityTest,AgentRuntimeToolResolverTest test`.
+  - no material follow-up tasks appended; future event consumers, timers, realtime streams, digests, and AutonomousAgent task notifications remain out-of-scope recommendations rather than v1 blockers.
   - commit message: `attention-backbone: verify v1 completion`
