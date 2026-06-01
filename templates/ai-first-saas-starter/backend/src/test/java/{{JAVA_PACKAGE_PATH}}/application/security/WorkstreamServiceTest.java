@@ -678,17 +678,17 @@ class WorkstreamServiceTest {
     assertEquals("accepted", guide.status());
     assertEquals("decision", guide.resultSurface().surfaceType());
     assertEquals("audit.trace.investigationGuide.v1", guide.resultSurface().data().get("surfaceContract"));
-    assertTrue(guide.resultSurface().toString().contains("audit.trace.summaryTask.start"));
-    assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-start-summary-task")));
+    assertTrue(guide.resultSurface().toString().contains("audit.trace.summary_task.start"));
+    assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-start")));
   }
 
   @Test
   void auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists() {
     var summary = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-audit-trace-start-summary-task", "action-audit-trace-start-summary-task", "audit.trace.summaryTask.start", "audit.trace.summaryTask.start", Map.of("schedule", "weekly-owner-digest"), "idem-audit-summary", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-summary"));
+        "action-audit-trace-summary-task-start", "action-audit-trace-summary-task-start", "audit.trace.summaryTask.start", "audit.trace.summary_task.start", Map.of("schedule", "weekly-owner-digest"), "idem-audit-summary", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-summary"));
 
     assertEquals("blocked_provider_or_runtime", summary.status());
-    assertEquals("surface-audit-trace-summary-task", summary.resultSurface().surfaceId());
+    assertEquals("surface-audit-trace-summary-progress", summary.resultSurface().surfaceId());
     assertEquals("workflow-status", summary.resultSurface().surfaceType());
     assertEquals("audit.trace.summaryTask.v1", summary.resultSurface().data().get("surfaceContract"));
     assertEquals("blocked_provider_or_runtime", summary.resultSurface().data().get("status"));

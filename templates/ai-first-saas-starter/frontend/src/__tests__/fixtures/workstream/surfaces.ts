@@ -1212,6 +1212,62 @@ export const auditTraceSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-investigation-guide', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceInvestigationGuideRequested', traceRequired: true }
+  },
+  startSummaryTask: {
+    actionId: 'action-audit-trace-summary-task-start',
+    label: 'Start audit summary task',
+    intent: 'workflow',
+    capabilityId: 'audit.trace.summary_task.start',
+    governedToolId: 'audit.trace.summaryTask.start',
+    browserToolId: 'action-audit-trace-summary-task-start',
+    inputSchemaRef: 'schema.audit-trace.summary-task.start.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-progress', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceSummaryTaskStarted', traceRequired: true }
+  },
+  readSummaryTask: {
+    actionId: 'action-audit-trace-summary-task-read',
+    label: 'Refresh summary task',
+    intent: 'read',
+    capabilityId: 'audit.trace.summary_task.read',
+    governedToolId: 'audit.trace.summaryTask.read',
+    browserToolId: 'action-audit-trace-summary-task-read',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-progress', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceSummaryTaskRead', traceRequired: true }
+  },
+  acceptSummaryResult: {
+    actionId: 'action-audit-trace-summary-task-accept-result',
+    label: 'Accept advisory summary',
+    intent: 'approval',
+    capabilityId: 'audit.trace.summary_task.accept_result',
+    governedToolId: 'audit.trace.summaryTask.acceptResult',
+    browserToolId: 'action-audit-trace-summary-task-accept-result',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceSummaryResultAccepted', traceRequired: true }
+  },
+  rejectSummaryResult: {
+    actionId: 'action-audit-trace-summary-task-reject-result',
+    label: 'Reject advisory summary',
+    intent: 'approval',
+    capabilityId: 'audit.trace.summary_task.reject_result',
+    governedToolId: 'audit.trace.summaryTask.rejectResult',
+    browserToolId: 'action-audit-trace-summary-task-reject-result',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceSummaryResultRejected', traceRequired: true }
+  },
+  openSummaryEvidence: {
+    actionId: 'action-audit-trace-summary-task-open-evidence',
+    label: 'Open cited evidence',
+    intent: 'trace',
+    capabilityId: 'audit.trace.summary_task.open_evidence',
+    governedToolId: 'audit.trace.summaryTask.openEvidence',
+    browserToolId: 'action-audit-trace-summary-task-open-evidence',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceSummaryEvidenceOpened', traceRequired: true }
   }
 } satisfies Record<string, SurfaceAction>;
 
@@ -1245,7 +1301,7 @@ export const auditTraceDashboardSurface = envelope(
     nextSteps: [
       { workstreamId: 'agent-audit-trace', label: 'Search scoped traces', allowed: true, capabilityIds: ['audit.trace.search'], traceId: 'trace-audit-dashboard-search' },
       { workstreamId: 'agent-audit-trace', label: 'Open failure evidence', allowed: true, capabilityIds: ['audit.trace.failureEvidence.read'], traceId: 'trace-audit-dashboard-failure' },
-      { workstreamId: 'agent-audit-trace-summary-task', label: 'Start audit summary task', allowed: false, blockedReason: 'Autonomous audit-summary task lifecycle is deferred until backend runtime exists.', capabilityIds: ['audit.trace.summaryTask.start'] }
+      { workstreamId: 'agent-audit-trace-summary-task', label: 'Start audit summary task', allowed: true, capabilityIds: ['audit.trace.summary_task.start'], traceId: 'trace-audit-summary-task-start' }
     ]
   },
   [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide]
@@ -1338,7 +1394,7 @@ export const auditTraceInvestigationGuideSurface = envelope(
       { actionId: 'action-audit-trace-timeline', label: 'Open timeline', browserToolId: 'action-audit-trace-timeline', governedToolId: 'audit.trace.timeline.read', capabilityId: 'audit.trace.timeline.read' }
     ],
     disabledActions: [
-      { actionId: 'audit.trace.summaryTask.start', reason: 'Autonomous audit summary tasks are deferred until task lifecycle/provider/tool-boundary runtime is implemented.' }
+      { actionId: 'action-audit-trace-summary-task-start-scheduled', reason: 'Scheduled audit summary cadence remains future work; manual backend-governed start is wired.' }
     ],
     risk: 'low',
     traceLinks: ['corr-provider-blocked-002']
@@ -1346,7 +1402,58 @@ export const auditTraceInvestigationGuideSurface = envelope(
   [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence]
 );
 
-export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface];
+export const auditTraceSummaryProgressSurface = envelope(
+  'surface-audit-trace-summary-progress',
+  'detail-edit',
+  'Audit/Trace summary progress',
+  'agent-audit-trace',
+  {
+    surfaceContract: 'audit.trace.summaryProgress.v1',
+    summaryTaskId: 'audit-summary-tenant-1-window-2026-05-25',
+    autonomousAgentTaskId: 'akka-task-audit-summary-tenant-1-window-2026-05-25',
+    status: 'blocked_provider_or_runtime',
+    progressSummary: 'Provider/runtime readiness failed closed; no deterministic, fixture, fake, or model-less audit summary success is rendered.',
+    blockerReason: 'Configure governed model provider, AuditTraceSummaryAutonomousAgent binding, ToolPermissionBoundary grants, readSkill/readReferenceDoc, and auditTraceSummaryEvidence.read.',
+    selectedContext: { tenantId: 'tenant-1', customerId: null, capabilityId: 'audit.trace.summary_task.start' },
+    window: { windowStart: '2026-05-20T00:00:00Z', windowEnd: '2026-05-25T00:00:00Z' },
+    evidenceCategories: ['admin_audit', 'authorization_denial', 'provider_readiness', 'agent_work', 'workstream_event'],
+    sourceRefs: ['projection:audit-summary-tenant-1-window-2026-05-25', 'autonomous_task:akka-task-audit-summary-tenant-1-window-2026-05-25'],
+    traceRefs: ['trace-audit-summary-start', 'trace-audit-summary-provider-blocked'],
+    redactionSummary: 'Raw JWTs, provider credentials, hidden prompts, raw tool payloads, invitation tokens, and cross-tenant evidence are omitted.',
+    noDirectMutation: true,
+    actions: ['action-audit-trace-summary-task-read', 'action-audit-trace-summary-task-open-evidence']
+  },
+  [auditTraceSurfaceActions.readSummaryTask, auditTraceSurfaceActions.openSummaryEvidence]
+);
+
+export const auditTraceSummaryReviewSurface = envelope(
+  'surface-audit-trace-summary-review',
+  'decision',
+  'Audit/Trace summary review',
+  'agent-audit-trace',
+  {
+    surfaceContract: 'audit.trace.summaryReview.v1',
+    summaryTaskId: 'audit-summary-tenant-1-window-2026-05-25',
+    autonomousAgentTaskId: 'akka-task-audit-summary-tenant-1-window-2026-05-25',
+    status: 'completed_review_required',
+    noDirectMutation: true,
+    humanDecisionRequired: true,
+    overallRisk: 'review_required',
+    executiveSummary: 'Model-backed AutonomousAgent completed a redacted advisory synthesis; reviewer decides accept/reject and protected records remain unchanged.',
+    findings: [
+      { findingId: 'finding-provider-readiness', category: 'provider_readiness', severity: 'warning', safeSummary: 'Provider readiness gaps appeared in recent traces.', evidenceRefs: ['auditTraceSummaryEvidence.read'], traceRefs: ['trace-provider-blocked-002'], redactionApplied: true }
+    ],
+    providerReadinessFindings: ['finding-provider-readiness'],
+    authorizationDenialFindings: ['trace-auth-denied-001'],
+    agentWorkFindings: ['trace-agent-work-002'],
+    omittedEvidenceSummary: 'not_found_or_redacted is used for hidden or unauthorized trace ids.',
+    redactionSummary: 'No raw prompts, raw tool payloads, raw JWTs, provider credentials, invitation tokens, or cross-tenant evidence are included.',
+    actions: ['action-audit-trace-summary-task-accept-result', 'action-audit-trace-summary-task-reject-result', 'action-audit-trace-summary-task-open-evidence']
+  },
+  [auditTraceSurfaceActions.acceptSummaryResult, auditTraceSurfaceActions.rejectSummaryResult, auditTraceSurfaceActions.openSummaryEvidence]
+);
+
+export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];
 
 export const userAdminDashboardSurface = envelope(
   'surface-user-admin-dashboard',

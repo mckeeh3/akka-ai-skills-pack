@@ -41,7 +41,7 @@ public final class AuditTraceService {
             mapOf("cardId", "card-redaction", "label", "Redaction", "value", "browser-safe", "severity", "info")),
         "attentionItems", List.of(mapOf("itemId", "warnings", "label", "Warnings and denials", "status", warningCount == 0 ? "clear" : "needs_review")),
         "readiness", "Trace search, details, timeline, failure evidence, and guidance are backend-scoped and redacted for the selected AuthContext.",
-        "capabilityIds", List.of(DASHBOARD_CAPABILITY, SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY),
+        "capabilityIds", List.of(DASHBOARD_CAPABILITY, SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, AuditTraceSummaryService.START_CAPABILITY, AuditTraceSummaryService.READ_CAPABILITY),
         "redaction", "redacted browser-safe evidence; provider credentials, raw tokens, hidden prompts, and raw tool payloads omitted"));
   }
 
@@ -132,8 +132,8 @@ public final class AuditTraceService {
     return new SurfaceData("surface-audit-trace-investigation-guide", "decision", "Investigation guidance", List.of("trace-audit-guide-" + stableSuffix(correlationId)), mapOf(
         "surfaceContract", "audit.trace.investigationGuide.v1",
         "recommendation", "Continue only with backend-authorized, tenant-scoped evidence.",
-        "allowedActions", List.of(mapOf("actionId", "action-audit-trace-search", "label", "Refine search", "browserToolId", "action-audit-trace-search", "governedToolId", SEARCH_CAPABILITY, "capabilityId", SEARCH_CAPABILITY), mapOf("actionId", "action-audit-trace-timeline", "label", "Open timeline", "browserToolId", "action-audit-trace-timeline", "governedToolId", TIMELINE_CAPABILITY, "capabilityId", TIMELINE_CAPABILITY)),
-        "disabledActions", List.of(mapOf("actionId", "action-audit-trace-start-summary-task", "capabilityId", "audit.trace.summaryTask.start", "reason", "Autonomous audit summary tasks are deferred until task lifecycle/provider/tool-boundary runtime is implemented.")),
+        "allowedActions", List.of(mapOf("actionId", "action-audit-trace-search", "label", "Refine search", "browserToolId", "action-audit-trace-search", "governedToolId", SEARCH_CAPABILITY, "capabilityId", SEARCH_CAPABILITY), mapOf("actionId", "action-audit-trace-timeline", "label", "Open timeline", "browserToolId", "action-audit-trace-timeline", "governedToolId", TIMELINE_CAPABILITY, "capabilityId", TIMELINE_CAPABILITY), mapOf("actionId", "action-audit-trace-summary-task-start", "label", "Start bounded audit summary task", "browserToolId", "action-audit-trace-summary-task-start", "governedToolId", "audit.trace.summaryTask.start", "capabilityId", AuditTraceSummaryService.START_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-progress")),
+        "disabledActions", List.of(mapOf("actionId", "action-audit-trace-summary-task-start-scheduled", "capabilityId", AuditTraceSummaryService.START_CAPABILITY, "reason", "Scheduled audit summary cadence remains future work; manual backend-governed start is wired.")),
         "risk", "low",
         "traceLinks", List.of(correlationId),
         "redaction", "no secrets, hidden prompts, raw payloads, or cross-tenant evidence"));

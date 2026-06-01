@@ -6,12 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentAdminPromptRiskReviewService;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AuditTraceSummaryAutonomousAgentRuntime;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoPromptRiskReviewTaskRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.PromptRiskAutonomousAgentRuntime;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItemStatus;
@@ -264,6 +266,59 @@ class WorkstreamEventBackboneServiceTest {
   }
 
   @Test
+  void auditTraceSummaryLifecyclePublishesEventsAttentionAndReviewSurfaceRefs() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+    var runtime = new RecordingAuditTraceSummaryAutonomousAgentRuntime();
+    var summaries = new AuditTraceSummaryService(new LocalDemoAuditTraceSummaryTaskRepository(), resolver, clock, producers, publisher, runtime);
+
+    var task = summaries.start(tenantAdmin, auditSummaryCommand("audit-summary-event"), "corr-audit-summary-start");
+
+    assertEquals(AuditTraceSummaryTask.Status.QUEUED, task.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.audit_trace.summary_started")));
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("worker.task.queued")));
+
+    runtime.nextProjection = new AuditTraceSummaryAutonomousAgentRuntime.Projection(
+        AuditTraceSummaryTask.Status.COMPLETED_REVIEW_REQUIRED,
+        100,
+        "Audit/Trace AutonomousAgent completed model-backed redacted summary; human Audit/Trace review is required and no audit, policy, user, provider, or authorization mutation occurred.",
+        null,
+        null,
+        List.of("auditTraceSummaryEvidence.read", "readSkill:audit-trace-summary-review", "readReferenceDoc:audit-trace-summary-review"),
+        List.of("audit_trace_summary_finding:finding-1:provider_readiness"),
+        List.of("autonomous_task:" + task.autonomousAgentTaskId(), "trace-audit-summary-model-result"));
+
+    var completed = summaries.read(tenantAdmin, task.taskId(), "corr-audit-summary-read");
+
+    assertEquals(AuditTraceSummaryTask.Status.COMPLETED_REVIEW_REQUIRED, completed.status());
+    var workflowCompleted = eventRepository.listTenant("tenant-1").stream().filter(event -> event.eventType().equals("workflow.audit_trace.summary_completed_review_required")).findFirst().orElseThrow();
+    var workerCompleted = eventRepository.listTenant("tenant-1").stream().filter(event -> event.eventType().equals("worker.task.completed_review_required")).findFirst().orElseThrow();
+    assertEquals("AuditTraceSummaryLifecycleEventPayload", workflowCompleted.payloadClass());
+    assertEquals("surface-audit-trace-summary-review", workflowCompleted.targetSurfaceId());
+    assertEquals("true", workflowCompleted.payload().get("noDirectMutation"));
+    assertEquals("true", workflowCompleted.payload().get("redactionRequired"));
+    assertTrue(workflowCompleted.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("autonomous_task") && ref.refId().equals(task.autonomousAgentTaskId())));
+    assertTrue(workflowCompleted.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("audit_trace") && ref.refId().contains("auditTraceSummaryEvidence.read")));
+    assertTrue(workflowCompleted.capabilityRefs().contains(AuditTraceSummaryService.READ_CAPABILITY));
+    assertFalse(workflowCompleted.toString().contains("providerCredential="));
+    assertFalse(workflowCompleted.toString().contains("api_key="));
+
+    var item = attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertEquals(AttentionCategory.AUDIT_FAILURE_EVIDENCE, item.category());
+    assertEquals("surface-audit-trace-summary-review", item.surfaceRef().targetSurfaceId());
+    assertTrue(item.summary().contains("requires human accept/reject review"));
+    assertTrue(item.summary().contains("no audit, policy, user, provider, or authorization mutation"));
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(workerCompleted.eventId())));
+
+    var accepted = summaries.acceptResult(tenantAdmin, task.taskId(), "advisory audit summary accepted only", "corr-audit-summary-accept");
+    assertEquals(AuditTraceSummaryTask.Status.ACCEPTED, accepted.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.audit_trace.summary_result_accepted")));
+    assertEquals(AttentionItemStatus.RESOLVED, attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow().status());
+  }
+
+  @Test
   void promptRiskProviderBlockedPublishesFailClosedEventAndAttention() {
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
@@ -296,6 +351,28 @@ class WorkstreamEventBackboneServiceTest {
 
     assertEquals(null, projected);
     assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DENIED") && audit.reasonCode().equals("scope-mismatch")));
+  }
+
+  private static final class RecordingAuditTraceSummaryAutonomousAgentRuntime implements AuditTraceSummaryAutonomousAgentRuntime {
+    private Projection nextProjection = Projection.unchanged();
+
+    @Override
+    public StartOutcome start(AuthContextResolver.ResolvedMe actor, AuditTraceSummaryTask starterTask, String correlationId) {
+      return StartOutcome.queued("akka-task-" + starterTask.taskId(), "Audit/Trace Summary Akka AutonomousAgent task queued; backend projection is authoritative and no fake success is returned.", List.of("autonomous_task:akka-task-" + starterTask.taskId()));
+    }
+
+    @Override
+    public Projection project(AuditTraceSummaryTask starterTask, String correlationId) {
+      return nextProjection;
+    }
+  }
+
+  private AuditTraceSummaryService.StartAuditTraceSummaryCommand auditSummaryCommand(String key) {
+    return new AuditTraceSummaryService.StartAuditTraceSummaryCommand(
+        Instant.parse("2026-05-20T00:00:00Z"),
+        Instant.parse("2026-05-25T00:00:00Z"),
+        List.of("admin_audit", "provider_readiness", "agent_work", "workstream_event"),
+        key);
   }
 
   private static final class RecordingPromptRiskAutonomousAgentRuntime implements PromptRiskAutonomousAgentRuntime {
