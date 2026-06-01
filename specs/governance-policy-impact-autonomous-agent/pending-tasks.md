@@ -76,7 +76,7 @@
 
 ### TASK-GPIA-02-001: Implement Governance/Policy impact runtime
 
-- status: pending
+- status: done
 - source: specs/governance-policy-impact-autonomous-agent/backlog/01-governance-impact-agent-build-backlog.md
 - task brief: specs/governance-policy-impact-autonomous-agent/tasks/02-runtime/01-implement-governance-impact-runtime.md
 - depends on:
@@ -100,6 +100,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `governance-impact-agent: implement runtime`
+  - completed: added starter backend Governance/Policy impact task projection, Akka AutonomousAgent component/task/result/rule, ComponentClient-backed runtime adapter, fail-closed runtime, durable repository adapter/entity, lifecycle service, capabilities, attention/event mappings, and focused scaffolded service tests.
+  - validation: `git diff --check` passed.
+  - validation: direct source-template Maven is blocked by placeholder `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded targeted backend checks passed with `mvn test -DskipTests` and `mvn test -Dtest=GovernancePolicyImpactServiceTest` from `/tmp/gpia-scaffold`.
+  - validation: full scaffolded `mvn test` was attempted and is blocked by an existing unrelated `WorkstreamServiceTest.auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists` assertion expecting `audit.trace.summaryTask.v1` while current source returns `audit.trace.summaryProgress.v1`.
 
 ### TASK-GPIA-03-001: Wire Governance/Policy events, attention, and surfaces
 

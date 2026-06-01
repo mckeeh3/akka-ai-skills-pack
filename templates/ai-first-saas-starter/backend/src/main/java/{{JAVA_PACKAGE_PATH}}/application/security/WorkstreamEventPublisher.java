@@ -3,6 +3,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventSourceRef;
@@ -21,6 +22,7 @@ public final class WorkstreamEventPublisher {
   public static final String PAYLOAD_ACCESS_REVIEW_LIFECYCLE = "AccessReviewLifecycleEventPayload";
   public static final String PAYLOAD_PROMPT_RISK_REVIEW_LIFECYCLE = "PromptRiskReviewLifecycleEventPayload";
   public static final String PAYLOAD_AUDIT_TRACE_SUMMARY_LIFECYCLE = "AuditTraceSummaryLifecycleEventPayload";
+  public static final String PAYLOAD_GOVERNANCE_POLICY_IMPACT_LIFECYCLE = "GovernancePolicyImpactLifecycleEventPayload";
 
   private final WorkstreamEventRepository repository;
   private final WorkstreamEventAttentionConsumer attentionConsumer;
@@ -80,6 +82,19 @@ public final class WorkstreamEventPublisher {
     var taskTransition = workerTaskTransition(task, semanticTransition);
     var eventType = "worker.task." + taskTransition;
     return publishAuditTraceSummaryEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
+  }
+
+  public WorkstreamEventEnvelope publishGovernancePolicyImpactLifecycle(GovernancePolicyImpactTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var eventType = "workflow.governance_policy.impact_analysis." + semanticTransition;
+    var event = publishGovernancePolicyImpactEvent(task, semanticTransition, eventType, EVENT_FAMILY_WORKFLOW_PROCESS, capabilityId, actorAccountId, correlationId);
+    publishGovernancePolicyImpactTaskEvent(task, semanticTransition, capabilityId, actorAccountId, correlationId);
+    return event;
+  }
+
+  public WorkstreamEventEnvelope publishGovernancePolicyImpactTaskEvent(GovernancePolicyImpactTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var taskTransition = workerTaskTransition(task, semanticTransition);
+    var eventType = "worker.task." + taskTransition;
+    return publishGovernancePolicyImpactEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
   }
 
   private WorkstreamEventEnvelope publishAccessReviewEvent(AccessReviewTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
@@ -306,6 +321,64 @@ public final class WorkstreamEventPublisher {
         Map.of("attentionCategory", "WORKFLOW_BLOCKED", "attentionItemId", "attention:worker-task:" + task.taskId() + ":task-state"));
   }
 
+  private WorkstreamEventEnvelope publishGovernancePolicyImpactEvent(GovernancePolicyImpactTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
+    var idempotencyKey = idempotencyKey(eventFamily, eventType, task.tenantId(), task.customerId(), task.impactTaskId(), semanticTransition);
+    var existing = repository.findByIdempotencyKey(task.tenantId(), idempotencyKey).orElse(null);
+    var event = existing == null
+        ? repository.publish(governancePolicyImpactLifecycleEnvelope(task, semanticTransition, eventType, eventFamily, capabilityId, actorAccountId, idempotencyKey, correlationId))
+        : existing;
+    attentionConsumer.project(event, task);
+    return event;
+  }
+
+  private WorkstreamEventEnvelope governancePolicyImpactLifecycleEnvelope(GovernancePolicyImpactTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String idempotencyKey, String correlationId) {
+    var eventId = "evt-" + stableSuffix(idempotencyKey);
+    var traceId = firstTraceRef(task, "trace-" + stableSuffix(eventId + ":" + correlationId));
+    var now = Instant.now(clock);
+    var safeCapability = safe(capabilityId, GovernancePolicyImpactService.READ_CAPABILITY);
+    return new WorkstreamEventEnvelope(
+        eventId,
+        eventType,
+        eventFamily,
+        1,
+        task.updatedAt() == null ? now : task.updatedAt(),
+        now,
+        task.tenantId(),
+        task.customerId(),
+        Map.of("scopeType", task.customerId() == null ? "TENANT" : "CUSTOMER", "tenantId", task.tenantId(), "customerId", safe(task.customerId(), ""), "capabilityIds", safeCapability + "," + GovernancePolicyImpactService.READ_CAPABILITY),
+        Map.of("actorType", actorAccountId == null || actorAccountId.isBlank() ? "worker" : "account", "accountId", safe(actorAccountId, "system"), "label", "Governance/Policy impact lifecycle"),
+        List.of(
+            new WorkstreamEventSourceRef("workflow", task.impactTaskId(), "Governance/Policy impact workflow " + semanticTransition, safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("autonomous_task", safe(task.autonomousAgentTaskId(), task.impactTaskId()), "Governance/Policy impact AutonomousAgent task state " + task.status().name().toLowerCase(java.util.Locale.ROOT), safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("governance_policy_proposal", task.proposalId(), "Policy proposal under impact analysis", safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("capability", safeCapability, "Governance/Policy impact capability", safeCapability, "trace-capability-" + stableSuffix(safeCapability), correlationId)),
+        List.of(safeCapability, GovernancePolicyImpactService.READ_CAPABILITY),
+        correlationId,
+        idempotencyKey,
+        task.idempotencyKey(),
+        List.of(traceId),
+        "agent-governance-policy",
+        task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED ? "surface-governance-policy-impact-analysis-result" : "surface-governance-policy-impact-analysis-task",
+        PAYLOAD_GOVERNANCE_POLICY_IMPACT_LIFECYCLE,
+        Map.ofEntries(
+            Map.entry("impactTaskId", task.impactTaskId()),
+            Map.entry("autonomousAgentTaskId", safe(task.autonomousAgentTaskId(), "")),
+            Map.entry("proposalId", task.proposalId()),
+            Map.entry("status", task.status().name().toLowerCase(java.util.Locale.ROOT)),
+            Map.entry("semanticTransition", semanticTransition),
+            Map.entry("taskLifecycleEventType", eventType),
+            Map.entry("progressPercent", Integer.toString(task.progressPercent())),
+            Map.entry("blockerCode", safe(task.blockerCode(), "")),
+            Map.entry("decision", safe(task.decision(), "")),
+            Map.entry("safeSummary", redact(safe(task.summary(), ""))),
+            Map.entry("providerOrRuntimeState", task.status() == GovernancePolicyImpactTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime:fail_closed:no_fake_success" : "state_recorded_without_policy_activation_or_mutation"),
+            Map.entry("noDirectMutation", "true"),
+            Map.entry("activationBlockedUntilHumanDecision", "true"),
+            Map.entry("redactionRequired", "true")),
+        Map.of("browserSafe", "true", "omitted", "rawPrompt,hiddenPromptText,rawToolPayload,rawJwt,providerSecret,providerCredential,crossTenantEvidence", "minimumRedactionLevel", "FULL"),
+        Map.of("attentionCategory", "WORKFLOW_BLOCKED", "attentionItemId", "attention:worker-task:" + task.impactTaskId() + ":task-state"));
+  }
+
   private static String idempotencyKey(String eventFamily, String eventType, String tenantId, String customerId, String sourceRefId, String semanticTransition) {
     return "workstream-event:" + eventFamily + ":" + eventType + ":" + tenantId + ":" + safe(customerId, "none") + ":" + sourceRefId + ":" + semanticTransition;
   }
@@ -322,6 +395,11 @@ public final class WorkstreamEventPublisher {
 
   private static String workerTaskTransition(AuditTraceSummaryTask task, String semanticTransition) {
     if (task.status() == AuditTraceSummaryTask.Status.FAILED || "autonomous_agent_task_failed".equals(task.blockerCode())) return "failed";
+    return normalizedWorkerTaskTransition(semanticTransition);
+  }
+
+  private static String workerTaskTransition(GovernancePolicyImpactTask task, String semanticTransition) {
+    if (task.status() == GovernancePolicyImpactTask.Status.FAILED || "autonomous_agent_task_failed".equals(task.blockerCode())) return "failed";
     return normalizedWorkerTaskTransition(semanticTransition);
   }
 
@@ -347,6 +425,10 @@ public final class WorkstreamEventPublisher {
   }
 
   private static String firstTraceRef(AuditTraceSummaryTask task, String fallback) {
+    return task.traceIds().isEmpty() ? fallback : task.traceIds().get(0);
+  }
+
+  private static String firstTraceRef(GovernancePolicyImpactTask task, String fallback) {
     return task.traceIds().isEmpty() ? fallback : task.traceIds().get(0);
   }
 

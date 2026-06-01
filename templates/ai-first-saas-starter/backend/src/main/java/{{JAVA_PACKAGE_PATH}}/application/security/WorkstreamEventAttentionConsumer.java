@@ -4,6 +4,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
@@ -117,6 +118,33 @@ public final class WorkstreamEventAttentionConsumer {
     });
   }
 
+  public AttentionItem project(WorkstreamEventEnvelope event, GovernancePolicyImpactTask sourceTask) {
+    var workflowEvent = "workflow/process".equals(event.eventFamily()) && event.eventType().startsWith("workflow.governance_policy.impact_analysis.");
+    var taskEvent = "task/worker".equals(event.eventFamily()) && event.eventType().startsWith("worker.task.");
+    if (!workflowEvent && !taskEvent) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "unsupported-event-type");
+      return null;
+    }
+    if (!event.tenantId().equals(sourceTask.tenantId()) || !Objects.equals(event.customerId(), sourceTask.customerId())) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "scope-mismatch");
+      return null;
+    }
+    if (!event.capabilityRefs().stream().anyMatch(capability -> capability.startsWith("governance.policy.impact_analysis."))) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "missing-governance-impact-capability-ref");
+      return null;
+    }
+    if (alreadyProjected(event)) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DUPLICATE", AdminAuditEvent.Result.NO_OP, event, event.idempotencyKey());
+      return currentItem(event);
+    }
+    return projectSupported(event, switch (event.eventType()) {
+      case "workflow.governance_policy.impact_analysis.started", "workflow.governance_policy.impact_analysis.blocked_provider_or_runtime", "workflow.governance_policy.impact_analysis.failed", "workflow.governance_policy.impact_analysis.completed_review_required", "workflow.governance_policy.impact_analysis.result_rejected", "workflow.governance_policy.impact_analysis.request_changes",
+          "worker.task.queued", "worker.task.running", "worker.task.blocked_provider_or_runtime", "worker.task.failed", "worker.task.completed_review_required", "worker.task.rejected_result" -> attentionProducerService.upsertWorkerTaskState(sourceTask, null, event.correlationId());
+      case "workflow.governance_policy.impact_analysis.cancelled", "workflow.governance_policy.impact_analysis.result_accepted", "worker.task.cancelled", "worker.task.accepted" -> attentionProducerService.resolveWorkerTaskState(sourceTask, sourceTask.status().name().toLowerCase(java.util.Locale.ROOT), event.correlationId());
+      default -> null;
+    });
+  }
+
   public AttentionItem project(WorkstreamEventEnvelope event, AuditTraceSummaryTask sourceTask) {
     var workflowEvent = "workflow/process".equals(event.eventFamily()) && event.eventType().startsWith("workflow.audit_trace.summary_");
     var taskEvent = "task/worker".equals(event.eventFamily()) && event.eventType().startsWith("worker.task.");
@@ -166,6 +194,9 @@ public final class WorkstreamEventAttentionConsumer {
     }
     if (event.payload().containsKey("taskId")) {
       return attentionRepository.find(event.tenantId(), workerTaskItemId(event.payload().get("taskId"))).orElse(null);
+    }
+    if (event.payload().containsKey("impactTaskId")) {
+      return attentionRepository.find(event.tenantId(), workerTaskItemId(event.payload().get("impactTaskId"))).orElse(null);
     }
     return null;
   }

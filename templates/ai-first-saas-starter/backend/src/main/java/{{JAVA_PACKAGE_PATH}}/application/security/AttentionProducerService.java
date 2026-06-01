@@ -11,6 +11,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItemStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSeverity;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSurfaceRef;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.InvitationStatus;
@@ -191,6 +192,35 @@ public final class AttentionProducerService {
     return resolve(task.tenantId(), workerTaskItemId(task.taskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
   }
 
+  public AttentionItem upsertWorkerTaskState(GovernancePolicyImpactTask task, String timerId, String correlationId) {
+    if (task.status() == GovernancePolicyImpactTask.Status.CANCELLED || task.status() == GovernancePolicyImpactTask.Status.ACCEPTED) {
+      return resolveWorkerTaskState(task, task.status().name().toLowerCase(), correlationId);
+    }
+    var attention = switch (task.status()) {
+      case BLOCKED_PROVIDER_OR_RUNTIME -> governancePolicyImpactWorkerTaskItem(task, AttentionSeverity.BLOCKED, AttentionCategory.WORKFLOW_BLOCKED,
+          "Governance/Policy impact worker is blocked by provider/runtime readiness",
+          "Governance/Policy impact task " + task.impactTaskId() + " is blocked_provider_or_runtime; the starter fails closed instead of returning deterministic, simulated, fake, or model-less policy impact findings.", timerId, correlationId);
+      case FAILED -> governancePolicyImpactWorkerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.AGENT_TASK_FAILED,
+          "Governance/Policy impact worker failed closed",
+          "Governance/Policy impact task " + task.impactTaskId() + " failed and needs authorized follow-up.", timerId, correlationId);
+      case REJECTED_RESULT, REQUEST_CHANGES -> governancePolicyImpactWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.AGENT_TASK_FAILED,
+          "Governance/Policy impact result needs follow-up",
+          "Governance/Policy impact task " + task.impactTaskId() + " was rejected or returned for changes and needs authorized Governance/Policy follow-up before policy activation.", timerId, correlationId);
+      case COMPLETED_REVIEW_REQUIRED -> governancePolicyImpactWorkerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.GOVERNANCE_APPROVAL,
+          "Governance/Policy impact result awaits human review",
+          "Governance/Policy impact task " + task.impactTaskId() + " completed through the governed AutonomousAgent runtime and requires human review before any policy decision or activation.", timerId, correlationId);
+      case RUNNING, QUEUED -> governancePolicyImpactWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.WORKFLOW_BLOCKED,
+          "Governance/Policy impact task is waiting for worker progress",
+          "Governance/Policy impact task " + task.impactTaskId() + " is " + task.status().name().toLowerCase() + " and may need worker/runtime attention if it remains stale.", timerId, correlationId);
+      case CANCELLED, ACCEPTED -> null;
+    };
+    return attention == null ? null : upsert(attention, WORKER_TASK_STATE_PRODUCER_ID, correlationId);
+  }
+
+  public AttentionItem resolveWorkerTaskState(GovernancePolicyImpactTask task, String reason, String correlationId) {
+    return resolve(task.tenantId(), workerTaskItemId(task.impactTaskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
+  }
+
   private AttentionItem upsertTimedInvitationDelivery(Invitation invitation, String timerId, String correlationId) {
     var item = upsertInvitationDelivery(invitation, correlationId);
     var refs = new java.util.ArrayList<>(item.sourceRefs());
@@ -257,6 +287,26 @@ public final class AttentionProducerService {
         WORKER_TASK_STATE_PRODUCER_ID,
         timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
         "Audit/Trace summary task state " + task.status().name().toLowerCase(),
+        null,
+        correlationId);
+  }
+
+  private AttentionItem governancePolicyImpactWorkerTaskItem(GovernancePolicyImpactTask task, AttentionSeverity severity, AttentionCategory category, String title, String summary, String timerId, String correlationId) {
+    return item(
+        workerTaskItemId(task.impactTaskId()),
+        task.tenantId(),
+        task.customerId(),
+        "agent-governance-policy",
+        title,
+        summary + " Evidence is limited to durable impact state, scoped/redacted governancePolicyEvidence.read refs, readSkill/readReferenceDoc traces, policy proposal refs, and AutonomousAgent work traces; no direct approval, activation, rollback, policy mutation, or fake model-backed success is introduced.",
+        category,
+        severity,
+        GovernancePolicyImpactService.READ_CAPABILITY,
+        task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED ? "surface-governance-policy-impact-analysis-result" : "surface-governance-policy-impact-analysis-task",
+        task.impactTaskId(),
+        WORKER_TASK_STATE_PRODUCER_ID,
+        timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
+        "Governance/Policy impact task state " + task.status().name().toLowerCase(),
         null,
         correlationId);
   }
