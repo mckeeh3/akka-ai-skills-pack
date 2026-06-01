@@ -158,7 +158,7 @@
 
 ### TASK-WAB-04-001: Wire frontend attention surfaces to backend-derived data
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-backbone-v1/backlog/01-attention-backbone-v1-build-backlog.md
 - task brief: specs/workstream-attention-backbone-v1/tasks/04-frontend/01-wire-frontend-attention-surfaces.md
 - depends on:
@@ -190,6 +190,9 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: frontend surfaces for left rail, My Account dashboard/personal queue, and workstream dashboard attention sections; browser-tool/API exposure; backend authorization remains authoritative; tests include rendering and frontend secret/authority boundary where touched
+  - backend rail summary contract added to functional-agent API payloads via `attention.list_rail_summaries`; `railAttentionState` remains transient unseen-response state only
+  - validation: `cd templates/ai-first-saas-starter/frontend && npm test -- --runInBand`; `cd templates/ai-first-saas-starter/frontend && npm run typecheck`; `cd templates/ai-first-saas-starter/frontend && npm run build`; scaffolded backend equivalent passed with `tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --template-dir templates/ai-first-saas-starter --app-name "WAB Frontend Check" --app-slug wab-frontend-check --base-package ai.first --maven-group-id ai.first --yes` then `mvn -q -Dtest=AttentionServiceTest,WorkstreamServiceTest test`
+  - rg proof: `rg -n "backend-actionable|attention\\.list_rail_summaries|railAttentionState|attentionSource|attention\\.list_workstream_items|FunctionalAgentAttention" templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/{MeResponse.java,WorkstreamService.java}`
   - commit message: `attention-backbone: wire frontend surfaces`
 
 ### TASK-WAB-99-001: Verify attention backbone v1 completion

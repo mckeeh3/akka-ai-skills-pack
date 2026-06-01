@@ -35,7 +35,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     },
     defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['secure-tenant-user-foundation', 'admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.audit.read'],
-    attention: { count: 2, severity: 'warning' },
+    attention: { count: 2, severity: 'warning', source: 'attention.list_rail_summaries' },
     availability: 'visible'
   },
   {
@@ -54,7 +54,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     },
     defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['agent_admin.submit_turn', 'agent_admin.list_definitions', 'agent_admin.get_definition', 'agent_admin.get_prompt_version', 'agent_admin.get_skill_version', 'agent_admin.get_reference_version', 'agent_admin.get_manifest', 'agent_admin.get_tool_boundary', 'agent_admin.draft_behavior_change', 'agent_admin.submit_behavior_change_for_review', 'agent_admin.approve_behavior_change', 'agent_admin.reject_behavior_change', 'agent_admin.activate_behavior_change', 'agent_admin.cancel_behavior_change', 'agent_admin.rollback_behavior_change', 'agent_admin.simulate_tool_boundary', 'agent_admin.get_model_ref', 'agent_admin.list_seed_material'],
-    attention: { count: 4, severity: 'critical' },
+    attention: { count: 4, severity: 'blocked', source: 'attention.list_rail_summaries' },
     availability: 'visible'
   },
   {
@@ -91,7 +91,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     },
     defaultSurfaceType: 'markdown_response',
     requiredCapabilityIds: ['governance.policy.read'],
-    attention: { count: 1, severity: 'critical' },
+    attention: { count: 1, severity: 'urgent', source: 'attention.list_rail_summaries' },
     availability: 'visible'
   },
   {

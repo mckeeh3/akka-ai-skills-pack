@@ -31,11 +31,16 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
         ))}
       </div>
       {envelope.data.attentionItems && envelope.data.attentionItems.length > 0 && (
-        <section className="surface-section-list" aria-label="Audit/Trace attention items">
+        <section className="surface-section-list" aria-label="Backend-derived attention items; Audit/Trace attention items" data-attention-source={envelope.data.attentionSource ?? 'attention.list_workstream_items'}>
           {envelope.data.attentionItems.map((item) => (
-            <article key={item.itemId} className={`surface-section-card ${item.severity ?? item.status}`}>
-              <h4>{item.label}</h4>
-              <p>Status: {item.status}</p>
+            <article key={item.itemId} className={`surface-section-card ${attentionSeverityClass(item.severity ?? item.status)}`} data-attention-redaction={item.redaction ?? 'full'}>
+              <h4>{item.label ?? item.title ?? item.itemId}</h4>
+              {item.summary && <p>{item.summary}</p>}
+              <p>Status: {item.status}{item.category ? ` · Category: ${item.category}` : ''}</p>
+              {item.sourceWorkstreamId && <p className="capability-basis">Source workstream: {item.sourceWorkstreamId}</p>}
+              {item.capabilityId && <p className="capability-basis">Capability: {item.capabilityId}</p>}
+              {item.governedToolId && <p className="capability-basis">Governed tool: {item.governedToolId}</p>}
+              {item.surfaceRef?.targetSurfaceId && <p className="capability-basis">Target surface: {item.surfaceRef.targetSurfaceId}</p>}
               {item.traceId && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(item.traceId)}`}>{item.traceId}</a>}
             </article>
           ))}
@@ -66,6 +71,10 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
     </SurfaceStateFrame>
   );
+}
+
+function attentionSeverityClass(severity: string): string {
+  return severity === 'critical' || severity === 'urgent' || severity === 'blocked' ? 'danger' : severity;
 }
 
 function renderSurfaceValue(value: unknown): string | undefined {

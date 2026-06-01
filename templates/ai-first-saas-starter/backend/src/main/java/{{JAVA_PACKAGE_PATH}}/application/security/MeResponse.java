@@ -145,8 +145,13 @@ public record MeResponse(
       WorkstreamIconDescriptor workstreamIcon,
       String defaultSurfaceType,
       List<String> requiredCapabilityIds,
+      FunctionalAgentAttention attention,
       String availability,
       String deniedReason) {
+    public FunctionalAgentSummary withAttention(FunctionalAgentAttention attention) {
+      return new FunctionalAgentSummary(functionalAgentId, label, purpose, icon, workstreamIcon, defaultSurfaceType, requiredCapabilityIds, attention, availability, deniedReason);
+    }
+
     static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
       var userAdminVisible = capabilities.contains("secure-tenant-user-foundation")
           || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
@@ -167,6 +172,7 @@ public record MeResponse(
               icon("workstream-my-account", "My Account", "my-account", "user account avatar", "accent-account", "Open My Account workstream from the signed-in user tile"),
               "markdown_response",
               List.of("my_account.view_summary", "my_account.ask_agent"),
+              null,
               profileVisible ? "visible" : "denied",
               profileVisible ? null : "No active profile context is available."),
           new FunctionalAgentSummary(
@@ -177,6 +183,7 @@ public record MeResponse(
               icon("workstream-user-admin", "User Admin", "users-admin", "users and roles", "accent-users", "Open User Admin workstream"),
               "markdown_response",
               List.of("secure-tenant-user-foundation"),
+              null,
               userAdminVisible ? "visible" : "denied",
               userAdminVisible ? null : "Missing User Admin read capability."),
           new FunctionalAgentSummary(
@@ -187,6 +194,7 @@ public record MeResponse(
               icon("workstream-agent-admin", "Agent Admin", "bot-spark", "agent bot sparkle", "accent-agents", "Open Agent Admin workstream"),
               "markdown_response",
               List.of("agent_admin.submit_turn", "agent_admin.list_definitions", "agent_admin.get_definition", "agent_admin.get_prompt_version", "agent_admin.get_skill_version", "agent_admin.get_reference_version", "agent_admin.get_manifest", "agent_admin.get_model_ref", "agent_admin.get_tool_boundary", "agent_admin.simulate_tool_boundary", "agent_admin.draft_behavior_change", "agent_admin.submit_behavior_change_for_review", "agent_admin.approve_behavior_change", "agent_admin.reject_behavior_change", "agent_admin.activate_behavior_change", "agent_admin.cancel_behavior_change", "agent_admin.rollback_behavior_change", "agent_admin.list_seed_material", "agent_admin.reseed_missing_defaults", "agent_admin.start_behavior_review_task", "agent_admin.get_behavior_review_task", "agent_admin.cancel_behavior_review_task"),
+              null,
               agentAdminVisible ? "visible" : "denied",
               agentAdminVisible ? null : "Missing governed Agent Admin capabilities."),
           new FunctionalAgentSummary(
@@ -197,6 +205,7 @@ public record MeResponse(
               icon("workstream-audit-trace", "Audit/Trace", "timeline-search", "audit timeline search", "accent-audit", "Open Audit/Trace workstream"),
               "markdown_response",
               List.of("audit.trace.read"),
+              null,
               auditVisible ? "visible" : "hidden",
               null),
           new FunctionalAgentSummary(
@@ -207,9 +216,12 @@ public record MeResponse(
               icon("workstream-governance-policy", "Governance/Policy", "shield-checklist", "shield checklist", "accent-governance", "Open Governance/Policy workstream"),
               "markdown_response",
               List.of("governance.policy.read", "improvements.review"),
+              null,
               governanceVisible ? "visible" : "denied",
               governanceVisible ? null : "Governance policy capabilities are not assigned in this context."));
     }
+
+    public record FunctionalAgentAttention(int count, String severity, String source) {}
 
     private static WorkstreamIconDescriptor icon(String workstreamId, String displayName, String iconId, String visualHint, String accentColorToken, String label) {
       return new WorkstreamIconDescriptor(workstreamId, displayName, iconId, visualHint, accentColorToken, label, label, null);

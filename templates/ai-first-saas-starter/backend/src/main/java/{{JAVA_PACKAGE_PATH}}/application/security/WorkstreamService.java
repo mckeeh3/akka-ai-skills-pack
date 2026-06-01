@@ -25,9 +25,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /** Browser-facing agent workstream API adapter for foundation, Agent Admin, and Governance/Policy surfaces. */
 public final class WorkstreamService {
@@ -145,11 +147,13 @@ public final class WorkstreamService {
   public WorkstreamBootstrapResponse bootstrap(WorkosIdentity identity, String selectedContextId, String correlationId) {
     var me = meService.me(identity, selectedContextId, correlationId);
     var actor = authContextResolver.resolveMe(identity, me.selectedAuthContext().selectedContextId(), correlationId);
-    return new WorkstreamBootstrapResponse(me, me.functionalAgents(), initialItems(actor, correlationId), initialSurfaces(actor, correlationId));
+    return new WorkstreamBootstrapResponse(me, functionalAgentsWithBackendAttention(actor, me.functionalAgents(), correlationId), initialItems(actor, correlationId), initialSurfaces(actor, correlationId));
   }
 
   public List<MeResponse.FunctionalAgentSummary> functionalAgents(WorkosIdentity identity, String selectedContextId, String correlationId) {
-    return meService.me(identity, selectedContextId, correlationId).functionalAgents();
+    var me = meService.me(identity, selectedContextId, correlationId);
+    var actor = authContextResolver.resolveMe(identity, me.selectedAuthContext().selectedContextId(), correlationId);
+    return functionalAgentsWithBackendAttention(actor, me.functionalAgents(), correlationId);
   }
 
   public List<WorkstreamItem> items(WorkosIdentity identity, String selectedContextId, String functionalAgentId, String correlationId) {
@@ -430,7 +434,7 @@ public final class WorkstreamService {
     var agent = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
         .filter(summary -> functionalAgentId.equals(summary.functionalAgentId()))
         .findFirst()
-        .orElse(new MeResponse.FunctionalAgentSummary(functionalAgentId, title.replace(" v0 response", ""), "Five core v0 starter workstream.", "workstream", new MeResponse.WorkstreamIconDescriptor(functionalAgentId, title.replace(" v0 response", ""), "workstream", "workstream", "accent-workstream", "Open " + title.replace(" v0 response", "") + " workstream", "Open " + title.replace(" v0 response", "") + " workstream", null), "markdown_response", List.of(), "visible", null));
+        .orElse(new MeResponse.FunctionalAgentSummary(functionalAgentId, title.replace(" v0 response", ""), "Five core v0 starter workstream.", "workstream", new MeResponse.WorkstreamIconDescriptor(functionalAgentId, title.replace(" v0 response", ""), "workstream", "workstream", "accent-workstream", "Open " + title.replace(" v0 response", "") + " workstream", "Open " + title.replace(" v0 response", "") + " workstream", null), "markdown_response", List.of(), null, "visible", null));
     return markdownResponseSurface(surfaceId, workstreamEntryId, agent, actor, correlationId, List.of("trace-" + surfaceId), markdown);
   }
 
@@ -780,6 +784,20 @@ public final class WorkstreamService {
       case "surface-governance-policy-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
       default -> null;
     };
+  }
+
+  private List<MeResponse.FunctionalAgentSummary> functionalAgentsWithBackendAttention(AuthContextResolver.ResolvedMe actor, List<MeResponse.FunctionalAgentSummary> agents, String correlationId) {
+    seedStarterCoreAttention(actor, correlationId);
+    var summaries = attentionService.listRailSummaries(actor, correlationId).stream()
+        .collect(Collectors.toMap(AttentionService.WorkstreamAttentionSummary::workstreamId, summary -> summary, (left, right) -> left, LinkedHashMap::new));
+    return agents.stream().map(agent -> {
+      var summary = summaries.get(agent.functionalAgentId());
+      if (summary == null || summary.attentionCount() <= 0) return agent.withAttention(null);
+      return agent.withAttention(new MeResponse.FunctionalAgentSummary.FunctionalAgentAttention(
+          summary.attentionCount(),
+          summary.highestSeverity().name().toLowerCase(Locale.ROOT),
+          AttentionService.LIST_RAIL_SUMMARIES_TOOL));
+    }).toList();
   }
 
   private void seedStarterCoreAttention(AuthContextResolver.ResolvedMe actor, String correlationId) {

@@ -1,9 +1,11 @@
 export type AgentAvailability = 'visible' | 'hidden' | 'denied' | 'disabled';
-export type AttentionSeverity = 'info' | 'warning' | 'critical';
+export type AttentionSeverity = 'info' | 'warning' | 'urgent' | 'blocked' | 'critical';
 
 export type FunctionalAgentAttention = {
   count: number;
   severity: AttentionSeverity;
+  /** Backend governed-tool that produced this actionable attention summary, e.g. attention.list_rail_summaries. */
+  source?: 'attention.list_rail_summaries' | string;
 };
 
 export type FunctionalAgentRailAttentionKind = 'background-response' | 'background-activity';

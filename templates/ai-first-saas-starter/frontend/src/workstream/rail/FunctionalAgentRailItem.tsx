@@ -8,7 +8,8 @@ type FunctionalAgentRailItemProps = {
   onSelect?: (functionalAgentId: string) => void;
 };
 
-const severityLabel = (severity: string) => `${severity} attention`;
+const severityLabel = (severity: string) => `${severity} backend-derived actionable attention`;
+const attentionSeverityClass = (severity: string) => (severity === 'critical' || severity === 'urgent' || severity === 'blocked' ? 'danger' : severity);
 
 export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: FunctionalAgentRailItemProps) {
   const selectable = isAgentSelectable(entry);
@@ -54,12 +55,12 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
           <span id={labelId}>{entry.label}</span>
         </span>
         {entry.attention && (
-          <span className={`status-pill ${entry.attention.severity === 'critical' ? 'danger' : entry.attention.severity}`} aria-label={`${entry.attention.count} ${severityLabel(entry.attention.severity)}`}>
+          <span className={`status-pill ${attentionSeverityClass(entry.attention.severity)}`} aria-label={`${entry.attention.count} ${severityLabel(entry.attention.severity)}`} data-attention-kind="backend-actionable" data-attention-source={entry.attention.source ?? 'attention.list_rail_summaries'}>
             {entry.attention.count}
           </span>
         )}
         {entry.railAttention && unseenResponseCount > 0 && (
-          <span className={`rail-unseen-response-badge ${entry.railAttention.severity === 'critical' ? 'danger' : entry.railAttention.severity}`} aria-label={unseenResponseLabel} data-attention-kind={entry.railAttention.kind}>
+          <span className={`rail-unseen-response-badge ${attentionSeverityClass(entry.railAttention.severity)}`} aria-label={unseenResponseLabel} data-attention-kind={entry.railAttention.kind}>
             {unseenResponseCount > 9 ? '9+' : unseenResponseCount}
           </span>
         )}

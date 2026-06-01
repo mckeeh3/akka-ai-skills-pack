@@ -35,7 +35,7 @@ test('Agent Admin functional agent is visible and capability backed for v0 gover
     assert.match(agents, new RegExp(capability.replaceAll('.', '\\.')));
     assert.match(me, new RegExp(capability.replaceAll('.', '\\.')));
   }
-  assert.match(agents, /attention: \{ count: 4, severity: 'critical' \}/);
+  assert.match(agents, /attention: \{ count: 4, severity: 'blocked', source: 'attention\.list_rail_summaries' \}/);
   assert.match(agents, /availability: 'visible'/);
 });
 

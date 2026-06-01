@@ -93,10 +93,41 @@ export type SystemMessageData = {
   };
 };
 
+export type AttentionItemStatus = 'open' | 'acknowledged' | 'resolved' | 'dismissed' | 'expired' | string;
+export type AttentionCategory = 'invitation_delivery' | 'provider_readiness' | 'governance_approval' | 'audit_failure_evidence' | 'access_review' | 'policy_exception' | 'workflow_blocked' | 'agent_task_failed' | 'security_review' | string;
+export type AttentionItemSeverity = 'info' | 'warning' | 'urgent' | 'blocked' | 'critical' | string;
+export type AttentionRedaction = 'full' | 'summary_only' | 'not_found_or_redacted' | string;
+
+export type AttentionSurfaceRef = {
+  targetFunctionalAgentId?: string;
+  targetSurfaceId?: string;
+  targetSurfaceType?: string;
+  targetItemId?: string;
+  defaultActionId?: string;
+  requiredCapabilityId?: string;
+};
+
+export type AttentionItem = {
+  itemId: string;
+  label?: string;
+  title?: string;
+  summary?: string;
+  status: AttentionItemStatus;
+  severity?: AttentionItemSeverity;
+  category?: AttentionCategory;
+  capabilityId?: string;
+  governedToolId?: string;
+  traceId?: string;
+  sourceWorkstreamId?: string;
+  surfaceRef?: AttentionSurfaceRef;
+  redaction?: AttentionRedaction;
+};
+
 export type DashboardSurfaceData = {
   surfaceContract?: 'audit.trace.dashboard.v1' | string;
-  cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'critical' | 'blocked_provider_or_runtime' }>;
-  attentionItems?: Array<{ itemId: string; label: string; status: string; severity?: string; traceId?: string }>;
+  cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'urgent' | 'critical' | 'blocked' | 'blocked_provider_or_runtime' }>;
+  attentionItems?: Array<AttentionItem>;
+  attentionSource?: 'attention.list_workstream_items' | string;
   sections?: Array<{ sectionId: string; label: string; summary: string }>;
   nextSteps?: Array<{ workstreamId: string; label: string; allowed: boolean; blockedReason?: string; capabilityIds?: string[]; traceId?: string }>;
   blockedState?: { reasonCode: string; message: string; recovery: string };
