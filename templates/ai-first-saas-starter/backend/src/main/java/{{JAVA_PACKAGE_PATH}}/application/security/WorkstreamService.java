@@ -19,6 +19,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
+import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -29,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /** Browser-facing agent workstream API adapter for foundation, Agent Admin, and Governance/Policy surfaces. */
@@ -109,6 +111,7 @@ public final class WorkstreamService {
   private final AttentionService attentionService;
   private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
   private final WorkstreamLogRepository workstreamLogRepository;
+  private final WorkstreamEventRepository workstreamEventRepository;
   private final Map<String, CapabilityActionResult> idempotentActionResults = new ConcurrentHashMap<>();
 
   public WorkstreamService(
@@ -127,7 +130,7 @@ public final class WorkstreamService {
       GovernancePolicyRepository governancePolicyRepository,
       AttentionService attentionService,
       AttentionProducerService attentionProducerService) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, null);
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, null, null);
   }
 
   public WorkstreamService(
@@ -146,7 +149,8 @@ public final class WorkstreamService {
       GovernancePolicyRepository governancePolicyRepository,
       AttentionService attentionService,
       AttentionProducerService attentionProducerService,
-      WorkstreamEventPublisher workstreamEventPublisher) {
+      WorkstreamEventPublisher workstreamEventPublisher,
+      WorkstreamEventRepository workstreamEventRepository) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.attentionService = Objects.requireNonNull(attentionService);
@@ -161,6 +165,7 @@ public final class WorkstreamService {
     this.agentRuntimeService = agentRuntimeService;
     this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
     this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
+    this.workstreamEventRepository = workstreamEventRepository == null ? new EmptyWorkstreamEventRepository() : workstreamEventRepository;
     this.auditTraceService = new AuditTraceService(authContextResolver, Objects.requireNonNull(auditTraceRepository));
     this.governancePolicyService = new GovernancePolicyService(Objects.requireNonNull(governancePolicyRepository), authContextResolver, Clock.systemUTC());
   }
@@ -417,7 +422,10 @@ public final class WorkstreamService {
 
   public List<WorkstreamEvent> events(WorkosIdentity identity, String selectedContextId, String functionalAgentId, String lastEventId, String correlationId) {
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
-    var events = initialEvents(actor, correlationId).stream().filter(event -> functionalAgentId == null || functionalAgentId.isBlank() || functionalAgentId.equals(event.functionalAgentId())).toList();
+    var allEvents = new ArrayList<WorkstreamEvent>();
+    allEvents.addAll(initialEvents(actor, correlationId));
+    allEvents.addAll(eventBackedRefreshEvents(actor, correlationId));
+    var events = allEvents.stream().filter(event -> functionalAgentId == null || functionalAgentId.isBlank() || functionalAgentId.equals(event.functionalAgentId())).toList();
     if (lastEventId == null || lastEventId.isBlank()) return events;
     for (var index = 0; index < events.size(); index++) if (lastEventId.equals(events.get(index).eventId()) && index + 1 < events.size()) return events.subList(index + 1, events.size());
     return List.of(new WorkstreamEvent("evt-stale-replay-unavailable-999", "surface.stale", actor.selectedContext().tenantId(), actor.selectedContext().customerId(), USER_ADMIN_AGENT_ID, "surface-v0-user-admin-markdown", "markdown_response", "v1", correlationId, List.of("trace-sse-replay-unavailable"), Instant.now().toString(), 999, mapOf("reason", "Replay from Last-Event-ID is unavailable; refresh the affected starter markdown_response surfaces.")));
@@ -764,6 +772,43 @@ public final class WorkstreamService {
   private List<WorkstreamEvent> initialEvents(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var tenantId = actor.selectedContext().tenantId(); var customerId = actor.selectedContext().customerId(); var now = Instant.now().toString();
     return List.of(new WorkstreamEvent("evt-workstream-reconnected-001", "surface.reconnected", tenantId, customerId, MY_ACCOUNT_AGENT_ID, "surface-v0-my-account-markdown", "markdown_response", "v1", correlationId, List.of("trace-sse-reconnected"), now, 1, mapOf("message", "Realtime stream connected for selected AuthContext.")), new WorkstreamEvent("evt-audit-appended-002", "workstream.item.appended", tenantId, customerId, AUDIT_TRACE_AGENT_ID, "surface-v0-audit-trace-markdown", "markdown_response", "v1", correlationId, List.of("trace-sse-audit"), now, 2, mapOf("itemId", "item-v0-audit-trace-markdown", "kind", "markdown_response", "title", "Audit/Trace v0 response", "body", "SSE delivered a browser-safe five-core v0 trace update.", "surfaceId", "surface-v0-audit-trace-markdown", "status", "ready")), new WorkstreamEvent("evt-user-admin-stale-003", "surface.stale", tenantId, customerId, USER_ADMIN_AGENT_ID, "surface-v0-user-admin-markdown", "markdown_response", "v1", correlationId, List.of("trace-sse-stale"), now, 3, mapOf("reason", "User Admin markdown_response should refresh after invitation/user changes.")), new WorkstreamEvent("evt-agent-admin-reconnected-004", "surface.reconnected", tenantId, customerId, AGENT_ADMIN_AGENT_ID, "surface-v0-agent-admin-markdown", "markdown_response", "v1", correlationId, List.of("trace-agent-admin-reconnected"), now, 4, mapOf("message", "Agent Admin v0 markdown_response is backed by governed records.")));
+  }
+
+  private List<WorkstreamEvent> eventBackedRefreshEvents(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var envelopes = new ArrayList<>(workstreamEventRepository.listTenant(actor.selectedContext().tenantId()));
+    envelopes.sort(java.util.Comparator.comparing(WorkstreamEventEnvelope::occurredAt));
+    var sequence = new AtomicInteger(100);
+    return envelopes.stream()
+        .filter(event -> Objects.equals(event.customerId(), actor.selectedContext().customerId()))
+        .filter(event -> event.capabilityRefs().stream().anyMatch(capability -> actor.selectedContext().capabilities().contains(capability)))
+        .map(event -> new WorkstreamEvent(
+            event.eventId(),
+            "projection.refresh.available",
+            event.tenantId(),
+            event.customerId(),
+            event.owningWorkstreamId(),
+            event.targetSurfaceId(),
+            surfaceTypeForEventBackedRefresh(event.targetSurfaceId()),
+            "v1",
+            event.correlationId(),
+            event.traceRefs(),
+            event.occurredAt().toString(),
+            sequence.getAndIncrement(),
+            mapOf(
+                "reason", "Backend event-backed projection refresh is available; reload backend-owned attention/dashboard surfaces instead of trusting frontend state.",
+                "source", "workstream.event.delivery.refresh",
+                "eventType", event.eventType(),
+                "eventFamily", event.eventFamily(),
+                "idempotencyKey", event.idempotencyKey(),
+                "sourceRefs", event.sourceRefs().stream().map(ref -> mapOf("refType", ref.refType(), "refId", ref.refId(), "capabilityId", ref.capabilityId(), "traceId", ref.traceId())).toList())))
+        .toList();
+  }
+
+  private String surfaceTypeForEventBackedRefresh(String surfaceId) {
+    if (surfaceId == null || surfaceId.isBlank()) return "dashboard";
+    if (surfaceId.contains("invitation-panel")) return "list-search";
+    if (surfaceId.contains("access-review")) return "workflow-status";
+    return "dashboard";
   }
 
   private SurfaceEnvelope dynamicSurface(AuthContextResolver.ResolvedMe actor, String surfaceId, String correlationId) {
@@ -1116,4 +1161,11 @@ public final class WorkstreamService {
   public record WorkstreamMessageRequest(String selectedContextId, String functionalAgentId, String prompt, String correlationId, String idempotencyKey) {}
   public record WorkstreamMessageResponse(String correlationId, String idempotencyKey, WorkstreamItem userItem, WorkstreamItem agentItem, SurfaceEnvelope surface) {}
   public record WorkstreamEvent(String eventId, String eventType, String tenantId, String customerId, String functionalAgentId, String surfaceId, String surfaceType, String surfaceVersion, String correlationId, List<String> traceIds, String occurredAt, Integer sequence, Map<String, Object> patch) {}
+
+  private static final class EmptyWorkstreamEventRepository implements WorkstreamEventRepository {
+    public WorkstreamEventEnvelope publish(WorkstreamEventEnvelope event) { return event; }
+    public java.util.Optional<WorkstreamEventEnvelope> find(String tenantId, String eventId) { return java.util.Optional.empty(); }
+    public java.util.Optional<WorkstreamEventEnvelope> findByIdempotencyKey(String tenantId, String idempotencyKey) { return java.util.Optional.empty(); }
+    public List<WorkstreamEventEnvelope> listTenant(String tenantId) { return List.of(); }
+  }
 }

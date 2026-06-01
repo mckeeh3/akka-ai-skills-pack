@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 class WorkstreamServiceTest {
   private LocalDemoIdentityRepository identityRepository;
   private LocalDemoAgentBehaviorRepository agentRepository;
+  private LocalDemoWorkstreamEventRepository eventRepository;
   private WorkstreamService service;
   private TrackingWorkstreamAgentRuntimeTestAdapter trackingRuntimeInvoker;
 
@@ -47,15 +48,18 @@ class WorkstreamServiceTest {
     var attentionRepository = new LocalDemoAttentionRepository();
     var attentionService = new AttentionService(attentionRepository, resolver, Clock.systemUTC());
     var attentionProducerService = new AttentionProducerService(attentionRepository, identityRepository, Clock.systemUTC());
+    eventRepository = new LocalDemoWorkstreamEventRepository();
+    var workstreamEventConsumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, attentionProducerService, Clock.systemUTC());
+    var workstreamEventPublisher = new WorkstreamEventPublisher(eventRepository, workstreamEventConsumer, Clock.systemUTC());
     var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
-    var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
+    var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher);
     agentRepository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"), new LocalDemoAgentRuntimeTraceSink());
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
     var workstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService);
+    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
@@ -198,6 +202,33 @@ class WorkstreamServiceTest {
 
     var staleFallback = service.events(identity(), "membership-admin", null, "evt-missing", "corr-events");
     assertEquals("surface.stale", staleFallback.get(0).eventType());
+  }
+
+  @Test
+  void eventBackedProjectionRefreshEventsAreBackendDerivedAndCapabilityScoped() {
+    var started = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-start-access-review", "action-useradmin-start-access-review", "user_admin.access_review.start", "user_admin.access_review.start", Map.of("scope", "tenant"), "idem-event-refresh", "membership-admin", "surface-user-admin-dashboard", "corr-event-refresh"));
+    assertEquals("blocked-runtime", started.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.access_review.blocked_provider_or_runtime")));
+
+    var events = service.events(identity(), "membership-admin", "agent-user-admin", null, "corr-event-refresh-read");
+
+    assertTrue(events.stream().anyMatch(event -> event.eventType().equals("projection.refresh.available")
+        && event.surfaceId().equals("surface-user-admin-access-review")
+        && event.patch().toString().contains("workstream.event.delivery.refresh")
+        && event.patch().toString().contains("idempotencyKey")
+        && event.patch().toString().contains("sourceRefs")));
+    assertTrue(service.functionalAgents(identity(), "membership-admin", "corr-refresh-rail").stream()
+        .filter(agent -> agent.functionalAgentId().equals("agent-user-admin"))
+        .findFirst()
+        .orElseThrow()
+        .attention()
+        .source()
+        .equals(AttentionService.LIST_RAIL_SUMMARIES_TOOL));
+    assertTrue(service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-refresh-dashboard").toString().contains("attention.list_workstream_items"));
+
+    var hidden = service.events(memberIdentity(), "membership-member", "agent-user-admin", null, "corr-event-refresh-hidden");
+    assertTrue(hidden.stream().noneMatch(event -> event.eventType().equals("projection.refresh.available")), "Members without User Admin capability must not receive event-backed refresh hints for hidden projections.");
   }
 
   @Test

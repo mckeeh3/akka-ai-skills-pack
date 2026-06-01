@@ -152,7 +152,7 @@
 
 ### TASK-WEB3-04-001: Harden event-backed update delivery
 
-- status: pending
+- status: done
 - source: specs/workstream-event-backbone-v3/backlog/01-workstream-event-backbone-v3-build-backlog.md
 - task brief: specs/workstream-event-backbone-v3/tasks/04-delivery/01-harden-event-backed-update-delivery.md
 - depends on:

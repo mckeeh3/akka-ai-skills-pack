@@ -36,10 +36,15 @@ test('producer-affecting actions, workstream open, and shell refresh reload back
   assert.match(main, /reason: 'producer-affecting-action-completion'/);
   assert.match(main, /reason: 'workstream-open'/);
   assert.match(main, /reason: 'shell-surface-refresh'/);
+  assert.match(main, /eventType === 'projection\.refresh\.available' \|\| event\.eventType === 'surface\.stale'/);
+  assert.match(main, /reason: 'event-backed-projection-refresh'/);
   assert.match(main, /refreshBackendDerivedAttentionDelivery/);
   assert.match(main, /workstreamClient\.getSurface\(surfaceId\)/);
   assert.match(main, /dashboardSurfaceIdForAgent\(input\.functionalAgentId\)/);
   assert.match(backendWorkstreamService, /attentionService\.listWorkstreamItems\(actor, workstreamId, correlationId\)/);
+  assert.match(backendWorkstreamService, /projection\.refresh\.available/);
+  assert.match(backendWorkstreamService, /workstream\.event\.delivery\.refresh/);
+  assert.match(backendWorkstreamService, /eventBackedRefreshEvents\(actor, correlationId\)/);
   assert.match(backendMyAccountService, /attentionService\.listMyAccountItems\(actor, correlationId\)/);
   assert.match(dashboardSurface, /data-attention-source=\{envelope\.data\.attentionSource \?\? 'attention\.list_workstream_items'\}/);
 });

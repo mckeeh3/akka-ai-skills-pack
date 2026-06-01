@@ -140,6 +140,9 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     const stateSubscription = realtimeClient.onState((state) => setRealtimeConnection(state));
     const eventSubscription = realtimeClient.onEvent((event) => {
       markUnseenBackgroundActivity(event);
+      if (event.eventType === 'projection.refresh.available' || event.eventType === 'surface.stale') {
+        void refreshBackendDerivedAttentionDelivery({ functionalAgentId: event.functionalAgentId, surfaceId: event.surfaceId, reason: 'event-backed-projection-refresh' });
+      }
       setBootstrap((current) => {
         if (current.status !== 'ready') return current;
         const merged = applyWorkstreamRealtimeEvent(
@@ -405,7 +408,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     await runShellSurfaceRequest(shellRequest, functionalAgentId, 'show-dashboard');
   }
 
-  async function refreshBackendDerivedAttentionDelivery(input: { functionalAgentId?: string; surfaceId?: string; reason: 'workstream-open' | 'producer-affecting-action-completion' | 'shell-surface-refresh' }) {
+  async function refreshBackendDerivedAttentionDelivery(input: { functionalAgentId?: string; surfaceId?: string; reason: 'workstream-open' | 'producer-affecting-action-completion' | 'shell-surface-refresh' | 'event-backed-projection-refresh' }) {
     // Backend attention remains authoritative: rail badges refresh from attention.list_rail_summaries via functional-agents,
     // while dashboard/My Account attention items refresh from backend surfaces carrying attention.list_workstream_items
     // or attention.list_my_account_items payloads. Transient railAttentionState remains only for unseen responses.
