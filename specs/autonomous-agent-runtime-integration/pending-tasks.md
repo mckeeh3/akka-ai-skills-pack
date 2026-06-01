@@ -44,7 +44,7 @@
 
 ### TASK-AAI-01-001: Define runtime contract and SDK gap check
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-runtime-integration/backlog/01-autonomous-agent-runtime-build-backlog.md
 - task brief: specs/autonomous-agent-runtime-integration/tasks/01-contracts/01-define-runtime-contract-and-sdk-gap.md
 - depends on:
@@ -75,6 +75,7 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin Access Review; durable internal/background AutonomousAgent; governed capabilities for task start/query/lifecycle/result review; v3 events; attention; User Admin/My Account surfaces; provider fail-closed; no deterministic fake success
+  - outcome: contract created at `specs/autonomous-agent-runtime-integration/user-admin-access-review-autonomous-agent-contract.md`; no SDK blocker found for single-task AutonomousAgent path; next task should block only if local dependency version lacks documented APIs
   - commit message: `autonomous-agent: define access review contract`
 
 ### TASK-AAI-02-001: Implement access review AutonomousAgent runtime
