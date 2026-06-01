@@ -288,7 +288,7 @@
 
 ### TASK-ATSA-08-001: Validate concrete Audit/Trace summary runtime path
 
-- status: pending
+- status: done
 - source: TASK-ATSA-99-001 verification gap
 - task brief: specs/audit-trace-summary-autonomous-agent/tasks/08-validation/01-validate-concrete-runtime-path.md
 - depends on:
@@ -315,6 +315,9 @@
   - any remaining blockers are recorded as bounded follow-up tasks before final verification
   - task changes and queue update are committed
 - notes:
+  - added concrete runtime validation artifact `validation/03-concrete-runtime-path-validation.md` and updated `audit-trace-summary-handoff.md` to reflect the bounded local runtime evidence without broadening into a general digest platform
+  - checks: `mvn -Dtest=AuditTraceSummaryRuntimeGuardrailTest,AuditTraceSummaryAutonomousAgentIntegrationTest,AuditTraceSummarySurfaceMappingTest test`; `cd frontend && node --test src/workstream-audit-trace-vertical.contract.test.mjs`; `cd frontend && npm run typecheck`; `cd frontend && npm run build`; focused `rg` for concrete runtime, `ComponentClient` task invocation/read, provider fail-closed, scoped redaction, events, attention, surfaces, and no fake success; `git diff --check`
+  - no remaining bounded blocker was identified before terminal verification; no browser-driven manual smoke was run beyond Akka TestKit-backed runtime validation and targeted frontend checks
   - commit message: `audit-summary-agent: validate concrete runtime`
 
 ### TASK-ATSA-99-002: Verify Audit/Trace summary AutonomousAgent completion
