@@ -44,7 +44,7 @@
 
 ### TASK-ARD-01-001: Capture dogfood evidence and smoke checklist
 
-- status: pending
+- status: done
 - source: specs/attention-release-readiness-dogfood/backlog/01-dogfood-release-readiness-backlog.md
 - task brief: specs/attention-release-readiness-dogfood/tasks/01-validation/01-capture-evidence-and-smoke-checklist.md
 - depends on:
@@ -61,7 +61,7 @@
 - skills:
   - none; validation planning task
 - expected outputs:
-  - smoke checklist artifact under specs/attention-release-readiness-dogfood/
+  - specs/attention-release-readiness-dogfood/attention-release-smoke-checklist.md
   - updated pending-tasks.md
 - required checks:
   - `git diff --check`
@@ -69,6 +69,8 @@
   - checklist covers left rail, My Account, dashboards/surfaces, producers, lifecycle, redaction, provider/fail-closed, and frontend-only authority guardrails
   - task changes and queue update are committed
 - notes:
+  - smoke checklist artifact: `specs/attention-release-readiness-dogfood/attention-release-smoke-checklist.md`
+  - validation: `git diff --check`
   - commit message: `attention-dogfood: capture smoke checklist`
 
 ### TASK-ARD-01-002: Run fresh scaffold automated validation
@@ -82,7 +84,7 @@
   - AGENTS.md
   - skills/README.md
   - specs/attention-release-readiness-dogfood/README.md
-  - smoke checklist from TASK-ARD-01-001
+  - specs/attention-release-readiness-dogfood/attention-release-smoke-checklist.md
   - specs/attention-release-readiness-dogfood/tasks/01-validation/02-run-fresh-scaffold-validation.md
 - skills:
   - none; validation task
@@ -110,7 +112,7 @@
   - AGENTS.md
   - skills/README.md
   - specs/attention-release-readiness-dogfood/README.md
-  - smoke checklist from TASK-ARD-01-001
+  - specs/attention-release-readiness-dogfood/attention-release-smoke-checklist.md
   - validation artifact from TASK-ARD-01-002
   - specs/attention-release-readiness-dogfood/tasks/02-review/01-run-manual-edge-review.md
 - skills:
@@ -140,7 +142,8 @@
   - AGENTS.md
   - skills/README.md
   - specs/attention-release-readiness-dogfood/README.md
-  - smoke checklist and validation artifacts from prior tasks
+  - specs/attention-release-readiness-dogfood/attention-release-smoke-checklist.md
+  - validation artifacts from prior tasks
   - specs/attention-release-readiness-dogfood/tasks/02-review/02-update-release-handoff.md
 - skills:
   - none; release handoff task
