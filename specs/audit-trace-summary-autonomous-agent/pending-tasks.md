@@ -159,7 +159,7 @@
 
 ### TASK-ATSA-05-001: Update Audit/Trace summary AutonomousAgent docs
 
-- status: pending
+- status: done
 - source: specs/audit-trace-summary-autonomous-agent/backlog/01-audit-summary-agent-build-backlog.md
 - task brief: specs/audit-trace-summary-autonomous-agent/tasks/05-docs/01-update-audit-summary-docs.md
 - depends on:
@@ -178,6 +178,8 @@
   - future agents understand audit summary worker status and pattern
   - task changes and queue update are committed
 - notes:
+  - added `audit-trace-summary-handoff.md` and updated README/example handoff to avoid overclaiming backend runtime completion
+  - checks: `git diff --check`; focused `rg` for implemented vertical, future digest platform, provider fail-closed, redaction, and no fake success
   - commit message: `audit-summary-agent: update docs`
 
 ### TASK-ATSA-99-001: Verify Audit/Trace summary AutonomousAgent

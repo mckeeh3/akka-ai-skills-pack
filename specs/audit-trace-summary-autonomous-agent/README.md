@@ -16,6 +16,7 @@ Builds on:
 - `specs/agent-admin-prompt-risk-autonomous-agent/`
 - `specs/workstream-event-backbone-v3/`
 - starter Audit/Trace, attention, event backbone, and AutonomousAgent implementation files
+- `specs/audit-trace-summary-autonomous-agent/audit-trace-summary-handoff.md` for current status, runtime guardrails, and verification handoff
 
 ## Scope
 
@@ -63,3 +64,7 @@ Complete when the starter/reference assets have:
 - Audit/Trace summary result/progress surfaces;
 - tests for auth, tenant isolation/redaction, idempotency, event/attention linkage, provider fail-closed, and no fake/model-less normal success;
 - docs identifying this as the scheduled/summary worker pattern candidate without overclaiming a general digest platform.
+
+## Current handoff status
+
+See `audit-trace-summary-handoff.md`. The current implemented vertical evidence is the contract plus Audit/Trace blocked/review surface fixtures and validation notes. Do not claim a completed backend `AuditTraceSummaryAutonomousAgent` runtime until implementation evidence exists. Provider fail-closed behavior, scoped redaction, and no fake success remain mandatory completion gates; this bounded worker is not a future digest platform.
