@@ -208,7 +208,7 @@
 
 ### TASK-ARD-99-001: Verify attention dogfood release readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/attention-release-readiness-dogfood/tasks/99-verification/01-verify-attention-dogfood-readiness.md
 - depends on:
@@ -238,3 +238,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `attention-dogfood: verify release readiness`
+  - verification result: mini-project complete; release-readiness is confirmed at the bounded implemented v1/v2 starter attention scope
+  - evidence reviewed: dogfood observation, smoke checklist, fresh scaffold validation, runtime-edge review, release-readiness handoff, completed task briefs, and queue history
+  - validation reviewed: scaffold generation, targeted backend attention Maven tests (75 passed in recorded fresh scaffolds), frontend `npm ci`, `npm test` (132 passed after path fix), `npm run typecheck`, `npm run build`, provider/fail-closed logs/checks, and backend-derived attention/source-guardrail `rg` checks
+  - focused doc/source scan found no release-blocking stale missing-backbone or overclaim language; future v3 event backbone, SSE/push, notification center/digests, richer producers, and broader AutonomousAgent task notifications remain explicitly out of scope
+  - next runnable task: none
