@@ -17,7 +17,7 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
         <input id={`${envelope.surfaceId}-query`} name="query" defaultValue={queryValue} />
       </form>
       {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
-      {envelope.data.redaction && <p className="redaction-note">Redaction: {envelope.data.redaction}</p>}
+      {envelope.data.redaction && <p className="redaction-note">Redaction: {renderSurfaceValue(envelope.data.redaction)}</p>}
       {envelope.data.rows.length === 0 ? <p>No results match the current search.</p> : (
         <table>
           <caption>{envelope.title} results</caption>
@@ -28,4 +28,12 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
     </SurfaceStateFrame>
   );
+}
+
+function renderSurfaceValue(value: unknown): string | undefined {
+  if (value == null) return undefined;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return value.map(renderSurfaceValue).filter(Boolean).join(' · ');
+  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>).map(([key, entry]) => `${key}: ${renderSurfaceValue(entry) ?? 'n/a'}`).join(' · ');
+  return String(value);
 }

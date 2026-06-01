@@ -13,6 +13,8 @@ const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const actionBar = read('./workstream/surfaces/SurfaceActionBar.tsx');
 const markdownResponse = read('./workstream/surfaces/MarkdownResponseSurface.tsx');
 const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
+const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
+const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const surfaceStyles = read('./styles/components.css');
 const packageJson = read('../package.json');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
@@ -100,6 +102,17 @@ test('system_message surfaces render provider-blocked recovery, trace links, and
   assert.match(item, /item\.kind === 'system_message'/);
   assert.match(surfaceStyles, /\.workstream-item\.system_message/);
   assert.match(surfaceStyles, /\.system-message-surface/);
+});
+
+test('browser-safe redaction metadata renders as text instead of a React object child', () => {
+  assert.match(surfaceTypes, /BrowserSafeRedactionMetadata/);
+  assert.match(surfaceTypes, /browserSafe\?: boolean/);
+  assert.match(surfaceTypes, /omittedFieldKeys\?: string\[\]/);
+  assert.match(surfaceTypes, /previewLimitChars\?: number/);
+  assert.match(dashboardSurface, /Redaction: \{renderSurfaceValue\(envelope\.data\.redaction\)\}/);
+  assert.match(listSearchSurface, /Redaction: \{renderSurfaceValue\(envelope\.data\.redaction\)\}/);
+  assert.doesNotMatch(dashboardSurface, /Redaction: \{envelope\.data\.redaction\}/);
+  assert.doesNotMatch(listSearchSurface, /Redaction: \{envelope\.data\.redaction\}/);
 });
 
 test('base surface frame and action bar preserve envelope, stale, redaction, disabled, confirmation, approval, and trace affordances', () => {

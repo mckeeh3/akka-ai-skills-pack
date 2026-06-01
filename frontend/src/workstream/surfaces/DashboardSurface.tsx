@@ -14,7 +14,7 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
       {envelope.data.surfaceContract && <p className="capability-basis">Surface contract: {envelope.data.surfaceContract}</p>}
       {readiness && <p className="surface-readiness">{readiness}</p>}
       {envelope.data.capabilityIds && <p className="capability-basis">Backend capabilities: {envelope.data.capabilityIds.join(', ')}</p>}
-      {envelope.data.redaction && <p className="redaction-note">Redaction: {envelope.data.redaction}</p>}
+      {envelope.data.redaction && <p className="redaction-note">Redaction: {renderSurfaceValue(envelope.data.redaction)}</p>}
       {envelope.data.blockedState && (
         <section className="surface-state-inline forbidden" aria-label="Blocked dashboard state">
           <strong>{envelope.data.blockedState.reasonCode}</strong>

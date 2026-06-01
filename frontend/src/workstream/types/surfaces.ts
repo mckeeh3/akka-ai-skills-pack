@@ -93,6 +93,13 @@ export type SystemMessageData = {
   };
 };
 
+export type BrowserSafeRedactionMetadata = string | {
+  browserSafe?: boolean;
+  omittedFieldKeys?: string[];
+  previewLimitChars?: number;
+  [key: string]: unknown;
+};
+
 export type DashboardSurfaceData = {
   surfaceContract?: 'audit.trace.dashboard.v1' | string;
   cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'critical' | 'blocked_provider_or_runtime' }>;
@@ -102,7 +109,7 @@ export type DashboardSurfaceData = {
   blockedState?: { reasonCode: string; message: string; recovery: string };
   readiness?: string;
   capabilityIds?: string[];
-  redaction?: string;
+  redaction?: BrowserSafeRedactionMetadata;
 };
 
 export type ListSearchSurfaceData = {
@@ -111,7 +118,7 @@ export type ListSearchSurfaceData = {
   rows: Array<Record<string, string | number | boolean | undefined>>;
   pageInfo?: { nextPageToken?: string; nextCursor?: string; totalKnownCount?: number };
   partial?: boolean;
-  redaction?: string;
+  redaction?: BrowserSafeRedactionMetadata;
 };
 
 export type DetailEditSurfaceData = {
