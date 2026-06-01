@@ -559,6 +559,11 @@ const agentModelsReadCapability = 'agent_admin.get_model_ref';
 const agentModelsManageCapability = 'agent_admin.activate_behavior_change';
 const agentSeedReadCapability = 'agent_admin.list_seed_material';
 const agentRuntimeTestCapability = 'agent_admin.draft_behavior_change';
+const agentPromptRiskStartCapability = 'agent_admin.prompt_risk_review.start';
+const agentPromptRiskReadCapability = 'agent_admin.prompt_risk_review.read';
+const agentPromptRiskCancelCapability = 'agent_admin.prompt_risk_review.cancel';
+const agentPromptRiskAcceptCapability = 'agent_admin.prompt_risk_review.accept_result';
+const agentPromptRiskRejectCapability = 'agent_admin.prompt_risk_review.reject_result';
 
 export const agentAdminSurfaceActions = {
   displayCatalog: {
@@ -723,6 +728,72 @@ export const agentAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-seed-material', openPlacement: 'inline' },
     audit: { eventType: 'AgentSeedMaterialListed', traceRequired: true }
+  },
+  startPromptRiskReview: {
+    actionId: 'action-agentadmin-start-prompt-risk-review',
+    label: 'Start prompt-risk review',
+    intent: 'workflow',
+    capabilityId: agentPromptRiskStartCapability,
+    governedToolId: agentPromptRiskStartCapability,
+    browserToolId: 'action-agentadmin-start-prompt-risk-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.start.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewStarted', traceRequired: true }
+  },
+  readPromptRiskReview: {
+    actionId: 'action-agentadmin-read-prompt-risk-review',
+    label: 'Read prompt-risk review',
+    intent: 'read',
+    capabilityId: agentPromptRiskReadCapability,
+    governedToolId: agentPromptRiskReadCapability,
+    browserToolId: 'action-agentadmin-read-prompt-risk-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.read.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewRead', traceRequired: true }
+  },
+  cancelPromptRiskReview: {
+    actionId: 'action-agentadmin-cancel-prompt-risk-review',
+    label: 'Cancel prompt-risk review',
+    intent: 'command',
+    capabilityId: agentPromptRiskCancelCapability,
+    governedToolId: agentPromptRiskCancelCapability,
+    browserToolId: 'action-agentadmin-cancel-prompt-risk-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.cancel.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewCancelled', traceRequired: true }
+  },
+  acceptPromptRiskReviewResult: {
+    actionId: 'action-agentadmin-accept-prompt-risk-review-result',
+    label: 'Accept advisory prompt-risk result',
+    intent: 'approval',
+    capabilityId: agentPromptRiskAcceptCapability,
+    governedToolId: agentPromptRiskAcceptCapability,
+    browserToolId: 'action-agentadmin-accept-prompt-risk-review-result',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewAccepted', traceRequired: true }
+  },
+  rejectPromptRiskReviewResult: {
+    actionId: 'action-agentadmin-reject-prompt-risk-review-result',
+    label: 'Reject advisory prompt-risk result',
+    intent: 'approval',
+    capabilityId: agentPromptRiskRejectCapability,
+    governedToolId: agentPromptRiskRejectCapability,
+    browserToolId: 'action-agentadmin-reject-prompt-risk-review-result',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.reject.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewRejected', traceRequired: true }
   },
   openAgentTrace: {
     actionId: 'action-open-agent-trace',
@@ -1887,6 +1958,51 @@ export const agentBehaviorProposalSurface = envelope(
   [agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.rejectBehaviorChange, agentAdminSurfaceActions.activateBehaviorChange, agentAdminSurfaceActions.cancelBehaviorChange, agentAdminSurfaceActions.rollbackBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
 );
 
+export const agentAdminPromptRiskReviewSurface = envelope(
+  'surface-agent-admin-prompt-risk-review',
+  'workflow-status',
+  'Agent Admin prompt-risk review',
+  'agent-agent-admin',
+  {
+    surfaceContract: 'agent_admin.prompt_risk_review_task.v1',
+    workflowId: 'workflow-agent-admin-prompt-risk-review-001',
+    taskId: 'prompt-risk-review-001',
+    autonomousAgentTaskId: 'akka-task-prompt-risk-review-001',
+    status: 'completed',
+    summary: 'Prompt-risk AutonomousAgent completed model-backed advisory review; activation remains blocked until human Agent Admin decision.',
+    initiatingCapabilityId: agentPromptRiskStartCapability,
+    requiredCapabilityId: agentPromptRiskReadCapability,
+    taskKind: 'autonomous-agent-analysis',
+    progress: { percent: 100, summary: 'completed_review_required' },
+    scope: { scopeType: 'CUSTOMER', tenantId: authContext.tenantId, customerId: authContext.customerId },
+    targetAgentDefinitionId: 'agent-agent-admin',
+    proposalId: 'proposal-agent-admin-prompt-risk-001',
+    proposalStatus: 'in_review',
+    artifactDeltas: [
+      { artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', changeSummary: 'Tighten governance prompt wording', redactedDiffRef: 'diff:proposal-agent-admin-prompt-risk-001:prompt' },
+      { artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', changeSummary: 'Requested side-effecting grant remains blocked', redactedDiffRef: 'diff:proposal-agent-admin-prompt-risk-001:tool-boundary' }
+    ],
+    riskSummary: 'High risk because the proposal touches prompt authority and ToolPermissionBoundary grants; No direct activation or mutation is allowed by this review.',
+    overallRisk: 'HIGH',
+    findings: [
+      { findingId: 'finding-prompt-hierarchy', riskLevel: 'HIGH', artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', category: 'prompt instruction hierarchy conflict', browserSafeDescription: 'Prompt wording could be read as authority expansion without explicit refusal behavior.', evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt-risk-review'], requiresHumanReview: true },
+      { findingId: 'finding-tool-boundary', riskLevel: 'CRITICAL', artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', category: 'side-effecting tool exposure', browserSafeDescription: 'Side-effecting tool exposure requires separate approval, idempotency, and activation checks.', evidenceRefs: ['readReferenceDoc:agent-admin-prompt-risk-review'], requiresHumanReview: true }
+    ],
+    recommendations: [
+      { recommendationId: 'rec-reject-tool-boundary', label: 'Reject tool-boundary expansion', risk: 'critical', confidence: 'high', summary: 'Do not activate side-effecting grants from prompt-risk acceptance; use a separate governed proposal path.' }
+    ],
+    requiredHumanReviewReasons: ['prompt authority change', 'ToolPermissionBoundary expansion', 'model-backed advisory result'],
+    evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt-risk-review', 'readReferenceDoc:agent-admin-prompt-risk-review', 'proposal:proposal-agent-admin-prompt-risk-001'],
+    providerFailures: [],
+    traceIds: ['trace-prompt-risk-assembly-001', 'trace-prompt-risk-skill-load-001', 'trace-prompt-risk-reference-load-001', 'trace-prompt-risk-model-call-001'],
+    resultReviewState: 'completed_review_required',
+    noDirectMutation: true,
+    activationBlockedUntilHumanDecision: true,
+    safety: 'Advisory-only prompt-risk result. Human Agent Admin review is required before any activation or behavior artifact mutation; accepting this result does not activate prompts, skills, references, models, or tool boundaries.'
+  },
+  [agentAdminSurfaceActions.readPromptRiskReview, agentAdminSurfaceActions.acceptPromptRiskReviewResult, agentAdminSurfaceActions.rejectPromptRiskReviewResult, agentAdminSurfaceActions.cancelPromptRiskReview, agentAdminSurfaceActions.openAgentTrace]
+);
+
 export const agentAdminAgentBlockedSystemMessageSurface = envelope(
   'surface-agent-admin-agent-provider-blocked',
   'system_message',
@@ -2289,6 +2405,7 @@ export const fullCoreDemoSurfaceEnvelopes = [
   agentSeedMaterialSurface,
   agentTestConsoleSurface,
   agentBehaviorProposalSurface,
+  agentAdminPromptRiskReviewSurface,
   agentAdminAgentBlockedSystemMessageSurface,
   agentAdminTraceSurface,
   ...auditTraceStructuredSurfaces,
@@ -2407,6 +2524,14 @@ export const displayAgentBehaviorProposalActionResult: CapabilityActionResult = 
   correlationId: 'corr-display-agent-behavior-proposal',
   traceIds: ['trace-agent-admin-behavior-review', 'trace-agent-admin-behavior-activation-blocked'],
   resultSurface: agentBehaviorProposalSurface
+};
+
+export const displayAgentPromptRiskReviewActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Displayed Agent Admin prompt-risk AutonomousAgent review surface with v3 event, attention, no direct mutation, and human decision evidence.',
+  correlationId: 'corr-display-agent-prompt-risk-review',
+  traceIds: ['trace-prompt-risk-assembly-001', 'trace-prompt-risk-model-call-001'],
+  resultSurface: agentAdminPromptRiskReviewSurface
 };
 
 export const displayAgentAdminTraceActionResult: CapabilityActionResult = {

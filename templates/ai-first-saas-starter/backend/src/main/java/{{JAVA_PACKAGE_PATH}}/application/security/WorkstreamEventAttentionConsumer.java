@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
@@ -84,6 +85,33 @@ public final class WorkstreamEventAttentionConsumer {
       case "workflow.access_review.started", "workflow.access_review.blocked_provider_or_runtime", "workflow.access_review.completed_review_required", "workflow.access_review.result_rejected",
           "worker.task.queued", "worker.task.running", "worker.task.blocked_provider_or_runtime", "worker.task.failed", "worker.task.completed_review_required", "worker.task.rejected_result" -> attentionProducerService.upsertWorkerTaskState(sourceTask, null, event.correlationId());
       case "workflow.access_review.cancelled", "workflow.access_review.result_accepted", "worker.task.cancelled", "worker.task.accepted" -> attentionProducerService.resolveWorkerTaskState(sourceTask, sourceTask.status().name().toLowerCase(java.util.Locale.ROOT), event.correlationId());
+      default -> null;
+    });
+  }
+
+  public AttentionItem project(WorkstreamEventEnvelope event, PromptRiskReviewTask sourceTask) {
+    var workflowEvent = "workflow/process".equals(event.eventFamily()) && event.eventType().startsWith("workflow.agent_admin.prompt_risk_review.");
+    var taskEvent = "task/worker".equals(event.eventFamily()) && event.eventType().startsWith("worker.task.");
+    if (!workflowEvent && !taskEvent) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "unsupported-event-type");
+      return null;
+    }
+    if (!event.tenantId().equals(sourceTask.tenantId()) || !Objects.equals(event.customerId(), sourceTask.customerId())) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "scope-mismatch");
+      return null;
+    }
+    if (!event.capabilityRefs().stream().anyMatch(capability -> capability.startsWith("agent_admin.prompt_risk_review."))) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "missing-prompt-risk-capability-ref");
+      return null;
+    }
+    if (alreadyProjected(event)) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DUPLICATE", AdminAuditEvent.Result.NO_OP, event, event.idempotencyKey());
+      return currentItem(event);
+    }
+    return projectSupported(event, switch (event.eventType()) {
+      case "workflow.agent_admin.prompt_risk_review.started", "workflow.agent_admin.prompt_risk_review.blocked_provider_or_runtime", "workflow.agent_admin.prompt_risk_review.completed_review_required", "workflow.agent_admin.prompt_risk_review.result_rejected",
+          "worker.task.queued", "worker.task.running", "worker.task.blocked_provider_or_runtime", "worker.task.failed", "worker.task.completed_review_required", "worker.task.rejected_result" -> attentionProducerService.upsertWorkerTaskState(sourceTask, null, event.correlationId());
+      case "workflow.agent_admin.prompt_risk_review.cancelled", "workflow.agent_admin.prompt_risk_review.result_accepted", "worker.task.cancelled", "worker.task.accepted" -> attentionProducerService.resolveWorkerTaskState(sourceTask, sourceTask.status().name().toLowerCase(java.util.Locale.ROOT), event.correlationId());
       default -> null;
     });
   }

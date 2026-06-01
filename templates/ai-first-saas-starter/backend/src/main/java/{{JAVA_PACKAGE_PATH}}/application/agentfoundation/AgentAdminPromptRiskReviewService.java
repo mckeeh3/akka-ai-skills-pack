@@ -1,7 +1,9 @@
 package {{JAVA_BASE_PACKAGE}}.application.agentfoundation;
 
+import {{JAVA_BASE_PACKAGE}}.application.security.AttentionProducerService;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthContextResolver;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
+import {{JAVA_BASE_PACKAGE}}.application.security.WorkstreamEventPublisher;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import java.time.Clock;
 import java.time.Instant;
@@ -19,16 +21,28 @@ public final class AgentAdminPromptRiskReviewService {
   private final PromptRiskReviewTaskRepository repository;
   private final AuthContextResolver authContextResolver;
   private final Clock clock;
+  private final AttentionProducerService attentionProducerService;
+  private final WorkstreamEventPublisher workstreamEventPublisher;
   private final PromptRiskAutonomousAgentRuntime autonomousAgentRuntime;
 
   public AgentAdminPromptRiskReviewService(PromptRiskReviewTaskRepository repository, AuthContextResolver authContextResolver, Clock clock) {
-    this(repository, authContextResolver, clock, new FailClosedPromptRiskAutonomousAgentRuntime());
+    this(repository, authContextResolver, clock, null, null, new FailClosedPromptRiskAutonomousAgentRuntime());
   }
 
   public AgentAdminPromptRiskReviewService(PromptRiskReviewTaskRepository repository, AuthContextResolver authContextResolver, Clock clock, PromptRiskAutonomousAgentRuntime autonomousAgentRuntime) {
+    this(repository, authContextResolver, clock, null, null, autonomousAgentRuntime);
+  }
+
+  public AgentAdminPromptRiskReviewService(PromptRiskReviewTaskRepository repository, AuthContextResolver authContextResolver, Clock clock, AttentionProducerService attentionProducerService, WorkstreamEventPublisher workstreamEventPublisher) {
+    this(repository, authContextResolver, clock, attentionProducerService, workstreamEventPublisher, new FailClosedPromptRiskAutonomousAgentRuntime());
+  }
+
+  public AgentAdminPromptRiskReviewService(PromptRiskReviewTaskRepository repository, AuthContextResolver authContextResolver, Clock clock, AttentionProducerService attentionProducerService, WorkstreamEventPublisher workstreamEventPublisher, PromptRiskAutonomousAgentRuntime autonomousAgentRuntime) {
     this.repository = Objects.requireNonNull(repository);
     this.authContextResolver = Objects.requireNonNull(authContextResolver);
     this.clock = Objects.requireNonNull(clock);
+    this.attentionProducerService = attentionProducerService;
+    this.workstreamEventPublisher = workstreamEventPublisher;
     this.autonomousAgentRuntime = Objects.requireNonNull(autonomousAgentRuntime);
   }
 
@@ -76,6 +90,7 @@ public final class AgentAdminPromptRiskReviewService {
     var started = task.withAutonomousAgentTaskId(start.autonomousAgentTaskId(), start.status(), start.progressPercent(), start.summary(), start.blockerCode(), startTraceIds, Instant.now(clock));
     repository.save(started);
     authContextResolver.appendProtectedReadTrace(actor, START_CAPABILITY, start.status() == PromptRiskReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "provider-blocked-fail-closed" : "autonomous-agent-task-started", correlationId);
+    publishLifecycleOrAttention(started, start.status() == PromptRiskReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : "started", START_CAPABILITY, actor.account().accountId(), correlationId);
     return started;
   }
 
@@ -96,6 +111,7 @@ public final class AgentAdminPromptRiskReviewService {
     var cancelled = task.withStatus(PromptRiskReviewTask.Status.CANCELLED, task.progressPercent(), firstNonBlank(reason, "Prompt-risk review cancelled by authorized Agent Admin; behavior artifacts unchanged."), null, List.of(traceId), Instant.now(clock));
     repository.save(cancelled);
     authContextResolver.appendProtectedReadTrace(actor, CANCEL_CAPABILITY, "cancelled:no direct mutation", correlationId);
+    publishLifecycleOrAttention(cancelled, "cancelled", CANCEL_CAPABILITY, actor.account().accountId(), correlationId);
     return cancelled;
   }
 
@@ -116,6 +132,7 @@ public final class AgentAdminPromptRiskReviewService {
     var decided = task.withDecision(status, decision, firstNonBlank(reason, "Human Agent Admin prompt-risk result decision recorded; behavior artifacts unchanged."), List.of(traceId), Instant.now(clock));
     repository.save(decided);
     authContextResolver.appendProtectedReadTrace(actor, status == PromptRiskReviewTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, decision + ":advisory-only:no direct activation", correlationId);
+    publishLifecycleOrAttention(decided, status == PromptRiskReviewTask.Status.ACCEPTED ? "result_accepted" : "result_rejected", status == PromptRiskReviewTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, actor.account().accountId(), correlationId);
     return decided;
   }
 
@@ -125,7 +142,29 @@ public final class AgentAdminPromptRiskReviewService {
     if (!projection.changed()) return task;
     var updated = task.withWorkerUpdate(projection.status(), projection.progressPercent(), projection.summary(), projection.blockerCode(), projection.evidenceRefs().isEmpty() ? task.evidenceRefs() : projection.evidenceRefs(), projection.findingRefs().isEmpty() ? task.findingRefs() : projection.findingRefs(), projection.traceIds().isEmpty() ? task.traceIds() : projection.traceIds(), Instant.now(clock));
     repository.save(updated);
+    var transition = switch (updated.status()) {
+      case QUEUED -> "queued";
+      case RUNNING -> "running";
+      case COMPLETED_REVIEW_REQUIRED -> "completed_review_required";
+      case CANCELLED -> "cancelled";
+      case BLOCKED_PROVIDER_OR_RUNTIME -> "blocked_provider_or_runtime";
+      case ACCEPTED -> "result_accepted";
+      case REJECTED -> "result_rejected";
+    };
+    publishLifecycleOrAttention(updated, transition, READ_CAPABILITY, null, correlationId);
     return updated;
+  }
+
+  private void publishLifecycleOrAttention(PromptRiskReviewTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    if (workstreamEventPublisher != null) {
+      workstreamEventPublisher.publishPromptRiskReviewLifecycle(task, semanticTransition, capabilityId, actorAccountId, correlationId);
+    } else if (attentionProducerService != null) {
+      if (task.status() == PromptRiskReviewTask.Status.CANCELLED || task.status() == PromptRiskReviewTask.Status.ACCEPTED) {
+        attentionProducerService.resolveWorkerTaskState(task, semanticTransition, correlationId);
+      } else {
+        attentionProducerService.upsertWorkerTaskState(task, null, correlationId);
+      }
+    }
   }
 
   private PromptRiskReviewTask task(AuthContextResolver.ResolvedMe actor, String taskId) {

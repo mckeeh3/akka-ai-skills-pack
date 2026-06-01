@@ -104,7 +104,7 @@
 
 ### TASK-AAPR-03-001: Wire prompt-risk events, attention, and surfaces
 
-- status: pending
+- status: done
 - source: specs/agent-admin-prompt-risk-autonomous-agent/backlog/01-prompt-risk-agent-build-backlog.md
 - task brief: specs/agent-admin-prompt-risk-autonomous-agent/tasks/03-surfaces/01-wire-events-attention-surfaces.md
 - depends on:

@@ -5,6 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentAdminPromptRiskReviewService;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoPromptRiskReviewTaskRepository;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.PromptRiskAutonomousAgentRuntime;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
@@ -208,6 +213,77 @@ class WorkstreamEventBackboneServiceTest {
   }
 
   @Test
+  void promptRiskLifecyclePublishesAgentAdminEventsAndProjectsReviewAttention() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+    var runtime = new RecordingPromptRiskAutonomousAgentRuntime();
+    var promptRisk = new AgentAdminPromptRiskReviewService(new LocalDemoPromptRiskReviewTaskRepository(), resolver, clock, producers, publisher, runtime);
+
+    var task = promptRisk.start(tenantAdmin, promptRiskCommand("prompt-risk-event"), "corr-prompt-risk-start");
+
+    assertEquals(PromptRiskReviewTask.Status.QUEUED, task.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.agent_admin.prompt_risk_review.started")));
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("worker.task.queued")));
+
+    runtime.nextProjection = new PromptRiskAutonomousAgentRuntime.Projection(
+        PromptRiskReviewTask.Status.COMPLETED_REVIEW_REQUIRED,
+        100,
+        "Prompt-risk AutonomousAgent completed model-backed advisory review; human Agent Admin review is required and no behavior artifacts were activated.",
+        null,
+        null,
+        List.of("agentAdminEvidence.read", "readSkill:agent-admin-prompt-risk-review", "readReferenceDoc:agent-admin-prompt-risk-review"),
+        List.of("prompt_risk_finding:finding-1:ToolPermissionBoundary expansion"),
+        List.of("autonomous_task:" + task.autonomousAgentTaskId(), "trace-prompt-risk-model-result"));
+
+    var completed = promptRisk.read(tenantAdmin, task.taskId(), "corr-prompt-risk-read");
+
+    assertEquals(PromptRiskReviewTask.Status.COMPLETED_REVIEW_REQUIRED, completed.status());
+    var workflowCompleted = eventRepository.listTenant("tenant-1").stream().filter(event -> event.eventType().equals("workflow.agent_admin.prompt_risk_review.completed_review_required")).findFirst().orElseThrow();
+    var workerCompleted = eventRepository.listTenant("tenant-1").stream().filter(event -> event.eventType().equals("worker.task.completed_review_required")).findFirst().orElseThrow();
+    assertEquals("PromptRiskReviewLifecycleEventPayload", workflowCompleted.payloadClass());
+    assertEquals("surface-agent-admin-prompt-risk-review", workflowCompleted.targetSurfaceId());
+    assertEquals("true", workflowCompleted.payload().get("noDirectMutation"));
+    assertEquals("true", workflowCompleted.payload().get("activationBlockedUntilHumanDecision"));
+    assertTrue(workflowCompleted.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("autonomous_task") && ref.refId().equals(task.autonomousAgentTaskId())));
+    assertTrue(workflowCompleted.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("behavior_proposal") && ref.refId().equals("proposal-1")));
+    assertTrue(workflowCompleted.capabilityRefs().contains(AgentAdminPromptRiskReviewService.READ_CAPABILITY));
+    assertFalse(workflowCompleted.toString().contains("providerCredential="));
+
+    var item = attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertEquals(AttentionCategory.SECURITY_REVIEW, item.category());
+    assertTrue(item.summary().contains("requires human accept/reject review before activation"));
+    assertTrue(item.summary().contains("no direct activation"));
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(workerCompleted.eventId())));
+
+    var accepted = promptRisk.acceptResult(tenantAdmin, task.taskId(), "advisory result accepted only", "corr-prompt-risk-accept");
+    assertEquals(PromptRiskReviewTask.Status.ACCEPTED, accepted.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.agent_admin.prompt_risk_review.result_accepted")));
+    assertEquals(AttentionItemStatus.RESOLVED, attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow().status());
+  }
+
+  @Test
+  void promptRiskProviderBlockedPublishesFailClosedEventAndAttention() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+    var promptRisk = new AgentAdminPromptRiskReviewService(new LocalDemoPromptRiskReviewTaskRepository(), resolver, clock, producers, publisher);
+
+    var task = promptRisk.start(tenantAdmin, promptRiskCommand("prompt-risk-blocked"), "corr-prompt-risk-blocked");
+
+    assertEquals(PromptRiskReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME, task.status());
+    var event = eventRepository.listTenant("tenant-1").stream().filter(candidate -> candidate.eventType().equals("workflow.agent_admin.prompt_risk_review.blocked_provider_or_runtime")).findFirst().orElseThrow();
+    assertEquals("blocked_provider_or_runtime:fail_closed:no_fake_success", event.payload().get("providerOrRuntimeState"));
+    assertTrue(event.idempotencyKey().startsWith("workstream-event:workflow/process:workflow.agent_admin.prompt_risk_review.blocked_provider_or_runtime:tenant-1:none:"));
+    var item = attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertEquals(AttentionCategory.WORKFLOW_BLOCKED, item.category());
+    assertTrue(item.summary().contains("fails closed"));
+    assertTrue(item.summary().contains("model-less prompt-risk findings"));
+  }
+
+  @Test
   void consumerRejectsCrossTenantSourceMismatchWithoutProjectingAttention() {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("invite-cross-tenant", "cross@example.test"));
     var event = new WorkstreamEventPublisher(eventRepository, new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, new AttentionProducerService(attentionRepository, identityRepository, clock), clock), clock)
@@ -220,6 +296,29 @@ class WorkstreamEventBackboneServiceTest {
 
     assertEquals(null, projected);
     assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DENIED") && audit.reasonCode().equals("scope-mismatch")));
+  }
+
+  private static final class RecordingPromptRiskAutonomousAgentRuntime implements PromptRiskAutonomousAgentRuntime {
+    private Projection nextProjection = Projection.unchanged();
+
+    @Override
+    public StartOutcome start(AuthContextResolver.ResolvedMe actor, PromptRiskReviewTask starterTask, String correlationId) {
+      return StartOutcome.queued("akka-task-" + starterTask.taskId(), "Prompt-risk Akka AutonomousAgent task queued; backend projection is authoritative.", List.of("autonomous_task:akka-task-" + starterTask.taskId()));
+    }
+
+    @Override
+    public Projection project(PromptRiskReviewTask starterTask, String correlationId) {
+      return nextProjection;
+    }
+  }
+
+  private AgentAdminPromptRiskReviewService.StartPromptRiskReviewCommand promptRiskCommand(String key) {
+    return new AgentAdminPromptRiskReviewService.StartPromptRiskReviewCommand(
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        "proposal-1",
+        List.of(new PromptRiskReviewTask.BehaviorArtifactDelta(PromptRiskReviewTask.ArtifactKind.TOOL_PERMISSION_BOUNDARY, "agent-admin-tool-boundary", 1, 2, "add side-effecting grant", "diff:proposal-1", "before", "after")),
+        List.of("proposal-evidence:proposal-1"),
+        key);
   }
 
   private static final class RecordingAccessReviewAutonomousAgentRuntime implements AccessReviewAutonomousAgentRuntime {

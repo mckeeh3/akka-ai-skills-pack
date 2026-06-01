@@ -30,7 +30,12 @@ test('Agent Admin functional agent is visible and capability backed for v0 gover
     'agent_admin.rollback_behavior_change',
     'agent_admin.simulate_tool_boundary',
     'agent_admin.get_model_ref',
-    'agent_admin.list_seed_material'
+    'agent_admin.list_seed_material',
+    'agent_admin.prompt_risk_review.start',
+    'agent_admin.prompt_risk_review.read',
+    'agent_admin.prompt_risk_review.cancel',
+    'agent_admin.prompt_risk_review.accept_result',
+    'agent_admin.prompt_risk_review.reject_result'
   ]) {
     assert.match(agents, new RegExp(capability.replaceAll('.', '\\.')));
     assert.match(me, new RegExp(capability.replaceAll('.', '\\.')));
@@ -51,6 +56,7 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
     'agentTestConsoleSurface',
     'agentBehaviorProposalSurface',
     'agentAdminAgentBlockedSystemMessageSurface',
+    'agentAdminPromptRiskReviewSurface',
     'agentAdminTraceSurface'
   ]) {
     assert.match(surfaces, new RegExp(fixture));
@@ -66,6 +72,7 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
     'surface-agent-test-console',
     'surface-agent-behavior-proposal',
     'surface-agent-admin-agent-provider-blocked',
+    'surface-agent-admin-prompt-risk-review',
     'surface-agent-admin-trace'
   ]) {
     assert.match(surfaces, new RegExp(surfaceId));
@@ -99,7 +106,12 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
     'readSkill(skillId)',
     'readReferenceDoc(referenceId)',
     'no direct mutation',
-    'No-side-effect agent test console'
+    'No-side-effect agent test console',
+    'agent_admin.prompt_risk_review_task.v1',
+    'completed_review_required',
+    'activationBlockedUntilHumanDecision',
+    'prompt-risk AutonomousAgent',
+    'No direct activation'
   ]) {
     assert.match(surfaces, new RegExp(marker.replace(/[()]/g, '\\$&')));
   }
@@ -125,7 +137,12 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
     'action-simulate-tool-boundary',
     'action-manage-model-ref',
     'action-list-agent-seed-material',
-    'action-open-agent-trace'
+    'action-open-agent-trace',
+    'action-agentadmin-start-prompt-risk-review',
+    'action-agentadmin-read-prompt-risk-review',
+    'action-agentadmin-cancel-prompt-risk-review',
+    'action-agentadmin-accept-prompt-risk-review-result',
+    'action-agentadmin-reject-prompt-risk-review-result'
   ]) {
     assert.match(surfaces, new RegExp(actionId));
   }
@@ -137,6 +154,7 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
   assert.match(apiClient, /displayAgentDetailActionResult/);
   assert.match(apiClient, /displayAgentSeedMaterialActionResult/);
   assert.match(apiClient, /displayAgentBehaviorProposalActionResult/);
+  assert.match(apiClient, /displayAgentPromptRiskReviewActionResult/);
   assert.match(apiClient, /agent_admin\.list_definitions/);
   assert.match(apiClient, /agent_admin\.list_seed_material/);
 });
@@ -152,7 +170,8 @@ test('Agent Admin defaults to five core v0 markdown and keeps richer governance 
     'surface-agent-admin-detail',
     'surface-agent-prompt-governance',
     'surface-agent-tool-boundary-diff',
-    'surface-agent-test-console'
+    'surface-agent-test-console',
+    'surface-agent-admin-prompt-risk-review'
   ]) {
     assert.match(surfaces, new RegExp(surfaceId));
   }

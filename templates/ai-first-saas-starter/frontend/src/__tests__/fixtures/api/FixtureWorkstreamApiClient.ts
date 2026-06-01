@@ -12,6 +12,7 @@ import {
   displayAgentManifestActionResult,
   displayAgentModelRefsActionResult,
   displayAgentPromptGovernanceActionResult,
+  displayAgentPromptRiskReviewActionResult,
   displayAgentSeedMaterialActionResult,
   displayAgentTestConsoleActionResult,
   displayAgentToolBoundaryActionResult,
@@ -187,6 +188,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
                     ? displayAgentTestConsoleActionResult
                     : ['action-submit-behavior-change', 'action-reject-behavior-change', 'action-activate-behavior-change', 'action-cancel-behavior-change', 'action-rollback-behavior-change'].includes(request.actionId)
                       ? displayAgentBehaviorProposalActionResult
+                      : ['action-agentadmin-start-prompt-risk-review', 'action-agentadmin-read-prompt-risk-review', 'action-agentadmin-cancel-prompt-risk-review', 'action-agentadmin-accept-prompt-risk-review-result', 'action-agentadmin-reject-prompt-risk-review-result'].includes(request.actionId) || request.capabilityId?.startsWith('agent_admin.prompt_risk_review.')
+                        ? displayAgentPromptRiskReviewActionResult
                       : request.actionId === 'action-open-agent-trace'
                         ? displayAgentAdminTraceActionResult
         : request.actionId === 'action-govpol-show-dashboard' || request.capabilityId === 'governance.policy.read'

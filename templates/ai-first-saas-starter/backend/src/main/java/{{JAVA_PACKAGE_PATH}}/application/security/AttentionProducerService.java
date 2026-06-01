@@ -1,5 +1,7 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentAdminPromptRiskReviewService;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
@@ -133,6 +135,32 @@ public final class AttentionProducerService {
     return resolve(task.tenantId(), workerTaskItemId(task.taskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
   }
 
+  public AttentionItem upsertWorkerTaskState(PromptRiskReviewTask task, String timerId, String correlationId) {
+    if (task.status() == PromptRiskReviewTask.Status.CANCELLED || task.status() == PromptRiskReviewTask.Status.ACCEPTED) {
+      return resolveWorkerTaskState(task, task.status().name().toLowerCase(), correlationId);
+    }
+    var attention = switch (task.status()) {
+      case BLOCKED_PROVIDER_OR_RUNTIME -> promptRiskWorkerTaskItem(task, AttentionSeverity.BLOCKED, AttentionCategory.WORKFLOW_BLOCKED,
+          "Agent Admin prompt-risk worker is blocked by provider/runtime readiness",
+          "Prompt-risk review task " + task.taskId() + " is blocked_provider_or_runtime; the starter fails closed instead of returning deterministic, fake, or model-less prompt-risk findings.", timerId, correlationId);
+      case REJECTED -> promptRiskWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.AGENT_TASK_FAILED,
+          "Agent Admin prompt-risk result was rejected",
+          "Prompt-risk review task " + task.taskId() + " was rejected and needs authorized Agent Admin follow-up before any behavior change activation.", timerId, correlationId);
+      case COMPLETED_REVIEW_REQUIRED -> promptRiskWorkerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.SECURITY_REVIEW,
+          "Agent Admin prompt-risk result awaits human review",
+          "Prompt-risk review task " + task.taskId() + " completed through the governed AutonomousAgent runtime and requires human accept/reject review before activation.", timerId, correlationId);
+      case RUNNING, QUEUED -> promptRiskWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.WORKFLOW_BLOCKED,
+          "Agent Admin prompt-risk task is waiting for worker progress",
+          "Prompt-risk review task " + task.taskId() + " is " + task.status().name().toLowerCase() + " and may need worker/runtime attention if it remains stale.", timerId, correlationId);
+      case CANCELLED, ACCEPTED -> null;
+    };
+    return attention == null ? null : upsert(attention, WORKER_TASK_STATE_PRODUCER_ID, correlationId);
+  }
+
+  public AttentionItem resolveWorkerTaskState(PromptRiskReviewTask task, String reason, String correlationId) {
+    return resolve(task.tenantId(), workerTaskItemId(task.taskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
+  }
+
   private AttentionItem upsertTimedInvitationDelivery(Invitation invitation, String timerId, String correlationId) {
     var item = upsertInvitationDelivery(invitation, correlationId);
     var refs = new java.util.ArrayList<>(item.sourceRefs());
@@ -159,6 +187,26 @@ public final class AttentionProducerService {
         WORKER_TASK_STATE_PRODUCER_ID,
         timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
         "Access-review task state " + task.status().name().toLowerCase(),
+        null,
+        correlationId);
+  }
+
+  private AttentionItem promptRiskWorkerTaskItem(PromptRiskReviewTask task, AttentionSeverity severity, AttentionCategory category, String title, String summary, String timerId, String correlationId) {
+    return item(
+        workerTaskItemId(task.taskId()),
+        task.tenantId(),
+        task.customerId(),
+        "agent-agent-admin",
+        title,
+        summary + " Evidence is limited to durable prompt-risk state, scoped proposal/artifact refs, governed readSkill/readReferenceDoc/agentAdminEvidence.read traces, and AutonomousAgent work traces; no direct activation or fake model-backed success is introduced.",
+        category,
+        severity,
+        AgentAdminPromptRiskReviewService.READ_CAPABILITY,
+        "surface-agent-admin-prompt-risk-review",
+        task.taskId(),
+        WORKER_TASK_STATE_PRODUCER_ID,
+        timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
+        "Prompt-risk review task state " + task.status().name().toLowerCase(),
         null,
         correlationId);
   }
