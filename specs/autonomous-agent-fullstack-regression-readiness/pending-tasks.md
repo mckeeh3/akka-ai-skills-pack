@@ -140,7 +140,7 @@
 
 ### TASK-AAFR-03-001: Update integrated readiness handoff
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-fullstack-regression-readiness/backlog/01-regression-readiness-backlog.md
 - task brief: specs/autonomous-agent-fullstack-regression-readiness/tasks/03-docs/01-update-integrated-readiness-handoff.md
 - depends on:
@@ -161,6 +161,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `autonomous-agent-regression: update readiness handoff`
+  - handoff: `specs/autonomous-agent-fullstack-regression-readiness/integrated-readiness-handoff.md`
+  - checks: focused `rg` proved the handoff names User Admin Access Review, Agent Admin Prompt-Risk, Audit/Trace Summary, and Governance/Policy Impact and preserves provider fail-closed/no fake success boundaries.
+  - checks: `git diff --check` passed.
 
 ### TASK-AAFR-99-001: Verify AutonomousAgent regression readiness
 
