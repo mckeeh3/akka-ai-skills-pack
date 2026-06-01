@@ -45,7 +45,7 @@
 
 ### TASK-WAB-01-001: Define starter attention backbone v1 contract
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-backbone-v1/backlog/01-attention-backbone-v1-build-backlog.md
 - task brief: specs/workstream-attention-backbone-v1/tasks/01-contracts/01-define-attention-contract.md
 - depends on:
@@ -76,6 +76,7 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: foundation/cross-cutting attention backbone; attention category contract for all workstreams; dashboard purpose is role-specific `what needs attention`; governed-tool ids to be defined by task; exposure channels include browser-tool/API/view/internal-tool; selected substrate to be proposed; audit/work trace required
+  - contract artifact: `specs/workstream-attention-backbone-v1/attention-backbone-v1-contract.md`
   - commit message: `attention-backbone: define v1 contract`
 
 ### TASK-WAB-02-001: Implement backend attention foundation
