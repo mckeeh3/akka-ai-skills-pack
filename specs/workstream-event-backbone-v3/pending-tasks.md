@@ -115,7 +115,7 @@
 
 ### TASK-WEB3-03-001: Add workflow/provider lifecycle events
 
-- status: pending
+- status: done
 - source: specs/workstream-event-backbone-v3/backlog/01-workstream-event-backbone-v3-build-backlog.md
 - task brief: specs/workstream-event-backbone-v3/tasks/03-workflows/01-add-workflow-provider-lifecycle-events.md
 - depends on:

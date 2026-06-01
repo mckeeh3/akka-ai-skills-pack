@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
@@ -31,6 +32,7 @@ class WorkstreamEventBackboneServiceTest {
   private LocalDemoInvitationRepository invitationRepository;
   private LocalDemoAttentionRepository attentionRepository;
   private LocalDemoWorkstreamEventRepository eventRepository;
+  private LocalDemoAccessReviewTaskRepository accessReviewRepository;
   private AuthContextResolver resolver;
   private InvitationService invitations;
   private AttentionService attention;
@@ -42,6 +44,7 @@ class WorkstreamEventBackboneServiceTest {
     invitationRepository = new LocalDemoInvitationRepository();
     attentionRepository = new LocalDemoAttentionRepository();
     eventRepository = new LocalDemoWorkstreamEventRepository();
+    accessReviewRepository = new LocalDemoAccessReviewTaskRepository();
     resolver = new AuthContextResolver(identityRepository);
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
@@ -105,6 +108,61 @@ class WorkstreamEventBackboneServiceTest {
     var resolved = attentionRepository.find("tenant-1", itemId).orElseThrow();
     assertEquals(AttentionItemStatus.RESOLVED, resolved.status());
     assertTrue(resolved.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event")));
+  }
+
+  @Test
+  void accessReviewProviderBlockedLifecyclePublishesWorkflowEventAndProjectsAttention() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+    var accessReviews = new UserAdminAccessReviewService(accessReviewRepository, new UserAdminService(identityRepository, clock), clock, producers, publisher);
+
+    var task = accessReviews.start(tenantAdmin, "access-review-event", "corr-access-review-event");
+
+    assertEquals(AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME, task.status());
+    var events = eventRepository.listTenant("tenant-1");
+    assertEquals(1, events.size());
+    var event = events.get(0);
+    assertEquals("workflow.access_review.blocked_provider_or_runtime", event.eventType());
+    assertEquals("workflow/process", event.eventFamily());
+    assertEquals("AccessReviewLifecycleEventPayload", event.payloadClass());
+    assertEquals("blocked_provider_or_runtime:fail_closed", event.payload().get("providerOrRuntimeState"));
+    assertTrue(event.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("workflow") && ref.refId().equals(task.taskId())));
+    assertTrue(event.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("autonomous_task") && ref.refId().equals(task.taskId())));
+    assertTrue(event.capabilityRefs().contains(UserAdminAccessReviewService.START_CAPABILITY));
+    assertFalse(event.toString().contains("providerCredential="));
+
+    var item = attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertEquals(AttentionCategory.WORKFLOW_BLOCKED, item.category());
+    assertTrue(item.summary().contains("fails closed"));
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(event.eventId())));
+
+    var replay = consumer.project(event, task);
+    assertNotNull(replay);
+    assertEquals(item.lastChangedAt(), replay.lastChangedAt());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DUPLICATE") && audit.result() == {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent.Result.NO_OP));
+  }
+
+  @Test
+  void accessReviewCancelLifecycleResolvesEventBackedAttentionWithoutMutatingAccess() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+    var accessReviews = new UserAdminAccessReviewService(accessReviewRepository, new UserAdminService(identityRepository, clock), clock, producers, publisher);
+    var beforeRoles = identityRepository.findMembership("membership-admin").orElseThrow().roles();
+    var task = accessReviews.start(tenantAdmin, "access-review-cancel-event", "corr-access-review-cancel-start");
+    var itemId = "attention:worker-task:" + task.taskId() + ":task-state";
+    assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", itemId).orElseThrow().status());
+
+    var cancelled = accessReviews.cancel(tenantAdmin, task.taskId(), "operator cancelled", "corr-access-review-cancel");
+
+    assertEquals(AccessReviewTask.Status.CANCELLED, cancelled.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.access_review.cancelled")));
+    var resolved = attentionRepository.find("tenant-1", itemId).orElseThrow();
+    assertEquals(AttentionItemStatus.RESOLVED, resolved.status());
+    assertTrue(resolved.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event")));
+    assertEquals(beforeRoles, identityRepository.findMembership("membership-admin").orElseThrow().roles());
   }
 
   @Test

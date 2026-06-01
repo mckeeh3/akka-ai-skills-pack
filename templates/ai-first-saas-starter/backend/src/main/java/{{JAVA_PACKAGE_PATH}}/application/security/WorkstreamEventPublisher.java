@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventSourceRef;
@@ -12,7 +13,9 @@ import java.util.Objects;
 /** Publishes selected starter domain transitions into the governed workstream event backbone. */
 public final class WorkstreamEventPublisher {
   public static final String EVENT_FAMILY_DOMAIN = "domain";
+  public static final String EVENT_FAMILY_WORKFLOW_PROCESS = "workflow/process";
   public static final String PAYLOAD_INVITATION_DELIVERY = "InvitationDeliveryEventPayload";
+  public static final String PAYLOAD_ACCESS_REVIEW_LIFECYCLE = "AccessReviewLifecycleEventPayload";
 
   private final WorkstreamEventRepository repository;
   private final WorkstreamEventAttentionConsumer attentionConsumer;
@@ -32,6 +35,17 @@ public final class WorkstreamEventPublisher {
         ? repository.publish(invitationDeliveryEnvelope(invitation, semanticTransition, deliveryAttemptId, safeErrorSummary, idempotencyKey, correlationId))
         : existing;
     attentionConsumer.project(event, invitation);
+    return event;
+  }
+
+  public WorkstreamEventEnvelope publishAccessReviewLifecycle(AccessReviewTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var eventType = "workflow.access_review." + semanticTransition;
+    var idempotencyKey = idempotencyKey(EVENT_FAMILY_WORKFLOW_PROCESS, eventType, task.tenantId(), task.customerId(), task.taskId(), semanticTransition);
+    var existing = repository.findByIdempotencyKey(task.tenantId(), idempotencyKey).orElse(null);
+    var event = existing == null
+        ? repository.publish(accessReviewLifecycleEnvelope(task, semanticTransition, capabilityId, actorAccountId, idempotencyKey, correlationId))
+        : existing;
+    attentionConsumer.project(event, task);
     return event;
   }
 
@@ -79,12 +93,62 @@ public final class WorkstreamEventPublisher {
         Map.of("attentionCategory", "INVITATION_DELIVERY", "attentionItemId", "attention:user-admin:invitation-delivery:" + invitation.invitationId()));
   }
 
+  private WorkstreamEventEnvelope accessReviewLifecycleEnvelope(AccessReviewTask task, String semanticTransition, String capabilityId, String actorAccountId, String idempotencyKey, String correlationId) {
+    var eventType = "workflow.access_review." + semanticTransition;
+    var eventId = "evt-" + stableSuffix(idempotencyKey);
+    var traceId = firstTraceRef(task, "trace-" + stableSuffix(eventId + ":" + correlationId));
+    var now = Instant.now(clock);
+    var safeCapability = safe(capabilityId, UserAdminAccessReviewService.READ_CAPABILITY);
+    return new WorkstreamEventEnvelope(
+        eventId,
+        eventType,
+        EVENT_FAMILY_WORKFLOW_PROCESS,
+        1,
+        task.updatedAt() == null ? now : task.updatedAt(),
+        now,
+        task.tenantId(),
+        task.customerId(),
+        Map.of(
+            "scopeType", task.scopeType().name(),
+            "tenantId", task.tenantId(),
+            "customerId", safe(task.customerId(), ""),
+            "capabilityIds", safeCapability + ",secure-tenant-user-foundation"),
+        Map.of("actorType", actorAccountId == null || actorAccountId.isBlank() ? "worker" : "account", "accountId", safe(actorAccountId, "system"), "label", "User Admin access-review lifecycle"),
+        List.of(
+            new WorkstreamEventSourceRef("workflow", task.taskId(), "Access-review workflow " + semanticTransition, safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("autonomous_task", task.taskId(), "Access-review task state " + task.status().name().toLowerCase(java.util.Locale.ROOT), safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("capability", safeCapability, "Access-review lifecycle capability", safeCapability, "trace-capability-" + stableSuffix(safeCapability), correlationId)),
+        List.of(safeCapability, "secure-tenant-user-foundation"),
+        correlationId,
+        idempotencyKey,
+        task.idempotencyKey(),
+        List.of(traceId),
+        "agent-user-admin",
+        "surface-user-admin-access-review-task",
+        PAYLOAD_ACCESS_REVIEW_LIFECYCLE,
+        Map.of(
+            "taskId", task.taskId(),
+            "status", task.status().name().toLowerCase(java.util.Locale.ROOT),
+            "semanticTransition", semanticTransition,
+            "progressPercent", Integer.toString(task.progressPercent()),
+            "blockerCode", safe(task.blockerCode(), ""),
+            "decision", safe(task.decision(), ""),
+            "safeSummary", redact(safe(task.summary(), "")),
+            "providerOrRuntimeState", task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime:fail_closed" : "state_recorded_without_direct_access_mutation"),
+        Map.of("browserSafe", "true", "omitted", "rawPrompt,rawToolPayload,providerSecret,providerCredential", "minimumRedactionLevel", "FULL"),
+        Map.of("attentionCategory", "WORKFLOW_BLOCKED", "attentionItemId", "attention:worker-task:" + task.taskId() + ":task-state"));
+  }
+
   private static String idempotencyKey(String eventFamily, String eventType, String tenantId, String customerId, String sourceRefId, String semanticTransition) {
     return "workstream-event:" + eventFamily + ":" + eventType + ":" + tenantId + ":" + safe(customerId, "none") + ":" + sourceRefId + ":" + semanticTransition;
   }
 
   private static String redact(String value) {
-    return safe(value, "").replaceAll("(?i)(api[_-]?key|secret|token)=[^\\s,;]+", "$1=[REDACTED]");
+    return safe(value, "").replaceAll("(?i)(api[_-]?key|secret|token|providerCredential)=[^\\s,;]+", "$1=[REDACTED]");
+  }
+
+  private static String firstTraceRef(AccessReviewTask task, String fallback) {
+    return task.traceIds().isEmpty() ? fallback : task.traceIds().get(0);
   }
 
   private static String safe(String value, String fallback) {

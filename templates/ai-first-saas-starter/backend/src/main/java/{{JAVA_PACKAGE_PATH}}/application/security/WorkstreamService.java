@@ -127,6 +127,26 @@ public final class WorkstreamService {
       GovernancePolicyRepository governancePolicyRepository,
       AttentionService attentionService,
       AttentionProducerService attentionProducerService) {
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, null);
+  }
+
+  public WorkstreamService(
+      MeService meService,
+      AuthContextResolver authContextResolver,
+      UserDirectoryView userDirectoryView,
+      InvitationView invitationView,
+      UserAdminService userAdminService,
+      InvitationService invitationService,
+      AgentBehaviorRepository agentBehaviorRepository,
+      AgentRuntimeService agentRuntimeService,
+      WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker,
+      WorkstreamLogRepository workstreamLogRepository,
+      AccessReviewTaskRepository accessReviewTaskRepository,
+      AuditTraceRepository auditTraceRepository,
+      GovernancePolicyRepository governancePolicyRepository,
+      AttentionService attentionService,
+      AttentionProducerService attentionProducerService,
+      WorkstreamEventPublisher workstreamEventPublisher) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.attentionService = Objects.requireNonNull(attentionService);
@@ -134,7 +154,7 @@ public final class WorkstreamService {
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
-    this.accessReviewService = new UserAdminAccessReviewService(Objects.requireNonNull(accessReviewTaskRepository), userAdminService, Clock.systemUTC(), attentionProducerService);
+    this.accessReviewService = new UserAdminAccessReviewService(Objects.requireNonNull(accessReviewTaskRepository), userAdminService, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher);
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentAdminService = new AgentAdminService(agentBehaviorRepository, authContextResolver);
