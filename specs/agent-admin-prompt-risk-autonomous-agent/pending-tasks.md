@@ -43,7 +43,7 @@
 
 ### TASK-AAPR-01-001: Define prompt-risk AutonomousAgent contract
 
-- status: pending
+- status: done
 - source: specs/agent-admin-prompt-risk-autonomous-agent/backlog/01-prompt-risk-agent-build-backlog.md
 - task brief: specs/agent-admin-prompt-risk-autonomous-agent/tasks/01-contracts/01-define-prompt-risk-contract.md
 - depends on:
