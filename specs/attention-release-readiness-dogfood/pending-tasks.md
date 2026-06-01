@@ -75,7 +75,7 @@
 
 ### TASK-ARD-01-002: Run fresh scaffold automated validation
 
-- status: pending
+- status: done
 - source: specs/attention-release-readiness-dogfood/backlog/01-dogfood-release-readiness-backlog.md
 - task brief: specs/attention-release-readiness-dogfood/tasks/01-validation/02-run-fresh-scaffold-validation.md
 - depends on:
@@ -91,6 +91,8 @@
 - expected outputs:
   - scaffold validation artifact under specs/attention-release-readiness-dogfood/
   - updated pending-tasks.md
+- output artifact:
+  - specs/attention-release-readiness-dogfood/fresh-scaffold-validation.md
 - required checks:
   - `git diff --check`
   - scaffolded backend Maven tests for attention services/producers/workstreams
@@ -100,6 +102,39 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `attention-dogfood: run scaffold validation`
+  - blocker recorded: scaffold generation and targeted backend tests pass; frontend typecheck/build pass after `npm ci`; `npm test` has two path-layout failures in attention contract tests that read `../../backend/src/...` even though the scaffold backend source is rooted at `src/...`.
+
+### TASK-ARD-01-003: Fix scaffold frontend attention contract test backend paths
+
+- status: pending
+- source: TASK-ARD-01-002 validation artifact
+- task brief: specs/attention-release-readiness-dogfood/tasks/01-validation/03-fix-frontend-attention-contract-backend-paths.md
+- depends on:
+  - TASK-ARD-01-002
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/attention-release-readiness-dogfood/README.md
+  - specs/attention-release-readiness-dogfood/fresh-scaffold-validation.md
+  - templates/ai-first-saas-starter/frontend/src/workstream-attention-backbone.contract.test.mjs
+  - templates/ai-first-saas-starter/frontend/src/workstream-attention-update-delivery.contract.test.mjs
+  - specs/attention-release-readiness-dogfood/tasks/01-validation/03-fix-frontend-attention-contract-backend-paths.md
+- skills:
+  - none; scaffold test blocker fix
+- expected outputs:
+  - fixed scaffold frontend attention contract tests
+  - updated pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - fresh scaffold frontend `npm ci` and `npm test`
+  - fresh scaffold frontend `npm run typecheck`
+  - fresh scaffold frontend `npm run build`
+- done criteria:
+  - fresh scaffold frontend attention contract tests read the actual generated backend source layout
+  - `npm test`, typecheck, and build pass in a new fresh scaffold
+  - task changes and queue update are committed
+- notes:
+  - commit message: `attention-dogfood: fix frontend attention contract paths`
 
 ### TASK-ARD-02-001: Run manual/runtime edge review
 
@@ -108,6 +143,7 @@
 - task brief: specs/attention-release-readiness-dogfood/tasks/02-review/01-run-manual-edge-review.md
 - depends on:
   - TASK-ARD-01-002
+  - TASK-ARD-01-003
 - required reads:
   - AGENTS.md
   - skills/README.md
