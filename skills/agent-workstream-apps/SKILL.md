@@ -97,7 +97,7 @@ Common foundation functional agents include My Account, User Admin, Agent Admin,
 
 ### 3. Distinguish internal agents
 
-Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. Model them as nodes in the internal workstream agent graph: the functional agent or workflow owns the virtual dashboard view of work to be delegated, chooses bounded worker nodes, records delegation/result edges, and escalates unresolved or high-risk outcomes back to human surfaces. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, governed-tool exposure as agent-tools/internal-tools, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests.
+Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. Model them as nodes in the internal workstream agent graph: the functional agent or workflow owns the virtual dashboard view of work to be delegated, chooses bounded worker nodes, records delegation/result edges, and escalates unresolved or high-risk outcomes back to human surfaces. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, governed-tool exposure as agent-tools/internal-tools, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests. When the internal node is durable task-oriented/background work, route to `akka-autonomous-agents` and `../../docs/autonomous-agent-worker-runtime-pattern.md`; require a task contract, governed capabilities, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
 
 ### 4. Define structured surfaces
 
@@ -160,7 +160,7 @@ When this skill is used for planning, hand downstream work a concise model conta
 - selected functional agents and their roles/capabilities;
 - workstream expertise skills/references needed to let the workstream agent explain role-specific dashboards, surface graph behavior, available governed-tools, denials, and examples of what users can do;
 - incremental-change reconciliation notes when the app already has workstreams, dashboards, surface graph nodes/edges, internal workstream agent graph delegations, governed-tools, or workstream expertise that must be updated rather than duplicated;
-- internal agents when applicable, clearly separated from left-rail functional agents;
+- internal agents when applicable, clearly separated from left-rail functional agents; durable worker nodes should reference `../../docs/autonomous-agent-worker-runtime-pattern.md` and preserve task contract, v3 events, attention, surfaces, provider fail-closed, and no fake success guardrails;
 - initial workstreams, universal workstream icon descriptors, and default surfaces;
 - structured surface contracts or required follow-up to create them;
 - surface action-to-capability mappings;

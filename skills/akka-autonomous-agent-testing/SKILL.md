@@ -9,6 +9,9 @@ Use this skill when validating Autonomous Agent components, task lifecycles, tas
 
 ## Required reading
 
+Read before validating generated-app worker tasks:
+- `../../docs/autonomous-agent-worker-runtime-pattern.md`
+
 Read when API details are needed:
 - `../../specs/autonomous-agents-integration/research-notes.md`
 - `akka-context/sdk/autonomous-agents/testing.html.md`
@@ -57,7 +60,7 @@ Coordination:
 
 ## Generated SaaS tests
 
-For generated-app autonomous work, add tests for:
+For generated-app autonomous work, and especially worker tasks covered by `../../docs/autonomous-agent-worker-runtime-pattern.md`, add tests for:
 - task start/query/result authorization and tenant isolation;
 - disabled user or disabled managed-agent denial;
 - model policy/provider-secret non-exposure and fail-closed missing config;
@@ -66,6 +69,8 @@ For generated-app autonomous work, add tests for:
 - task id/agent instance id/customer scope validation;
 - task creation idempotency where exposed through retriable APIs;
 - trace emission for task creation, assignment, completion/failure, tool calls, delegation, handoff, notification exposure, and denials;
+- v3 `worker.task.*` event payload/source refs, attention upsert/resolve behavior, and structured progress/result surface/API contracts;
+- provider fail-closed and no fake success scans for deterministic/demo/model-less runtime substitutes;
 - endpoint/workflow/UI smoke path when the task represents a named runtime feature.
 
 ## Runtime completion rule

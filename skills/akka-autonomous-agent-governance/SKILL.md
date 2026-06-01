@@ -9,6 +9,9 @@ Use this skill when Autonomous Agents are part of a generated secure AI-first Sa
 
 ## Required reading
 
+Read before generated-app worker task implementation or review:
+- `../../docs/autonomous-agent-worker-runtime-pattern.md`
+
 Read when API details are needed:
 - `../../docs/agent-component-selection-guide.md`
 - `../../docs/capability-first-backend-architecture.md`
@@ -20,7 +23,7 @@ Read when API details are needed:
 
 ## Governance model
 
-Autonomous Agents add durable task machinery. They do not relax the pack's managed-agent requirements. Model-driven task loops still need backend-owned capability contracts, authorization, model policy, tool boundaries, approval rules, and durable traces.
+Autonomous Agents add durable task machinery. They do not relax the pack's managed-agent requirements. Model-driven task loops still need backend-owned capability contracts, authorization, model policy, tool boundaries, approval rules, and durable traces. Generated-app worker tasks must additionally follow `../../docs/autonomous-agent-worker-runtime-pattern.md`: explicit task contract, governed capabilities, v3 `worker.task.*` events, attention rules, structured surfaces, provider fail-closed behavior, and no fake success.
 
 Qualify terminology:
 - **Akka autonomous `AgentDefinition`**: SDK definition returned by `AutonomousAgent.definition()` / `define()` or dynamic `AgentSetup`.
@@ -36,6 +39,7 @@ Define capabilities for:
 - suspend/resume/terminate agent instance;
 - dynamic setup changes;
 - task notification stream and agent notification stream;
+- v3 `worker.task.*` event publication, attention upsert/resolve, and structured worker progress/result surface reads/actions when visible;
 - delegation, handoff, team, and moderation operations;
 - every local/function/component/MCP/readSkill/readReferenceDoc tool;
 - every side effect performed from the autonomous loop.
@@ -51,6 +55,8 @@ Before task start or assignment:
 4. resolve active prompt/skill/reference manifests and `ToolPermissionBoundary` for tool registration;
 5. deny missing provider/security/model/boundary config with actionable errors;
 6. emit task-start or denial trace.
+
+For worker tasks, missing `ComponentClient`, provider/model configuration, governed profile, tool grants, evidence access, or runtime binding must fail closed with blocked/denied state, trace refs, v3 events/attention when appropriate, and actionable recovery text. Do not fabricate successful findings or use deterministic/demo/model-less runtime substitutes.
 
 For tool calls, use `akka-agent-tool-boundaries`: prompt text, task instructions, skill/reference text, and tool descriptions never grant authority.
 

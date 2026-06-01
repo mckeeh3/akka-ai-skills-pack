@@ -96,7 +96,7 @@
 
 ### TASK-AAWPE-03-001: Update AutonomousAgent skills routing
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-worker-pattern-extraction/backlog/01-pattern-extraction-backlog.md
 - task brief: specs/autonomous-agent-worker-pattern-extraction/tasks/03-skills/01-update-autonomous-agent-skills-routing.md
 - depends on:

@@ -11,6 +11,9 @@ Do **not** use Autonomous Agents as the default for user-facing workstream reque
 
 ## Required reading
 
+Read before implementing generated-app AutonomousAgent worker tasks:
+- `../../docs/autonomous-agent-worker-runtime-pattern.md`
+
 Read when API details are needed:
 - `../../docs/agent-component-selection-guide.md`
 - `../../specs/autonomous-agents-integration/research-notes.md`
@@ -30,12 +33,13 @@ Read when API details are needed:
 
 ## Generated SaaS contract
 
-Before implementation, the task/spec must supply:
+Before implementation, the task/spec must supply the reusable worker contract from `../../docs/autonomous-agent-worker-runtime-pattern.md` when this is generated-app worker work:
 - internal/background or explicit functional placement; do not promote it to a left-rail workstream unless product intent says so;
 - task capability ids and governed-tool ids for starting, assigning, querying, completing/failing, suspending/resuming, terminating, and streaming notifications;
 - caller `AuthContext`, tenant/customer scope, roles/capabilities, model policy, tool boundary, approval gates, trace requirements, and provider-secret boundary;
 - internal workstream agent graph placement, delegation source, result/escalation surface, and whether exposed operations are agent-tools, internal-tools, workflow-tools, timer-tools, or consumer-tools;
-- task input/result DTOs, instructions, attachments, dependency behavior, idempotency, cancellation/failure behavior, and tests.
+- task contract with typed task input/result DTOs, instructions, attachments, dependency behavior, idempotency, cancellation/failure behavior, and tests;
+- v3 `worker.task.*` events, attention upsert/resolve rules, structured progress/result surfaces, provider fail-closed behavior, and no fake success/runtime-substitute guardrails.
 
 Block or repair the task if these are missing for generated-app work.
 
@@ -62,5 +66,7 @@ Akka autonomous `AgentDefinition` is the SDK builder result returned by `Autonom
 - model config, provider secrets, and dynamic setup fail closed when invalid;
 - protected governed-tools are registered only after `ToolPermissionBoundary` enforcement and with explicit agent-tool/internal-tool exposure labels;
 - task start/query/result/notification paths preserve the governed-tool contract across workflows, timers, consumers, and browser APIs;
-- normal runtime does not use deterministic/demo/model-less substitutes;
+- normal runtime does not use deterministic/demo/model-less substitutes, fake success, or direct provider/service calls that bypass Akka `AutonomousAgent`;
+- provider/model/governed runtime/tool/evidence gaps fail closed with actionable state instead of canned success;
+- worker progress/results emit v3 `worker.task.*` events, update attention, and render backend-projected surfaces when visible;
 - tests use `TestModelProvider.AutonomousAgentTools` only as test infrastructure.
