@@ -25,6 +25,7 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.OpenAiModelProviderClie
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Customer;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
@@ -60,6 +61,8 @@ public final class StarterSecurityComponents {
   private static volatile GovernancePolicyRepository governancePolicyRepository = new UnboundGovernancePolicyRepository();
   private static volatile AuditTraceService auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
   private static volatile GovernancePolicyService governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
+  private static volatile AttentionRepository attentionRepository = new UnboundAttentionRepository();
+  private static volatile AttentionService attentionService = new AttentionService(attentionRepository, authContextResolver, CLOCK);
   private static volatile WorkstreamService workstreamService = unboundWorkstreamService();
 
   static {
@@ -87,6 +90,7 @@ public final class StarterSecurityComponents {
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
     var durableAccessReviews = new AkkaAccessReviewTaskRepository(componentClient);
     var durableGovernancePolicy = new AkkaGovernancePolicyRepository(componentClient);
+    var durableAttention = new AkkaAttentionRepository(componentClient);
     var durableRuntime = new AgentRuntimeService(durableAgentBehavior, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, new AkkaAgentRuntimeTraceSink(componentClient));
     invitationRepository = durableInvitations;
     agentBehaviorRepository = durableAgentBehavior;
@@ -98,8 +102,10 @@ public final class StarterSecurityComponents {
     invitationView = new InvitationView(invitationService);
     accessReviewTaskRepository = durableAccessReviews;
     governancePolicyRepository = durableGovernancePolicy;
+    attentionRepository = durableAttention;
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
     governancePolicyService = new GovernancePolicyService(durableGovernancePolicy, authContextResolver, CLOCK);
+    attentionService = new AttentionService(durableAttention, authContextResolver, CLOCK);
     workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy);
   }
 
@@ -221,6 +227,10 @@ public final class StarterSecurityComponents {
     return governancePolicyService;
   }
 
+  public static AttentionService attentionService() {
+    return attentionService;
+  }
+
   public static ModelProviderClient modelProviderClient() {
     return MODEL_PROVIDER_CLIENT;
   }
@@ -323,6 +333,17 @@ public final class StarterSecurityComponents {
     public Optional<GovernancePolicyProposal> findByIdempotencyKey(String tenantId, String customerId, String accountId, String idempotencyKey) { throw unavailable(); }
     public GovernancePolicyProposal saveProposal(GovernancePolicyProposal proposal) { throw unavailable(); }
     public List<GovernancePolicyProposal> listProposals(String tenantId, String customerId) { throw unavailable(); }
+  }
+
+  private static final class UnboundAttentionRepository implements AttentionRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("AttentionRepository");
+    }
+
+    public AttentionItem upsert(AttentionItem item) { throw unavailable(); }
+    public Optional<AttentionItem> find(String tenantId, String itemId) { throw unavailable(); }
+    public List<AttentionItem> listTenant(String tenantId) { throw unavailable(); }
+    public AttentionItem save(AttentionItem item) { throw unavailable(); }
   }
 
   private static final class UnboundWorkstreamLogRepository implements WorkstreamLogRepository {

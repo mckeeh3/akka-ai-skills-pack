@@ -81,7 +81,7 @@
 
 ### TASK-WAB-02-001: Implement backend attention foundation
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-backbone-v1/backlog/01-attention-backbone-v1-build-backlog.md
 - task brief: specs/workstream-attention-backbone-v1/tasks/02-backend/01-implement-backend-attention-foundation.md
 - depends on:
@@ -112,6 +112,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: foundation/cross-cutting attention backbone; non-UI/internal plus API-ready read/lifecycle operations; capability ids from TASK-WAB-01-001; selected substrate must be justified; tests include success, forbidden, tenant isolation, idempotency/no-op, audit/trace
+  - selected substrate: shared Akka Key Value Entity repository (`starter-attention-backbone`) plus `AttentionService` projection/lifecycle boundary
+  - validation: direct source-template Maven command is blocked by unresolved template placeholders (`{{MAVEN_GROUP_ID}}`, `{{APP_SLUG}}`); scaffolded equivalent passed with `tools/scaffold-ai-first-saas-starter.sh --target "$tmp" --template-dir templates/ai-first-saas-starter --app-name "WAB Backend Check" --app-slug wab-backend-check --base-package ai.first --maven-group-id ai.first --yes` then `mvn -q -Dtest=AttentionServiceTest,DurableAttentionRepositoryEntityTest test`
   - commit message: `attention-backbone: implement backend foundation`
 
 ### TASK-WAB-03-001: Wire core workstreams to shared attention
