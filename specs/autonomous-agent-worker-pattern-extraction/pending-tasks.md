@@ -72,7 +72,7 @@
 
 ### TASK-AAWPE-02-001: Create AutonomousAgent worker pattern doc
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-worker-pattern-extraction/backlog/01-pattern-extraction-backlog.md
 - task brief: specs/autonomous-agent-worker-pattern-extraction/tasks/02-docs/01-create-worker-pattern-doc.md
 - depends on:
