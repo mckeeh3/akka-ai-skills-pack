@@ -42,7 +42,7 @@
 
 ### TASK-AAFR-01-001: Fix Audit/Trace summary contract regression
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-fullstack-regression-readiness/backlog/01-regression-readiness-backlog.md
 - task brief: specs/autonomous-agent-fullstack-regression-readiness/tasks/01-regression/01-fix-audit-trace-summary-contract-regression.md
 - depends on:
@@ -69,6 +69,10 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `autonomous-agent-regression: fix audit summary contract`
+  - completed: updated starter Audit/Trace summary blocked-progress test and protected-read trace marker to canonical `audit.trace.summaryProgress.v1` contract without weakening provider fail-closed/no fake success assertions.
+  - validation: fresh scaffold targeted test `mvn -Dtest=WorkstreamServiceTest#auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists test` passed from `/tmp/aafr-targeted-w4HweZ`.
+  - validation: `rg -n "audit\\.trace\\.summaryTask\\.v1" templates/ai-first-saas-starter/backend/src templates/ai-first-saas-starter/frontend/src -S || true` returned no source/template matches.
+  - validation: `git diff --check` passed.
 
 ### TASK-AAFR-02-001: Run fullstack regression validation
 

@@ -176,7 +176,7 @@ public final class AuditTraceSummaryService {
   private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId) {
     authContextResolver.requireTenant(actor.selectedContext(), actor.selectedContext().tenantId());
     authContextResolver.requireCapability(actor.selectedContext(), capabilityId);
-    authContextResolver.appendProtectedReadTrace(actor, capabilityId, "audit.trace.summaryTask.v1", correlationId);
+    authContextResolver.appendProtectedReadTrace(actor, capabilityId, "audit.trace.summaryProgress.v1", correlationId);
   }
 
   private static List<String> normalizedCategories(List<String> requested) {
