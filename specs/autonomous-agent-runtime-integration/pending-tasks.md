@@ -163,7 +163,7 @@
 
 ### TASK-AAI-04-001: Run AutonomousAgent runtime validation
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-runtime-integration/backlog/01-autonomous-agent-runtime-build-backlog.md
 - task brief: specs/autonomous-agent-runtime-integration/tasks/04-validation/01-run-runtime-validation.md
 - depends on:
@@ -181,7 +181,7 @@
 - skills:
   - none; validation task
 - expected outputs:
-  - runtime validation artifact
+  - specs/autonomous-agent-runtime-integration/runtime-validation-evidence.md
   - updated pending-tasks.md
   - optional appended blocker tasks if issues are found
 - required checks:
@@ -194,6 +194,9 @@
   - blockers are converted to bounded tasks or recorded as release blockers
   - task changes and queue update are committed
 - notes:
+  - completed: fresh scaffold rendered to `/tmp/aai-runtime-validation`; backend `mvn -q test` passed from scaffold root; frontend `npm ci`, `npm test`, `npm run typecheck`, and `npm run build` passed; focused `rg` confirmed AutonomousAgent task APIs, provider fail-closed/no model-less success guardrails, v3 workflow/worker events, `autonomous_task` refs, worker-task attention ids, and `surface-user-admin-access-review` wiring.
+  - manual/local smoke: live provider-backed model smoke was not run because validation environment lacks production provider secrets/configuration; this is the intended fail-closed boundary and produced no release blocker for the scoped starter runtime path.
+  - validation artifact: `specs/autonomous-agent-runtime-integration/runtime-validation-evidence.md`
   - commit message: `autonomous-agent: validate runtime path`
 
 ### TASK-AAI-05-001: Update AutonomousAgent runtime docs and handoff
