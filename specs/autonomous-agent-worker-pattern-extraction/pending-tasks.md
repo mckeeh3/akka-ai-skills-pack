@@ -147,7 +147,7 @@
 
 ### TASK-AAWPE-99-001: Verify worker pattern extraction
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/autonomous-agent-worker-pattern-extraction/tasks/99-verification/01-verify-worker-pattern-extraction.md
 - depends on:
@@ -171,4 +171,6 @@
   - if incomplete, bounded follow-up tasks and a new terminal verification task are appended
   - task changes and queue update are committed
 - notes:
+  - verification result: complete; no follow-up tasks required
+  - evidence: focused `rg` confirmed the pattern doc, skill routing, examples, provider fail-closed/no fake success guardrails, v3 `worker.task.*` events, attention, surfaces, and next-worker candidates are discoverable
   - commit message: `autonomous-agent-pattern: verify extraction`
