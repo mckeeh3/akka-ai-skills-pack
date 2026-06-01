@@ -216,21 +216,21 @@ type WorkstreamItem = {
   title?: string;
   body?: string;
   status?: "working" | "waiting-for-human" | "blocked" | "ready" | "failed" | "stale";
-  requestOrigin?: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion";
+  requestOrigin?: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion" | "shell_button";
   canonicalPrompt?: string;
 };
 ```
 
 The stream supports grouped history, stable item ids, append/update semantics, trace links, and action-feedback items for non-chat navigation/actions.
 
-Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. Workstream-switch request items are appended only in the new target workstream. Use `docs/workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
+Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, the standard composer **Show dashboard** shell button, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. The Show dashboard button is handled directly by the shell rather than routed through the workstream agent: it appends a `Show dashboard` request surface and then the selected workstream's dashboard surface. Workstream-switch request items are appended only in the new target workstream. Use `docs/workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
 
 Shell request normalization contract:
 
 ```ts
 type WorkstreamShellRequest = {
   requestType: "show_surface" | "open_workstream" | "refresh_surface" | "open_attention_item";
-  origin: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion";
+  origin: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion" | "shell_button";
   displayText: string;
   canonicalPrompt: string; // e.g. "show surface user-admin-user-list"
   targetFunctionalAgentId?: string;

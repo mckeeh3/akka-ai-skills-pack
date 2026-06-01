@@ -9,14 +9,16 @@ type WorkstreamComposerProps = {
   attachedSurfaceId?: string;
   isSubmitting?: boolean;
   onSubmit?: (request: ComposerRequest) => void | Promise<boolean | void>;
+  onShowDashboard?: (functionalAgentId: string) => void | Promise<void>;
 };
 
-export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, isSubmitting = false, onSubmit }: WorkstreamComposerProps) {
+export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, isSubmitting = false, onSubmit, onShowDashboard }: WorkstreamComposerProps) {
   const [draft, setDraft] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const availability = useMemo(() => composerAvailability(me, selectedAgent), [me, selectedAgent]);
   const disabledReason = availability.status === 'disabled' ? availability.reason : undefined;
   const submitDisabled = isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability);
+  const showDashboardDisabled = !selectedAgent || availability.status === 'disabled';
   const helperId = 'workstream-composer-helper';
   const pointerStartedInSelectableSurfaceRef = useRef(false);
 
@@ -95,6 +97,12 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
     window.requestAnimationFrame(focusComposerInput);
   }
 
+  async function showDashboard() {
+    if (!selectedAgent || showDashboardDisabled) return;
+    await onShowDashboard?.(selectedAgent.functionalAgentId);
+    window.requestAnimationFrame(focusComposerInput);
+  }
+
   return (
     <form className="command-strip workstream-composer" aria-label="Persistent workstream composer" onSubmit={submit}>
       <div className="composer-input-wrap">
@@ -120,7 +128,21 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
         <span aria-hidden="true">↑</span>
         <span className="workstream-send-prompt-tooltip" role="tooltip">{isSubmitting ? 'Submitting prompt to model-backed agent' : 'Send prompt'}</span>
       </button>
+      <button type="button" className="ds-button secondary icon-button show-dashboard-button" disabled={showDashboardDisabled} aria-label="Show dashboard" onClick={showDashboard}>
+        <DashboardIcon />
+        <span className="workstream-show-dashboard-tooltip" role="tooltip">Show dashboard</span>
+      </button>
     </form>
+  );
+}
+
+function DashboardIcon() {
+  return (
+    <svg className="dashboard-button-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+      <rect x="4" y="5" width="16" height="14" rx="3" />
+      <path d="M8 10h3M8 14h2M14 10h2M14 14h2" />
+      <path d="M4 9h16" />
+    </svg>
   );
 }
 

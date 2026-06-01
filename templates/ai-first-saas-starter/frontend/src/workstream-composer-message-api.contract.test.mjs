@@ -9,6 +9,7 @@ const apiContract = read('./api/WorkstreamApiClient.ts');
 const httpClient = read('./api/HttpWorkstreamApiClient.ts');
 const fixtureClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
+const shell = read('./workstream/shell/WorkstreamShell.tsx');
 const composer = read('./workstream/composer/WorkstreamComposer.tsx');
 const markdownSurface = read('./workstream/surfaces/MarkdownResponseSurface.tsx');
 const surfaceFrame = read('./workstream/surfaces/SurfaceStateFrame.tsx');
@@ -33,6 +34,24 @@ test('composer routes dashboard prompts through backend shell requests instead o
   assert.match(main, /dashboardSurfaceIdForAgent\(functionalAgentId\)/);
   assert.match(main, /case 'agent-user-admin'|default: return 'surface-user-admin-dashboard'/);
   assert.match(main, /const shellRequest = buildComposerShellRequest\(request\.prompt, request\.functionalAgentId, me\.selectedAuthContext\.selectedContextId, correlationId\)/);
+});
+
+test('standard Show dashboard button is shell-handled and appends request plus dashboard surface', () => {
+  assert.match(composer, /className="ds-button secondary icon-button show-dashboard-button"/);
+  assert.match(composer, /aria-label="Show dashboard"/);
+  assert.match(composer, /<DashboardIcon \/>/);
+  assert.match(composer, /onClick=\{showDashboard\}/);
+  assert.match(shell, /onShowDashboard=\{onShowDashboard\}/);
+  assert.match(main, /async function handleShowDashboard\(functionalAgentId: string\)/);
+  assert.match(main, /buildShowDashboardShellRequest\(functionalAgentId, me\.selectedAuthContext\.selectedContextId, correlationId, 'shell_button'\)/);
+  assert.match(main, /canonicalPrompt: 'Show dashboard'/);
+  assert.match(main, /origin: 'shell_button'|origin,\n    displayText/);
+  assert.match(main, /await runShellSurfaceRequest\(shellRequest, functionalAgentId, 'show-dashboard'\)/);
+  assert.match(main, /kind: 'user-request'/);
+  assert.match(main, /kind: 'surface'/);
+  assert.match(componentStyles, /\.show-dashboard-button/);
+  assert.match(componentStyles, /\.dashboard-button-icon/);
+  assert.match(componentStyles, /\.workstream-show-dashboard-tooltip/);
 });
 
 test('composer response appends returned items and markdown_response surface', () => {

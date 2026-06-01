@@ -470,7 +470,7 @@
 .workstream-composer {
   pointer-events: auto;
   overflow: visible;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: end;
   border-color: color-mix(in srgb, var(--color-ai) 24%, var(--color-border));
   border-radius: var(--radius-xl);
@@ -502,7 +502,8 @@
 
 .workstream-composer textarea::placeholder { color: var(--color-muted); }
 
-.send-prompt-button {
+.send-prompt-button,
+.show-dashboard-button {
   position: relative;
   overflow: visible;
   width: 3rem;
@@ -512,7 +513,33 @@
   line-height: 1;
 }
 
+.send-prompt-button {
+  overflow: visible;
+}
+
+.show-dashboard-button {
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary-soft) 78%, var(--color-surface-raised));
+}
+
+.dashboard-button-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .workstream-send-prompt-tooltip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-2));
+}
+
+.workstream-send-prompt-tooltip,
+.workstream-show-dashboard-tooltip {
   position: absolute;
   right: 0;
   bottom: calc(100% + var(--space-2));
@@ -537,7 +564,8 @@
   white-space: nowrap;
 }
 
-.workstream-send-prompt-tooltip::before {
+.workstream-send-prompt-tooltip::before,
+.workstream-show-dashboard-tooltip::before {
   content: '';
   position: absolute;
   right: 1.15rem;
@@ -551,7 +579,9 @@
 }
 
 .send-prompt-button:hover .workstream-send-prompt-tooltip,
-.send-prompt-button:focus-visible .workstream-send-prompt-tooltip {
+.send-prompt-button:focus-visible .workstream-send-prompt-tooltip,
+.show-dashboard-button:hover .workstream-show-dashboard-tooltip,
+.show-dashboard-button:focus-visible .workstream-show-dashboard-tooltip {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1468,7 +1498,7 @@
     left: var(--space-3);
   }
   .workstream-composer {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
   }
   .workstream-item.user-request,
   .workstream-item.surface-request {

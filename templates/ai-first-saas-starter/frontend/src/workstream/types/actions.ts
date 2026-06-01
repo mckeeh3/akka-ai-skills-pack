@@ -2,7 +2,7 @@ import type { SurfaceEnvelope } from './surfaces';
 
 export type SurfaceActionIntent = 'read' | 'surface-request' | 'command' | 'proposal' | 'approval' | 'workflow' | 'governance' | 'trace';
 export type ShellRequestType = 'show_surface' | 'open_workstream' | 'refresh_surface' | 'open_attention_item';
-export type ShellRequestOrigin = 'user_prompt' | 'surface_action' | 'deep_link' | 'my_account_panel' | 'system_suggestion';
+export type ShellRequestOrigin = 'user_prompt' | 'surface_action' | 'deep_link' | 'my_account_panel' | 'system_suggestion' | 'shell_button';
 export type IdempotencyKeySource = 'client-generated' | 'surface-item' | 'server-issued';
 export type ResultSurfacePlacement = 'inline' | 'modal' | 'side-panel' | 'deep-link';
 

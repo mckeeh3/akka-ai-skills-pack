@@ -98,7 +98,7 @@ Required shell regions:
 
 1. **Left rail functional agents** — show only agents the selected `AuthContext` may use. Examples: User Admin, Agent Admin, Governance/Policy, Audit/Trace, Support Access, Billing, Procurement, Finance, Sales Pipeline, Approval Queue, Risk & Exceptions. The signed-in user tile/email at the bottom of the rail is the My Account launcher; do not also list My Account among the top rail workstream buttons, and do not replace it with a separate profile/settings menu. Each visible rail workstream has universal workstream icon metadata for compact launchers, tooltips, accessible labels, and cross-surface reuse.
 2. **Main workstream panel** — shows a continuous vertical stream of user intent, agent responses, structured surfaces, capability results, workflow status, decision cards, traces, and links.
-3. **Persistent composer** — accepts natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent.
+3. **Persistent composer** — accepts natural-language requests, commands, uploads where allowed, and contextual follow-ups for the selected functional agent. It includes a standard **Show dashboard** button immediately to the right of **Send prompt**. The button uses a dashboard icon, is handled directly by the shell rather than prompting the workstream agent, and appends a `Show dashboard` request surface followed by the selected workstream's dashboard surface.
 4. **Context and authority indicators** — show selected tenant/customer context, active role/capability basis, pending approvals, trace links, and safe denial/recovery states.
 
 Selecting a functional agent selects its workstream and should normally produce an initial dashboard, attention, or briefing surface for that work area. The selected workstream agent may also request surfaces in response to natural language: “dashboard”, “show the access review queue”, “find Alex”, or “how do I add a new user?” should resolve to guidance, surface requests, or capability-backed actions within that workstream. Clicking buttons, links, cards, rows, icons, and other controls should append or update workstream surfaces rather than forcing users through a page-first navigation hierarchy.
@@ -125,7 +125,7 @@ Every request item must preserve honest origin metadata even when it is visually
 ```ts
 type WorkstreamShellRequest = {
   requestType: "show_surface" | "open_workstream" | "refresh_surface" | "open_attention_item";
-  origin: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion";
+  origin: "user_prompt" | "surface_action" | "deep_link" | "my_account_panel" | "system_suggestion" | "shell_button";
   displayText: string;        // what the user typed or action label said
   canonicalPrompt: string;    // e.g. "show surface users-list"
   targetFunctionalAgentId?: string;

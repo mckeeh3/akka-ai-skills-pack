@@ -345,6 +345,63 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     }
   }
 
+  async function runShellSurfaceRequest(shellRequest: WorkstreamShellRequest, fallbackFunctionalAgentId: string, itemPrefix: string) {
+    const shellResult = await workstreamClient.runShellRequest(shellRequest);
+    if (!shellResult.ok) {
+      const safeError = safeComposerErrorCopy(shellResult.error);
+      const errorItem: WorkstreamItem = {
+        itemId: `${itemPrefix}-shell-error-${Date.now()}`,
+        functionalAgentId: fallbackFunctionalAgentId,
+        kind: 'system-notification',
+        createdAt: new Date().toISOString(),
+        correlationId: shellRequest.correlationId,
+        traceIds: [],
+        title: safeError.title,
+        body: `${safeError.body} Correlation ${shellResult.error.correlationId}.`,
+        status: safeError.status
+      };
+      setBootstrap((current) => current.status === 'ready'
+        ? { ...current, items: pruneWorkstreamItems([...current.items, errorItem]) }
+        : current);
+      return false;
+    }
+    const targetSurface = shellResult.value.resultSurface;
+    const requestItem = shellResult.value.requestItem;
+    const surfaceResponseItem: WorkstreamItem = {
+      itemId: `${itemPrefix}-shell-response-${targetSurface.surfaceId}-${Date.now()}`,
+      functionalAgentId: targetSurface.ownerFunctionalAgentId,
+      kind: 'surface',
+      createdAt: new Date().toISOString(),
+      correlationId: shellResult.value.correlationId,
+      traceIds: targetSurface.traceIds,
+      surfaceId: targetSurface.surfaceId,
+      title: targetSurface.title,
+      status: 'ready'
+    };
+    setRequestScrollTargetForCurrentSession(requestItem.itemId, targetSurface.ownerFunctionalAgentId);
+    rememberVisualSession(sessionForAgent(targetSurface.ownerFunctionalAgentId), { anchorSurfaceId: requestItem.itemId, selectedSurfaceId: targetSurface.surfaceId, userHasManualScroll: false });
+    setBootstrap((current) => {
+      if (current.status !== 'ready') return current;
+      const nextSurfaces = current.surfaces.some((surface) => surface.surfaceId === targetSurface.surfaceId)
+        ? current.surfaces.map((surface) => surface.surfaceId === targetSurface.surfaceId ? targetSurface : surface)
+        : [...current.surfaces, targetSurface];
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, requestItem, surfaceResponseItem]) };
+    });
+    if (isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
+      updateSelection({ selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId, selectedSurfaceId: targetSurface.surfaceId, surfacePlacement: 'inline' });
+    } else {
+      markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem.itemId, 'info');
+    }
+    return true;
+  }
+
+  async function handleShowDashboard(functionalAgentId: string) {
+    if (!ready || !me) return;
+    const correlationId = `corr-show-dashboard-${Date.now().toString(36)}`;
+    const shellRequest = buildShowDashboardShellRequest(functionalAgentId, me.selectedAuthContext.selectedContextId, correlationId, 'shell_button');
+    await runShellSurfaceRequest(shellRequest, functionalAgentId, 'show-dashboard');
+  }
+
   async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
     if (!ready || !me) return false;
     const submittedAt = Date.now();
@@ -352,53 +409,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     const correlationId = `corr-composer-${submittedAt.toString(36)}`;
     const shellRequest = buildComposerShellRequest(request.prompt, request.functionalAgentId, me.selectedAuthContext.selectedContextId, correlationId);
     if (shellRequest) {
-      const shellResult = await workstreamClient.runShellRequest(shellRequest);
-      if (!shellResult.ok) {
-        const safeError = safeComposerErrorCopy(shellResult.error);
-        const errorItem: WorkstreamItem = {
-          itemId: `composer-shell-error-${Date.now()}`,
-          functionalAgentId: request.functionalAgentId,
-          kind: 'system-notification',
-          createdAt: new Date().toISOString(),
-          correlationId,
-          traceIds: [],
-          title: safeError.title,
-          body: `${safeError.body} Correlation ${shellResult.error.correlationId}.`,
-          status: safeError.status
-        };
-        setBootstrap((current) => current.status === 'ready'
-          ? { ...current, items: pruneWorkstreamItems([...current.items, errorItem]) }
-          : current);
-        return false;
-      }
-      const targetSurface = shellResult.value.resultSurface;
-      const requestItem = shellResult.value.requestItem;
-      const surfaceResponseItem: WorkstreamItem = {
-        itemId: `composer-shell-response-${targetSurface.surfaceId}-${submittedAt}`,
-        functionalAgentId: targetSurface.ownerFunctionalAgentId,
-        kind: 'surface',
-        createdAt: new Date().toISOString(),
-        correlationId: shellResult.value.correlationId,
-        traceIds: targetSurface.traceIds,
-        surfaceId: targetSurface.surfaceId,
-        title: targetSurface.title,
-        status: 'ready'
-      };
-      setRequestScrollTargetForCurrentSession(requestItem.itemId, targetSurface.ownerFunctionalAgentId);
-      rememberVisualSession(sessionForAgent(targetSurface.ownerFunctionalAgentId), { anchorSurfaceId: requestItem.itemId, selectedSurfaceId: targetSurface.surfaceId, userHasManualScroll: false });
-      setBootstrap((current) => {
-        if (current.status !== 'ready') return current;
-        const nextSurfaces = current.surfaces.some((surface) => surface.surfaceId === targetSurface.surfaceId)
-          ? current.surfaces.map((surface) => surface.surfaceId === targetSurface.surfaceId ? targetSurface : surface)
-          : [...current.surfaces, targetSurface];
-        return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, requestItem, surfaceResponseItem]) };
-      });
-      if (isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
-        updateSelection({ selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId, selectedSurfaceId: targetSurface.surfaceId, surfacePlacement: 'inline' });
-      } else {
-        markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem.itemId, 'info');
-      }
-      return true;
+      return runShellSurfaceRequest(shellRequest, request.functionalAgentId, 'composer');
     }
     const userRequestItem: WorkstreamItem = {
       itemId: `composer-request-${submittedAt}`,
@@ -509,6 +520,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       appName="AI-first SaaS"
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
+      onShowDashboard={handleShowDashboard}
       submittingFunctionalAgentId={submittingFunctionalAgentId}
       railAttentionByAgentId={railAttentionByAgentId}
       onSignOut={onSignOut}
@@ -548,11 +560,16 @@ function isMaterialBackgroundEvent(eventType: WorkstreamEvent['eventType']): boo
 function buildComposerShellRequest(prompt: string, functionalAgentId: string, selectedContextId: string, correlationId: string): WorkstreamShellRequest | undefined {
   const normalized = prompt.trim().toLowerCase().replace(/[.!?]+$/g, '').replace(/\s+/g, ' ');
   if (!['dashboard', 'show dashboard', 'open dashboard', 'refresh dashboard', 'show command center', 'open command center'].includes(normalized)) return undefined;
+  const shellRequest = buildShowDashboardShellRequest(functionalAgentId, selectedContextId, correlationId, 'user_prompt', prompt.trim());
+  return normalized.startsWith('refresh') ? { ...shellRequest, requestType: 'refresh_surface' } : shellRequest;
+}
+
+function buildShowDashboardShellRequest(functionalAgentId: string, selectedContextId: string, correlationId: string, origin: WorkstreamShellRequest['origin'], displayText = 'Show dashboard'): WorkstreamShellRequest {
   return {
-    requestType: normalized.startsWith('refresh') ? 'refresh_surface' : 'show_surface',
-    origin: 'user_prompt',
-    displayText: prompt.trim(),
-    canonicalPrompt: `show dashboard for ${functionalAgentId}`,
+    requestType: 'show_surface',
+    origin,
+    displayText,
+    canonicalPrompt: 'Show dashboard',
     targetFunctionalAgentId: functionalAgentId,
     targetSurfaceId: dashboardSurfaceIdForAgent(functionalAgentId),
     sourceFunctionalAgentId: functionalAgentId,
