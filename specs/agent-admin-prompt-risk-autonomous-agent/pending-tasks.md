@@ -130,7 +130,7 @@
 
 ### TASK-AAPR-04-001: Run prompt-risk AutonomousAgent validation
 
-- status: pending
+- status: done
 - source: specs/agent-admin-prompt-risk-autonomous-agent/backlog/01-prompt-risk-agent-build-backlog.md
 - task brief: specs/agent-admin-prompt-risk-autonomous-agent/tasks/04-validation/01-run-prompt-risk-validation.md
 - depends on:
