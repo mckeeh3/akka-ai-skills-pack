@@ -79,7 +79,7 @@
 
 ### TASK-WEB3-02-001: Implement domain events and consumer projection path
 
-- status: pending
+- status: done
 - source: specs/workstream-event-backbone-v3/backlog/01-workstream-event-backbone-v3-build-backlog.md
 - task brief: specs/workstream-event-backbone-v3/tasks/02-events-consumers/01-implement-domain-events-and-consumer.md
 - depends on:

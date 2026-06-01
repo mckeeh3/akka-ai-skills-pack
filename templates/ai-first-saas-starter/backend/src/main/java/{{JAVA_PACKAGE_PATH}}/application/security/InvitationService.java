@@ -37,16 +37,22 @@ public final class InvitationService {
   private final InvitationRepository invitationRepository;
   private final Clock clock;
   private final AttentionProducerService attentionProducerService;
+  private final WorkstreamEventPublisher workstreamEventPublisher;
 
   public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock) {
-    this(identityRepository, invitationRepository, clock, null);
+    this(identityRepository, invitationRepository, clock, null, null);
   }
 
   public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock, AttentionProducerService attentionProducerService) {
+    this(identityRepository, invitationRepository, clock, attentionProducerService, null);
+  }
+
+  public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock, AttentionProducerService attentionProducerService, WorkstreamEventPublisher workstreamEventPublisher) {
     this.identityRepository = identityRepository;
     this.invitationRepository = invitationRepository;
     this.clock = clock;
     this.attentionProducerService = attentionProducerService;
+    this.workstreamEventPublisher = workstreamEventPublisher;
   }
 
   public Invitation createInvitation(AuthContextResolver.ResolvedMe actor, CreateInvitationRequest request) {
@@ -142,7 +148,9 @@ public final class InvitationService {
         invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), correlationId);
     invitationRepository.saveInvitation(updated);
     appendSystemAudit(updated, "INVITATION_DELIVERY_" + (delivered ? deliveredStatus.name() : "FAILED"), delivered ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.FAILED, delivered ? deliveredStatus.name().toLowerCase(java.util.Locale.ROOT) : safeError, correlationId);
-    if (attentionProducerService != null) {
+    if (workstreamEventPublisher != null) {
+      workstreamEventPublisher.publishInvitationDelivery(updated, delivered, deliveryAttemptId, delivered ? deliveredStatus.name() : "FAILED", safeError, correlationId);
+    } else if (attentionProducerService != null) {
       if (delivered) attentionProducerService.resolveInvitationDelivery(updated, deliveredStatus.name().toLowerCase(java.util.Locale.ROOT), correlationId);
       else attentionProducerService.upsertInvitationDelivery(updated, correlationId);
     }

@@ -35,6 +35,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Tenant;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
+import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +65,9 @@ public final class StarterSecurityComponents {
   private static volatile AttentionRepository attentionRepository = new UnboundAttentionRepository();
   private static volatile AttentionService attentionService = new AttentionService(attentionRepository, authContextResolver, CLOCK);
   private static volatile AttentionProducerService attentionProducerService = new AttentionProducerService(attentionRepository, identityRepository, CLOCK);
+  private static volatile WorkstreamEventRepository workstreamEventRepository = new UnboundWorkstreamEventRepository();
+  private static volatile WorkstreamEventAttentionConsumer workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, attentionProducerService, CLOCK);
+  private static volatile WorkstreamEventPublisher workstreamEventPublisher = new WorkstreamEventPublisher(workstreamEventRepository, workstreamEventAttentionConsumer, CLOCK);
   static {
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
   }
@@ -95,6 +99,7 @@ public final class StarterSecurityComponents {
     var durableAccessReviews = new AkkaAccessReviewTaskRepository(componentClient);
     var durableGovernancePolicy = new AkkaGovernancePolicyRepository(componentClient);
     var durableAttention = new AkkaAttentionRepository(componentClient);
+    var durableWorkstreamEvents = new AkkaWorkstreamEventRepository(componentClient);
     var durableRuntime = new AgentRuntimeService(durableAgentBehavior, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, new AkkaAgentRuntimeTraceSink(componentClient));
     invitationRepository = durableInvitations;
     agentBehaviorRepository = durableAgentBehavior;
@@ -107,7 +112,10 @@ public final class StarterSecurityComponents {
     attentionRepository = durableAttention;
     attentionService = new AttentionService(durableAttention, authContextResolver, CLOCK);
     attentionProducerService = new AttentionProducerService(durableAttention, durableIdentity, CLOCK);
-    invitationService = new InvitationService(durableIdentity, durableInvitations, CLOCK, attentionProducerService);
+    workstreamEventRepository = durableWorkstreamEvents;
+    workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(durableAttention, durableIdentity, attentionProducerService, CLOCK);
+    workstreamEventPublisher = new WorkstreamEventPublisher(durableWorkstreamEvents, workstreamEventAttentionConsumer, CLOCK);
+    invitationService = new InvitationService(durableIdentity, durableInvitations, CLOCK, attentionProducerService, workstreamEventPublisher);
     invitationView = new InvitationView(invitationService);
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
     governancePolicyService = new GovernancePolicyService(durableGovernancePolicy, authContextResolver, CLOCK, attentionProducerService);
@@ -156,6 +164,8 @@ public final class StarterSecurityComponents {
     userAdminService = new UserAdminService(testRepository, CLOCK);
     invitationRepository = new UnboundInvitationRepository();
     attentionProducerService = new AttentionProducerService(attentionRepository, testRepository, CLOCK);
+    workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(attentionRepository, testRepository, attentionProducerService, CLOCK);
+    workstreamEventPublisher = new WorkstreamEventPublisher(workstreamEventRepository, workstreamEventAttentionConsumer, CLOCK);
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK, attentionProducerService);
     invitationView = new InvitationView(invitationService);
     accessReviewTaskRepository = new UnboundAccessReviewTaskRepository();
@@ -173,6 +183,8 @@ public final class StarterSecurityComponents {
     attentionRepository = testRepository;
     attentionService = new AttentionService(testRepository, authContextResolver, CLOCK);
     attentionProducerService = new AttentionProducerService(testRepository, identityRepository, CLOCK);
+    workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(testRepository, identityRepository, attentionProducerService, CLOCK);
+    workstreamEventPublisher = new WorkstreamEventPublisher(workstreamEventRepository, workstreamEventAttentionConsumer, CLOCK);
     invitationService = new InvitationService(identityRepository, invitationRepository, CLOCK, attentionProducerService);
     invitationView = new InvitationView(invitationService);
     governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK, attentionProducerService);
@@ -250,6 +262,23 @@ public final class StarterSecurityComponents {
 
   public static AttentionService attentionService() {
     return attentionService;
+  }
+
+  public static WorkstreamEventRepository workstreamEventRepository() {
+    return workstreamEventRepository;
+  }
+
+  public static WorkstreamEventPublisher workstreamEventPublisher() {
+    return workstreamEventPublisher;
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source workstream event adapters. */
+  public static void bindTestWorkstreamEventRepository(WorkstreamEventRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test workstream event repository binding");
+    workstreamEventRepository = testRepository;
+    workstreamEventPublisher = new WorkstreamEventPublisher(testRepository, workstreamEventAttentionConsumer, CLOCK);
+    invitationService = new InvitationService(identityRepository, invitationRepository, CLOCK, attentionProducerService, workstreamEventPublisher);
+    invitationView = new InvitationView(invitationService);
   }
 
   public static ModelProviderClient modelProviderClient() {
@@ -365,6 +394,17 @@ public final class StarterSecurityComponents {
     public Optional<AttentionItem> find(String tenantId, String itemId) { throw unavailable(); }
     public List<AttentionItem> listTenant(String tenantId) { throw unavailable(); }
     public AttentionItem save(AttentionItem item) { throw unavailable(); }
+  }
+
+  private static final class UnboundWorkstreamEventRepository implements WorkstreamEventRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("WorkstreamEventRepository");
+    }
+
+    public WorkstreamEventEnvelope publish(WorkstreamEventEnvelope event) { throw unavailable(); }
+    public Optional<WorkstreamEventEnvelope> find(String tenantId, String eventId) { throw unavailable(); }
+    public Optional<WorkstreamEventEnvelope> findByIdempotencyKey(String tenantId, String idempotencyKey) { throw unavailable(); }
+    public List<WorkstreamEventEnvelope> listTenant(String tenantId) { throw unavailable(); }
   }
 
   private static final class UnboundWorkstreamLogRepository implements WorkstreamLogRepository {
