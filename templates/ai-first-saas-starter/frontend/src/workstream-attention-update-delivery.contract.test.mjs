@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const readBackend = (path) => read(`../../backend/${path}`);
+const resolve = (path) => new URL(path, import.meta.url);
+const read = (path) => readFileSync(resolve(path), 'utf8');
+const readBackend = (path) => {
+  const scaffoldRootPath = `../../${path}`;
+  if (existsSync(resolve(scaffoldRootPath))) return read(scaffoldRootPath);
+  return read(`../../backend/${path}`);
+};
 
 const main = read('./main.tsx');
 const apiClient = read('./api/WorkstreamApiClient.ts');

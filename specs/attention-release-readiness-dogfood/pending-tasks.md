@@ -106,7 +106,7 @@
 
 ### TASK-ARD-01-003: Fix scaffold frontend attention contract test backend paths
 
-- status: pending
+- status: done
 - source: TASK-ARD-01-002 validation artifact
 - task brief: specs/attention-release-readiness-dogfood/tasks/01-validation/03-fix-frontend-attention-contract-backend-paths.md
 - depends on:
@@ -135,6 +135,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `attention-dogfood: fix frontend attention contract paths`
+  - validation target: `/tmp/attention-dogfood-scaffold-fix-8ROWu5`
+  - validation passed: fresh scaffold frontend `npm ci`, `npm test` (132 passed), `npm run typecheck`, and `npm run build`
 
 ### TASK-ARD-02-001: Run manual/runtime edge review
 
