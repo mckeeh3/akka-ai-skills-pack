@@ -76,7 +76,7 @@
 
 ### TASK-AAPR-02-001: Implement prompt-risk AutonomousAgent runtime
 
-- status: pending
+- status: done
 - source: specs/agent-admin-prompt-risk-autonomous-agent/backlog/01-prompt-risk-agent-build-backlog.md
 - task brief: specs/agent-admin-prompt-risk-autonomous-agent/tasks/02-runtime/01-implement-prompt-risk-runtime.md
 - depends on:

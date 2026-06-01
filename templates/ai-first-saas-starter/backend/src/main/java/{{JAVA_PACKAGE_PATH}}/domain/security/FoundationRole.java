@@ -93,7 +93,12 @@ public enum FoundationRole {
           "agent_admin.reseed_missing_defaults",
           "agent_admin.start_behavior_review_task",
           "agent_admin.get_behavior_review_task",
-          "agent_admin.cancel_behavior_review_task")),
+          "agent_admin.cancel_behavior_review_task",
+          "agent_admin.prompt_risk_review.start",
+          "agent_admin.prompt_risk_review.read",
+          "agent_admin.prompt_risk_review.cancel",
+          "agent_admin.prompt_risk_review.accept_result",
+          "agent_admin.prompt_risk_review.reject_result")),
   TENANT_EMPLOYEE(
       ScopeType.TENANT,
       List.of(
@@ -178,7 +183,12 @@ public enum FoundationRole {
           "agent_admin.reseed_missing_defaults",
           "agent_admin.start_behavior_review_task",
           "agent_admin.get_behavior_review_task",
-          "agent_admin.cancel_behavior_review_task")),
+          "agent_admin.cancel_behavior_review_task",
+          "agent_admin.prompt_risk_review.start",
+          "agent_admin.prompt_risk_review.read",
+          "agent_admin.prompt_risk_review.cancel",
+          "agent_admin.prompt_risk_review.accept_result",
+          "agent_admin.prompt_risk_review.reject_result")),
   CUSTOMER_USER(
       ScopeType.CUSTOMER,
       List.of(
