@@ -167,7 +167,7 @@
 
 ### TASK-AAFR-99-001: Verify AutonomousAgent regression readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/autonomous-agent-fullstack-regression-readiness/tasks/99-verification/01-verify-regression-readiness.md
 - depends on:
@@ -192,3 +192,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `autonomous-agent-regression: verify readiness`
+  - verification: reviewed all mini-project artifacts plus full backend/frontend validation evidence; backend `mvn test` and frontend `npm ci`, `npm test`, `npm run typecheck`, and `npm run build` are recorded passing in fresh scaffolds after the bounded frontend script fix.
+  - verification: focused scans found User Admin Access Review, Agent Admin Prompt-Risk, Audit/Trace Summary, and Governance/Policy Impact vertical evidence.
+  - verification: stale regression-language scan found only historical/problem-statement references or superseded validation-blocker evidence; README wording was updated to avoid current blocked-state language.
+  - outcome: no additional bounded follow-up tasks are required; this mini-project is terminally complete.
