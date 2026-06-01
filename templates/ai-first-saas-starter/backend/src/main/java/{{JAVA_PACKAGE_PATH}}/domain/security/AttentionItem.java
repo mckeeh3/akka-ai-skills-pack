@@ -62,6 +62,13 @@ public record AttentionItem(
         redactionLevel, createdAt, now, now, expiresAt, acknowledgedAt, resolvedAt, now, correlationId);
   }
 
+  public AttentionItem expire(Instant now, String correlationId) {
+    if (status == AttentionItemStatus.EXPIRED) return this;
+    return new AttentionItem(itemId, tenantId, customerId, owningWorkstreamId, title, summary, category, severity,
+        AttentionItemStatus.EXPIRED, assigneeKind, assigneeId, requiredCapabilityId, surfaceRef, sourceRefs,
+        redactionLevel, createdAt, now, now, expiresAt, acknowledgedAt, resolvedAt, dismissedAt, correlationId);
+  }
+
   public boolean countsAsActionable() {
     return status == AttentionItemStatus.OPEN || status == AttentionItemStatus.ACKNOWLEDGED;
   }

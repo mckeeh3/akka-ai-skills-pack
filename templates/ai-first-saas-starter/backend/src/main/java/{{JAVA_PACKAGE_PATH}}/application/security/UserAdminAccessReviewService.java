@@ -17,11 +17,17 @@ public final class UserAdminAccessReviewService {
   private final AccessReviewTaskRepository repository;
   private final UserAdminService userAdminService;
   private final Clock clock;
+  private final AttentionProducerService attentionProducerService;
 
   public UserAdminAccessReviewService(AccessReviewTaskRepository repository, UserAdminService userAdminService, Clock clock) {
+    this(repository, userAdminService, clock, null);
+  }
+
+  public UserAdminAccessReviewService(AccessReviewTaskRepository repository, UserAdminService userAdminService, Clock clock, AttentionProducerService attentionProducerService) {
     this.repository = Objects.requireNonNull(repository);
     this.userAdminService = Objects.requireNonNull(userAdminService);
     this.clock = Objects.requireNonNull(clock);
+    this.attentionProducerService = attentionProducerService;
   }
 
   public AccessReviewTask start(AuthContextResolver.ResolvedMe actor, String idempotencyKey, String correlationId) {
@@ -56,6 +62,7 @@ public final class UserAdminAccessReviewService {
         now);
     repository.save(task);
     userAdminService.auditAccessReview(actor, task, START_CAPABILITY, AdminAuditEvent.Result.ALLOWED, "provider-blocked-fail-closed", correlationId);
+    if (attentionProducerService != null) attentionProducerService.upsertWorkerTaskState(task, null, correlationId);
     return task;
   }
 
@@ -77,6 +84,7 @@ public final class UserAdminAccessReviewService {
     var cancelled = task.withStatus(AccessReviewTask.Status.CANCELLED, task.progressPercent(), firstNonBlank(reason, "Access-review task cancelled by authorized User Admin."), null, List.of(traceId), Instant.now(clock));
     repository.save(cancelled);
     userAdminService.auditAccessReview(actor, cancelled, CANCEL_CAPABILITY, AdminAuditEvent.Result.ALLOWED, "cancelled", correlationId);
+    if (attentionProducerService != null) attentionProducerService.resolveWorkerTaskState(cancelled, "cancelled", correlationId);
     return cancelled;
   }
 
@@ -91,6 +99,7 @@ public final class UserAdminAccessReviewService {
     var updated = task.withWorkerUpdate(status, result.progressPercent(), result.summary(), result.blockerCode(), result.evidenceRefs(), result.recommendationRefs(), result.traceIds(), Instant.now(clock));
     repository.save(updated);
     userAdminService.auditAccessReview(actor, updated, READ_CAPABILITY, status == AccessReviewTask.Status.COMPLETED ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.DENIED, status == AccessReviewTask.Status.COMPLETED ? "worker-completed:no direct mutation" : "worker-blocked-fail-closed", correlationId);
+    if (attentionProducerService != null) attentionProducerService.upsertWorkerTaskState(updated, null, correlationId);
     return updated;
   }
 
@@ -114,6 +123,10 @@ public final class UserAdminAccessReviewService {
     var decided = task.withDecision(status, decision, firstNonBlank(reason, "Human result decision recorded; access state unchanged."), List.of(traceId), Instant.now(clock));
     repository.save(decided);
     userAdminService.auditAccessReview(actor, decided, status == AccessReviewTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, AdminAuditEvent.Result.ALLOWED, decision + ":no direct mutation", correlationId);
+    if (attentionProducerService != null) {
+      if (status == AccessReviewTask.Status.ACCEPTED) attentionProducerService.resolveWorkerTaskState(decided, "accepted", correlationId);
+      else attentionProducerService.upsertWorkerTaskState(decided, null, correlationId);
+    }
     return decided;
   }
 

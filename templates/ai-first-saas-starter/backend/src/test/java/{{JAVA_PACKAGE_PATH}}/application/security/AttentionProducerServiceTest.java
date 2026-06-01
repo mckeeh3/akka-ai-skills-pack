@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
@@ -20,6 +21,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -82,6 +84,50 @@ class AttentionProducerServiceTest {
     assertEquals(AttentionItemStatus.RESOLVED, attentionRepository.find("tenant-1", item.itemId()).orElseThrow().status());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("ATTENTION_PRODUCER_UPSERT") && event.reasonCode().contains(AttentionProducerService.INVITATION_DELIVERY_PRODUCER_ID)));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("ATTENTION_PRODUCER_RESOLVE") && event.correlationId().equals("corr-delivery-ok")));
+  }
+
+  @Test
+  void timedInvitationDeliveryCheckUpdatesNearExpiryAndExpiresExpiredAttention() {
+    var invite = invitations.createInvitation(tenantAdmin, inviteRequest("invite-timed", "timed@example.test"));
+    invitations.recordDeliveryResult(invite.invitationId(), "delivery-1", false, null, "provider blocked token=abc123", "corr-timed-failed");
+
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var timed = producers.runInvitationDeliveryTimedCheck(invitationRepository, Duration.ofHours(2), "timer.invitation-delivery-expiry", "corr-timed-check");
+
+    assertEquals(1, timed.size());
+    var item = attentionRepository.find("tenant-1", "attention:user-admin:invitation-delivery:" + invite.invitationId()).orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertEquals(AttentionSeverity.URGENT, item.severity());
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("timer")));
+    assertFalse(item.toString().contains("token=abc123"));
+
+    invitations.expire(invite.invitationId(), "tenant-1", null, "corr-expire");
+    assertEquals(AttentionItemStatus.RESOLVED, attentionRepository.find("tenant-1", item.itemId()).orElseThrow().status());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("ATTENTION_PRODUCER_TIMED_CHECK") && event.reasonCode().contains("timer.invitation-delivery-expiry")));
+  }
+
+  @Test
+  void workerTaskBlockedStateProducesAttentionAndCancelResolvesWithoutFakeSuccess() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), new UserAdminService(identityRepository, clock), clock, producers);
+
+    var task = accessReviews.start(tenantAdmin, "idem-worker-attention", "corr-worker-start");
+
+    var item = attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow();
+    assertEquals(AttentionCategory.WORKFLOW_BLOCKED, item.category());
+    assertEquals(AttentionSeverity.BLOCKED, item.severity());
+    assertTrue(item.summary().contains("blocked_provider_or_runtime"));
+    assertTrue(item.summary().contains("no fake model-backed success"));
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("autonomous_task") && ref.refId().equals(task.taskId())));
+
+    var replay = producers.upsertWorkerTaskState(task, "timer.worker-task-staleness", "corr-worker-timer");
+    assertEquals(item.itemId(), replay.itemId());
+    assertTrue(replay.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("timer")));
+
+    accessReviews.cancel(tenantAdmin, task.taskId(), "cancel blocked worker", "corr-worker-cancel");
+    assertEquals(AttentionItemStatus.RESOLVED, attentionRepository.find("tenant-1", item.itemId()).orElseThrow().status());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("ATTENTION_PRODUCER_UPSERT") && event.reasonCode().contains(AttentionProducerService.WORKER_TASK_STATE_PRODUCER_ID)));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("ATTENTION_PRODUCER_RESOLVE") && event.reasonCode().contains("cancelled")));
   }
 
   @Test

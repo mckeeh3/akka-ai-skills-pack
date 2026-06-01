@@ -120,7 +120,7 @@
 
 ### TASK-WAEP-03-001: Add timed and worker/task attention producers
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-event-producers-v2/backlog/01-event-producers-v2-build-backlog.md
 - task brief: specs/workstream-attention-event-producers-v2/tasks/03-workers/01-add-timed-and-worker-attention.md
 - depends on:
@@ -153,6 +153,9 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: timed/stale attention plus internal worker/task attention; non-UI trigger with dashboard/system-message/result surface refs; audit/work trace required; frontend rendering remains existing attention surfaces unless update delivery task changes it
+  - implemented invitation delivery timed-check producer (`runInvitationDeliveryTimedCheck`) and worker/task-state producer (`attention.producer.worker.task_state`) for User Admin access-review `blocked_provider_or_runtime`, completed-review-needed, rejected, queued/running stale, cancel/accept resolution paths.
+  - wired `UserAdminAccessReviewService` to upsert/resolve worker task attention while preserving fail-closed behavior and no fake model-backed success path.
+  - validation: direct template Maven command is blocked by placeholder `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}`; scaffolded equivalent passed with `tools/scaffold-ai-first-saas-starter.sh --target <tmp> --template-dir templates/ai-first-saas-starter --app-name "WAEP Backend Check" --app-slug waep-backend-check --base-package ai.first --maven-group-id ai.first --yes` then `mvn -q -Dtest=AttentionProducerServiceTest,UserAdminAccessReviewServiceTest,WorkstreamServiceTest test`; `git diff --check`; focused blocked/provider/fake-success `rg`.
   - commit message: `attention-producers: add timed worker attention`
 
 ### TASK-WAEP-04-001: Wire backend-derived attention update delivery

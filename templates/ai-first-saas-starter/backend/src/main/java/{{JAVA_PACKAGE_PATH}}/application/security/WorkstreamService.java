@@ -125,7 +125,8 @@ public final class WorkstreamService {
       AccessReviewTaskRepository accessReviewTaskRepository,
       AuditTraceRepository auditTraceRepository,
       GovernancePolicyRepository governancePolicyRepository,
-      AttentionService attentionService) {
+      AttentionService attentionService,
+      AttentionProducerService attentionProducerService) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.attentionService = Objects.requireNonNull(attentionService);
@@ -133,7 +134,7 @@ public final class WorkstreamService {
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
-    this.accessReviewService = new UserAdminAccessReviewService(Objects.requireNonNull(accessReviewTaskRepository), userAdminService, Clock.systemUTC());
+    this.accessReviewService = new UserAdminAccessReviewService(Objects.requireNonNull(accessReviewTaskRepository), userAdminService, Clock.systemUTC(), attentionProducerService);
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentAdminService = new AgentAdminService(agentBehaviorRepository, authContextResolver);

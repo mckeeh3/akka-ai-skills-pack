@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
@@ -9,7 +10,9 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSurfaceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
+import {{JAVA_BASE_PACKAGE}}.domain.security.InvitationStatus;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +22,7 @@ import java.util.UUID;
 public final class AttentionProducerService {
   public static final String INVITATION_DELIVERY_PRODUCER_ID = "attention.producer.user_admin.invitation_delivery";
   public static final String GOVERNANCE_POLICY_APPROVAL_PRODUCER_ID = "attention.producer.governance.policy_approval";
+  public static final String WORKER_TASK_STATE_PRODUCER_ID = "attention.producer.worker.task_state";
 
   private final AttentionRepository attentionRepository;
   private final IdentityRepository identityRepository;
@@ -90,6 +94,75 @@ public final class AttentionProducerService {
     return resolve(proposal.tenantId(), governanceApprovalItemId(proposal.proposalId()), GOVERNANCE_POLICY_APPROVAL_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
   }
 
+  public List<AttentionItem> runInvitationDeliveryTimedCheck(InvitationRepository invitations, Duration nearExpiryWindow, String timerId, String correlationId) {
+    var now = Instant.now(clock);
+    var window = nearExpiryWindow == null ? Duration.ofHours(24) : nearExpiryWindow;
+    return invitations.invitations().stream()
+        .filter(invitation -> invitation.status() == InvitationStatus.DELIVERY_FAILED)
+        .filter(invitation -> !invitation.terminal())
+        .filter(invitation -> !invitation.expiresAt().isAfter(now.plus(window)))
+        .map(invitation -> invitation.expiresAt().isAfter(now)
+            ? upsertTimedInvitationDelivery(invitation, timerId, correlationId)
+            : expire(invitation.tenantId(), invitationDeliveryItemId(invitation.invitationId()), INVITATION_DELIVERY_PRODUCER_ID, "timer-expired:" + safe(timerId, "invitation-delivery-expiry"), correlationId))
+        .toList();
+  }
+
+  public AttentionItem upsertWorkerTaskState(AccessReviewTask task, String timerId, String correlationId) {
+    if (task.status() == AccessReviewTask.Status.CANCELLED || task.status() == AccessReviewTask.Status.ACCEPTED) {
+      return resolveWorkerTaskState(task, task.status().name().toLowerCase(), correlationId);
+    }
+    var attention = switch (task.status()) {
+      case BLOCKED_PROVIDER_OR_RUNTIME -> workerTaskItem(task, AttentionSeverity.BLOCKED, AttentionCategory.WORKFLOW_BLOCKED,
+          "User Admin access-review worker is blocked by provider/runtime readiness",
+          "Access-review task " + task.taskId() + " is blocked_provider_or_runtime; the starter fails closed instead of returning model-less worker success.", timerId, correlationId);
+      case REJECTED -> workerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.AGENT_TASK_FAILED,
+          "User Admin access-review result was rejected",
+          "Access-review task " + task.taskId() + " was rejected and needs authorized follow-up.", timerId, correlationId);
+      case COMPLETED -> workerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.ACCESS_REVIEW,
+          "User Admin access-review result awaits human review",
+          "Access-review task " + task.taskId() + " completed through the governed runtime and requires human accept/reject review.", timerId, correlationId);
+      case RUNNING, QUEUED -> workerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.WORKFLOW_BLOCKED,
+          "User Admin access-review task is waiting for worker progress",
+          "Access-review task " + task.taskId() + " is " + task.status().name().toLowerCase() + " and may need worker/runtime attention if it remains stale.", timerId, correlationId);
+      case CANCELLED, ACCEPTED -> null;
+    };
+    return attention == null ? null : upsert(attention, WORKER_TASK_STATE_PRODUCER_ID, correlationId);
+  }
+
+  public AttentionItem resolveWorkerTaskState(AccessReviewTask task, String reason, String correlationId) {
+    return resolve(task.tenantId(), workerTaskItemId(task.taskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
+  }
+
+  private AttentionItem upsertTimedInvitationDelivery(Invitation invitation, String timerId, String correlationId) {
+    var item = upsertInvitationDelivery(invitation, correlationId);
+    var refs = new java.util.ArrayList<>(item.sourceRefs());
+    refs.add(new AttentionSourceRef("timer", safe(timerId, "invitation-delivery-expiry"), "Timed check: invitation delivery failure is near expiry", "secure-tenant-user-foundation", "trace-timer-" + stableSuffix(safe(timerId, "invitation-delivery-expiry") + invitation.invitationId()), correlationId));
+    var updated = new AttentionItem(item.itemId(), item.tenantId(), item.customerId(), item.owningWorkstreamId(), item.title(), item.summary() + " Timed check shows the invitation expires at " + invitation.expiresAt() + ".", item.category(), AttentionSeverity.URGENT, item.status(), item.assigneeKind(), item.assigneeId(), item.requiredCapabilityId(), item.surfaceRef(), refs, item.redactionLevel(), item.createdAt(), Instant.now(clock), Instant.now(clock), item.expiresAt(), item.acknowledgedAt(), item.resolvedAt(), item.dismissedAt(), correlationId);
+    attentionRepository.save(updated);
+    appendSystemAudit("ATTENTION_PRODUCER_TIMED_CHECK", AdminAuditEvent.Result.ALLOWED, updated.tenantId(), updated.customerId(), INVITATION_DELIVERY_PRODUCER_ID + ":" + updated.itemId() + ":" + safe(timerId, "invitation-delivery-expiry"), correlationId);
+    return updated;
+  }
+
+  private AttentionItem workerTaskItem(AccessReviewTask task, AttentionSeverity severity, AttentionCategory category, String title, String summary, String timerId, String correlationId) {
+    return item(
+        workerTaskItemId(task.taskId()),
+        task.tenantId(),
+        task.customerId(),
+        "agent-user-admin",
+        title,
+        summary + " Evidence is limited to durable task state, governed tool refs, and work traces; no fake model-backed success is introduced.",
+        category,
+        severity,
+        "secure-tenant-user-foundation",
+        "surface-user-admin-access-review-task",
+        task.taskId(),
+        WORKER_TASK_STATE_PRODUCER_ID,
+        timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
+        "Access-review task state " + task.status().name().toLowerCase(),
+        null,
+        correlationId);
+  }
+
   private AttentionItem upsert(AttentionItem next, String producerId, String correlationId) {
     var existing = attentionRepository.find(next.tenantId(), next.itemId()).orElse(null);
     var now = Instant.now(clock);
@@ -114,6 +187,19 @@ public final class AttentionProducerService {
     if (!noOp) attentionRepository.save(resolved);
     appendSystemAudit("ATTENTION_PRODUCER_RESOLVE", noOp ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED, current.tenantId(), current.customerId(), producerId + ":" + itemId + ":" + reason, correlationId);
     return noOp ? current : resolved;
+  }
+
+  private AttentionItem expire(String tenantId, String itemId, String producerId, String reason, String correlationId) {
+    var current = attentionRepository.find(tenantId, itemId).orElse(null);
+    if (current == null) {
+      appendSystemAudit("ATTENTION_PRODUCER_EXPIRE", AdminAuditEvent.Result.NO_OP, tenantId, null, producerId + ":missing:" + reason, correlationId);
+      return null;
+    }
+    var expired = current.expire(Instant.now(clock), correlationId);
+    var noOp = expired.equals(current);
+    if (!noOp) attentionRepository.save(expired);
+    appendSystemAudit("ATTENTION_PRODUCER_EXPIRE", noOp ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED, current.tenantId(), current.customerId(), producerId + ":" + itemId + ":" + reason, correlationId);
+    return noOp ? current : expired;
   }
 
   private AttentionItem item(
@@ -188,6 +274,10 @@ public final class AttentionProducerService {
 
   private static String governanceApprovalItemId(String proposalId) {
     return "attention:governance:policy-approval:" + proposalId;
+  }
+
+  private static String workerTaskItemId(String taskId) {
+    return "attention:worker-task:" + taskId + ":task-state";
   }
 
   private static String stableSuffix(String value) {
