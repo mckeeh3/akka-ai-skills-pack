@@ -46,7 +46,7 @@
 
 ### TASK-WEB3-01-001: Define event contract and gap map
 
-- status: pending
+- status: done
 - source: specs/workstream-event-backbone-v3/backlog/01-workstream-event-backbone-v3-build-backlog.md
 - task brief: specs/workstream-event-backbone-v3/tasks/01-contracts/01-define-event-contract-and-gap-map.md
 - depends on:
