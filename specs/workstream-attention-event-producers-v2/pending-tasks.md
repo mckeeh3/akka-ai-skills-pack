@@ -47,7 +47,7 @@
 
 ### TASK-WAEP-01-001: Define producer contract and v1 gap map
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-event-producers-v2/backlog/01-event-producers-v2-build-backlog.md
 - task brief: specs/workstream-attention-event-producers-v2/tasks/01-contracts/01-define-producer-contract-and-gap-map.md
 - depends on:
@@ -76,6 +76,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: foundation/cross-cutting attention producer layer over v1 backbone; source events/states feed workstream dashboards, My Account, and rail summaries; governed-tool/API exposure remains v1 attention lifecycle/read boundary; audit/work trace required
+  - contract artifact: `specs/workstream-attention-event-producers-v2/attention-event-producers-v2-contract.md`
+  - validation: `git diff --check`; `rg -n "producerId|attention\.producer\.|idempotencyKey|upsertAttention|resolveAttention|timed checks|Task-state attention|update delivery|attention\.list_rail_summaries|attention\.list_workstream_items|attention\.list_my_account_items" specs/workstream-attention-event-producers-v2/attention-event-producers-v2-contract.md`
   - commit message: `attention-producers: define v2 contract`
 
 ### TASK-WAEP-02-001: Wire domain service attention producers
