@@ -44,7 +44,7 @@
 
 ### TASK-MAPAD-01-001: Define personal attention digest AutonomousAgent contract
 
-- status: pending
+- status: done
 - source: specs/my-account-personal-attention-digest-autonomous-agent/backlog/01-personal-attention-digest-build-backlog.md
 - task brief: specs/my-account-personal-attention-digest-autonomous-agent/tasks/01-contracts/01-define-personal-attention-digest-contract.md
 - depends on:
