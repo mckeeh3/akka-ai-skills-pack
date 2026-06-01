@@ -2,6 +2,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventSourceRef;
@@ -19,6 +20,7 @@ public final class WorkstreamEventPublisher {
   public static final String PAYLOAD_INVITATION_DELIVERY = "InvitationDeliveryEventPayload";
   public static final String PAYLOAD_ACCESS_REVIEW_LIFECYCLE = "AccessReviewLifecycleEventPayload";
   public static final String PAYLOAD_PROMPT_RISK_REVIEW_LIFECYCLE = "PromptRiskReviewLifecycleEventPayload";
+  public static final String PAYLOAD_AUDIT_TRACE_SUMMARY_LIFECYCLE = "AuditTraceSummaryLifecycleEventPayload";
 
   private final WorkstreamEventRepository repository;
   private final WorkstreamEventAttentionConsumer attentionConsumer;
@@ -65,6 +67,19 @@ public final class WorkstreamEventPublisher {
     var taskTransition = workerTaskTransition(task, semanticTransition);
     var eventType = "worker.task." + taskTransition;
     return publishPromptRiskReviewEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
+  }
+
+  public WorkstreamEventEnvelope publishAuditTraceSummaryLifecycle(AuditTraceSummaryTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var eventType = "workflow.audit_trace.summary_" + semanticTransition;
+    var event = publishAuditTraceSummaryEvent(task, semanticTransition, eventType, EVENT_FAMILY_WORKFLOW_PROCESS, capabilityId, actorAccountId, correlationId);
+    publishAuditTraceSummaryTaskEvent(task, semanticTransition, capabilityId, actorAccountId, correlationId);
+    return event;
+  }
+
+  public WorkstreamEventEnvelope publishAuditTraceSummaryTaskEvent(AuditTraceSummaryTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var taskTransition = workerTaskTransition(task, semanticTransition);
+    var eventType = "worker.task." + taskTransition;
+    return publishAuditTraceSummaryEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
   }
 
   private WorkstreamEventEnvelope publishAccessReviewEvent(AccessReviewTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
@@ -231,6 +246,66 @@ public final class WorkstreamEventPublisher {
         Map.of("attentionCategory", "WORKFLOW_BLOCKED", "attentionItemId", "attention:worker-task:" + task.taskId() + ":task-state"));
   }
 
+  private WorkstreamEventEnvelope publishAuditTraceSummaryEvent(AuditTraceSummaryTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
+    var idempotencyKey = idempotencyKey(eventFamily, eventType, task.tenantId(), task.customerId(), task.taskId(), semanticTransition);
+    var existing = repository.findByIdempotencyKey(task.tenantId(), idempotencyKey).orElse(null);
+    var event = existing == null
+        ? repository.publish(auditTraceSummaryLifecycleEnvelope(task, semanticTransition, eventType, eventFamily, capabilityId, actorAccountId, idempotencyKey, correlationId))
+        : existing;
+    attentionConsumer.project(event, task);
+    return event;
+  }
+
+  private WorkstreamEventEnvelope auditTraceSummaryLifecycleEnvelope(AuditTraceSummaryTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String idempotencyKey, String correlationId) {
+    var eventId = "evt-" + stableSuffix(idempotencyKey);
+    var traceId = firstTraceRef(task, "trace-" + stableSuffix(eventId + ":" + correlationId));
+    var now = Instant.now(clock);
+    var safeCapability = safe(capabilityId, AuditTraceSummaryService.READ_CAPABILITY);
+    return new WorkstreamEventEnvelope(
+        eventId,
+        eventType,
+        eventFamily,
+        1,
+        task.updatedAt() == null ? now : task.updatedAt(),
+        now,
+        task.tenantId(),
+        task.customerId(),
+        Map.of(
+            "scopeType", task.customerId() == null ? "TENANT" : "CUSTOMER",
+            "tenantId", task.tenantId(),
+            "customerId", safe(task.customerId(), ""),
+            "capabilityIds", safeCapability + "," + AuditTraceSummaryService.READ_CAPABILITY),
+        Map.of("actorType", actorAccountId == null || actorAccountId.isBlank() ? "worker" : "account", "accountId", safe(actorAccountId, "system"), "label", "Audit/Trace summary lifecycle"),
+        List.of(
+            new WorkstreamEventSourceRef("workflow", task.taskId(), "Audit/Trace summary workflow " + semanticTransition, safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("autonomous_task", safe(task.autonomousAgentTaskId(), task.taskId()), "Audit/Trace summary task state " + task.status().name().toLowerCase(java.util.Locale.ROOT), safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("audit_trace", String.join(",", task.evidenceRefs()), "Redacted Audit/Trace summary evidence refs", AuditTraceSummaryService.OPEN_EVIDENCE_CAPABILITY, traceId, correlationId),
+            new WorkstreamEventSourceRef("capability", safeCapability, "Audit/Trace summary capability", safeCapability, "trace-capability-" + stableSuffix(safeCapability), correlationId)),
+        List.of(safeCapability, AuditTraceSummaryService.READ_CAPABILITY),
+        correlationId,
+        idempotencyKey,
+        task.idempotencyKey(),
+        List.of(traceId),
+        "agent-audit-trace",
+        task.status() == AuditTraceSummaryTask.Status.COMPLETED_REVIEW_REQUIRED ? "surface-audit-trace-summary-review" : "surface-audit-trace-summary-progress",
+        PAYLOAD_AUDIT_TRACE_SUMMARY_LIFECYCLE,
+        Map.ofEntries(
+            Map.entry("taskId", task.taskId()),
+            Map.entry("autonomousAgentTaskId", safe(task.autonomousAgentTaskId(), "")),
+            Map.entry("status", task.status().name().toLowerCase(java.util.Locale.ROOT)),
+            Map.entry("semanticTransition", semanticTransition),
+            Map.entry("taskLifecycleEventType", eventType),
+            Map.entry("progressPercent", Integer.toString(task.progressPercent())),
+            Map.entry("blockerCode", safe(task.blockerCode(), "")),
+            Map.entry("decision", safe(task.decision(), "")),
+            Map.entry("safeSummary", redact(safe(task.summary(), ""))),
+            Map.entry("providerOrRuntimeState", task.status() == AuditTraceSummaryTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime:fail_closed:no_fake_success" : "state_recorded_without_audit_or_policy_mutation"),
+            Map.entry("noDirectMutation", "true"),
+            Map.entry("redactionRequired", "true")),
+        Map.of("browserSafe", "true", "omitted", "rawPrompt,rawToolPayload,rawJwt,invitationToken,providerSecret,providerCredential,crossTenantEvidence", "minimumRedactionLevel", "FULL"),
+        Map.of("attentionCategory", "WORKFLOW_BLOCKED", "attentionItemId", "attention:worker-task:" + task.taskId() + ":task-state"));
+  }
+
   private static String idempotencyKey(String eventFamily, String eventType, String tenantId, String customerId, String sourceRefId, String semanticTransition) {
     return "workstream-event:" + eventFamily + ":" + eventType + ":" + tenantId + ":" + safe(customerId, "none") + ":" + sourceRefId + ":" + semanticTransition;
   }
@@ -242,6 +317,11 @@ public final class WorkstreamEventPublisher {
 
   private static String workerTaskTransition(PromptRiskReviewTask task, String semanticTransition) {
     if (task.status() == PromptRiskReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME && "autonomous_agent_task_failed".equals(task.blockerCode())) return "failed";
+    return normalizedWorkerTaskTransition(semanticTransition);
+  }
+
+  private static String workerTaskTransition(AuditTraceSummaryTask task, String semanticTransition) {
+    if (task.status() == AuditTraceSummaryTask.Status.FAILED || "autonomous_agent_task_failed".equals(task.blockerCode())) return "failed";
     return normalizedWorkerTaskTransition(semanticTransition);
   }
 
@@ -263,6 +343,10 @@ public final class WorkstreamEventPublisher {
   }
 
   private static String firstTraceRef(PromptRiskReviewTask task, String fallback) {
+    return task.traceIds().isEmpty() ? fallback : task.traceIds().get(0);
+  }
+
+  private static String firstTraceRef(AuditTraceSummaryTask task, String fallback) {
     return task.traceIds().isEmpty() ? fallback : task.traceIds().get(0);
   }
 

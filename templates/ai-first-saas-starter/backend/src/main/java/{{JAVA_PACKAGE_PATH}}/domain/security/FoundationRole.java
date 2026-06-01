@@ -52,6 +52,12 @@ public enum FoundationRole {
           "audit.trace.failureEvidence.read",
           "audit.trace.explain",
           "audit.trace.investigationGuide.read",
+          "audit.trace.summary_task.start",
+          "audit.trace.summary_task.read",
+          "audit.trace.summary_task.cancel",
+          "audit.trace.summary_task.accept_result",
+          "audit.trace.summary_task.reject_result",
+          "audit.trace.summary_task.open_evidence",
           "governance.policy.read",
           "governance.policy.simulate",
           "governance.policy.propose",
@@ -142,6 +148,12 @@ public enum FoundationRole {
           "audit.trace.failureEvidence.read",
           "audit.trace.explain",
           "audit.trace.investigationGuide.read",
+          "audit.trace.summary_task.start",
+          "audit.trace.summary_task.read",
+          "audit.trace.summary_task.cancel",
+          "audit.trace.summary_task.accept_result",
+          "audit.trace.summary_task.reject_result",
+          "audit.trace.summary_task.open_evidence",
           "governance.policy.read",
           "governance.policy.simulate",
           "governance.policy.propose",
@@ -226,7 +238,13 @@ public enum FoundationRole {
           "audit.trace.timeline.read",
           "audit.trace.failureEvidence.read",
           "audit.trace.explain",
-          "audit.trace.investigationGuide.read"));
+          "audit.trace.investigationGuide.read",
+          "audit.trace.summary_task.start",
+          "audit.trace.summary_task.read",
+          "audit.trace.summary_task.cancel",
+          "audit.trace.summary_task.accept_result",
+          "audit.trace.summary_task.reject_result",
+          "audit.trace.summary_task.open_evidence"));
 
   private final ScopeType defaultScopeType;
   private final List<String> capabilities;

@@ -4,6 +4,7 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentAdminPromptRiskRev
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItemStatus;
@@ -161,6 +162,35 @@ public final class AttentionProducerService {
     return resolve(task.tenantId(), workerTaskItemId(task.taskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
   }
 
+  public AttentionItem upsertWorkerTaskState(AuditTraceSummaryTask task, String timerId, String correlationId) {
+    if (task.status() == AuditTraceSummaryTask.Status.CANCELLED || task.status() == AuditTraceSummaryTask.Status.ACCEPTED) {
+      return resolveWorkerTaskState(task, task.status().name().toLowerCase(), correlationId);
+    }
+    var attention = switch (task.status()) {
+      case BLOCKED_PROVIDER_OR_RUNTIME -> auditSummaryWorkerTaskItem(task, AttentionSeverity.BLOCKED, AttentionCategory.WORKFLOW_BLOCKED,
+          "Audit/Trace summary worker is blocked by provider/runtime readiness",
+          "Audit/Trace summary task " + task.taskId() + " is blocked_provider_or_runtime; the starter fails closed instead of returning deterministic, fake, or model-less audit summary findings.", timerId, correlationId);
+      case FAILED -> auditSummaryWorkerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.AGENT_TASK_FAILED,
+          "Audit/Trace summary worker failed closed",
+          "Audit/Trace summary task " + task.taskId() + " failed and needs authorized Audit/Trace follow-up.", timerId, correlationId);
+      case REJECTED -> auditSummaryWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.AGENT_TASK_FAILED,
+          "Audit/Trace summary result was rejected",
+          "Audit/Trace summary task " + task.taskId() + " was rejected and needs authorized follow-up.", timerId, correlationId);
+      case COMPLETED_REVIEW_REQUIRED -> auditSummaryWorkerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.AUDIT_FAILURE_EVIDENCE,
+          "Audit/Trace summary result awaits human review",
+          "Audit/Trace summary task " + task.taskId() + " completed through the governed AutonomousAgent runtime and requires human accept/reject review.", timerId, correlationId);
+      case RUNNING, QUEUED -> auditSummaryWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.WORKFLOW_BLOCKED,
+          "Audit/Trace summary task is waiting for worker progress",
+          "Audit/Trace summary task " + task.taskId() + " is " + task.status().name().toLowerCase() + " and may need worker/runtime attention if it remains stale.", timerId, correlationId);
+      case CANCELLED, ACCEPTED -> null;
+    };
+    return attention == null ? null : upsert(attention, WORKER_TASK_STATE_PRODUCER_ID, correlationId);
+  }
+
+  public AttentionItem resolveWorkerTaskState(AuditTraceSummaryTask task, String reason, String correlationId) {
+    return resolve(task.tenantId(), workerTaskItemId(task.taskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
+  }
+
   private AttentionItem upsertTimedInvitationDelivery(Invitation invitation, String timerId, String correlationId) {
     var item = upsertInvitationDelivery(invitation, correlationId);
     var refs = new java.util.ArrayList<>(item.sourceRefs());
@@ -207,6 +237,26 @@ public final class AttentionProducerService {
         WORKER_TASK_STATE_PRODUCER_ID,
         timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
         "Prompt-risk review task state " + task.status().name().toLowerCase(),
+        null,
+        correlationId);
+  }
+
+  private AttentionItem auditSummaryWorkerTaskItem(AuditTraceSummaryTask task, AttentionSeverity severity, AttentionCategory category, String title, String summary, String timerId, String correlationId) {
+    return item(
+        workerTaskItemId(task.taskId()),
+        task.tenantId(),
+        task.customerId(),
+        "agent-audit-trace",
+        title,
+        summary + " Evidence is limited to durable summary state, scoped/redacted auditTraceSummaryEvidence.read refs, readSkill/readReferenceDoc traces, and AutonomousAgent work traces; no audit, policy, user, provider, or authorization mutation and no fake model-backed success is introduced.",
+        category,
+        severity,
+        AuditTraceSummaryService.READ_CAPABILITY,
+        task.status() == AuditTraceSummaryTask.Status.COMPLETED_REVIEW_REQUIRED ? "surface-audit-trace-summary-review" : "surface-audit-trace-summary-progress",
+        task.taskId(),
+        WORKER_TASK_STATE_PRODUCER_ID,
+        timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
+        "Audit/Trace summary task state " + task.status().name().toLowerCase(),
         null,
         correlationId);
   }

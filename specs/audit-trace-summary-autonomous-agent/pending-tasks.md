@@ -76,7 +76,7 @@
 
 ### TASK-ATSA-02-001: Implement Audit/Trace summary runtime
 
-- status: pending
+- status: done
 - source: specs/audit-trace-summary-autonomous-agent/backlog/01-audit-summary-agent-build-backlog.md
 - task brief: specs/audit-trace-summary-autonomous-agent/tasks/02-runtime/01-implement-audit-summary-runtime.md
 - depends on:
