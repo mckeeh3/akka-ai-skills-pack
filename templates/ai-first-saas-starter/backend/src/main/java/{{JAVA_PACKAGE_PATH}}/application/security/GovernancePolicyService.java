@@ -27,11 +27,17 @@ public final class GovernancePolicyService {
   private final GovernancePolicyRepository repository;
   private final AuthContextResolver authContextResolver;
   private final Clock clock;
+  private final AttentionProducerService attentionProducerService;
 
   public GovernancePolicyService(GovernancePolicyRepository repository, AuthContextResolver authContextResolver, Clock clock) {
+    this(repository, authContextResolver, clock, null);
+  }
+
+  public GovernancePolicyService(GovernancePolicyRepository repository, AuthContextResolver authContextResolver, Clock clock, AttentionProducerService attentionProducerService) {
     this.repository = Objects.requireNonNull(repository);
     this.authContextResolver = Objects.requireNonNull(authContextResolver);
     this.clock = Objects.requireNonNull(clock);
+    this.attentionProducerService = attentionProducerService;
   }
 
   public SurfaceData dashboard(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -129,6 +135,7 @@ public final class GovernancePolicyService {
     if (proposal.status() == GovernancePolicyProposal.Status.IN_REVIEW) return action("no-op", "Policy proposal was already submitted; idempotent no-op returned current review record.", proposal(actor, proposal, correlationId), List.of(trace("proposal-submit-noop", correlationId)));
     var submitted = repository.saveProposal(proposal.submitted(correlationId, Instant.now(clock)));
     authContextResolver.appendProtectedReadTrace(actor, "governance.policy.proposal lifecycle submit", submitted.proposalId(), correlationId);
+    if (attentionProducerService != null && submitted.status() == GovernancePolicyProposal.Status.IN_REVIEW) attentionProducerService.upsertGovernanceApproval(submitted, correlationId);
     return action(submitted.status() == GovernancePolicyProposal.Status.IN_REVIEW ? "accepted" : "validation-error", "Policy proposal submitted for human review; no active authority changed.", proposal(actor, submitted, correlationId), List.of(trace("proposal-submit", correlationId)));
   }
 
@@ -163,6 +170,7 @@ public final class GovernancePolicyService {
     var decided = "reject".equals(decision) ? proposal.rejected(rationale, correlationId, Instant.now(clock)) : proposal.approved(rationale, correlationId, Instant.now(clock));
     repository.saveProposal(decided);
     authContextResolver.appendProtectedReadTrace(actor, APPROVE_CAPABILITY, "governance policy decision", correlationId);
+    if (attentionProducerService != null && (decided.status() == GovernancePolicyProposal.Status.APPROVED || decided.status() == GovernancePolicyProposal.Status.REJECTED)) attentionProducerService.resolveGovernanceApproval(decided, decided.status().name().toLowerCase(), correlationId);
     return action("approved".equals(decided.decision()) ? "accepted" : "accepted", "Governance decision recorded as human approval/rejection evidence; activation remains a separate backend command.", decision(actor, decided, correlationId), List.of(trace("decision", correlationId)));
   }
 
@@ -179,6 +187,7 @@ public final class GovernancePolicyService {
     }
     var activated = repository.saveProposal(proposal.activated(safe(rollbackReference), correlationId, Instant.now(clock)));
     authContextResolver.appendProtectedReadTrace(actor, ACTIVATE_CAPABILITY, "governance policy activation", correlationId);
+    if (attentionProducerService != null) attentionProducerService.resolveGovernanceApproval(activated, "activated", correlationId);
     return action("accepted", "Approved Governance/Policy proposal activated by backend-owned deterministic lifecycle with rollback metadata; no model or frontend state granted authority.", decision(actor, activated, correlationId), List.of(trace("activation", correlationId)));
   }
 
@@ -192,6 +201,7 @@ public final class GovernancePolicyService {
     }
     var rolledBack = repository.saveProposal(proposal.rolledBack(correlationId, Instant.now(clock)));
     authContextResolver.appendProtectedReadTrace(actor, ROLLBACK_CAPABILITY, "governance policy rollback", correlationId);
+    if (attentionProducerService != null) attentionProducerService.resolveGovernanceApproval(rolledBack, "rolled_back", correlationId);
     return action("accepted", "Governance/Policy rollback recorded through backend-owned deterministic lifecycle.", decision(actor, rolledBack, correlationId), List.of(trace("rollback", correlationId)));
   }
 

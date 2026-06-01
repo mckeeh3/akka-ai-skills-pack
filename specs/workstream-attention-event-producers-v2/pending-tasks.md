@@ -82,7 +82,7 @@
 
 ### TASK-WAEP-02-001: Wire domain service attention producers
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-event-producers-v2/backlog/01-event-producers-v2-build-backlog.md
 - task brief: specs/workstream-attention-event-producers-v2/tasks/02-producers/01-wire-domain-service-producers.md
 - depends on:
@@ -114,6 +114,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin invitation delivery, Governance proposal/approval, Audit/Trace provider evidence, and/or Agent Admin provider readiness; attention categories include failed_action, approval, blocked_work, audit_anomaly; exposure through backend services and existing workstream surfaces
+  - implemented `AttentionProducerService` for `attention.producer.user_admin.invitation_delivery` and `attention.producer.governance.policy_approval`; wired invitation delivery failure/success/revoke/expire/accept plus governance submit/decision/activation/rollback to backend attention upsert/resolve lifecycle.
+  - validation: `git diff --check`; scaffolded starter Maven `mvn -q -Dtest=AttentionProducerServiceTest,AttentionServiceTest,InvitationAndUserAdminServiceTest,GovernancePolicyServiceTest test`; focused producer-id/upsert/resolve `rg`.
   - commit message: `attention-producers: wire domain producers`
 
 ### TASK-WAEP-03-001: Add timed and worker/task attention producers

@@ -36,11 +36,17 @@ public final class InvitationService {
   private final IdentityRepository identityRepository;
   private final InvitationRepository invitationRepository;
   private final Clock clock;
+  private final AttentionProducerService attentionProducerService;
 
   public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock) {
+    this(identityRepository, invitationRepository, clock, null);
+  }
+
+  public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock, AttentionProducerService attentionProducerService) {
     this.identityRepository = identityRepository;
     this.invitationRepository = invitationRepository;
     this.clock = clock;
+    this.attentionProducerService = attentionProducerService;
   }
 
   public Invitation createInvitation(AuthContextResolver.ResolvedMe actor, CreateInvitationRequest request) {
@@ -136,6 +142,10 @@ public final class InvitationService {
         invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), correlationId);
     invitationRepository.saveInvitation(updated);
     appendSystemAudit(updated, "INVITATION_DELIVERY_" + (delivered ? deliveredStatus.name() : "FAILED"), delivered ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.FAILED, delivered ? deliveredStatus.name().toLowerCase(java.util.Locale.ROOT) : safeError, correlationId);
+    if (attentionProducerService != null) {
+      if (delivered) attentionProducerService.resolveInvitationDelivery(updated, deliveredStatus.name().toLowerCase(java.util.Locale.ROOT), correlationId);
+      else attentionProducerService.upsertInvitationDelivery(updated, correlationId);
+    }
     return updated;
   }
 
@@ -178,6 +188,7 @@ public final class InvitationService {
         invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), correlationId);
     invitationRepository.saveInvitation(updated);
     audit(actor, updated, "INVITATION_REVOKE", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    if (attentionProducerService != null) attentionProducerService.resolveInvitationDelivery(updated, "revoked", correlationId);
     return updated;
   }
 
@@ -199,6 +210,7 @@ public final class InvitationService {
         invite.resendCount(), invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), correlationId);
     invitationRepository.saveInvitation(updated);
     appendSystemAudit(updated, "INVITATION_EXPIRE", AdminAuditEvent.Result.ALLOWED, "expired", correlationId);
+    if (attentionProducerService != null) attentionProducerService.resolveInvitationDelivery(updated, "expired", correlationId);
     return updated;
   }
 
@@ -231,6 +243,7 @@ public final class InvitationService {
     invitationRepository.saveInvitation(updated);
     appendSystemAudit(updated, "INVITATION_ACCEPT", AdminAuditEvent.Result.ALLOWED, "accepted", correlationId);
     appendSystemAudit(updated, "MEMBERSHIP_ACTIVATE", AdminAuditEvent.Result.ALLOWED, "invitation-accepted", correlationId);
+    if (attentionProducerService != null) attentionProducerService.resolveInvitationDelivery(updated, "accepted", correlationId);
     return updated;
   }
 
