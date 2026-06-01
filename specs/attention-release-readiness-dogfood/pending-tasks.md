@@ -176,7 +176,7 @@
 
 ### TASK-ARD-02-002: Update release-readiness handoff
 
-- status: pending
+- status: done
 - source: specs/attention-release-readiness-dogfood/backlog/01-dogfood-release-readiness-backlog.md
 - task brief: specs/attention-release-readiness-dogfood/tasks/02-review/02-update-release-handoff.md
 - depends on:
@@ -193,6 +193,8 @@
 - expected outputs:
   - release-readiness handoff summary
   - updated pending-tasks.md
+- output artifact:
+  - specs/attention-release-readiness-dogfood/release-readiness-handoff.md
 - required checks:
   - `git diff --check`
   - focused `rg` over attention docs/handoff for stale missing-backbone claims if docs are edited
@@ -201,6 +203,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `attention-dogfood: update release handoff`
+  - handoff status: release-ready at implemented v1/v2 starter attention scope, with future v3 event backbone, SSE/push, notification center/digests, richer producers, and broader AutonomousAgent task notifications explicitly out of scope
+  - validation: `git diff --check`; focused `rg` over attention docs/handoff for stale missing-backbone or future-work overclaim language
 
 ### TASK-ARD-99-001: Verify attention dogfood release readiness
 
