@@ -67,4 +67,4 @@ Complete when the starter/reference assets have:
 
 ## Current handoff status
 
-See `audit-trace-summary-handoff.md`. The current implemented vertical evidence is the contract plus Audit/Trace blocked/review surface fixtures and validation notes. Do not claim a completed backend `AuditTraceSummaryAutonomousAgent` runtime until implementation evidence exists. Provider fail-closed behavior, scoped redaction, and no fake success remain mandatory completion gates; this bounded worker is not a future digest platform.
+See `audit-trace-summary-handoff.md` and `validation/04-concrete-completion-verification.md`. The bounded starter/reference vertical is complete: a concrete backend `AuditTraceSummaryAutonomousAgent` runtime exists with scoped/redacted evidence, provider fail-closed behavior, v3 events, attention mappings, Audit/Trace summary surfaces, and targeted backend/frontend validation. This completion is intentionally limited to the Audit/Trace summary worker and does not claim a general digest platform.
