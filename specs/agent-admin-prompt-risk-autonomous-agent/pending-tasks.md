@@ -179,7 +179,7 @@
 
 ### TASK-AAPR-99-001: Verify Agent Admin prompt-risk AutonomousAgent
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/agent-admin-prompt-risk-autonomous-agent/tasks/99-verification/01-verify-prompt-risk-agent.md
 - depends on:
@@ -193,6 +193,7 @@
 - skills:
   - none; verification task
 - expected outputs:
+  - specs/agent-admin-prompt-risk-autonomous-agent/prompt-risk-verification.md
   - updated pending-tasks.md
   - optional follow-up tasks if gaps remain
 - required checks:
@@ -203,6 +204,7 @@
 - done criteria:
   - mini-project done state is assessed
   - if incomplete, bounded follow-up tasks and a new terminal verification task are appended
+  - no follow-up tasks were required by verification
   - task changes and queue update are committed
 - notes:
   - commit message: `agent-admin-risk: verify completion`
