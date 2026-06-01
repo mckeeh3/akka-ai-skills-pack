@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentAdminPromptRiskReviewService;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AuditTraceSummaryAutonomousAgentRuntime;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.GovernancePolicyImpactAutonomousAgentRuntime;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoPromptRiskReviewTaskRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.PromptRiskAutonomousAgentRuntime;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentBehaviorSeedLoader;
@@ -19,6 +20,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItemStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailDeliveryStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
@@ -30,6 +32,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -319,6 +322,60 @@ class WorkstreamEventBackboneServiceTest {
   }
 
   @Test
+  void governancePolicyImpactLifecyclePublishesEventsAttentionAndResultSurfaceRefs() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+    var runtime = new RecordingGovernancePolicyImpactAutonomousAgentRuntime();
+    var governancePolicyRepository = new LocalDemoGovernancePolicyRepository();
+    var impacts = new GovernancePolicyImpactService(new LocalDemoGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock, producers, publisher, runtime);
+    var proposalId = governancePolicyProposal(governancePolicyRepository, "governance-impact-event");
+
+    var task = impacts.start(tenantAdmin, governanceImpactCommand(proposalId, "governance-impact-event"), "corr-governance-impact-start");
+
+    assertEquals(GovernancePolicyImpactTask.Status.QUEUED, task.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.governance_policy.impact_analysis.started")));
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("worker.task.queued")));
+
+    runtime.nextProjection = new GovernancePolicyImpactAutonomousAgentRuntime.Projection(
+        GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED,
+        100,
+        "Governance/Policy AutonomousAgent completed model-backed policy impact analysis; human approval is required before any policy decision or activation.",
+        null,
+        null,
+        List.of("governancePolicyEvidence.read", "readSkill:governance-policy-impact-analysis", "readReferenceDoc:governance-policy-impact-analysis"),
+        List.of("governance_policy_impact_finding:finding-1:approval-gate"),
+        List.of("autonomous_task:" + task.autonomousAgentTaskId(), "trace-governance-impact-model-result"));
+
+    var completed = impacts.read(tenantAdmin, task.impactTaskId(), "corr-governance-impact-read");
+
+    assertEquals(GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED, completed.status());
+    var workflowCompleted = eventRepository.listTenant("tenant-1").stream().filter(event -> event.eventType().equals("workflow.governance_policy.impact_analysis.completed_review_required")).findFirst().orElseThrow();
+    var workerCompleted = eventRepository.listTenant("tenant-1").stream().filter(event -> event.eventType().equals("worker.task.completed_review_required")).findFirst().orElseThrow();
+    assertEquals("GovernancePolicyImpactLifecycleEventPayload", workflowCompleted.payloadClass());
+    assertEquals("surface-governance-policy-impact-analysis-result", workflowCompleted.targetSurfaceId());
+    assertEquals("true", workflowCompleted.payload().get("noDirectMutation"));
+    assertEquals("true", workflowCompleted.payload().get("activationBlockedUntilHumanDecision"));
+    assertTrue(workflowCompleted.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("autonomous_task") && ref.refId().equals(task.autonomousAgentTaskId())));
+    assertTrue(workflowCompleted.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("governance_policy_proposal") && ref.refId().equals(proposalId)));
+    assertTrue(workflowCompleted.capabilityRefs().contains(GovernancePolicyImpactService.READ_CAPABILITY));
+    assertFalse(workflowCompleted.toString().contains("api_key="));
+
+    var item = attentionRepository.find("tenant-1", "attention:worker-task:" + task.impactTaskId() + ":task-state").orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertEquals(AttentionCategory.GOVERNANCE_APPROVAL, item.category());
+    assertEquals("surface-governance-policy-impact-analysis-result", item.surfaceRef().targetSurfaceId());
+    assertTrue(item.summary().contains("requires human review before any policy decision or activation"));
+    assertTrue(item.summary().contains("no direct approval, activation, rollback, policy mutation"));
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(workerCompleted.eventId())));
+
+    var accepted = impacts.acceptResult(tenantAdmin, task.impactTaskId(), "advisory impact result accepted only", "corr-governance-impact-accept");
+    assertEquals(GovernancePolicyImpactTask.Status.ACCEPTED, accepted.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.governance_policy.impact_analysis.result_accepted")));
+    assertEquals(AttentionItemStatus.RESOLVED, attentionRepository.find("tenant-1", "attention:worker-task:" + task.impactTaskId() + ":task-state").orElseThrow().status());
+  }
+
+  @Test
   void promptRiskProviderBlockedPublishesFailClosedEventAndAttention() {
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
@@ -351,6 +408,39 @@ class WorkstreamEventBackboneServiceTest {
 
     assertEquals(null, projected);
     assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DENIED") && audit.reasonCode().equals("scope-mismatch")));
+  }
+
+  private static final class RecordingGovernancePolicyImpactAutonomousAgentRuntime implements GovernancePolicyImpactAutonomousAgentRuntime {
+    private Projection nextProjection = Projection.unchanged();
+
+    @Override
+    public StartOutcome start(AuthContextResolver.ResolvedMe actor, GovernancePolicyImpactTask starterTask, String evidenceRequest, String correlationId) {
+      return StartOutcome.queued("akka-task-" + starterTask.impactTaskId(), "Governance/Policy impact Akka AutonomousAgent task queued; backend projection is authoritative and no fake success is returned.", List.of("autonomous_task:akka-task-" + starterTask.impactTaskId()));
+    }
+
+    @Override
+    public Projection project(GovernancePolicyImpactTask starterTask, String correlationId) {
+      return nextProjection;
+    }
+  }
+
+  private String governancePolicyProposal(LocalDemoGovernancePolicyRepository repository, String key) {
+    var governance = new GovernancePolicyService(repository, resolver, clock);
+    var draft = governance.draftProposal(tenantAdmin, Map.of("rationale", "tighten approval boundary", "proposedContent", "change ToolPermissionBoundary approval gate"), key, key + "-draft");
+    var proposalId = draft.surface().data().get("proposalId").toString();
+    governance.submitProposal(tenantAdmin, Map.of("proposalId", proposalId), key + "-submit", key + "-submit-corr");
+    return proposalId;
+  }
+
+  private GovernancePolicyImpactService.StartGovernancePolicyImpactCommand governanceImpactCommand(String proposalId, String key) {
+    return new GovernancePolicyImpactService.StartGovernancePolicyImpactCommand(
+        proposalId,
+        "policy-human-approval",
+        "proposalId=" + proposalId + " focus=approval gates, redaction, and ToolPermissionBoundary",
+        List.of("governance.policy.approve", "governance.policy.activate"),
+        List.of("ToolPermissionBoundary", "AgentDefinition"),
+        List.of("proposal-evidence:" + proposalId),
+        key);
   }
 
   private static final class RecordingAuditTraceSummaryAutonomousAgentRuntime implements AuditTraceSummaryAutonomousAgentRuntime {

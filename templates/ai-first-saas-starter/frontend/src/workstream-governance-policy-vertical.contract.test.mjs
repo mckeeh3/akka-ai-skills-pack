@@ -19,8 +19,12 @@ test('Governance/Policy v0 exposes contract capabilities, structured surfaces, a
     'governance.policy.approve',
     'governance.policy.activate',
     'governance.policy.rollback',
-    'governance.policy.analysis.start',
-    'governance.policy.analysis.read',
+    'governance.policy.impact_analysis.start',
+    'governance.policy.impact_analysis.read',
+    'governance.policy.impact_analysis.cancel',
+    'governance.policy.impact_analysis.accept_result',
+    'governance.policy.impact_analysis.reject_result',
+    'governance.policy.impact_analysis.request_changes',
     'audit.trace.read'
   ]) {
     assert.match(fixtures, new RegExp(capability.replaceAll('.', '\\.')));
@@ -32,7 +36,8 @@ test('Governance/Policy v0 exposes contract capabilities, structured surfaces, a
     'governancePolicyProposalSurface',
     'governancePolicySimulationSurface',
     'governancePolicyDecisionSurface',
-    'governancePolicyAnalysisTaskSurface',
+    'governancePolicyImpactAnalysisTaskSurface',
+    'governancePolicyImpactAnalysisResultSurface',
     'governancePolicyDecisionTraceSurface'
   ]) {
     assert.match(fixtures, new RegExp(`export const ${surface}`));
@@ -48,10 +53,12 @@ test('Governance/Policy UI states preserve backend authority, denials, approval 
     'Simulation is advisory and grants no authority',
     'requiresApproval: true',
     'blocked_provider_or_runtime',
-    'the UI must not fake task progress',
-    'No model-less or deterministic fake analysis result is produced',
+    'no frontend-only or deterministic success is rendered',
+    'No model-less, simulated, deterministic, or fake impact_ready result is produced',
     'trace-govpol-simulation',
-    'trace-govpol-analysis-blocked'
+    'trace-govpol-impact-analysis-blocked',
+    'workflow.governance_policy.impact_analysis.* and worker.task.*',
+    'surface-governance-policy-impact-analysis-result'
   ]) {
     assert.match(fixtures, new RegExp(marker.replace(/[()]/g, '\\$&')));
   }
@@ -74,10 +81,12 @@ test('Governance/Policy fixture client returns structured results for dashboard,
   assert.match(apiClient, /displayGovernancePolicyDashboardActionResult/);
   assert.match(apiClient, /displayGovernancePolicyInventoryActionResult/);
   assert.match(apiClient, /displayGovernancePolicySimulationActionResult/);
-  for (const actionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis']) {
+  assert.match(apiClient, /displayGovernancePolicyImpactTaskActionResult/);
+  assert.match(apiClient, /displayGovernancePolicyImpactResultActionResult/);
+  for (const actionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis', 'action-govpol-accept-impact-result', 'action-govpol-request-impact-changes']) {
     assert.match(fixtures, new RegExp(actionId));
   }
-  for (const routedActionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal']) {
+  for (const routedActionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis']) {
     assert.match(apiClient, new RegExp(routedActionId));
   }
 });

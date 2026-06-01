@@ -93,6 +93,20 @@ class GovernancePolicyImpactServiceTest {
     assertTrue(completed.findingRefs().stream().anyMatch(ref -> ref.contains("governance_policy_impact_finding")));
     assertFalse(completed.summary().toLowerCase().contains("secret="));
 
+    var taskSurface = service.taskSurface(tenantAdmin, completed.impactTaskId(), "corr-impact-task-surface");
+    assertEquals("surface-governance-policy-impact-analysis-task", taskSurface.surfaceId());
+    assertEquals("workflow-status", taskSurface.surfaceType());
+    assertEquals("governance.policy.impact_analysis.task.v1", taskSurface.data().get("surfaceContract"));
+    assertEquals(true, taskSurface.data().get("noDirectMutation"));
+
+    var resultSurface = service.resultSurface(tenantAdmin, completed.impactTaskId(), "corr-impact-result-surface");
+    assertEquals("surface-governance-policy-impact-analysis-result", resultSurface.surfaceId());
+    assertEquals("decision", resultSurface.surfaceType());
+    assertEquals("governance.policy.impact_analysis.result.v1", resultSurface.data().get("surfaceContract"));
+    assertTrue(resultSurface.data().get("requiredHumanDecisions").toString().contains("separately activate"));
+    assertTrue(resultSurface.data().get("disabledActions").toString().contains("not executed by this worker"));
+    assertFalse(resultSurface.toString().contains("api_key="));
+
     var accepted = service.acceptResult(tenantAdmin, completed.impactTaskId(), "accepted as advisory evidence", "corr-impact-accept");
     assertEquals(GovernancePolicyImpactTask.Status.ACCEPTED, accepted.status());
     assertTrue(accepted.decisionReason().contains("advisory"));

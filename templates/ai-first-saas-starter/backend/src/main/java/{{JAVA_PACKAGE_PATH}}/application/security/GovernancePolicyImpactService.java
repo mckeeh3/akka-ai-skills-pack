@@ -131,7 +131,7 @@ public final class GovernancePolicyImpactService {
 
   public SurfaceData taskSurface(AuthContextResolver.ResolvedMe actor, String impactTaskId, String correlationId) {
     var task = read(actor, impactTaskId, correlationId);
-    return new SurfaceData("surface-governance-policy-impact-analysis-task", "worker-task", "Governance/Policy impact analysis task", List.of(trace("impact-task", correlationId)), Map.ofEntries(
+    return new SurfaceData("surface-governance-policy-impact-analysis-task", "workflow-status", "Governance/Policy impact analysis task", List.of(trace("impact-task", correlationId)), Map.ofEntries(
         Map.entry("surfaceContract", "governance.policy.impact_analysis.task.v1"),
         Map.entry("impactTaskId", task.impactTaskId()),
         Map.entry("autonomousAgentTaskId", safe(task.autonomousAgentTaskId(), "")),
@@ -142,10 +142,36 @@ public final class GovernancePolicyImpactService {
         Map.entry("summary", safe(task.summary(), "")),
         Map.entry("evidenceRefs", task.evidenceRefs()),
         Map.entry("traceIds", task.traceIds()),
-        Map.entry("authorizedActions", List.of(READ_CAPABILITY, CANCEL_CAPABILITY, ACCEPT_RESULT_CAPABILITY, REJECT_RESULT_CAPABILITY, REQUEST_CHANGES_CAPABILITY)),
+        Map.entry("authorizedActions", List.of(READ_CAPABILITY, CANCEL_CAPABILITY)),
         Map.entry("noDirectMutation", true),
         Map.entry("activationBlockedUntilHumanDecision", true),
         Map.entry("redaction", "browser-safe; raw prompts, provider credentials, JWTs, raw tool payloads, and cross-tenant/customer data omitted")));
+  }
+
+  public SurfaceData resultSurface(AuthContextResolver.ResolvedMe actor, String impactTaskId, String correlationId) {
+    var task = read(actor, impactTaskId, correlationId);
+    if (task.status() != GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED
+        && task.status() != GovernancePolicyImpactTask.Status.ACCEPTED
+        && task.status() != GovernancePolicyImpactTask.Status.REJECTED_RESULT
+        && task.status() != GovernancePolicyImpactTask.Status.REQUEST_CHANGES) {
+      return taskSurface(actor, impactTaskId, correlationId);
+    }
+    return new SurfaceData("surface-governance-policy-impact-analysis-result", "decision", "Governance/Policy impact analysis result", List.of(trace("impact-result", correlationId)), Map.ofEntries(
+        Map.entry("surfaceContract", "governance.policy.impact_analysis.result.v1"),
+        Map.entry("impactTaskId", task.impactTaskId()),
+        Map.entry("proposalId", task.proposalId()),
+        Map.entry("overallRisk", task.findingRefs().stream().anyMatch(ref -> ref.toLowerCase(java.util.Locale.ROOT).contains("critical")) ? "critical" : "high"),
+        Map.entry("reviewState", task.status().name().toLowerCase(java.util.Locale.ROOT)),
+        Map.entry("summary", safe(task.summary(), "Governance/Policy impact analysis requires human review.")),
+        Map.entry("impactFindings", task.findingRefs()),
+        Map.entry("evidenceRefs", task.evidenceRefs()),
+        Map.entry("traceIds", task.traceIds()),
+        Map.entry("requiredHumanDecisions", List.of("review advisory impact result", "separately approve/reject proposal", "separately activate approved policy change if still authorized")),
+        Map.entry("authorizedActions", List.of(ACCEPT_RESULT_CAPABILITY, REJECT_RESULT_CAPABILITY, REQUEST_CHANGES_CAPABILITY, READ_CAPABILITY)),
+        Map.entry("disabledActions", List.of("governance.policy.activate is not executed by this worker result surface", "governance.policy.rollback requires a separate approved capability path")),
+        Map.entry("noDirectMutation", true),
+        Map.entry("activationBlockedUntilHumanDecision", true),
+        Map.entry("redaction", "browser-safe impact evidence only; raw prompts, hidden prompt text, provider credentials, JWTs, raw tool payloads, and cross-tenant/customer data omitted")));
   }
 
   private GovernancePolicyImpactTask decide(AuthContextResolver.ResolvedMe actor, String impactTaskId, GovernancePolicyImpactTask.Status status, String decision, String capabilityId, String reason, String correlationId) {

@@ -107,7 +107,7 @@
 
 ### TASK-GPIA-03-001: Wire Governance/Policy events, attention, and surfaces
 
-- status: pending
+- status: done
 - source: specs/governance-policy-impact-autonomous-agent/backlog/01-governance-impact-agent-build-backlog.md
 - task brief: specs/governance-policy-impact-autonomous-agent/tasks/03-surfaces/01-wire-events-attention-surfaces.md
 - depends on:
@@ -130,6 +130,12 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `governance-impact-agent: wire events attention surfaces`
+  - completed: wired Governance/Policy impact task/result surfaces to canonical `governance.policy.impact_analysis.*` capabilities, v3 workflow/worker event and attention surface refs, frontend fixture/action routing, and focused backend/frontend tests for impact task/result surfaces, event payloads, attention mapping, human review, redaction, fail-closed, and no fake success.
+  - validation: `git diff --check` passed.
+  - validation: scaffolded targeted backend checks passed with `mvn test -Dtest=GovernancePolicyImpactServiceTest,WorkstreamEventBackboneServiceTest` from `/tmp/gpia-scaffold`.
+  - validation: scaffolded broader backend check `mvn test -Dtest=GovernancePolicyImpactServiceTest,WorkstreamEventBackboneServiceTest,WorkstreamServiceTest` was attempted and remains blocked by existing unrelated `WorkstreamServiceTest.auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists` assertion expecting `audit.trace.summaryTask.v1` while source returns `audit.trace.summaryProgress.v1`.
+  - validation: frontend contract tests passed with `npm --prefix templates/ai-first-saas-starter/frontend test -- workstream-governance-policy-vertical.contract.test.mjs`.
+  - validation: frontend typecheck/build passed with `npm --prefix templates/ai-first-saas-starter/frontend run typecheck` and `npm --prefix templates/ai-first-saas-starter/frontend run build`.
 
 ### TASK-GPIA-04-001: Run Governance/Policy impact validation
 

@@ -2160,8 +2160,12 @@ const governancePolicyCapabilities = {
   approveProposal: 'governance.policy.approve',
   activatePolicyChange: 'governance.policy.activate',
   rollbackPolicyChange: 'governance.policy.rollback',
-  startImpactAnalysis: 'governance.policy.analysis.start',
-  readImpactAnalysis: 'governance.policy.analysis.read',
+  startImpactAnalysis: 'governance.policy.impact_analysis.start',
+  readImpactAnalysis: 'governance.policy.impact_analysis.read',
+  cancelImpactAnalysis: 'governance.policy.impact_analysis.cancel',
+  acceptImpactResult: 'governance.policy.impact_analysis.accept_result',
+  rejectImpactResult: 'governance.policy.impact_analysis.reject_result',
+  requestImpactChanges: 'governance.policy.impact_analysis.request_changes',
   openTrace: 'audit.trace.read'
 } as const;
 
@@ -2263,10 +2267,71 @@ export const governancePolicySurfaceActions = {
     browserToolId: 'action-govpol-start-impact-analysis',
     inputSchemaRef: 'schema.governance-policy.impact-analysis.start.v1',
     requiresConfirmation: true,
-    disabled: { reasonCode: 'blocked_provider_or_runtime', message: 'Durable AutonomousAgent policy-impact analysis is unavailable in this starter slice; the UI must not fake task progress.' },
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-governance-policy-analysis-task', openPlacement: 'inline' },
-    audit: { eventType: 'GovernancePolicyImpactAnalysisStartBlocked', traceRequired: true }
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-task', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactAnalysisStartedOrBlocked', traceRequired: true }
+  },
+  readImpactAnalysis: {
+    actionId: 'action-govpol-read-impact-analysis',
+    label: 'Read policy impact task',
+    intent: 'read',
+    capabilityId: governancePolicyCapabilities.readImpactAnalysis,
+    governedToolId: governancePolicyCapabilities.readImpactAnalysis,
+    browserToolId: 'action-govpol-read-impact-analysis',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-task', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactAnalysisRead', traceRequired: true }
+  },
+  cancelImpactAnalysis: {
+    actionId: 'action-govpol-cancel-impact-analysis',
+    label: 'Cancel policy impact task',
+    intent: 'command',
+    capabilityId: governancePolicyCapabilities.cancelImpactAnalysis,
+    governedToolId: governancePolicyCapabilities.cancelImpactAnalysis,
+    browserToolId: 'action-govpol-cancel-impact-analysis',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-task', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactAnalysisCancelled', traceRequired: true }
+  },
+  acceptImpactResult: {
+    actionId: 'action-govpol-accept-impact-result',
+    label: 'Accept advisory impact result',
+    intent: 'approval',
+    capabilityId: governancePolicyCapabilities.acceptImpactResult,
+    governedToolId: governancePolicyCapabilities.acceptImpactResult,
+    browserToolId: 'action-govpol-accept-impact-result',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-result', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactResultAccepted', traceRequired: true }
+  },
+  rejectImpactResult: {
+    actionId: 'action-govpol-reject-impact-result',
+    label: 'Reject advisory impact result',
+    intent: 'approval',
+    capabilityId: governancePolicyCapabilities.rejectImpactResult,
+    governedToolId: governancePolicyCapabilities.rejectImpactResult,
+    browserToolId: 'action-govpol-reject-impact-result',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-result', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactResultRejected', traceRequired: true }
+  },
+  requestImpactChanges: {
+    actionId: 'action-govpol-request-impact-changes',
+    label: 'Request analysis changes',
+    intent: 'approval',
+    capabilityId: governancePolicyCapabilities.requestImpactChanges,
+    governedToolId: governancePolicyCapabilities.requestImpactChanges,
+    browserToolId: 'action-govpol-request-impact-changes',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-result', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactChangesRequested', traceRequired: true }
   },
   openTrace: {
     actionId: 'action-govpol-open-trace',
@@ -2297,12 +2362,12 @@ export const governancePolicyDashboardSurface = envelope(
     sections: [
       { sectionId: 'posture', label: 'Governance posture', summary: 'Selected AuthContext has read and proposal authority; backend remains authoritative for approval, activation, and rollback.' },
       { sectionId: 'attention', label: 'Attention items', summary: 'One policy-boundary proposal requires human approval after deterministic simulation evidence is reviewed.' },
-      { sectionId: 'blocked-runtime', label: 'Blocked runtime', summary: 'AutonomousAgent impact analysis is visibly blocked until a real durable task path exists; no simulated progress is shown.' }
+      { sectionId: 'impact-worker', label: 'Impact worker', summary: 'AutonomousAgent impact analysis is backend-derived, emits workflow.governance_policy.impact_analysis.* and worker.task.* events, and fails closed when provider/runtime configuration is missing.' }
     ],
     nextSteps: [
       { workstreamId: 'agent-governance-policy', label: 'Review policy inventory', allowed: true, capabilityIds: [governancePolicyCapabilities.readDashboard], traceId: 'trace-govpol-inventory' },
       { workstreamId: 'agent-governance-policy', label: 'Simulate proposal impact', allowed: true, capabilityIds: [governancePolicyCapabilities.simulateProposal], traceId: 'trace-govpol-simulation' },
-      { workstreamId: 'agent-governance-policy-analysis', label: 'Start impact analysis', allowed: false, blockedReason: 'Durable AutonomousAgent runtime is not enabled; backend must fail closed.', capabilityIds: [governancePolicyCapabilities.startImpactAnalysis], traceId: 'trace-govpol-analysis-blocked' }
+      { workstreamId: 'agent-governance-policy', label: 'Start impact analysis', allowed: true, capabilityIds: [governancePolicyCapabilities.startImpactAnalysis], traceId: 'trace-govpol-impact-analysis-start' }
     ],
     blockedState: { reasonCode: 'FRONTEND_NOT_AUTHORITY', message: 'Launcher visibility and action buttons are convenience signals only.', recovery: 'Backend capability checks decide every protected action and return safe denial surfaces when authority is missing.' }
   },
@@ -2373,10 +2438,10 @@ export const governancePolicySimulationSurface = envelope(
     simulation: {
       affectedCapabilities: ['GOVPOL-SIMULATE-PROPOSAL', 'GOVPOL-DECIDE-PROPOSAL', 'GOVPOL-ACTIVATE-POLICY-CHANGE', 'GOVPOL-ROLLBACK-POLICY-CHANGE'],
       expectedAllows: ['governance.policy.read', 'governance.policy.simulate'],
-      expectedDenials: ['governance.policy.activate without approved proposal', 'governance.policy.analysis.start while runtime unavailable'],
+      expectedDenials: ['governance.policy.activate without approved proposal', 'governance.policy.impact_analysis.start when provider/runtime is missing'],
       warnings: ['Simulation is deterministic/advisory and never grants authority.', 'Unsupported evidence scopes are omitted with trace links.'],
       confidence: 'bounded fixture confidence based on scoped policy rows',
-      evidenceTraceIds: ['trace-govpol-simulation', 'trace-govpol-analysis-blocked']
+      evidenceTraceIds: ['trace-govpol-simulation', 'trace-govpol-impact-analysis-blocked']
     },
     traceLinks: ['trace-govpol-simulation']
   },
@@ -2404,7 +2469,7 @@ export const governancePolicyDecisionSurface = envelope(
     ],
     disabledActions: [
       { actionId: 'action-govpol-activate-policy-change', reason: 'Activation stays blocked until backend confirms approved version and idempotency key.' },
-      { actionId: 'action-govpol-start-impact-analysis', reason: 'AutonomousAgent analysis runtime is not enabled; no fake progress is rendered.' }
+      { actionId: 'action-govpol-activate-policy-change', reason: 'Activation stays a separate backend-governed policy capability; impact analysis acceptance cannot activate policy state.' }
     ],
     risk: 'Authority-changing approval',
     traceLinks: ['trace-govpol-decision', 'trace-govpol-approval-basis']
@@ -2412,22 +2477,60 @@ export const governancePolicyDecisionSurface = envelope(
   [governancePolicySurfaceActions.decideProposal, governancePolicySurfaceActions.activateProposal, governancePolicySurfaceActions.rollbackProposal, governancePolicySurfaceActions.openTrace]
 );
 
-export const governancePolicyAnalysisTaskSurface = envelope(
-  'surface-governance-policy-analysis-task',
+export const governancePolicyImpactAnalysisTaskSurface = envelope(
+  'surface-governance-policy-impact-analysis-task',
   'workflow-status',
   'Policy impact analysis task',
   'agent-governance-policy',
   {
-    workflowId: 'govpol-analysis-task-blocked',
+    surfaceContract: 'governance.policy.impact_analysis.task.v1',
+    workflowId: 'govpol-impact-task-001',
+    taskId: 'governance-impact-fixture-001',
     taskKind: 'autonomous-agent-analysis',
     status: 'blocked_provider_or_runtime',
-    summary: 'Policy-impact analysis is a durable AutonomousAgent follow-up only; this fixture fails closed until the backend task lifecycle exists.',
-    requiredCapabilityId: governancePolicyCapabilities.startImpactAnalysis,
-    traceIds: ['trace-govpol-analysis-blocked'],
-    progress: [{ snapshotId: 'blocked-start', label: 'Start denied before task creation', status: 'blocked_provider_or_runtime', traceId: 'trace-govpol-analysis-blocked' }],
-    resultSummary: 'No model-less or deterministic fake analysis result is produced.'
+    summary: 'Policy-impact analysis is a durable AutonomousAgent task; backend projection emits worker.task.blocked_provider_or_runtime and workflow.governance_policy.impact_analysis.blocked_provider_or_runtime when provider/runtime config is missing.',
+    requiredCapabilityId: governancePolicyCapabilities.readImpactAnalysis,
+    initiatingCapabilityId: governancePolicyCapabilities.startImpactAnalysis,
+    traceIds: ['trace-govpol-impact-analysis-blocked', 'trace-govpol-impact-worker-event'],
+    progress: { percent: 0, summary: 'Blocked by provider/runtime readiness; no frontend-only or deterministic success is rendered.' },
+    blockers: [{ code: 'blocked_provider_or_runtime', message: 'Real Akka AutonomousAgent provider/runtime binding is required before impact findings can be marked impact_ready.' }],
+    evidenceRefs: ['governancePolicyEvidence.read', 'readSkill:governance-policy-impact-analysis', 'readReferenceDoc:governance-policy-impact-analysis', 'proposal:proposal-govpol-001'],
+    providerFailures: ['provider/model/governed runtime missing; fail-closed no fake success'],
+    resultReviewState: 'blocked_provider_or_runtime',
+    noDirectMutation: true,
+    safety: 'Frontend reloads this state from backend projections; raw prompts, JWTs, provider secrets, raw tool payloads, and cross-tenant evidence are redacted.',
+    resultSummary: 'No model-less, simulated, deterministic, or fake impact_ready result is produced.'
   },
-  [governancePolicySurfaceActions.openTrace]
+  [governancePolicySurfaceActions.readImpactAnalysis, governancePolicySurfaceActions.cancelImpactAnalysis, governancePolicySurfaceActions.openTrace]
+);
+
+export const governancePolicyImpactAnalysisResultSurface = envelope(
+  'surface-governance-policy-impact-analysis-result',
+  'decision',
+  'Policy impact result review',
+  'agent-governance-policy',
+  {
+    decisionId: 'governance-impact-fixture-001',
+    recommendation: 'Review advisory policy impact findings, accept or reject the analysis as evidence, then use separate proposal decision and activation capabilities if still authorized.',
+    riskScore: 'high',
+    confidenceScore: 'model-backed when runtime is available; blocked_provider_or_runtime otherwise',
+    evidence: [
+      { evidenceId: 'governancePolicyEvidence.read', label: 'Scoped policy evidence', summary: 'Proposal, affected capabilities, approval gate, ToolPermissionBoundary, and simulation refs are browser-safe and tenant-scoped.' },
+      { evidenceId: 'trace-govpol-impact-worker-event', label: 'v3 event linkage', summary: 'workflow.governance_policy.impact_analysis.completed_review_required and worker.task.completed_review_required drive attention.' },
+      { evidenceId: 'redaction', label: 'Redaction guardrail', summary: 'Raw prompts, hidden prompt text, provider credentials, JWTs, raw tool payloads, and cross-tenant/customer data are omitted.' }
+    ],
+    allowedActions: [
+      { actionId: 'action-govpol-accept-impact-result', label: 'Accept advisory result evidence', browserToolId: 'action-govpol-accept-impact-result', governedToolId: governancePolicyCapabilities.acceptImpactResult, capabilityId: governancePolicyCapabilities.acceptImpactResult },
+      { actionId: 'action-govpol-reject-impact-result', label: 'Reject advisory result evidence', browserToolId: 'action-govpol-reject-impact-result', governedToolId: governancePolicyCapabilities.rejectImpactResult, capabilityId: governancePolicyCapabilities.rejectImpactResult },
+      { actionId: 'action-govpol-request-impact-changes', label: 'Request analysis changes', browserToolId: 'action-govpol-request-impact-changes', governedToolId: governancePolicyCapabilities.requestImpactChanges, capabilityId: governancePolicyCapabilities.requestImpactChanges }
+    ],
+    disabledActions: [
+      { actionId: 'action-govpol-activate-policy-change', reason: 'Worker result acceptance never activates policy; activation remains a separate human-authorized backend capability.' }
+    ],
+    risk: 'Advisory-only policy impact; activationBlockedUntilHumanDecision=true; noDirectMutation=true',
+    traceLinks: ['trace-govpol-impact-result', 'trace-govpol-impact-worker-event']
+  },
+  [governancePolicySurfaceActions.acceptImpactResult, governancePolicySurfaceActions.rejectImpactResult, governancePolicySurfaceActions.requestImpactChanges, governancePolicySurfaceActions.openTrace]
 );
 
 export const governancePolicyDecisionTraceSurface = envelope(
@@ -2439,7 +2542,7 @@ export const governancePolicyDecisionTraceSurface = envelope(
     events: [
       { eventId: 'govpol-proposal-created', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'Draft proposal created with idempotency key and redacted diff summary', traceId: 'trace-govpol-proposal-created' },
       { eventId: 'govpol-simulation', occurredAt: generatedAt, actor: 'GovernancePolicyService', action: 'Deterministic simulation recorded expected allows, denials, warnings, and evidence refs', traceId: 'trace-govpol-simulation' },
-      { eventId: 'govpol-analysis-blocked', occurredAt: generatedAt, actor: 'Governance/Policy Agent', action: 'AutonomousAgent impact analysis failed closed because durable task runtime is unavailable', traceId: 'trace-govpol-analysis-blocked' }
+      { eventId: 'govpol-impact-analysis-blocked', occurredAt: generatedAt, actor: 'Governance/Policy Agent', action: 'AutonomousAgent impact analysis emitted workflow.governance_policy.impact_analysis.blocked_provider_or_runtime and worker.task.blocked_provider_or_runtime; attention points to surface-governance-policy-impact-analysis-task.', traceId: 'trace-govpol-impact-analysis-blocked' }
     ]
   },
   [governancePolicySurfaceActions.showDashboard]
@@ -2451,7 +2554,8 @@ export const governancePolicyStructuredSurfaces = [
   governancePolicyProposalSurface,
   governancePolicySimulationSurface,
   governancePolicyDecisionSurface,
-  governancePolicyAnalysisTaskSurface,
+  governancePolicyImpactAnalysisTaskSurface,
+  governancePolicyImpactAnalysisResultSurface,
   governancePolicyDecisionTraceSurface
 ];
 
@@ -2477,6 +2581,22 @@ export const displayGovernancePolicySimulationActionResult: CapabilityActionResu
   correlationId: 'corr-display-governance-policy-simulation',
   traceIds: ['trace-govpol-simulation'],
   resultSurface: governancePolicySimulationSurface
+};
+
+export const displayGovernancePolicyImpactTaskActionResult: CapabilityActionResult = {
+  status: 'blocked_provider_or_runtime',
+  message: 'Displayed backend-derived governance.policy.impact_analysis task state with v3 worker.task.* / workflow.governance_policy.impact_analysis.* event and attention linkage; no fake success is rendered.',
+  correlationId: 'corr-display-governance-policy-impact-task',
+  traceIds: ['trace-govpol-impact-analysis-blocked', 'trace-govpol-impact-worker-event'],
+  resultSurface: governancePolicyImpactAnalysisTaskSurface
+};
+
+export const displayGovernancePolicyImpactResultActionResult: CapabilityActionResult = {
+  status: 'approval-required',
+  message: 'Displayed advisory Governance/Policy impact result review surface. Accept/reject/request-changes record worker-result disposition only and cannot activate policy state.',
+  correlationId: 'corr-display-governance-policy-impact-result',
+  traceIds: ['trace-govpol-impact-result', 'trace-govpol-impact-worker-event'],
+  resultSurface: governancePolicyImpactAnalysisResultSurface
 };
 
 export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-my-account', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }], attentionSource: 'attention.list_workstream_items', attentionItems: [{ itemId: 'attention-agent-admin-readiness', label: 'Agent Admin provider readiness is blocked', summary: 'Model/runtime provider readiness is blocked until governed provider configuration is available.', status: 'open', severity: 'blocked', category: 'provider_readiness', capabilityId: 'agent_admin.list_definitions', governedToolId: 'attention.open_attention_item', traceId: 'trace-agent-admin-provider-readiness', sourceWorkstreamId: 'agent-agent-admin', surfaceRef: { targetFunctionalAgentId: 'agent-agent-admin', targetSurfaceId: 'surface-agent-admin-catalog', targetSurfaceType: 'dashboard', targetItemId: 'attention-agent-admin-readiness', defaultActionId: 'attention.open_attention_item', requiredCapabilityId: 'agent_admin.list_definitions' }, redaction: 'full' }], scopeNote: 'Full-core/demo surface; actionable attention is backend-derived through attention.list_workstream_items and separate from transient unseen-response badges.' }, [surfaceActionsByIntent.read]);

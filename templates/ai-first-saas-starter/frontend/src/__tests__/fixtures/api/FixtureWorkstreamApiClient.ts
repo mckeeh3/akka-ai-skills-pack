@@ -27,6 +27,8 @@ import {
   userAdminRoleChangePreviewSurface,
   displayGovernancePolicyDashboardActionResult,
   displayGovernancePolicyInventoryActionResult,
+  displayGovernancePolicyImpactResultActionResult,
+  displayGovernancePolicyImpactTaskActionResult,
   displayGovernancePolicySimulationActionResult,
   displayUserDetailActionResult,
   displayUserListActionResult,
@@ -198,6 +200,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
             ? displayGovernancePolicyInventoryActionResult
             : request.actionId === 'action-govpol-simulate-proposal' || request.capabilityId === 'governance.policy.simulate'
               ? displayGovernancePolicySimulationActionResult
+              : ['action-govpol-start-impact-analysis', 'action-govpol-read-impact-analysis', 'action-govpol-cancel-impact-analysis'].includes(request.actionId) || request.capabilityId?.startsWith('governance.policy.impact_analysis.')
+                ? (['action-govpol-accept-impact-result', 'action-govpol-reject-impact-result', 'action-govpol-request-impact-changes'].includes(request.actionId) ? displayGovernancePolicyImpactResultActionResult : displayGovernancePolicyImpactTaskActionResult)
               : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent_admin.list_definitions'
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
