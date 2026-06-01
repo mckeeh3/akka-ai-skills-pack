@@ -140,7 +140,7 @@
 
 ### TASK-ARD-02-001: Run manual/runtime edge review
 
-- status: pending
+- status: done
 - source: specs/attention-release-readiness-dogfood/backlog/01-dogfood-release-readiness-backlog.md
 - task brief: specs/attention-release-readiness-dogfood/tasks/02-review/01-run-manual-edge-review.md
 - depends on:
@@ -159,6 +159,8 @@
   - manual/runtime edge review artifact
   - updated pending-tasks.md
   - optional appended blocker tasks if issues are found
+- output artifact:
+  - specs/attention-release-readiness-dogfood/manual-runtime-edge-review.md
 - required checks:
   - `git diff --check`
   - manual/runtime notes or clear blocked reason
@@ -168,6 +170,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `attention-dogfood: review runtime edges`
+  - validation target: `/tmp/attention-dogfood-runtime-review-q2RB7j`
+  - validation passed: fresh scaffold targeted backend attention tests (75 passed), frontend `npm ci`, `npm test` (132 passed), `npm run typecheck`, `npm run build`, and focused backend-authority/frontend-only-guardrail source checks
+  - no release blockers found; interactive browser rerun was not launched in this harness session, with existing user dogfood evidence retained as the manual browser evidence
 
 ### TASK-ARD-02-002: Update release-readiness handoff
 
