@@ -234,7 +234,7 @@
 
 ### TASK-WAEP-99-001: Verify attention event producers v2 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/workstream-attention-event-producers-v2/tasks/99-verification/01-verify-attention-event-producers-v2.md
 - depends on:
@@ -270,4 +270,7 @@
   - if incomplete, new bounded tasks are appended before a new terminal verification task
   - task changes and queue update are committed
 - notes:
+  - verified sprint goals and mini-project done state against completed v2 work: producer contract exists; invitation and governance service state changes upsert/resolve backend attention; invitation timed checks update/expire attention; User Admin access-review task states create/update/resolve blocked/review attention without fake model-backed success; rail/My Account/workstream update delivery refreshes backend-derived summaries/items and keeps `railAttentionState` transient/non-authoritative; docs distinguish implemented v1 backbone, v2 bounded producers/update delivery, and future event/notification/digest work.
+  - no new required follow-up task was appended; richer audit/provider readiness producers, generic event consumers, SSE/push notifications, and digests remain future recommendations outside the bounded v2 done state.
+  - validation: `git diff --check`; scaffolded starter backend `mvn -q -Dtest=AttentionProducerServiceTest,AttentionServiceTest,InvitationAndUserAdminServiceTest,GovernancePolicyServiceTest,UserAdminAccessReviewServiceTest,WorkstreamServiceTest test` after `tools/scaffold-ai-first-saas-starter.sh --target <tmp>/waep-verify --template-dir templates/ai-first-saas-starter --app-name "WAEP Verify" --app-slug waep-verify --base-package ai.first --maven-group-id ai.first --yes`; frontend `npm test -- --test-name-pattern 'attention update delivery|attention backbone'`; `npm run typecheck`; `npm run build`; required focused `rg` for producer/update/timed/worker/rail/backbone terms.
   - commit message: `attention-producers: verify v2 completion`
