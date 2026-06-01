@@ -44,7 +44,7 @@
 
 ### TASK-ATSA-01-001: Define Audit/Trace summary AutonomousAgent contract
 
-- status: pending
+- status: done
 - source: specs/audit-trace-summary-autonomous-agent/backlog/01-audit-summary-agent-build-backlog.md
 - task brief: specs/audit-trace-summary-autonomous-agent/tasks/01-contracts/01-define-audit-summary-contract.md
 - depends on:
