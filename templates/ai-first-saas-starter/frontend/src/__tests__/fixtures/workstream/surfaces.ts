@@ -1602,6 +1602,7 @@ export const userAdminAccessReviewSurface = envelope(
         { recommendationId: 'rec-review-admin-access', label: 'Review stale admin access', risk: 'medium', confidence: 'provider-blocked', summary: 'Recommendation content requires model-backed worker completion before human acceptance.' }
       ],
       providerFailures: ['blocked_provider_or_runtime'],
+      resultReviewStates: ['pending_worker_result', 'completed_review_required', 'result_accepted', 'result_rejected', 'cancelled'],
       resultReviewState: 'pending_worker_result',
       noDirectMutation: true,
       safety: 'Access-review output cannot directly mutate memberships, invitations, roles, capabilities, authorization state, or provider configuration.',

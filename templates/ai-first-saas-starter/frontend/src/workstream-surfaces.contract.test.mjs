@@ -146,7 +146,11 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(allSurfaceComponents, /Access review evidence references/);
   assert.match(allSurfaceComponents, /Provider\/runtime blockers/);
   assert.match(allSurfaceComponents, /No direct mutation/);
+  assert.match(allSurfaceComponents, /evidenceKey\(evidence\)/);
+  assert.match(allSurfaceComponents, /recommendationKey\(recommendation\)/);
   assert.match(surfaceTypes, /user_admin\.access_review_task\.v1/);
+  assert.match(surfaceTypes, /evidenceRefs\?: Array<string \|/);
+  assert.match(surfaceTypes, /recommendations\?: Array<string \|/);
   assert.match(allSurfaceComponents, /governance-diff-summary/);
   assert.match(allSurfaceComponents, /outcome-metrics/);
 });

@@ -119,7 +119,7 @@
 
 ### TASK-AAI-03-001: Wire AutonomousAgent events, attention, and surfaces
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-runtime-integration/backlog/01-autonomous-agent-runtime-build-backlog.md
 - task brief: specs/autonomous-agent-runtime-integration/tasks/03-surfaces/01-wire-events-attention-surfaces.md
 - depends on:
@@ -157,6 +157,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin and My Account attention/surface paths; v3 events; backend-derived update delivery; no fake model-backed success
+  - completed: access-review lifecycle publication now emits both `workflow.access_review.*` and `worker.task.*` v3 events with `autonomous_task` refs; event attention projection accepts workflow and task families; attention producer preserves event/idempotency evidence across duplicate projections; User Admin access-review surface exposes backend-derived result review states, result summary, trace/evidence/recommendation data, and no-direct-mutation safety copy; frontend workflow-status rendering supports backend string refs without becoming authoritative.
+  - checks: `git diff --check`; rendered scaffold backend `mvn -q -Dtest=UserAdminAccessReviewServiceTest,WorkstreamEventBackboneServiceTest test`; frontend `npm test`; frontend `npm run typecheck`; frontend `npm run build`; focused `rg` for `workflow.access_review`, `worker.task`, `autonomous_task`, `attention:worker-task`, `surface-user-admin-access-review`, `blocked_provider_or_runtime`, fail-closed/no fake success guardrails
   - commit message: `autonomous-agent: wire events attention surfaces`
 
 ### TASK-AAI-04-001: Run AutonomousAgent runtime validation

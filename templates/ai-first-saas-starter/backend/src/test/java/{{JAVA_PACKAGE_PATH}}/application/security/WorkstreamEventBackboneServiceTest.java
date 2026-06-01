@@ -121,8 +121,12 @@ class WorkstreamEventBackboneServiceTest {
 
     assertEquals(AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME, task.status());
     var events = eventRepository.listTenant("tenant-1");
-    assertEquals(1, events.size());
-    var event = events.get(0);
+    assertEquals(2, events.size());
+    var event = events.stream().filter(candidate -> candidate.eventType().equals("workflow.access_review.blocked_provider_or_runtime")).findFirst().orElseThrow();
+    var workerEvent = events.stream().filter(candidate -> candidate.eventType().equals("worker.task.blocked_provider_or_runtime")).findFirst().orElseThrow();
+    assertEquals("worker.task.blocked_provider_or_runtime", workerEvent.eventType());
+    assertEquals("task/worker", workerEvent.eventFamily());
+    assertTrue(workerEvent.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("autonomous_task") && ref.refId().equals(task.taskId())));
     assertEquals("workflow.access_review.blocked_provider_or_runtime", event.eventType());
     assertEquals("workflow/process", event.eventFamily());
     assertEquals("AccessReviewLifecycleEventPayload", event.payloadClass());
@@ -159,10 +163,48 @@ class WorkstreamEventBackboneServiceTest {
 
     assertEquals(AccessReviewTask.Status.CANCELLED, cancelled.status());
     assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.access_review.cancelled")));
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("worker.task.cancelled")));
     var resolved = attentionRepository.find("tenant-1", itemId).orElseThrow();
     assertEquals(AttentionItemStatus.RESOLVED, resolved.status());
     assertTrue(resolved.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event")));
     assertEquals(beforeRoles, identityRepository.findMembership("membership-admin").orElseThrow().roles());
+  }
+
+  @Test
+  void accessReviewAutonomousAgentCompletionPublishesWorkerTaskEventsAndReviewAttention() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+    var runtime = new RecordingAccessReviewAutonomousAgentRuntime();
+    var accessReviews = new UserAdminAccessReviewService(accessReviewRepository, new UserAdminService(identityRepository, clock), clock, producers, publisher, runtime);
+
+    var task = accessReviews.start(tenantAdmin, "access-review-complete-event", "corr-access-review-complete-start");
+
+    assertEquals(AccessReviewTask.Status.QUEUED, task.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.access_review.started")));
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("worker.task.queued")));
+
+    runtime.nextProjection = new AccessReviewAutonomousAgentRuntime.Projection(
+        AccessReviewTask.Status.COMPLETED,
+        100,
+        "Access-review AutonomousAgent completed with advisory recommendations; User Admin human review is required.",
+        null,
+        null,
+        List.of("userAdminEvidence.read", "trace-access-review-evidence"),
+        List.of("autonomous_agent_recommendation:review dormant admin role"),
+        List.of("autonomous_task:" + task.autonomousAgentTaskId(), "trace-model-result"));
+
+    var completed = accessReviews.read(tenantAdmin, task.taskId(), "corr-access-review-complete-read");
+
+    assertEquals(AccessReviewTask.Status.COMPLETED, completed.status());
+    assertTrue(eventRepository.listTenant("tenant-1").stream().anyMatch(event -> event.eventType().equals("workflow.access_review.completed_review_required")));
+    var workerCompleted = eventRepository.listTenant("tenant-1").stream().filter(event -> event.eventType().equals("worker.task.completed_review_required")).findFirst().orElseThrow();
+    assertEquals("task/worker", workerCompleted.eventFamily());
+    assertTrue(workerCompleted.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("autonomous_task") && ref.refId().equals(task.autonomousAgentTaskId())));
+    var item = attentionRepository.find("tenant-1", "attention:worker-task:" + task.taskId() + ":task-state").orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertEquals(AttentionCategory.ACCESS_REVIEW, item.category());
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(workerCompleted.eventId())));
   }
 
   @Test
@@ -178,6 +220,20 @@ class WorkstreamEventBackboneServiceTest {
 
     assertEquals(null, projected);
     assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DENIED") && audit.reasonCode().equals("scope-mismatch")));
+  }
+
+  private static final class RecordingAccessReviewAutonomousAgentRuntime implements AccessReviewAutonomousAgentRuntime {
+    private Projection nextProjection = Projection.unchanged();
+
+    @Override
+    public StartOutcome start(AuthContextResolver.ResolvedMe actor, AccessReviewTask starterTask, String correlationId) {
+      return StartOutcome.queued("akka-task-" + starterTask.taskId(), "Access-review Akka AutonomousAgent task queued; backend projection is authoritative.", List.of("autonomous_task:akka-task-" + starterTask.taskId()));
+    }
+
+    @Override
+    public Projection project(AccessReviewTask starterTask, String correlationId) {
+      return nextProjection;
+    }
   }
 
   private InvitationService.CreateInvitationRequest inviteRequest(String key, String email) {

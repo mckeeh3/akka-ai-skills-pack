@@ -620,7 +620,7 @@ public final class WorkstreamService {
   private SurfaceEnvelope accessReviewSurface(AuthContextResolver.ResolvedMe actor, AccessReviewTask task, String correlationId) {
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_ACCESS_REVIEW_READ, "user_admin.access_review_task.v1", correlationId);
     return envelope("surface-user-admin-access-review", "workflow-status", "User Admin access review", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.access_review_task.v1", "workflowId", task.taskId(), "taskId", task.taskId(), "autonomousAgentTaskId", task.autonomousAgentTaskId(), "status", accessReviewStatus(task), "initiatingCapabilityId", USERADMIN_ACCESS_REVIEW_START, "scope", mapOf("scopeType", task.scopeType().name(), "tenantId", task.tenantId(), "customerId", task.customerId()), "progress", mapOf("percent", task.progressPercent(), "summary", task.summary()), "blockers", task.blockerCode() == null ? List.of() : List.of(mapOf("code", task.blockerCode(), "message", "Governed AutonomousAgent provider/runtime is not configured; the starter fails closed instead of returning model-less access-review recommendations.")), "evidenceRefs", task.evidenceRefs(), "recommendations", task.recommendationRefs(), "resultReviewState", task.decision() == null ? "pending_worker_result" : task.decision(), "providerFailures", task.blockerCode() == null ? List.of() : List.of("blocked_provider_or_runtime"), "traceIds", task.traceIds(), "noDirectMutation", true, "safety", "access-review output cannot directly mutate memberships, invitations, roles, capabilities, or authorization state"),
+        mapOf("surfaceContract", "user_admin.access_review_task.v1", "workflowId", task.taskId(), "taskId", task.taskId(), "autonomousAgentTaskId", task.autonomousAgentTaskId(), "status", accessReviewStatus(task), "initiatingCapabilityId", USERADMIN_ACCESS_REVIEW_START, "scope", mapOf("scopeType", task.scopeType().name(), "tenantId", task.tenantId(), "customerId", task.customerId()), "progress", mapOf("percent", task.progressPercent(), "summary", task.summary()), "resultSummary", task.status() == AccessReviewTask.Status.COMPLETED ? task.summary() : null, "blockers", task.blockerCode() == null ? List.of() : List.of(mapOf("code", task.blockerCode(), "message", "Governed AutonomousAgent provider/runtime is not configured; the starter fails closed instead of returning model-less access-review recommendations.")), "evidenceRefs", task.evidenceRefs(), "recommendations", task.recommendationRefs(), "resultReviewState", accessReviewResultReviewState(task), "providerFailures", task.blockerCode() == null ? List.of() : List.of("blocked_provider_or_runtime"), "traceIds", task.traceIds(), "noDirectMutation", true, "safety", "access-review output cannot directly mutate memberships, invitations, roles, capabilities, authorization state, or provider configuration; User Admin human review is required before follow-up changes"),
         List.of(startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), traceAction()));
   }
 
@@ -633,6 +633,18 @@ public final class WorkstreamService {
 
   private String accessReviewStatus(AccessReviewTask task) {
     return task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : task.status().name().toLowerCase();
+  }
+
+  private String accessReviewResultReviewState(AccessReviewTask task) {
+    if (task.decision() != null && !task.decision().isBlank()) return task.decision().equals("rejected") ? "result_rejected" : "result_" + task.decision();
+    return switch (task.status()) {
+      case COMPLETED -> "completed_review_required";
+      case ACCEPTED -> "result_accepted";
+      case REJECTED -> "result_rejected";
+      case CANCELLED -> "cancelled";
+      case BLOCKED_PROVIDER_OR_RUNTIME -> "blocked_provider_or_runtime";
+      default -> "pending_worker_result";
+    };
   }
 
   private CapabilityActionResult governancePolicyReadResult(AuthContextResolver.ResolvedMe actor, String message, String correlationId, SurfaceEnvelope surface) {

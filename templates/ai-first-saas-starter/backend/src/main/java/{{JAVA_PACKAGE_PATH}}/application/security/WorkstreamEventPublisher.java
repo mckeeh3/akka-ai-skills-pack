@@ -14,6 +14,7 @@ import java.util.Objects;
 public final class WorkstreamEventPublisher {
   public static final String EVENT_FAMILY_DOMAIN = "domain";
   public static final String EVENT_FAMILY_WORKFLOW_PROCESS = "workflow/process";
+  public static final String EVENT_FAMILY_TASK_WORKER = "task/worker";
   public static final String PAYLOAD_INVITATION_DELIVERY = "InvitationDeliveryEventPayload";
   public static final String PAYLOAD_ACCESS_REVIEW_LIFECYCLE = "AccessReviewLifecycleEventPayload";
 
@@ -40,10 +41,22 @@ public final class WorkstreamEventPublisher {
 
   public WorkstreamEventEnvelope publishAccessReviewLifecycle(AccessReviewTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
     var eventType = "workflow.access_review." + semanticTransition;
-    var idempotencyKey = idempotencyKey(EVENT_FAMILY_WORKFLOW_PROCESS, eventType, task.tenantId(), task.customerId(), task.taskId(), semanticTransition);
+    var event = publishAccessReviewEvent(task, semanticTransition, eventType, EVENT_FAMILY_WORKFLOW_PROCESS, capabilityId, actorAccountId, correlationId);
+    publishAccessReviewTaskEvent(task, semanticTransition, capabilityId, actorAccountId, correlationId);
+    return event;
+  }
+
+  public WorkstreamEventEnvelope publishAccessReviewTaskEvent(AccessReviewTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var taskTransition = workerTaskTransition(task, semanticTransition);
+    var eventType = "worker.task." + taskTransition;
+    return publishAccessReviewEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
+  }
+
+  private WorkstreamEventEnvelope publishAccessReviewEvent(AccessReviewTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
+    var idempotencyKey = idempotencyKey(eventFamily, eventType, task.tenantId(), task.customerId(), task.taskId(), semanticTransition);
     var existing = repository.findByIdempotencyKey(task.tenantId(), idempotencyKey).orElse(null);
     var event = existing == null
-        ? repository.publish(accessReviewLifecycleEnvelope(task, semanticTransition, capabilityId, actorAccountId, idempotencyKey, correlationId))
+        ? repository.publish(accessReviewLifecycleEnvelope(task, semanticTransition, eventType, eventFamily, capabilityId, actorAccountId, idempotencyKey, correlationId))
         : existing;
     attentionConsumer.project(event, task);
     return event;
@@ -93,8 +106,7 @@ public final class WorkstreamEventPublisher {
         Map.of("attentionCategory", "INVITATION_DELIVERY", "attentionItemId", "attention:user-admin:invitation-delivery:" + invitation.invitationId()));
   }
 
-  private WorkstreamEventEnvelope accessReviewLifecycleEnvelope(AccessReviewTask task, String semanticTransition, String capabilityId, String actorAccountId, String idempotencyKey, String correlationId) {
-    var eventType = "workflow.access_review." + semanticTransition;
+  private WorkstreamEventEnvelope accessReviewLifecycleEnvelope(AccessReviewTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String idempotencyKey, String correlationId) {
     var eventId = "evt-" + stableSuffix(idempotencyKey);
     var traceId = firstTraceRef(task, "trace-" + stableSuffix(eventId + ":" + correlationId));
     var now = Instant.now(clock);
@@ -102,7 +114,7 @@ public final class WorkstreamEventPublisher {
     return new WorkstreamEventEnvelope(
         eventId,
         eventType,
-        EVENT_FAMILY_WORKFLOW_PROCESS,
+        eventFamily,
         1,
         task.updatedAt() == null ? now : task.updatedAt(),
         now,
@@ -131,6 +143,7 @@ public final class WorkstreamEventPublisher {
             "autonomousAgentTaskId", safe(task.autonomousAgentTaskId(), ""),
             "status", task.status().name().toLowerCase(java.util.Locale.ROOT),
             "semanticTransition", semanticTransition,
+            "taskLifecycleEventType", eventType,
             "progressPercent", Integer.toString(task.progressPercent()),
             "blockerCode", safe(task.blockerCode(), ""),
             "decision", safe(task.decision(), ""),
@@ -142,6 +155,16 @@ public final class WorkstreamEventPublisher {
 
   private static String idempotencyKey(String eventFamily, String eventType, String tenantId, String customerId, String sourceRefId, String semanticTransition) {
     return "workstream-event:" + eventFamily + ":" + eventType + ":" + tenantId + ":" + safe(customerId, "none") + ":" + sourceRefId + ":" + semanticTransition;
+  }
+
+  private static String workerTaskTransition(AccessReviewTask task, String semanticTransition) {
+    if (task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME && "autonomous_agent_task_failed".equals(task.blockerCode())) return "failed";
+    return switch (safe(semanticTransition, "running")) {
+      case "started", "queued" -> "queued";
+      case "result_accepted" -> "accepted";
+      case "result_rejected" -> "rejected_result";
+      default -> semanticTransition;
+    };
   }
 
   private static String redact(String value) {

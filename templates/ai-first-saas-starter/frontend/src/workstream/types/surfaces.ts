@@ -256,8 +256,8 @@ export type WorkflowStatusSurfaceData = {
   steps?: Array<{ stepId: string; label: string; status: string }>;
   scope?: { scopeType?: string; tenantId?: string; customerId?: string };
   blockers?: Array<{ code: string; message: string }>;
-  evidenceRefs?: Array<{ refId: string; label?: string; summary?: string; traceId?: string }>;
-  recommendations?: Array<{ recommendationId?: string; label?: string; risk?: string; confidence?: string; summary?: string }>;
+  evidenceRefs?: Array<string | { refId: string; label?: string; summary?: string; traceId?: string }>;
+  recommendations?: Array<string | { recommendationId?: string; label?: string; risk?: string; confidence?: string; summary?: string }>;
   providerFailures?: string[];
   resultReviewState?: string;
   noDirectMutation?: boolean;
@@ -271,6 +271,7 @@ export type WorkflowStatusSurfaceData = {
     evidenceRefs?: Array<{ refId: string; label: string; summary: string; traceId?: string }>;
     recommendations?: Array<{ recommendationId: string; label: string; risk: string; confidence: string; summary: string }>;
     providerFailures?: string[];
+    resultReviewStates?: string[];
     resultReviewState?: string;
     noDirectMutation: boolean;
     safety: string;

@@ -62,7 +62,9 @@ public final class WorkstreamEventAttentionConsumer {
   }
 
   public AttentionItem project(WorkstreamEventEnvelope event, AccessReviewTask sourceTask) {
-    if (!"workflow/process".equals(event.eventFamily()) || !event.eventType().startsWith("workflow.access_review.")) {
+    var workflowEvent = "workflow/process".equals(event.eventFamily()) && event.eventType().startsWith("workflow.access_review.");
+    var taskEvent = "task/worker".equals(event.eventFamily()) && event.eventType().startsWith("worker.task.");
+    if (!workflowEvent && !taskEvent) {
       appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "unsupported-event-type");
       return null;
     }
@@ -79,8 +81,9 @@ public final class WorkstreamEventAttentionConsumer {
       return currentItem(event);
     }
     return projectSupported(event, switch (event.eventType()) {
-      case "workflow.access_review.blocked_provider_or_runtime", "workflow.access_review.completed_review_required", "workflow.access_review.result_rejected" -> attentionProducerService.upsertWorkerTaskState(sourceTask, null, event.correlationId());
-      case "workflow.access_review.cancelled", "workflow.access_review.result_accepted" -> attentionProducerService.resolveWorkerTaskState(sourceTask, sourceTask.status().name().toLowerCase(java.util.Locale.ROOT), event.correlationId());
+      case "workflow.access_review.started", "workflow.access_review.blocked_provider_or_runtime", "workflow.access_review.completed_review_required", "workflow.access_review.result_rejected",
+          "worker.task.queued", "worker.task.running", "worker.task.blocked_provider_or_runtime", "worker.task.failed", "worker.task.completed_review_required", "worker.task.rejected_result" -> attentionProducerService.upsertWorkerTaskState(sourceTask, null, event.correlationId());
+      case "workflow.access_review.cancelled", "workflow.access_review.result_accepted", "worker.task.cancelled", "worker.task.accepted" -> attentionProducerService.resolveWorkerTaskState(sourceTask, sourceTask.status().name().toLowerCase(java.util.Locale.ROOT), event.correlationId());
       default -> null;
     });
   }

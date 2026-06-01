@@ -166,10 +166,15 @@ public final class AttentionProducerService {
   private AttentionItem upsert(AttentionItem next, String producerId, String correlationId) {
     var existing = attentionRepository.find(next.tenantId(), next.itemId()).orElse(null);
     var now = Instant.now(clock);
+    var sourceRefs = new java.util.ArrayList<AttentionSourceRef>();
+    if (existing != null) sourceRefs.addAll(existing.sourceRefs());
+    for (var ref : next.sourceRefs()) {
+      if (sourceRefs.stream().noneMatch(existingRef -> existingRef.kind().equals(ref.kind()) && existingRef.refId().equals(ref.refId()))) sourceRefs.add(ref);
+    }
     var normalized = new AttentionItem(
         next.itemId(), next.tenantId(), next.customerId(), next.owningWorkstreamId(), next.title(), next.summary(), next.category(),
         next.severity(), AttentionItemStatus.OPEN, next.assigneeKind(), next.assigneeId(), next.requiredCapabilityId(), next.surfaceRef(),
-        next.sourceRefs(), next.redactionLevel(), existing == null ? now : existing.createdAt(), now, now, next.expiresAt(), null, null, null,
+        List.copyOf(sourceRefs), next.redactionLevel(), existing == null ? now : existing.createdAt(), now, now, next.expiresAt(), null, null, null,
         correlationId);
     var saved = attentionRepository.upsert(normalized);
     appendSystemAudit("ATTENTION_PRODUCER_UPSERT", existing == null ? AdminAuditEvent.Result.ALLOWED : (existing.equals(saved) ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED), saved.tenantId(), saved.customerId(), producerId + ":" + saved.itemId(), correlationId);
