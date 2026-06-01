@@ -44,7 +44,7 @@
 
 ### TASK-GPIA-01-001: Define Governance/Policy impact AutonomousAgent contract
 
-- status: pending
+- status: done
 - source: specs/governance-policy-impact-autonomous-agent/backlog/01-governance-impact-agent-build-backlog.md
 - task brief: specs/governance-policy-impact-autonomous-agent/tasks/01-contracts/01-define-governance-impact-contract.md
 - depends on:
