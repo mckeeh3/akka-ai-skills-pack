@@ -233,7 +233,7 @@
 
 ### TASK-AAI-99-001: Verify AutonomousAgent runtime integration
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/autonomous-agent-runtime-integration/tasks/99-verification/01-verify-autonomous-agent-runtime-integration.md
 - depends on:
@@ -265,4 +265,7 @@
   - if incomplete, bounded follow-up tasks and a new terminal verification task are appended
   - task changes and queue update are committed
 - notes:
+  - completed: verified all prerequisite tasks are done; mini-project done state is satisfied for the scoped User Admin Access Review AutonomousAgent vertical. Fresh scaffold rendered to `/tmp/aai-verification`; targeted backend tests passed for AutonomousAgent runtime, fail-closed behavior, events, and attention; frontend `npm ci`, `npm test`, `npm run typecheck`, and `npm run build` passed; focused `rg` confirmed `AutonomousAgent` APIs, `runSingleTask`/`forTask`, test-only `completeTask`/`failTask`, fail-closed/no model-less success guardrails, v3 `workflow.access_review.*` and `worker.task.*` events, `autonomous_task` source refs, worker-task attention ids, and `surface-user-admin-access-review` wiring.
+  - verification assessment: no bounded follow-up tasks are required for this mini-project's stated scope. Future workers/team/delegation work remains intentionally outside this first vertical and is documented in `autonomous-agent-runtime-handoff.md`.
+  - checks: `git diff --check`; scaffolded backend `mvn -q -Dtest=UserAdminAccessReviewAutonomousAgentTest,UserAdminAccessReviewServiceTest,WorkstreamEventBackboneServiceTest,AttentionProducerServiceTest test`; scaffolded frontend `npm ci`; `npm test`; `npm run typecheck`; `npm run build`; focused `rg` for AutonomousAgent, fail-closed/no fake success, v3 events, attention, and surfaces.
   - commit message: `autonomous-agent: verify runtime integration`
