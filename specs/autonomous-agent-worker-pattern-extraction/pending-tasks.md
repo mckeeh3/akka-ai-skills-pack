@@ -121,7 +121,7 @@
 
 ### TASK-AAWPE-04-001: Add example index and next-worker recommendations
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-worker-pattern-extraction/backlog/01-pattern-extraction-backlog.md
 - task brief: specs/autonomous-agent-worker-pattern-extraction/tasks/04-examples/01-add-example-index-and-next-workers.md
 - depends on:
