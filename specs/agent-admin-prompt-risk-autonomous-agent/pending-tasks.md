@@ -156,7 +156,7 @@
 
 ### TASK-AAPR-05-001: Update prompt-risk AutonomousAgent docs
 
-- status: pending
+- status: done
 - source: specs/agent-admin-prompt-risk-autonomous-agent/backlog/01-prompt-risk-agent-build-backlog.md
 - task brief: specs/agent-admin-prompt-risk-autonomous-agent/tasks/05-docs/01-update-prompt-risk-docs.md
 - depends on:
