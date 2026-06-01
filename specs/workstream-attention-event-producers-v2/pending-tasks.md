@@ -160,7 +160,7 @@
 
 ### TASK-WAEP-04-001: Wire backend-derived attention update delivery
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-event-producers-v2/backlog/01-event-producers-v2-build-backlog.md
 - task brief: specs/workstream-attention-event-producers-v2/tasks/04-realtime/01-wire-attention-update-delivery.md
 - depends on:
@@ -193,6 +193,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: shell/rail, My Account, workstream dashboards; browser API/action or stream exposure; backend attention service remains source of truth; tests cover rendering/update and frontend secret/authority boundary where touched
+  - implemented explicit backend-derived refresh path in the starter frontend: bootstrap uses backend rail summaries from `/api/workstream/bootstrap`, workstream open/shell refresh/action completion refresh rail summaries via `/api/workstream/functional-agents`, and dashboard/My Account/workstream surfaces refresh through backend `getSurface` payloads carrying attention-source fields. Transient `railAttentionState` remains only for unseen responses/background activity.
+  - validation: `git diff --check`; frontend `npm test -- --test-name-pattern 'attention update delivery|attention backbone'` (command ran full contract suite); `npm run typecheck`; `npm run build`; focused update-delivery `rg` for backend summary/item sources and transient rail attention separation.
   - commit message: `attention-producers: wire update delivery`
 
 ### TASK-WAEP-05-001: Update attention docs and guidance

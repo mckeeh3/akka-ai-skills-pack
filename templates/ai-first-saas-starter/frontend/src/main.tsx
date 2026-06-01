@@ -69,7 +69,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       if (!active) return;
       setBootstrap(
         result.ok
-          ? { status: 'ready', me: result.value.me, items: result.value.items, surfaces: result.value.surfaces }
+          ? { status: 'ready', me: { ...result.value.me, functionalAgents: result.value.functionalAgents }, items: result.value.items, surfaces: result.value.surfaces }
           : { status: 'error', message: result.error.message }
       );
     });
@@ -241,10 +241,11 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   function selectAgent(functionalAgentId: string) {
     if (!ready) return;
     const restoredSession = sessionForAgent(functionalAgentId);
-    const restoredSurface = restoredSession.selectedSurfaceId ?? surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
+    const restoredSurface = restoredSession.selectedSurfaceId ?? surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId ?? dashboardSurfaceIdForAgent(functionalAgentId);
     clearRailAttention(functionalAgentId);
     setVisualSessionsByKey((store) => saveVisualSession(store, restoredSession));
     updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: restoredSurface });
+    void refreshBackendDerivedAttentionDelivery({ functionalAgentId, surfaceId: restoredSurface, reason: 'workstream-open' });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
   }
 
@@ -343,6 +344,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     } else if (targetSurface) {
       markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem?.itemId ?? actionRequestItem.itemId, 'info');
     }
+    await refreshBackendDerivedAttentionDelivery({ functionalAgentId: targetSurface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId, surfaceId: targetSurface?.surfaceId ?? surfaceId, reason: 'producer-affecting-action-completion' });
   }
 
   async function runShellSurfaceRequest(shellRequest: WorkstreamShellRequest, fallbackFunctionalAgentId: string, itemPrefix: string) {
@@ -392,6 +394,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     } else {
       markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem.itemId, 'info');
     }
+    await refreshBackendDerivedAttentionDelivery({ functionalAgentId: targetSurface.ownerFunctionalAgentId, surfaceId: targetSurface.surfaceId, reason: 'shell-surface-refresh' });
     return true;
   }
 
@@ -400,6 +403,35 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     const correlationId = `corr-show-dashboard-${Date.now().toString(36)}`;
     const shellRequest = buildShowDashboardShellRequest(functionalAgentId, me.selectedAuthContext.selectedContextId, correlationId, 'shell_button');
     await runShellSurfaceRequest(shellRequest, functionalAgentId, 'show-dashboard');
+  }
+
+  async function refreshBackendDerivedAttentionDelivery(input: { functionalAgentId?: string; surfaceId?: string; reason: 'workstream-open' | 'producer-affecting-action-completion' | 'shell-surface-refresh' }) {
+    // Backend attention remains authoritative: rail badges refresh from attention.list_rail_summaries via functional-agents,
+    // while dashboard/My Account attention items refresh from backend surfaces carrying attention.list_workstream_items
+    // or attention.list_my_account_items payloads. Transient railAttentionState remains only for unseen responses.
+    await refreshBackendAttentionSummaries(input.reason);
+    const surfaceId = input.surfaceId ?? (input.functionalAgentId ? dashboardSurfaceIdForAgent(input.functionalAgentId) : undefined);
+    if (surfaceId) await refreshBackendSurface(surfaceId);
+  }
+
+  async function refreshBackendAttentionSummaries(reason: string) {
+    const result = await workstreamClient.listFunctionalAgents();
+    if (!result.ok) return;
+    setBootstrap((current) => current.status === 'ready'
+      ? { ...current, me: { ...current.me, functionalAgents: result.value } }
+      : current);
+  }
+
+  async function refreshBackendSurface(surfaceId: string) {
+    const result = await workstreamClient.getSurface(surfaceId);
+    if (!result.ok) return;
+    setBootstrap((current) => {
+      if (current.status !== 'ready') return current;
+      const nextSurfaces = current.surfaces.some((surface) => surface.surfaceId === result.value.surfaceId)
+        ? current.surfaces.map((surface) => surface.surfaceId === result.value.surfaceId ? result.value : surface)
+        : [...current.surfaces, result.value];
+      return { ...current, surfaces: nextSurfaces };
+    });
   }
 
   async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
