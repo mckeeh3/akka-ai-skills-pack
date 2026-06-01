@@ -217,7 +217,7 @@
 
 ### TASK-ATSA-06-001: Implement concrete Audit/Trace summary backend runtime
 
-- status: pending
+- status: done
 - source: TASK-ATSA-99-001 verification gap
 - task brief: specs/audit-trace-summary-autonomous-agent/tasks/06-runtime/01-implement-concrete-backend-runtime.md
 - depends on:
@@ -246,6 +246,9 @@
   - concrete runtime path exists or an actionable blocker is recorded without fake success
   - task changes and queue update are committed
 - notes:
+  - added concrete `AuditTraceSummaryAutonomousAgent`, typed task/result/rule, `ComponentClientAuditTraceSummaryAutonomousAgentRuntime`, fail-closed runtime, browser-safe projection, and scoped/redacted evidence tool under `src/main/java/com/example/application`
+  - added targeted backend tests for concrete AutonomousAgent invocation/read through `ComponentClient`, fail-closed provider/runtime blocking, redaction/cross-tenant not_found_or_redacted behavior, result validation, and no fake/model-less success
+  - checks: `mvn -Dtest=AuditTraceSummaryRuntimeGuardrailTest,AuditTraceSummaryAutonomousAgentIntegrationTest test`; focused `rg` for concrete runtime, `ComponentClient` task invocation/read, fail-closed, redaction, and no fake success guardrails; `git diff --check`
   - commit message: `audit-summary-agent: implement concrete runtime`
 
 ### TASK-ATSA-07-001: Wire backend-derived Audit/Trace summary events, attention, and surfaces
