@@ -199,7 +199,7 @@
 
 ### TASK-WAEP-05-001: Update attention docs and guidance
 
-- status: pending
+- status: done
 - source: specs/workstream-attention-event-producers-v2/backlog/01-event-producers-v2-build-backlog.md
 - task brief: specs/workstream-attention-event-producers-v2/tasks/05-docs/01-update-attention-docs-and-guidance.md
 - depends on:
@@ -228,6 +228,8 @@
   - task changes and queue update are committed
 - notes:
   - scope: docs/starter guidance only; do not register project-only docs in pack manifest unless already appropriate
+  - updated starter README/scaffold rules, canonical workstream/surface docs, WIP provenance, and v1/v2 mini-project docs to distinguish implemented v1 backbone, v2 bounded producers/update delivery, and future event/notification/digest work.
+  - validation: `git diff --check`; focused `rg` for implemented v1/v2, future-work, backend-owned attention, and frontend-only authority guardrails.
   - commit message: `attention-producers: update docs guidance`
 
 ### TASK-WAEP-99-001: Verify attention event producers v2 completion

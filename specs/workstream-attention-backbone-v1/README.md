@@ -1,19 +1,25 @@
 # Workstream Attention Backbone v1
 
+## Status
+
+Completed at the starter/reference scope. The AI-first SaaS starter now includes a shared backend-owned attention backbone with `AttentionItem` lifecycle state, scoped workstream/My Account/rail reads, safe redaction, audit/work traces, and frontend rendering from backend-derived summaries. This README preserves the original planning rationale and done-state contract; do not use the historical source discussion below to claim the backbone is still missing.
+
+Follow-on `workstream-attention-event-producers-v2` work adds bounded event/service/timer/task producers and backend-derived update delivery. Full event-message backbone, broad notification infrastructure, and digest/enterprise notification flows remain future work unless a later task implements and validates them.
+
 ## Purpose
 
 Create a self-contained implementation queue for the shared workstream attention backbone discussed in this session.
 
-The repository already has doctrine and partial starter behavior for “what needs my attention?” through dashboard `attentionItems`, My Account personal attention, and left-rail indicators. The missing feature is a first-class backend-owned attention backbone: one shared, tenant-aware, workstream-scoped store/projection layer that powers workstream dashboards, My Account aggregate attention, and left-rail summaries.
+At planning time, the repository already had doctrine and partial starter behavior for “what needs my attention?” through dashboard `attentionItems`, My Account personal attention, and left-rail indicators. The then-missing feature was a first-class backend-owned attention backbone: one shared, tenant-aware, workstream-scoped store/projection layer that powers workstream dashboards, My Account aggregate attention, and left-rail summaries.
 
 ## Source discussion
 
-The user asked whether the internal bus/queue of “things that need my attention” had been implemented. Review found:
+The user asked whether the internal bus/queue of “things that need my attention” had been implemented. The original review found these pre-v1 gaps, which are now historical for the completed v1 scope:
 
-- `templates/ai-first-saas-starter/backend/.../MyAccountService.java` returns hard-coded/deterministically capability-derived personal attention.
-- `WorkstreamService.java` includes dashboard `attentionItems`, but they are local to each surface and not backed by a shared attention queue/projection.
-- frontend rail attention state tracks unseen/background responses in memory only.
-- no durable `AttentionItem`, `AttentionRepository`, attention projection, internal event bus, or shared attention queue implementation exists.
+- `templates/ai-first-saas-starter/backend/.../MyAccountService.java` returned hard-coded/deterministically capability-derived personal attention.
+- `WorkstreamService.java` included dashboard `attentionItems`, but they were local to each surface and not backed by a shared attention queue/projection.
+- frontend rail attention state tracked unseen/background responses in memory only.
+- no durable `AttentionItem`, `AttentionRepository`, attention projection, internal event bus, or shared attention queue implementation existed.
 
 The accepted direction is:
 

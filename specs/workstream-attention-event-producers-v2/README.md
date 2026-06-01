@@ -14,7 +14,7 @@ After v1 completion, the recommended next step was a follow-up mini-project for 
 2. timed/projection updates for overdue or stale attention;
 3. AutonomousAgent task attention for failed, stuck, completed-with-review-needed, or rejected-result tasks;
 4. realtime/notification delivery of backend-derived attention summaries;
-5. docs/package updates so guidance no longer implies the attention backbone is missing.
+5. docs/package updates so guidance accurately distinguishes the implemented v1 backbone, v2 producers, and future event/notification work.
 
 The user accepted creating this v2 mini-project.
 

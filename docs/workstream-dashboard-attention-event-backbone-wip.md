@@ -6,6 +6,12 @@ Superseded as the primary rule source by `docs/requirements-to-workstream-develo
 
 This document remains as provenance, design detail, open-question backlog, and source material for future focused docs. For normative intake, PRD, app-description, planning, backlog, and implementation-readiness guidance, use the canonical requirements-to-workstream process doc first.
 
+Implementation status for starter/reference assets:
+
+- v1 shared attention backbone is implemented at starter scope: backend-owned `AttentionItem` lifecycle, scoped workstream/My Account/rail projections, redaction, and audit/work traces.
+- v2 bounded attention producers are implemented at starter scope: invitation delivery, governance approval, timed invitation checks, worker/task blocked or review-needed states, and backend-derived refresh/update delivery.
+- This WIP may still discuss broader conceptual event/message backbones, notifications, digests, and AutonomousAgent task streams. Treat those as future work unless a current starter contract or test proves the specific runtime path.
+
 Related current doctrine:
 - `docs/requirements-to-workstream-development-process.md`
 - `docs/ai-first-saas-application-architecture.md`
@@ -113,7 +119,7 @@ Design implications:
 
 - Counts are user-specific, not just global workstream health.
 - Counts reflect actionable attention, not every warning, event, or unread item.
-- Counts should derive from governed backend state/projections, not frontend-only badge logic.
+- Counts should derive from governed backend state/projections, not frontend-only badge logic. The starter's implemented v1/v2 path uses backend attention projections and bounded producers for actionable attention; frontend-only rail badges remain transient presentation state.
 - Clicking a rail item should open that workstream, ideally showing its default dashboard with attention items visible or prioritized.
 - My Account provides the explanatory aggregate view; the left rail provides the compact persistent view.
 - A count can be zero, hidden, or unavailable depending on authorization and context.

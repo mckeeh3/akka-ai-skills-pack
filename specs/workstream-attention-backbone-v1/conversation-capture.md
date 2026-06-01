@@ -1,17 +1,21 @@
 # Conversation Capture: Workstream Attention Backbone v1
 
+## Current status
+
+This capture records the pre-v1 discussion. The accepted gaps below are historical: v1 has since implemented the shared backend-owned starter attention backbone, and v2 has added bounded producer/update behavior. Use the current contracts and completed queue notes for implementation status.
+
 ## User goals
 
 The user identified a core workstream architecture feature: an internal bus/queue containing “things that need my attention.” They asked whether it had been implemented and then asked whether the bus/queue should be per-workstream or shared.
 
 ## Findings accepted in discussion
 
-The repository/starter has partial attention support but no first-class shared runtime backbone:
+At the time of the original discussion, the repository/starter had partial attention support but no first-class shared runtime backbone:
 
 - My Account has `my_account.list_personal_attention`, but current starter implementation derives hard-coded items from capabilities.
 - Workstream dashboard surfaces have `attentionItems`, but they are local surface payloads rather than shared attention records/projections.
 - The frontend rail has in-memory unseen-response state, not backend-owned attention counts.
-- Search found no `AttentionItem`, attention repository/entity, attention view/projection, or internal attention bus implementation.
+- Search found no `AttentionItem`, attention repository/entity, attention view/projection, or internal attention bus implementation. This finding is historical and no longer describes the completed starter v1 scope.
 
 ## Decisions made
 

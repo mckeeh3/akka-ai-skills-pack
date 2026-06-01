@@ -33,4 +33,14 @@ Rendered starter guidance must identify the initial runnable target as the five 
 
 Rendered guidance must also preserve the workstream graph vocabulary: role-specific dashboard attention, human surface graph nodes/edges, internal workstream agent graph follow-up where applicable, workstream expertise, governed-tool ids, and qualified browser-tool, agent-tool, and internal-tool exposures. Do not describe protected surface actions as generic tools; tie them to governed capabilities, authorization, audit/work trace, and runtime validation.
 
-Scaffolded app-description and specs placeholders must keep full-core follow-up work explicit. Five-core-v0 readiness is not full-core readiness; richer structured surfaces, complete invitation onboarding, support access, governed agent document lifecycle, searchable audit/trace views, policy/governance workflows, security hardening, and app-specific domain workstreams remain follow-up until implemented and tested.
+Scaffolded app-description and specs placeholders must keep full-core follow-up work explicit. Five-core-v0 readiness is not full-core readiness; richer structured surfaces, support access, full governed agent document lifecycle, searchable audit/trace views, deeper policy/governance workflows, security hardening, and app-specific domain workstreams remain follow-up until implemented and tested.
+
+## Attention backbone and producers
+
+The starter includes a v1 shared backend-owned attention backbone and v2 bounded producers. Guidance for generated apps must distinguish:
+
+- **implemented v1 starter scope:** actionable `AttentionItem` lifecycle state, scoped workstream dashboard reads, My Account aggregate attention, left-rail summaries from backend projections, redaction, and audit/work traces;
+- **implemented v2 starter scope:** producer ids/idempotency for invitation delivery, governance approval state, timed invitation checks, worker/task blocked or review-needed states, and backend-derived refresh after producer-affecting actions;
+- **future work unless explicitly implemented:** full event/message backbone consumers, broad notification streams, digests, enterprise notification preferences, and arbitrary AutonomousAgent task notifications.
+
+Do not describe frontend-only badges or fixture/demo data as authoritative attention behavior. Normal runtime attention claims must be backed by backend attention state and local validation through the rendered starter paths.
