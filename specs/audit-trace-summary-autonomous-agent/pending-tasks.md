@@ -129,7 +129,7 @@
 
 ### TASK-ATSA-04-001: Run Audit/Trace summary validation
 
-- status: pending
+- status: done
 - source: specs/audit-trace-summary-autonomous-agent/backlog/01-audit-summary-agent-build-backlog.md
 - task brief: specs/audit-trace-summary-autonomous-agent/tasks/04-validation/01-run-audit-summary-validation.md
 - depends on:
@@ -140,7 +140,7 @@
 - skills:
   - none; validation task
 - expected outputs:
-  - validation artifact
+  - specs/audit-trace-summary-autonomous-agent/validation/01-runtime-path-validation.md
   - updated pending-tasks.md
 - required checks:
   - `git diff --check`
@@ -150,6 +150,10 @@
 - done criteria:
   - validation evidence is captured and blockers are recorded or converted to tasks
   - task changes and queue update are committed
+- validation notes:
+  - backend Maven tests passed; frontend typecheck/build passed; targeted Audit/Trace frontend contract test passed
+  - full frontend suite is blocked by unrelated User Admin expertise contract failure
+  - current checkout has Audit/Trace summary frontend blocked/review surface fixtures but no backend `AuditTraceSummaryAutonomousAgent` runtime class
 - notes:
   - commit message: `audit-summary-agent: validate runtime path`
 
