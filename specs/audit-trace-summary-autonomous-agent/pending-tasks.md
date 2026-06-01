@@ -253,7 +253,7 @@
 
 ### TASK-ATSA-07-001: Wire backend-derived Audit/Trace summary events, attention, and surfaces
 
-- status: pending
+- status: done
 - source: TASK-ATSA-99-001 verification gap
 - task brief: specs/audit-trace-summary-autonomous-agent/tasks/07-surfaces/01-wire-backend-events-attention-surfaces.md
 - depends on:
@@ -281,6 +281,9 @@
   - Audit/Trace summary states are visible through backend-derived events, attention, and surfaces
   - task changes and queue update are committed
 - notes:
+  - added backend-owned `AuditTraceSummarySurfaces` mapping from concrete runtime projections to idempotent `worker.task.*` and `workflow.audit_trace.summary_*` events, task-state attention ids, progress/review surface contracts, and accept/reject/cancel disposition traces
+  - added targeted backend surface mapping tests for event source refs, attention upsert/resolve, blocked-provider fail-closed surfaces, review surfaces, redaction, and no direct mutation/no fake success guardrails
+  - checks: `mvn -Dtest=AuditTraceSummarySurfaceMappingTest,AuditTraceSummaryRuntimeGuardrailTest,AuditTraceSummaryAutonomousAgentIntegrationTest test`; focused `rg` for summary events, worker events, attention id, summary surface contracts, redaction, and no fake success; `git diff --check`
   - commit message: `audit-summary-agent: wire backend surfaces`
 
 ### TASK-ATSA-08-001: Validate concrete Audit/Trace summary runtime path
