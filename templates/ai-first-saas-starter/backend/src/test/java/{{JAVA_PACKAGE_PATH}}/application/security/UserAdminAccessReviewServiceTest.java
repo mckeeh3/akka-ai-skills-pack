@@ -52,11 +52,46 @@ class UserAdminAccessReviewServiceTest {
     assertTrue(task.evidenceRefs().contains("userAdminEvidence.read"));
     assertTrue(task.summary().contains("provider/runtime configuration"));
     assertTrue(task.traceIds().get(0).contains("trace-useradmin-access-review-start"));
-    assertTrue(task.summary().contains("Access-review task record created"));
+    assertTrue(task.summary().contains("fails closed"));
 
     var replay = accessReviews.start(tenantAdmin, "idem-access-review", "corr-access-review-replay");
     assertEquals(task.taskId(), replay.taskId());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("user_admin.access_review.start") && event.result() == {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent.Result.NO_OP));
+  }
+
+  @Test
+  void componentClientBackedAutonomousAgentRuntimeStartIsQueuedAndIdempotentUntilProjectionCompletes() {
+    var repository = new LocalDemoAccessReviewTaskRepository();
+    var runtime = new RecordingAutonomousAgentRuntime();
+    var service = new UserAdminAccessReviewService(repository, userAdminService, clock, null, null, runtime);
+
+    var task = service.start(tenantAdmin, "idem-autonomous-agent", "corr-autonomous-start");
+
+    assertEquals(AccessReviewTask.Status.QUEUED, task.status());
+    assertEquals("akka-task-" + task.taskId(), task.autonomousAgentTaskId());
+    assertTrue(task.traceIds().stream().anyMatch(trace -> trace.startsWith("autonomous_task:")));
+    assertEquals(1, runtime.startCount);
+
+    var replay = service.start(tenantAdmin, "idem-autonomous-agent", "corr-autonomous-replay");
+    assertEquals(task.taskId(), replay.taskId());
+    assertEquals(1, runtime.startCount, "idempotent replay must not start a second Akka AutonomousAgent task");
+
+    runtime.nextProjection = new AccessReviewAutonomousAgentRuntime.Projection(
+        AccessReviewTask.Status.COMPLETED,
+        100,
+        "Akka AutonomousAgent completed model-backed advisory access review; human review required.",
+        null,
+        null,
+        List.of("userAdminEvidence.read", "readSkill:ua.access-review-triage.v1"),
+        List.of("autonomous_agent_recommendation:review dormant admin"),
+        List.of("autonomous_task:" + task.autonomousAgentTaskId(), "trace-model-backed-autonomous-result"));
+
+    var completed = service.read(tenantAdmin, task.taskId(), "corr-autonomous-read");
+
+    assertEquals(AccessReviewTask.Status.COMPLETED, completed.status());
+    assertTrue(completed.summary().contains("model-backed advisory"));
+    assertTrue(completed.recommendationRefs().stream().anyMatch(ref -> ref.contains("autonomous_agent_recommendation")));
+    assertFalse(completed.summary().toLowerCase().contains("api_key"));
   }
 
   @Test
@@ -95,6 +130,25 @@ class UserAdminAccessReviewServiceTest {
     var deniedRead = assertThrows(AuthorizationException.class, () -> accessReviews.read(deniedActor, task.taskId(), "corr-denied-read"));
     assertTrue(deniedRead.reasonCode().contains("missing-capability"));
     assertFalse(deniedRead.reasonCode().contains("tenant-1"));
+  }
+
+  private static final class RecordingAutonomousAgentRuntime implements AccessReviewAutonomousAgentRuntime {
+    private int startCount;
+    private Projection nextProjection = Projection.unchanged();
+
+    @Override
+    public StartOutcome start(AuthContextResolver.ResolvedMe actor, AccessReviewTask starterTask, String correlationId) {
+      startCount++;
+      return StartOutcome.queued(
+          "akka-task-" + starterTask.taskId(),
+          "Akka AutonomousAgent task accepted; no deterministic/model-less access-review success is returned by start.",
+          List.of("autonomous_task:akka-task-" + starterTask.taskId(), "trace-test-autonomous-start"));
+    }
+
+    @Override
+    public Projection project(AccessReviewTask starterTask, String correlationId) {
+      return nextProjection;
+    }
   }
 
   private void seed(String email, String membershipId, FoundationRole role) {

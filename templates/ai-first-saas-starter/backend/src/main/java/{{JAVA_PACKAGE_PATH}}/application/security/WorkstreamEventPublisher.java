@@ -116,7 +116,7 @@ public final class WorkstreamEventPublisher {
         Map.of("actorType", actorAccountId == null || actorAccountId.isBlank() ? "worker" : "account", "accountId", safe(actorAccountId, "system"), "label", "User Admin access-review lifecycle"),
         List.of(
             new WorkstreamEventSourceRef("workflow", task.taskId(), "Access-review workflow " + semanticTransition, safeCapability, traceId, correlationId),
-            new WorkstreamEventSourceRef("autonomous_task", task.taskId(), "Access-review task state " + task.status().name().toLowerCase(java.util.Locale.ROOT), safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("autonomous_task", safe(task.autonomousAgentTaskId(), task.taskId()), "Access-review task state " + task.status().name().toLowerCase(java.util.Locale.ROOT), safeCapability, traceId, correlationId),
             new WorkstreamEventSourceRef("capability", safeCapability, "Access-review lifecycle capability", safeCapability, "trace-capability-" + stableSuffix(safeCapability), correlationId)),
         List.of(safeCapability, "secure-tenant-user-foundation"),
         correlationId,
@@ -128,6 +128,7 @@ public final class WorkstreamEventPublisher {
         PAYLOAD_ACCESS_REVIEW_LIFECYCLE,
         Map.of(
             "taskId", task.taskId(),
+            "autonomousAgentTaskId", safe(task.autonomousAgentTaskId(), ""),
             "status", task.status().name().toLowerCase(java.util.Locale.ROOT),
             "semanticTransition", semanticTransition,
             "progressPercent", Integer.toString(task.progressPercent()),

@@ -12,9 +12,10 @@ import java.util.Objects;
  * Minimal governed worker seam for SMB User Admin access-review tasks.
  *
  * <p>This class is intentionally named as an internal worker, not a request/response UserAdminAgent turn.
- * It can be migrated to an Akka AutonomousAgent task loop when that SDK dependency is selected. Until then,
- * successful results are still model-backed through the governed runtime boundary; provider/runtime failures
- * fail closed as blocked task state. The worker exposes no direct mutation method for invitations,
+ * The normal durable access-review path now starts an Akka AutonomousAgent task through ComponentClient.
+ * This worker remains a governed support seam for focused unit tests and fallback projection code; successful
+ * results are still model-backed through the governed runtime boundary, provider/runtime failures fail closed as
+ * blocked task state, and it exposes no direct mutation method for invitations,
  * memberships, roles, capabilities, authorization, provider config, or audit policy.
  */
 public final class UserAdminAccessReviewWorker implements AccessReviewWorker {

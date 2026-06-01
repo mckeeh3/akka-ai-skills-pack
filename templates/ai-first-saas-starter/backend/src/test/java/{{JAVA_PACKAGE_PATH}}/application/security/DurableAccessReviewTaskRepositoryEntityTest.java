@@ -62,6 +62,7 @@ class DurableAccessReviewTaskRepositoryEntityTest {
   private static AccessReviewTask task(String taskId, String tenantId, String accountId, String idempotencyKey, AccessReviewTask.Status status) {
     return new AccessReviewTask(
         taskId,
+        null,
         tenantId,
         null,
         ScopeType.TENANT,

@@ -80,7 +80,7 @@
 
 ### TASK-AAI-02-001: Implement access review AutonomousAgent runtime
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-runtime-integration/backlog/01-autonomous-agent-runtime-build-backlog.md
 - task brief: specs/autonomous-agent-runtime-integration/tasks/02-runtime/01-implement-access-review-runtime.md
 - depends on:
@@ -114,6 +114,8 @@
 - notes:
   - vertical contract: User Admin access-review task start/query/lifecycle/result review; AuthContext tenant/customer scope; event backbone; attention; audit/work trace; provider fail-closed
   - commit message: `autonomous-agent: implement access review runtime`
+  - completed: added `UserAdminAccessReviewAutonomousAgent`, typed task/result/rule definitions, ComponentClient-backed runtime adapter, fail-closed runtime adapter, starter task projection with `autonomousAgentTaskId`, and backend tests for lifecycle/idempotency/fail-closed behavior including `TestModelProvider.AutonomousAgentTools.completeTask`/`failTask`
+  - checks: `git diff --check`; rendered scaffold `mvn -q test`; focused `rg` for AutonomousAgent/task APIs, fail-closed/no fake success guardrails, and access-review event/attention/surface refs
 
 ### TASK-AAI-03-001: Wire AutonomousAgent events, attention, and surfaces
 

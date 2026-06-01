@@ -6,6 +6,7 @@ import java.util.List;
 /** Durable User Admin access-review task state. Worker output is advisory and never mutates access directly. */
 public record AccessReviewTask(
     String taskId,
+    String autonomousAgentTaskId,
     String tenantId,
     String customerId,
     ScopeType scopeType,
@@ -43,14 +44,18 @@ public record AccessReviewTask(
   }
 
   public AccessReviewTask withStatus(Status nextStatus, int nextProgressPercent, String nextSummary, String nextBlockerCode, List<String> nextTraceIds, Instant now) {
-    return new AccessReviewTask(taskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, nextProgressPercent, nextSummary, nextBlockerCode, decision, decisionReason, evidenceRefs, recommendationRefs, nextTraceIds, createdAt, now);
+    return new AccessReviewTask(taskId, autonomousAgentTaskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, nextProgressPercent, nextSummary, nextBlockerCode, decision, decisionReason, evidenceRefs, recommendationRefs, nextTraceIds, createdAt, now);
+  }
+
+  public AccessReviewTask withAutonomousAgentTaskId(String nextAutonomousAgentTaskId, AccessReviewTask.Status nextStatus, int nextProgressPercent, String nextSummary, String nextBlockerCode, List<String> nextTraceIds, Instant now) {
+    return new AccessReviewTask(taskId, nextAutonomousAgentTaskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, nextProgressPercent, nextSummary, nextBlockerCode, decision, decisionReason, evidenceRefs, recommendationRefs, List.copyOf(nextTraceIds == null ? List.of() : nextTraceIds), createdAt, now);
   }
 
   public AccessReviewTask withDecision(Status nextStatus, String nextDecision, String nextDecisionReason, List<String> nextTraceIds, Instant now) {
-    return new AccessReviewTask(taskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, progressPercent, summary, blockerCode, nextDecision, nextDecisionReason, evidenceRefs, recommendationRefs, nextTraceIds, createdAt, now);
+    return new AccessReviewTask(taskId, autonomousAgentTaskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, progressPercent, summary, blockerCode, nextDecision, nextDecisionReason, evidenceRefs, recommendationRefs, nextTraceIds, createdAt, now);
   }
 
   public AccessReviewTask withWorkerUpdate(Status nextStatus, int nextProgressPercent, String nextSummary, String nextBlockerCode, List<String> nextEvidenceRefs, List<String> nextRecommendationRefs, List<String> nextTraceIds, Instant now) {
-    return new AccessReviewTask(taskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, nextProgressPercent, nextSummary, nextBlockerCode, decision, decisionReason, List.copyOf(nextEvidenceRefs == null ? List.of() : nextEvidenceRefs), List.copyOf(nextRecommendationRefs == null ? List.of() : nextRecommendationRefs), List.copyOf(nextTraceIds == null ? List.of() : nextTraceIds), createdAt, now);
+    return new AccessReviewTask(taskId, autonomousAgentTaskId, tenantId, customerId, scopeType, startedByAccountId, startedByMembershipId, idempotencyKey, nextStatus, nextProgressPercent, nextSummary, nextBlockerCode, decision, decisionReason, List.copyOf(nextEvidenceRefs == null ? List.of() : nextEvidenceRefs), List.copyOf(nextRecommendationRefs == null ? List.of() : nextRecommendationRefs), List.copyOf(nextTraceIds == null ? List.of() : nextTraceIds), createdAt, now);
   }
 }
