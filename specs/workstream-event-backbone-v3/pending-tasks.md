@@ -222,7 +222,7 @@
 
 ### TASK-WEB3-99-001: Verify workstream event backbone v3 completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/workstream-event-backbone-v3/tasks/99-verification/01-verify-workstream-event-backbone-v3.md
 - depends on:
@@ -255,3 +255,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `event-backbone: verify v3 completion`
+  - completed with `specs/workstream-event-backbone-v3/completion-verification.md`; no bounded v3 follow-up tasks were required
+  - checks: `git diff --check`; fresh scaffold backend `mvn -q -Dtest=WorkstreamEventBackboneServiceTest,AttentionProducerServiceTest,UserAdminAccessReviewServiceTest,WorkstreamServiceTest test`; fresh scaffold frontend `npm test -- --run`, `npm run typecheck`, `npm run build` after `npm install`; focused `rg` for event envelope, consumer, repository, idempotency, source refs, lifecycle events, projection refresh, and future AutonomousAgent handoff

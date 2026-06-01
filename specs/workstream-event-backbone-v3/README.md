@@ -52,7 +52,7 @@ Execute one task per fresh harness context. Each task must update `pending-tasks
 
 ## Current implementation status
 
-Tasks 01–04 have implemented the bounded starter/reference v3 runtime path: the contract exists, the starter includes typed event envelope/source-ref records, an Akka-backed event repository seam, event publication for invitation delivery and access-review lifecycle states, idempotent event-to-attention consumer behavior, backend-derived projection refresh hints, and targeted backend/frontend tests. See `event-backbone-v3-handoff.md` for the docs handoff that distinguishes v1, v2, v3, and future AutonomousAgent runtime work.
+Workstream Event Backbone v3 is complete for its bounded starter/reference scope. Tasks 01–04 implemented the runtime path: the contract exists, the starter includes typed event envelope/source-ref records, an Akka-backed event repository seam, event publication for invitation delivery and access-review lifecycle states, idempotent event-to-attention consumer behavior, backend-derived projection refresh hints, and targeted backend/frontend tests. Task 05 updated the docs handoff distinguishing v1, v2, v3, and future AutonomousAgent runtime work. Task 99 verified completion; see `completion-verification.md`.
 
 ## Done state
 
