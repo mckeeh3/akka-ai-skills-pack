@@ -77,7 +77,7 @@ None.
 ### Intentional deferrals / post-release recommendations
 
 - Richer full-core structured surfaces remain explicit demo/fixture surfaces where the current v0 starter defaults to five core markdown responses; this is acceptable because the source labels fixture/demo boundaries and does not claim those as normal model-backed runtime completion.
-- Durable internal workers such as policy-impact analysis and access-review analysis remain blocked/deferred unless real provider/runtime paths exist; the UI represents these as `blocked_provider_or_runtime` rather than successful analysis.
+- Durable internal workers such as policy-impact analysis remain blocked/deferred unless real provider/runtime paths exist; the UI represents unavailable workers as `blocked_provider_or_runtime` rather than successful analysis. Historical note: User Admin access-review analysis was later implemented as the first bounded Akka `AutonomousAgent` vertical with provider fail-closed behavior, no fake/model-less success, backend-derived attention, and `surface-user-admin-access-review` review state.
 
 ## Release recommendation from this review
 

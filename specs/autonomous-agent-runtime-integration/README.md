@@ -45,7 +45,7 @@ Execute one task per fresh harness context. Each task must update `pending-tasks
 2. **Backend runtime integration** — implement governed task start/query/lifecycle and AutonomousAgent setup/invocation path.
 3. **Events, attention, and surfaces** — wire task lifecycle to v3 events, attention, and structured surfaces.
 4. **Runtime validation** — prove provider fail-closed and model-backed path behavior through scaffolded local validation.
-5. **Docs/handoff** — document current AutonomousAgent integration status and future workers.
+5. **Docs/handoff** — document current AutonomousAgent integration status and future workers. Handoff artifact: `autonomous-agent-runtime-handoff.md`.
 6. **Verification** — confirm done state or append bounded follow-ups.
 
 ## Done state
@@ -60,4 +60,4 @@ The mini-project is complete when the starter/reference assets have:
 - attention items derived from task states without frontend-only or fake success shortcuts;
 - structured progress/result/decision surfaces visible through User Admin/My Account paths;
 - tests for authorization, tenant isolation, lifecycle, idempotency, event/attention linkage, provider fail-closed, and no model-less normal success;
-- docs updated to distinguish this first AutonomousAgent vertical from future broader runtime/team/delegation work.
+- docs updated to distinguish this first AutonomousAgent vertical from future broader runtime/team/delegation work; see `autonomous-agent-runtime-handoff.md`.

@@ -201,7 +201,7 @@
 
 ### TASK-AAI-05-001: Update AutonomousAgent runtime docs and handoff
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-runtime-integration/backlog/01-autonomous-agent-runtime-build-backlog.md
 - task brief: specs/autonomous-agent-runtime-integration/tasks/05-docs/01-update-autonomous-agent-runtime-docs.md
 - depends on:
@@ -227,6 +227,8 @@
   - future agents can understand current AutonomousAgent runtime integration status and next steps
   - task changes and queue update are committed
 - notes:
+  - completed: added `autonomous-agent-runtime-handoff.md`; updated starter README, User Admin vertical contract, SMB worker-opportunity guidance, release handoff, and mini-project README to distinguish the implemented User Admin access-review AutonomousAgent vertical from future worker/team/delegation work; docs preserve provider fail-closed and no fake/model-less success guardrails.
+  - checks: `git diff --check`; focused `rg` proving docs distinguish implemented vertical, future workers, provider fail-closed, and no fake success.
   - commit message: `autonomous-agent: update runtime docs`
 
 ### TASK-AAI-99-001: Verify AutonomousAgent runtime integration

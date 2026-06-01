@@ -6,7 +6,7 @@ Date: 2026-05-30
 
 Recommendation: **ship for the documented full-core SMB starter scope, including the stronger no-in-memory-normal-runtime bar**.
 
-The original release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries. The follow-up runtime durability remediation then removed or gated normal runtime in-memory/default fixture dependencies and revalidated the rendered starter.
+The original release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries. The follow-up runtime durability remediation then removed or gated normal runtime in-memory/default fixture dependencies and revalidated the rendered starter. A later AutonomousAgent runtime integration slice added the first durable internal/background worker vertical: User Admin access-review investigation through an Akka `AutonomousAgent` task path with backend lifecycle projection, v3 events, attention, and result-review surfaces.
 
 The stronger durability bar is now met at the documented scope: normal completed runtime paths either bind Akka durable components or fail closed with actionable guidance; explicit local/demo repositories require `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true`; frontend fixture mode requires dev/local opt-in; production-like static resources scan clean for fixture/demo/provider-secret markers. The remediation map is `specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md`.
 
@@ -25,6 +25,7 @@ This recommendation remains scoped to `templates/ai-first-saas-starter/` after s
 | Frontend tests/typecheck/build | Pass | `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build` passed; Vite reported a non-blocking chunk-size warning. |
 | Visual UX and cross-workstream polish | Pass | Source/test review covered all five workstreams, shell, system messages, provider-blocked states, trace links, responsive/accessibility contracts, and structured surfaces; no visual release blockers found. |
 | Provider/trace/secret boundary audit | Pass | Static scans and source review found no deterministic/model-less normal runtime substitute, no browser-visible backend/provider secrets, no hidden prompt exposure, and no trace/navigation/evidence-tool blocker. |
+| User Admin access-review AutonomousAgent vertical | Pass | `specs/autonomous-agent-runtime-integration/runtime-validation-evidence.md` records rendered-scaffold backend `mvn -q test`, frontend tests/typecheck/build, concrete `AutonomousAgent` task APIs, `worker.task.*`/`workflow.access_review.*` events, `autonomous_task` refs, worker-task attention, provider fail-closed behavior, and no fake/model-less normal success. |
 
 ## Runtime and provider position
 
@@ -39,7 +40,7 @@ This recommendation remains scoped to `templates/ai-first-saas-starter/` after s
 These are not release blockers because the starter does not claim them as completed runtime behavior:
 
 - Enterprise IAM/SCIM/SSO administration, SIEM/legal hold/e-discovery, compliance suites, marketplace prompts, arbitrary tenant-managed tool binding, and policy-as-code authoring remain out of the SMB baseline release scope.
-- Optional durable background workers such as personal digest, audit-summary, behavior-review, access-review analysis, and policy-impact analysis remain post-release candidates unless a future visible runtime path claims completion.
+- Optional durable background workers such as personal digest, audit-summary, behavior-review, and policy-impact analysis remain post-release candidates unless a future visible runtime path claims completion. User Admin access-review analysis is no longer only a candidate at the starter/reference scope: it has a bounded Akka `AutonomousAgent` runtime path, while any broader team/delegation/access-remediation worker expansion remains future work.
 - Richer full-core structured surfaces can continue to evolve beyond the current v0/workstream response baseline, provided fixture/demo surfaces remain labeled and do not replace governed model-backed runtime paths.
 - Manual viewport QA for mobile/off-canvas rail interactions is recommended before a public announcement, but source contracts and tests did not reveal a blocker.
 - A final rendered production asset scan is recommended after any future docs/source changes, even though current source/static scans and fullstack validation found no secret leaks.
@@ -53,8 +54,8 @@ These are not release blockers because the starter does not claim them as comple
 
 ## Documentation status
 
-`templates/ai-first-saas-starter/README.md` now records the current release-readiness status, validation commands, provider fail-closed expectations, durability boundaries, explicit local/demo gating, and post-release deferrals. It does not claim deterministic/model-less runtime completion for model-backed behavior.
+`templates/ai-first-saas-starter/README.md` now records the current release-readiness status, validation commands, provider fail-closed expectations, durability boundaries, explicit local/demo gating, the implemented User Admin access-review AutonomousAgent vertical, and post-release deferrals. It does not claim deterministic/model-less runtime completion for model-backed behavior.
 
 ## Next step
 
-For the durability remediation mini-project, proceed to terminal verification: `TASK-FCSMB-DUR-99-001: Verify runtime durability remediation readiness`.
+For AutonomousAgent runtime integration, proceed to terminal verification: `TASK-AAI-99-001: Verify AutonomousAgent runtime integration`.

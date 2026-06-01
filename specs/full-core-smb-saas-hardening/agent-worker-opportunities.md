@@ -4,6 +4,8 @@
 
 This document identifies concrete internal worker opportunities for full-core SMB hardening. These are not substitutes for request/response workstream agents or deterministic services. They are candidates for Akka `AutonomousAgent` or equivalent durable internal/background work only when task lifecycle semantics are justified and validated.
 
+Current status: User Admin access-review investigation is the first implemented and validated starter/reference `AutonomousAgent` vertical. It remains bounded to advisory access-review task lifecycle and human result review; future workers below are candidates until they receive the same governed capability, provider fail-closed, no fake success, event/attention/surface, and runtime-validation evidence.
+
 ## Selection rule
 
 Use a worker only when the work needs one or more of:
@@ -54,12 +56,16 @@ Missing provider configuration must produce a blocked/provider system-message su
 
 ### Access review investigation
 
+Status: **implemented first vertical at starter/reference scope** via Akka `AutonomousAgent`; see `specs/autonomous-agent-runtime-integration/user-admin-access-review-autonomous-agent-contract.md` and `specs/autonomous-agent-runtime-integration/runtime-validation-evidence.md`.
+
 - Trigger: admin starts access review, scheduled SMB access review cadence, suspicious role/capability changes, or stale membership signals.
 - Purpose: review scoped users, memberships, roles/capabilities, inactive accounts, disabled/reactivated users, risky grants, and last-admin constraints.
 - Justification: durable task lifecycle, progress, evidence collection, result review, and potential human approvals are central.
 - Capabilities: `user_admin.access_review.start`, `user_admin.access_review.read`, `user_admin.access_review.cancel`, `user_admin.access_review.accept_result`, `user_admin.access_review.reject_result`.
+- Implemented runtime evidence: concrete `UserAdminAccessReviewAutonomousAgent`, typed task/result/rule definitions, ComponentClient-backed start/query/projection adapter, provider/runtime fail-closed adapter, starter `autonomousAgentTaskId`, `workflow.access_review.*` plus `worker.task.*` events with `autonomous_task` refs, `attention:worker-task:<taskId>:task-state`, and `surface-user-admin-access-review` progress/result/review states.
 - Required deterministic support: member/role queries, tenant filtering, last-admin policy checks, audit trace reads, role-change preview capability.
 - Human result: review recommendations; any membership or role change must execute through deterministic User Admin capabilities, not directly by worker output.
+- Guardrail: no deterministic, fake, canned, or model-less successful recommendation may stand in for the normal Akka `AutonomousAgent` task path; missing provider/runtime setup fails closed with actionable blocked status, events, attention, and traces.
 
 ### Stale invitation cleanup review
 
@@ -215,7 +221,7 @@ Missing provider configuration must produce a blocked/provider system-message su
 
 Prioritize worker implementation only after the deterministic capability and structured surface path exists for the corresponding workstream. Suggested first candidates for SMB value:
 
-1. User Admin access review investigation, because it gives owners practical access governance and tests durable worker/result review semantics.
+1. User Admin access review investigation is the completed first vertical at starter/reference scope; use it as the example contract for later workers, not as permission to skip governed capabilities or runtime validation.
 2. Agent Admin prompt-risk review, because behavior changes are central to AI-first SaaS safety and exercise tool-boundary/prompt/reference traces.
 3. Audit/Trace scheduled audit summary, because it makes trace substrate visible and useful across all workstreams.
 4. Governance/Policy policy-change impact analysis, because approval decisions need evidence and human authority boundaries.

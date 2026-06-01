@@ -2,14 +2,14 @@
 
 ## Purpose
 
-This document turns the Full-Core SMB User Admin child plan into implementation-ready vertical slices for the AI-first SaaS starter. It is a planning contract for future source-edit tasks, not a claim that runtime behavior is already implemented.
+This document turns the Full-Core SMB User Admin child plan into implementation-ready vertical slices for the AI-first SaaS starter. It began as a planning contract for future source-edit tasks; current runtime status is now mixed. Directory/invitation/member/role guidance remains planning-oriented where not separately validated, while the User Admin access-review `AutonomousAgent` worker has a bounded implemented starter/reference vertical with validation evidence under `specs/autonomous-agent-runtime-integration/`.
 
 ## Vertical slice order
 
 1. **Directory and invitation dashboard foundation**: backend capability contracts, typed overview/member/invitation surfaces, deterministic invitation and membership projections, audit/trace fields, and local API/UI validation.
 2. **Member status and role-change actions**: disable/reactivate and role/capability preview/change with last-admin, self-disable, disabled-user, tenant/customer, policy, no-op, and idempotency guardrails.
 3. **UserAdminAgent request/response guidance**: governed Akka `Agent` runtime invocation for summaries, blocked-invitation explanations, role-change guidance, and provider fail-closed surfaces/traces.
-4. **Access review worker candidate**: `AutonomousAgent` access-review investigation only after deterministic directory, role, status, trace, and dashboard foundations exist.
+4. **Access review worker implemented vertical**: bounded `AutonomousAgent` access-review investigation now exists for starter/reference scope after deterministic User Admin, trace, attention, event, and dashboard/task surface foundations were added.
 
 The first source-edit task should implement slice 1 only.
 
@@ -125,7 +125,13 @@ Missing provider/model configuration must return a blocked `system_message` surf
 
 ## Access-review worker contract
 
-The access-review investigation worker is justified after directory/invitation/status/role/trace foundations exist because it needs durable task lifecycle, progress, evidence collection, model-assisted summarization, human result review, and possible cancellation/retry.
+The access-review investigation worker is now the first implemented durable internal/background `AutonomousAgent` vertical at starter/reference scope. It was justified after directory/invitation/status/role/trace foundations existed because it needs durable task lifecycle, progress, evidence collection, model-assisted summarization, human result review, and possible cancellation/retry.
+
+Implementation and validation evidence:
+- contract: `specs/autonomous-agent-runtime-integration/user-admin-access-review-autonomous-agent-contract.md`;
+- runtime: `UserAdminAccessReviewAutonomousAgent`, typed `UserAdminAccessReviewTasks`, `ComponentClientAccessReviewAutonomousAgentRuntime`, fail-closed adapter, and starter `autonomousAgentTaskId` projection;
+- events/attention/surfaces: `workflow.access_review.*`, `worker.task.*`, `autonomous_task` refs, `attention:worker-task:<taskId>:task-state`, and `surface-user-admin-access-review` backend-derived progress/result/review states;
+- validation: `specs/autonomous-agent-runtime-integration/runtime-validation-evidence.md` documents rendered-scaffold backend/frontend checks, provider fail-closed behavior, and no deterministic/model-less/fake normal success guardrails.
 
 Worker capabilities:
 - `user_admin.access_review.start`
@@ -191,4 +197,4 @@ For every source-edit task, name exact commands after source discovery. The expe
 1. Inspect current starter source boundaries and implement the directory/invitation dashboard foundation as a bounded vertical slice.
 2. Implement member disable/reactivate and role-change preview/change after the directory/invitation foundation is validated.
 3. Implement `UserAdminAgent` request/response guidance only after deterministic evidence reads and provider fail-closed traces exist.
-4. Implement access-review worker only after deterministic User Admin capabilities, trace substrate, and typed dashboard/task surfaces are validated.
+4. Use the implemented access-review `AutonomousAgent` vertical as the reference for future worker expansions; do not broaden it to direct access mutation, team/delegation, or additional worker families without new governed capabilities, event/attention/surface mappings, provider fail-closed checks, and runtime validation.
