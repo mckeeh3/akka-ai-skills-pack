@@ -108,7 +108,7 @@
 
 ### TASK-AAFR-02-002: Fix scaffold frontend validation scripts
 
-- status: pending
+- status: done
 - source: TASK-AAFR-02-001 validation blocker
 - task brief: specs/autonomous-agent-fullstack-regression-readiness/tasks/02-validation/02-fix-frontend-validation-scripts.md
 - depends on:
@@ -134,6 +134,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `autonomous-agent-regression: fix frontend validation scripts`
+  - validation artifact: specs/autonomous-agent-fullstack-regression-readiness/validation/02-frontend-validation-scripts.md
+  - validation: fresh scaffold frontend `npm ci`, `npm test`, `npm run typecheck`, and `npm run build` passed from `/tmp/aafr-frontend-scripts-cCGw0a/frontend`.
+  - validation: focused scan confirmed scaffolded frontend `package.json` exposes `test`, `typecheck`, and `build`.
 
 ### TASK-AAFR-03-001: Update integrated readiness handoff
 
