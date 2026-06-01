@@ -49,6 +49,10 @@ Execute one task per fresh harness context. Each task must update `pending-tasks
 5. Docs/handoff.
 6. Verification.
 
+## Handoff
+
+See `handoff.md` for the current implemented vertical summary, boundaries, runtime guardrails, redaction expectations, and future policy simulation platform distinction.
+
 ## Done state
 
 Complete when the starter/reference assets have:

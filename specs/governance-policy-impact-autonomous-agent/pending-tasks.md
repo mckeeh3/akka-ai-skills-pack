@@ -172,7 +172,7 @@
 
 ### TASK-GPIA-05-001: Update Governance/Policy impact AutonomousAgent docs
 
-- status: pending
+- status: done
 - source: specs/governance-policy-impact-autonomous-agent/backlog/01-governance-impact-agent-build-backlog.md
 - task brief: specs/governance-policy-impact-autonomous-agent/tasks/05-docs/01-update-governance-impact-docs.md
 - depends on:
@@ -192,6 +192,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `governance-impact-agent: update docs`
+  - completed: added Governance/Policy impact handoff, linked it from the mini-project README, updated the starter README to identify the third implemented AutonomousAgent vertical and future full policy simulation boundary, and updated the reusable AutonomousAgent worker pattern doc to include the Governance/Policy impact-analysis worker.
+  - validation: `git diff --check` passed.
+  - validation: focused `rg` proved docs distinguish implemented vertical, future policy simulation platform, provider fail-closed, redaction, and no fake/model-less success.
 
 ### TASK-GPIA-99-001: Verify Governance/Policy impact AutonomousAgent
 
