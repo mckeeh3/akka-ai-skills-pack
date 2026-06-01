@@ -76,7 +76,7 @@
 
 ### TASK-AAFR-02-001: Run fullstack regression validation
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-fullstack-regression-readiness/backlog/01-regression-readiness-backlog.md
 - task brief: specs/autonomous-agent-fullstack-regression-readiness/tasks/02-validation/01-run-fullstack-regression-validation.md
 - depends on:
@@ -100,6 +100,40 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `autonomous-agent-regression: run fullstack validation`
+  - validation artifact: specs/autonomous-agent-fullstack-regression-readiness/validation/02-fullstack-regression-validation.md
+  - validation: fresh scaffold backend `mvn test` passed from `/tmp/aafr-fullstack-FKxiVA/backend` with `Tests run: 173, Failures: 0, Errors: 0, Skipped: 0` and `BUILD SUCCESS`.
+  - validation: fresh scaffold frontend `npm ci` passed from `/tmp/aafr-fullstack-FKxiVA/frontend`.
+  - blocker: fresh scaffold frontend `npm test`, `npm run typecheck`, and `npm run build` failed because the scaffolded frontend package is missing those scripts; bounded follow-up `TASK-AAFR-02-002` added.
+  - validation: focused scans found all four AutonomousAgent verticals and 0 stale `audit.trace.summaryTask.v1` matches.
+
+### TASK-AAFR-02-002: Fix scaffold frontend validation scripts
+
+- status: pending
+- source: TASK-AAFR-02-001 validation blocker
+- task brief: specs/autonomous-agent-fullstack-regression-readiness/tasks/02-validation/02-fix-frontend-validation-scripts.md
+- depends on:
+  - TASK-AAFR-02-001
+- required reads:
+  - specs/autonomous-agent-fullstack-regression-readiness/README.md
+  - specs/autonomous-agent-fullstack-regression-readiness/validation/02-fullstack-regression-validation.md
+  - specs/autonomous-agent-fullstack-regression-readiness/tasks/02-validation/02-fix-frontend-validation-scripts.md
+- skills:
+  - none; validation-script fix task
+- expected outputs:
+  - scaffold frontend validation script fix
+  - updated pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - fresh scaffold frontend `npm ci`
+  - fresh scaffold frontend `npm test`
+  - fresh scaffold frontend `npm run typecheck`
+  - fresh scaffold frontend `npm run build`
+  - focused scan that scaffolded frontend `package.json` exposes `test`, `typecheck`, and `build`
+- done criteria:
+  - required frontend validation scripts pass in a fresh scaffold
+  - task changes and queue update are committed
+- notes:
+  - commit message: `autonomous-agent-regression: fix frontend validation scripts`
 
 ### TASK-AAFR-03-001: Update integrated readiness handoff
 
@@ -107,7 +141,7 @@
 - source: specs/autonomous-agent-fullstack-regression-readiness/backlog/01-regression-readiness-backlog.md
 - task brief: specs/autonomous-agent-fullstack-regression-readiness/tasks/03-docs/01-update-integrated-readiness-handoff.md
 - depends on:
-  - TASK-AAFR-02-001
+  - TASK-AAFR-02-002
 - required reads:
   - validation artifact from TASK-AAFR-02-001
   - completed worker handoffs
@@ -133,6 +167,7 @@
 - depends on:
   - TASK-AAFR-01-001
   - TASK-AAFR-02-001
+  - TASK-AAFR-02-002
   - TASK-AAFR-03-001
 - required reads:
   - all mini-project artifacts
