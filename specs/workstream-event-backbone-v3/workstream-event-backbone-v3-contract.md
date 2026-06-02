@@ -227,7 +227,7 @@ A consumer/projection must:
 
 ## Bounded implementation sequence
 
-1. Add starter event records/envelopes and an in-memory/durable event repository seam matching this contract.
+1. Add starter event records/envelopes and an Akka component-backed event repository seam matching this contract.
 2. Add event publication for invitation delivery failure/success and corresponding attention consumer/projection path.
 3. Add governance proposal and access-review workflow lifecycle publication.
 4. Add provider/fail-closed lifecycle events only for existing starter blocked/readiness paths.

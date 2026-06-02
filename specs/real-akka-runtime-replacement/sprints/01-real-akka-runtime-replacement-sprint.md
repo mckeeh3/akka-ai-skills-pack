@@ -6,7 +6,7 @@ Remove the remaining non-Akka normal-runtime seams from the AI-first SaaS starte
 
 ## Source context
 
-- User decision: all in-memory/defaults must be replaced with real Akka components.
+- User decision: all non-Akka substitute/defaults must be replaced with real Akka components.
 - Prior mini-project: `specs/full-core-smb-runtime-durability-remediation/` improved gating but allowed local/demo adapters; this sprint supersedes that compromise for normal runtime.
 - Current starter contains `LocalDemo*`, `FailClosed*`, fixture clients, and constructors that still instantiate non-Akka runtime adapters.
 
@@ -23,11 +23,11 @@ Remove the remaining non-Akka normal-runtime seams from the AI-first SaaS starte
 
 ## Acceptance criteria
 
-- Source scans show no `LocalDemo`, `InMemory`, fixture, mock, fake, canned, or model-less substitute wired in `backend/src/main/java` or production frontend runtime paths.
+- Source scans show no `LocalDemo`, `Substitute`, fixture, mock, fake, canned, or model-less substitute wired in `backend/src/main/java` or production frontend runtime paths.
 - Any remaining mocks/fakes/fixtures live under tests or explicit test assets only.
 - Normal runtime service construction requires real Akka component-backed repositories/sinks/invokers.
 - Workstream features persist and read state through Akka components at the stated starter scope.
-- README/skills/docs no longer describe replacing in-memory adapters as optional later hardening.
+- README/skills/docs no longer describe replacing non-Akka substitute adapters as optional later hardening.
 - Validation commands in the verification task pass or append bounded follow-up tasks before a new terminal verification task.
 
 ## Handoff notes

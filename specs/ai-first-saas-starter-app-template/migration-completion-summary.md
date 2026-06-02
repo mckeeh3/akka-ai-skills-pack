@@ -28,7 +28,7 @@ This completion summary records the Sprint 07 accepted baseline. A later agent-w
 - Backend foundation includes `/api/me`, AuthContext, memberships, roles/capabilities, audit facts, invitations, user-admin services, governed agent records, seed import, prompt assembly, `readSkill`, behavior editing, workstream service contracts, concrete admin/governance/audit APIs, durable component seams/slices, and tests.
 - Invitation acceptance, local/test captured outbox behavior, and Resend production adapter boundary are represented in the starter foundation.
 - Local AuthKit and first-admin bootstrap behavior is documented and safe for clean scaffolds.
-- Starter frontend tests, typecheck, and production build pass for workstream shell/surfaces/realtime/Agent Admin/Governance/User Admin behavior, production-first mode, and explicit fixture mode.
+- Starter frontend tests, typecheck, and production build pass for workstream shell/surfaces/realtime/Agent Admin/Governance/User Admin behavior, production-first runtime mode, and test-only fixture quarantine.
 - Fullstack smoke validation proves scaffolded backend tests, frontend tests/typecheck/build, Akka static resource handoff, and frontend secret-boundary scanning together.
 - Installed-pack scaffold validation proves `.agents/resources/templates/ai-first-saas-starter` and `.agents/bin/scaffold-ai-first-saas-starter.sh` work after install.
 - Legacy DCA/static assets are quarantined from canonical starter routing.
@@ -87,7 +87,7 @@ The Sprint 07 hardening gaps are closed for the starter baseline: embedded front
 Remaining qualifications are expected extension/deployment boundaries rather than starter blockers:
 
 1. WorkOS, Resend, and model-provider production credentials remain project/tenant-specific deployment configuration and must stay out of frontend DTOs, traces, fixtures, and built assets.
-2. Downstream product hardening can continue expanding durable Akka coverage behind the starter's existing repository/service ports as app-specific durability and audit requirements grow.
+2. Downstream product hardening can add new Akka components, views, workflows, and surface-specific tests as app-specific durability and audit requirements grow; it must not introduce substitute runtime repositories into normal runtime paths.
 3. App-specific domains should extend the starter through app-description/spec updates, capability-first modeling, focused Akka components, workstream surfaces, and security tests rather than modifying the scaffold as a hidden template fork.
 
 Later Sprint 08 queue entries (`TASK-STARTER-08-001` and following) are the current preferred route for that continued hardening inside this repository: they supersede broad future task shapes from earlier sprints without invalidating the delivered Sprint 07 scaffold acceptance.

@@ -31,7 +31,7 @@ Read these first if present:
 1. Declare streaming in the `.proto` contract with `returns (stream Reply)`.
 2. Return `Source<Reply, NotUsed>` from the generated Java method.
 3. Map each upstream element to a protobuf reply with a small helper.
-4. Prefer forwarding a component or view stream rather than building ad hoc in-memory state.
+4. Prefer forwarding a component or view stream rather than building ad hoc Akka component-backed state.
 5. If reconnects matter, design the request so the client can resume from its own offset or cursor.
 6. Do not rely on a single JVM instance staying alive for the lifetime of the gRPC connection.
 

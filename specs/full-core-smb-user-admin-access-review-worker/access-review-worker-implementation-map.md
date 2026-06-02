@@ -49,7 +49,7 @@ New or likely files:
 
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/security/AccessReviewTask.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AccessReviewTaskRepository.java`
-- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InMemoryAccessReviewTaskRepository.java`
+- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/SubstituteAccessReviewTaskRepository.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/UserAdminAccessReviewService.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/UserAdminAccessReviewWorker.java` or `UserAdminAccessReviewWorkerInvoker.java` depending on the runtime seam selected by the implementation task.
 

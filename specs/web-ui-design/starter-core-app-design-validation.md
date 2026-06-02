@@ -154,7 +154,7 @@ Realtime expectations cover:
 - idempotent merge by id/version;
 - tenant and permission scoped subscriptions.
 
-Validation note: initial localized frontend can use fixture streams or an in-memory event simulator until backend SSE exists.
+Validation note: initial localized frontend can use fixture streams or an Akka component-backed event simulator until backend SSE exists.
 
 ### 9. Accessibility and responsive behavior
 

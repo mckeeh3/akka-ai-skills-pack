@@ -113,7 +113,7 @@ The current reference demonstrates active runtime versions and behavior-edit pro
 
 ### G7. Seed import needs a production carrier and audit path
 
-The seed loader demonstrates the right import behavior in memory. Production handoff must decide and specify whether first-install/tenant-bootstrap seed import runs as:
+The seed loader demonstrates the right import behavior through Akka components. Production handoff must decide and specify whether first-install/tenant-bootstrap seed import runs as:
 
 - a bootstrap action;
 - an internal endpoint restricted by ACL;
@@ -134,7 +134,7 @@ Current proposal/review helpers intentionally do not mutate active records. Full
 
 ### G9. Trace records are not durable/searchable/redacted
 
-The in-memory trace sink is sufficient for reference tests but not full core. Need contracts for:
+The Akka component-backed trace sink is sufficient for reference tests but not full core. Need contracts for:
 
 - durable `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, tool invocation trace, and admin audit events;
 - search/list/timeline views by tenant, customer, agent, correlation id, actor, artifact, and decision;

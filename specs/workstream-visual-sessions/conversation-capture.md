@@ -51,7 +51,7 @@ Persistent visual sessions are desirable for SaaS users. Device-only persistence
 
 Accepted phased approach:
 
-1. Phase 1: in-memory per-workstream visual sessions.
+1. Phase 1: component-backed per-workstream visual sessions.
 2. Phase 2: browser-local persistence.
 3. Phase 3: backend-persisted visual sessions for cross-device continuity and observability-friendly resume behavior.
 

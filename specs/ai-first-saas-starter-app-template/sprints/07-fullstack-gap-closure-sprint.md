@@ -12,7 +12,7 @@ This sprint closes the review gaps found after the frontend was embedded into th
 4. local WorkOS/AuthKit and first-admin bootstrap are not turnkey enough;
 5. invitation onboarding lacks a complete browser/API acceptance path;
 6. Resend remains a production seam/stub instead of an adapter boundary with testable behavior;
-7. core foundation persistence is still in-memory and should be incrementally replaced by durable Akka components;
+7. core foundation persistence is still Akka component-backed and should be incrementally replaced by durable Akka components;
 8. governed agent/runtime records need durable component-backed lifecycle paths;
 9. admin/governance/audit capability APIs need stronger concrete contracts and HTTP/integration tests;
 10. final acceptance must be rerun against the updated fullstack starter.

@@ -63,7 +63,7 @@ Accepted for current scaffold baseline:
 
 - Scaffolded backend exposes workstream bootstrap/surface/action API services for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface families.
 - The scaffold renders the React/Vite workstream frontend as a `frontend/` project.
-- Frontend tests prove workstream shell, structured surfaces, realtime/stale behavior, Agent Admin, Governance/Policy, User Admin, capability actions, accessibility markers, production-first behavior, explicit fixture mode, and production build behavior.
+- Frontend tests prove workstream shell, structured surfaces, realtime/stale behavior, Agent Admin, Governance/Policy, User Admin, capability actions, accessibility markers, production-first runtime behavior, test-only fixture quarantine, and production build behavior.
 - Concrete admin/governance/audit APIs now have strengthened integration coverage for auth, tenant isolation, idempotency, audit, and denials.
 
 ### Packaging and extension
@@ -82,7 +82,7 @@ Closed by Sprint 07:
 
 1. Embedded scaffold frontend.
 2. One-command fullstack smoke validation.
-3. Production-first frontend copy with explicit fixture mode.
+3. Production-first frontend copy with fixture clients/data quarantined to test-only assets.
 4. Local AuthKit and safe first-admin bootstrap documentation/semantics.
 5. Invitation acceptance through API/browser paths.
 6. Resend adapter boundary plus captured outbox checks.
@@ -94,7 +94,7 @@ Closed by Sprint 07:
 Remaining qualifications:
 
 1. **Deployment-specific provider configuration:** WorkOS, Resend, and model providers still require project/tenant-specific credentials and secret management outside browser DTOs, traces, fixtures, and built assets. This is expected deployment configuration, not a scaffold blocker.
-2. **Incremental durability expansion:** The starter now includes durable Akka slices/seams for identity/invitation/audit and governed-agent behavior, but downstream product hardening can continue replacing any remaining compact in-memory/reference repositories behind the same ports as requirements demand.
+2. **Durable Akka runtime boundary:** Normal generated-app runtime state for claimed starter workstream and foundation behavior is required to be Akka component-backed. Substitute runtime repositories are not an accepted path; deterministic fixtures and test doubles are allowed only under test-only assets.
 3. **Domain-specific extension:** The starter intentionally remains the secure AI-first SaaS foundation; product-specific capabilities must be added through app-description/spec updates, capability-first modeling, Akka component implementation, UI surfaces, and security tests.
 
 No new follow-up backlog was created by the Sprint 07 acceptance rerun itself; the remaining qualifications are extension/deployment boundaries rather than blockers for the canonical starter baseline. A later agent-workstream skills realignment added Sprint 08 workstream-first follow-up tasks (`TASK-STARTER-08-001` through `TASK-STARTER-08-008`) to improve future starter task shape around functional agents, structured surfaces/actions, and governed capabilities. Those tasks extend the accepted scaffoldable baseline; they do not reopen or weaken this Sprint 07 acceptance verdict.

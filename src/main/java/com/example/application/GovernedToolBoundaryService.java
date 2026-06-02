@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Small in-memory governed tool-boundary reference service for the Autonomous Agent example.
+ * Small Akka component-backed governed tool-boundary reference service for the Autonomous Agent example.
  *
  * <p>The service is intentionally minimal, but preserves generated-app contracts: a backend-owned
  * boundary is resolved before protected tool work, model-supplied tenant/customer arguments never

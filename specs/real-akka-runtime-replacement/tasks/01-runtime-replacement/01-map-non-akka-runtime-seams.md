@@ -2,7 +2,7 @@
 
 ## Objective
 
-Inventory every remaining local-demo, fail-closed, fixture, in-memory-style, mock, fake, canned, model-less, or default substitute path that can participate in normal generated-app runtime, then refine/append implementation tasks with exact Akka replacement targets.
+Inventory every remaining local-demo, fail-closed, fixture, non-Akka substitute, mock, fake, canned, model-less, or default substitute path that can participate in normal generated-app runtime, then refine/append implementation tasks with exact Akka replacement targets.
 
 ## Required reads
 
@@ -35,7 +35,7 @@ Inventory every remaining local-demo, fail-closed, fixture, in-memory-style, moc
 ## Required checks
 
 - `git diff --check`
-- `rg -n "LocalDemo|InMemory|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md skills docs --glob '!**/node_modules/**' --glob '!**/target/**'`
+- `rg -n "LocalDemo|Substitute|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md skills docs --glob '!**/node_modules/**' --glob '!**/target/**'`
 - targeted `find` listing backend main-source `LocalDemo*`, `FailClosed*`, and production fixture client files
 
 ## Done criteria

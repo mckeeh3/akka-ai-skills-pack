@@ -2,7 +2,7 @@
 
 ## Objective
 
-Inventory in-memory/mock/fixture/demo runtime paths, classify release impact, and append bounded remediation tasks.
+Inventory non-Akka substitute/mock/fixture/demo runtime paths, classify release impact, and append bounded remediation tasks.
 
 ## Ordered work areas
 
@@ -16,4 +16,4 @@ Inventory in-memory/mock/fixture/demo runtime paths, classify release impact, an
 
 - No future remediation task has to guess source paths or validation commands.
 - Release blocker status is explicit.
-- Durable/fail-closed target behavior is clear for every normal runtime in-memory path.
+- Durable/fail-closed target behavior is clear for every normal runtime Akka component-backed path.

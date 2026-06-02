@@ -33,7 +33,7 @@ Add a focused backend Governance/Policy service/repository/domain boundary for d
 
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/GovernancePolicyService.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/GovernancePolicyRepository.java`
-- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InMemoryGovernancePolicyRepository.java`
+- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/SubstituteGovernancePolicyRepository.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/security/GovernancePolicyProposal.java`
 - updated `WorkstreamService.java`
 - backend tests, likely `GovernancePolicyServiceTest.java` and `WorkstreamServiceTest.java`

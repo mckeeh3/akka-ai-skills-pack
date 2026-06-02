@@ -2,7 +2,7 @@
 
 ## Objective
 
-Replace or fail-closed gate normal backend runtime use of in-memory foundation repositories that currently back identity/account/membership, workstream log, audit trace, governance policy, and access-review task behavior.
+Replace or fail-closed gate normal backend runtime use of Akka component-backed foundation repositories that currently back identity/account/membership, workstream log, audit trace, governance policy, and access-review task behavior.
 
 ## Required reads
 
@@ -16,11 +16,11 @@ Replace or fail-closed gate normal backend runtime use of in-memory foundation r
 ## In scope
 
 - Normal runtime wiring in `StarterSecurityComponents` and `WorkstreamService` for:
-  - `InMemoryIdentityRepository`
-  - `InMemoryWorkstreamLogRepository`
-  - `InMemoryAuditTraceRepository`
-  - `InMemoryGovernancePolicyRepository`
-  - `InMemoryAccessReviewTaskRepository`
+  - `SubstituteIdentityRepository`
+  - `SubstituteWorkstreamLogRepository`
+  - `SubstituteAuditTraceRepository`
+  - `SubstituteGovernancePolicyRepository`
+  - `SubstituteAccessReviewTaskRepository`
 - Tests and docs needed to prove durable or fail-closed behavior at the stated starter scope.
 - Keep explicitly named test/local-demo adapters only where they cannot be mistaken for normal runtime completion.
 
@@ -40,13 +40,13 @@ Replace or fail-closed gate normal backend runtime use of in-memory foundation r
 ## Required checks
 
 - `git diff --check`
-- Targeted source scan for remaining normal-runtime in-memory foundation wiring:
-  - `rg -n "new InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)|InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)Repository" templates/ai-first-saas-starter/backend/src/main/java`
+- Targeted source scan for remaining normal-runtime Akka component-backed foundation wiring:
+  - `rg -n "new Substitute(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)|Substitute(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)Repository" templates/ai-first-saas-starter/backend/src/main/java`
 - Rendered or targeted backend tests appropriate to changed paths; prefer kept scaffold command if template placeholders block Maven directly.
 
 ## Done criteria
 
-- Normal generated backend runtime no longer silently relies on the listed in-memory foundation repositories for completed behavior, or fails closed with actionable copy/traces where durable state is not yet implemented.
+- Normal generated backend runtime no longer silently relies on the listed Akka component-backed foundation repositories for completed behavior, or fails closed with actionable copy/traces where durable state is not yet implemented.
 - Test-only/local-demo use is explicitly named and gated.
 - Checks pass and changes are committed.
 

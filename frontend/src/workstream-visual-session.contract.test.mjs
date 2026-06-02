@@ -44,7 +44,7 @@ test('visual-session limits are turn-group first with a secondary rendered-surfa
   assert.match(visualSessionState, /total \+ 1 \+ group\.responseItems\.length/);
 });
 
-test('snapshot semantics stay in-memory and semantic rather than browser-local or backend persisted', () => {
+test('snapshot semantics stay Akka component-backed and semantic rather than browser-local or backend persisted', () => {
   assert.match(visualSessionState, /toVisualSessionSnapshot/);
   assert.match(visualSessionState, /loadedTurnGroupIds: session\.loadedTurnGroupIds/);
   assert.match(visualSessionState, /userHasManualScroll: session\.userHasManualScroll/);
@@ -64,7 +64,7 @@ test('visual sessions are keyed by account, selected auth context, functional ag
   assert.match(visualSessionState, /updateVisualSessionViewState/);
 });
 
-test('workstream shell restores per-workstream in-memory visual state on agent switch without browser or backend persistence', () => {
+test('workstream shell restores per-workstream Akka component-backed visual state on agent switch without browser or backend persistence', () => {
   assert.match(main, /useState<WorkstreamVisualSessionStore>\(\{\}\)/);
   assert.match(main, /requestScrollTargetBySessionKey/);
   assert.match(main, /createWorkstreamVisualSessionKey\(\{\s*accountId: me\?\.account\.accountId \?\? 'bootstrap-loading',\s*selectedContextId: me\?\.selectedAuthContext\.selectedContextId \?\? 'bootstrap-loading',/s);
@@ -80,7 +80,7 @@ test('workstream shell restores per-workstream in-memory visual state on agent s
   assert.doesNotMatch(main, /visualSessionsByKey[\s\S]{0,200}(localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon)/i);
 });
 
-test('background responses create in-memory rail unseen indicators that clear on selection', () => {
+test('background responses create Akka component-backed rail unseen indicators that clear on selection', () => {
   assert.match(main, /useState<FunctionalAgentRailAttentionStore>\(\{\}\)/);
   assert.match(main, /markUnseenResponse\(functionalAgentId: string, lastItemId\?: string/);
   assert.match(main, /if \(isCurrentlySelectedFunctionalAgent\(functionalAgentId\)\) return/);

@@ -17,7 +17,7 @@
 ### TASK-RUNTIME-00-001: Create real Akka runtime replacement queue
 
 - status: done
-- source: user clarified all in-memory/defaults must be replaced with real Akka components; substitutes are allowed only in tests
+- source: user clarified all non-Akka substitute/defaults must be replaced with real Akka components; substitutes are allowed only in tests
 - task brief: specs/real-akka-runtime-replacement/tasks/00-planning/00-create-real-akka-runtime-replacement-queue.md
 - depends on: []
 - required reads:
@@ -70,7 +70,7 @@
   - optional added task briefs for newly discovered bounded work
 - required checks:
   - `git diff --check`
-  - `rg -n "LocalDemo|InMemory|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md skills docs --glob '!**/node_modules/**' --glob '!**/target/**'`
+  - `rg -n "LocalDemo|Substitute|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md skills docs --glob '!**/node_modules/**' --glob '!**/target/**'`
   - targeted `find` listing backend main-source `LocalDemo*`, `FailClosed*`, and production fixture client files
 - done criteria:
   - all remaining substitute paths in production-relevant source are classified
@@ -269,8 +269,8 @@
 - required checks:
   - `git diff --check`
   - rendered backend test suite or targeted rendered backend tests covering changed areas
-  - `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|InMemory|FailClosed.*Repository|FailClosed.*Sink"` must return no production substitute adapters
-  - `rg -n "AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|new LocalDemo|new InMemory" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/README.md`
+  - `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|Substitute|FailClosed.*Repository|FailClosed.*Sink"` must return no production substitute adapters
+  - `rg -n "AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|new LocalDemo|new Substitute" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/README.md`
 - done criteria:
   - main backend runtime source no longer contains substitute repository/sink implementations for claimed features
   - tests still pass using Akka components or test-only fixtures
@@ -278,7 +278,7 @@
 - notes:
   - commit message: `runtime: remove backend substitute adapters`
   - completed: removed the public non-ComponentClient workstream service factory that accepted arbitrary log repositories, kept pre-binding service state unbound/fail-closed only, removed AgentRuntimeService constructors that silently selected an unbound trace sink, and updated starter README language to remove the local-demo repository runtime switch.
-  - checks: `git diff --check`; rendered fullstack validation with `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh --keep --target /tmp/ai-first-saas-starter-runtime-task-01006-nosmoke-2`; required production adapter filename scan returned no matches; required local-demo/in-memory runtime switch scan returned no matches.
+  - checks: `git diff --check`; rendered fullstack validation with `env -u OPENAI_API_KEY tools/validate-ai-first-saas-starter-fullstack.sh --keep --target /tmp/ai-first-saas-starter-runtime-task-01006-nosmoke-2`; required production adapter filename scan returned no matches; required local-demo/Akka component-backed runtime switch scan returned no matches.
 
 ### TASK-RUNTIME-01-007: Quarantine frontend fixtures to tests
 
@@ -347,7 +347,7 @@
   - updated queue notes
 - required checks:
   - `git diff --check`
-  - `rg -n "local/demo|in-memory adapter|default local|fixtureWorkstream|fixture client|mock runtime|optional hardening|replace .* in production" AGENTS.md pack/AGENTS.md skills docs templates/ai-first-saas-starter/README.md specs/full-core-smb-runtime-durability-remediation specs/real-akka-runtime-replacement --glob '!**/node_modules/**' --glob '!**/target/**'`
+  - `rg -n "local/demo|non-Akka substitute adapter|default local|fixtureWorkstream|fixture client|mock runtime|optional hardening|replace .* in production" AGENTS.md pack/AGENTS.md skills docs templates/ai-first-saas-starter/README.md specs/full-core-smb-runtime-durability-remediation specs/real-akka-runtime-replacement --glob '!**/node_modules/**' --glob '!**/target/**'`
 - done criteria:
   - guidance consistently says normal generated runtime uses real Akka components
   - test-only substitutes remain allowed only in tests

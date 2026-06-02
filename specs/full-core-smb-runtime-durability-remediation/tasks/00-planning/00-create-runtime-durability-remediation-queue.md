@@ -2,7 +2,7 @@
 
 ## Objective
 
-Create the mini-project queue for removing, replacing, or gating in-memory/fixture/demo normal runtime paths.
+Create the mini-project queue for removing, replacing, or gating non-Akka substitute/fixture/demo normal runtime paths.
 
 ## In scope
 

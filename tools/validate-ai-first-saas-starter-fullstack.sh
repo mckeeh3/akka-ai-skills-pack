@@ -93,6 +93,7 @@ done
 command -v mvn >/dev/null 2>&1 || fail "mvn is required"
 command -v npm >/dev/null 2>&1 || fail "npm is required"
 command -v grep >/dev/null 2>&1 || fail "grep is required"
+command -v rg >/dev/null 2>&1 || fail "rg (ripgrep) is required"
 
 if [[ -z "$TARGET_DIR" ]]; then
   TARGET_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ai-first-saas-starter-fullstack.XXXXXX")"
@@ -128,6 +129,47 @@ require_grep() {
   fi
 }
 
+scan_forbidden_runtime_substitutes() {
+  local adapter_matches
+  adapter_matches="$(find "$TARGET_DIR/src/main/java" -type f | rg -i 'LocalDemo|FailClosed.*Repository|FailClosed.*Sink' || true)"
+  if [[ -n "$adapter_matches" ]]; then
+    printf '%s\n' "$adapter_matches" >&2
+    fail "Production backend source contains substitute adapter files"
+  fi
+
+  local forbidden_storage_word
+  forbidden_storage_word="in-""memory|In""Memory|IN_""MEMORY|in ""memory"
+
+  if rg -n "$forbidden_storage_word" "$REPO_ROOT" \
+    --glob '!**/.git/**' \
+    --glob '!**/.git-bak/**' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/target/**' \
+    --glob '!dist/**'; then
+    fail "Repository contains forbidden non-Akka storage terminology"
+  fi
+
+  local runtime_pattern='new[[:space:]]+LocalDemo|AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|reference repositories behind the same ports|downstream product hardening can continue replacing|optional hardening|fixtureWorkstream|FixtureWorkstream|FixtureApiClient|FixtureRealtimeClient'
+  if rg -n "$runtime_pattern" \
+    "$TARGET_DIR/src/main/java" \
+    "$TARGET_DIR/frontend/src" \
+    "$TARGET_DIR/README.md" \
+    --glob '!**/__tests__/**' \
+    --glob '!**/*.test.*' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/target/**'; then
+    fail "Rendered starter production runtime contains forbidden substitute-runtime markers"
+  fi
+
+  local canonical_doc_pattern='reference repositories behind the same ports|downstream product hardening can continue replacing|optional hardening'
+  if rg -n "$canonical_doc_pattern" \
+    "$REPO_ROOT/specs/ai-first-saas-starter-app-template/final-acceptance-review.md" \
+    "$REPO_ROOT/specs/ai-first-saas-starter-app-template/migration-completion-summary.md" \
+    "$REPO_ROOT/templates/ai-first-saas-starter/README.md"; then
+    fail "Canonical starter acceptance/docs contain stale substitute-runtime qualification wording"
+  fi
+}
+
 log "Scaffolding starter into $TARGET_DIR"
 "$SCAFFOLD_SCRIPT" \
   --target "$TARGET_DIR" \
@@ -153,6 +195,9 @@ require_path "$WORKSTREAM_AGENT_PATH"
 require_grep '\.tools\(runtimeTools\.runtimeTools\(\)\)' "$TARGET_DIR/$WORKSTREAM_AGENT_PATH" "WorkstreamRuntimeAgent effects().tools(runtimeTools) registration"
 require_grep 'AgentRuntimeToolResolver' "$TARGET_DIR/$WORKSTREAM_AGENT_PATH" "governed runtime tool resolver use"
 require_grep 'readSkill|readReferenceDoc' "$TARGET_DIR/src/main/java/${BASE_PACKAGE//.//}/application/agentfoundation/AgentRuntimeLoaderTools.java" "governed loader tool methods"
+
+log "Scanning rendered starter for forbidden substitute-runtime markers"
+scan_forbidden_runtime_substitutes
 
 log "Running scaffolded backend tests"
 ( cd "$TARGET_DIR" && mvn test )

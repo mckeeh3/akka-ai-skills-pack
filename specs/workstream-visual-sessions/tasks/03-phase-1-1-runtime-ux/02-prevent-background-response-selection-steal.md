@@ -31,7 +31,7 @@ Prevent an async response for a non-selected workstream from automatically switc
 
 - Do not drop or hide the background response.
 - Do not weaken request anchoring for the selected workstream.
-- Do not introduce persistence beyond in-memory Phase 1/1.1 state.
+- Do not introduce persistence beyond component-backed Phase 1/1.1 state.
 
 ## Completion
 

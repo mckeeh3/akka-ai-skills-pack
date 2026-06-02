@@ -38,7 +38,7 @@ Use stable capability ids in code/tests:
 
 ## Minimum domain model
 
-Keep the reference small and in-memory/test-oriented where possible, while preserving runtime path semantics:
+Keep the reference small and Akka component-backed test-oriented where possible, while preserving runtime path semantics:
 
 - `GovernedRiskReviewRequest(tenantId, customerId, reviewId, question)`
 - `GovernedRiskReviewResult(tenantId, customerId, recommendation, evidenceIds, proposedActionId)`

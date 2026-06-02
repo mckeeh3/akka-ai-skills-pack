@@ -2,7 +2,7 @@
 
 ## Objective
 
-Capture the user's stricter decision as a durable mini-project and queue: all normal generated workstream/foundation runtime defaults must be replaced with real Akka components; in-memory/default/mock/fixture substitutes are allowed only in tests.
+Capture the user's stricter decision as a durable mini-project and queue: all normal generated workstream/foundation runtime defaults must be replaced with real Akka components; non-Akka substitute/default/mock/fixture paths are allowed only in tests.
 
 ## Required reads
 

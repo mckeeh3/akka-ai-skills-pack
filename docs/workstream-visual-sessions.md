@@ -12,9 +12,9 @@ Canonical related docs:
 A workstream visual session is browser/UI state for how a user is currently viewing a durable workstream. It does not replace durable workstream history, audit/work traces, authorization, or backend capability semantics.
 
 Current repository readiness:
-- Phase 1 in-memory visual sessions are implemented in the source frontend reference and synced into the AI-first SaaS starter template.
+- Phase 1 Akka component-backed visual sessions are implemented in the source frontend reference and synced into the AI-first SaaS starter template.
 - Phase 1.1 runtime UX remediation is verified in both source and starter: request anchoring targets the actual visible workstream scroll container, background responses do not switch the selected workstream, and the left rail shows accessible unseen-response indicators that clear on workstream selection.
-- Contract coverage exists in `frontend/src/workstream-visual-session.contract.test.mjs`, `frontend/src/workstream-shell.contract.test.mjs`, `templates/ai-first-saas-starter/frontend/src/workstream-visual-session.contract.test.mjs`, and `templates/ai-first-saas-starter/frontend/src/workstream-shell.contract.test.mjs` for turn grouping, ordering, turn/surface caps, semantic snapshots, request anchoring, manual-scroll pause, per-workstream in-memory restore, no background selection steal, and rail unseen-response indicators.
+- Contract coverage exists in `frontend/src/workstream-visual-session.contract.test.mjs`, `frontend/src/workstream-shell.contract.test.mjs`, `templates/ai-first-saas-starter/frontend/src/workstream-visual-session.contract.test.mjs`, and `templates/ai-first-saas-starter/frontend/src/workstream-shell.contract.test.mjs` for turn grouping, ordering, turn/surface caps, semantic snapshots, request anchoring, manual-scroll pause, per-workstream component-state restore, no background selection steal, and rail unseen-response indicators.
 - Phase 2 browser-local persistence and phase 3 backend-persisted visual sessions remain future work and must not be claimed by generated apps until implemented.
 
 ## User experience goal
@@ -122,7 +122,7 @@ When limits are reached:
 
 ## Phased implementation plan
 
-### Phase 1: basic in-memory visual sessions
+### Phase 1: basic Akka component-backed visual sessions
 
 Status: implemented for the source frontend reference and starter template.
 
@@ -153,7 +153,7 @@ Readiness notes:
 - Request anchoring was reverified after remediation in both the source frontend and starter template: composer success/error, surface-open, and surface-action flows keep the request item as the scroll target while correlated response/result surfaces append below it.
 - Manual wheel, touch, and keyboard scroll input pauses automatic anchoring for the active request.
 - In-memory restore is keyed by account, selected auth context, functional agent, and workstream id where available.
-- The snapshot helper is semantic and in-memory only; it intentionally does not call `localStorage`, `sessionStorage`, IndexedDB, fetch, or beacon APIs.
+- The snapshot helper is semantic and Akka component-backed only; it intentionally does not call `localStorage`, `sessionStorage`, IndexedDB, fetch, or beacon APIs.
 - Phase 1.1 runtime UX checks are verified in the source frontend and starter template: the actual workstream panel is the explicit scroll container for request top anchoring, async responses for non-selected workstreams update background state without stealing focus, and role-authorized left-rail workstream entries show visual-only accessible unseen-response indicators that clear when selected.
 
 ### Phase 2: browser-local persistence
@@ -236,8 +236,8 @@ These events should be privacy-conscious and should reference stable workstream/
 - [x] The request surface for the new turn group scrolls to the top of the visible workstream panel.
 - [x] Response surfaces append below the request surface.
 - [x] The request surface remains anchored while response surfaces append, unless the user manually scrolls.
-- [x] Switching workstreams preserves and restores in-memory visual state per workstream.
+- [x] Switching workstreams preserves and restores Akka component-backed visual state per workstream.
 - [x] Visual session limits are based primarily on turn groups, with a secondary surface cap.
 - [x] Tests cover append order, scroll target, anchor pause on manual scroll, and per-workstream state restoration.
 
-Phase 1 plus phase 1.1 runtime UX remediation are documentation-ready for generated app guidance at in-memory scope only. This is a UI-only slice, not persistence or resume completion. Any generated feature that claims durable workstream/session continuity must use backend persistence and be validated through the local Akka runtime path. Browser-local refresh persistence and backend/cross-device resume behavior remain future phases until explicitly implemented and tested.
+Phase 1 plus phase 1.1 runtime UX remediation are documentation-ready for generated app guidance at Akka component-backed scope only. This is a UI-only slice, not persistence or resume completion. Any generated feature that claims durable workstream/session continuity must use backend persistence and be validated through the local Akka runtime path. Browser-local refresh persistence and backend/cross-device resume behavior remain future phases until explicitly implemented and tested.

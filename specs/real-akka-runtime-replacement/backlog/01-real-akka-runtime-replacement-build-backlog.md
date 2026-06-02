@@ -42,4 +42,4 @@ Make the starter's normal generated runtime use real Akka components for all wor
 
 - Every queue task can run in one fresh session.
 - Replacement tasks name exact source areas, expected Akka substrates, tests, and scans.
-- Verification can decide whether the stricter no-in-memory/default runtime bar is actually met.
+- Verification can decide whether the stricter Akka-component-backed runtime bar is actually met.

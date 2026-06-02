@@ -24,7 +24,7 @@ Phase 1.1 added rail attention types and badge markup, but runtime testing shows
 
 ## Expected outputs
 
-- Background composer success/error responses increment in-memory unseen state for the originating workstream.
+- Background composer success/error responses increment component-backed unseen state for the originating workstream.
 - Left rail renders a visible and accessible badge/dot/count for that workstream.
 - Indicator is visible in expanded and collapsed rail modes.
 - Indicator clears when the user selects the workstream.

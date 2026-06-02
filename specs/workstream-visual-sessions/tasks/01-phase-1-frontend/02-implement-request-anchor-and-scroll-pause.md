@@ -16,7 +16,7 @@ Implement phase 1 stream behavior: when a new request is appended, scroll its re
 
 - Preserve traditional chat ordering.
 - Do not reorder prior turn groups.
-- Do not introduce persistence beyond in-memory state required for the active component/session.
+- Do not introduce persistence beyond Akka component-backed state required for the active component/session.
 
 ## Completion
 

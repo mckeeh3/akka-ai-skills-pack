@@ -201,7 +201,7 @@
   - templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java
 - expected outputs:
   - Add an Akka durable component for tenant/context/functional-agent scoped workstream logs, including user message, agent response item, markdown surface envelope, correlation/idempotency, model/provider trace references, and error/denial entries.
-  - Make `/api/workstream/items`, `/api/workstream/surfaces/{surfaceId}`, and message submission read/write the durable log rather than only rebuilding static in-memory starter items.
+  - Make `/api/workstream/items`, `/api/workstream/surfaces/{surfaceId}`, and message submission read/write the durable log rather than only rebuilding static Akka component-backed starter items.
   - Preserve idempotency for duplicate message submission.
   - Add tests for append, read by functional agent, surface lookup, duplicate idempotency, tenant/context isolation, and denial persistence.
 - required checks:
@@ -209,7 +209,7 @@
   - `git diff --check`
   - `rg -n "WorkstreamLog|KeyValueEntity|EventSourcedEntity|idempotency|surfaceId|tenant" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java`
 - done criteria:
-  - Workstream messages and response surfaces survive normal backend service boundaries and are not merely frontend/in-memory append illusions.
+  - Workstream messages and response surfaces survive normal backend service boundaries and are not merely frontend/Akka component-backed append illusions.
   - A git commit exists for the changes.
 
 ### TASK-PRODV0-03-002: Normalize backend bootstrap to five markdown v0 surfaces only

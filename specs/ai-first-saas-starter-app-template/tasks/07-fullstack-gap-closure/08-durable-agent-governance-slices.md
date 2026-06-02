@@ -2,12 +2,12 @@
 
 ## Goal
 
-Start replacing in-memory governed-agent records with durable Akka component-backed state while preserving prompt assembly, readSkill, behavior proposal, and trace semantics.
+Start replacing Akka component-backed governed-agent records with durable Akka component-backed state while preserving prompt assembly, readSkill, behavior proposal, and trace semantics.
 
 ## Required reads
 
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorRepository.java`
-- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/InMemoryAgentBehaviorRepository.java`
+- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/SubstituteAgentBehaviorRepository.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentBehaviorSeedLoader.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/**`

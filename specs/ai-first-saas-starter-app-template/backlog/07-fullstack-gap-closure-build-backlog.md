@@ -33,11 +33,11 @@ The starter app should scaffold into a project that can be installed, built, tes
    - Preserve local/dev/test captured outbox behavior and no-secret frontend/static guarantees.
 
 7. **Durable identity/invitation/audit Akka slices**
-   - Incrementally replace static in-memory identity/invitation/audit storage behind existing ports with Akka components.
+   - Incrementally replace static Akka component-backed identity/invitation/audit storage behind existing ports with Akka components.
    - Preserve current service contracts and tests while adding component-level and endpoint-level tests.
 
 8. **Durable governed-agent Akka slices**
-   - Incrementally replace in-memory governed-agent behavior storage behind existing ports with Akka components.
+   - Incrementally replace Akka component-backed governed-agent behavior storage behind existing ports with Akka components.
    - Preserve deterministic prompt assembly/readSkill/proposal semantics and traces.
 
 9. **Concrete admin/governance/audit APIs and integration tests**

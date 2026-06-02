@@ -25,7 +25,7 @@ Update repository guidance so downstream implementation sessions understand that
 
 ## In scope
 
-- Replace wording that permits local/demo/in-memory/default runtime adapters with language requiring real Akka components.
+- Replace wording that permits local/demo/non-Akka substitute/default runtime adapters with language requiring real Akka components.
 - Clarify that fail-closed applies to missing external provider/security configuration, not missing internal Akka persistence for claimed features.
 - Update starter README and related specs to supersede prior local/demo gating compromise.
 - Ensure fixture guidance says test-only.
@@ -42,7 +42,7 @@ Update repository guidance so downstream implementation sessions understand that
 ## Required checks
 
 - `git diff --check`
-- `rg -n "local/demo|in-memory adapter|default local|fixtureWorkstream|fixture client|mock runtime|optional hardening|replace .* in production" AGENTS.md pack/AGENTS.md skills docs templates/ai-first-saas-starter/README.md specs/full-core-smb-runtime-durability-remediation specs/real-akka-runtime-replacement --glob '!**/node_modules/**' --glob '!**/target/**'`
+- `rg -n "local/demo|non-Akka substitute adapter|default local|fixtureWorkstream|fixture client|mock runtime|optional hardening|replace .* in production" AGENTS.md pack/AGENTS.md skills docs templates/ai-first-saas-starter/README.md specs/full-core-smb-runtime-durability-remediation specs/real-akka-runtime-replacement --glob '!**/node_modules/**' --glob '!**/target/**'`
 
 ## Done criteria
 

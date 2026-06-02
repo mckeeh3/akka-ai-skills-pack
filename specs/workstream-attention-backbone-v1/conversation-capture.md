@@ -14,7 +14,7 @@ At the time of the original discussion, the repository/starter had partial atten
 
 - My Account has `my_account.list_personal_attention`, but current starter implementation derives hard-coded items from capabilities.
 - Workstream dashboard surfaces have `attentionItems`, but they are local surface payloads rather than shared attention records/projections.
-- The frontend rail has in-memory unseen-response state, not backend-owned attention counts.
+- The frontend rail has component-backed unseen-response state, not backend-owned attention counts.
 - Search found no `AttentionItem`, attention repository/entity, attention view/projection, or internal attention bus implementation. This finding is historical and no longer describes the completed starter v1 scope.
 
 ## Decisions made
@@ -46,7 +46,7 @@ The discussed v1 should model:
 ## Risks
 
 - Over-broad implementation could turn v1 into a full workflow/event platform. Keep tasks bounded.
-- A purely in-memory or fixture-only implementation would violate the repository runtime completion doctrine if claimed as normal runtime behavior.
+- A purely Akka component-backed or fixture-only implementation would violate the repository runtime completion doctrine if claimed as normal runtime behavior.
 - Authorization/redaction is central: My Account aggregation must not leak hidden workstreams or item counts.
 
 ## Unresolved questions

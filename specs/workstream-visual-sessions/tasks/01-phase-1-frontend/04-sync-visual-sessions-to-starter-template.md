@@ -7,7 +7,7 @@ Apply the accepted phase 1 visual-session behavior from the reference frontend t
 ## Expected outputs
 
 - `templates/ai-first-saas-starter/frontend/src/workstream/**` updated as needed
-- starter template tests updated or added for turn ordering, request anchoring, manual-scroll pause, and in-memory per-workstream restore
+- starter template tests updated or added for turn ordering, request anchoring, manual-scroll pause, and component-backed per-workstream restore
 - generated template placeholders preserved
 - queue status update and git commit
 

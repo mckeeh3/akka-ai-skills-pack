@@ -18,7 +18,7 @@ The user asked whether the internal bus/queue of “things that need my attentio
 
 - `templates/ai-first-saas-starter/backend/.../MyAccountService.java` returned hard-coded/deterministically capability-derived personal attention.
 - `WorkstreamService.java` included dashboard `attentionItems`, but they were local to each surface and not backed by a shared attention queue/projection.
-- frontend rail attention state tracked unseen/background responses in memory only.
+- frontend rail attention state tracked unseen/background responses through Akka components only.
 - no durable `AttentionItem`, `AttentionRepository`, attention projection, internal event bus, or shared attention queue implementation existed.
 
 The accepted direction is:

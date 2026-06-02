@@ -17,7 +17,7 @@
 ### TASK-FCSMB-DUR-00-001: Create runtime durability remediation queue
 
 - status: done
-- source: user confirmed no-in-memory-normal-runtime release bar after source scan found in-memory runtime defaults
+- source: user confirmed Akka-component-backed normal-runtime release bar after source scan found Akka component-backed runtime defaults
 - task brief: specs/full-core-smb-runtime-durability-remediation/tasks/00-planning/00-create-runtime-durability-remediation-queue.md
 - depends on: []
 - required reads:
@@ -43,7 +43,7 @@
 - notes:
   - commit message: `full-core-smb: add runtime durability remediation queue`
 
-### TASK-FCSMB-DUR-01-001: Inspect in-memory and fixture runtime paths and define remediation map
+### TASK-FCSMB-DUR-01-001: Inspect Akka component-backed and fixture runtime paths and define remediation map
 
 - status: done
 - source: specs/full-core-smb-runtime-durability-remediation/backlog/01-runtime-durability-remediation-backlog.md
@@ -67,16 +67,16 @@
   - task briefs for next backend/frontend/docs remediation tasks
 - required checks:
   - `git diff --check`
-  - `rg -n "InMemory|in-memory|mock|Mock|fake|Fake|fixture|Fixture|demo|Demo|canned|model-less|fallback|stub|Stub" templates/ai-first-saas-starter frontend specs/full-core-smb-polish-release-readiness --glob '!**/node_modules/**' --glob '!**/target/**' --glob '!**/dist/**'`
-  - targeted `find` commands listing discovered in-memory classes, fixture clients, static generated assets, and docs claims
-  - `rg -n "InMemory|fixture|demo|release|blocker|durable|fail closed|normal runtime|test-only" specs/full-core-smb-runtime-durability-remediation`
+  - `rg -n "Substitute|Akka component-backed|mock|Mock|fake|Fake|fixture|Fixture|demo|Demo|canned|model-less|fallback|stub|Stub" templates/ai-first-saas-starter frontend specs/full-core-smb-polish-release-readiness --glob '!**/node_modules/**' --glob '!**/target/**' --glob '!**/dist/**'`
+  - targeted `find` commands listing discovered Akka component-backed classes, fixture clients, static generated assets, and docs claims
+  - `rg -n "Substitute|fixture|demo|release|blocker|durable|fail closed|normal runtime|test-only" specs/full-core-smb-runtime-durability-remediation`
 - done criteria:
-  - all discovered in-memory/fixture/demo paths are classified by release impact
+  - all discovered non-Akka substitute/fixture/demo paths are classified by release impact
   - remediation tasks can run without guessing source paths or validation commands
   - release-readiness ship recommendation is superseded or explicitly blocked if needed
   - task changes and queue update are committed
 - notes:
-  - release-readiness handoff, verification, and starter README now mark the stronger no-in-memory-normal-runtime bar blocked until remediation completes
+  - release-readiness handoff, verification, and starter README now mark the stronger Akka-component-backed normal-runtime bar blocked until remediation completes
   - commit message: `full-core-smb: map runtime durability remediation`
 
 ### TASK-FCSMB-DUR-01-002: Remediate backend foundation runtime durability
@@ -100,16 +100,16 @@
   - updated specs/full-core-smb-runtime-durability-remediation/pending-tasks.md
 - required checks:
   - `git diff --check`
-  - `rg -n "new InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)|InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)Repository" templates/ai-first-saas-starter/backend/src/main/java`
+  - `rg -n "new Substitute(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)|Substitute(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)Repository" templates/ai-first-saas-starter/backend/src/main/java`
   - targeted rendered backend tests appropriate to changed paths
 - done criteria:
-  - normal generated backend runtime no longer silently relies on listed in-memory foundation repositories, or fails closed with actionable copy/traces where durable state is not yet implemented
+  - normal generated backend runtime no longer silently relies on listed Akka component-backed foundation repositories, or fails closed with actionable copy/traces where durable state is not yet implemented
   - test/local-demo use is explicitly named and gated
   - task changes and queue update are committed
 - notes:
   - renamed foundation repository adapters to explicit `LocalDemo*` test/local-demo adapters and added `FailClosed*` normal-runtime ports
   - `WorkstreamEndpoint` continues to bind `AkkaWorkstreamLogRepository` where `ComponentClient` is available; service construction without durable state fails closed unless `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true` or test runtime is active
-  - validation: `git diff --check`; `rg -n "new InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)|InMemory(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)Repository" templates/ai-first-saas-starter/backend/src/main/java`; `tools/validate-ai-first-saas-starter-fullstack.sh --keep`
+  - validation: `git diff --check`; `rg -n "new Substitute(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)|Substitute(Identity|WorkstreamLog|AuditTrace|GovernancePolicy|AccessReviewTask)Repository" templates/ai-first-saas-starter/backend/src/main/java`; `tools/validate-ai-first-saas-starter-fullstack.sh --keep`
   - commit message: `full-core-smb: remediate backend foundation durability`
 
 ### TASK-FCSMB-DUR-01-003: Bind invitation, agent behavior, and runtime trace durable seams
@@ -137,15 +137,15 @@
   - updated specs/full-core-smb-runtime-durability-remediation/pending-tasks.md
 - required checks:
   - `git diff --check`
-  - `rg -n "new InMemory(Invitation|AgentBehavior|AgentRuntimeTrace)|InMemory(Invitation|AgentBehavior)Repository|InMemoryAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java`
+  - `rg -n "new Substitute(Invitation|AgentBehavior|AgentRuntimeTrace)|Substitute(Invitation|AgentBehavior)Repository|SubstituteAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java`
   - targeted rendered backend tests for invitation, agent behavior, prompt assembly, runtime trace sink, and provider fail-closed/smoke guards as applicable
 - done criteria:
-  - normal generated runtime does not wire in-memory invitation/agent behavior stores or in-memory trace sinks as completed defaults
+  - normal generated runtime does not wire Akka component-backed invitation/agent behavior stores or Akka component-backed trace sinks as completed defaults
   - governed Akka Agent runtime path and provider fail-closed behavior are preserved
   - task changes and queue update are committed
 - notes:
   - superseded by `specs/real-akka-runtime-replacement/`: normal endpoint wiring now requires Akka-backed repositories/sinks for claimed features, and substitute adapters belong only in test source
-  - validation: `git diff --check`; `rg -n "new InMemory(Invitation|AgentBehavior|AgentRuntimeTrace)|InMemory(Invitation|AgentBehavior)Repository|InMemoryAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java` (no matches); `tools/validate-ai-first-saas-starter-fullstack.sh --keep`
+  - validation: `git diff --check`; `rg -n "new Substitute(Invitation|AgentBehavior|AgentRuntimeTrace)|Substitute(Invitation|AgentBehavior)Repository|SubstituteAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java` (no matches); `tools/validate-ai-first-saas-starter-fullstack.sh --keep`
   - commit message: `full-core-smb: bind durable agent and invitation seams`
 
 ### TASK-FCSMB-DUR-01-004: Gate frontend fixtures and refresh static assets
@@ -174,14 +174,14 @@
   - `git diff --check`
   - `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build`
   - root frontend checks if root mirror changes: `cd frontend && npm test -- --run && npm run typecheck && npm run build`
-  - `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
+  - `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|Substitute|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
 - done criteria:
   - superseded current bar: normal frontend runtime cannot render fixture bootstrap data or use test fixture clients; fixtures belong in test-only assets
   - static resources match updated source or are intentionally cleaned
   - task changes and queue update are committed
 - notes:
   - template frontend validation passed: `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build`
-  - static resource scan passed with no matches: `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
+  - static resource scan passed with no matches: `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|Substitute|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
   - root frontend mirror was updated for gating, but root mirror validation remains blocked by pre-existing drift in root-only User Admin expertise/resource/type contracts; follow-up TASK-FCSMB-DUR-01-004A was appended before final validation
   - commit message: `full-core-smb: gate frontend fixtures`
 
@@ -246,8 +246,8 @@
 - required checks:
   - `git diff --check`
   - `tools/validate-ai-first-saas-starter-fullstack.sh`
-  - `rg -n "InMemory|in-memory|mock|Mock|fake|Fake|fixture|Fixture|demo|Demo|canned|model-less|fallback|stub|Stub" templates/ai-first-saas-starter frontend specs/full-core-smb-polish-release-readiness --glob '!**/node_modules/**' --glob '!**/target/**' --glob '!**/dist/**'`
-  - `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
+  - `rg -n "Substitute|Akka component-backed|mock|Mock|fake|Fake|fixture|Fixture|demo|Demo|canned|model-less|fallback|stub|Stub" templates/ai-first-saas-starter frontend specs/full-core-smb-polish-release-readiness --glob '!**/node_modules/**' --glob '!**/target/**' --glob '!**/dist/**'`
+  - `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|Substitute|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
 - done criteria:
   - broad starter validation passes or remaining blockers are appended as bounded tasks before verification
   - release docs no longer recommend shipping under the stronger durability bar unless the bar is met
@@ -255,8 +255,8 @@
 - notes:
   - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` passed on rendered target `/tmp/ai-first-saas-starter-fullstack.YQvBuC`, including real provider Akka Agent smoke because `OPENAI_API_KEY` was present
   - broad inventory scan still reports test-only/local-demo/dev-fixture/documentation hits; these are classified as acceptable under the remediated normal-runtime gating/fail-closed boundaries
-  - static resource scan passed with no matches: `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
-  - release handoff and starter README now recommend shipping at the documented SMB starter scope under the stronger no-in-memory-normal-runtime bar
+  - static resource scan passed with no matches: `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|Substitute|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
+  - release handoff and starter README now recommend shipping at the documented SMB starter scope under the stronger Akka-component-backed normal-runtime bar
   - commit message: `full-core-smb: validate runtime durability remediation`
 
 ### TASK-FCSMB-DUR-99-001: Verify runtime durability remediation readiness
@@ -296,5 +296,5 @@
   - task changes and queue update are committed
 - notes:
   - verification complete; no follow-up blocker tasks appended
-  - validation: `git diff --check`; targeted backend normal-runtime in-memory scan returned no matches; static resource fixture/demo/provider-secret scan returned no matches; `tools/validate-ai-first-saas-starter-fullstack.sh` passed on `/tmp/ai-first-saas-starter-fullstack.9nYyN9`; broad inventory scan returns only classified test-only/local-demo/dev-fixture/documentation hits
+  - validation: `git diff --check`; targeted backend normal-runtime Akka component-backed scan returned no matches; static resource fixture/demo/provider-secret scan returned no matches; `tools/validate-ai-first-saas-starter-fullstack.sh` passed on `/tmp/ai-first-saas-starter-fullstack.9nYyN9`; broad inventory scan returns only classified test-only/local-demo/dev-fixture/documentation hits
   - commit message: `full-core-smb: verify runtime durability remediation`

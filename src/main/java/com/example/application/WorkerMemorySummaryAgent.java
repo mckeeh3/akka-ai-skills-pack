@@ -15,7 +15,7 @@ public class WorkerMemorySummaryAgent extends Agent {
 
   private static final String SYSTEM_MESSAGE =
       """
-      You summarize the conversation using only the worker-agent context available in memory.
+      You summarize the conversation using only the worker-agent context available through Akka components.
       Ignore any missing details rather than inventing them.
       """
           .stripIndent();

@@ -2,7 +2,7 @@
 
 ## Objective
 
-Move normal generated runtime wiring away from in-memory invitation, governed-agent behavior, and agent runtime trace defaults. Use existing durable Akka seams where present and require/implement durable trace persistence or explicit fail-closed construction where missing.
+Move normal generated runtime wiring away from Akka component-backed invitation, governed-agent behavior, and agent runtime trace defaults. Use existing durable Akka seams where present and require/implement durable trace persistence or explicit fail-closed construction where missing.
 
 ## Required reads
 
@@ -22,7 +22,7 @@ Move normal generated runtime wiring away from in-memory invitation, governed-ag
 - Normal runtime binding for invitation current state/outbox.
 - Normal runtime binding for AgentDefinition, prompt, skill, reference, manifest, model policy/config, and tool boundary records.
 - Runtime trace sink default behavior in `AgentRuntimeService` constructors.
-- Tests proving normal paths do not use in-memory defaults and provider fail-closed behavior remains intact.
+- Tests proving normal paths do not use non-Akka substitute defaults and provider fail-closed behavior remains intact.
 
 ## Out of scope
 
@@ -38,12 +38,12 @@ Move normal generated runtime wiring away from in-memory invitation, governed-ag
 ## Required checks
 
 - `git diff --check`
-- `rg -n "new InMemory(Invitation|AgentBehavior|AgentRuntimeTrace)|InMemory(Invitation|AgentBehavior)Repository|InMemoryAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java`
+- `rg -n "new Substitute(Invitation|AgentBehavior|AgentRuntimeTrace)|Substitute(Invitation|AgentBehavior)Repository|SubstituteAgentRuntimeTraceSink" templates/ai-first-saas-starter/backend/src/main/java`
 - Targeted rendered backend tests for invitation, agent behavior, prompt assembly, runtime trace sink, and real-model fail-closed/smoke guards as applicable.
 
 ## Done criteria
 
-- Normal generated runtime does not wire in-memory invitation/agent behavior stores or in-memory trace sinks as completed defaults.
+- Normal generated runtime does not wire Akka component-backed invitation/agent behavior stores or Akka component-backed trace sinks as completed defaults.
 - Unit-test fakes/adapters remain test-scoped.
 - Governed Akka Agent runtime path and provider fail-closed behavior are preserved.
 - Checks pass and changes are committed.

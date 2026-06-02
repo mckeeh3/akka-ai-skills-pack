@@ -2,10 +2,10 @@
 
 ## User goals and decisions
 
-- The user asked to review workstream-related skills/template guidance for in-memory mockups.
-- The review found remaining in-memory/local-demo/default guidance and starter runtime wiring.
-- The user then clarified the stronger requirement: **replace these in-memory/defaults; they all must be replaced with real Akka components.**
-- The only allowed use of in-memory mockups, fakes, mocks, fixtures, canned responses, or deterministic substitute runtime is testing.
+- The user asked to review workstream-related skills/template guidance for non-Akka substitute mockups.
+- The review found remaining Akka component-backed/local-demo/default guidance and starter runtime wiring.
+- The user then clarified the stronger requirement: **replace these non-Akka substitute/defaults; they all must be replaced with real Akka components.**
+- The only allowed use of non-Akka substitute mockups, fakes, mocks, fixtures, canned responses, or deterministic substitute runtime is testing.
 
 ## Accepted constraints
 
@@ -19,8 +19,8 @@
 
 - Do not keep `LocalDemo*` repositories as explicit local/demo runtime adapters for generated applications.
 - Do not keep query-string/runtime fixture switches for normal UI behavior.
-- Do not mark a feature complete because static fixtures, local in-memory state, or fail-closed placeholder repositories exist.
-- Do not merely rename in-memory classes without changing runtime behavior.
+- Do not mark a feature complete because static fixtures, local Akka component-backed state, or fail-closed placeholder repositories exist.
+- Do not merely rename Akka component-backed classes without changing runtime behavior.
 
 ## Risks
 

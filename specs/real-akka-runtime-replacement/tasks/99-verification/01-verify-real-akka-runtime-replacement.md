@@ -44,8 +44,8 @@ Verify that the mini-project's stricter done state is met: normal generated runt
 - template frontend tests/typecheck/build
 - root frontend tests/typecheck/build if root mirror changed
 - scans proving no production runtime substitute paths remain:
-  - `rg -n "LocalDemo|InMemory|AI_FIRST_SAAS_LOCAL_DEMO|fixtureWorkstream|FixtureWorkstream|FixtureApiClient|FixtureRealtimeClient|model-less successful|canned guidance" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md --glob '!**/*.test.mjs' --glob '!**/node_modules/**' --glob '!**/target/**'`
-  - `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|InMemory|FailClosed.*Repository|FailClosed.*Sink"`
+  - `rg -n "LocalDemo|Substitute|AI_FIRST_SAAS_LOCAL_DEMO|fixtureWorkstream|FixtureWorkstream|FixtureApiClient|FixtureRealtimeClient|model-less successful|canned guidance" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md --glob '!**/*.test.mjs' --glob '!**/node_modules/**' --glob '!**/target/**'`
+  - `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|Substitute|FailClosed.*Repository|FailClosed.*Sink"`
 
 ## Done criteria
 

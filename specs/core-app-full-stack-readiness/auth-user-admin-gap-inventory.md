@@ -121,7 +121,7 @@ Follow-up ordering:
 ### 6. P0 — Admin discovery views are absent in Java reference
 
 Evidence:
-- `AdminUsersEndpoint.listUsers` requires caller-supplied `userIds` query parameter and filters loaded accounts in memory.
+- `AdminUsersEndpoint.listUsers` requires caller-supplied `userIds` query parameter and filters loaded accounts through Akka components.
 - There are no Akka Views for `UserDirectoryView`, `MembershipView`, `InvitationView`, `AdminAuditView`, or `AccessReviewQueueView`.
 - `AdminAuditEntryEntity` stores individual immutable records but no queryable audit view.
 

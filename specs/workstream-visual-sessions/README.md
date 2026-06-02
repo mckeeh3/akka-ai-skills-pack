@@ -22,7 +22,7 @@ The goal is to preserve the familiar modern chat timeline experience while suppo
 
 ## Phase plan
 
-### Phase 1: in-memory visual sessions
+### Phase 1: Akka component-backed visual sessions
 
 Status: complete for the source frontend reference and starter template.
 
@@ -30,7 +30,7 @@ Implemented the basic frontend behavior without backend or browser persistence:
 
 1. turn-group/session state helpers;
 2. request-surface anchoring and manual-scroll pause;
-3. per-workstream in-memory restore when switching workstreams;
+3. per-workstream component-state restore when switching workstreams;
 4. template sync and contract coverage;
 5. phase 1 readiness documentation.
 

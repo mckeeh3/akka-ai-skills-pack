@@ -2,7 +2,7 @@
 
 ## Objective
 
-Verify no normal generated runtime path still silently depends on in-memory/fixture/demo stores for claimed-complete features, or append bounded follow-up tasks.
+Verify no normal generated runtime path still silently depends on non-Akka substitute/fixture/demo stores for claimed-complete features, or append bounded follow-up tasks.
 
 ## In scope
 

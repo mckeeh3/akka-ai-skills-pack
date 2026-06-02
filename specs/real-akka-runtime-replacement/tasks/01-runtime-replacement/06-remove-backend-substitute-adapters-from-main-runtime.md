@@ -40,8 +40,8 @@ Delete or move remaining backend substitute adapters and constructors out of `ba
 
 - `git diff --check`
 - rendered backend test suite or targeted rendered backend tests covering changed areas
-- `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|InMemory|FailClosed.*Repository|FailClosed.*Sink"` must return no production substitute adapters
-- `rg -n "AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|new LocalDemo|new InMemory" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/README.md`
+- `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|Substitute|FailClosed.*Repository|FailClosed.*Sink"` must return no production substitute adapters
+- `rg -n "AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|new LocalDemo|new Substitute" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/README.md`
 
 ## Done criteria
 

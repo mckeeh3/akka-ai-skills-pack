@@ -21,7 +21,7 @@ Compared against:
 
 ## Done-state assessment
 
-- Backend substitute adapters: no `LocalDemo*`, `InMemory*`, `FailClosed*Repository`, or `FailClosed*Sink` implementation remains under `templates/ai-first-saas-starter/backend/src/main/java`.
+- Backend substitute adapters: no `LocalDemo*`, `Substitute*`, `FailClosed*Repository`, or `FailClosed*Sink` implementation remains under `templates/ai-first-saas-starter/backend/src/main/java`.
 - Backend normal runtime binding: completed task notes and rendered backend validation show identity, workstream log, audit trace, governance policy, access-review, invitation, governed agent behavior, and agent trace paths are bound through Akka components in normal runtime.
 - Frontend fixtures: fixture clients/data remain under `src/__tests__/fixtures/**`; production runtime imports do not expose `fixtureWorkstream`, `FixtureWorkstream*`, `FixtureApiClient`, or `FixtureRealtimeClient` when test directories are excluded.
 - Guidance/readiness: completed doctrine task updated repo guidance to require real Akka component-backed normal runtime and to allow substitutes only in tests.
@@ -39,10 +39,10 @@ Compared against:
   - Result: passed; 121 frontend tests passed.
 - `cd frontend && npm test -- --run && npm run typecheck && npm run build`
   - Result: passed; 118 frontend tests passed.
-- `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|InMemory|FailClosed.*Repository|FailClosed.*Sink"`
+- `find templates/ai-first-saas-starter/backend/src/main/java -type f | rg -i "LocalDemo|Substitute|FailClosed.*Repository|FailClosed.*Sink"`
   - Result: no matches.
 - Production substitute scan excluding test assets:
-  - `rg -n "new LocalDemo|new InMemory|AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|FixtureWorkstream|fixtureWorkstream" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md --glob '!**/__tests__/**' --glob '!**/*.test.mjs' --glob '!**/node_modules/**' --glob '!**/target/**'`
+  - `rg -n "new LocalDemo|new Substitute|AI_FIRST_SAAS_LOCAL_DEMO|local/demo repositories|FixtureWorkstream|fixtureWorkstream" templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/README.md --glob '!**/__tests__/**' --glob '!**/*.test.mjs' --glob '!**/node_modules/**' --glob '!**/target/**'`
   - Result: no matches.
 - Required broad substitute scan:
   - Result: remaining matches are test-only fixture files under `frontend/src/__tests__/fixtures/**` plus intentional blocked/fail-closed wording in `WorkstreamService.java` that says no model-less successful output/canned guidance is returned.

@@ -258,7 +258,7 @@ Use a coordinator workflow/agent pair for non-trivial systems:
 
 ## Async queues and workers
 
-- Prefer durable workflow steps, entity commands, Consumers, topics/streams, and Timed Actions over in-memory background jobs.
+- Prefer durable workflow steps, entity commands, Consumers, topics/streams, and Timed Actions over Akka component-backed background jobs.
 - Use queues/topics for high-volume or decoupled work, but persist correlation IDs to `Goal`, `ExecutionPlan`, `AgentRun`, `TaskRun`, and `WorkTrace`.
 - Build Views for pending work: ready tasks, blocked tasks, approval queue, retry queue, failed tasks, active goals, and stale runs.
 - Use Timed Actions for reminders, deadlines, SLA escalations, delayed retries, periodic digests, and stale-run detection.
@@ -423,7 +423,7 @@ runtime_orchestration_spec:
 Before considering runtime orchestration complete, verify:
 
 - [ ] Goals, plans, agent runs, task runs, tool invocations, approvals, exceptions, and outcomes have explicit lifecycle states.
-- [ ] Long-running work is modeled with Akka Workflows rather than in-memory control flow.
+- [ ] Long-running work is modeled with Akka Workflows rather than Akka component-backed control flow.
 - [ ] Event Sourced Entities are used where lifecycle history, auditability, replay, or temporal reasoning matter.
 - [ ] Every side-effecting operation has an idempotency strategy and side-effect classification.
 - [ ] Approval gates block before protected actions and can resume/revise/cancel workflows.

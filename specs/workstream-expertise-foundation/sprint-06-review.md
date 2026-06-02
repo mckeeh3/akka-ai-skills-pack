@@ -22,7 +22,7 @@ Required sprint-review reads:
 Additional text-search evidence confirmed the implementation path includes:
 
 - first-class starter `ReferenceDocument` and `AgentReferenceManifest` records;
-- repository APIs and durable/in-memory repository state for reference documents and manifests;
+- repository APIs and durable/non-Akka substitute repository state for reference documents and manifests;
 - seed import of User Admin references with manifest assignment and a separate `READ_REFERENCE` tool-boundary grant;
 - compact reference-manifest prompt assembly with no full reference bodies;
 - `AgentRuntimeService.readReferenceDoc(...)` with active agent, active manifest, active reference, allowed-use, size/secret, and separate `READ_REFERENCE` boundary checks;

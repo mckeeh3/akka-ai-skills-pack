@@ -4,7 +4,7 @@ Date: 2026-05-30
 
 ## Decision applied
 
-The stricter replacement decision for this mini-project is: **normal generated-app runtime must use real Akka components for claimed starter workstream/foundation behavior.** Local-demo, fail-closed placeholder repositories, in-memory-style stores, fixture clients/data, mocks, fakes, canned/model-less success paths, and runtime switches that select them are allowed only in tests or explicitly test-only assets.
+The stricter replacement decision for this mini-project is: **normal generated-app runtime must use real Akka components for claimed starter workstream/foundation behavior.** Local-demo, fail-closed placeholder repositories, non-Akka substitute stores, fixture clients/data, mocks, fakes, canned/model-less success paths, and runtime switches that select them are allowed only in tests or explicitly test-only assets.
 
 This map is an inventory and follow-up-task refinement artifact. It does not implement the replacements.
 
@@ -13,7 +13,7 @@ This map is an inventory and follow-up-task refinement artifact. It does not imp
 Required broad scan:
 
 ```bash
-rg -n "LocalDemo|InMemory|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" \
+rg -n "LocalDemo|Substitute|FailClosed|fixture|Fixture|mock|Mock|fake|Fake|canned|model-less|demo|Demo|AI_FIRST_SAAS_LOCAL_DEMO" \
   templates/ai-first-saas-starter/backend/src/main/java \
   templates/ai-first-saas-starter/frontend/src \
   templates/ai-first-saas-starter/README.md \

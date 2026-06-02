@@ -2,7 +2,7 @@
 
 ## Task
 
-Maintain independent in-memory visual session state for each selected workstream and restore it when users switch between functional agents/workstreams.
+Maintain independent Akka component-backed visual session state for each selected workstream and restore it when users switch between functional agents/workstreams.
 
 ## Expected outputs
 

@@ -31,7 +31,7 @@ Implemented foundations:
   - `action-audit-trace-failure-evidence`
   - `action-audit-trace-investigation-guide`
 - `WorkstreamService` has initial dashboard/search/detail/timeline/failure/guidance surface shaping with selected-tenant checks and browser-safe redaction copy.
-- `AgentRuntimeTraceEntity`, `AgentRuntimeTraceSink`, `AgentRuntimeTraceView`, `AkkaAgentRuntimeTraceSink`, and `InMemoryAgentRuntimeTraceSink` provide governed-agent trace persistence/search foundations for prompt assembly, skill/reference loads, tool invocation/denial, model invocation, provider failures, behavior edits, and AgentWorkTrace facts.
+- `AgentRuntimeTraceEntity`, `AgentRuntimeTraceSink`, `AgentRuntimeTraceView`, `AkkaAgentRuntimeTraceSink`, and `SubstituteAgentRuntimeTraceSink` provide governed-agent trace persistence/search foundations for prompt assembly, skill/reference loads, tool invocation/denial, model invocation, provider failures, behavior edits, and AgentWorkTrace facts.
 - `WorkstreamLogRepository`, `DurableWorkstreamLogEntity`, and `AkkaWorkstreamLogRepository` persist workstream message items/surfaces by tenant and selected context; Audit/Trace can use these as correlation/workstream evidence.
 - `AuthContextResolver` and existing User Admin/Agent Admin services emit protected-read/denial traces and source-specific trace ids.
 - Audit/Trace seeded managed-agent records exist through `AgentBehaviorSeedLoader`:
@@ -49,7 +49,7 @@ Implemented foundations:
 Material gaps for SMB full-core:
 
 1. Audit/Trace reads are browser-shaped directly inside `WorkstreamService`; there is no focused deterministic `AuditTraceService` with reusable contracts for authorization, query validation, redaction, correlation assembly, failure evidence, and investigation next steps.
-2. Search currently combines one synthetic auth-context row plus in-memory `agentRuntimeService.traces()` rows. It does not query `AgentRuntimeTraceView`, workstream log entries, User Admin audit/admin-change evidence, Agent Admin behavior-change evidence, access-review task evidence, or Governance/Policy traces through a unified repository facade.
+2. Search currently combines one synthetic auth-context row plus Akka component-backed `agentRuntimeService.traces()` rows. It does not query `AgentRuntimeTraceView`, workstream log entries, User Admin audit/admin-change evidence, Agent Admin behavior-change evidence, access-review task evidence, or Governance/Policy traces through a unified repository facade.
 3. Detail/timeline reads are limited to agent runtime traces and synthetic rows. They do not normalize event kinds across AdminAuditEvent, workstream messages, surface actions, capability denials, invitation/member/role events, behavior-change proposals, worker tasks, or provider/tool failures.
 4. Redaction is represented in copy and DTO fields, but there is no deterministic redaction policy object/test suite proving no raw JWTs, invitation tokens, provider credentials, hidden prompt text, raw tool payloads, or cross-tenant data reach browser DTOs.
 5. Cross-workstream trace links exist, but they are not all routed through an Audit/Trace detail/timeline service that returns non-enumerating not-found-or-redacted results for hidden evidence.
@@ -90,7 +90,7 @@ Primary source paths:
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java`
 - new likely `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AuditTraceService.java`
 - new likely `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AuditTraceRepository.java`
-- new likely `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InMemoryAuditTraceRepository.java`
+- new likely `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/SubstituteAuditTraceRepository.java`
 - optional adapter `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/AkkaAuditTraceRepository.java` if component-client access to trace views/log entities is needed in the same task
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamLogRepository.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeTraceView.java`

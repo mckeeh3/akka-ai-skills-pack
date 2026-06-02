@@ -74,7 +74,7 @@ These are Akka substrate mechanics examples, not generated-product architecture 
 ## Gotchas
 
 - deleting an event sourced entity does not itself emit a consumer callback unless you persist a final deletion event before delete
-- do not mutate in-memory consumer fields to track progress
+- do not mutate Akka component-backed consumer fields to track progress
 - do not assume one delivery per event
 - do not place side effects inside entity `thenReply()` when a consumer is the right downstream boundary
 

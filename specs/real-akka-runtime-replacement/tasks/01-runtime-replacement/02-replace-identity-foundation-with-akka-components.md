@@ -29,7 +29,7 @@ Replace normal-runtime local-demo/fail-closed identity/account/profile/settings/
 - Add or complete Akka components for Account/UserProfile/UserSettings/Membership/Role/Capability current state and required views.
 - Bind normal runtime `AuthContextResolver`, `/api/me`, and user-admin reads/writes to Akka-backed state.
 - Move local-demo identity/bootstrap helpers out of main runtime or make them test-only.
-- Preserve first-admin bootstrap as audited Akka state import/command, not in-memory seeding.
+- Preserve first-admin bootstrap as audited Akka state import/command, not Akka component-backed seeding.
 
 ## Out of scope
 

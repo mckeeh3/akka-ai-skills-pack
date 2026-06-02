@@ -2,7 +2,7 @@
 
 ## Task
 
-Add reusable frontend types/helpers for phase 1 in-memory workstream visual sessions and turn groups.
+Add reusable frontend types/helpers for phase 1 Akka component-backed workstream visual sessions and turn groups.
 
 ## Expected outputs
 

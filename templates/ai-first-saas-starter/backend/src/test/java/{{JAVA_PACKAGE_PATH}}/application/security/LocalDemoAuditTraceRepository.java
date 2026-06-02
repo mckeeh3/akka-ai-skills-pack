@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Starter repository facade that normalizes currently available in-memory runtime and workstream evidence.
+ * Starter repository facade that normalizes currently available Akka runtime and workstream evidence.
  * Production templates can replace this with view-backed adapters without changing AuditTraceService DTOs.
  */
 public final class LocalDemoAuditTraceRepository implements AuditTraceRepository {

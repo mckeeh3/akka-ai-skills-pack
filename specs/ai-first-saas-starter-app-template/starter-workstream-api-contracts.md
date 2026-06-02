@@ -360,7 +360,7 @@ Rules:
 - Implement workstream endpoints under `{{JAVA_BASE_PACKAGE}}.api.workstream` or `{{JAVA_BASE_PACKAGE}}.api.security` with explicit `@HttpEndpoint` and `@Acl`.
 - Use the same JWT/request-context extraction style as `MeEndpoint`, but resolve selected context by `X-Selected-Context-Id`.
 - Keep endpoint DTOs browser-facing; do not expose `domain.security` records directly.
-- The first starter slice may use application services and in-memory repositories as seams, but route/capability contracts must remain stable when replaced by Akka components.
+- The first starter slice may use application services and Akka component repository ports as seams, but route/capability contracts must remain stable when replaced by Akka components.
 - The generic `POST /api/workstream/actions` dispatcher should map capability ids to service methods explicitly, not by reflection or trusting the client to name service methods.
 
 ## Frontend client implementation notes

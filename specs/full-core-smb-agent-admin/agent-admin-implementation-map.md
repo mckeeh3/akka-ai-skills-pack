@@ -16,7 +16,7 @@ Implemented foundations:
 
 - `WorkstreamService` exposes Agent Admin catalog/detail/diff/model/test/trace surfaces through structured surface ids and action ids.
 - `AgentBehaviorSeedLoader` seeds `agent-agent-admin`, `prompt-agent-admin-system`, `manifest-agent-admin`, `reference-manifest-agent-admin`, `tool-boundary-agent-admin`, starter guidance skill/reference, shared model config, and shared model policy.
-- `AgentRuntimeService` resolves active `AgentDefinition`, prompt, skill/reference manifests, `ToolPermissionBoundary`, model binding, prompt assembly, `readSkill`, `readReferenceDoc`, model/provider fail-closed path, and in-memory behavior-change proposal records.
+- `AgentRuntimeService` resolves active `AgentDefinition`, prompt, skill/reference manifests, `ToolPermissionBoundary`, model binding, prompt assembly, `readSkill`, `readReferenceDoc`, model/provider fail-closed path, and Akka component-backed behavior-change proposal records.
 - `WorkstreamRuntimeAgent` is the concrete request/response Akka `Agent` runtime invoked through `DefaultWorkstreamAgentRuntimeInvoker` in production wiring.
 - User Admin access-review work introduced an example durable task lifecycle pattern with provider-blocked semantics and no-direct-mutation surfaces.
 - Frontend fixtures, renderers, actions, and tests already know Agent Admin v0 surfaces and can render `dashboard`, `list-search`, `detail-edit`, `governance-diff`, `decision`, `workflow-status`, `audit-timeline`, `system_message`, and blocked provider/runtime states.
@@ -27,7 +27,7 @@ Material gaps for SMB full-core:
 2. `dynamicSurface` omits Agent Admin surface ids, so some surfaces are only action-return surfaces rather than independently retrievable structured surfaces.
 3. Capability visibility for `agent_admin.*` is not explicitly handled in `isActionCapabilityVisible`; it relies on the selected context already carrying exact capability ids, but should be made explicit and tested.
 4. Behavior-change lifecycle is partial: draft and unsafe-boundary denial exist; submit/review/reject/activate/cancel/rollback are not exposed as deterministic Agent Admin commands. `approveProposal` activates immediately and uses `agent.behavior.manage`, not SMB-specific review/activation capability ids.
-5. Proposal storage is in-memory inside `AgentRuntimeService`, with no durable audited proposal repository/entity and no rollback metadata.
+5. Proposal storage is Akka component-backed inside `AgentRuntimeService`, with no durable audited proposal repository/entity and no rollback metadata.
 6. `BehaviorChangeProposal.TargetArtifact` supports `PROMPT`, `SKILL`, and `TOOL_BOUNDARY`; references, manifests, and model refs are not first-class proposal targets.
 7. Agent Admin seed material contains only one starter guidance skill/reference. Full-core guidance needs Agent Admin-specific prompt/skill/reference content for definition review, prompt diff review, skill/reference manifest review, tool-boundary review, provider/model readiness, seed/default material, and no-direct-mutation lifecycle boundaries.
 8. `tool-boundary-agent-admin` grants only `readSkill` and `readReferenceDoc`; there is no model-facing read-only Agent Admin evidence tool. The AgentAdminAgent can load seed guidance but cannot ask for scoped live catalog/proposal/readiness evidence through a governed tool.
@@ -101,7 +101,7 @@ Primary source paths:
 
 - `AgentRuntimeService.java` for existing proposal helpers, likely split or wrap with a deterministic `AgentAdminBehaviorChangeService`.
 - `BehaviorChangeProposal.java` and related domain records.
-- `AgentBehaviorRepository` implementations: in-memory and Akka/durable repository/entity files.
+- `AgentBehaviorRepository` implementations: Akka component-backed and Akka/durable repository/entity files.
 - `WorkstreamService.java` Agent Admin actions and surfaces.
 - tests: `AgentRuntimeServiceTest`, `DurableAgentBehaviorRepositoryStateTest`, `ManifestBoundaryEntityTest`, `WorkstreamServiceTest`, plus new focused service tests.
 

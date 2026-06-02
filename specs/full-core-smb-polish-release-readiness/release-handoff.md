@@ -4,9 +4,9 @@ Date: 2026-05-30
 
 ## Release recommendation
 
-Recommendation: **ship for the documented full-core SMB starter scope, including the stronger no-in-memory-normal-runtime bar**.
+Recommendation: **ship for the documented full-core SMB starter scope, including the stronger Akka-component-backed normal-runtime bar**.
 
-The original release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries. The follow-up runtime durability remediation then removed or gated normal runtime in-memory/default fixture dependencies and revalidated the rendered starter. A later AutonomousAgent runtime integration slice added the first durable internal/background worker vertical: User Admin access-review investigation through an Akka `AutonomousAgent` task path with backend lifecycle projection, v3 events, attention, and result-review surfaces.
+The original release-readiness task group found **no release blockers** across integrated validation, visual UX polish, provider/runtime fail-closed behavior, trace/navigation semantics, evidence-tool authorization, or browser-visible secret boundaries. The follow-up runtime durability remediation then removed or gated normal runtime non-Akka substitute/default fixture dependencies and revalidated the rendered starter. A later AutonomousAgent runtime integration slice added the first durable internal/background worker vertical: User Admin access-review investigation through an Akka `AutonomousAgent` task path with backend lifecycle projection, v3 events, attention, and result-review surfaces.
 
 The stronger durability bar is now met at the documented scope: normal completed runtime paths either bind Akka durable components or fail closed with actionable guidance; explicit local/demo repositories require `AI_FIRST_SAAS_LOCAL_DEMO_REPOSITORIES=true`; frontend fixture mode requires dev/local opt-in; production-like static resources scan clean for fixture/demo/provider-secret markers. The remediation map is `specs/full-core-smb-runtime-durability-remediation/runtime-durability-remediation-map.md`.
 

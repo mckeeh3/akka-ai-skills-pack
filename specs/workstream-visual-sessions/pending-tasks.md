@@ -76,7 +76,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Add workstream visual session state helpers`
-  - completed: added reusable in-memory visual-session and turn-group helpers, contract tests for grouping/order/limits/snapshots, and no browser-local/backend persistence.
+  - completed: added reusable Akka component-backed visual-session and turn-group helpers, contract tests for grouping/order/limits/snapshots, and no browser-local/backend persistence.
 
 ### TASK-WVS-01-002: Implement request-surface anchoring and manual-scroll pause
 
@@ -114,11 +114,11 @@
   - commit message: `Implement workstream request anchoring`
   - completed: added reduced-motion-safe request-surface top anchoring, preserved the active request anchor while responses append, and paused automatic anchoring after wheel, touch, or keyboard scroll input.
 
-### TASK-WVS-01-003: Restore in-memory visual sessions when switching workstreams
+### TASK-WVS-01-003: Restore Akka component-backed visual sessions when switching workstreams
 
 - status: done
 - source: docs/workstream-visual-sessions.md phase 1
-- task brief: specs/workstream-visual-sessions/tasks/01-phase-1-frontend/03-restore-in-memory-sessions-on-workstream-switch.md
+- task brief: specs/workstream-visual-sessions/tasks/01-phase-1-frontend/03-restore-Akka component-backed-sessions-on-workstream-switch.md
 - depends on: [TASK-WVS-01-002]
 - required reads:
   - AGENTS.md
@@ -133,7 +133,7 @@
   - akka-web-ui-state-rendering
   - akka-web-ui-testing
 - expected outputs:
-  - per-workstream in-memory visual session state
+  - per-workstream Akka component-backed visual session state
   - restoration of anchor/selected-surface/collapsed-or-loaded state where supported by existing UI contracts
   - focused contract tests for switching workstreams and returning where the user left off
 - required checks:
@@ -141,12 +141,12 @@
   - switching workstreams does not jump to latest unless a new request is submitted or explicit jump behavior exists
   - no cross-device/browser-local/backend persistence is introduced in this task
 - done criteria:
-  - users can switch workstreams and return to the previous in-memory visual position/state
+  - users can switch workstreams and return to the previous Akka component-backed visual position/state
   - frontend tests/checks relevant to changed files pass
   - task changes and queue update are committed
 - notes:
-  - commit message: `Restore in-memory workstream visual sessions`
-  - completed: added auth-context/functional-agent keyed in-memory visual-session restore, preserved selected surface and manual-scroll pause state across workstream switches, and kept request anchoring per session without browser-local or backend persistence.
+  - commit message: `Restore Akka component-backed workstream visual sessions`
+  - completed: added auth-context/functional-agent keyed Akka component-backed visual-session restore, preserved selected surface and manual-scroll pause state across workstream switches, and kept request anchoring per session without browser-local or backend persistence.
 
 ### TASK-WVS-01-004: Sync phase 1 visual sessions into the starter template
 
@@ -169,7 +169,7 @@
   - starter template frontend updated to match phase 1 reference visual-session behavior
   - starter template contract tests updated or added
 - required checks:
-  - template behavior matches reference frontend behavior for turn order, anchoring, manual-scroll pause, and per-workstream in-memory restore
+  - template behavior matches reference frontend behavior for turn order, anchoring, manual-scroll pause, and per-workstream component-state restore
   - generated template placeholders remain intact
   - run relevant starter frontend checks/tests if available
 - done criteria:
@@ -177,7 +177,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Sync visual sessions to starter template`
-  - completed: synced phase 1 in-memory visual-session helpers, request anchoring/manual-scroll pause, per-workstream restore, and starter contract coverage.
+  - completed: synced phase 1 Akka component-backed visual-session helpers, request anchoring/manual-scroll pause, per-workstream restore, and starter contract coverage.
 
 ### TASK-WVS-01-005: Close phase 1 docs and readiness notes
 
@@ -206,7 +206,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Close workstream visual session phase 1 docs`
-  - completed: marked phase 1 acceptance as implemented at in-memory scope, recorded source/starter contract coverage, and added phase 2/3 future backlog stubs without claiming persistence is implemented.
+  - completed: marked phase 1 acceptance as implemented at Akka component-backed scope, recorded source/starter contract coverage, and added phase 2/3 future backlog stubs without claiming persistence is implemented.
 
 ### TASK-WVS-02-001: Keep request anchor through response append
 
@@ -402,7 +402,7 @@
   - akka-web-ui-accessibility-responsive
   - akka-web-ui-testing
 - expected outputs:
-  - in-memory unseen response state for non-selected workstreams
+  - component-backed unseen response state for non-selected workstreams
   - accessible rail badge/dot/count indicator
   - indicator clears on workstream selection
 - required checks:
@@ -414,7 +414,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Add left rail unseen response indicators`
-  - completed: added in-memory per-functional-agent unseen response/background activity state, accessible rail badges with extensible attention kinds, and clearing on workstream selection.
+  - completed: added Akka component-backed per-functional-agent unseen response/background activity state, accessible rail badges with extensible attention kinds, and clearing on workstream selection.
   - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-shell.contract.test.mjs`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`.
 
 ### TASK-WVS-03-004: Sync phase 1.1 runtime UX to starter template
@@ -544,7 +544,7 @@
   - akka-web-ui-accessibility-responsive
   - akka-web-ui-testing
 - expected outputs:
-  - background responses increment in-memory unseen state
+  - background responses increment component-backed unseen state
   - left rail shows accessible visible badge/dot/count in expanded and collapsed modes
   - indicator clears on selection
 - required checks:
@@ -556,7 +556,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Fix runtime unseen response indicators`
-  - completed: added a reusable rail-attention state helper, keyed composer response indicators to the originating workstream item/agent instead of the returned surface owner, kept indicators in memory only, and covered record/increment/clear behavior plus expanded/collapsed badge visibility.
+  - completed: added a reusable rail-attention state helper, keyed composer response indicators to the originating workstream item/agent instead of the returned surface owner, kept indicators through Akka components only, and covered record/increment/clear behavior plus expanded/collapsed badge visibility.
   - checks: `cd frontend && npm run typecheck`; `cd frontend && node --test src/workstream-shell.contract.test.mjs`; `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`.
 
 ### TASK-WVS-04-003: Sync runtime remediation to starter template

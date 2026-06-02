@@ -2,14 +2,14 @@
 
 ## Goal
 
-Start replacing static in-memory security foundation state with durable Akka components behind the existing repository/service ports, without breaking frontend/backend contracts.
+Start replacing static Akka component-backed security foundation state with durable Akka components behind the existing repository/service ports, without breaking frontend/backend contracts.
 
 ## Required reads
 
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/IdentityRepository.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InvitationRepository.java`
-- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InMemoryIdentityRepository.java`
-- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/InMemoryInvitationRepository.java`
+- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/SubstituteIdentityRepository.java`
+- `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/SubstituteInvitationRepository.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/security/**`
 - `skills/akka-key-value-entities/SKILL.md`
 - `skills/akka-event-sourced-entities/SKILL.md`
@@ -23,7 +23,7 @@ Start replacing static in-memory security foundation state with durable Akka com
    - current-state Account/Profile/Settings/Membership where appropriate;
    - event-sourced Invitation lifecycle and AdminAudit events where history matters;
    - views for directory/invitation/audit queries if practical.
-3. Keep in-memory adapters only as local/test fallback if needed, clearly labeled.
+3. Keep non-Akka substitute adapters only as local/test fallback if needed, clearly labeled.
 4. Add component tests and service tests showing identical auth/idempotency/tenant-isolation behavior.
 5. Update documentation to describe current durability coverage and remaining slices.
 6. Update the pending queue entry.

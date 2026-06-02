@@ -34,7 +34,7 @@ The slice should be executable, deterministic, and local-test friendly. It shoul
 - scope: one tenant, one active `AgentDefinition`, one active prompt, one active manifest, one assigned skill, one denied skill.
 - authorization: runtime call requires tenant match, active agent, active prompt version, active manifest, active tool boundary, and granted `readSkill` tool.
 - side effects: trace facts only; no external side effects.
-- traces: `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` as in-memory/domain records or minimal Akka-owned records.
+- traces: `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` as Akka component-backed domain records or minimal Akka-owned records.
 - tests: success, disabled-agent denial, cross-tenant denial, unassigned-skill denial, missing-tool-grant denial, and trace assertions.
 
 ## Proposed package shape
@@ -76,7 +76,7 @@ Add deterministic helpers under `src/main/java/com/example/application/agentfoun
   - authorizes `readSkill(skillId)` against tenant, agent, manifest entry, active skill version, runtime mode, and `ToolPermissionBoundary`;
   - records `ReferenceSkillLoadTrace` for allowed and denied attempts.
 - `ReferenceTraceSink`
-  - in-memory test sink for prompt assembly, skill load, and work traces.
+  - Akka component-backed test sink for prompt assembly, skill load, and work traces.
 
 These helpers may be ordinary Java classes. They should not become hidden authorization stores; all authorization inputs must come from explicit fixture/state records.
 

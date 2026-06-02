@@ -1,8 +1,8 @@
-# Task: Inspect in-memory and fixture runtime paths and define remediation map
+# Task: Inspect Akka component-backed and fixture runtime paths and define remediation map
 
 ## Objective
 
-Inventory all in-memory/mock/fake/fixture/demo/canned/model-less paths in the starter and classify release impact. Append bounded remediation tasks.
+Inventory all non-Akka substitute/mock/fake/fixture/demo/canned/model-less paths in the starter and classify release impact. Append bounded remediation tasks.
 
 ## In scope
 

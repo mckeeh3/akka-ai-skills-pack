@@ -40,7 +40,7 @@ Historical task objective: ensure frontend fixture/demo paths are not normal pro
 - `git diff --check`
 - `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build`
 - Root frontend checks if root mirror changes: `cd frontend && npm test -- --run && npm run typecheck && npm run build`
-- `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|InMemory|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
+- `rg -n "fixtureWorkstream|FixtureWorkstream|fixture|demo|Substitute|fake|model-less|OPENAI_API_KEY|WORKOS_API_KEY" templates/ai-first-saas-starter/src/main/resources/static-resources --glob '!**/*.map'`
 
 ## Done criteria
 

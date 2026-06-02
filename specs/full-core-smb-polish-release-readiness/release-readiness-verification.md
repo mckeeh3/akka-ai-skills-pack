@@ -6,7 +6,7 @@ Date: 2026-05-30
 
 The full-core SMB polish and release-readiness mini-project was complete for its original stated scope.
 
-Release recommendation after durability remediation: **ship for the documented full-core SMB starter scope, including the stronger no-in-memory-normal-runtime bar**.
+Release recommendation after durability remediation: **ship for the documented full-core SMB starter scope, including the stronger Akka-component-backed normal-runtime bar**.
 
 A later source-boundary scan found normal starter runtime defaults and frontend/static fixture paths that violated the user's stronger durability bar. `specs/full-core-smb-runtime-durability-remediation/` remediated those paths by binding durable Akka seams where available, failing closed for unimplemented foundation ports unless explicit local/demo mode is enabled, gating frontend fixture mode to dev/local opt-in, refreshing static assets, and re-running fullstack validation plus static scans.
 

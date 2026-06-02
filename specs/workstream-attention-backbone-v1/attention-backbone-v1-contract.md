@@ -279,7 +279,7 @@ v1 may choose the smallest safe starter substrate, but normal runtime claims req
 - browser API/shell request integration for reads and lifecycle actions;
 - frontend types/components that consume backend-derived counts/items.
 
-Do not satisfy this contract with in-memory frontend fixtures, deterministic hard-coded personal-attention lists, or demo-only badge state.
+Do not satisfy this contract with Akka component-backed frontend fixtures, deterministic hard-coded personal-attention lists, or demo-only badge state.
 
 ## Test obligations for implementation tasks
 
