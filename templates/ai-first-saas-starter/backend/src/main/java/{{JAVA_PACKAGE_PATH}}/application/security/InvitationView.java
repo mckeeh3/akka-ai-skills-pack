@@ -5,6 +5,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.InvitationStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 /** Browser-safe scoped invitation read model seam. Raw token and token hash are intentionally absent. */
@@ -17,6 +18,7 @@ public final class InvitationView {
 
   public List<InvitationRow> list(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     return invitationService.listScoped(actor, scopeType, tenantId, customerId).stream()
+        .sorted(Comparator.comparing({{JAVA_BASE_PACKAGE}}.domain.security.Invitation::createdAt).reversed().thenComparing({{JAVA_BASE_PACKAGE}}.domain.security.Invitation::invitationId))
         .map(invite -> new InvitationRow(
             invite.invitationId(),
             invite.normalizedEmail(),
@@ -43,6 +45,7 @@ public final class InvitationView {
     var invite = invitationService.invitationRepository().invitation(invitationId).orElseThrow(() -> new AuthorizationException(404, "invitation-not-found-or-forbidden"));
     invitationService.requireScopedRead(actor, invite.scopeType(), invite.tenantId(), invite.customerId());
     return invitationService.invitationRepository().lifecycleHistory(invitationId).stream()
+        .sorted(Comparator.comparing({{JAVA_BASE_PACKAGE}}.domain.security.InvitationLifecycleFact::occurredAt).thenComparing({{JAVA_BASE_PACKAGE}}.domain.security.InvitationLifecycleFact::factId))
         .map(fact -> new InvitationHistoryRow(
             fact.factId(),
             fact.invitationId(),

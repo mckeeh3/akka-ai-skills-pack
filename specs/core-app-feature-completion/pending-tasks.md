@@ -128,7 +128,7 @@
 
 ### TASK-COREEXT-01-003: Complete core projections and views
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/01-durable-core/03-core-projections-and-views.md
 - depends on: [TASK-COREEXT-01-002]
@@ -161,6 +161,7 @@
   - queue is updated and committed
 - notes:
   - commit message: `coreext: complete core projections`
+  - validation: `git diff --check`; rendered scaffold `mvn test -Dtest=AdminAuditViewTest,WorkstreamServiceTest`; `tools/validate-ai-first-saas-starter-fullstack.sh`
 
 ### TASK-COREEXT-02-001: Broaden governed workstream event coverage
 

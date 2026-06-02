@@ -12,13 +12,14 @@ import akka.javasdk.http.HttpResponses;
 import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.notFound;
 import static akka.javasdk.http.HttpException.unauthorized;
+import {{JAVA_BASE_PACKAGE}}.application.security.AdminAuditView;
+import {{JAVA_BASE_PACKAGE}}.application.security.AdminAuditView.AdminAuditRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView.InvitationRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService.UserDirectoryRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
-import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
@@ -143,7 +144,9 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     var limit = requestContext().queryParams().getInteger("limit").orElse(50);
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      var events = StarterSecurityComponents.userAdminService().auditEvents(actor, Math.max(1, Math.min(limit, 100)), correlationId).stream()
+      var events = new AdminAuditView(StarterSecurityComponents.userAdminService())
+          .list(actor, limit, correlationId)
+          .stream()
           .map(AdminAuditEventResponse::from)
           .toList();
       return HttpResponses.ok(new AdminAuditEventsResponse(events, correlationId));
@@ -224,9 +227,9 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   }
   public record MembershipActionApiResponse(String status, String message, String membershipId, String accountId, List<String> roles, String membershipStatus, String traceId, String correlationId) {}
   public record AdminAuditEventsResponse(List<AdminAuditEventResponse> events, String correlationId) {}
-  public record AdminAuditEventResponse(String eventId, String occurredAt, String correlationId, String actorAccountId, String actionType, String result, String reasonCode, String tenantId, String customerId, String targetAccountId, String targetMembershipId) {
-    static AdminAuditEventResponse from(AdminAuditEvent event) {
-      return new AdminAuditEventResponse(event.auditEventId(), event.timestamp().toString(), event.correlationId(), event.actorAccountId(), event.actionType(), event.result().name().toLowerCase(), event.reasonCode(), event.tenantId(), event.customerId(), event.targetAccountId(), event.targetMembershipId());
+  public record AdminAuditEventResponse(String eventId, String occurredAt, String correlationId, String actorAccountId, String actionType, String result, String reasonCode, String tenantId, String customerId, String targetAccountId, String targetMembershipId, String evidenceSummary, String dataClassification, String redactionSummary) {
+    static AdminAuditEventResponse from(AdminAuditRow row) {
+      return new AdminAuditEventResponse(row.auditEventId(), row.occurredAt().toString(), row.correlationId(), row.actorAccountId(), row.actionType(), row.result().name().toLowerCase(), row.reasonCode(), row.tenantId(), row.customerId(), row.targetAccountId(), row.targetMembershipId(), row.evidenceSummary(), row.dataClassification(), row.redactionSummary());
     }
   }
 }
