@@ -100,7 +100,7 @@
 
 ### TASK-AARPS-03-001: Update real-provider smoke docs
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-real-provider-smoke-readiness/backlog/01-real-provider-smoke-backlog.md
 - task brief: specs/autonomous-agent-real-provider-smoke-readiness/tasks/03-docs/01-update-real-provider-smoke_docs.md
 - depends on:
@@ -120,6 +120,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `autonomous-agent-smoke: update smoke docs`
+  - completion note: Updated mini-project guidance, starter README provider-smoke instructions, My Account digest handoff, and release handoff with provider configuration, provider-skip validation, configured real-provider smoke, fail-closed behavior, troubleshooting, and no fake/model-less success guardrails.
+  - checks: `git diff --check`; focused `rg -n "OPENAI_API_KEY|provider-skip|real-provider|real provider|fail-closed|fake|model-less|smoke-ai-first-saas-starter-real-model|RealModelProviderSmokeTest|provider configuration" specs/autonomous-agent-real-provider-smoke-readiness/README.md templates/ai-first-saas-starter/README.md specs/my-account-personal-attention-digest-autonomous-agent/my-account-personal-attention-digest-handoff.md specs/full-core-smb-polish-release-readiness/release-handoff.md`
 
 ### TASK-AARPS-99-001: Verify real-provider smoke readiness
 

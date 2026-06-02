@@ -39,3 +39,11 @@ Complete when:
 - real-provider smoke can be run safely when configured;
 - absent provider config still fails closed;
 - docs/handoff explain commands, required secrets, expected outcomes, and troubleshooting.
+
+## Current smoke guidance
+
+- Provider-skip validation is safe for CI: `env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh` must report an explicit skip with enablement guidance and must not claim model-backed success.
+- Configured real-provider smoke requires backend-only `OPENAI_API_KEY`; optional variables are `OPENAI_MODEL_ID`, `OPENAI_API_BASE_URL`, and `OPENAI_REQUEST_TIMEOUT_SECONDS`.
+- Configured smoke should be run with `tools/smoke-ai-first-saas-starter-real-model.sh --keep --base-package ai.first --maven-group-id ai.first` when debugging so the rendered scaffold remains available.
+- If the configured smoke fails, rerun from the kept scaffold with `mvn -DrealModelProviderSmoke=true -Dtest=RealModelProviderSmokeTest test` and preserve the sanitized failure as evidence.
+- Missing provider/runtime configuration must remain fail-closed with actionable blocked/provider state; do not introduce deterministic, canned, simulated, fake, or model-less success to satisfy smoke readiness.

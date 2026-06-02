@@ -159,7 +159,8 @@ mvn compile exec:java
 Optional provider smoke from the skills-pack source repository:
 
 ```bash
-# Skip mode is safe for CI with no provider secrets:
+# Skip mode is safe for CI with no provider secrets. This must report an
+# explicit skip, not model-backed success:
 env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh
 
 # Real mode runs a targeted JUnit smoke in a rendered scaffold and submits one
@@ -170,6 +171,8 @@ export OPENAI_API_BASE_URL="https://api.openai.com/v1" # optional default
 export OPENAI_REQUEST_TIMEOUT_SECONDS="30" # optional default
 tools/smoke-ai-first-saas-starter-real-model.sh
 ```
+
+Real mode must pass through the `ComponentClient`-backed `WorkstreamRuntimeAgent`, assert provider-backed `markdown_response` output, prompt/model/work trace ids, durable/in-process trace shape, and provider-secret redaction in smoke logs, frontend env files, and static assets. If `OPENAI_API_KEY` is missing or blank, the command exits successfully only as an environmental skip with enablement guidance; it must not fake deterministic, canned, simulated, or model-less success. If real mode fails, keep the rendered target with `--keep` and rerun the focused backend test from that scaffold with `mvn -DrealModelProviderSmoke=true -Dtest=RealModelProviderSmokeTest test` after confirming the backend-only provider variables are exported.
 
 The starter's Akka model-provider config intentionally keeps `temperature` and `top-p` at OpenAI default-compatible values because some supported OpenAI models reject non-default sampling overrides. Keep any future sampling overrides model-specific.
 

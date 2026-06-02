@@ -16,7 +16,7 @@ This recommendation remains scoped to `templates/ai-first-saas-starter/` after s
 
 | Area | Result | Evidence |
 |---|---|---|
-| Fullstack scaffold validation | Pass | `tools/validate-ai-first-saas-starter-fullstack.sh` rendered the starter, ran backend tests, frontend tests/typecheck/build, verified static resources, scanned built assets, and ran real-provider smoke when `OPENAI_API_KEY` was present. Latest durability-remediation validation passed on 2026-05-30 against `/tmp/ai-first-saas-starter-fullstack.YQvBuC`. |
+| Fullstack scaffold validation | Pass | `tools/validate-ai-first-saas-starter-fullstack.sh` rendered the starter, ran backend tests, frontend tests/typecheck/build, verified static resources, scanned built assets, and ran real-provider smoke when `OPENAI_API_KEY` was present. Latest durability-remediation validation passed on 2026-05-30 against `/tmp/ai-first-saas-starter-fullstack.YQvBuC`; later autonomous-agent smoke readiness validated provider-skip full tests and configured real-provider smoke after fixing a stale trace-sink assertion in `RealModelProviderSmokeTest`. |
 | Kept rendered scaffold validation | Pass | `tools/validate-ai-first-saas-starter-fullstack.sh --keep` repeated fullstack validation and retained `/tmp/ai-first-saas-starter-fullstack.ASsYXm` for focused backend commands. |
 | Workstream icon proof | Pass | `tools/prove-workstream-icons-v0.sh` verified descriptor-backed top-rail icons for User Admin, Agent Admin, Audit/Trace, and Governance/Policy while My Account remains launched from the lower-left signed-in user tile. |
 | Provider-missing smoke mode | Expected skip | `env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh` skipped loudly with enablement guidance rather than producing model-less success. |
@@ -32,8 +32,9 @@ This recommendation remains scoped to `templates/ai-first-saas-starter/` after s
 - Normal model-backed workstream message submission must use the governed Akka Agent runtime path: active managed configuration resolution, `WorkstreamRuntimeAgent`, governed loader tools, `ToolPermissionBoundary`, `effects().tools(runtimeTools)`, trace emission, and provider-backed response generation.
 - Missing or blank provider configuration must fail closed with actionable `system_message`/provider-blocked behavior and trace/correlation references. It must not return deterministic, mock, canned, model-less, or fixture-backed normal success responses.
 - Provider smoke has two valid modes:
-  - with `OPENAI_API_KEY` set, the fullstack validation can run a targeted real-model smoke through the rendered scaffold;
+  - with `OPENAI_API_KEY` set, the fullstack validation can run a targeted real-model smoke through the rendered scaffold, including `ComponentClient`-backed `WorkstreamRuntimeAgent` invocation, provider-backed `markdown_response`, prompt/model/work trace shape, and provider-secret redaction checks;
   - with `OPENAI_API_KEY` unset, the standalone smoke command skips loudly and explains how to enable real provider validation.
+- Troubleshoot configured real-provider failures from a kept scaffold with `mvn -DrealModelProviderSmoke=true -Dtest=RealModelProviderSmokeTest test`; assertion failures must be fixed or documented, not reclassified as success, and absent provider configuration must remain fail-closed/no-fake-success.
 
 ## Intentional deferrals and non-blocking recommendations
 

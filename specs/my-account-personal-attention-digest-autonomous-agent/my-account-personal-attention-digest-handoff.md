@@ -43,4 +43,4 @@ Provider-skip fullstack validation passed with:
 - frontend typecheck and Vite build passed;
 - optional real-provider smoke skipped only when `OPENAI_API_KEY` was intentionally unset.
 
-A separate ambient real-provider smoke failed with a sanitized assertion failure and remains a local real-provider smoke blocker. That blocker is not treated as fake success or as a model-less substitute for normal runtime behavior.
+The previously recorded ambient real-provider smoke blocker was diagnosed and resolved under `specs/autonomous-agent-real-provider-smoke-readiness/`. The failure was a brittle `RealModelProviderSmokeTest` setup issue: the test captured `AgentRuntimeService` before `StarterSecurityComponents.workstreamService(...)` rebound the Akka runtime, so final trace assertions read a stale trace sink. The fixed smoke now captures the runtime after binding; provider-skip validation still skips loudly when `OPENAI_API_KEY` is absent, and configured real-provider smoke passes without treating fake, deterministic, canned, simulated, or model-less output as success.
