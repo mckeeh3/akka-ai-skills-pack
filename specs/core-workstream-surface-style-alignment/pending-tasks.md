@@ -82,7 +82,7 @@
 
 ### TASK-CWSS-01-002: Align User Admin and Agent Admin surface style
 
-- status: pending
+- status: done
 - source: specs/core-workstream-surface-style-alignment/backlog/01-core-domain-surfaces-build-backlog.md
 - task brief: specs/core-workstream-surface-style-alignment/tasks/01-core-domain-surfaces/02-align-admin-workstream-surfaces.md
 - depends on:
@@ -115,6 +115,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: align admin workstream surface style`
+  - checks: `git diff --check`; focused stale style/theme search over touched files passed
 
 ### TASK-CWSS-01-003: Align Audit/Trace and Governance/Policy surface style
 

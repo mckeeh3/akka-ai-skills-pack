@@ -49,6 +49,18 @@ The workstream agent must handle:
 | `surface.agent_admin.prompt_assembly_trace.v1` | audit_timeline | assembly inputs, versions, manifests, tool list, authorization decisions | `agent_admin.traces.prompt_assembly.view` | open source doc/version, open agent work trace |
 | `surface.agent_admin.system_message.v1` | system_message | denials, validation, approval required, activation success/failure | capability-specific | retry, open trace, request approval |
 
+## Surface style expectations
+
+These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent evidence/authority/trust cues. Style is a UI realization layer only; it must not change functional-agent semantics, managed-agent governance, prompt/skill/reference authority, tool-boundary enforcement, capability mappings, approval rules, routes, or trace behavior.
+
+- Dashboard: render as an agent-governance briefing with KPI cards for active/disabled agents, pending proposals, failed tests, recent traces, and authority-expansion risk; put proposal and trace attention queues above routine catalog summaries.
+- Agent catalog and detail: use dense catalog rows/cards and layered detail panels showing lifecycle, owner/steward, model policy, prompt, manifests, tool boundary, status, and recent trace links with explicit disabled/read-only states.
+- Prompt, skill, and reference version surfaces: use enterprise diff-review layouts with version metadata, checksums/status, reviewer state, activation/rollback eligibility, simulation/test evidence, redaction notes, and side-by-side or inline diffs as appropriate.
+- Manifest and tool-boundary editors: emphasize compact expertise manifests, assigned/unassigned artifacts, allowed/denied tools, data/side-effect boundaries, and authority-expansion warnings through governance/trust control panels and approval-required decision cards.
+- Behavior proposal surfaces: render as decision cards plus diff review with rationale, risk/impact, expected tests/replays, approve/reject/request-changes actions, and trace/audit links.
+- Prompt assembly and work-trace surfaces: render as audit timelines with ordered inputs, versions, manifest entries, tool list, authorization decisions, allowed/denied loads, correlation ids, and links back to source documents and agent work traces.
+- System-message surfaces: use typed cards for unsafe requests, validation, denied authority, pending approval, activation success/failure, and trace-unavailable states with semantic icon/color plus text, recovery actions, and request-approval/open-trace affordances when authorized.
+
 ## Capability inventory and exposure channels
 
 A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.

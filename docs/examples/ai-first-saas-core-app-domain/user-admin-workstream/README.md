@@ -48,6 +48,17 @@ The agent may draft or recommend side-effecting changes, but commit requires exp
 | `surface.user_admin.admin_audit_summary.v1` | audit_timeline | recent user-admin audit | `user_admin.audit.summary` | open audit trace, filter, export request if allowed |
 | `surface.user_admin.system_message.v1` | system_message | denials, validation, last-admin protection, success, stale/reconnect | capability-specific | retry, open trace, request approval |
 
+## Surface style expectations
+
+These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered cards, blue/indigo accent, sparse semantic status colors, accessible focus states, and strong numeric/table hierarchy. Style clarifies authority, risk, evidence, and auditability; it must not change surface inventory, capability mappings, authorization, routes, or audit behavior.
+
+- Dashboard: render as a mission-control briefing with a KPI strip for admin health, pending invites, failed deliveries, disabled users, and admin counts; keep attention queues for failed delivery, last-admin, approval-required, and stale access-review items visually above routine reports.
+- Users and invitations lists: use dense enterprise table/search layouts with clear scoped filters, sortable columns, status badges with text, row-level trace links where allowed, and empty/error states that do not leak cross-tenant existence.
+- User detail/edit and invite form: use layered detail/form panels with visible authority context, destructive-action separation, last-admin protection messaging, idempotent submit feedback, and decision/system-message cards for approval-required or denied changes.
+- Access review: present high-risk memberships as attention cards or grouped review rows with severity, evidence, reviewer state, and trace links; keep the layout grounded in review workflow and authorization evidence.
+- Admin audit summary: render as an audit timeline with timestamps, actor, scope, capability/action, authorization basis, and drill-down links.
+- System-message surfaces: use typed cards for denial, validation, stale/reconnect, success, and approval-required states with semantic icon/color plus text, recovery actions, and trace/request-approval affordances when allowed.
+
 ## Capability inventory and exposure channels
 
 A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.
