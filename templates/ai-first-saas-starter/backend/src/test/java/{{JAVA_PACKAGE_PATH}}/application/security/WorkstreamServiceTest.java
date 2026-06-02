@@ -59,7 +59,8 @@ class WorkstreamServiceTest {
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"), new LocalDemoAgentRuntimeTraceSink());
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
     var workstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository);
+    var notificationService = new NotificationService(new LocalDemoNotificationRepository(), resolver, Clock.systemUTC());
+    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
@@ -463,6 +464,37 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void myAccountNotificationCenterSurfaceRendersBackendProjectionAndLifecycleActions() {
+    var dashboard = service.surface(identity(), "membership-admin", "surface-my-account-dashboard", "corr-notification-dashboard");
+    assertTrue(dashboard.toString().contains("card-my-account-notifications"));
+    assertTrue(dashboard.toString().contains("notification.list_my_account_center"));
+    assertTrue(dashboard.toString().contains("surface-my-account-notification-center"));
+
+    var center = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-show-my-account-notification-center", "action-show-my-account-notification-center", "notification.list_my_account_center", "notification.list_my_account_center", null, null, "membership-admin", "surface-my-account-dashboard", "corr-notification-center"));
+
+    assertEquals("accepted", center.status());
+    assertEquals("surface-my-account-notification-center", center.resultSurface().surfaceId());
+    assertEquals("notification-center", center.resultSurface().surfaceType());
+    assertEquals("my_account.notification_center.v1", center.resultSurface().data().get("surfaceContract"));
+    assertEquals("in_app", center.resultSurface().data().get("channel"));
+    assertTrue(center.resultSurface().toString().contains("notification.mark_read"));
+    assertTrue(center.resultSurface().toString().contains("notification.archive"));
+    assertTrue(center.resultSurface().toString().contains("notification.update_preferences"));
+    assertTrue(center.resultSurface().toString().contains("email and push are future"));
+    assertFalse(center.resultSurface().toString().contains("pushEnabled"));
+
+    var firstNotificationId = ((List<?>) center.resultSurface().data().get("items")).get(0).toString().replaceFirst(".*notificationId=([^,}]+).*", "$1");
+    var read = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-mark-read", "action-notification-mark-read", "notification.mark_read", "notification.mark_read", Map.of("notificationId", firstNotificationId), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-read"));
+
+    assertEquals("full", read.status());
+    assertEquals("surface-my-account-notification-center", read.resultSurface().surfaceId());
+    assertTrue(read.resultSurface().toString().contains("notification.list_my_account_center"));
+    assertTrue(read.message().contains("source attention/task/event state unchanged"));
+  }
+
+  @Test
   void myAccountProfileSettingsUpdatePersistsAllowedSelfServiceFieldsAndIsIdempotent() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-update-my-profile", "action-update-my-profile", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Updated Admin", "preferredColorMode", "dark"), "idem-my-account-update", "membership-admin", "surface-my-profile", "corr-my-account-update"));
@@ -837,7 +869,8 @@ class WorkstreamServiceTest {
       throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
     }, new LocalDemoAgentRuntimeTraceSink());
     var failClosedWorkstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, agentRuntimeService::invokeWorkstreamAgent, failClosedWorkstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, failClosedWorkstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, null);
+    var notificationService = new NotificationService(new LocalDemoNotificationRepository(), resolver, Clock.systemUTC());
+    var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, agentRuntimeService::invokeWorkstreamAgent, failClosedWorkstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, failClosedWorkstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, null, null, null, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     var response = failClosedService.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-audit-trace", "Explain this provider failure", "corr-audit-failclosed", "idem-audit-failclosed"), "corr-header");

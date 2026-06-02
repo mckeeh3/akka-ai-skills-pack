@@ -22,6 +22,7 @@ const backendPersonalAttentionDigestService = readTemplateOrRenderedBackend('src
 const backendPersonalAttentionDigestTest = readTemplateOrRenderedBackend('src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountPersonalAttentionDigestServiceTest.java');
 const surfaceRenderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
+const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const actionState = read('./workstream/actions/capabilityActionState.ts');
@@ -34,6 +35,7 @@ const expectedMyAccountMarkers = [
   'surface-my-settings',
   'surface-my-context',
   'surface-my-account-open-denied',
+  'surface-my-account-notification-center',
   'surface-my-account-personal-attention-digest-progress',
   'surface-my-account-personal-attention-digest-result',
   'surface-my-account-personal-attention-digest-blocked',
@@ -41,6 +43,12 @@ const expectedMyAccountMarkers = [
   'action-show-my-profile',
   'action-show-my-settings',
   'action-show-my-context',
+  'action-show-my-account-notification-center',
+  'action-notification-mark-read',
+  'action-notification-dismiss',
+  'action-notification-archive',
+  'action-notification-snooze',
+  'action-notification-update-preferences',
   'action-update-my-profile',
   'action-update-my-settings',
   'action-open-user-admin',
@@ -102,6 +110,11 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(surfaceRenderer, /case 'system_message':\n      return <SystemMessageSurface/);
   assert.match(dashboardSurface, /attentionItems/);
   assert.match(dashboardSurface, /nextSteps/);
+  assert.match(surfaceRenderer, /case 'notification-center':\n      return <NotificationCenterSurface/);
+  assert.match(notificationCenterSurface, /notification\.list_my_account_center/);
+  assert.match(notificationCenterSurface, /In-app only/);
+  assert.match(notificationCenterSurface, /Email and push delivery are future governed-channel work/);
+  assert.doesNotMatch(notificationCenterSurface, /pushEnabled|emailEnabled/);
   assert.match(detailEditSurface, /surface-detail-edit-form/);
   assert.match(detailEditSurface, /permissionState/);
   assert.match(systemMessageSurface, /Recovery steps/);

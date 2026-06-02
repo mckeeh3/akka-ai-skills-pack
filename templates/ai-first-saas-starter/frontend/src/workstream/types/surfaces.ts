@@ -2,7 +2,7 @@ import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
 export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op' | 'blocked_provider_or_runtime' | 'not_found_or_redacted' | 'validation-error';
-export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome';
+export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'notification-center';
 
 export type SurfaceLink = {
   label: string;
@@ -299,6 +299,43 @@ export type GovernanceDiffSurfaceData = {
     confidence: string;
     evidenceTraceIds: string[];
   };
+};
+
+export type NotificationCenterSurfaceData = {
+  surfaceContract: 'my_account.notification_center.v1' | string;
+  channel: 'in_app' | string;
+  unreadCount: number;
+  visibleCount: number;
+  items?: Array<{
+    notificationId: string;
+    channel?: 'in_app' | string;
+    title?: string;
+    summary?: string;
+    category?: string;
+    priority?: 'info' | 'warning' | 'urgent' | 'blocked' | string;
+    status: 'unread' | 'read' | 'dismissed' | 'archived' | 'snoozed' | 'expired' | string;
+    origin?: string;
+    redactionLevel?: 'full' | 'summary_only' | 'not_found_or_redacted' | string;
+    requiredCapabilityId?: string;
+    owningWorkstreamId?: string;
+    surfaceRef?: AttentionSurfaceRef;
+    sourceRefs?: Array<{ refType?: string; refId: string; label?: string; capabilityId?: string; traceId?: string; correlationId?: string }>;
+    traceRefs?: string[];
+    createdAt?: string;
+    updatedAt?: string;
+    lastChangedAt?: string;
+    readAt?: string;
+    dismissedAt?: string;
+    archivedAt?: string;
+    snoozedUntil?: string;
+  }>;
+  preferencesSummary?: Array<{ preferenceId: string; channel: 'in_app' | string; category: string; enabled: boolean; minimumPriority: string; muteUntil?: string; includeReadInCenter: boolean; updatedAt?: string; updatedBy?: string; correlationId?: string }>;
+  sourceSummary?: Record<string, number>;
+  redaction?: string;
+  traceRefs?: string[];
+  correlationId?: string;
+  capabilityIds?: string[];
+  futureDeliveryChannels?: string;
 };
 
 export type OutcomeSurfaceData = {

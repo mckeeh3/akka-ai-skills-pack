@@ -18,6 +18,13 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSurfaceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountNotificationCenter;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationCategory;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationLifecycleStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPriority;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationSourceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
@@ -86,6 +93,12 @@ public final class WorkstreamService {
   private static final String MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY = MyAccountPersonalAttentionDigestService.CANCEL_CAPABILITY;
   private static final String MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY = MyAccountPersonalAttentionDigestService.ACCEPT_RESULT_CAPABILITY;
   private static final String MY_ACCOUNT_DIGEST_REJECT_CAPABILITY = MyAccountPersonalAttentionDigestService.REJECT_RESULT_CAPABILITY;
+  private static final String NOTIFICATION_LIST_CAPABILITY = NotificationService.LIST_MY_ACCOUNT_CENTER_TOOL;
+  private static final String NOTIFICATION_MARK_READ_CAPABILITY = NotificationService.MARK_READ_TOOL;
+  private static final String NOTIFICATION_DISMISS_CAPABILITY = NotificationService.DISMISS_TOOL;
+  private static final String NOTIFICATION_ARCHIVE_CAPABILITY = NotificationService.ARCHIVE_TOOL;
+  private static final String NOTIFICATION_SNOOZE_CAPABILITY = NotificationService.SNOOZE_TOOL;
+  private static final String NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY = NotificationService.UPDATE_PREFERENCES_TOOL;
   private static final String AUDIT_TRACE_READ_CAPABILITY = "audit.trace.read";
   private static final String AUDIT_TRACE_DASHBOARD_CAPABILITY = "audit.trace.dashboard.read";
   private static final String AUDIT_TRACE_SEARCH_CAPABILITY = "audit.trace.search";
@@ -105,6 +118,7 @@ public final class WorkstreamService {
   private final AuthContextResolver authContextResolver;
   private final MyAccountService myAccountService;
   private final MyAccountPersonalAttentionDigestService personalAttentionDigestService;
+  private final NotificationService notificationService;
   private final UserDirectoryView userDirectoryView;
   private final InvitationView invitationView;
   private final UserAdminService userAdminService;
@@ -138,7 +152,7 @@ public final class WorkstreamService {
       GovernancePolicyRepository governancePolicyRepository,
       AttentionService attentionService,
       AttentionProducerService attentionProducerService) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, null, null, new FailClosedAccessReviewAutonomousAgentRuntime());
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, null, null, new FailClosedAccessReviewAutonomousAgentRuntime(), StarterSecurityComponents.notificationService());
   }
 
   public WorkstreamService(
@@ -159,7 +173,7 @@ public final class WorkstreamService {
       AttentionProducerService attentionProducerService,
       WorkstreamEventPublisher workstreamEventPublisher,
       WorkstreamEventRepository workstreamEventRepository) {
-    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new FailClosedAccessReviewAutonomousAgentRuntime());
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), StarterSecurityComponents.notificationService());
   }
 
   public WorkstreamService(
@@ -180,12 +194,14 @@ public final class WorkstreamService {
       AttentionProducerService attentionProducerService,
       WorkstreamEventPublisher workstreamEventPublisher,
       WorkstreamEventRepository workstreamEventRepository,
-      AccessReviewAutonomousAgentRuntime accessReviewAutonomousAgentRuntime) {
+      AccessReviewAutonomousAgentRuntime accessReviewAutonomousAgentRuntime,
+      NotificationService notificationService) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.attentionService = Objects.requireNonNull(attentionService);
     this.myAccountService = new MyAccountService(authContextResolver, attentionService);
     this.personalAttentionDigestService = StarterSecurityComponents.personalAttentionDigestService();
+    this.notificationService = Objects.requireNonNull(notificationService);
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
@@ -358,6 +374,23 @@ public final class WorkstreamService {
     } else if ("action-reject-my-account-personal-attention-digest".equals(request.actionId())) {
       var task = personalAttentionDigestService.rejectResult(actor, stringInput(request.input(), "digestTaskId", ""), stringInput(request.input(), "reason", "needs refresh"), request.correlationId());
       result = personalAttentionDigestActionResult(task, "accepted", "Advisory personal attention digest rejected for follow-up; source attention lifecycle unchanged.", request.correlationId(), actor);
+    } else if ("action-show-my-account-notification-center".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "My Account in-app notification center loaded from backend-owned notification projection.", request.correlationId(), List.of("trace-my-account-notification-center"), myAccountNotificationCenterSurface(actor, request.correlationId()));
+    } else if ("action-notification-mark-read".equals(request.actionId())) {
+      var item = notificationService.markRead(actor, notificationIdInput(actor, request.input(), request.correlationId()), request.correlationId());
+      result = new CapabilityActionResult(item.redactionLevel().name().toLowerCase(Locale.ROOT), "Notification mark-read processed by backend-owned in-app lifecycle; source attention/task/event state unchanged.", request.correlationId(), item.traceRefs(), myAccountNotificationCenterSurface(actor, request.correlationId()));
+    } else if ("action-notification-dismiss".equals(request.actionId())) {
+      var item = notificationService.dismiss(actor, notificationIdInput(actor, request.input(), request.correlationId()), request.correlationId());
+      result = new CapabilityActionResult(item.redactionLevel().name().toLowerCase(Locale.ROOT), "Notification dismiss processed by backend-owned in-app lifecycle; source state unchanged.", request.correlationId(), item.traceRefs(), myAccountNotificationCenterSurface(actor, request.correlationId()));
+    } else if ("action-notification-archive".equals(request.actionId())) {
+      var item = notificationService.archive(actor, notificationIdInput(actor, request.input(), request.correlationId()), request.correlationId());
+      result = new CapabilityActionResult(item.redactionLevel().name().toLowerCase(Locale.ROOT), "Notification archive processed by backend-owned in-app lifecycle; source state unchanged.", request.correlationId(), item.traceRefs(), myAccountNotificationCenterSurface(actor, request.correlationId()));
+    } else if ("action-notification-snooze".equals(request.actionId())) {
+      var item = notificationService.snooze(actor, notificationIdInput(actor, request.input(), request.correlationId()), Instant.now().plus(1, ChronoUnit.HOURS), request.correlationId());
+      result = new CapabilityActionResult(item.redactionLevel().name().toLowerCase(Locale.ROOT), "Notification snooze processed by backend-owned in-app lifecycle; source state unchanged.", request.correlationId(), item.traceRefs(), myAccountNotificationCenterSurface(actor, request.correlationId()));
+    } else if ("action-notification-update-preferences".equals(request.actionId())) {
+      var pref = notificationService.updatePreference(actor, NotificationCategory.ALL, booleanInput(request.input(), "enabled", true), NotificationPriority.INFO, null, booleanInput(request.input(), "includeReadInCenter", false), request.correlationId());
+      result = new CapabilityActionResult("accepted", "In-app notification preferences updated by backend authority; email/push delivery remains future work.", request.correlationId(), List.of(pref.correlationId()), myAccountNotificationCenterSurface(actor, request.correlationId()));
     } else if ("action-open-user-admin".equals(request.actionId()) || "action-open-agent-admin".equals(request.actionId()) || "action-open-audit-trace".equals(request.actionId()) || "action-open-governance-policy".equals(request.actionId())) {
       var open = myAccountService.openAuthorizedWorkstream(actor, request.actionId(), request.correlationId());
       result = "accepted".equals(open.status())
@@ -522,10 +555,46 @@ public final class WorkstreamService {
   private SurfaceEnvelope myAccountDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     seedStarterCoreAttention(actor, correlationId);
     var dashboard = myAccountService.dashboardData(actor, correlationId);
+    var notificationCenter = myAccountNotificationCenterData(actor, correlationId);
+    var cards = new ArrayList<>(dashboard.cards());
+    cards.add(mapOf("cardId", "card-my-account-notifications", "label", "Unread in-app notifications", "value", notificationCenter.unreadCount(), "severity", notificationCenter.unreadCount() > 0 ? "warning" : "info"));
     return envelope("surface-my-account-dashboard", "dashboard", "My Account", actor, correlationId,
-        mapOf("surfaceContract", dashboard.surfaceContract(), "cards", dashboard.cards(), "sections", dashboard.sections(), "attentionItems", dashboard.attentionItems(), "personalAttentionDigest", mapOf("surfaceIds", List.of("surface-my-account-personal-attention-digest-progress", "surface-my-account-personal-attention-digest-result", "surface-my-account-personal-attention-digest-blocked"), "statusSource", "backend-projected MyAccountPersonalAttentionDigestTask", "noDirectMutation", true, "capabilityIds", List.of(MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, MY_ACCOUNT_DIGEST_REJECT_CAPABILITY)), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention only includes authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "personal attention digest", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
-        List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), showContextAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
+        mapOf("surfaceContract", dashboard.surfaceContract(), "cards", cards, "sections", dashboard.sections(), "attentionItems", dashboard.attentionItems(), "notificationCenter", mapOf("surfaceId", "surface-my-account-notification-center", "surfaceContract", notificationCenter.surfaceContract(), "channel", "in_app", "unreadCount", notificationCenter.unreadCount(), "visibleCount", notificationCenter.visibleCount(), "countSource", NotificationService.LIST_MY_ACCOUNT_CENTER_TOOL, "futureEmailPush", "not implemented"), "personalAttentionDigest", mapOf("surfaceIds", List.of("surface-my-account-personal-attention-digest-progress", "surface-my-account-personal-attention-digest-result", "surface-my-account-personal-attention-digest-blocked"), "statusSource", "backend-projected MyAccountPersonalAttentionDigestTask", "noDirectMutation", true, "capabilityIds", List.of(MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, MY_ACCOUNT_DIGEST_REJECT_CAPABILITY)), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention and notifications only include authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "personal attention digest", "notification center", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
+        List.of(showDashboardAction(), showNotificationCenterAction(), showProfileAction(), showSettingsAction(), showContextAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
   }
+
+  private SurfaceEnvelope myAccountNotificationCenterSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var center = myAccountNotificationCenterData(actor, correlationId);
+    return envelope("surface-my-account-notification-center", "notification-center", "In-app notifications", actor, correlationId,
+        mapOf("surfaceContract", center.surfaceContract(), "channel", "in_app", "unreadCount", center.unreadCount(), "visibleCount", center.visibleCount(), "items", center.items().stream().map(this::notificationItemMap).toList(), "preferencesSummary", center.preferencesSummary().stream().map(this::notificationPreferenceMap).toList(), "sourceSummary", center.sourceSummary(), "redaction", center.redaction().name().toLowerCase(Locale.ROOT), "traceRefs", center.traceRefs(), "correlationId", center.correlationId(), "capabilityIds", List.of(NOTIFICATION_LIST_CAPABILITY, NOTIFICATION_MARK_READ_CAPABILITY, NOTIFICATION_DISMISS_CAPABILITY, NOTIFICATION_ARCHIVE_CAPABILITY, NOTIFICATION_SNOOZE_CAPABILITY, NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY), "futureDeliveryChannels", "email and push are future governed delivery-channel work; this surface is in-app only"),
+        List.of(showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), openAuditAction()));
+  }
+
+  private MyAccountNotificationCenter myAccountNotificationCenterData(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    seedStarterCoreAttention(actor, correlationId);
+    for (var item : attentionService.listMyAccountItems(actor, correlationId).personalQueue()) notificationService.projectFromAttention(actor, item, correlationId);
+    if (workstreamEventRepository != null) {
+      workstreamEventRepository.listTenant(actor.selectedContext().tenantId()).stream()
+          .filter(event -> event.customerId() == null || Objects.equals(event.customerId(), actor.selectedContext().customerId()))
+          .filter(event -> event.capabilityRefs() != null && !event.capabilityRefs().isEmpty())
+          .filter(event -> actor.selectedContext().capabilities().contains(event.capabilityRefs().get(0)))
+          .forEach(event -> notificationService.projectFromWorkstreamEvent(actor, event, correlationId));
+    }
+    return notificationService.listMyAccountCenter(actor, correlationId);
+  }
+
+  private Map<String, Object> notificationItemMap(NotificationItem item) {
+    return mapOf("notificationId", item.notificationId(), "channel", item.channel().name().toLowerCase(Locale.ROOT), "title", item.title(), "summary", item.summary(), "category", item.category() == null ? null : item.category().name().toLowerCase(Locale.ROOT), "priority", item.priority() == null ? null : item.priority().name().toLowerCase(Locale.ROOT), "status", item.status().name().toLowerCase(Locale.ROOT), "origin", item.origin(), "redactionLevel", item.redactionLevel().name().toLowerCase(Locale.ROOT), "requiredCapabilityId", item.requiredCapabilityId(), "owningWorkstreamId", item.owningWorkstreamId(), "surfaceRef", item.surfaceRef(), "sourceRefs", item.sourceRefs().stream().map(this::notificationSourceRefMap).toList(), "traceRefs", item.traceRefs(), "createdAt", item.createdAt() == null ? null : item.createdAt().toString(), "updatedAt", item.updatedAt() == null ? null : item.updatedAt().toString(), "lastChangedAt", item.lastChangedAt() == null ? null : item.lastChangedAt().toString(), "readAt", item.readAt() == null ? null : item.readAt().toString(), "dismissedAt", item.dismissedAt() == null ? null : item.dismissedAt().toString(), "archivedAt", item.archivedAt() == null ? null : item.archivedAt().toString(), "snoozedUntil", item.snoozedUntil() == null ? null : item.snoozedUntil().toString());
+  }
+
+  private Map<String, Object> notificationSourceRefMap(NotificationSourceRef ref) {
+    return mapOf("refType", ref.sourceType(), "refId", ref.sourceId(), "label", ref.label(), "capabilityId", ref.requiredCapabilityId(), "traceId", ref.traceId(), "correlationId", ref.correlationId());
+  }
+
+  private Map<String, Object> notificationPreferenceMap(NotificationPreference pref) {
+    return mapOf("preferenceId", pref.preferenceId(), "channel", pref.channel().name().toLowerCase(Locale.ROOT), "category", pref.category().name().toLowerCase(Locale.ROOT), "enabled", pref.enabled(), "minimumPriority", pref.minimumPriority().name().toLowerCase(Locale.ROOT), "muteUntil", pref.muteUntil() == null ? null : pref.muteUntil().toString(), "includeReadInCenter", pref.includeReadInCenter(), "updatedAt", pref.updatedAt().toString(), "updatedBy", pref.updatedBy(), "correlationId", pref.correlationId());
+  }
+
 
   private SurfaceEnvelope myProfileSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     return envelope("surface-my-profile", "detail-edit", "User profile", actor, correlationId,
@@ -905,6 +974,7 @@ public final class WorkstreamService {
       case "surface-my-profile" -> myProfileSurface(actor, correlationId);
       case "surface-my-settings" -> mySettingsSurface(actor, correlationId);
       case "surface-my-context" -> myContextSurface(actor, correlationId);
+      case "surface-my-account-notification-center" -> myAccountNotificationCenterSurface(actor, correlationId);
       case "surface-my-account-personal-attention-digest-progress" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "surface-my-account-personal-attention-digest-result" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "surface-my-account-personal-attention-digest-blocked" -> personalAttentionDigestBlockedSurface(actor, null, correlationId);
@@ -1097,6 +1167,7 @@ public final class WorkstreamService {
       case "action-show-my-profile", "action-update-my-profile" -> myProfileSurface(actor, correlationId);
       case "action-show-my-settings", "action-update-my-settings" -> mySettingsSurface(actor, correlationId);
       case "action-show-my-context" -> myContextSurface(actor, correlationId);
+      case "action-show-my-account-notification-center", "action-notification-mark-read", "action-notification-dismiss", "action-notification-archive", "action-notification-snooze", "action-notification-update-preferences" -> myAccountNotificationCenterSurface(actor, correlationId);
       case "action-sign-out" -> myAccountDashboardSurface(actor, correlationId);
       case "action-start-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "action-read-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
@@ -1132,7 +1203,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), showContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayListAction(), displayDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayListAction(), displayDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
@@ -1147,6 +1218,12 @@ public final class WorkstreamService {
   private String governedToolId(String capabilityId) { return capabilityId; }
 
   private SurfaceAction showDashboardAction() { return new SurfaceAction("action-show-my-account-dashboard", "Refresh My Account summary", "read", browserToolId("action-show-my-account-dashboard"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-dashboard", "inline"), new Audit("MyAccountDashboardDisplayed", true)); }
+  private SurfaceAction showNotificationCenterAction() { return new SurfaceAction("action-show-my-account-notification-center", "Open in-app notification center", "read", browserToolId("action-show-my-account-notification-center"), governedToolId(NOTIFICATION_LIST_CAPABILITY), NOTIFICATION_LIST_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("MyAccountNotificationCenterDisplayed", true)); }
+  private SurfaceAction markNotificationReadAction() { return new SurfaceAction("action-notification-mark-read", "Mark notification read", "command", browserToolId("action-notification-mark-read"), governedToolId(NOTIFICATION_MARK_READ_CAPABILITY), NOTIFICATION_MARK_READ_CAPABILITY, "schema.notification.mark-read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationMarkedRead", true)); }
+  private SurfaceAction dismissNotificationAction() { return new SurfaceAction("action-notification-dismiss", "Dismiss notification", "command", browserToolId("action-notification-dismiss"), governedToolId(NOTIFICATION_DISMISS_CAPABILITY), NOTIFICATION_DISMISS_CAPABILITY, "schema.notification.dismiss.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationDismissed", true)); }
+  private SurfaceAction archiveNotificationAction() { return new SurfaceAction("action-notification-archive", "Archive notification", "command", browserToolId("action-notification-archive"), governedToolId(NOTIFICATION_ARCHIVE_CAPABILITY), NOTIFICATION_ARCHIVE_CAPABILITY, "schema.notification.archive.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationArchived", true)); }
+  private SurfaceAction snoozeNotificationAction() { return new SurfaceAction("action-notification-snooze", "Snooze notification", "command", browserToolId("action-notification-snooze"), governedToolId(NOTIFICATION_SNOOZE_CAPABILITY), NOTIFICATION_SNOOZE_CAPABILITY, "schema.notification.snooze.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationSnoozed", true)); }
+  private SurfaceAction updateNotificationPreferencesAction() { return new SurfaceAction("action-notification-update-preferences", "Update in-app notification preferences", "command", browserToolId("action-notification-update-preferences"), governedToolId(NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY), NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY, "schema.notification.preferences.update.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationPreferencesUpdated", true)); }
   private SurfaceAction showProfileAction() { return new SurfaceAction("action-show-my-profile", "Show user profile", "read", browserToolId("action-show-my-profile"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-profile", "inline"), new Audit("UserProfileDisplayed", true)); }
   private SurfaceAction showSettingsAction() { return new SurfaceAction("action-show-my-settings", "Show user settings", "read", browserToolId("action-show-my-settings"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-settings", "inline"), new Audit("UserSettingsDisplayed", true)); }
   private SurfaceAction showContextAction() { return new SurfaceAction("action-show-my-context", "Show selected context", "read", browserToolId("action-show-my-context"), governedToolId(MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY), MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-context", "inline"), new Audit("AuthContextDisplayed", true)); }
@@ -1237,10 +1314,13 @@ public final class WorkstreamService {
     if (capabilityId != null && capabilityId.startsWith("audit.trace.") && actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) return true;
     if (capabilityId != null && capabilityId.startsWith("governance.policy.") && actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_READ_CAPABILITY)) return actor.selectedContext().capabilities().contains(capabilityId);
     if (capabilityId != null && capabilityId.startsWith("agent_admin.")) return actor.selectedContext().capabilities().contains(capabilityId);
+    if (capabilityId != null && capabilityId.startsWith("notification.")) return actor.selectedContext().capabilities().contains(capabilityId);
     return capabilityId != null && (capabilityId.startsWith("USERADMIN_") || capabilityId.startsWith("user_admin.")) && actor.selectedContext().capabilities().contains(USER_ADMIN_CAPABILITY);
   }
 
+  private String notificationIdInput(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) { var requested = stringInput(input, "notificationId", null); if (requested != null) return requested; return myAccountNotificationCenterData(actor, correlationId).items().stream().findFirst().map(NotificationItem::notificationId).orElse("missing-notification"); }
   private static String stringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return value; return fallback; }
+  private static boolean booleanInput(Object input, String key, boolean fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof Boolean value) return value; return fallback; }
   private static int intInput(Object input, String key, int fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof Number value) return value.intValue(); return fallback; }
   private static List<FoundationRole> rolesInput(Object input) { if (input instanceof Map<?, ?> map && map.get("roles") instanceof List<?> roles && !roles.isEmpty()) return roles.stream().map(String::valueOf).map(FoundationRole::valueOf).toList(); return List.of(FoundationRole.TENANT_EMPLOYEE); }
   private static String firstNonBlank(String... values) { for (var value : values) if (value != null && !value.isBlank()) return value; return null; }

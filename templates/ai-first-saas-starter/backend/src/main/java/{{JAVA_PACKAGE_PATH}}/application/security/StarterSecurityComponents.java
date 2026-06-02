@@ -134,7 +134,7 @@ public final class StarterSecurityComponents {
     invitationView = new InvitationView(invitationService);
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
     governancePolicyService = new GovernancePolicyService(durableGovernancePolicy, authContextResolver, CLOCK, attentionProducerService);
-    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy, attentionService, attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver));
+    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy, attentionService, attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), notificationService);
   }
 
   public static AuthContextResolver authContextResolver() {
@@ -151,7 +151,7 @@ public final class StarterSecurityComponents {
 
   public static WorkstreamService workstreamService(ComponentClient componentClient, WorkstreamLogRepository workstreamLogRepository) {
     bindAkkaRuntime(componentClient);
-    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository(), attentionService(), attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver));
+    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository(), attentionService(), attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), notificationService);
   }
 
   public static InvitationService invitationService() {
@@ -320,7 +320,7 @@ public final class StarterSecurityComponents {
 
   private static WorkstreamService unboundWorkstreamService() {
     var workstreamLogRepository = new UnboundWorkstreamLogRepository();
-    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), workstreamLogRepository, accessReviewTaskRepository(), auditTraceRepository(workstreamLogRepository), governancePolicyRepository(), attentionService(), attentionProducerService, workstreamEventPublisher, workstreamEventRepository);
+    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new FailClosedWorkstreamAgentRuntimeInvoker(), workstreamLogRepository, accessReviewTaskRepository(), auditTraceRepository(workstreamLogRepository), governancePolicyRepository(), attentionService(), attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
   }
 
   private static AccessReviewTaskRepository accessReviewTaskRepository() {

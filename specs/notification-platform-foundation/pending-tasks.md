@@ -93,7 +93,7 @@
 
 ### TASK-NPF-03-001: Wire My Account notification center surfaces
 
-- status: pending
+- status: done
 - source: specs/notification-platform-foundation/backlog/01-notification-foundation-build-backlog.md
 - task brief: specs/notification-platform-foundation/tasks/03-surfaces/01-wire-notification-center-surfaces.md
 - depends on:
