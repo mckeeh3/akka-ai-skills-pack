@@ -99,7 +99,7 @@
 
 ### TASK-PRP-03-001: Create release changelog and handoff
 
-- status: pending
+- status: done
 - source: specs/pack-release-publication/backlog/01-pack-release-publication-backlog.md
 - task brief: specs/pack-release-publication/tasks/03-docs/01-create-release-changelog-handoff.md
 - depends on:
@@ -119,6 +119,8 @@
   - release handoff is clear, bounded, and validated
   - task changes and queue update are committed
 - notes:
+  - release changelog/handoff artifact: `specs/pack-release-publication/release-handoff.md`
+  - focused scan confirmed current starter capabilities, validation evidence, install/scaffold instructions, and future-work boundaries are covered
   - commit message: `pack-release: add release handoff`
 
 ### TASK-PRP-99-001: Verify pack release publication readiness
