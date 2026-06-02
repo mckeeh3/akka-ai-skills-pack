@@ -154,7 +154,7 @@
 
 ### TASK-NEDC-05-001: Update email notification channel docs
 
-- status: pending
+- status: done
 - source: specs/notification-email-delivery-channel/backlog/01-email-delivery-channel-build-backlog.md
 - task brief: specs/notification-email-delivery-channel/tasks/05-docs/01-update-email-channel-docs.md
 - depends on:
@@ -174,6 +174,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `notification-email: update docs`
+  - docs updated: `specs/notification-email-delivery-channel/README.md`; `specs/notification-email-delivery-channel/notification-email-channel-handoff.md`
+  - checks passed: `git diff --check`; focused `rg` for Resend, captured outbox, provider fail-closed, preferences, redaction, and future SMS/push/webhook boundary
 
 ### TASK-NEDC-99-001: Verify notification email delivery channel
 

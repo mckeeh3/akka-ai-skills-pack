@@ -40,6 +40,14 @@ Builds on:
 
 Execute one task per fresh harness context. Each task must update `pending-tasks.md`, run checks or record blockers, and make one focused commit.
 
+## Handoff and validation
+
+- Contract: `notification-email-channel-contract.md`
+- Validation evidence: `email-channel-validation.md`
+- Current handoff: `notification-email-channel-handoff.md`
+
+The validated starter/reference scope uses Resend for production email delivery and captured outbox behavior for local/dev/test. Missing Resend provider configuration fails closed instead of recording fake production success. My Account email preferences, category allowlist checks, redaction, idempotency, and audit evidence are part of the validated boundary. Future SMS/push/webhook channels require separate governed delivery-channel contracts.
+
 ## Done state
 
 Complete when the starter/reference assets have:
