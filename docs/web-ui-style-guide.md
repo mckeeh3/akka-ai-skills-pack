@@ -33,13 +33,13 @@ Every app UI style guide should define:
 - selected AI-first style id and name, or `unselected`
 - source reference: this document, a custom design reference, or a user-provided brand brief
 - visual direction: concise aesthetic point of view, tone, memorable motif, and forbidden generic patterns
-- **theme model:** named-theme selection; available theme ids/names; default theme id; user preference scope and persistence expectations
+- **theme model:** named-theme selection; available theme ids/names; default theme id; user preference scope and persistence expectations; immediate local preview behavior for My Account theme selection; governed save/confirm path for durable persistence
 - brand adaptations: app name, logo/icon treatment, product-specific accent allowances, forbidden copied demo names/logos
 - layout shell: functional-agent rail, context/authority bar, main workstream panel, persistent composer, surface grid density, and deep-link support
 - typography: font family, scale, weights, line heights, numeric/table conventions, and fallback strategy
 - color tokens: CSS variables for canvas, surfaces, text, borders, primary/accent colors, status colors, chart colors, focus rings, and shadows
 - spacing/radius/elevation tokens
-- component rules: command strip, decision cards, cards, buttons, forms, tables/lists, charts, badges, empty/error/loading states, toasts/modals where applicable
+- component rules: command strip, decision cards, cards, buttons, forms, structured-surface form controls, tables/lists, charts, badges, empty/error/loading states, toasts/modals where applicable
 - motion and texture: purposeful transition rules, reduced-motion behavior, background depth, borders, shadows, and decorative texture limits
 - accessibility constraints: contrast, focus visibility, color-not-alone status semantics, reduced motion expectations
 - generated asset expectations: `index.html` uses semantic landmarks, `app.css` defines tokens as CSS variables, TypeScript toggles only documented theme ids/classes/attributes rather than hard-coded styling decisions
@@ -60,7 +60,7 @@ Every app UI style guide should define:
 - default theme id: <aurora-light | ...>
 - available themes:
   - <theme-id>: <theme name>; <light | dark>; <short intent>
-- My Account behavior: users select one available named theme and the UI applies it
+- My Account behavior: users select one available named theme, the UI previews the selected theme immediately on field change, and Save/Confirm persists the selected theme through the governed settings action
 - persistence scope: <backend user settings | local browser setting | deferred-with-follow-up>
 - future theme rule: add token bundles without changing workstream/component anatomy
 
@@ -99,7 +99,7 @@ Every app UI style guide should define:
 - governance/trust controls:
 - cards/panels:
 - buttons/actions:
-- forms:
+- forms: structured-surface inputs/selects/textareas use tokenized designed control classes/states and must not render as browser-default/native controls
 - tables/lists:
 - charts/data visualization:
 - loading/empty/error/success states:
@@ -179,6 +179,8 @@ Generated AI-first SaaS apps start with these four named themes unless the autho
 | `midnight-dark` | Midnight Dark | dark | darker blue-black workspace with crisp cyan-blue accent |
 
 Theme ids are stable implementation values. Theme names are user-facing labels. My Account settings should expose available theme names, store/apply the selected theme id at the documented scope, and avoid presenting `system`, `light`, or `dark` as the primary choice. A theme may record `tone: light` or `tone: dark` for contrast testing, but users choose by name.
+
+When the user changes a named-theme field, the UI must preview that selected theme immediately in the current browser session by switching only documented theme ids/classes/attributes. Save/Confirm must still call the governed backend settings action for durable persistence, authorization, audit, and cross-session truth. Immediate preview is not proof that persistence succeeded; failure to save must show a clear recovery path without silently claiming the preference is stored.
 
 Future themes are added by defining new token bundles and adding them to the available-theme list. Adding a theme must not change workstream shell anatomy, surface contracts, card structure, spacing scale, icon/status semantics, route behavior, capability mapping, authorization, audit behavior, or tests.
 
@@ -400,6 +402,19 @@ Required elements:
 - enabled/verified status
 - link to edit policy guardrails or inspect policy history
 
+### Structured-surface forms
+
+Structured surfaces that collect or edit user input, including `detail-edit` and settings surfaces, must render controls as designed components in the selected AI-first style system.
+
+Required elements:
+
+- semantic `<form>`, `<label>`, `<input>`, `<select>`, `<textarea>`, and `<button>` elements where applicable
+- visible or programmatic labels, helper text, validation text, and disabled/submitting states
+- tokenized control styling for background, border, text, spacing, radius, focus ring, disabled state, and validation state
+- layout rhythm that aligns labels, controls, helper text, and actions with surrounding workstream surface spacing
+- browser-default/native-looking controls are unacceptable for generated workstream surfaces, even when the markup is semantically correct
+- tests or source checks for important generated surfaces should catch missing structured-surface form control styling when those surfaces are in scope
+
 ### Data visualization
 
 - charts use selected style chart tokens only
@@ -423,9 +438,10 @@ Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashbo
 1. Replace demo names, logos, users, and metrics with the target app's domain.
 2. Keep the AI-first component anatomy, not literal mockup content.
 3. Define tokens once in `app.css` or project-standard token files; TypeScript may toggle only documented named theme ids/classes/attributes.
-4. Preserve accessibility even when adapting brand colors: contrast and focus tokens override decorative brand fidelity.
-5. If users request custom styling later, update the authoritative style guide first, then regenerate affected web UI assets.
-6. If theme persistence is not implemented at the expected runtime scope, record the limitation and queue follow-up work rather than claiming durable My Account theme selection is complete.
+4. Style structured-surface form controls through reusable tokenized selectors/classes; do not accept raw browser-default input, select, or textarea rendering in workstream surfaces.
+5. Preserve accessibility even when adapting brand colors: contrast and focus tokens override decorative brand fidelity.
+6. If users request custom styling later, update the authoritative style guide first, then regenerate affected web UI assets.
+7. If theme persistence is not implemented at the expected runtime scope, record the limitation and queue follow-up work rather than claiming durable My Account theme selection is complete.
 
 ## Removed generic visual catalog choices
 

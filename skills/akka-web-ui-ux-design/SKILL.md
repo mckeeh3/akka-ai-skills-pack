@@ -73,7 +73,7 @@ For each workstream shell region, structured surface, or major region, define:
 12. **Responsive behavior** — how the primary task survives on narrow screens.
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
 14. **UX copy** — labels, button text, helper text, empty/error/success messages.
-15. **Style guide application** — how selected style tokens and named themes support hierarchy, feedback, and My Account preference behavior when in scope.
+15. **Style guide application** — how selected style tokens and named themes support hierarchy, feedback, structured-surface form controls, and My Account preference behavior when in scope.
 16. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown.
 
 ## UX copy rules
@@ -158,6 +158,8 @@ Before coding or accepting UI work, verify:
 - every shell region and surface has a clear primary action or clear read-only purpose
 - empty/error/success states are useful, not placeholders
 - forms preserve user input and focus the first problem after validation failure
+- structured-surface form controls, including detail-edit inputs/selects/textareas, look like designed tokenized controls rather than browser defaults
+- named-theme selection in My Account previews the selected theme immediately while Save/Confirm remains the governed persistence action
 - destructive actions are hard to trigger accidentally
 - mobile layout preserves the main task
 - keyboard-only flow reaches and completes primary actions

@@ -29,13 +29,15 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 
 1. Use semantic `<form>`, `<label>`, `<input>`, `<select>`, `<textarea>`, and `<button>` elements.
 2. Every input needs an accessible label.
-3. Validate required fields and simple format rules in the browser for fast feedback.
-4. Keep authoritative business validation on the backend.
-5. Map backend validation errors back to field-level or form-level messages.
-6. Disable submit buttons while submitting; show progress.
-7. Make success and failure outcomes visible.
-8. Do not lose user input after validation failure.
-9. Avoid optimistic updates unless the rollback behavior is explicit.
+3. Structured-surface forms, including `detail-edit` and settings surfaces, must render inputs/selects/textareas with the selected style guide's tokenized control styling; browser-default/native-looking controls are unacceptable.
+4. Validate required fields and simple format rules in the browser for fast feedback.
+5. Keep authoritative business validation on the backend.
+6. Map backend validation errors back to field-level or form-level messages.
+7. Disable submit buttons while submitting; show progress.
+8. Make success and failure outcomes visible.
+9. Do not lose user input after validation failure.
+10. Avoid optimistic updates unless the rollback behavior is explicit.
+11. For named-theme settings fields, preview the selected named theme immediately on change, but persist only through the governed Save/Confirm action path.
 
 ## Frontend structure
 
@@ -45,6 +47,7 @@ Keep these responsibilities explicit in whichever structure the project uses:
 - read or bind form input
 - validate client-side input
 - render field-level and form-level errors
+- apply reusable tokenized structured-surface form control classes/selectors for inputs, selects, textareas, focus, disabled, and validation states
 - wire submit behavior and disabled/submitting state
 
 Represent validation errors structurally:
@@ -71,3 +74,4 @@ For each form action, verify:
 - the first invalid field receives focus after failed validation
 - form-level errors are announced or placed before the form
 - controls remain keyboard-operable
+- styled structured-surface controls retain visible focus and accessible labels across named themes

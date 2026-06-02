@@ -125,7 +125,7 @@
 
 ### TASK-WFTL-02-001: Harden form and theme style guidance
 
-- status: pending
+- status: done
 - source: specs/workstream-form-theme-live-remediation/backlog/02-style-guide-hardening-build-backlog.md
 - task brief: specs/workstream-form-theme-live-remediation/tasks/02-style-guide-hardening/01-harden-form-theme-style-guidance.md
 - depends on:
@@ -159,6 +159,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: harden workstream form theme guidance`
+  - checks: `git diff --check`; targeted search for structured-surface form controls and immediate named-theme preview in touched docs/skills
 
 ### TASK-WFTL-99-001: Verify workstream form theme live remediation completion
 

@@ -49,6 +49,7 @@ For generated AI-first SaaS work in this source repository, compare end-to-end s
 ## Forms and validation
 
 - [ ] Every input has a label.
+- [ ] Structured-surface form controls, including detail-edit inputs/selects/textareas, render with tokenized designed control styling rather than browser-default/native-looking controls.
 - [ ] Client validation handles quick feedback.
 - [ ] Backend validation remains authoritative.
 - [ ] Server validation errors map to field/form messages.
@@ -61,7 +62,7 @@ For generated AI-first SaaS work in this source repository, compare end-to-end s
 - [ ] The authored stylesheet or component styling implements the selected AI-first style guide through CSS variables/tokens or project-standard styling configuration rather than scattered hard-coded values.
 - [ ] The user-facing theme preference is named-theme based; available themes, default theme, and persistence scope are recorded.
 - [ ] At least four initial named themes are present or explicitly required for generated AI-first SaaS: two light and two dark.
-- [ ] My Account theme selection, when in scope, lets the user choose one available named theme and applies that theme to the UI without treating theme choice as authorization.
+- [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration.
 
@@ -70,7 +71,7 @@ For generated AI-first SaaS work in this source repository, compare end-to-end s
 - [ ] The UI has an intentional aesthetic direction recorded in the style guide rather than improvised generic SaaS styling.
 - [ ] Typography, spacing, and density make the shell and structured surfaces feel production-grade and readable.
 - [ ] Human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity have distinct hierarchy without relying on color alone.
-- [ ] Decision cards, audit timelines, governance diffs, denials, empty states, and errors feel deliberately designed, not default or placeholder.
+- [ ] Decision cards, structured-surface forms, audit timelines, governance diffs, denials, empty states, and errors feel deliberately designed, not default or placeholder.
 - [ ] Motion and transitions clarify state changes and respect reduced-motion preferences.
 - [ ] Cosmetic effects such as gradients, grain, glow, shadows, or patterns preserve contrast, focus visibility, and surface readability.
 - [ ] Visual changes do not alter functional agents, workstreams, surface contracts, capability mappings, authorization, API behavior, tests, or readiness claims.
@@ -121,5 +122,5 @@ For generated SaaS applications, the browser UI inherits the mandatory secure fo
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.
 - [ ] Tests assert route references for API/SSE/WebSocket dependencies without promoting page routes as the primary app model.
 - [ ] Workstream contract tests cover shell, rail, composer, structured surfaces, capability actions, deep links, forbidden/disabled states, stale/realtime behavior, and the User Admin reference vertical where foundation admin UI is in scope.
-- [ ] UX review notes or tests cover key loading, empty, error, validation, and success states.
+- [ ] UX review notes or tests cover key loading, empty, error, validation, success states, structured-surface form control styling, and immediate named-theme preview when those surfaces are in scope.
 - [ ] Backend tests pass for changed endpoint/component behavior.

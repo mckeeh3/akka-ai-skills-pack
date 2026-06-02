@@ -77,12 +77,14 @@ Cover:
 A complete UI should have tests or explicit manual review notes for:
 - loading/empty/error/success states
 - form validation and server validation mapping
+- structured-surface form control styling, including checks that important detail-edit/settings inputs, selects, and textareas use designed tokenized classes/selectors instead of unstyled browser-default/native controls
 - packaged asset delivery, including the stylesheet implementing the selected style guide and named-theme token bundles
 - API contract shape
 - realtime route references when used
 - protected-route behavior for generated SaaS UI, including forbidden/disabled/wrong-context cases for protected surfaces
 - local Akka-hosted app smoke path for the visible feature before marking the UI feature complete
-- CSS style-guide output staying aligned with the authoritative selected style, available named themes, default theme id, and My Account selection behavior when in scope
+- CSS style-guide output staying aligned with the authoritative selected style, available named themes, default theme id, styled structured-surface form controls, and My Account selection behavior when in scope
+- immediate named-theme preview on selection plus governed Save/Confirm persistence behavior when My Account theme settings are in scope
 - frontend build output staying in sync with source
 
 ## Anti-patterns

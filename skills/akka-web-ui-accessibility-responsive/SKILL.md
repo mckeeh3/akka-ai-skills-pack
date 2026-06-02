@@ -43,7 +43,7 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 8. Use `aria-*` only to supplement semantics, not replace them.
 9. Do not rely on color alone to convey status.
 10. For direct DOM updates, prefer `textContent` for dynamic text; in component frameworks, rely on normal safe text binding rather than unsafe HTML injection.
-11. Apply the selected style guide's named-theme contrast, focus, and status-color constraints; if the style or named-theme contract is missing, add or request the style-selection question in `specs/pending-questions.md` before completing affected UI implementation work.
+11. Apply the selected style guide's named-theme contrast, focus, status-color, and structured-surface form-control constraints; if the style or named-theme contract is missing, add or request the style-selection question in `specs/pending-questions.md` before completing affected UI implementation work.
 
 ## Responsive rules
 
@@ -60,6 +60,7 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 - edit `frontend/src/**` and rebuild; do not hand-edit generated assets under `src/main/resources/static-resources/**`
 - use meaningful class names or project-established component/style conventions tied to UI purpose
 - define reusable spacing/status/focus styles from the selected style guide's CSS tokens and named-theme bundles
+- ensure structured-surface inputs, selects, and textareas keep visible labels, focus rings, hit targets, disabled states, and validation states while avoiding browser-default/native-looking control rendering
 - do not introduce a new UI styling framework by default; if the frontend project already uses one, follow its conventions instead of replacing it
 
 ## Completion checklist
@@ -72,5 +73,6 @@ Before finishing, verify:
 - status/error information is not color-only
 - AI-first status, evidence, risk, policy-trigger, approval, exception, trace, and outcome information is available as text when applicable
 - narrow layouts preserve the main supervision, decision, or governance task before secondary diagnostics
-- each required named light/dark theme, focus rings, and status colors satisfy the selected style guide and accessibility contrast expectations
+- each required named light/dark theme, focus rings, form controls, and status colors satisfy the selected style guide and accessibility contrast expectations
+- My Account named-theme selection previews immediately without breaking keyboard focus or accessible field announcements, and durable persistence still uses the governed save path
 - page has a clear main landmark and title/heading
