@@ -125,7 +125,7 @@
 
 ### TASK-PRP-99-001: Verify pack release publication readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/pack-release-publication/tasks/99-verification/01-verify-pack-release-publication.md
 - depends on:
@@ -148,4 +148,8 @@
   - if incomplete, bounded follow-up tasks and a new terminal verification task are appended
   - task changes and queue update are committed
 - notes:
+  - verified required mini-project artifacts are present: package resource review, package smoke validation, and release handoff
+  - queue state has no remaining pending publication tasks after this terminal verification
+  - focused scans found no stale release blocker; prior leakage scans remain documented as 0 unexpected source-only `specs/`, `akka-context`, `node_modules`, or `.env.local` packaged/installed paths
+  - no follow-up task required for the current release-publication scope
   - commit message: `pack-release: verify publication readiness`
