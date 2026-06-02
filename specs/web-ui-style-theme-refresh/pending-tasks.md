@@ -45,7 +45,7 @@
 
 ### TASK-WUTR-01-001: Update canonical style and named-theme guide
 
-- status: pending
+- status: done
 - source: specs/web-ui-style-theme-refresh/backlog/01-style-doctrine-build-backlog.md
 - task brief: specs/web-ui-style-theme-refresh/tasks/01-style-doctrine/01-update-canonical-style-theme-guide.md
 - depends on:
@@ -80,6 +80,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: replace canonical web ui style guide`
+  - checks: `git diff --check`; `rg -n "orange|coral|system with light|system mode|atlas-ops-supervisory-console|warm near-black" docs/web-ui-style-guide.md docs/web-ui-ux-patterns.md docs/web-ui-quality-checklist.md` (no stale contradictions found)
 
 ### TASK-WUTR-01-002: Align web UI skills with named theme guidance
 

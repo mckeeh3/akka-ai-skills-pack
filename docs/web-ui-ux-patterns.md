@@ -24,7 +24,7 @@ Pair with:
 
 ## Workstream shell UX contract
 
-For each generated SaaS app, define these shell regions before conventional route details:
+For each generated SaaS app, define these shell regions before conventional route details. When My Account or profile/settings surfaces are in scope, include simple named-theme preference behavior: list available theme names from the authoritative UI style guide, allow selecting one theme id, apply it to the UI, and state the persistence scope truthfully.
 
 ```text
 Functional-agent rail:

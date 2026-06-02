@@ -59,7 +59,9 @@ For generated AI-first SaaS work in this source repository, compare end-to-end s
 
 - [ ] A selected style guide is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
 - [ ] The authored stylesheet or component styling implements the selected AI-first style guide through CSS variables/tokens or project-standard styling configuration rather than scattered hard-coded values.
-- [ ] Light/dark/system mode behavior matches the style guide.
+- [ ] The user-facing theme preference is named-theme based; available themes, default theme, and persistence scope are recorded.
+- [ ] At least four initial named themes are present or explicitly required for generated AI-first SaaS: two light and two dark.
+- [ ] My Account theme selection, when in scope, lets the user choose one available named theme and applies that theme to the UI without treating theme choice as authorization.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration.
 
