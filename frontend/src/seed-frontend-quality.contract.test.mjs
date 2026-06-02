@@ -69,10 +69,14 @@ test('workstream composer send tooltip can escape the composer frame', () => {
   assert.match(components, /\.workstream-send-prompt-tooltip \{[\s\S]*?position: absolute;/);
 });
 
-test('light dark system style guide and tokenized semantic states remain available', () => {
-  assert.match(tokens, /\[data-mode="light"\]/);
-  assert.match(tokens, /\[data-mode="dark"\]/);
-  assert.match(main, /mode === 'system'/);
+test('named themes and tokenized semantic states remain available', () => {
+  assert.match(tokens, /\[data-theme="aurora-light"\]/);
+  assert.match(tokens, /\[data-theme="cobalt-light"\]/);
+  assert.match(tokens, /\[data-theme="obsidian-dark"\]/);
+  assert.match(tokens, /\[data-theme="midnight-dark"\]/);
+  assert.match(tokens, /--color-success-soft/);
+  assert.match(tokens, /--color-warning-soft/);
+  assert.match(tokens, /--color-danger-soft/);
   assert.match(components, /\.status-pill\.success/);
   assert.match(components, /\.status-pill\.warning/);
   assert.match(components, /\.status-pill\.danger/);

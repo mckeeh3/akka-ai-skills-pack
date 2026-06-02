@@ -163,7 +163,7 @@
 
 ### TASK-WUTR-02-002: Refresh starter/reference theme tokens
 
-- status: pending
+- status: done
 - source: specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
 - task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/02-refresh-starter-theme-tokens.md
 - depends on:
@@ -203,6 +203,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: refresh starter theme tokens`
+  - checks: `git diff --check`; `cd frontend && npm test && npm run typecheck && npm run build`; `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`; `rg -n "#ff9f1c|#c75a6f|#d65f73|#050a08|#fbf7ef|#f4ecdf|warm palettes|atlas ops supervisory" frontend/src/styles frontend/src/*.test.mjs templates/ai-first-saas-starter/frontend/src/styles templates/ai-first-saas-starter/frontend/src/*.test.mjs src/main/resources/static-resources templates/ai-first-saas-starter/src/main/resources/static-resources || true` (no stale old-default token values or labels found)
 
 ### TASK-WUTR-02-003: Align My Account theme selection
 

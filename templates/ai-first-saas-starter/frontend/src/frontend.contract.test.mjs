@@ -61,15 +61,17 @@ test('mode switching uses root data attributes and persists preference', () => {
   assert.match(main, /window\.localStorage\.setItem\(modeStorageKey, mode\)/);
 });
 
-test('atlas ops supervisory console tokens include sans UI fonts, mono technical fonts, and warm palettes', () => {
+test('AI-first workstream enterprise tokens include named themes and semantic aliases', () => {
   assert.match(tokens, /--font-sans: Inter/);
   assert.match(tokens, /--font-mono: "JetBrains Mono"/);
-  assert.match(tokens, /\[data-mode="light"\]/);
-  assert.match(tokens, /\[data-mode="dark"\]/);
-  assert.match(tokens, /--color-primary: #ff9f1c/);
-  assert.match(tokens, /--color-ai: #c75a6f/);
-  assert.match(tokens, /--color-bg: #050a08/);
-  assert.match(tokens, /--color-ai: #d65f73/);
+  assert.match(tokens, /\[data-theme="aurora-light"\]/);
+  assert.match(tokens, /\[data-theme="cobalt-light"\]/);
+  assert.match(tokens, /\[data-theme="obsidian-dark"\]/);
+  assert.match(tokens, /\[data-theme="midnight-dark"\]/);
+  assert.match(tokens, /--color-canvas: #f7f8fb/);
+  assert.match(tokens, /--color-accent: #4f46e5/);
+  assert.match(tokens, /--color-accent: #38bdf8/);
+  assert.match(tokens, /--color-primary: var\(--color-accent\)/);
 });
 
 test('focus, skip link, reduced motion, and responsive shell rules are present', () => {
