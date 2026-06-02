@@ -45,7 +45,7 @@
 
 ### TASK-CWSS-01-001: Align core overview and My Account surface style
 
-- status: pending
+- status: done
 - source: specs/core-workstream-surface-style-alignment/backlog/01-core-domain-surfaces-build-backlog.md
 - task brief: specs/core-workstream-surface-style-alignment/tasks/01-core-domain-surfaces/01-align-overview-my-account-surfaces.md
 - depends on:
@@ -78,6 +78,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: align core my account surface style`
+  - checks: `git diff --check`; focused stale-language search over overview and My Account docs passed
 
 ### TASK-CWSS-01-002: Align User Admin and Agent Admin surface style
 

@@ -43,7 +43,7 @@ Side effects require explicit surface actions; the agent may guide but not silen
 |---|---|---|---|---|---|
 | `surface.my_account.dashboard.v1` | `surfaces/dashboard.md` | dashboard/detail | personal next-action hub with account overview, active AuthContext, profile/settings shortcuts, personal queue, accessible workstream attention counts, and capabilities summary | `my_account.dashboard.view` | open profile, open settings, open context selector, open personal queue item, open workstream, sign out |
 | `surface.my_account.profile.v1` | `surfaces/profile.md` | detail/form | view/edit allowed profile fields | `my_account.profile.view` | save profile, cancel, open audit trace |
-| `surface.my_account.settings.v1` | `surfaces/settings.md` | form | preferences, locale/timezone/theme/notifications | `my_account.settings.view` | save settings, reset defaults |
+| `surface.my_account.settings.v1` | `surfaces/settings.md` | form | preferences, locale/timezone/named theme/notifications, including `preferredThemeId` selection from available theme ids | `my_account.settings.view` | save settings, reset defaults |
 | `surface.my_account.context_selector.v1` | `surfaces/context-selector.md` | data_table/form | choose tenant/customer AuthContext from memberships | `my_account.contexts.list` | select context, refresh contexts |
 | `surface.my_account.capabilities.v1` | `surfaces/capabilities.md` | detail/table | browser-safe roles/capabilities and denied-workstream explanations | `my_account.capabilities.view` | open related workstream, request access info |
 | `surface.my_account.system_message.v1` | `surfaces/system-messages.md` | system_message | success/denial/recovery/system feedback | capability-specific | retry, open trace, request help |
@@ -77,6 +77,12 @@ For this workstream, read/evidence capabilities may be exposed to the My Account
 - Context selection limited to active memberships and allowed support-access context.
 - Disabled users receive safe recovery/denial system-message surfaces and cannot perform protected actions except allowed recovery flows.
 - `/api/me` remains authoritative for visible workstreams and capabilities.
+
+## Surface style expectations
+
+My Account surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md` and the core domain overview. Keep the dashboard as a personal operating hub rendered with enterprise workstream surface patterns: profile/context summary cards, a concise personal attention queue, compact workstream status panels, capability/evidence affordances, and typed system-message cards for denial or recovery feedback.
+
+The Settings surface should expose named theme selection. Users choose one available named theme by label; the saved value is the stable theme id in `preferredThemeId`. Initial available ids are `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`. The UI may use each theme's light/dark tone for contrast testing, but it must not present `system`, `light`, or `dark` as the primary user preference. Changing `preferredThemeId` only changes visual tokens and must not alter workstream visibility, capability grants, authorization, audit behavior, routes, or surface contracts.
 
 ## Dashboard surface details
 
@@ -155,8 +161,8 @@ Required:
 - Workstream status panels do not expose inaccessible workstreams or hidden item details.
 - Workstream icon buttons expose accessible labels/tooltips with full workstream names.
 - Opening a queue item or workstream panel selects the target workstream/surface through a governed surface-request action.
-- Profile/settings read and update success.
-- Invalid profile/settings validation produces `system_message`.
+- Profile/settings read and update success, including saving an available named theme id as `preferredThemeId`.
+- Invalid profile/settings validation produces `system_message`, including unknown or unavailable theme ids.
 - Context selector excludes unauthorized tenant/customer contexts.
 - Selecting context changes visible workstreams/capabilities.
 - Disabled user receives safe denial/recovery.

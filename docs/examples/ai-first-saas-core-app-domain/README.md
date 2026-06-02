@@ -16,6 +16,17 @@ The document intentionally prioritizes deterministic decomposition over human na
 - **Frontend substrate:** React/Vite/TypeScript workstream shell, left rail, persistent composer, structured surfaces
 - **Backend substrate:** Akka Java SDK components selected from capability contracts
 
+## Shared UI style and theme contract
+
+Core workstream surfaces inherit the canonical style contract from `docs/web-ui-style-guide.md`:
+
+- **Selected style:** `ai-first-workstream-enterprise` — a calm enterprise workstream interface for delegated agent work, evidence, decisions, governance, audit, and outcomes.
+- **Theme model:** named-theme selection, not mode-first `light`/`dark`/`system` preferences.
+- **Initial named themes:** `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`.
+- **My Account settings:** expose available theme names and persist/apply the selected theme id as `preferredThemeId`; theme choice is not authorization.
+
+Surface PRDs should keep capability/action semantics authoritative and add only surface-specific appearance expectations. Generated UI should render dashboards, lists, detail cards, decision cards, diff reviews, audit timelines, governance controls, and system-message surfaces as enterprise workstream surfaces rather than generic dashboard or CRUD mockups.
+
 ## Domain invariant
 
 ```text
@@ -79,6 +90,8 @@ Required objects/concepts:
 - Governed runtime agent artifacts: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`.
 
 ## Shared surface type baseline
+
+These surface types inherit the shared UI style and named-theme contract above. Surface files may use generic type names such as `dashboard` or `data_table`, but their generated appearance should follow the AI-first enterprise workstream patterns in `docs/web-ui-style-guide.md`.
 
 Every core workstream may use:
 
