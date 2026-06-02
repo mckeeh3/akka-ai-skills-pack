@@ -1,0 +1,199 @@
+# Pending Tasks: Workstream Form Styling and Live Theme Remediation
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, conversation capture, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `ui-theme: <short task title>`.
+
+## Tasks
+
+### TASK-WFTL-00-001: Create workstream form theme remediation planning scaffold
+
+- status: done
+- source: user complaint after reviewing `user-settings-surface.png`
+- task brief: specs/workstream-form-theme-live-remediation/tasks/00-planning/00-create-workstream-form-theme-live-remediation-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - user-settings-surface.png
+  - frontend/src/workstream/surfaces/DetailEditSurface.tsx
+  - frontend/src/styles/components.css
+  - frontend/src/main.tsx
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/workstream-form-theme-live-remediation/README.md
+  - specs/workstream-form-theme-live-remediation/conversation-capture.md
+  - specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - specs/workstream-form-theme-live-remediation/sprints/*.md
+  - specs/workstream-form-theme-live-remediation/backlog/*.md
+  - specs/workstream-form-theme-live-remediation/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlogs, task briefs, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: add workstream form remediation queue`
+
+### TASK-WFTL-01-001: Fix detail-edit form styling and live theme preview
+
+- status: pending
+- source: specs/workstream-form-theme-live-remediation/backlog/01-runtime-remediation-build-backlog.md
+- task brief: specs/workstream-form-theme-live-remediation/tasks/01-runtime-remediation/01-fix-detail-edit-form-and-live-theme-preview.md
+- depends on:
+  - TASK-WFTL-00-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-form-theme-live-remediation/README.md
+  - specs/workstream-form-theme-live-remediation/conversation-capture.md
+  - specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - specs/workstream-form-theme-live-remediation/sprints/01-runtime-remediation-sprint.md
+  - specs/workstream-form-theme-live-remediation/backlog/01-runtime-remediation-build-backlog.md
+  - specs/workstream-form-theme-live-remediation/tasks/01-runtime-remediation/01-fix-detail-edit-form-and-live-theme-preview.md
+  - user-settings-surface.png
+  - frontend/src/workstream/surfaces/DetailEditSurface.tsx
+  - frontend/src/styles/components.css
+  - frontend/src/main.tsx
+  - matching files under templates/ai-first-saas-starter/frontend/src/
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+- expected outputs:
+  - updated DetailEditSurface/theme handling in reference frontend and starter template
+  - updated structured-surface form CSS in reference frontend and starter template
+  - updated specs/workstream-form-theme-live-remediation/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `cd frontend && npm test && npm run typecheck && npm run build`
+  - `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`
+- done criteria:
+  - structured detail-edit form controls no longer render as browser-default controls
+  - `preferredThemeId` selection applies the selected named theme immediately
+  - Save/Confirm still passes selected field values to the backend action path
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: fix workstream form styling and theme preview`
+
+### TASK-WFTL-01-002: Add form styling and theme preview regression tests
+
+- status: pending
+- source: specs/workstream-form-theme-live-remediation/backlog/01-runtime-remediation-build-backlog.md
+- task brief: specs/workstream-form-theme-live-remediation/tasks/01-runtime-remediation/02-add-form-theme-regression-tests.md
+- depends on:
+  - TASK-WFTL-01-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-form-theme-live-remediation/README.md
+  - specs/workstream-form-theme-live-remediation/conversation-capture.md
+  - specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - specs/workstream-form-theme-live-remediation/sprints/01-runtime-remediation-sprint.md
+  - specs/workstream-form-theme-live-remediation/backlog/01-runtime-remediation-build-backlog.md
+  - specs/workstream-form-theme-live-remediation/tasks/01-runtime-remediation/02-add-form-theme-regression-tests.md
+  - frontend test files relevant to workstream shell/surfaces/theme behavior
+  - matching starter template frontend test files
+- skills:
+  - akka-web-ui-testing
+  - akka-web-ui-accessibility-responsive
+- expected outputs:
+  - updated reference frontend tests/checks
+  - updated starter template frontend tests/checks
+  - updated specs/workstream-form-theme-live-remediation/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `cd frontend && npm test && npm run typecheck && npm run build`
+  - `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`
+- done criteria:
+  - tests fail if theme selection no longer previews immediately
+  - tests/source checks guard the structured-surface form styling path
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: add workstream form theme regression tests`
+
+### TASK-WFTL-02-001: Harden form and theme style guidance
+
+- status: pending
+- source: specs/workstream-form-theme-live-remediation/backlog/02-style-guide-hardening-build-backlog.md
+- task brief: specs/workstream-form-theme-live-remediation/tasks/02-style-guide-hardening/01-harden-form-theme-style-guidance.md
+- depends on:
+  - TASK-WFTL-01-002
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-form-theme-live-remediation/README.md
+  - specs/workstream-form-theme-live-remediation/conversation-capture.md
+  - specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - specs/workstream-form-theme-live-remediation/sprints/02-style-guide-hardening-sprint.md
+  - specs/workstream-form-theme-live-remediation/backlog/02-style-guide-hardening-build-backlog.md
+  - specs/workstream-form-theme-live-remediation/tasks/02-style-guide-hardening/01-harden-form-theme-style-guidance.md
+  - docs/web-ui-style-guide.md
+  - relevant web UI skills found by search for form/theme guidance
+- skills:
+  - akka-web-ui-ux-design
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - updated docs/web-ui-style-guide.md
+  - updated focused web UI skills/checklists if needed
+  - updated specs/workstream-form-theme-live-remediation/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - targeted search confirming touched docs/skills mention structured-surface form controls and immediate named-theme preview
+- done criteria:
+  - style guide/guidance would reject the screenshot UI as unacceptable
+  - guidance requires immediate named-theme preview plus governed save persistence
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: harden workstream form theme guidance`
+
+### TASK-WFTL-99-001: Verify workstream form theme live remediation completion
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/workstream-form-theme-live-remediation/tasks/99-verification/01-verify-workstream-form-theme-live-remediation.md
+- depends on:
+  - TASK-WFTL-01-001
+  - TASK-WFTL-01-002
+  - TASK-WFTL-02-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-form-theme-live-remediation/README.md
+  - specs/workstream-form-theme-live-remediation/conversation-capture.md
+  - specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - specs/workstream-form-theme-live-remediation/sprints/*.md
+  - specs/workstream-form-theme-live-remediation/backlog/*.md
+  - specs/workstream-form-theme-live-remediation/tasks/**/*.md
+  - user-settings-surface.png
+  - changed frontend/docs/skills files
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - optional verification notes
+  - follow-up task briefs if needed
+- required checks:
+  - `git diff --check`
+  - frontend checks from runtime tasks if frontend changed since last test
+  - targeted source/docs searches for detail-edit styling and immediate theme preview coverage
+- done criteria:
+  - screenshot class of default-looking structured-surface fields is addressed
+  - theme selection previews immediately
+  - guidance would reject recurrence
+  - if complete, no follow-up tasks are appended
+  - if incomplete, bounded follow-up tasks plus a new terminal verification task are appended
+  - verification changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: verify workstream form theme remediation`
