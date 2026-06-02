@@ -50,6 +50,10 @@ Execute one task per fresh harness context. Each task must update `pending-tasks
 5. Docs/handoff.
 6. Verification.
 
+## Handoff
+
+Current docs/handoff artifact: `my-account-personal-attention-digest-handoff.md`.
+
 ## Done state
 
 Complete when the starter/reference assets have:

@@ -1,12 +1,12 @@
 # AutonomousAgent worker runtime pattern
 
-Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. It is extracted from the starter User Admin access-review worker, Agent Admin prompt-risk review worker, and Governance/Policy impact-analysis worker.
+Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. It is extracted from the starter User Admin access-review worker, Agent Admin prompt-risk review worker, Audit/Trace summary worker, Governance/Policy impact-analysis worker, and My Account personal attention digest worker.
 
 This is a runtime completion pattern, not only a design pattern: a worker is done only when the normal local runtime path starts and observes a concrete Akka `AutonomousAgent` task, projects backend-owned state, emits workstream events/attention, renders governed surfaces, and fails closed when provider or governed runtime configuration is missing.
 
 ## When to use
 
-Use Akka `AutonomousAgent` when the work is internal/background, task-oriented, and benefits from typed task ids, snapshots, failure/cancellation, notifications, dependencies, or model-driven iteration. Common generated-app examples include access review investigations, prompt/skill/reference risk review, governance/policy impact analysis, audit summaries, evaluation/replay loops, monitoring/remediation, and specialist follow-up.
+Use Akka `AutonomousAgent` when the work is internal/background, task-oriented, and benefits from typed task ids, snapshots, failure/cancellation, notifications, dependencies, or model-driven iteration. Common generated-app examples include access review investigations, prompt/skill/reference risk review, governance/policy impact analysis, audit summaries, personal attention digests, evaluation/replay loops, monitoring/remediation, and specialist follow-up.
 
 Do not use this pattern for:
 
@@ -67,7 +67,7 @@ The normal adapter must:
 - resolve governed runtime context before task start, including model/provider/profile configuration, active managed-agent configuration where applicable, prompt/skill/reference traces, evidence tools, and tool-boundary grants;
 - register only authorized read-only tools/evidence loaders for the worker slice.
 
-The fail-closed adapter must produce a blocked provider/runtime state when `ComponentClient`, provider/model config, governed profile, tool grants, evidence access, or runtime binding is unavailable. The blocked state must include actionable browser-safe recovery text, correlation/trace refs, v3 events, and attention. It must not return a deterministic successful review or canned recommendations. For governance/policy impact analysis, deterministic simulation output may be cited only as scoped evidence; it is not a substitute for a real model-backed `AutonomousAgent` impact result and must never become fake success.
+The fail-closed adapter must produce a blocked provider/runtime state when `ComponentClient`, provider/model config, governed profile, tool grants, evidence access, or runtime binding is unavailable. The blocked state must include actionable browser-safe recovery text, correlation/trace refs, v3 events, and attention. It must not return a deterministic successful review or canned recommendations. For governance/policy impact analysis, deterministic simulation output may be cited only as scoped evidence; it is not a substitute for a real model-backed `AutonomousAgent` impact result and must never become fake success. For My Account personal attention digest, backend attention evidence may be collected deterministically and redacted before the task, but a normal successful digest summary must still come from the concrete model-backed `AutonomousAgent` path; collected evidence is not a canned/model-less digest result.
 
 ## v3 events and shared worker-task events
 
@@ -119,7 +119,7 @@ A worker progress/result surface should include:
 - evidence/source refs and trace ids;
 - typed findings/recommendations only after a valid typed Akka task result;
 - `noDirectMutation=true` for advisory review workers;
-- task-specific flags such as `activationBlockedUntilHumanDecision=true` where protected activation is out of scope, especially Governance/Policy impact workers whose advisory result must not approve, reject, activate, roll back, or mutate policy state;
+- task-specific flags such as `activationBlockedUntilHumanDecision=true` where protected activation is out of scope, especially Governance/Policy impact workers whose advisory result must not approve, reject, activate, roll back, or mutate policy state, or `noDirectMutation=true` for My Account personal attention digest workers whose advisory result must not acknowledge, dismiss, resolve, expire, or mutate source attention;
 - actions mapped to governed capabilities: read/refresh, cancel, accept, reject, open evidence, open trace, open attention item, or task-specific follow-up.
 
 The frontend must reload worker state from backend projections and handle blocked, failed, review-required, cancelled, accepted, forbidden, stale, and reconnect states without inventing success.

@@ -155,7 +155,7 @@
 
 ### TASK-MAPAD-05-001: Update personal attention digest AutonomousAgent docs
 
-- status: pending
+- status: done
 - source: specs/my-account-personal-attention-digest-autonomous-agent/backlog/01-personal-attention-digest-build-backlog.md
 - task brief: specs/my-account-personal-attention-digest-autonomous-agent/tasks/05-docs/01-update-personal-attention-digest-docs.md
 - depends on:
