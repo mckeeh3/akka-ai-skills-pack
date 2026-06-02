@@ -67,7 +67,7 @@
 
 ### TASK-AFSSR-02-001: Run fresh scaffold fullstack validation
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-release-readiness/backlog/01-starter-release-readiness-backlog.md
 - task brief: specs/ai-first-saas-starter-release-readiness/tasks/02-validation/01-run-fresh-scaffold-fullstack-validation.md
 - depends on:
