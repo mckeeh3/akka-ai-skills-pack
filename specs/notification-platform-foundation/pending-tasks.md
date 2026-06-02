@@ -42,7 +42,7 @@
 
 ### TASK-NPF-01-001: Define notification foundation contract
 
-- status: pending
+- status: done
 - source: specs/notification-platform-foundation/backlog/01-notification-foundation-build-backlog.md
 - task brief: specs/notification-platform-foundation/tasks/01-contracts/01-define-notification-contract.md
 - depends on:
