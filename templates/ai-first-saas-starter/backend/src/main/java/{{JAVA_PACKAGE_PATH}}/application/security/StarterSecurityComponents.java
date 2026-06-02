@@ -34,6 +34,8 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Tenant;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
@@ -68,6 +70,8 @@ public final class StarterSecurityComponents {
   private static volatile AttentionRepository attentionRepository = new UnboundAttentionRepository();
   private static volatile AttentionService attentionService = new AttentionService(attentionRepository, authContextResolver, CLOCK);
   private static volatile MyAccountPersonalAttentionDigestTaskRepository personalAttentionDigestTaskRepository = new UnboundMyAccountPersonalAttentionDigestTaskRepository();
+  private static volatile NotificationRepository notificationRepository = new UnboundNotificationRepository();
+  private static volatile NotificationService notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
   private static volatile MyAccountPersonalAttentionDigestService personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(personalAttentionDigestTaskRepository, authContextResolver, attentionService, CLOCK);
   private static volatile AttentionProducerService attentionProducerService = new AttentionProducerService(attentionRepository, identityRepository, CLOCK);
   private static volatile WorkstreamEventRepository workstreamEventRepository = new UnboundWorkstreamEventRepository();
@@ -118,6 +122,8 @@ public final class StarterSecurityComponents {
     attentionRepository = durableAttention;
     attentionService = new AttentionService(durableAttention, authContextResolver, CLOCK);
     personalAttentionDigestTaskRepository = durablePersonalAttentionDigests;
+    notificationRepository = new AkkaNotificationRepository(componentClient);
+    notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     attentionProducerService = new AttentionProducerService(durableAttention, durableIdentity, CLOCK);
     workstreamEventRepository = durableWorkstreamEvents;
@@ -173,6 +179,7 @@ public final class StarterSecurityComponents {
     userAdminService = new UserAdminService(testRepository, CLOCK);
     invitationRepository = new UnboundInvitationRepository();
     attentionProducerService = new AttentionProducerService(attentionRepository, testRepository, CLOCK);
+    notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(attentionRepository, testRepository, attentionProducerService, CLOCK);
     workstreamEventPublisher = new WorkstreamEventPublisher(workstreamEventRepository, workstreamEventAttentionConsumer, CLOCK);
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK, attentionProducerService);
@@ -191,6 +198,7 @@ public final class StarterSecurityComponents {
     if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test attention repository binding");
     attentionRepository = testRepository;
     attentionService = new AttentionService(testRepository, authContextResolver, CLOCK);
+    notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
     personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(personalAttentionDigestTaskRepository, authContextResolver, attentionService, CLOCK);
     attentionProducerService = new AttentionProducerService(testRepository, identityRepository, CLOCK);
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(testRepository, identityRepository, attentionProducerService, CLOCK);
@@ -276,6 +284,17 @@ public final class StarterSecurityComponents {
 
   public static MyAccountPersonalAttentionDigestService personalAttentionDigestService() {
     return personalAttentionDigestService;
+  }
+
+  public static NotificationService notificationService() {
+    return notificationService;
+  }
+
+  /** Test-only hook for unit tests that use explicit test-source notification adapters. */
+  public static void bindTestNotificationRepository(NotificationRepository testRepository) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test notification repository binding");
+    notificationRepository = testRepository;
+    notificationService = new NotificationService(testRepository, authContextResolver, CLOCK);
   }
 
   public static WorkstreamEventRepository workstreamEventRepository() {
@@ -396,6 +415,21 @@ public final class StarterSecurityComponents {
     public Optional<MyAccountPersonalAttentionDigestTask> find(String digestTaskId) { throw unavailable(); }
     public Optional<MyAccountPersonalAttentionDigestTask> findByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { throw unavailable(); }
     public MyAccountPersonalAttentionDigestTask save(MyAccountPersonalAttentionDigestTask task) { throw unavailable(); }
+  }
+
+  private static final class UnboundNotificationRepository implements NotificationRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("NotificationRepository");
+    }
+
+    public NotificationItem upsert(NotificationItem item) { throw unavailable(); }
+    public NotificationItem save(NotificationItem item) { throw unavailable(); }
+    public Optional<NotificationItem> find(String tenantId, String notificationId) { throw unavailable(); }
+    public Optional<NotificationItem> findByDedupeKey(String tenantId, String dedupeKey) { throw unavailable(); }
+    public List<NotificationItem> listTenant(String tenantId) { throw unavailable(); }
+    public NotificationPreference savePreference(NotificationPreference preference) { throw unavailable(); }
+    public Optional<NotificationPreference> findPreference(String tenantId, String preferenceId) { throw unavailable(); }
+    public List<NotificationPreference> listPreferences(String tenantId, String accountId) { throw unavailable(); }
   }
 
   private static final class UnboundGovernancePolicyRepository implements GovernancePolicyRepository {

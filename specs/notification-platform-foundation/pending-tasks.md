@@ -67,7 +67,7 @@
 
 ### TASK-NPF-02-001: Implement notification backend foundation
 
-- status: pending
+- status: done
 - source: specs/notification-platform-foundation/backlog/01-notification-foundation-build-backlog.md
 - task brief: specs/notification-platform-foundation/tasks/02-backend/01-implement-notification-backend.md
 - depends on:
