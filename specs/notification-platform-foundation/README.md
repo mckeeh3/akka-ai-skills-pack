@@ -39,6 +39,18 @@ Builds on:
 
 Execute one task per fresh harness context. Each task must update `pending-tasks.md`, run checks or record blockers, and make one focused commit.
 
+## Current status
+
+The first governed **in-app notification foundation** has been implemented and validation passed for a rendered scaffold. See:
+
+- `notification-foundation-contract.md` for the contract;
+- `validation/notification-foundation-validation.md` for check evidence;
+- `notification-foundation-handoff.md` for implementation status and boundaries.
+
+Implemented scope includes backend-owned in-app notification projection from authorized attention/event/digest inputs, governed read/lifecycle/preference operations, a My Account notification center surface, durable repository seam, redaction/tenant/AuthContext guardrails, and backend/frontend tests.
+
+Email, SMS, mobile push, webhook, Slack/Teams, external delivery, fan-out subscriptions, delivery analytics, and a broad enterprise notification platform remain future governed delivery-channel work. They must not be inferred from this in-app foundation.
+
 ## Done state
 
 Complete when the starter/reference assets have:

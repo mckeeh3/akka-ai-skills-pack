@@ -143,7 +143,7 @@
 
 ### TASK-NPF-05-001: Update notification foundation docs
 
-- status: pending
+- status: done
 - source: specs/notification-platform-foundation/backlog/01-notification-foundation-build-backlog.md
 - task brief: specs/notification-platform-foundation/tasks/05-docs/01-update-notification-foundation-docs.md
 - depends on:

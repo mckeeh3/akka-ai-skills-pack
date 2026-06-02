@@ -62,5 +62,6 @@ Frontend contract tests cover:
 - Capability-backed action controls with disabled/denied reasons, idempotency, confirmation, audit/trace affordances, and result-surface handling.
 - Deep links for selected functional agents, stream items, and surfaces without making pages/routes the primary UI model.
 - User Admin dashboard → list/search → detail/edit starter vertical through structured surfaces.
+- My Account notification center rendering from backend-derived in-app notification data, including governed notification action descriptors, redacted/empty/error states, backend-owned counts, and explicit absence of implemented email/push controls.
 
 Legacy `src/screens/**` files are retained only as quarantined mechanics references for older slice tests. New generated SaaS frontend work should extend `src/workstream/**`, `src/api/**`, and `src/main.tsx`.
