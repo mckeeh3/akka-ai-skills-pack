@@ -166,7 +166,7 @@
 
 ### TASK-NPF-99-001: Verify notification foundation
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/notification-platform-foundation/tasks/99-verification/01-verify-notification-foundation.md
 - depends on:
