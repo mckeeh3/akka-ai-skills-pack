@@ -247,7 +247,7 @@
 
 ### TASK-WFTL-99-002: Verify workstream form theme static runtime completion
 
-- status: pending
+- status: done
 - source: TASK-WFTL-99-001 verification finding
 - task brief: specs/workstream-form-theme-live-remediation/tasks/99-verification/02-verify-workstream-form-theme-static-runtime.md
 - depends on:
@@ -280,3 +280,5 @@
   - verification changes and queue update are committed
 - notes:
   - commit message: `ui-theme: verify workstream form theme static runtime`
+  - checks: `git diff --check`; targeted source/static/docs searches for `.surface-detail-field`, `preferredThemeId`, `onSurfaceFieldValueChange`, browser-default control rejection, and immediate named-theme preview coverage
+  - finding: source frontend, starter source, committed Akka-hosted static JS/CSS assets, tests, docs, and skills cover styled structured-surface controls and immediate `preferredThemeId` preview; no frontend or static assets changed since TASK-WFTL-03-001 checks, so no frontend rebuild/check rerun was required; no follow-up tasks appended
