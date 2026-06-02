@@ -1,11 +1,16 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AgentAdminPromptRiskReviewService;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptRiskReviewTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionRedactionLevel;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSeverity;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountNotificationCenter;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationCategory;
@@ -82,13 +87,55 @@ public final class NotificationService {
   }
 
   public NotificationItem projectFromPersonalDigest(AuthContextResolver.ResolvedMe actor, MyAccountPersonalAttentionDigestTask task, String correlationId) {
-    requireVisibleSource(actor, task.tenantId(), task.customerId(), "my_account.personal_attention_digest.read");
-    if (!actor.account().accountId().equals(task.startedByAccountId())) throw new AuthorizationException(404, "not_found_or_redacted");
     var blocked = task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME || task.status() == MyAccountPersonalAttentionDigestTask.Status.FAILED || task.status() == MyAccountPersonalAttentionDigestTask.Status.REJECTED;
     var ready = task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED || task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_EMPTY;
-    var input = new NotificationProjectionInput(task.digestTaskId(), "personal_attention_digest", task.tenantId(), task.customerId(), task.startedByAccountId(), Map.of("selectedContextId", task.selectedAuthContextId()), "agent-my-account", "my_account.personal_attention_digest.read",
-        task.evidenceRefs().stream().map(ref -> new NotificationSourceRef("personal_attention_digest", ref, "Personal attention digest evidence", "my_account.personal_attention_digest.read", ref, correlationId)).toList(), task.traceIds(), blocked ? "Personal attention digest is blocked" : "Personal attention digest is ready", safe(firstNonBlank(task.summary(), blocked ? task.blockerCode() : "Digest result is ready for review.")), blocked ? NotificationCategory.DIGEST_BLOCKED : NotificationCategory.DIGEST_READY, blocked ? NotificationPriority.BLOCKED : NotificationPriority.INFO,
-        new NotificationSurfaceRef("agent-my-account", "surface-my-account-personal-attention-digest", "dashboard", task.digestTaskId(), "my_account.personal_attention_digest.open_evidence", "my_account.personal_attention_digest.read"), dedupe(task.tenantId(), task.customerId(), task.startedByAccountId(), "personal_attention_digest", task.digestTaskId(), ready ? "ready" : "blocked"), correlationId);
+    return projectWorkerTask(actor, new WorkerTaskNotification(
+        task.digestTaskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.selectedAuthContextId(), task.startedByAccountId(), "agent-my-account", "personal_attention_digest", "Personal attention digest", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.sectionRefs(), task.traceIds(), "my_account.personal_attention_digest.read", "surface-my-account-personal-attention-digest", "my_account.personal_attention_digest.open_evidence", ready ? "ready" : "blocked", blocked ? NotificationCategory.DIGEST_BLOCKED : NotificationCategory.DIGEST_READY, blocked ? NotificationPriority.BLOCKED : NotificationPriority.INFO), correlationId);
+  }
+
+  public NotificationItem projectFromAccessReviewTask(AuthContextResolver.ResolvedMe actor, AccessReviewTask task, String correlationId) {
+    return projectWorkerTask(actor, new WorkerTaskNotification(
+        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.startedByMembershipId(), task.startedByAccountId(), "agent-user-admin", "access_review_task", "User Admin access-review task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.recommendationRefs(), task.traceIds(), UserAdminAccessReviewService.READ_CAPABILITY, "surface-user-admin-access-review", "user_admin.access_review.open_result", workerSemanticKind(task.status().name()), workerCategory("user_admin", task.status().name()), workerPriority(task.status().name())), correlationId);
+  }
+
+  public NotificationItem projectFromPromptRiskReviewTask(AuthContextResolver.ResolvedMe actor, PromptRiskReviewTask task, String correlationId) {
+    return projectWorkerTask(actor, new WorkerTaskNotification(
+        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.startedByMembershipId(), task.startedByAccountId(), "agent-agent-admin", "prompt_risk_review_task", "Agent Admin prompt-risk review task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.findingRefs(), task.traceIds(), AgentAdminPromptRiskReviewService.READ_CAPABILITY, "surface-agent-admin-prompt-risk-review", "agent_admin.prompt_risk_review.open_result", workerSemanticKind(task.status().name()), workerCategory("agent_admin", task.status().name()), workerPriority(task.status().name())), correlationId);
+  }
+
+  public NotificationItem projectFromAuditTraceSummaryTask(AuthContextResolver.ResolvedMe actor, AuditTraceSummaryTask task, String correlationId) {
+    return projectWorkerTask(actor, new WorkerTaskNotification(
+        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.selectedAuthContextId(), task.startedByAccountId(), "agent-audit-trace", "audit_trace_summary_task", "Audit/Trace summary task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.findingRefs(), task.traceIds(), AuditTraceSummaryService.READ_CAPABILITY, "surface-audit-trace-summary-task", AuditTraceSummaryService.OPEN_EVIDENCE_CAPABILITY, workerSemanticKind(task.status().name()), workerCategory("audit_trace", task.status().name()), workerPriority(task.status().name())), correlationId);
+  }
+
+  public NotificationItem projectFromGovernancePolicyImpactTask(AuthContextResolver.ResolvedMe actor, GovernancePolicyImpactTask task, String correlationId) {
+    return projectWorkerTask(actor, new WorkerTaskNotification(
+        task.impactTaskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.startedByMembershipId(), task.startedByAccountId(), "agent-governance-policy", "governance_policy_impact_task", "Governance/Policy impact-analysis task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.findingRefs(), task.traceIds(), GovernancePolicyImpactService.READ_CAPABILITY, "surface-governance-policy-impact-analysis-task", "governance.policy.impact_analysis.open_result", workerSemanticKind(task.status().name()), workerCategory("governance_policy", task.status().name()), workerPriority(task.status().name())), correlationId);
+  }
+
+  private NotificationItem projectWorkerTask(AuthContextResolver.ResolvedMe actor, WorkerTaskNotification task, String correlationId) {
+    requireVisibleSource(actor, task.tenantId(), task.customerId(), task.requiredCapabilityId());
+    if (!actor.account().accountId().equals(task.recipientAccountId())) throw new AuthorizationException(404, "not_found_or_redacted");
+    var sourceRefs = java.util.stream.Stream.concat(
+            task.evidenceRefs().stream().map(ref -> new NotificationSourceRef(task.origin(), ref, task.titlePrefix() + " evidence", task.requiredCapabilityId(), ref, correlationId)),
+            task.findingOrSectionRefs().stream().map(ref -> new NotificationSourceRef(task.origin() + "_result", ref, task.titlePrefix() + " result", task.requiredCapabilityId(), ref, correlationId)))
+        .toList();
+    var traceRefs = task.traceRefs().stream().distinct().toList();
+    var statusText = task.rawStatus().toLowerCase(Locale.ROOT);
+    var title = switch (task.semanticKind()) {
+      case "blocked" -> task.titlePrefix() + " is blocked";
+      case "failed" -> task.titlePrefix() + " failed";
+      case "review_required" -> task.titlePrefix() + " is ready for review";
+      case "accepted" -> task.titlePrefix() + " was accepted";
+      case "rejected" -> task.titlePrefix() + " was rejected";
+      case "cancelled" -> task.titlePrefix() + " was cancelled";
+      default -> task.titlePrefix() + " is " + statusText.replace('_', ' ');
+    };
+    var summary = firstNonBlank(task.summary(), task.blockerCode(), task.titlePrefix() + " progress is " + task.progressPercent() + "% with backend-derived status " + statusText + ".");
+    var input = new NotificationProjectionInput(task.taskId(), task.origin(), task.tenantId(), task.customerId(), task.recipientAccountId(), Map.of("selectedContextId", firstNonBlank(task.selectedContextId(), task.startedByMembershipOrContextId())), task.owningWorkstreamId(), task.requiredCapabilityId(),
+        sourceRefs, traceRefs, safe(title), safe(summary), task.category(), task.priority(),
+        new NotificationSurfaceRef(task.owningWorkstreamId(), task.surfaceId(), "workflow-status", task.taskId(), task.defaultActionId(), task.requiredCapabilityId()),
+        dedupe(task.tenantId(), task.customerId(), task.recipientAccountId(), task.origin(), task.taskId(), task.semanticKind()), firstNonBlank(correlationId, task.autonomousAgentTaskId()));
     return projectFromSource(actor, input, correlationId);
   }
 
@@ -302,6 +349,36 @@ public final class NotificationService {
     };
   }
 
+  private NotificationCategory workerCategory(String family, String rawStatus) {
+    if (rawStatus == null) return NotificationCategory.WORKSTREAM_UPDATE;
+    var status = rawStatus.toUpperCase(Locale.ROOT);
+    if (status.contains("BLOCKED")) return NotificationCategory.PROVIDER_READINESS;
+    if (status.contains("FAILED")) return NotificationCategory.AUDIT_OR_SECURITY;
+    if ("governance_policy".equals(family)) return NotificationCategory.POLICY_OR_GOVERNANCE;
+    if ("audit_trace".equals(family)) return NotificationCategory.AUDIT_OR_SECURITY;
+    return NotificationCategory.WORKSTREAM_UPDATE;
+  }
+
+  private NotificationPriority workerPriority(String rawStatus) {
+    if (rawStatus == null) return NotificationPriority.INFO;
+    var status = rawStatus.toUpperCase(Locale.ROOT);
+    if (status.contains("BLOCKED") || status.contains("FAILED")) return NotificationPriority.BLOCKED;
+    if (status.contains("COMPLETED") || status.contains("REJECT")) return NotificationPriority.WARNING;
+    return NotificationPriority.INFO;
+  }
+
+  private String workerSemanticKind(String rawStatus) {
+    if (rawStatus == null) return "progress";
+    var status = rawStatus.toUpperCase(Locale.ROOT);
+    if (status.contains("BLOCKED")) return "blocked";
+    if (status.contains("FAILED")) return "failed";
+    if (status.contains("COMPLETED")) return "review_required";
+    if (status.contains("ACCEPTED")) return "accepted";
+    if (status.contains("REJECT")) return "rejected";
+    if (status.contains("CANCELLED")) return "cancelled";
+    return "progress";
+  }
+
   private NotificationPriority priorityFromHint(String value) {
     if (value == null || value.isBlank()) return NotificationPriority.INFO;
     try { return NotificationPriority.valueOf(value.trim().toUpperCase(Locale.ROOT)); } catch (IllegalArgumentException ignored) { return NotificationPriority.INFO; }
@@ -339,5 +416,39 @@ public final class NotificationService {
   private String firstNonBlank(String... values) {
     for (var value : values) if (value != null && !value.isBlank()) return value;
     return "";
+  }
+
+  private record WorkerTaskNotification(
+      String taskId,
+      String autonomousAgentTaskId,
+      String tenantId,
+      String customerId,
+      String startedByMembershipOrContextId,
+      String recipientAccountId,
+      String owningWorkstreamId,
+      String origin,
+      String titlePrefix,
+      String rawStatus,
+      int progressPercent,
+      String summary,
+      String blockerCode,
+      List<String> evidenceRefs,
+      List<String> findingOrSectionRefs,
+      List<String> traceRefs,
+      String requiredCapabilityId,
+      String surfaceId,
+      String defaultActionId,
+      String semanticKind,
+      NotificationCategory category,
+      NotificationPriority priority) {
+    private WorkerTaskNotification {
+      evidenceRefs = List.copyOf(evidenceRefs == null ? List.of() : evidenceRefs);
+      findingOrSectionRefs = List.copyOf(findingOrSectionRefs == null ? List.of() : findingOrSectionRefs);
+      traceRefs = List.copyOf(traceRefs == null ? List.of() : traceRefs);
+    }
+
+    String selectedContextId() {
+      return startedByMembershipOrContextId;
+    }
   }
 }

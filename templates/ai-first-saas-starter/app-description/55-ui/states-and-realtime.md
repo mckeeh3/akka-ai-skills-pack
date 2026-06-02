@@ -46,9 +46,10 @@
 - governance surfaces:
   - policy proposal status changes
   - simulation/replay completion
-- notification/digest indicators:
+- notification/digest/worker-task indicators:
   - unread count
   - material event summary
+  - backend-owned worker task notifications for implemented AutonomousAgent verticals, derived from task/event/attention state and carrying governed capability ids, source refs, trace refs, surface targets, and recipient scoping rather than frontend-only badges
 
 ## Realtime behavior rules
 
