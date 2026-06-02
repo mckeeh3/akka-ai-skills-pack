@@ -68,7 +68,7 @@
 
 ### TASK-NDRR-01-002: Run fullstack notification delivery validation
 
-- status: pending
+- status: done
 - source: specs/notification-delivery-release-readiness/backlog/01-notification-delivery-readiness-backlog.md
 - task brief: specs/notification-delivery-release-readiness/tasks/01-validation/02-run-fullstack-notification-validation.md
 - depends on:
