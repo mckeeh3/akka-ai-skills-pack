@@ -42,7 +42,7 @@
 
 ### TASK-AARPS-01-001: Diagnose My Account digest real-provider smoke failure
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-real-provider-smoke-readiness/backlog/01-real-provider-smoke-backlog.md
 - task brief: specs/autonomous-agent-real-provider-smoke-readiness/tasks/01-diagnosis/01-diagnose-my-account-digest-provider-smoke.md
 - depends on:
@@ -57,6 +57,8 @@
 - expected outputs:
   - diagnosis artifact under specs/autonomous-agent-real-provider-smoke-readiness/
   - updated pending-tasks.md
+- output artifact:
+  - specs/autonomous-agent-real-provider-smoke-readiness/01-diagnose-my-account-digest-provider-smoke.md
 - required checks:
   - `git diff --check`
   - provider-skip validation or targeted tests sufficient to reproduce context
