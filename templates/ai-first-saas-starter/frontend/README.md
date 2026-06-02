@@ -16,6 +16,7 @@ npm install
 npm run typecheck
 npm test -- --run
 npm run build
+npm run analyze:bundle
 ```
 
 The built app expects backend routes to enforce identity, selected AuthContext, membership, role/capability, and tenant/customer boundaries. Frontend visibility and disabled controls are UX hints only.
@@ -38,6 +39,7 @@ Run from this directory:
 npm test -- --run
 npm run typecheck
 npm run build
+npm run analyze:bundle
 ```
 
 ## Akka static hosting output
@@ -49,6 +51,8 @@ src/main/resources/static-resources/
 ```
 
 The Akka endpoint serves `index.html`, `/favicon.ico`, and `/assets/**` from that directory. Do not hand-edit generated build output; rebuild from frontend source.
+
+After a production build, run `npm run analyze:bundle` to print the rendered JS/CSS/HTML bundle-size summary. The starter accepts the current Vite chunk-size residual as non-blocking unless it becomes operationally relevant; this command makes future regressions visible during release polish.
 
 ## Canonical contract scope
 

@@ -6,6 +6,7 @@ REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 TEMPLATE_DIR="$REPO_ROOT/templates/ai-first-saas-starter"
 SCAFFOLD_SCRIPT="$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh"
 MODEL_SMOKE_SCRIPT="$REPO_ROOT/tools/smoke-ai-first-saas-starter-real-model.sh"
+STATIC_ASSET_SCAN_SCRIPT="$REPO_ROOT/tools/scan-ai-first-saas-static-assets.sh"
 KEEP=false
 TARGET_DIR=""
 APP_NAME="Fullstack Smoke Starter"
@@ -89,6 +90,7 @@ done
 
 [[ -x "$SCAFFOLD_SCRIPT" ]] || fail "Scaffold script is not executable: $SCAFFOLD_SCRIPT"
 [[ -x "$MODEL_SMOKE_SCRIPT" ]] || fail "Provider smoke script is not executable: $MODEL_SMOKE_SCRIPT"
+[[ -x "$STATIC_ASSET_SCAN_SCRIPT" ]] || fail "Static asset scan script is not executable: $STATIC_ASSET_SCAN_SCRIPT"
 [[ -d "$TEMPLATE_DIR" ]] || fail "Template directory not found: $TEMPLATE_DIR"
 command -v mvn >/dev/null 2>&1 || fail "mvn is required"
 command -v npm >/dev/null 2>&1 || fail "npm is required"
@@ -227,10 +229,10 @@ if ! find "$STATIC_DIR/assets" -type f \( -name '*.js' -o -name '*.css' \) -prin
 fi
 
 log "Scanning built static assets for backend secret leaks"
-SECRET_PATTERN='(WORKOS_API_KEY|WORKOS_CLIENT_SECRET|RESEND_API_KEY|OPENAI_API_KEY|ANTHROPIC_API_KEY|INVITE_EMAIL_FROM|ADMIN_USERS|BEGIN[[:space:]]+(RSA |EC |OPENSSH |)PRIVATE KEY|sk-[A-Za-z0-9_-]{20,}|whsec_[A-Za-z0-9_-]+)'
-if grep -RIE --line-number "$SECRET_PATTERN" "$STATIC_DIR"; then
-  fail "Potential backend secret marker found in built static assets"
-fi
+"$STATIC_ASSET_SCAN_SCRIPT" "$STATIC_DIR"
+
+log "Reporting frontend bundle-size summary"
+( cd "$TARGET_DIR/frontend" && npm run analyze:bundle )
 
 log "Running optional real model provider smoke or reporting provider-skip state"
 "$MODEL_SMOKE_SCRIPT" --target "$TARGET_DIR" --base-package "$BASE_PACKAGE" --maven-group-id "$MAVEN_GROUP_ID"

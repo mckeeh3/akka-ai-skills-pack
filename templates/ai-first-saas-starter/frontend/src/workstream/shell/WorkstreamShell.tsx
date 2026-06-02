@@ -24,26 +24,49 @@ export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], chil
   const initialAgentId = initialFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status) ?? me.functionalAgents[0]?.functionalAgentId;
   const [selectedFunctionalAgentId, setSelectedFunctionalAgentId] = useState(initialAgentId);
   const [railCollapsed, setRailCollapsed] = useState(false);
+  const [mobileRailOpen, setMobileRailOpen] = useState(false);
   const selectedAgent = useMemo(() => selectedFunctionalAgent(me.functionalAgents, selectedFunctionalAgentId ?? ''), [me.functionalAgents, selectedFunctionalAgentId]);
 
   useEffect(() => {
     setSelectedFunctionalAgentId(initialFunctionalAgentId ?? initialAgentId);
   }, [initialFunctionalAgentId, initialAgentId]);
 
+  useEffect(() => {
+    if (!mobileRailOpen) return;
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMobileRailOpen(false);
+    }
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [mobileRailOpen]);
+
   function selectAgent(functionalAgentId: string) {
     setSelectedFunctionalAgentId(functionalAgentId);
+    setMobileRailOpen(false);
     onSelectAgent?.(functionalAgentId);
   }
 
   return (
-    <div className="app-shell workstream-shell" data-selected-functional-agent={selectedFunctionalAgentId}>
+    <div className="app-shell workstream-shell" data-selected-functional-agent={selectedFunctionalAgentId} data-mobile-rail-open={mobileRailOpen ? 'true' : 'false'}>
       <a className="skip-link" href="#main-content">Skip to main workstream</a>
+      <button
+        type="button"
+        className="mobile-menu-button"
+        aria-controls="workstream-functional-agent-rail"
+        aria-expanded={mobileRailOpen}
+        onClick={() => setMobileRailOpen(true)}
+      >
+        <span aria-hidden="true">☰</span>
+        <span>Workstreams</span>
+      </button>
+      {mobileRailOpen && <button type="button" className="nav-backdrop" aria-label="Close workstream navigation" onClick={() => setMobileRailOpen(false)} />}
       <FunctionalAgentRail
         agents={me.functionalAgents}
         selectedFunctionalAgentId={selectedFunctionalAgentId}
         visibleCapabilityIds={me.visibleCapabilityIds}
         accountStatus={me.account.status}
         collapsed={railCollapsed}
+        mobileOpen={mobileRailOpen}
         appName={appName}
         userDisplayName={me.account.displayName}
         railAttentionByAgentId={railAttentionByAgentId}

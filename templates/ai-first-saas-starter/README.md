@@ -134,7 +134,7 @@ The earlier release-readiness evidence remains valid for provider fail-closed, g
 
 This release status depends on the same runtime completion doctrine used by the starter: normal model-backed workstream message submission must use the governed Akka Agent runtime path, including active managed configuration resolution, `WorkstreamRuntimeAgent`, governed loader tools, `ToolPermissionBoundary`, `effects().tools(runtimeTools)`, trace emission, and a configured backend model provider. Missing or blank provider configuration must fail closed with actionable `system_message`/provider-blocked behavior; it must not return deterministic, mock, canned, model-less, or fixture-backed normal success responses. Enterprise IAM/SCIM/SSO support is currently a provider-neutral validation and fail-closed administration foundation; production provisioning and SSO activation remain narrower until provider-specific WorkOS configuration and smoke validation are added.
 
-Recommended post-release/manual QA items are mobile viewport/off-canvas rail inspection, a final rendered production static asset secret scan after any future source changes, and frontend bundle-size optimization if the Vite chunk-size warning becomes operationally relevant.
+Recommended post-release/manual QA items are now covered by repeatable validation hooks where possible: the mobile/off-canvas rail has a keyboard-accessible open/close path with safe-area spacing and contract coverage, `tools/validate-ai-first-saas-starter-fullstack.sh` delegates built asset scanning to `tools/scan-ai-first-saas-static-assets.sh`, and the frontend exposes `npm run analyze:bundle` for rendered JS/CSS/HTML bundle-size summaries. The current Vite chunk-size warning remains an accepted non-blocking residual unless it becomes operationally relevant.
 
 ## Fullstack scaffold validation
 
@@ -144,7 +144,7 @@ From the skills-pack source repository, validate the rendered starter with one c
 tools/validate-ai-first-saas-starter-fullstack.sh
 ```
 
-The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, checks that `WorkstreamRuntimeAgent` still registers runtime tools with `effects().tools(runtimeTools)`, runs `mvn test` including governed agent seed/runtime tests and Akka Agent runtime guards for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, and `npm run build`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, scans the built static assets for obvious backend secret markers, and reports the optional provider smoke state. If `OPENAI_API_KEY` is absent, the provider smoke is skipped loudly and validation still passes; if backend model-provider env is present, it runs a targeted real model smoke through one message in each five-core v0 workstream, backend workstream message submission, the `ComponentClient`-backed `WorkstreamRuntimeAgent`, runtime tool registration, trace ids, and secret-boundary checks. Use `--keep` to retain the generated target for inspection.
+The validation command scaffolds this template into a temporary target, verifies rendered backend/frontend paths, checks that `WorkstreamRuntimeAgent` still registers runtime tools with `effects().tools(runtimeTools)`, runs `mvn test` including governed agent seed/runtime tests and Akka Agent runtime guards for the five core v0 workstreams, runs `npm install`, `npm test -- --run`, `npm run typecheck`, `npm run build`, and `npm run analyze:bundle`, verifies the frontend build wrote Akka static resources under `src/main/resources/static-resources/`, scans the built static assets for obvious backend secret markers through `tools/scan-ai-first-saas-static-assets.sh`, and reports the optional provider smoke state. If `OPENAI_API_KEY` is absent, the provider smoke is skipped loudly and validation still passes; if backend model-provider env is present, it runs a targeted real model smoke through one message in each five-core v0 workstream, backend workstream message submission, the `ComponentClient`-backed `WorkstreamRuntimeAgent`, runtime tool registration, trace ids, and secret-boundary checks. Use `--keep` to retain the generated target for inspection.
 
 Focused workstream icon proof from the skills-pack source repository:
 
@@ -165,6 +165,7 @@ npm install
 npm test -- --run
 npm run typecheck
 npm run build
+npm run analyze:bundle
 cd ..
 mvn compile exec:java
 ```

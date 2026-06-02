@@ -22,7 +22,7 @@ This recommendation remains scoped to `templates/ai-first-saas-starter/` after s
 | Provider-missing smoke mode | Expected skip | `env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh` skipped loudly with enablement guidance rather than producing model-less success. |
 | Focused backend workstream/admin/governance tests | Pass on rendered scaffold | `env -u ADMIN_USERS mvn test -Dtest=MeServiceTest,WorkstreamServiceTest,AdminEndpointIntegrationTest,InvitationAndUserAdminServiceTest,UserAdminAccessReviewServiceTest,GovernancePolicyServiceTest` passed. |
 | Focused backend governed-agent runtime tests | Pass on rendered scaffold | `env -u ADMIN_USERS mvn test -Dtest=AgentBehaviorSeedLoaderTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,WorkstreamRuntimeAgentTest,AgentRuntimeTraceEntityTest,AgentRuntimeTraceViewTest,AgentRuntimeTraceSinkTest,DurableAgentBehaviorRepositoryStateTest,ManifestBoundaryEntityTest,ManifestBoundaryViewTest` passed. |
-| Frontend tests/typecheck/build | Pass | `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build` passed; Vite reported a non-blocking chunk-size warning. |
+| Frontend tests/typecheck/build | Pass | `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build && npm run analyze:bundle` passed; Vite reported a non-blocking chunk-size warning and the bundle analyzer records the accepted residual. |
 | Visual UX and cross-workstream polish | Pass | Source/test review covered all five workstreams, shell, system messages, provider-blocked states, trace links, responsive/accessibility contracts, and structured surfaces; no visual release blockers found. |
 | Provider/trace/secret boundary audit | Pass | Static scans and source review found no deterministic/model-less normal runtime substitute, no browser-visible backend/provider secrets, no hidden prompt exposure, and no trace/navigation/evidence-tool blocker. |
 | User Admin access-review AutonomousAgent vertical | Pass | `specs/autonomous-agent-runtime-integration/runtime-validation-evidence.md` records rendered-scaffold backend `mvn -q test`, frontend tests/typecheck/build, concrete `AutonomousAgent` task APIs, `worker.task.*`/`workflow.access_review.*` events, `autonomous_task` refs, worker-task attention, provider fail-closed behavior, and no fake/model-less normal success. |
@@ -43,9 +43,9 @@ These are not release blockers because the starter does not claim them as comple
 - Enterprise IAM/SCIM/SSO administration, SIEM/legal hold/e-discovery, compliance suites, marketplace prompts, arbitrary tenant-managed tool binding, and policy-as-code authoring remain out of the SMB baseline release scope.
 - Optional durable background workers such as personal digest, audit-summary, behavior-review, and policy-impact analysis remain post-release candidates unless a future visible runtime path claims completion. User Admin access-review analysis is no longer only a candidate at the starter/reference scope: it has a bounded Akka `AutonomousAgent` runtime path, while any broader team/delegation/access-remediation worker expansion remains future work.
 - Richer full-core structured surfaces can continue to evolve beyond the current v0/workstream response baseline, provided fixture/demo surfaces remain labeled and do not replace governed model-backed runtime paths.
-- Manual viewport QA for mobile/off-canvas rail interactions is recommended before a public announcement, but source contracts and tests did not reveal a blocker.
-- A final rendered production asset scan is recommended after any future docs/source changes, even though current source/static scans and fullstack validation found no secret leaks.
-- Frontend bundle-size optimization can be tracked post-release; the current Vite chunk-size warning is non-blocking.
+- Mobile/off-canvas rail interactions now have a keyboard-accessible mobile opener, backdrop close, Escape close, safe-area spacing, and contract coverage; any remaining device-specific viewport inspection is non-blocking manual QA.
+- A rendered production asset scan is now automated by `tools/scan-ai-first-saas-static-assets.sh` and invoked by fullstack validation after every frontend build.
+- Frontend bundle-size tracking is now repeatable through `npm run analyze:bundle`; the current Vite chunk-size warning is an accepted non-blocking residual unless operational constraints change.
 
 ## Environmental notes for future validators
 
@@ -55,7 +55,7 @@ These are not release blockers because the starter does not claim them as comple
 
 ## Documentation status
 
-`templates/ai-first-saas-starter/README.md` now records the current release-readiness status, validation commands, provider fail-closed expectations, durability boundaries, explicit local/demo gating, the implemented User Admin access-review AutonomousAgent vertical, and post-release deferrals. It does not claim deterministic/model-less runtime completion for model-backed behavior.
+`templates/ai-first-saas-starter/README.md` now records the current release-readiness status, validation commands including static asset scanning and bundle analysis, provider fail-closed expectations, durability boundaries, explicit local/demo gating, implemented AutonomousAgent verticals, and remaining provider-specific deferrals. It does not claim deterministic/model-less runtime completion for model-backed behavior.
 
 ## Next step
 

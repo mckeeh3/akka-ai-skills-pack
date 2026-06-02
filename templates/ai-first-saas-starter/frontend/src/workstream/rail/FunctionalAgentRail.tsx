@@ -9,6 +9,7 @@ type FunctionalAgentRailProps = {
   visibleCapabilityIds: string[];
   accountStatus?: AccountStatus;
   collapsed?: boolean;
+  mobileOpen?: boolean;
   appName?: string;
   userDisplayName: string;
   railAttentionByAgentId?: FunctionalAgentRailAttentionStore;
@@ -25,6 +26,7 @@ export function FunctionalAgentRail({
   visibleCapabilityIds,
   accountStatus = 'active',
   collapsed = false,
+  mobileOpen = false,
   appName = 'Workstream',
   userDisplayName,
   railAttentionByAgentId = {},
@@ -41,7 +43,7 @@ export function FunctionalAgentRail({
   }
 
   return (
-    <aside className={`sidebar workstream-functional-agent-rail ${collapsed ? 'collapsed' : 'expanded'}`} aria-label="Functional agents">
+    <aside id="workstream-functional-agent-rail" className={`sidebar workstream-functional-agent-rail ${collapsed ? 'collapsed' : 'expanded'} ${mobileOpen ? 'open' : ''}`.trim()} aria-label="Functional agents">
       <div className="rail-top">
         <div className="brand-lockup">
           <span className="brand-mark" aria-hidden="true">AI</span>

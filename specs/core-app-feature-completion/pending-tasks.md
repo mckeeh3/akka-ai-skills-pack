@@ -484,7 +484,7 @@
 
 ### TASK-COREEXT-05-001: Complete mobile, asset scan, and bundle polish
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/05-polish-validation/01-mobile-asset-bundle-polish.md
 - depends on: [TASK-COREEXT-04-003]
@@ -516,6 +516,9 @@
   - polish findings are resolved or explicitly documented as non-blocking with validation evidence
   - queue is updated and committed
 - notes:
+  - validation: `git diff --check`; `cd templates/ai-first-saas-starter/frontend && npm test -- --run && npm run typecheck && npm run build && npm run analyze:bundle`; `tools/scan-ai-first-saas-static-assets.sh templates/ai-first-saas-starter/src/main/resources/static-resources`; `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - bundle evidence: rendered JS/CSS/HTML total 447.3 KiB, within 750 KiB starter review threshold after prebuild cleanup removes stale Vite assets while preserving favicon.ico
+  - mobile evidence: workstream rail has keyboard-accessible mobile opener, backdrop close, Escape close, safe-area spacing, and contract coverage
   - commit message: `coreext: polish mobile assets bundle`
 
 ### TASK-COREEXT-99-001: Verify core feature completion

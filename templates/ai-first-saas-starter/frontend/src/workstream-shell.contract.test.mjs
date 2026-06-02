@@ -51,6 +51,9 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(toggle, /collapsed \? 'Expand sidebar' : 'Collapse sidebar'/);
   assert.match(toggle, /workstream-rail-toggle-tooltip/);
   assert.doesNotMatch(toggle, /title=/);
+  assert.match(rail, /id="workstream-functional-agent-rail"/);
+  assert.match(rail, /mobileOpen = false/);
+  assert.match(rail, /\$\{mobileOpen \? 'open' : ''\}/);
   assert.match(rail, /aria-label="Functional agents"/);
   assert.match(rail, /const myAccountFunctionalAgentId = 'agent-my-account'/);
   assert.match(rail, /entry\.functionalAgentId !== myAccountFunctionalAgentId/);
@@ -187,7 +190,14 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
 });
 
 test('workstream shell composes left rail, continuous flow, and floating persistent composer regions', () => {
+  assert.match(shell, /mobileRailOpen/);
+  assert.match(shell, /aria-controls="workstream-functional-agent-rail"/);
+  assert.match(shell, /aria-expanded=\{mobileRailOpen\}/);
+  assert.match(shell, /aria-label="Close workstream navigation"/);
+  assert.match(shell, /event\.key === 'Escape'/);
+  assert.match(shell, /setMobileRailOpen\(false\)/);
   assert.match(shell, /<FunctionalAgentRail/);
+  assert.match(shell, /mobileOpen=\{mobileRailOpen\}/);
   assert.doesNotMatch(shell, /<ContextAuthorityBar/);
   assert.match(shell, /<WorkstreamPanel/);
   assert.match(shell, /<WorkstreamComposer/);
