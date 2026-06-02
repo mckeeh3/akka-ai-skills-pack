@@ -1,0 +1,287 @@
+# Pending Tasks: Web UI Style Theme Refresh
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, conversation capture, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `ui-theme: <short task title>`.
+
+## Tasks
+
+### TASK-WUTR-00-001: Create web UI style theme refresh planning scaffold
+
+- status: done
+- source: user request to turn the discussed web UI style/theme replacement into a specs mini-project
+- task brief: specs/web-ui-style-theme-refresh/tasks/00-planning/00-create-web-ui-style-theme-refresh-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/pending-task-queue.md
+  - docs/pending-question-queue.md
+  - web-ui-high-level-style-guide.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/*.md
+  - specs/web-ui-style-theme-refresh/backlog/*.md
+  - specs/web-ui-style-theme-refresh/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlogs, task briefs, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: add web ui style theme refresh queue`
+
+### TASK-WUTR-01-001: Update canonical style and named-theme guide
+
+- status: pending
+- source: specs/web-ui-style-theme-refresh/backlog/01-style-doctrine-build-backlog.md
+- task brief: specs/web-ui-style-theme-refresh/tasks/01-style-doctrine/01-update-canonical-style-theme-guide.md
+- depends on:
+  - TASK-WUTR-00-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/01-style-doctrine-sprint.md
+  - specs/web-ui-style-theme-refresh/backlog/01-style-doctrine-build-backlog.md
+  - specs/web-ui-style-theme-refresh/tasks/01-style-doctrine/01-update-canonical-style-theme-guide.md
+  - web-ui-high-level-style-guide.md
+  - docs/web-ui-style-guide.md
+  - docs/web-ui-ux-patterns.md
+  - docs/web-ui-quality-checklist.md
+- skills:
+  - none; repository docs task
+- expected outputs:
+  - updated docs/web-ui-style-guide.md
+  - focused updates to docs/web-ui-ux-patterns.md and/or docs/web-ui-quality-checklist.md if needed
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - targeted stale-language search from task brief
+- done criteria:
+  - canonical style guide treats the high-level guide direction as the replacement default
+  - named themes, not mode-first selection, are the user-facing preference model
+  - four initial themes are specified or explicitly required with two light and two dark
+  - theme token guidance allows future additions without changing component anatomy
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: replace canonical web ui style guide`
+
+### TASK-WUTR-01-002: Align web UI skills with named theme guidance
+
+- status: pending
+- source: specs/web-ui-style-theme-refresh/backlog/01-style-doctrine-build-backlog.md
+- task brief: specs/web-ui-style-theme-refresh/tasks/01-style-doctrine/02-align-web-ui-skills-theme-guidance.md
+- depends on:
+  - TASK-WUTR-01-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/01-style-doctrine-sprint.md
+  - specs/web-ui-style-theme-refresh/backlog/01-style-doctrine-build-backlog.md
+  - specs/web-ui-style-theme-refresh/tasks/01-style-doctrine/02-align-web-ui-skills-theme-guidance.md
+  - docs/web-ui-style-guide.md
+  - skills/app-description-ui/SKILL.md
+  - skills/akka-web-ui-apps/SKILL.md
+  - focused web UI skills found by targeted search for style/theme/mode references
+- skills:
+  - app-description-ui
+  - akka-web-ui-apps
+  - akka-web-ui-ux-design
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - updated web UI/app-description skill files as needed
+  - updated skills/README.md only if routing summary text needs theme wording alignment
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - targeted stale-language search from task brief
+- done criteria:
+  - web UI skills expect named theme guidance before implementation
+  - app-description UI guidance records available/default theme semantics and simple My Account selection where relevant
+  - testing/accessibility guidance checks named themes and status semantics
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: align web ui skills with named themes`
+
+### TASK-WUTR-02-001: Update seed app-description theme contract
+
+- status: pending
+- source: specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
+- task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/01-update-seed-app-description-theme-contract.md
+- depends on:
+  - TASK-WUTR-01-002
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/02-reference-runtime-sprint.md
+  - specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
+  - specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/01-update-seed-app-description-theme-contract.md
+  - docs/web-ui-style-guide.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
+  - seed app-description My Account/settings files identified by search
+- skills:
+  - app-description-ui
+  - app-description-surface-modeling if My Account surface contracts need focused updates
+- expected outputs:
+  - updated seed app-description UI files
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - targeted stale-language search from task brief
+- done criteria:
+  - seed app-description uses the replacement style as selected default
+  - seed app-description records named themes with two light and two dark initial options
+  - My Account theme selection is described as selecting one available theme and applying it to the UI
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: update seed app theme contract`
+
+### TASK-WUTR-02-002: Refresh starter/reference theme tokens
+
+- status: pending
+- source: specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
+- task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/02-refresh-starter-theme-tokens.md
+- depends on:
+  - TASK-WUTR-02-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/02-reference-runtime-sprint.md
+  - specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
+  - specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/02-refresh-starter-theme-tokens.md
+  - docs/web-ui-style-guide.md
+  - frontend/src/styles/tokens.css
+  - frontend/src/styles/base.css
+  - frontend/src/styles/layout.css
+  - frontend/src/styles/components.css
+  - templates/ai-first-saas-starter/frontend/src/styles/tokens.css
+  - template frontend style files identified by search
+- skills:
+  - akka-web-ui-frontend-project
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - updated reference frontend CSS tokens/styles
+  - updated starter template frontend CSS tokens/styles
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - frontend type/build checks documented by repository guidance for changed frontend assets, or a clear blocker if prerequisites are unavailable
+  - targeted search proving old default token names/values are not still the active default where replaced
+- done criteria:
+  - reference/starter CSS exposes four named theme token bundles
+  - replacement style colors, surfaces, borders, typography, status colors, and functional color usage are reflected in token names/values
+  - existing component classes consume semantic tokens rather than theme-specific hard-coded colors where practical
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: refresh starter theme tokens`
+
+### TASK-WUTR-02-003: Align My Account theme selection
+
+- status: pending
+- source: specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
+- task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/03-align-my-account-theme-selection.md
+- depends on:
+  - TASK-WUTR-02-002
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/02-reference-runtime-sprint.md
+  - specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
+  - specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/03-align-my-account-theme-selection.md
+  - docs/web-ui-style-guide.md
+  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
+  - frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - My Account/settings frontend/API files identified by search
+- skills:
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation if settings form behavior is edited
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - updated reference/starter frontend theme selection behavior or documented bounded limitation plus follow-up task
+  - updated tests/checks where existing frontend test structure supports them
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - frontend type/build checks documented by repository guidance for changed frontend assets, or a clear blocker if prerequisites are unavailable
+  - manual/source inspection confirming theme selection maps to named theme ids and document/root theme application
+- done criteria:
+  - user-facing selector model is named-theme based, not mode-first
+  - choosing an available theme changes the UI theme at the scoped reference/starter level
+  - persistence/runtime scope is truthful and, if incomplete, follow-up work is appended before verification
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: align my account theme selection`
+
+### TASK-WUTR-99-001: Verify web UI style theme refresh completion
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/web-ui-style-theme-refresh/tasks/99-verification/01-verify-web-ui-style-theme-refresh.md
+- depends on:
+  - TASK-WUTR-01-001
+  - TASK-WUTR-01-002
+  - TASK-WUTR-02-001
+  - TASK-WUTR-02-002
+  - TASK-WUTR-02-003
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/*.md
+  - specs/web-ui-style-theme-refresh/backlog/*.md
+  - specs/web-ui-style-theme-refresh/tasks/**/*.md
+  - web-ui-high-level-style-guide.md
+  - docs/web-ui-style-guide.md
+  - affected docs/skills/examples/frontend/template files from completed tasks
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+  - optional verification notes file if useful
+  - follow-up task briefs if material gaps remain
+- required checks:
+  - `git diff --check`
+  - scoped stale-contradiction search from task brief
+  - frontend checks needed to validate changed frontend assets, as recorded by implementation tasks
+- done criteria:
+  - task group/sprint goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - unresolved questions/blockers have been reviewed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - verification changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: verify style theme refresh completion`
