@@ -195,7 +195,7 @@
 
 ### TASK-CWSS-99-001: Verify core workstream surface style alignment completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/core-workstream-surface-style-alignment/tasks/99-verification/01-verify-core-workstream-surface-style-alignment.md
 - depends on:
@@ -220,7 +220,7 @@
   - none; repository verification task
 - expected outputs:
   - updated specs/core-workstream-surface-style-alignment/pending-tasks.md
-  - optional verification notes
+  - specs/core-workstream-surface-style-alignment/verification-notes.md
   - follow-up task briefs if needed
 - required checks:
   - `git diff --check`
@@ -232,3 +232,4 @@
   - verification changes and queue update are committed
 - notes:
   - commit message: `ui-theme: verify core workstream surface style alignment`
+  - checks: `git diff --check`; stale contradiction search found only explicit reject-list/task wording and the intended My Account rejection of mode-first theme labels; positive style/theme search confirmed coverage; no follow-up tasks required
