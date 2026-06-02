@@ -118,7 +118,7 @@
 
 ### TASK-NPF-04-001: Run notification foundation validation
 
-- status: pending
+- status: done
 - source: specs/notification-platform-foundation/backlog/01-notification-foundation-build-backlog.md
 - task brief: specs/notification-platform-foundation/tasks/04-validation/01-run-notification-foundation-validation.md
 - depends on:
