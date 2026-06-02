@@ -163,7 +163,7 @@
 
 ### TASK-WFTL-99-001: Verify workstream form theme live remediation completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/workstream-form-theme-live-remediation/tasks/99-verification/01-verify-workstream-form-theme-live-remediation.md
 - depends on:
@@ -200,3 +200,82 @@
   - verification changes and queue update are committed
 - notes:
   - commit message: `ui-theme: verify workstream form theme remediation`
+  - checks: `git diff --check`; `cd frontend && npm test && npm run typecheck && npm run build`; `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`; targeted source/docs/static searches for structured-surface form controls and immediate theme preview coverage
+  - finding: frontend source, starter source, contract tests, docs, and skills address the screenshot class and live `preferredThemeId` preview; committed Akka-hosted static resources were stale after rebuild and lacked the live field-change propagation, so follow-up TASK-WFTL-03-001 and terminal verification TASK-WFTL-99-002 were appended.
+
+### TASK-WFTL-03-001: Sync Akka-hosted static frontend assets
+
+- status: pending
+- source: TASK-WFTL-99-001 verification finding
+- task brief: specs/workstream-form-theme-live-remediation/tasks/03-static-runtime-sync/01-sync-akka-hosted-static-assets.md
+- depends on:
+  - TASK-WFTL-99-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-form-theme-live-remediation/README.md
+  - specs/workstream-form-theme-live-remediation/conversation-capture.md
+  - specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - specs/workstream-form-theme-live-remediation/tasks/03-static-runtime-sync/01-sync-akka-hosted-static-assets.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/surfaces/DetailEditSurface.tsx
+  - frontend/src/styles/components.css
+  - src/main/resources/static-resources/index.html
+  - templates/ai-first-saas-starter/frontend/src/main.tsx
+  - templates/ai-first-saas-starter/frontend/src/workstream/surfaces/DetailEditSurface.tsx
+  - templates/ai-first-saas-starter/frontend/src/styles/components.css
+  - templates/ai-first-saas-starter/src/main/resources/static-resources/index.html
+- skills:
+  - none; build-output synchronization task
+- expected outputs:
+  - updated src/main/resources/static-resources/** build output
+  - updated templates/ai-first-saas-starter/src/main/resources/static-resources/** build output
+  - updated specs/workstream-form-theme-live-remediation/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `cd frontend && npm test && npm run typecheck && npm run build`
+  - `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`
+  - targeted search in committed static resources for live theme callback evidence and `.surface-detail-field` styling evidence
+- done criteria:
+  - Akka-hosted static resources are in sync with frontend source for reference and starter template
+  - served static assets contain detail-edit structured-surface form styling
+  - served static assets contain immediate `preferredThemeId` preview propagation, not only post-save theme application
+  - changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: sync workstream static theme assets`
+
+### TASK-WFTL-99-002: Verify workstream form theme static runtime completion
+
+- status: pending
+- source: TASK-WFTL-99-001 verification finding
+- task brief: specs/workstream-form-theme-live-remediation/tasks/99-verification/02-verify-workstream-form-theme-static-runtime.md
+- depends on:
+  - TASK-WFTL-03-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/workstream-form-theme-live-remediation/README.md
+  - specs/workstream-form-theme-live-remediation/conversation-capture.md
+  - specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - specs/workstream-form-theme-live-remediation/tasks/99-verification/02-verify-workstream-form-theme-static-runtime.md
+  - user-settings-surface.png
+  - changed frontend/static/docs/skills files
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/workstream-form-theme-live-remediation/pending-tasks.md
+  - optional verification notes
+  - follow-up task briefs if needed
+- required checks:
+  - `git diff --check`
+  - frontend checks if frontend or static assets changed since the previous task's checks
+  - targeted source/static/docs searches for detail-edit styling and immediate theme preview coverage
+- done criteria:
+  - screenshot class of default-looking structured-surface fields is addressed in source and committed served static assets
+  - theme selection previews immediately in source and committed served static assets
+  - guidance would reject recurrence
+  - if complete, no follow-up tasks are appended
+  - if incomplete, bounded follow-up tasks plus a new terminal verification task are appended
+  - verification changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: verify workstream form theme static runtime`
