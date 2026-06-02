@@ -60,9 +60,9 @@ public record MeResponse(
     }
   }
 
-  public record SettingsSummary(String preferredColorMode) {
+  public record SettingsSummary(String preferredThemeId) {
     static SettingsSummary from(UserSettings settings) {
-      return new SettingsSummary(settings.uiMode().name().toLowerCase(Locale.ROOT));
+      return new SettingsSummary(settings.themeId().id());
     }
   }
 

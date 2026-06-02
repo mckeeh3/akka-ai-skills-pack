@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type SystemMessageSurfaceProps = {
   envelope: SurfaceEnvelope<SystemMessageData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 const severityTone: Record<string, string> = {

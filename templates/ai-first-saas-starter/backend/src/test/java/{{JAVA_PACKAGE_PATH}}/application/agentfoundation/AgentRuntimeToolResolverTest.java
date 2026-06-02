@@ -111,7 +111,7 @@ class AgentRuntimeToolResolverTest {
     assertTrue(resolved.runtimeTools().stream().anyMatch(MyAccountEvidenceTools.class::isInstance));
     var identityRepository = seededIdentityRepository();
     var tool = new MyAccountEvidenceTools(identityRepository, new MyAccountService(new AuthContextResolver(identityRepository), StarterSecurityComponents.attentionService()), tenantAdmin, "corr-my-account-evidence");
-    var beforeSettings = identityRepository.settings("admin-1").uiMode();
+    var beforeSettings = identityRepository.settings("admin-1").themeId();
 
     var evidence = tool.read("summarize current tenantId=tenant-1 My Account selected context authority personal attention trace refs provider system_message no direct mutation evidence");
 
@@ -129,7 +129,7 @@ class AgentRuntimeToolResolverTest {
     assertFalse(evidence.toLowerCase().contains("rawjwt="));
     assertFalse(evidence.toLowerCase().contains("providersecret="));
     assertFalse(evidence.toLowerCase().contains("hiddenprompttext="));
-    assertEquals(beforeSettings, identityRepository.settings("admin-1").uiMode(), "Evidence reads must not mutate profile or settings");
+    assertEquals(beforeSettings, identityRepository.settings("admin-1").themeId(), "Evidence reads must not mutate profile or settings");
   }
 
   @Test
@@ -344,11 +344,11 @@ class AgentRuntimeToolResolverTest {
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin-1", "workos-admin-1", "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("admin-1", "admin@example.test", "Tenant Admin", "Tenant", "Admin", null));
-    identityRepository.putSettings(new UserSettings("admin-1", UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings("admin-1", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-1", "admin-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), MembershipStatus.ACTIVE, false, null));
     identityRepository.saveAccount(new Account("member-1", null, "member@example.test", "member@example.test", AccountStatus.ACTIVE, "UNLINKED"));
     identityRepository.putProfile(new UserProfile("member-1", "member@example.test", "Member One", "Member", "One", null));
-    identityRepository.putSettings(new UserSettings("member-1", UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings("member-1", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-member", "member-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
     return identityRepository;
   }

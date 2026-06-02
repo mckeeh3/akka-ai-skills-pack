@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type AuditTimelineSurfaceProps = {
   envelope: SurfaceEnvelope<AuditTimelineSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 type TimelineEvent = {

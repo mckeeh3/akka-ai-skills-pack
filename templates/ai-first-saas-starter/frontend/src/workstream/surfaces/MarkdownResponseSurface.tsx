@@ -6,7 +6,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type MarkdownResponseSurfaceProps = {
   envelope: SurfaceEnvelope<MarkdownResponseData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 const unsafeSchemePattern = /^(?:javascript|data|vbscript):/i;

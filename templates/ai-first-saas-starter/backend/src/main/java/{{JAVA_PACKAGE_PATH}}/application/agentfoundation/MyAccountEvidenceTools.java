@@ -52,7 +52,7 @@ public final class MyAccountEvidenceTools {
         + "\nselectedTenantId=" + safe(authContext.tenantId())
         + "\nselectedCustomerId=" + safe(authContext.customerId())
         + "\nselectedContextId=" + safe(authContext.membershipId())
-        + "\nprofile={displayName=" + safe(actor.profile().displayName()) + ", preferredColorMode=" + actor.settings().uiMode().name().toLowerCase(java.util.Locale.ROOT) + "}"
+        + "\nprofile={displayName=" + safe(actor.profile().displayName()) + ", preferredThemeId=" + actor.settings().themeId().id() + "}"
         + "\nauthorityBasis=" + summary.authorityBasis()
         + "\ncapabilityGroups=" + summary.capabilityGroups()
         + "\npersonalAttention=" + dashboard.attentionItems()
@@ -79,7 +79,7 @@ public final class MyAccountEvidenceTools {
       throw new AuthorizationException(403, "my-account-evidence-auth-context-mismatch");
     }
     var profile = identityRepository.profile(account.accountId());
-    var settings = identityRepository.settings(account.accountId()) == null ? new UserSettings(account.accountId(), UserSettings.UiMode.LIGHT) : identityRepository.settings(account.accountId());
+    var settings = identityRepository.settings(account.accountId()) == null ? new UserSettings(account.accountId(), UserSettings.ThemeId.AURORA_LIGHT) : identityRepository.settings(account.accountId());
     return new AuthContextResolver.ResolvedMe(account, profile, settings, memberships, authContext, correlationId);
   }
 

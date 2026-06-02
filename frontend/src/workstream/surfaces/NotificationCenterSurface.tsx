@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type NotificationCenterSurfaceProps = {
   envelope: SurfaceEnvelope<NotificationCenterSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 export function NotificationCenterSurface({ envelope, onAction }: NotificationCenterSurfaceProps) {

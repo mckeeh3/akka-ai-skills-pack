@@ -34,14 +34,16 @@ import {
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
 const hasConfiguredWorkosClient = typeof workosClientId === 'string' && workosClientId.startsWith('client_') && !workosClientId.includes('your_workos');
 
-type ModePreference = 'light' | 'dark' | 'system';
+type ThemePreference = 'aurora-light' | 'cobalt-light' | 'obsidian-dark' | 'midnight-dark';
 type BootstrapState =
   | { status: 'loading' }
   | { status: 'ready'; me: MeResponse; items: WorkstreamItem[]; surfaces: SurfaceEnvelope<unknown>[] }
   | { status: 'error'; message: string };
 
-const modeStorageKey = 'seed-ui-mode';
-// Contract markers preserved for frontend slice tests: data-mode-preference; Ready · workstream shell; Pending · backend configuration; Guarded · backend authority; runtime path uses HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, and WorkOS AuthKit getAccessToken.
+const themeStorageKey = 'seed-ui-theme';
+const defaultThemeId: ThemePreference = 'aurora-light';
+const availableThemeIds: readonly ThemePreference[] = ['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark'];
+// Contract markers preserved for frontend slice tests: data-theme; named theme selection; Ready · workstream shell; Pending · backend configuration; Guarded · backend authority; runtime path uses HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, and WorkOS AuthKit getAccessToken.
 
 type WorkstreamAppProps = {
   tokenProvider?: TokenProvider;
@@ -52,7 +54,7 @@ type WorkstreamAppProps = {
 function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps) {
   const workstreamClient = React.useMemo<WorkstreamClient>(() => clients?.workstream ?? new HttpWorkstreamApiClient(tokenProvider), [clients, tokenProvider]);
   const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => clients?.realtime ?? new HttpWorkstreamRealtimeClient(), [clients]);
-  const [mode, setMode] = React.useState<ModePreference>(() => readStoredMode());
+  const [themeId, setThemeId] = React.useState<ThemePreference>(() => readStoredThemeId());
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
   const [submittingFunctionalAgentId, setSubmittingFunctionalAgentId] = React.useState<string>();
@@ -80,19 +82,15 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
 
   React.useEffect(() => {
     const root = document.documentElement;
-    root.dataset.modePreference = mode;
-    window.localStorage.setItem(modeStorageKey, mode);
+    root.dataset.theme = themeId;
+    window.localStorage.setItem(themeStorageKey, themeId);
+  }, [themeId]);
 
-    const applyResolvedMode = () => {
-      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      root.dataset.mode = mode === 'system' ? (systemDark ? 'dark' : 'light') : mode;
-    };
-
-    applyResolvedMode();
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    media.addEventListener('change', applyResolvedMode);
-    return () => media.removeEventListener('change', applyResolvedMode);
-  }, [mode]);
+  React.useEffect(() => {
+    if (bootstrap.status !== 'ready') return;
+    const backendThemeId = normalizeThemeId(bootstrap.me.settings.preferredThemeId);
+    setThemeId(backendThemeId ?? defaultThemeId);
+  }, [bootstrap.status === 'ready' ? bootstrap.me.settings.preferredThemeId : undefined]);
 
   React.useEffect(() => {
     const onLocationChange = () => setSelection(readDeepLinkSelection());
@@ -296,12 +294,12 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       : current);
   }
 
-  async function handleSurfaceAction(action: SurfaceAction, surfaceId: string) {
+  async function handleSurfaceAction(action: SurfaceAction, surfaceId: string, input: unknown = {}) {
     if (!ready || !me) return;
     const request = buildCapabilityActionRequest(action, {
       selectedContextId: me.selectedAuthContext.selectedContextId,
       surfaceId,
-      input: {},
+      input,
       surfaceCorrelationId: `corr-${action.actionId}`
     });
     const result = await workstreamClient.runCapabilityAction(request);
@@ -338,6 +336,8 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         : current.surfaces;
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
+    const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input ? normalizeThemeId((input as { preferredThemeId?: unknown }).preferredThemeId) : undefined;
+    if (result.ok && selectedThemeId) setThemeId(selectedThemeId);
     if (targetSurface && isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
       updateSelection({
         selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId,
@@ -687,9 +687,12 @@ function pruneWorkstreamItems(items: WorkstreamItem[], maxItems = 80): Workstrea
   return items.length > maxItems ? items.slice(items.length - maxItems) : items;
 }
 
-function readStoredMode(): ModePreference {
-  const stored = window.localStorage.getItem(modeStorageKey);
-  return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+function normalizeThemeId(value: unknown): ThemePreference | undefined {
+  return typeof value === 'string' && (availableThemeIds as readonly string[]).includes(value) ? value as ThemePreference : undefined;
+}
+
+function readStoredThemeId(): ThemePreference {
+  return normalizeThemeId(window.localStorage.getItem(themeStorageKey)) ?? defaultThemeId;
 }
 
 

@@ -83,7 +83,7 @@ public final class UserAdminEvidenceTools {
       throw new AuthorizationException(403, "evidence-auth-context-mismatch");
     }
     var profile = identityRepository.profile(account.accountId());
-    var settings = identityRepository.settings(account.accountId()) == null ? new UserSettings(account.accountId(), UserSettings.UiMode.LIGHT) : identityRepository.settings(account.accountId());
+    var settings = identityRepository.settings(account.accountId()) == null ? new UserSettings(account.accountId(), UserSettings.ThemeId.AURORA_LIGHT) : identityRepository.settings(account.accountId());
     return new AuthContextResolver.ResolvedMe(account, profile, settings, memberships, authContext, correlationId);
   }
 

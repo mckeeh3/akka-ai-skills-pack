@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type ListSearchSurfaceProps = {
   envelope: SurfaceEnvelope<ListSearchSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps) {

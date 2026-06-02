@@ -613,7 +613,7 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope mySettingsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     return envelope("surface-my-settings", "detail-edit", "User settings", actor, correlationId,
-        mapOf("recordId", actor.account().accountId() + "-settings", "recordLabel", actor.profile().displayName() + " settings", "recordKind", "settings", "summary", "Current signed-in user preferences for the workstream shell and notifications.", "fields", List.of(mapOf("fieldId", "preferredColorMode", "label", "Color mode", "value", actor.settings().uiMode().name().toLowerCase(), "editable", true, "inputType", "select"), mapOf("fieldId", "notificationDigest", "label", "Notification digest", "value", "daily", "editable", false, "inputType", "select", "disabledReason", "Notification digest is deferred beyond My Account v0."), mapOf("fieldId", "composerDensity", "label", "Composer density", "value", "comfortable", "editable", false, "inputType", "select", "disabledReason", "Composer density is deferred beyond My Account v0.")), "version", 1, "permissionState", mapOf("canEdit", true, "authoritativeCapabilityId", MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), "audit", mapOf("lastEventType", "UserSettingsDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-my-settings"))), List.of(updateSettingsAction(), openAuditAction()));
+        mapOf("recordId", actor.account().accountId() + "-settings", "recordLabel", actor.profile().displayName() + " settings", "recordKind", "settings", "summary", "Current signed-in user preferences for the workstream shell and notifications.", "fields", List.of(mapOf("fieldId", "preferredThemeId", "label", "Theme", "value", actor.settings().themeId().id(), "editable", true, "inputType", "select", "options", namedThemeOptions()), mapOf("fieldId", "notificationDigest", "label", "Notification digest", "value", "daily", "editable", false, "inputType", "select", "disabledReason", "Notification digest is deferred beyond My Account v0."), mapOf("fieldId", "composerDensity", "label", "Composer density", "value", "comfortable", "editable", false, "inputType", "select", "disabledReason", "Composer density is deferred beyond My Account v0.")), "version", 1, "permissionState", mapOf("canEdit", true, "authoritativeCapabilityId", MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), "audit", mapOf("lastEventType", "UserSettingsDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-my-settings"))), List.of(updateSettingsAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope myContextSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1237,6 +1237,14 @@ public final class WorkstreamService {
   private SurfaceAction updateEmailNotificationPreferencesAction() { return new SurfaceAction("action-notification-email-update-preferences", "Update email notification preferences", "command", browserToolId("action-notification-email-update-preferences"), governedToolId(NOTIFICATION_EMAIL_UPDATE_PREFERENCES_CAPABILITY), NOTIFICATION_EMAIL_UPDATE_PREFERENCES_CAPABILITY, "schema.notification.email.preferences.update.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("EmailNotificationPreferencesUpdated", true)); }
   private SurfaceAction showProfileAction() { return new SurfaceAction("action-show-my-profile", "Show user profile", "read", browserToolId("action-show-my-profile"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-profile", "inline"), new Audit("UserProfileDisplayed", true)); }
   private SurfaceAction showSettingsAction() { return new SurfaceAction("action-show-my-settings", "Show user settings", "read", browserToolId("action-show-my-settings"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-settings", "inline"), new Audit("UserSettingsDisplayed", true)); }
+  private List<Map<String, Object>> namedThemeOptions() {
+    return List.of(
+        mapOf("value", "aurora-light", "label", "Aurora Light"),
+        mapOf("value", "cobalt-light", "label", "Cobalt Light"),
+        mapOf("value", "obsidian-dark", "label", "Obsidian Dark"),
+        mapOf("value", "midnight-dark", "label", "Midnight Dark"));
+  }
+
   private SurfaceAction showContextAction() { return new SurfaceAction("action-show-my-context", "Show selected context", "read", browserToolId("action-show-my-context"), governedToolId(MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY), MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-context", "inline"), new Audit("AuthContextDisplayed", true)); }
   private SurfaceAction updateProfileAction() { return new SurfaceAction("action-update-my-profile", "Save profile changes", "command", browserToolId("action-update-my-profile"), governedToolId(MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "schema.my-account.profile.update.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-my-profile", "inline"), new Audit("UserProfileUpdateRequested", true)); }
   private SurfaceAction updateSettingsAction() { return new SurfaceAction("action-update-my-settings", "Save settings changes", "command", browserToolId("action-update-my-settings"), governedToolId(MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "schema.my-account.settings.update.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-my-settings", "inline"), new Audit("UserSettingsUpdateRequested", true)); }
@@ -1254,20 +1262,20 @@ public final class WorkstreamService {
     if (!(request.input() instanceof Map<?, ?> input)) throw new AuthorizationException(400, "MY_ACCOUNT_UPDATE_INPUT_REQUIRED");
     var unsupported = input.keySet().stream()
         .map(String::valueOf)
-        .filter(key -> !List.of("displayName", "preferredColorMode").contains(key))
+        .filter(key -> !List.of("displayName", "preferredThemeId").contains(key))
         .sorted()
         .toList();
     if (!unsupported.isEmpty()) throw new AuthorizationException(403, "MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD:" + String.join(",", unsupported));
     var displayName = input.get("displayName") instanceof String value ? value : null;
-    UserSettings.UiMode uiMode = null;
-    if (input.get("preferredColorMode") instanceof String value && !value.isBlank()) {
-      uiMode = switch (value.toLowerCase()) {
-        case "light" -> UserSettings.UiMode.LIGHT;
-        case "dark" -> UserSettings.UiMode.DARK;
-        default -> throw new AuthorizationException(400, "MY_ACCOUNT_INVALID_COLOR_MODE");
-      };
+    UserSettings.ThemeId themeId = null;
+    if (input.get("preferredThemeId") instanceof String value && !value.isBlank()) {
+      try {
+        themeId = UserSettings.ThemeId.fromId(value);
+      } catch (IllegalArgumentException invalid) {
+        throw new AuthorizationException(400, "MY_ACCOUNT_INVALID_THEME_ID");
+      }
     }
-    return myAccountService.updateProfileSettings(actor, displayName, uiMode, request.idempotencyKey(), request.correlationId());
+    return myAccountService.updateProfileSettings(actor, displayName, themeId, request.idempotencyKey(), request.correlationId());
   }
 
   private SurfaceAction displayListAction() { return new SurfaceAction("action-display-user-list", "Display user list view", "read", browserToolId("action-display-user-list"), governedToolId(USERADMIN_LIST_MEMBERS), USERADMIN_LIST_MEMBERS, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-list", "inline"), new Audit("UserAdminListDisplayed", true)); }

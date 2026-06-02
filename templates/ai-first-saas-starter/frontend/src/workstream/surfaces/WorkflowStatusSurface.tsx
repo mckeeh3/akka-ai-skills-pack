@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type WorkflowStatusSurfaceProps = {
   envelope: SurfaceEnvelope<WorkflowStatusSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 function formatStatus(value: string) {

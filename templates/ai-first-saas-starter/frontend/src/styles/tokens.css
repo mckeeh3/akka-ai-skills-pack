@@ -28,8 +28,7 @@
 }
 
 :root,
-[data-theme="aurora-light"],
-[data-mode="light"] {
+[data-theme="aurora-light"] {
   color-scheme: light;
   --color-canvas: #f7f8fb;
   --color-canvas-subtle: #eef2f7;
@@ -151,8 +150,7 @@
   --color-primary-soft: var(--color-accent-soft);
 }
 
-[data-theme="obsidian-dark"],
-[data-mode="dark"] {
+[data-theme="obsidian-dark"] {
   color-scheme: dark;
   --color-canvas: #111318;
   --color-canvas-subtle: #171a21;

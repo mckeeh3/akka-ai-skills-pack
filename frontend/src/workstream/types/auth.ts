@@ -1,5 +1,5 @@
 export type AccountStatus = 'active' | 'disabled' | 'pending';
-export type ColorModePreference = 'light' | 'dark' | 'system';
+export type ThemePreference = 'aurora-light' | 'cobalt-light' | 'obsidian-dark' | 'midnight-dark';
 
 export type AccountSummary = {
   accountId: string;
@@ -15,7 +15,7 @@ export type UserProfile = {
 };
 
 export type UserSettings = {
-  preferredColorMode?: ColorModePreference;
+  preferredThemeId?: ThemePreference;
 };
 
 export type MembershipSummary = {

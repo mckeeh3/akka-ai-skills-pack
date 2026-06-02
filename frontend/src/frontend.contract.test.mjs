@@ -53,12 +53,12 @@ test('workstream entry gates fixture realtime client and wires stream state', ()
   assert.match(main, /selectedContextId: bootstrap\.me\.selectedAuthContext\.selectedContextId/);
 });
 
-test('mode switching uses root data attributes and persists preference', () => {
-  assert.match(main, /type ModePreference = 'light' \| 'dark' \| 'system'/);
-  assert.match(main, /root\.dataset\.modePreference = mode/);
-  assert.match(main, /root\.dataset\.mode = mode === 'system'/);
-  assert.match(main, /prefers-color-scheme: dark/);
-  assert.match(main, /window\.localStorage\.setItem\(modeStorageKey, mode\)/);
+test('named theme selection uses root data-theme and persists preference', () => {
+  assert.match(main, /type ThemePreference = 'aurora-light' \| 'cobalt-light' \| 'obsidian-dark' \| 'midnight-dark'/);
+  assert.match(main, /root\.dataset\.theme = themeId/);
+  assert.match(main, /window\.localStorage\.setItem\(themeStorageKey, themeId\)/);
+  assert.match(main, /bootstrap\.me\.settings\.preferredThemeId/);
+  assert.doesNotMatch(main, /prefers-color-scheme: dark/);
 });
 
 test('AI-first workstream enterprise tokens include named themes and semantic aliases', () => {

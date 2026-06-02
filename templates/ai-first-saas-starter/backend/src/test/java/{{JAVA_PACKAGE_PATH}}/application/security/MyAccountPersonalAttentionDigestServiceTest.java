@@ -226,7 +226,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
   private void seed(String email, String membershipId, FoundationRole role) {
     identityRepository.saveAccount(new Account(email, null, email, email, AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile(email, email, email, null, null, null));
-    identityRepository.putSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership(membershipId, email, ScopeType.TENANT, "tenant-1", null, List.of(role), MembershipStatus.ACTIVE, false, null));
   }
 }

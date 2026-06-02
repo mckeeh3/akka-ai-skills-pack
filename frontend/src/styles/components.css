@@ -703,7 +703,7 @@
   clip: rect(0 0 0 0);
 }
 
-.mode-choice {
+.theme-choice {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -716,7 +716,7 @@
   font-weight: 800;
 }
 
-.mode-choice.selected {
+.theme-choice.selected {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
 }
@@ -1391,7 +1391,7 @@
 }
 
 .audit-link-row,
-.preference-mode-group {
+.preference-theme-group {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
@@ -1400,7 +1400,7 @@
   padding: 0;
 }
 
-.preference-mode-group legend {
+.preference-theme-group legend {
   width: 100%;
   color: var(--color-text-soft);
   font-weight: 800;

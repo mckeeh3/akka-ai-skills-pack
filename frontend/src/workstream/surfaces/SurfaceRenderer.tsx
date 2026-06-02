@@ -17,7 +17,7 @@ type StructuredSurfaceRendererProps = {
   envelope?: SurfaceEnvelope<unknown>;
   envelopes?: SurfaceEnvelope<unknown>[];
   selectedSurfaceId?: string;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSurfaceId, onAction }: StructuredSurfaceRendererProps) {

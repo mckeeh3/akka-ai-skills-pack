@@ -65,11 +65,11 @@ class WorkstreamServiceTest {
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("admin@example.test", "admin@example.test", "Tenant Admin", "Tenant", "Admin", null));
-    identityRepository.putSettings(new UserSettings("admin@example.test", UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings("admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-admin", "admin@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN, FoundationRole.AUDITOR), MembershipStatus.ACTIVE, false, null));
     identityRepository.saveAccount(new Account("member@example.test", null, "member@example.test", "member@example.test", AccountStatus.ACTIVE, "UNLINKED"));
     identityRepository.putProfile(new UserProfile("member@example.test", "member@example.test", "Member User", "Member", "User", null));
-    identityRepository.putSettings(new UserSettings("member@example.test", UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings("member@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-member", "member@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
   }
 
@@ -323,7 +323,7 @@ class WorkstreamServiceTest {
   void userAdminContractCapabilityActionsPreviewApplyAuditAndIdempotency() {
     identityRepository.saveAccount(new Account("second-admin@example.test", null, "second-admin@example.test", "second-admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("second-admin@example.test", "second-admin@example.test", "Second Admin", "Second", "Admin", null));
-    identityRepository.putSettings(new UserSettings("second-admin@example.test", UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings("second-admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-second-admin", "second-admin@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), MembershipStatus.ACTIVE, false, null));
 
     var preview = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
@@ -456,7 +456,7 @@ class WorkstreamServiceTest {
     assertEquals("detail-edit", context.surfaceType());
     assertEquals("surface-my-context", context.surfaceId());
     assertTrue(profile.toString().contains("my_account.update_profile_settings"));
-    assertTrue(settings.toString().contains("preferredColorMode"));
+    assertTrue(settings.toString().contains("preferredThemeId"));
     assertTrue(context.toString().contains("/api/me?selectedContextId=membership-admin"));
     assertTrue(context.toString().contains("my_account.view_context"));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-show-my-account-dashboard")));
@@ -510,14 +510,14 @@ class WorkstreamServiceTest {
   @Test
   void myAccountProfileSettingsUpdatePersistsAllowedSelfServiceFieldsAndIsIdempotent() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-update-my-profile", "action-update-my-profile", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Updated Admin", "preferredColorMode", "dark"), "idem-my-account-update", "membership-admin", "surface-my-profile", "corr-my-account-update"));
+        "action-update-my-profile", "action-update-my-profile", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Updated Admin", "preferredThemeId", "obsidian-dark"), "idem-my-account-update", "membership-admin", "surface-my-profile", "corr-my-account-update"));
 
     assertEquals("accepted", result.status());
     assertEquals("surface-my-profile", result.resultSurface().surfaceId());
     assertTrue(result.resultSurface().toString().contains("Updated Admin"));
     var me = service.bootstrap(identity(), "membership-admin", "corr-my-account-read").me();
     assertEquals("Updated Admin", me.profile().displayName());
-    assertEquals("dark", me.settings().preferredColorMode());
+    assertEquals("obsidian-dark", me.settings().preferredThemeId());
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-update-my-profile", "action-update-my-profile", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Ignored Duplicate"), "idem-my-account-update", "membership-admin", "surface-my-profile", "corr-my-account-duplicate"));
@@ -537,7 +537,7 @@ class WorkstreamServiceTest {
   @Test
   void myAccountProfileSettingsNoOpIsTracedAndReturnsCurrentSurface() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Tenant Admin", "preferredColorMode", "light"), "idem-my-account-noop", "membership-admin", "surface-my-settings", "corr-my-account-noop"));
+        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Tenant Admin", "preferredThemeId", "aurora-light"), "idem-my-account-noop", "membership-admin", "surface-my-settings", "corr-my-account-noop"));
 
     assertEquals("no-op", result.status());
     assertEquals("surface-my-settings", result.resultSurface().surfaceId());

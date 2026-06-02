@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type DashboardSurfaceProps = {
   envelope: SurfaceEnvelope<DashboardSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) {

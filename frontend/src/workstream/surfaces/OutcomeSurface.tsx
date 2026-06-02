@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type OutcomeSurfaceProps = {
   envelope: SurfaceEnvelope<OutcomeSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 export function OutcomeSurface({ envelope, onAction }: OutcomeSurfaceProps) {

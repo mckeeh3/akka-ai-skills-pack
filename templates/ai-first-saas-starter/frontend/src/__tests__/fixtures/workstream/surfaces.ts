@@ -997,7 +997,7 @@ export const myAccountDashboardSurface = envelope(
   {
     cards: [
       { cardId: 'card-my-profile', label: 'Signed-in profile', value: 'Tenant Admin', severity: 'info' },
-      { cardId: 'card-my-settings', label: 'Color mode', value: 'system', severity: 'info' },
+      { cardId: 'card-my-settings', label: 'Theme', value: 'Aurora Light', severity: 'info' },
       { cardId: 'card-current-context', label: 'Selected AuthContext', value: tenantAdminAuthContext.tenantName, severity: 'info' }
     ],
     sections: [
@@ -1051,7 +1051,7 @@ export const myAccountSettingsSurface = envelope(
     recordKind: 'settings',
     summary: 'Personal settings for the workstream shell. Backend persistence, no-op, idempotency, and validation errors are reflected as capability action results.',
     fields: [
-      { fieldId: 'preferredColorMode', label: 'Color mode', value: 'system', editable: true, inputType: 'select', options: [{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }] },
+      { fieldId: 'preferredThemeId', label: 'Theme', value: 'aurora-light', editable: true, inputType: 'select', options: [{ value: 'aurora-light', label: 'Aurora Light' }, { value: 'cobalt-light', label: 'Cobalt Light' }, { value: 'obsidian-dark', label: 'Obsidian Dark' }, { value: 'midnight-dark', label: 'Midnight Dark' }] },
       { fieldId: 'notificationDigest', label: 'Notification digest', value: 'daily', editable: false, inputType: 'select', disabledReason: 'Notification digest is deferred beyond My Account v0.' },
       { fieldId: 'composerDensity', label: 'Composer density', value: 'comfortable', editable: false, inputType: 'select', disabledReason: 'Composer density is deferred beyond My Account v0.' }
     ],

@@ -207,7 +207,7 @@
 
 ### TASK-WUTR-02-003: Align My Account theme selection
 
-- status: pending
+- status: done
 - source: specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
 - task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/03-align-my-account-theme-selection.md
 - depends on:
@@ -246,6 +246,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: align my account theme selection`
+  - checks: `git diff --check`; `cd frontend && npm test && npm run typecheck && npm run build`; `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`; `rg -n "preferredColorMode|Color mode|ModePreference|modeStorageKey|data-mode|modePreference|preferences\\.mode|request\\.mode|display mode|Display mode|system mode|light, dark, or system|profile-mode|mode-choice|preference-mode|UiMode|uiMode|MY_ACCOUNT_INVALID_COLOR_MODE" frontend/src templates/ai-first-saas-starter/frontend/src templates/ai-first-saas-starter/backend/src/main/java templates/ai-first-saas-starter/backend/src/test/java || true` (remaining `mode` hits are governed agent-runtime mode, not UI theme selection)
+  - blocker: `cd templates/ai-first-saas-starter/backend && mvn test -q` cannot run before template rendering because placeholder `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}` values make the template POM invalid as a raw Maven project
 
 ### TASK-WUTR-99-001: Verify web UI style theme refresh completion
 

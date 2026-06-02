@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ApiClient, ApiError, MeResponse, ModePreference } from '../../api';
+import type { ApiClient, ApiError, MeResponse, ThemePreference } from '../../api';
 import { Button, Card, DataState } from '../../design-system';
 
 type RemoteData<T> =
@@ -8,9 +8,9 @@ type RemoteData<T> =
   | { status: 'ready'; value: T }
   | { status: 'error'; error: ApiError };
 
-export function ProfilePreferencesPage({ apiClient, mode, onModeChange }: { apiClient: ApiClient; mode: ModePreference; onModeChange: (mode: ModePreference) => void }) {
+export function ProfilePreferencesPage({ apiClient, themeId, onThemeChange }: { apiClient: ApiClient; themeId: ThemePreference; onThemeChange: (themeId: ThemePreference) => void }) {
   const [profileState, setProfileState] = React.useState<RemoteData<MeResponse>>({ status: 'loading' });
-  const [draftMode, setDraftMode] = React.useState<ModePreference>(mode);
+  const [draftThemeId, setDraftThemeId] = React.useState<ThemePreference>(themeId);
   const [emailDigest, setEmailDigest] = React.useState(true);
   const [decisionAlerts, setDecisionAlerts] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
@@ -25,9 +25,9 @@ export function ProfilePreferencesPage({ apiClient, mode, onModeChange }: { apiC
       return;
     }
     setProfileState({ status: 'ready', value: result.value });
-    setDraftMode(result.value.preferences.mode);
-    onModeChange(result.value.preferences.mode);
-  }, [apiClient, onModeChange]);
+    setDraftThemeId(result.value.preferences.themeId);
+    onThemeChange(result.value.preferences.themeId);
+  }, [apiClient, onThemeChange]);
 
   React.useEffect(() => {
     void loadProfile();
@@ -43,14 +43,14 @@ export function ProfilePreferencesPage({ apiClient, mode, onModeChange }: { apiC
       setMessage('API failure: preferences were not saved. Keep your current selections and try again.');
       return;
     }
-    const result = await apiClient.session.updatePreferences({ mode: draftMode });
+    const result = await apiClient.session.updatePreferences({ themeId: draftThemeId });
     setSaving(false);
     if (!result.ok) {
       setMessage(result.error.message);
       return;
     }
-    onModeChange(result.value.preferences.mode);
-    setMessage(`Preferences saved. Display mode is ${result.value.preferences.mode}; correlation ${result.value.correlationId}.`);
+    onThemeChange(result.value.preferences.themeId);
+    setMessage(`Preferences saved. Theme is ${result.value.preferences.themeId}; correlation ${result.value.correlationId}.`);
     await loadProfile();
   }
 
@@ -59,7 +59,7 @@ export function ProfilePreferencesPage({ apiClient, mode, onModeChange }: { apiC
       <div className="slice-intro">
         <p className="eyebrow">Slice 7</p>
         <h2>Profile Preferences</h2>
-        <p>Review profile context, choose light, dark, or system mode, and persist preferences through the session client seam.</p>
+        <p>Review profile context, choose an available named theme, and persist preferences through the session client seam.</p>
       </div>
       <div className="two-column-flow profile-layout">
         <DataState
@@ -71,13 +71,13 @@ export function ProfilePreferencesPage({ apiClient, mode, onModeChange }: { apiC
         >
           {(profile) => <ProfileSummary profile={profile} />}
         </DataState>
-        <Card className="form-card" title="Preferences" subtitle="Mode changes update the root token attribute after save; notification controls preserve future API seams.">
+        <Card className="form-card" title="Preferences" subtitle="Theme changes update the root data-theme token attribute after save; notification controls preserve future API seams.">
           <form className="stacked-form" onSubmit={savePreferences}>
-            <fieldset className="preference-mode-group">
-              <legend>Display mode</legend>
-              {(['light', 'dark', 'system'] as const).map((option) => (
-                <label key={option} className={draftMode === option ? 'mode-choice selected' : 'mode-choice'}>
-                  <input type="radio" name="profile-mode" value={option} checked={draftMode === option} onChange={() => setDraftMode(option)} />
+            <fieldset className="preference-theme-group">
+              <legend>Theme</legend>
+              {(['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark'] as const).map((option) => (
+                <label key={option} className={draftThemeId === option ? 'theme-choice selected' : 'theme-choice'}>
+                  <input type="radio" name="profile-theme" value={option} checked={draftThemeId === option} onChange={() => setDraftThemeId(option)} />
                   <span>{option}</span>
                 </label>
               ))}
@@ -111,7 +111,7 @@ function ProfileSummary({ profile }: { profile: MeResponse }) {
       <div className="decision-facts">
         <div className="fact"><span>Tenant</span><strong>{activeMembership?.tenantName ?? 'No tenant'}</strong></div>
         <div className="fact"><span>Roles</span><strong>{activeMembership?.roles.join(', ') ?? 'none'}</strong></div>
-        <div className="fact"><span>Saved mode</span><strong>{profile.preferences.mode}</strong></div>
+        <div className="fact"><span>Saved theme</span><strong>{profile.preferences.themeId}</strong></div>
         <div className="fact"><span>Security note</span><strong>UX only</strong></div>
       </div>
     </Card>

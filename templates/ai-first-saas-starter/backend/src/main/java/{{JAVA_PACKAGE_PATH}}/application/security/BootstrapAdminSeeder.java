@@ -117,7 +117,7 @@ public final class BootstrapAdminSeeder {
       Membership membership) {
     repository.saveAccount(new Account(email, workosSubject, email, email, AccountStatus.ACTIVE, workosSubject == null ? "UNLINKED" : "LINKED"));
     repository.saveProfile(new UserProfile(email, email, displayName(email), null, null, null));
-    repository.saveSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
+    repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
     repository.saveMembership(membership);
   }
 

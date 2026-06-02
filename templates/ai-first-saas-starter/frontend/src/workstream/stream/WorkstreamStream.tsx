@@ -10,7 +10,7 @@ type WorkstreamStreamProps = {
   autoAnchorPaused?: boolean;
   surfaces?: SurfaceEnvelope<unknown>[];
   onOpenSurface?: (surfaceId: string) => void;
-  onSurfaceAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onSurfaceAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
   onAutoAnchorPaused?: (requestScrollTargetId: string) => void;
 };
 

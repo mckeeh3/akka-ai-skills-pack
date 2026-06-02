@@ -184,7 +184,7 @@ class MeServiceTest {
     repository.saveAccount(
         new Account(email, null, email, email, accountStatus, accountStatus == AccountStatus.ACTIVE ? "LINKED" : "UNLINKED"));
     repository.putProfile(new UserProfile(email, email, "Starter User", "Starter", "User", null));
-    repository.putSettings(new UserSettings(email, UserSettings.UiMode.LIGHT));
+    repository.putSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
     repository.putMembership(
         new Membership(
             "membership-" + email,

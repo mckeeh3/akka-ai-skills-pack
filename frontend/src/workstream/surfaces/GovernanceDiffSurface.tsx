@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type GovernanceDiffSurfaceProps = {
   envelope: SurfaceEnvelope<GovernanceDiffSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 export function GovernanceDiffSurface({ envelope, onAction }: GovernanceDiffSurfaceProps) {

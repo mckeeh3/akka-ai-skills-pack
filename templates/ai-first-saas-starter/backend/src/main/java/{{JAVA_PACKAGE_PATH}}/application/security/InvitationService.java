@@ -86,7 +86,7 @@ public final class InvitationService {
       putProfileIfSupported(new UserProfile(account.accountId(), account.displayEmail(), request.displayName(), null, null, null));
     }
     if (identityRepository.settings(account.accountId()) == null) {
-      putSettingsIfSupported(new UserSettings(account.accountId(), UserSettings.UiMode.LIGHT));
+      putSettingsIfSupported(new UserSettings(account.accountId(), UserSettings.ThemeId.AURORA_LIGHT));
     }
 
     var invitationId = "inv-" + UUID.randomUUID();

@@ -4,7 +4,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type DecisionSurfaceProps = {
   envelope: SurfaceEnvelope<DecisionSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {

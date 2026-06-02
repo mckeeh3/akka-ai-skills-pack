@@ -109,7 +109,7 @@ class UserAdminAccessReviewWorkerTest {
   private void seedTenantMember(LocalDemoIdentityRepository identityRepository) {
     identityRepository.saveAccount(new {{JAVA_BASE_PACKAGE}}.domain.security.Account("member@example.test", null, "member@example.test", "member@example.test", {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus.ACTIVE, "UNLINKED"));
     identityRepository.saveProfile(new {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile("member@example.test", "member@example.test", "member", null, null, null));
-    identityRepository.saveSettings(new {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings("member@example.test", {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings.UiMode.LIGHT));
+    identityRepository.saveSettings(new {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings("member@example.test", {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.saveMembership(new {{JAVA_BASE_PACKAGE}}.domain.security.Membership("membership-member@example.test", "member@example.test", {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType.TENANT, "tenant-starter", null, java.util.List.of({{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole.TENANT_EMPLOYEE), {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus.ACTIVE, false, null));
   }
 }

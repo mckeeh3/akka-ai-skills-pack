@@ -47,10 +47,10 @@ public final class MyAccountService {
   public AuthContextResolver.ProfileSettingsUpdateResult updateProfileSettings(
       AuthContextResolver.ResolvedMe actor,
       String displayName,
-      UserSettings.UiMode uiMode,
+      UserSettings.ThemeId themeId,
       String idempotencyKey,
       String correlationId) {
-    return authContextResolver.updateOwnProfileSettings(actor, displayName, uiMode, idempotencyKey, correlationId);
+    return authContextResolver.updateOwnProfileSettings(actor, displayName, themeId, idempotencyKey, correlationId);
   }
 
   public OpenWorkstreamDecision openAuthorizedWorkstream(
@@ -85,7 +85,7 @@ public final class MyAccountService {
         "my_account.dashboard.v1",
         List.of(
             mapOf("cardId", "card-my-profile", "label", "Profile", "value", actor.profile().displayName(), "severity", "info"),
-            mapOf("cardId", "card-my-settings", "label", "Settings", "value", actor.settings().uiMode().name().toLowerCase(Locale.ROOT), "severity", "info"),
+            mapOf("cardId", "card-my-settings", "label", "Theme", "value", actor.settings().themeId().id(), "severity", "info"),
             mapOf("cardId", "card-current-context", "label", "Selected context", "value", actor.selectedContext().tenantId(), "severity", "info"),
             mapOf("cardId", "card-authority", "label", "Authority", "value", summary.authorityBasis().primaryRoleBasis(), "severity", "info")),
         List.of(

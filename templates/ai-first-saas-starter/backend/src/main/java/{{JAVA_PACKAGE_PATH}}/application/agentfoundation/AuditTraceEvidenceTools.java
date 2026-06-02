@@ -90,7 +90,7 @@ public final class AuditTraceEvidenceTools {
   private AuthContextResolver.ResolvedMe syntheticActor() {
     var account = new Account(authContext.accountId(), authContext.workosUserId(), authContext.accountId() + "@redacted.local", authContext.accountId() + "@redacted.local", AccountStatus.ACTIVE, "RUNTIME_TOOL_CONTEXT");
     var profile = new UserProfile(authContext.accountId(), account.displayEmail(), "Audit/Trace runtime actor", "Audit", "Trace", null);
-    var settings = new UserSettings(authContext.accountId(), UserSettings.UiMode.LIGHT);
+    var settings = new UserSettings(authContext.accountId(), UserSettings.ThemeId.AURORA_LIGHT);
     var membership = new Membership(authContext.membershipId(), authContext.accountId(), authContext.scopeType(), authContext.tenantId(), authContext.customerId(), authContext.roles(), MembershipStatus.ACTIVE, false, null);
     return new AuthContextResolver.ResolvedMe(account, profile, settings, List.of(membership), authContext, correlationId);
   }

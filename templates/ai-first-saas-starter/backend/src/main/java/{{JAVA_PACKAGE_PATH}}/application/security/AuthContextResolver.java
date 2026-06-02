@@ -61,7 +61,7 @@ public final class AuthContextResolver {
             selected.capabilities());
     appendAudit("AUTH_CONTEXT_RESOLVE", AdminAuditEvent.Result.ALLOWED, account, selected, "allowed", correlationId);
     var profile = repository.profile(account.accountId());
-    var settings = repository.settings(account.accountId()) == null ? new UserSettings(account.accountId(), UserSettings.UiMode.LIGHT) : repository.settings(account.accountId());
+    var settings = repository.settings(account.accountId()) == null ? new UserSettings(account.accountId(), UserSettings.ThemeId.AURORA_LIGHT) : repository.settings(account.accountId());
     return new ResolvedMe(account, profile, settings, memberships, authContext, correlationId);
   }
 
@@ -74,25 +74,25 @@ public final class AuthContextResolver {
   public ProfileSettingsUpdateResult updateOwnProfileSettings(
       ResolvedMe actor,
       String displayName,
-      UserSettings.UiMode uiMode,
+      UserSettings.ThemeId themeId,
       String idempotencyKey,
       String correlationId) {
     requireCapability(actor.selectedContext(), "my_account.update_profile_settings");
     var profile = actor.profile();
     var settings = actor.settings();
     var nextDisplayName = displayName == null || displayName.isBlank() ? profile.displayName() : displayName.trim();
-    var nextUiMode = uiMode == null ? settings.uiMode() : uiMode;
-    var changed = !nextDisplayName.equals(profile.displayName()) || nextUiMode != settings.uiMode();
+    var nextThemeId = themeId == null ? settings.themeId() : themeId;
+    var changed = !nextDisplayName.equals(profile.displayName()) || nextThemeId != settings.themeId();
     var savedProfile = changed
         ? repository.saveProfile(new UserProfile(profile.accountId(), profile.displayEmail(), nextDisplayName, profile.givenName(), profile.familyName(), profile.avatarUrl()))
         : profile;
-    var savedSettings = changed ? repository.saveSettings(new UserSettings(settings.accountId(), nextUiMode)) : settings;
+    var savedSettings = changed ? repository.saveSettings(new UserSettings(settings.accountId(), nextThemeId)) : settings;
     appendAudit(
         "MY_ACCOUNT_PROFILE_SETTINGS_UPDATE",
         AdminAuditEvent.Result.ALLOWED,
         actor.account(),
         selectedMembership(actor),
-        changed ? "changed-fields:displayName/uiMode" : "no-op",
+        changed ? "changed-fields:displayName/themeId" : "no-op",
         correlationId);
     return new ProfileSettingsUpdateResult(savedProfile, savedSettings, changed, correlationId, idempotencyKey);
   }

@@ -34,7 +34,7 @@ class DurableIdentityRepositoryEntityTest {
     var account = new Account("admin@example.com", null, "admin@example.com", "admin@example.com", AccountStatus.INVITED, "UNLINKED");
     var linked = new Account("admin@example.com", "workos-admin", "admin@example.com", "admin@example.com", AccountStatus.ACTIVE, "LINKED");
     var profile = new UserProfile("admin@example.com", "admin@example.com", "Admin", "A", "User", null);
-    var settings = new UserSettings("admin@example.com", UserSettings.UiMode.DARK);
+    var settings = new UserSettings("admin@example.com", UserSettings.ThemeId.OBSIDIAN_DARK);
     var tenant = new Tenant("tenant-1", "Tenant One", true);
     var membership = new Membership("membership-admin", "admin@example.com", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), MembershipStatus.ACTIVE, false, null);
     var audit = audit("audit-1", "AUTH_CONTEXT_RESOLVE", AdminAuditEvent.Result.ALLOWED, membership);

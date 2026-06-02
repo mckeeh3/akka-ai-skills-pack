@@ -39,7 +39,7 @@ function responseFor(accountId: string, email: string, displayName: string, stat
   return {
     account: { accountId, email, displayName, status },
     profile: { displayName, locale: 'en-US', timeZone: baseTimeZone },
-    settings: { preferredColorMode: 'system' },
+    settings: { preferredThemeId: 'aurora-light' },
     memberships: [
       {
         membershipId: selectedAuthContext.membershipId,
@@ -67,7 +67,7 @@ export const meDisabledUser = responseFor('acct-disabled', 'disabled@example.tes
 export const meForbiddenNoMembership: MeResponse = {
   account: { accountId: 'acct-nomembership', email: 'nomembership@example.test', displayName: 'No Membership', status: 'active' },
   profile: { displayName: 'No Membership', locale: 'en-US', timeZone: baseTimeZone },
-  settings: { preferredColorMode: 'system' },
+  settings: { preferredThemeId: 'aurora-light' },
   memberships: [],
   selectedAuthContext: { selectedContextId: 'ctx-forbidden-none', tenantId: 'tenant-acme', tenantName: 'Acme Tenant', membershipId: 'none', roleIds: [], capabilityIds: [] },
   availableAuthContexts: [],

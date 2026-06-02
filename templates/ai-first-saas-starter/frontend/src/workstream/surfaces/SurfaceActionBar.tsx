@@ -3,10 +3,11 @@ import type { SurfaceAction } from '../types';
 type SurfaceActionBarProps = {
   actions: SurfaceAction[];
   surfaceId: string;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  actionInput?: Record<string, string>;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
-export function SurfaceActionBar({ actions, surfaceId, onAction }: SurfaceActionBarProps) {
+export function SurfaceActionBar({ actions, surfaceId, actionInput, onAction }: SurfaceActionBarProps) {
   if (actions.length === 0) {
     return <p className="surface-action-bar empty">No actions are currently available.</p>;
   }
@@ -19,7 +20,7 @@ export function SurfaceActionBar({ actions, surfaceId, onAction }: SurfaceAction
           type="button"
           disabled={Boolean(action.disabled)}
           aria-describedby={action.disabled ? `${action.actionId}-disabled` : undefined}
-          onClick={() => onAction?.(action, surfaceId)}
+          onClick={() => onAction?.(action, surfaceId, actionInput)}
         >
           {action.label}
           {action.requiresConfirmation && ' · confirm'}

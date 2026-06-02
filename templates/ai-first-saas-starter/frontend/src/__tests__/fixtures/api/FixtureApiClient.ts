@@ -20,7 +20,7 @@ export class FixtureApiClient implements ApiClient {
     user: { id: 'seed-user-1', email: 'supervisor@example.test', displayName: 'Seed Supervisor' },
     memberships: [{ tenantId, tenantName: 'Seed tenant', status: 'active', roles: ['supervisor', 'reviewer'] }],
     activeTenantId: tenantId,
-    preferences: { mode: 'system' }
+    preferences: { themeId: 'aurora-light' }
   };
 
   private users: AdminUser[] = [
@@ -50,8 +50,8 @@ export class FixtureApiClient implements ApiClient {
 
   session = {
     getMe: () => delayedOk(this.me),
-    updatePreferences: (request: { mode: MeResponse['preferences']['mode'] }) => {
-      this.me = { ...this.me, preferences: { mode: request.mode } };
+    updatePreferences: (request: { themeId: MeResponse['preferences']['themeId'] }) => {
+      this.me = { ...this.me, preferences: { themeId: request.themeId } };
       return delayedOk({ preferences: this.me.preferences, correlationId: correlationId() });
     }
   };

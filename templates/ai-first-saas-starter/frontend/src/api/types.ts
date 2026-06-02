@@ -1,4 +1,4 @@
-export type ModePreference = 'light' | 'dark' | 'system';
+export type ThemePreference = 'aurora-light' | 'cobalt-light' | 'obsidian-dark' | 'midnight-dark';
 
 export type ApiError = {
   code: string;
@@ -30,16 +30,16 @@ export type MeResponse = {
   }>;
   activeTenantId?: string;
   preferences: {
-    mode: ModePreference;
+    themeId: ThemePreference;
   };
 };
 
 export type UpdatePreferencesRequest = {
-  mode: ModePreference;
+  themeId: ThemePreference;
 };
 
 export type UpdatePreferencesResponse = {
-  preferences: { mode: ModePreference };
+  preferences: { themeId: ThemePreference };
   correlationId: string;
 };
 

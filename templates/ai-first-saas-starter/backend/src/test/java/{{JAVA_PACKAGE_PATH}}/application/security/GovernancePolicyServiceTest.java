@@ -35,12 +35,12 @@ class GovernancePolicyServiceTest {
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", "workos-admin", "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("admin@example.test", "admin@example.test", "Tenant Admin", "Tenant", "Admin", null));
-    identityRepository.putSettings(new UserSettings("admin@example.test", UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings("admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-admin", "admin@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), MembershipStatus.ACTIVE, false, null));
 
     identityRepository.saveAccount(new Account("member@example.test", "workos-member", "member@example.test", "member@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("member@example.test", "member@example.test", "Member User", "Member", "User", null));
-    identityRepository.putSettings(new UserSettings("member@example.test", UserSettings.UiMode.LIGHT));
+    identityRepository.putSettings(new UserSettings("member@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-member", "member@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
   }
 

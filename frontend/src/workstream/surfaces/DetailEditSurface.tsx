@@ -1,10 +1,11 @@
+import { useEffect, useMemo, useState } from 'react';
 import type { DetailEditSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type DetailEditSurfaceProps = {
   envelope: SurfaceEnvelope<DetailEditSurfaceData>;
-  onAction?: (action: SurfaceAction, surfaceId: string) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
 function stringifySafe(value: unknown): string {
@@ -19,6 +20,17 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
   const recordId = envelope.data.recordId ?? envelope.data.traceId ?? envelope.data.category ?? envelope.surfaceId;
   const recordLabel = envelope.data.recordLabel ?? envelope.data.eventKind ?? envelope.data.category ?? recordId;
   const isAuditEvidence = fields.length === 0 && (envelope.surfaceId.includes('audit-trace') || envelope.data.traceId || envelope.data.safeReason || envelope.data.redactedEvidence);
+
+  const initialFieldValues = useMemo(() => Object.fromEntries(fields.map((field) => [field.fieldId, field.value])), [fields]);
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>(initialFieldValues);
+
+  useEffect(() => {
+    setFieldValues(initialFieldValues);
+  }, [initialFieldValues]);
+
+  function updateFieldValue(fieldId: string, value: string) {
+    setFieldValues((current) => ({ ...current, [fieldId]: value }));
+  }
 
   return (
     <SurfaceStateFrame envelope={envelope}>
@@ -80,13 +92,13 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
               <div key={field.fieldId} className="surface-detail-field">
                 <label htmlFor={inputId}>{field.label}</label>
                 {field.inputType === 'textarea' ? (
-                  <textarea id={inputId} name={field.fieldId} defaultValue={field.value} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
+                  <textarea id={inputId} name={field.fieldId} value={fieldValues[field.fieldId] ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
                 ) : field.inputType === 'select' && field.options ? (
-                  <select id={inputId} name={field.fieldId} defaultValue={field.options.find((option) => option.label === field.value)?.value ?? field.value} disabled={!field.editable} aria-describedby={describedBy}>
+                  <select id={inputId} name={field.fieldId} value={fieldValues[field.fieldId] ?? field.options.find((option) => option.label === field.value)?.value ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} disabled={!field.editable} aria-describedby={describedBy}>
                     {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                   </select>
                 ) : (
-                  <input id={inputId} name={field.fieldId} type={field.inputType ?? 'text'} defaultValue={field.value} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
+                  <input id={inputId} name={field.fieldId} type={field.inputType ?? 'text'} value={fieldValues[field.fieldId] ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
                 )}
                 {!field.editable && field.disabledReason && <p id={describedBy} className="form-error denied-reason">{field.disabledReason}</p>}
               </div>
@@ -135,7 +147,7 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
           {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${traceId}`}>{traceId}</a>)}
         </section>
       )}
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
+      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={fieldValues} onAction={onAction} />
     </SurfaceStateFrame>
   );
 }
