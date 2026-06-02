@@ -10,6 +10,9 @@
   - run prompt/skill/manifest/tool-boundary test → `managed-agent-foundation`
   - approve/activate/rollback behavior version → `managed-agent-foundation`, `governance-decisions-audit`
   - invoke `readSkill(skillId)` and `readReferenceDoc(referenceId)` test consoles → `managed-agent-foundation`
+- UI style notes:
+  - render as an enterprise governance center, not a generic settings/admin page: catalog/detail, proposed diffs, approval state, prompt/skill manifests, tool-boundary controls, test consoles, and trace links use the governance/trust controls and diff-review patterns from `55-ui/style-guide.md`
+  - unauthorized authority expansion, unassigned skill/reference denial, activation approval, and rollback states require prominent policy/authority badges and decision-card handoffs across all named themes
 - states:
   - no active agent, disabled agent, draft pending review, approval required, unauthorized authority expansion, skill not assigned, trace unavailable
 - auth/security:

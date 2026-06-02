@@ -18,6 +18,9 @@
   - theme preference is a named-theme selection from the available list, with initial theme ids `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`
   - selecting a theme stores/applies the selected theme id at the documented settings scope and must not be treated as authorization
   - administrative roles, memberships, support access, and tenant/customer authority changes remain in User Admin/Governance surfaces
+- UI style notes:
+  - render as an `ai-first-workstream-enterprise` My Account workstream surface opened from the lower-left signed-in user tile, with the same shell anatomy, layered cards, semantic status labels, focus treatment, and named-theme tokens defined in `55-ui/style-guide.md`
+  - Theme settings present available named theme labels and store/apply `preferredThemeId`; do not present `system`, `light`, or `dark` as the primary user choice
 - states:
   - loading `/api/me`, no memberships, forbidden/disabled account, stale settings save, successful context switch or save
 - auth/security:

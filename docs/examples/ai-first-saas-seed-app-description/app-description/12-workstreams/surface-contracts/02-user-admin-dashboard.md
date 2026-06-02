@@ -33,6 +33,11 @@ Dashboard payload is owned by the User Admin frontend API contract and must incl
 
 Allowed actions are display hints only; backend authorization remains authoritative. Each edge records origin dashboard card, selected `AuthContext`, correlation id, capability id, stale/forbidden state, and result surface id so system-message surfaces and workstream-agent explanations can reference the same graph transition.
 
+## UI style notes
+
+- Render as an enterprise workstream dashboard, not a generic admin dashboard: KPI cards, risk/attention queues, recommendation panels, and audit links use the `ai-first-workstream-enterprise` card anatomy, semantic status colors with text labels, and strong numeric hierarchy from `55-ui/style-guide.md`.
+- Scope labels, policy/authority badges, invitation/support-access risk cards, and system-message denial surfaces must remain visually prominent across all named themes without changing authorization or capability semantics.
+
 ## States
 
 - `loading`: show skeleton cards and queue placeholders; no stale fixture data may be treated as backend state.

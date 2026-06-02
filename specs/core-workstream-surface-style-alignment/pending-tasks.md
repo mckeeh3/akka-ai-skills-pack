@@ -158,7 +158,7 @@
 
 ### TASK-CWSS-02-001: Review seed surface style alignment
 
-- status: pending
+- status: done
 - source: specs/core-workstream-surface-style-alignment/backlog/02-seed-surface-style-build-backlog.md
 - task brief: specs/core-workstream-surface-style-alignment/tasks/02-seed-surface-style/01-review-seed-surface-style-alignment.md
 - depends on:
@@ -191,6 +191,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: review seed surface style alignment`
+  - checks: `git diff --check`; focused stale style/theme search over seed 12-workstreams and 55-ui files found only non-stale canonical style-system/font/system-message references and the explicit My Account rejection of mode labels
 
 ### TASK-CWSS-99-001: Verify core workstream surface style alignment completion
 

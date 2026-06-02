@@ -35,6 +35,11 @@ User list payload is owned by the User Admin frontend API contract and must incl
 
 Allowed actions are display hints only; backend authorization remains authoritative.
 
+## UI style notes
+
+- Render as a capability-backed enterprise workstream search/list surface, not a generic CRUD table: filters, scoped row metadata, risk/status badges, action availability, and audit evidence links use the named-theme tokens, readable density, and table/list rules from `55-ui/style-guide.md`.
+- Responsive table-to-card fallback preserves authority, risk, invitation/support-access, decision-card, and trace affordances with text labels plus color/icon semantics in every named theme.
+
 ## States
 
 - `loading`: preserve submitted filters and show table skeletons; disable mutation buttons.

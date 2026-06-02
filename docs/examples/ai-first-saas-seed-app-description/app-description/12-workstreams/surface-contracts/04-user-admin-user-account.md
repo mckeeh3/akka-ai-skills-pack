@@ -39,6 +39,11 @@ User account payload is owned by the User Admin frontend API contract and must i
 
 Allowed actions are display hints only; backend authorization remains authoritative.
 
+## UI style notes
+
+- Render as an enterprise workstream detail/action surface: account summary, membership cards, invitation/support-access sections, access-review evidence, action panel, and audit excerpts use layered panels, visible authority badges, semantic state labels, and trace-link affordances from `55-ui/style-guide.md`.
+- Risky or approval-required mutations should visually route to decision-card patterns; style must clarify evidence, policy boundary, and consequence without making UI visibility a substitute for backend authorization.
+
 ## States
 
 - `loading`: show account skeleton, action-panel skeleton, and disabled mutation controls.
