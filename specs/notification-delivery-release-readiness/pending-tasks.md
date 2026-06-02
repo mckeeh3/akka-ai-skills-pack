@@ -43,7 +43,7 @@
 
 ### TASK-NDRR-01-001: Create notification delivery readiness checklist
 
-- status: pending
+- status: done
 - source: specs/notification-delivery-release-readiness/backlog/01-notification-delivery-readiness-backlog.md
 - task brief: specs/notification-delivery-release-readiness/tasks/01-validation/01-create-readiness-checklist.md
 - depends on:
@@ -56,7 +56,7 @@
 - skills:
   - none; checklist task
 - expected outputs:
-  - readiness checklist artifact
+  - specs/notification-delivery-release-readiness/readiness-checklist.md
   - updated pending-tasks.md
 - required checks:
   - `git diff --check`
@@ -74,7 +74,7 @@
 - depends on:
   - TASK-NDRR-01-001
 - required reads:
-  - checklist from TASK-NDRR-01-001
+  - specs/notification-delivery-release-readiness/readiness-checklist.md
   - specs/notification-delivery-release-readiness/tasks/01-validation/02-run-fullstack-notification-validation.md
 - skills:
   - none; validation task
