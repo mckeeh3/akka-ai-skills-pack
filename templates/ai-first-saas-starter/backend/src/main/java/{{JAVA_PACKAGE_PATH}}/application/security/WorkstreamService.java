@@ -438,7 +438,7 @@ public final class WorkstreamService {
       var submit = governancePolicyService.submitProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(submit.status(), submit.message(), request.correlationId(), submit.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), submit.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction())));
     } else if ("action-governance-policy-simulate".equals(request.actionId()) || "action-simulate-policy".equals(request.actionId())) {
-      var simulation = governancePolicyService.simulateProposal(actor, request.input(), request.correlationId());
+      var simulation = governancePolicyService.simulateProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(simulation.status(), simulation.message(), request.correlationId(), simulation.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), simulation.surface(), List.of(governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction())));
     } else if ("action-governance-policy-decide".equals(request.actionId())) {
       var decision = governancePolicyService.decideProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
@@ -542,7 +542,7 @@ public final class WorkstreamService {
         initialMarkdownSurface("surface-v0-audit-trace-markdown", "item-v0-audit-trace-markdown", AUDIT_TRACE_AGENT_ID, "Audit/Trace v0 response", actor, correlationId,
             "## Audit/Trace\n\n### Available now\n- Ask for browser-safe audit and trace summaries for the selected context.\n- Correlation and trace ids are preserved in the response envelope.\n\n### Full-core follow-up\nRich audit timelines and investigation views remain explicit full-core/demo follow-up behavior."),
         initialMarkdownSurface("surface-v0-governance-policy-markdown", "item-v0-governance-policy-markdown", GOVERNANCE_POLICY_AGENT_ID, "Governance/Policy v0 response", actor, correlationId,
-            "## Governance/Policy\n\n### Available now\n- Ask about policy guardrails, approval boundaries, deferred decisions, and safe next steps.\n\n### Full-core follow-up\nPolicy simulations, proposal diffs, and approval cards remain explicit full-core/demo follow-up behavior."));
+            "## Governance/Policy\n\n### Available now\n- Ask about policy guardrails, approval boundaries, deferred decisions, and safe next steps.\n- Draft proposals, record advisory simulation evidence, review decision cards, and keep activation blocked until backend approval and rollback metadata are present.\n\n### Full-core follow-up\nBroader replay/evaluation suites and provider-backed impact-analysis success remain explicit full-core/demo follow-up behavior."));
   }
 
   private List<WorkstreamItem> initialItems(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -851,9 +851,8 @@ public final class WorkstreamService {
   private SurfaceEnvelope governancePolicySimulationSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     validateGovernancePolicyInputScope(actor, input, correlationId);
     authContextResolver.appendProtectedReadTrace(actor, GOVERNANCE_POLICY_SIMULATE_CAPABILITY, "proposal simulation", correlationId);
-    return envelope("surface-governance-policy-simulation", "governance-diff", "Policy simulation", actor, correlationId,
-        mapOf("simulationId", "sim-" + stableSuffix(correlationId), "proposalId", stringInput(input, "proposalId", "starter-governance-policy-review"), "affectedCapabilities", List.of(GOVERNANCE_POLICY_APPROVE_CAPABILITY, GOVERNANCE_POLICY_ACTIVATE_CAPABILITY, "agent.references.read"), "expectedDenials", List.of("model cannot self-approve", "prompt text cannot grant tool access", "cross-tenant evidence is omitted"), "expectedAllows", List.of("authorized read-only policy inventory", "authorized simulation evidence"), "warnings", List.of("Activation still requires approved proposal and idempotency key."), "confidence", "bounded-starter", "evidenceTraceLinks", List.of("trace-governance-policy-simulation-" + stableSuffix(correlationId))),
-        List.of(governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction()));
+    var simulation = governancePolicyService.simulateProposal(actor, input, "surface-fallback-simulation-" + stableSuffix(correlationId), correlationId);
+    return governancePolicyEnvelope(actor, correlationId, simulation.surface(), List.of(governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope governancePolicyDecisionSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {

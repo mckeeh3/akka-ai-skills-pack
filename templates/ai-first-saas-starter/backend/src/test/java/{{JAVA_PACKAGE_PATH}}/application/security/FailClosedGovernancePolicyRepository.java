@@ -1,6 +1,7 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicySimulationResult;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,8 @@ public final class FailClosedGovernancePolicyRepository implements GovernancePol
   @Override public Optional<GovernancePolicyProposal> findByIdempotencyKey(String tenantId, String customerId, String accountId, String idempotencyKey) { throw unavailable(); }
   @Override public GovernancePolicyProposal saveProposal(GovernancePolicyProposal proposal) { throw unavailable(); }
   @Override public List<GovernancePolicyProposal> listProposals(String tenantId, String customerId) { throw unavailable(); }
+  @Override public Optional<GovernancePolicySimulationResult> findSimulation(String tenantId, String customerId, String simulationId) { throw unavailable(); }
+  @Override public Optional<GovernancePolicySimulationResult> findSimulationByIdempotencyKey(String tenantId, String customerId, String accountId, String idempotencyKey) { throw unavailable(); }
+  @Override public GovernancePolicySimulationResult saveSimulation(GovernancePolicySimulationResult simulation) { throw unavailable(); }
+  @Override public List<GovernancePolicySimulationResult> listSimulations(String tenantId, String customerId, String proposalId) { throw unavailable(); }
 }

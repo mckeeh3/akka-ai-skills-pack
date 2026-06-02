@@ -31,6 +31,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Customer;
 import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicySimulationResult;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
@@ -484,6 +485,10 @@ public final class StarterSecurityComponents {
     public Optional<GovernancePolicyProposal> findByIdempotencyKey(String tenantId, String customerId, String accountId, String idempotencyKey) { throw unavailable(); }
     public GovernancePolicyProposal saveProposal(GovernancePolicyProposal proposal) { throw unavailable(); }
     public List<GovernancePolicyProposal> listProposals(String tenantId, String customerId) { throw unavailable(); }
+    public Optional<GovernancePolicySimulationResult> findSimulation(String tenantId, String customerId, String simulationId) { throw unavailable(); }
+    public Optional<GovernancePolicySimulationResult> findSimulationByIdempotencyKey(String tenantId, String customerId, String accountId, String idempotencyKey) { throw unavailable(); }
+    public GovernancePolicySimulationResult saveSimulation(GovernancePolicySimulationResult simulation) { throw unavailable(); }
+    public List<GovernancePolicySimulationResult> listSimulations(String tenantId, String customerId, String proposalId) { throw unavailable(); }
   }
 
   private static final class UnboundAttentionRepository implements AttentionRepository {

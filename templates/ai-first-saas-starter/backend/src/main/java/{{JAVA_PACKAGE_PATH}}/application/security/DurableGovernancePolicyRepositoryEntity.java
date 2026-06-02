@@ -3,6 +3,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicySimulationResult;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,30 @@ public class DurableGovernancePolicyRepositoryEntity extends KeyValueEntity<Dura
         .toList());
   }
 
+  public ReadOnlyEffect<Optional<GovernancePolicySimulationResult>> findSimulation(SimulationQuery query) {
+    return effects().reply(Optional.ofNullable(currentState().simulations().get(scopeKey(query.tenantId(), query.customerId(), query.simulationId()))));
+  }
+
+  public ReadOnlyEffect<Optional<GovernancePolicySimulationResult>> findSimulationByIdempotencyKey(IdempotencyQuery query) {
+    if (query.idempotencyKey() == null || query.idempotencyKey().isBlank()) return effects().reply(Optional.empty());
+    var simulationId = currentState().simulationIdempotencyIndex().get(idempotencyKey(query.tenantId(), query.customerId(), query.accountId(), query.idempotencyKey()));
+    var simulation = simulationId == null ? null : currentState().simulations().get(scopeKey(query.tenantId(), query.customerId(), simulationId));
+    return effects().reply(Optional.ofNullable(simulation));
+  }
+
+  public Effect<GovernancePolicySimulationResult> saveSimulation(GovernancePolicySimulationResult simulation) {
+    return effects().updateState(currentState().saveSimulation(simulation)).thenReply(() -> simulation);
+  }
+
+  public ReadOnlyEffect<List<GovernancePolicySimulationResult>> listSimulations(SimulationListQuery query) {
+    return effects().reply(currentState().simulations().values().stream()
+        .filter(simulation -> query.tenantId().equals(simulation.tenantId()))
+        .filter(simulation -> query.customerId() == null || query.customerId().equals(simulation.customerId()))
+        .filter(simulation -> query.proposalId() == null || query.proposalId().equals(simulation.proposalId()))
+        .sorted(Comparator.comparing(GovernancePolicySimulationResult::createdAt).reversed())
+        .toList());
+  }
+
   private static String scopeKey(String tenantId, String customerId, String proposalId) {
     return tenantId + ":" + (customerId == null ? "tenant" : customerId) + ":" + proposalId;
   }
@@ -53,10 +78,12 @@ public class DurableGovernancePolicyRepositoryEntity extends KeyValueEntity<Dura
   public record ProposalQuery(String tenantId, String customerId, String proposalId) {}
   public record IdempotencyQuery(String tenantId, String customerId, String accountId, String idempotencyKey) {}
   public record ListQuery(String tenantId, String customerId) {}
+  public record SimulationQuery(String tenantId, String customerId, String simulationId) {}
+  public record SimulationListQuery(String tenantId, String customerId, String proposalId) {}
 
-  public record State(Map<String, GovernancePolicyProposal> proposals, Map<String, String> idempotencyIndex) {
+  public record State(Map<String, GovernancePolicyProposal> proposals, Map<String, String> idempotencyIndex, Map<String, GovernancePolicySimulationResult> simulations, Map<String, String> simulationIdempotencyIndex) {
     static State empty() {
-      return new State(Map.of(), Map.of());
+      return new State(Map.of(), Map.of(), Map.of(), Map.of());
     }
 
     State saveProposal(GovernancePolicyProposal proposal) {
@@ -66,7 +93,17 @@ public class DurableGovernancePolicyRepositoryEntity extends KeyValueEntity<Dura
       if (proposal.idempotencyKey() != null && !proposal.idempotencyKey().isBlank()) {
         nextIdempotency.put(idempotencyKey(proposal.tenantId(), proposal.customerId(), proposal.createdByAccountId(), proposal.idempotencyKey()), proposal.proposalId());
       }
-      return new State(Map.copyOf(nextProposals), Map.copyOf(nextIdempotency));
+      return new State(Map.copyOf(nextProposals), Map.copyOf(nextIdempotency), simulations, simulationIdempotencyIndex);
+    }
+
+    State saveSimulation(GovernancePolicySimulationResult simulation) {
+      var nextSimulations = new HashMap<>(simulations);
+      var nextIdempotency = new HashMap<>(simulationIdempotencyIndex);
+      nextSimulations.put(scopeKey(simulation.tenantId(), simulation.customerId(), simulation.simulationId()), simulation);
+      if (simulation.idempotencyKey() != null && !simulation.idempotencyKey().isBlank()) {
+        nextIdempotency.put(idempotencyKey(simulation.tenantId(), simulation.customerId(), simulation.requestedByAccountId(), simulation.idempotencyKey()), simulation.simulationId());
+      }
+      return new State(proposals, idempotencyIndex, Map.copyOf(nextSimulations), Map.copyOf(nextIdempotency));
     }
   }
 }

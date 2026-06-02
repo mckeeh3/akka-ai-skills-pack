@@ -105,8 +105,13 @@ class GovernancePolicyServiceTest {
     var simulation = service.simulateProposal(actor, Map.of("proposalId", proposalId), "corr-gov-lifecycle-sim");
     assertEquals("accepted", simulation.status());
     assertEquals("surface-governance-policy-simulation", simulation.surface().surfaceId());
-    assertTrue(simulation.surface().toString().contains("advisory deterministic simulation"));
+    assertTrue(simulation.surface().toString().contains("advisory deterministic simulation evidence record"));
     assertTrue(simulation.surface().toString().contains("model cannot self-approve"));
+    assertTrue(simulation.surface().toString().contains("activationGate"));
+
+    var duplicateSimulation = service.simulateProposal(actor, Map.of("proposalId", proposalId), "idem-gov-lifecycle-sim", "corr-gov-lifecycle-sim-replay");
+    assertEquals("accepted", duplicateSimulation.status());
+    assertEquals("surface-governance-policy-simulation", duplicateSimulation.surface().surfaceId());
 
     var activationBeforeDecision = service.activateProposal(actor, Map.of("proposalId", proposalId, "rollbackReference", "rollback metadata v1"), "idem-gov-activate-early", "corr-gov-activate-early");
     assertEquals("approval-required", activationBeforeDecision.status());
@@ -132,6 +137,21 @@ class GovernancePolicyServiceTest {
     var rollback = service.rollbackProposal(actor, Map.of("proposalId", proposalId), "idem-gov-rollback", "corr-gov-rollback");
     assertEquals("accepted", rollback.status());
     assertEquals("rolled_back", rollback.surface().data().get("status"));
+  }
+
+  @Test
+  void activationRequiresRecordedSimulationEvidenceEvenAfterApproval() {
+    var actor = resolver.resolveMe(identity(), "membership-admin", "corr-gov-simulation-required");
+    var draft = service.draftProposal(actor, Map.of("rationale", "tighten approval copy", "proposedContent", "activate authority only after human approval"), "idem-gov-no-sim-draft", "corr-gov-no-sim-draft");
+    var proposalId = draft.surface().data().get("proposalId").toString();
+    service.submitProposal(actor, Map.of("proposalId", proposalId), "idem-gov-no-sim-submit", "corr-gov-no-sim-submit");
+    service.decideProposal(actor, Map.of("proposalId", proposalId, "decision", "approve", "rationale", "bounded human approval"), "idem-gov-no-sim-decision", "corr-gov-no-sim-decision");
+
+    var activation = service.activateProposal(actor, Map.of("proposalId", proposalId, "rollbackReference", "rollback metadata v1"), "idem-gov-no-sim-activate", "corr-gov-no-sim-activate");
+
+    assertEquals("approval-required", activation.status());
+    assertTrue(activation.message().contains("simulation evidence"));
+    assertTrue(activation.surface().toString().contains("simulation evidence"));
   }
 
   @Test

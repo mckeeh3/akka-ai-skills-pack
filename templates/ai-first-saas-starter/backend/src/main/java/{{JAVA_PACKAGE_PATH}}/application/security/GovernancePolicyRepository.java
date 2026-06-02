@@ -1,6 +1,7 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
+import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicySimulationResult;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,4 +14,12 @@ public interface GovernancePolicyRepository {
   GovernancePolicyProposal saveProposal(GovernancePolicyProposal proposal);
 
   List<GovernancePolicyProposal> listProposals(String tenantId, String customerId);
+
+  Optional<GovernancePolicySimulationResult> findSimulation(String tenantId, String customerId, String simulationId);
+
+  Optional<GovernancePolicySimulationResult> findSimulationByIdempotencyKey(String tenantId, String customerId, String accountId, String idempotencyKey);
+
+  GovernancePolicySimulationResult saveSimulation(GovernancePolicySimulationResult simulation);
+
+  List<GovernancePolicySimulationResult> listSimulations(String tenantId, String customerId, String proposalId);
 }

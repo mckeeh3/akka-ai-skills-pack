@@ -33,7 +33,7 @@ The scaffold starts with the five core v0 workstream set:
 - Public unauthenticated chatbot behavior.
 - Frontend-only or prompt-only authorization.
 - Deterministic/demo/model-less normal runtime responses for model-backed workstreams.
-- Full enterprise IAM, SIEM, e-discovery, marketplace prompt catalogs, arbitrary tenant-managed tool binding, or broad policy simulation platforms unless explicitly added later.
+- Full enterprise IAM, SIEM, e-discovery, marketplace prompt catalogs, arbitrary tenant-managed tool binding, or broad replay/evaluation suites beyond the bounded Governance/Policy simulation-evidence platform unless explicitly added later.
 
 ## Architectural assumptions
 

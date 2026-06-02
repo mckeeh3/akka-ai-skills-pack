@@ -340,7 +340,7 @@
 
 ### TASK-COREEXT-03-003: Implement policy simulation platform
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/03-workers-governance/03-policy-simulation-platform.md
 - depends on: [TASK-COREEXT-03-002]
@@ -371,6 +371,7 @@
   - policy simulation produces reviewable evidence/results and cannot activate or mutate authority without explicit backend approval paths
   - queue is updated and committed
 - notes:
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`
   - commit message: `coreext: add policy simulation platform`
 
 ### TASK-COREEXT-04-001: Implement IAM/SCIM/SSO administration foundation
