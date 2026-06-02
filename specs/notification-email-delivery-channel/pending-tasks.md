@@ -43,7 +43,7 @@
 
 ### TASK-NEDC-01-001: Define email notification channel contract
 
-- status: pending
+- status: done
 - source: specs/notification-email-delivery-channel/backlog/01-email-delivery-channel-build-backlog.md
 - task brief: specs/notification-email-delivery-channel/tasks/01-contracts/01-define-email-channel-contract.md
 - depends on:
