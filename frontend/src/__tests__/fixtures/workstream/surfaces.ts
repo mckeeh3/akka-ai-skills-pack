@@ -36,6 +36,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Refresh users',
     intent: 'read',
     capabilityId: secureTenantUserFoundation,
+    governedToolId: secureTenantUserFoundation,
+    browserToolId: 'action-refresh-users',
     idempotency: { required: false },
     audit: { eventType: 'AdminUsersRead', traceRequired: true }
   },
@@ -44,6 +46,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Show users list',
     intent: 'surface-request',
     capabilityId: userAdminCapabilities.listMembers,
+    governedToolId: userAdminCapabilities.listMembers,
+    browserToolId: 'action-show-user-list',
     idempotency: { required: false },
     resultSurface: { appendSurfaceType: 'table', openPlacement: 'inline' },
     shellRequest: {
@@ -59,6 +63,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Invite user',
     intent: 'command',
     capabilityId: userAdminCapabilities.sendInvitation,
+    governedToolId: userAdminCapabilities.sendInvitation,
+    browserToolId: 'action-invite-user',
     inputSchemaRef: 'schema.invitation.create.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -70,6 +76,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Propose policy change',
     intent: 'proposal',
     capabilityId: 'governance.policy.propose',
+    governedToolId: 'governance.policy.propose',
+    browserToolId: 'action-propose-policy',
     inputSchemaRef: 'schema.policy.proposal.v1',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { appendSurfaceType: 'governance-diff', openPlacement: 'side-panel' },
@@ -80,6 +88,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Approve recommendation',
     intent: 'approval',
     capabilityId: 'governance-decisions-audit',
+    governedToolId: 'governance-decisions-audit',
+    browserToolId: 'action-approve-decision',
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -90,6 +100,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Resume workflow',
     intent: 'workflow',
     capabilityId: userAdminCapabilities.sendInvitation,
+    governedToolId: userAdminCapabilities.sendInvitation,
+    browserToolId: 'action-resume-workflow',
     disabled: { reasonCode: 'waiting-for-approval', message: 'Approval is required before this workflow can resume.' },
     idempotency: { required: true, keySource: 'server-issued' },
     resultSurface: { updateSurfaceId: 'surface-workflow-status', openPlacement: 'inline' },
@@ -100,6 +112,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Run simulation',
     intent: 'governance',
     capabilityId: 'governance.policy.simulate',
+    governedToolId: 'governance.policy.simulate',
+    browserToolId: 'action-simulate-policy',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-governance-diff', openPlacement: 'inline' },
     audit: { eventType: 'PolicySimulationRequested', traceRequired: true }
@@ -109,6 +123,8 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     label: 'Open trace',
     intent: 'trace',
     capabilityId: 'audit.trace.read',
+    governedToolId: 'audit.trace.read',
+    browserToolId: 'action-open-trace',
     idempotency: { required: false },
     resultSurface: { appendSurfaceType: 'audit-timeline', openPlacement: 'deep-link' },
     audit: { eventType: 'TraceOpened', traceRequired: true }
@@ -121,6 +137,8 @@ export const userAdminSurfaceActions = {
     label: 'Refresh User Admin dashboard',
     intent: 'read',
     capabilityId: userAdminCapabilities.overview,
+    governedToolId: userAdminCapabilities.overview,
+    browserToolId: 'action-refresh-user-admin-dashboard',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-dashboard', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDashboardRead', traceRequired: true }
@@ -130,6 +148,8 @@ export const userAdminSurfaceActions = {
     label: 'Display user list view',
     intent: 'read',
     capabilityId: userAdminCapabilities.listMembers,
+    governedToolId: userAdminCapabilities.listMembers,
+    browserToolId: 'action-display-user-list',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminListDisplayed', traceRequired: true }
@@ -139,6 +159,8 @@ export const userAdminSurfaceActions = {
     label: 'Search users and invitations',
     intent: 'read',
     capabilityId: userAdminCapabilities.listMembers,
+    governedToolId: userAdminCapabilities.listMembers,
+    browserToolId: 'action-search-users',
     inputSchemaRef: 'schema.user-admin.search.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
@@ -149,6 +171,8 @@ export const userAdminSurfaceActions = {
     label: 'Display user account detail',
     intent: 'read',
     capabilityId: userAdminCapabilities.listMembers,
+    governedToolId: userAdminCapabilities.listMembers,
+    browserToolId: 'action-display-user-detail',
     inputSchemaRef: 'schema.user-admin.detail.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-detail-admin', openPlacement: 'inline' },
@@ -159,6 +183,8 @@ export const userAdminSurfaceActions = {
     label: 'Display role/capability matrix',
     intent: 'read',
     capabilityId: userAdminCapabilities.listRolesCapabilities,
+    governedToolId: userAdminCapabilities.listRolesCapabilities,
+    browserToolId: 'action-display-role-capability-matrix',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'user-admin-role-capability-matrix', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminRoleCapabilityMatrixDisplayed', traceRequired: true }
@@ -168,6 +194,8 @@ export const userAdminSurfaceActions = {
     label: 'Preview role change',
     intent: 'proposal',
     capabilityId: userAdminCapabilities.previewRoleChange,
+    governedToolId: userAdminCapabilities.previewRoleChange,
+    browserToolId: 'action-useradmin-preview-role-change',
     inputSchemaRef: 'schema.user-admin.role-change.preview.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-role-change-preview', openPlacement: 'inline' },
@@ -178,6 +206,8 @@ export const userAdminSurfaceActions = {
     label: 'Apply role change',
     intent: 'command',
     capabilityId: userAdminCapabilities.changeMemberRoles,
+    governedToolId: userAdminCapabilities.changeMemberRoles,
+    browserToolId: 'action-useradmin-change-member-roles',
     inputSchemaRef: 'schema.user-admin.role-change.apply.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -190,6 +220,8 @@ export const userAdminSurfaceActions = {
     label: 'Create invitation',
     intent: 'command',
     capabilityId: userAdminCapabilities.sendInvitation,
+    governedToolId: userAdminCapabilities.sendInvitation,
+    browserToolId: 'action-invite-user',
     inputSchemaRef: 'schema.invitation.create.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -201,6 +233,8 @@ export const userAdminSurfaceActions = {
     label: 'Resend pending invitation',
     intent: 'command',
     capabilityId: userAdminCapabilities.resendInvitation,
+    governedToolId: userAdminCapabilities.resendInvitation,
+    browserToolId: 'action-useradmin-resend-invitation',
     inputSchemaRef: 'schema.invitation.resend.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -212,6 +246,8 @@ export const userAdminSurfaceActions = {
     label: 'Revoke expired invitation',
     intent: 'command',
     capabilityId: userAdminCapabilities.revokeInvitation,
+    governedToolId: userAdminCapabilities.revokeInvitation,
+    browserToolId: 'action-useradmin-revoke-invitation',
     inputSchemaRef: 'schema.invitation.revoke.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -223,6 +259,8 @@ export const userAdminSurfaceActions = {
     label: 'Add membership',
     intent: 'command',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-add-membership',
     inputSchemaRef: 'schema.membership.add.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -234,6 +272,8 @@ export const userAdminSurfaceActions = {
     label: 'Disable member',
     intent: 'command',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-useradmin-disable-member',
     inputSchemaRef: 'schema.user-admin.member-status.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -245,6 +285,8 @@ export const userAdminSurfaceActions = {
     label: 'Reactivate member',
     intent: 'command',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-useradmin-reactivate-member',
     inputSchemaRef: 'schema.user-admin.member-status.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -256,6 +298,8 @@ export const userAdminSurfaceActions = {
     label: 'Remove membership',
     intent: 'command',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-remove-membership',
     inputSchemaRef: 'schema.membership.remove.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -269,6 +313,8 @@ export const userAdminSurfaceActions = {
     label: 'Save profile changes',
     intent: 'command',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-update-user-profile',
     inputSchemaRef: 'schema.user-admin.profile.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -280,6 +326,8 @@ export const userAdminSurfaceActions = {
     label: 'Replace membership role',
     intent: 'command',
     capabilityId: userAdminCapabilities.changeMemberRoles,
+    governedToolId: userAdminCapabilities.changeMemberRoles,
+    browserToolId: 'action-replace-membership-role',
     inputSchemaRef: 'schema.membership.role.replace.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -293,6 +341,8 @@ export const userAdminSurfaceActions = {
     label: 'Remove membership role',
     intent: 'command',
     capabilityId: userAdminCapabilities.changeMemberRoles,
+    governedToolId: userAdminCapabilities.changeMemberRoles,
+    browserToolId: 'action-remove-membership-role',
     inputSchemaRef: 'schema.membership.role.remove.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -306,6 +356,8 @@ export const userAdminSurfaceActions = {
     label: 'Disable account',
     intent: 'command',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-disable-account',
     inputSchemaRef: 'schema.user-admin.account.disable.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -319,6 +371,8 @@ export const userAdminSurfaceActions = {
     label: 'Reactivate account',
     intent: 'command',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-reactivate-account',
     inputSchemaRef: 'schema.user-admin.account.reactivate.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -330,6 +384,8 @@ export const userAdminSurfaceActions = {
     label: 'Request identity relink',
     intent: 'proposal',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-request-identity-relink',
     inputSchemaRef: 'schema.user-admin.identity-relink.request.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -342,6 +398,8 @@ export const userAdminSurfaceActions = {
     label: 'Complete identity relink',
     intent: 'approval',
     capabilityId: userAdminCapabilities.updateMemberStatus,
+    governedToolId: userAdminCapabilities.updateMemberStatus,
+    browserToolId: 'action-complete-identity-relink',
     inputSchemaRef: 'schema.user-admin.identity-relink.complete.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -354,6 +412,8 @@ export const userAdminSurfaceActions = {
     label: 'Read support access grants',
     intent: 'read',
     capabilityId: userAdminCapabilities.viewTraceReference,
+    governedToolId: userAdminCapabilities.viewTraceReference,
+    browserToolId: 'action-read-support-access',
     inputSchemaRef: 'schema.support-access.search.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'inline' },
@@ -364,6 +424,8 @@ export const userAdminSurfaceActions = {
     label: 'Grant support access',
     intent: 'command',
     capabilityId: userAdminCapabilities.viewTraceReference,
+    governedToolId: userAdminCapabilities.viewTraceReference,
+    browserToolId: 'action-grant-support-access',
     inputSchemaRef: 'schema.support-access.grant.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -377,6 +439,8 @@ export const userAdminSurfaceActions = {
     label: 'Revoke support access',
     intent: 'command',
     capabilityId: userAdminCapabilities.viewTraceReference,
+    governedToolId: userAdminCapabilities.viewTraceReference,
+    browserToolId: 'action-revoke-support-access',
     inputSchemaRef: 'schema.support-access.revoke.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -388,6 +452,8 @@ export const userAdminSurfaceActions = {
     label: 'Extend support access',
     intent: 'command',
     capabilityId: userAdminCapabilities.viewTraceReference,
+    governedToolId: userAdminCapabilities.viewTraceReference,
+    browserToolId: 'action-extend-support-access',
     inputSchemaRef: 'schema.support-access.extend.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -400,6 +466,8 @@ export const userAdminSurfaceActions = {
     label: 'Start access review',
     intent: 'workflow',
     capabilityId: userAdminCapabilities.startAccessReviewTask,
+    governedToolId: userAdminCapabilities.startAccessReviewTask,
+    browserToolId: 'action-useradmin-start-access-review',
     inputSchemaRef: 'schema.user-admin.access-review.start.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -412,6 +480,8 @@ export const userAdminSurfaceActions = {
     label: 'Read access review item',
     intent: 'read',
     capabilityId: userAdminCapabilities.viewAccessReviewTask,
+    governedToolId: userAdminCapabilities.viewAccessReviewTask,
+    browserToolId: 'action-useradmin-read-access-review',
     inputSchemaRef: 'schema.user-admin.access-review.read.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-access-review', openPlacement: 'inline' },
@@ -422,6 +492,8 @@ export const userAdminSurfaceActions = {
     label: 'Cancel access review',
     intent: 'command',
     capabilityId: userAdminCapabilities.cancelAccessReviewTask,
+    governedToolId: userAdminCapabilities.cancelAccessReviewTask,
+    browserToolId: 'action-useradmin-cancel-access-review',
     inputSchemaRef: 'schema.user-admin.access-review.cancel.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -433,6 +505,8 @@ export const userAdminSurfaceActions = {
     label: 'Accept access review result',
     intent: 'approval',
     capabilityId: userAdminCapabilities.acceptAccessReviewResult,
+    governedToolId: userAdminCapabilities.acceptAccessReviewResult,
+    browserToolId: 'action-useradmin-accept-access-review-result',
     inputSchemaRef: 'schema.user-admin.access-review.accept-result.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -445,6 +519,8 @@ export const userAdminSurfaceActions = {
     label: 'Reject access review result',
     intent: 'approval',
     capabilityId: userAdminCapabilities.rejectAccessReviewResult,
+    governedToolId: userAdminCapabilities.rejectAccessReviewResult,
+    browserToolId: 'action-useradmin-reject-access-review-result',
     inputSchemaRef: 'schema.user-admin.access-review.reject-result.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -457,6 +533,8 @@ export const userAdminSurfaceActions = {
     label: 'Open admin audit evidence',
     intent: 'trace',
     capabilityId: userAdminCapabilities.viewTraceReference,
+    governedToolId: userAdminCapabilities.viewTraceReference,
+    browserToolId: 'action-open-admin-audit',
     idempotency: { required: false },
     resultSurface: { appendSurfaceType: 'audit-timeline', openPlacement: 'deep-link' },
     audit: { eventType: 'AdminAuditOpened', traceRequired: true }
@@ -481,6 +559,11 @@ const agentModelsReadCapability = 'agent_admin.get_model_ref';
 const agentModelsManageCapability = 'agent_admin.activate_behavior_change';
 const agentSeedReadCapability = 'agent_admin.list_seed_material';
 const agentRuntimeTestCapability = 'agent_admin.draft_behavior_change';
+const agentPromptRiskStartCapability = 'agent_admin.prompt_risk_review.start';
+const agentPromptRiskReadCapability = 'agent_admin.prompt_risk_review.read';
+const agentPromptRiskCancelCapability = 'agent_admin.prompt_risk_review.cancel';
+const agentPromptRiskAcceptCapability = 'agent_admin.prompt_risk_review.accept_result';
+const agentPromptRiskRejectCapability = 'agent_admin.prompt_risk_review.reject_result';
 
 export const agentAdminSurfaceActions = {
   displayCatalog: {
@@ -488,6 +571,8 @@ export const agentAdminSurfaceActions = {
     label: 'Display agent catalog',
     intent: 'read',
     capabilityId: agentDefinitionsCapability,
+    governedToolId: agentDefinitionsCapability,
+    browserToolId: 'action-display-agent-catalog',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-admin-catalog', openPlacement: 'inline' },
     audit: { eventType: 'AgentCatalogDisplayed', traceRequired: true }
@@ -497,6 +582,8 @@ export const agentAdminSurfaceActions = {
     label: 'Open agent readiness detail',
     intent: 'read',
     capabilityId: agentDefinitionReadCapability,
+    governedToolId: agentDefinitionReadCapability,
+    browserToolId: 'action-open-agent-detail',
     inputSchemaRef: 'schema.agent-definition.detail.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
@@ -507,6 +594,8 @@ export const agentAdminSurfaceActions = {
     label: 'Propose prompt diff',
     intent: 'proposal',
     capabilityId: agentPromptsCapability,
+    governedToolId: agentPromptsCapability,
+    browserToolId: 'action-propose-prompt-diff',
     inputSchemaRef: 'schema.prompt-version.proposal.v1',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-agent-prompt-governance', openPlacement: 'side-panel' },
@@ -517,6 +606,8 @@ export const agentAdminSurfaceActions = {
     label: 'Run no-side-effect prompt test',
     intent: 'workflow',
     capabilityId: agentRuntimeTestCapability,
+    governedToolId: agentRuntimeTestCapability,
+    browserToolId: 'action-test-agent-prompt',
     inputSchemaRef: 'schema.agent-runtime.test.v1',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { appendSurfaceType: 'workflow-status', openPlacement: 'inline' },
@@ -527,6 +618,8 @@ export const agentAdminSurfaceActions = {
     label: 'Approve manifest review',
     intent: 'approval',
     capabilityId: agentSkillsCapability,
+    governedToolId: agentSkillsCapability,
+    browserToolId: 'action-approve-skill-manifest',
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -538,6 +631,8 @@ export const agentAdminSurfaceActions = {
     label: 'Submit behavior change for review',
     intent: 'proposal',
     capabilityId: agentSubmitReviewCapability,
+    governedToolId: agentSubmitReviewCapability,
+    browserToolId: 'action-submit-behavior-change',
     inputSchemaRef: 'schema.agent-admin.behavior-change.submit.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -549,6 +644,8 @@ export const agentAdminSurfaceActions = {
     label: 'Reject behavior change',
     intent: 'approval',
     capabilityId: agentRejectCapability,
+    governedToolId: agentRejectCapability,
+    browserToolId: 'action-reject-behavior-change',
     inputSchemaRef: 'schema.agent-admin.behavior-change.reject.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -561,6 +658,8 @@ export const agentAdminSurfaceActions = {
     label: 'Activate approved behavior change',
     intent: 'command',
     capabilityId: agentActivateCapability,
+    governedToolId: agentActivateCapability,
+    browserToolId: 'action-activate-behavior-change',
     inputSchemaRef: 'schema.agent-admin.behavior-change.activate.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -573,6 +672,8 @@ export const agentAdminSurfaceActions = {
     label: 'Cancel behavior change',
     intent: 'command',
     capabilityId: agentCancelCapability,
+    governedToolId: agentCancelCapability,
+    browserToolId: 'action-cancel-behavior-change',
     inputSchemaRef: 'schema.agent-admin.behavior-change.cancel.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
@@ -584,6 +685,8 @@ export const agentAdminSurfaceActions = {
     label: 'Rollback activated behavior change',
     intent: 'command',
     capabilityId: agentRollbackCapability,
+    governedToolId: agentRollbackCapability,
+    browserToolId: 'action-rollback-behavior-change',
     inputSchemaRef: 'schema.agent-admin.behavior-change.rollback.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -596,6 +699,8 @@ export const agentAdminSurfaceActions = {
     label: 'Simulate tool boundary change',
     intent: 'governance',
     capabilityId: agentToolBoundariesCapability,
+    governedToolId: agentToolBoundariesCapability,
+    browserToolId: 'action-simulate-tool-boundary',
     inputSchemaRef: 'schema.tool-boundary.simulation.v1',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-agent-tool-boundary-diff', openPlacement: 'inline' },
@@ -606,6 +711,8 @@ export const agentAdminSurfaceActions = {
     label: 'Request model ref change',
     intent: 'proposal',
     capabilityId: agentModelsManageCapability,
+    governedToolId: agentModelsManageCapability,
+    browserToolId: 'action-manage-model-ref',
     disabled: { reasonCode: 'MODEL_POLICY_DENIED', message: 'This fixture denies switching to a disabled provider alias; provider secrets remain redacted.' },
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { appendSurfaceType: 'decision', openPlacement: 'inline' },
@@ -616,15 +723,85 @@ export const agentAdminSurfaceActions = {
     label: 'List seed material',
     intent: 'read',
     capabilityId: agentSeedReadCapability,
+    governedToolId: agentSeedReadCapability,
+    browserToolId: 'action-list-agent-seed-material',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-seed-material', openPlacement: 'inline' },
     audit: { eventType: 'AgentSeedMaterialListed', traceRequired: true }
+  },
+  startPromptRiskReview: {
+    actionId: 'action-agentadmin-start-prompt-risk-review',
+    label: 'Start prompt-risk review',
+    intent: 'workflow',
+    capabilityId: agentPromptRiskStartCapability,
+    governedToolId: agentPromptRiskStartCapability,
+    browserToolId: 'action-agentadmin-start-prompt-risk-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.start.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewStarted', traceRequired: true }
+  },
+  readPromptRiskReview: {
+    actionId: 'action-agentadmin-read-prompt-risk-review',
+    label: 'Read prompt-risk review',
+    intent: 'read',
+    capabilityId: agentPromptRiskReadCapability,
+    governedToolId: agentPromptRiskReadCapability,
+    browserToolId: 'action-agentadmin-read-prompt-risk-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.read.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewRead', traceRequired: true }
+  },
+  cancelPromptRiskReview: {
+    actionId: 'action-agentadmin-cancel-prompt-risk-review',
+    label: 'Cancel prompt-risk review',
+    intent: 'command',
+    capabilityId: agentPromptRiskCancelCapability,
+    governedToolId: agentPromptRiskCancelCapability,
+    browserToolId: 'action-agentadmin-cancel-prompt-risk-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.cancel.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewCancelled', traceRequired: true }
+  },
+  acceptPromptRiskReviewResult: {
+    actionId: 'action-agentadmin-accept-prompt-risk-review-result',
+    label: 'Accept advisory prompt-risk result',
+    intent: 'approval',
+    capabilityId: agentPromptRiskAcceptCapability,
+    governedToolId: agentPromptRiskAcceptCapability,
+    browserToolId: 'action-agentadmin-accept-prompt-risk-review-result',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewAccepted', traceRequired: true }
+  },
+  rejectPromptRiskReviewResult: {
+    actionId: 'action-agentadmin-reject-prompt-risk-review-result',
+    label: 'Reject advisory prompt-risk result',
+    intent: 'approval',
+    capabilityId: agentPromptRiskRejectCapability,
+    governedToolId: agentPromptRiskRejectCapability,
+    browserToolId: 'action-agentadmin-reject-prompt-risk-review-result',
+    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.reject.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminPromptRiskReviewRejected', traceRequired: true }
   },
   openAgentTrace: {
     actionId: 'action-open-agent-trace',
     label: 'Open agent work trace',
     intent: 'trace',
     capabilityId: 'audit.trace.read',
+    governedToolId: 'audit.trace.read',
+    browserToolId: 'action-open-agent-trace',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-admin-trace', openPlacement: 'deep-link' },
     audit: { eventType: 'AgentWorkTraceOpened', traceRequired: true }
@@ -706,6 +883,8 @@ export const myAccountSurfaceActions = {
     label: 'Refresh My Account summary',
     intent: 'read',
     capabilityId: myAccountCapabilities.viewSummary,
+    governedToolId: myAccountCapabilities.viewSummary,
+    browserToolId: 'action-show-my-account-dashboard',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-my-account-dashboard', openPlacement: 'inline' },
     audit: { eventType: 'MyAccountSummaryDisplayed', traceRequired: true }
@@ -715,6 +894,8 @@ export const myAccountSurfaceActions = {
     label: 'Show user profile',
     intent: 'read',
     capabilityId: myAccountCapabilities.viewSummary,
+    governedToolId: myAccountCapabilities.viewSummary,
+    browserToolId: 'action-show-my-profile',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-my-profile', openPlacement: 'inline' },
     audit: { eventType: 'UserProfileDisplayed', traceRequired: true }
@@ -724,6 +905,8 @@ export const myAccountSurfaceActions = {
     label: 'Show user settings',
     intent: 'read',
     capabilityId: myAccountCapabilities.viewSummary,
+    governedToolId: myAccountCapabilities.viewSummary,
+    browserToolId: 'action-show-my-settings',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-my-settings', openPlacement: 'inline' },
     audit: { eventType: 'UserSettingsDisplayed', traceRequired: true }
@@ -733,6 +916,8 @@ export const myAccountSurfaceActions = {
     label: 'Save profile changes',
     intent: 'command',
     capabilityId: myAccountCapabilities.updateProfileSettings,
+    governedToolId: myAccountCapabilities.updateProfileSettings,
+    browserToolId: 'action-update-my-profile',
     inputSchemaRef: 'schema.my-account.profile.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -744,6 +929,8 @@ export const myAccountSurfaceActions = {
     label: 'Save settings changes',
     intent: 'command',
     capabilityId: myAccountCapabilities.updateProfileSettings,
+    governedToolId: myAccountCapabilities.updateProfileSettings,
+    browserToolId: 'action-update-my-settings',
     inputSchemaRef: 'schema.my-account.settings.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
@@ -755,6 +942,8 @@ export const myAccountSurfaceActions = {
     label: 'Open User Admin',
     intent: 'surface-request',
     capabilityId: myAccountCapabilities.openAuthorizedWorkstream,
+    governedToolId: myAccountCapabilities.openAuthorizedWorkstream,
+    browserToolId: 'action-open-user-admin',
     inputSchemaRef: 'schema.my-account.open-workstream.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-list', openPlacement: 'deep-link' },
@@ -766,6 +955,8 @@ export const myAccountSurfaceActions = {
     label: 'Open Agent Admin',
     intent: 'surface-request',
     capabilityId: myAccountCapabilities.openAuthorizedWorkstream,
+    governedToolId: myAccountCapabilities.openAuthorizedWorkstream,
+    browserToolId: 'action-open-agent-admin',
     inputSchemaRef: 'schema.my-account.open-workstream.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-admin-catalog', openPlacement: 'deep-link' },
@@ -777,6 +968,8 @@ export const myAccountSurfaceActions = {
     label: 'Open audit timeline',
     intent: 'trace',
     capabilityId: myAccountCapabilities.viewOwnTraceRefs,
+    governedToolId: myAccountCapabilities.viewOwnTraceRefs,
+    browserToolId: 'action-open-audit-trace',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-timeline', openPlacement: 'inline' },
     audit: { eventType: 'AuditTimelineOpened', traceRequired: true }
@@ -786,6 +979,8 @@ export const myAccountSurfaceActions = {
     label: 'Sign out',
     intent: 'command',
     capabilityId: myAccountCapabilities.viewSummary,
+    governedToolId: myAccountCapabilities.viewSummary,
+    browserToolId: 'action-sign-out',
     requiresConfirmation: true,
     disabled: { reasonCode: 'AUTHKIT_SESSION_ACTION', message: 'Sign-out is handled by the shell AuthKit session boundary, not by granting backend authority.' },
     idempotency: { required: false },
@@ -952,6 +1147,8 @@ export const auditTraceSurfaceActions = {
     label: 'Refresh Audit/Trace dashboard',
     intent: 'read',
     capabilityId: 'audit.trace.dashboard.read',
+    governedToolId: 'audit.trace.dashboard.read',
+    browserToolId: 'action-audit-trace-dashboard',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-dashboard', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceDashboardRead', traceRequired: true }
@@ -961,6 +1158,8 @@ export const auditTraceSurfaceActions = {
     label: 'Search scoped traces',
     intent: 'read',
     capabilityId: 'audit.trace.search',
+    governedToolId: 'audit.trace.search',
+    browserToolId: 'action-audit-trace-search',
     inputSchemaRef: 'schema.audit-trace.search.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-search', openPlacement: 'inline' },
@@ -971,6 +1170,8 @@ export const auditTraceSurfaceActions = {
     label: 'Open trace detail',
     intent: 'read',
     capabilityId: 'audit.trace.detail.read',
+    governedToolId: 'audit.trace.detail.read',
+    browserToolId: 'action-audit-trace-detail',
     inputSchemaRef: 'schema.audit-trace.detail.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-detail', openPlacement: 'inline' },
@@ -981,6 +1182,8 @@ export const auditTraceSurfaceActions = {
     label: 'Open correlation timeline',
     intent: 'trace',
     capabilityId: 'audit.trace.timeline.read',
+    governedToolId: 'audit.trace.timeline.read',
+    browserToolId: 'action-audit-trace-timeline',
     inputSchemaRef: 'schema.audit-trace.timeline.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-timeline', openPlacement: 'inline' },
@@ -991,6 +1194,8 @@ export const auditTraceSurfaceActions = {
     label: 'Open failure evidence',
     intent: 'read',
     capabilityId: 'audit.trace.failureEvidence.read',
+    governedToolId: 'audit.trace.failureEvidence.read',
+    browserToolId: 'action-audit-trace-failure-evidence',
     inputSchemaRef: 'schema.audit-trace.failure-evidence.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-failure-evidence', openPlacement: 'inline' },
@@ -1001,6 +1206,8 @@ export const auditTraceSurfaceActions = {
     label: 'Show investigation guidance',
     intent: 'read',
     capabilityId: 'audit.trace.investigationGuide.read',
+    governedToolId: 'audit.trace.investigationGuide.read',
+    browserToolId: 'action-audit-trace-investigation-guide',
     inputSchemaRef: 'schema.audit-trace.investigation-guide.v1',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-investigation-guide', openPlacement: 'inline' },
@@ -1011,6 +1218,8 @@ export const auditTraceSurfaceActions = {
     label: 'Start audit summary task',
     intent: 'workflow',
     capabilityId: 'audit.trace.summary_task.start',
+    governedToolId: 'audit.trace.summaryTask.start',
+    browserToolId: 'action-audit-trace-summary-task-start',
     inputSchemaRef: 'schema.audit-trace.summary-task.start.v1',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-progress', openPlacement: 'inline' },
@@ -1021,6 +1230,8 @@ export const auditTraceSurfaceActions = {
     label: 'Refresh summary task',
     intent: 'read',
     capabilityId: 'audit.trace.summary_task.read',
+    governedToolId: 'audit.trace.summaryTask.read',
+    browserToolId: 'action-audit-trace-summary-task-read',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-progress', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceSummaryTaskRead', traceRequired: true }
@@ -1030,6 +1241,8 @@ export const auditTraceSurfaceActions = {
     label: 'Accept advisory summary',
     intent: 'approval',
     capabilityId: 'audit.trace.summary_task.accept_result',
+    governedToolId: 'audit.trace.summaryTask.acceptResult',
+    browserToolId: 'action-audit-trace-summary-task-accept-result',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceSummaryResultAccepted', traceRequired: true }
@@ -1039,6 +1252,8 @@ export const auditTraceSurfaceActions = {
     label: 'Reject advisory summary',
     intent: 'approval',
     capabilityId: 'audit.trace.summary_task.reject_result',
+    governedToolId: 'audit.trace.summaryTask.rejectResult',
+    browserToolId: 'action-audit-trace-summary-task-reject-result',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceSummaryResultRejected', traceRequired: true }
@@ -1048,6 +1263,8 @@ export const auditTraceSurfaceActions = {
     label: 'Open cited evidence',
     intent: 'trace',
     capabilityId: 'audit.trace.summary_task.open_evidence',
+    governedToolId: 'audit.trace.summaryTask.openEvidence',
+    browserToolId: 'action-audit-trace-summary-task-open-evidence',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-detail', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceSummaryEvidenceOpened', traceRequired: true }
@@ -1173,9 +1390,8 @@ export const auditTraceInvestigationGuideSurface = envelope(
   {
     recommendation: 'Continue only with backend-authorized, tenant-scoped evidence.',
     allowedActions: [
-      { actionId: 'action-audit-trace-search', label: 'Refine search', capabilityId: 'audit.trace.search' },
-      { actionId: 'action-audit-trace-timeline', label: 'Open timeline', capabilityId: 'audit.trace.timeline.read' },
-      { actionId: 'action-audit-trace-summary-task-start', label: 'Start bounded audit summary task', capabilityId: 'audit.trace.summary_task.start' }
+      { actionId: 'action-audit-trace-search', label: 'Refine search', browserToolId: 'action-audit-trace-search', governedToolId: 'audit.trace.search', capabilityId: 'audit.trace.search' },
+      { actionId: 'action-audit-trace-timeline', label: 'Open timeline', browserToolId: 'action-audit-trace-timeline', governedToolId: 'audit.trace.timeline.read', capabilityId: 'audit.trace.timeline.read' }
     ],
     disabledActions: [
       { actionId: 'action-audit-trace-summary-task-start-scheduled', reason: 'Scheduled audit summary cadence remains future work; manual backend-governed start is wired.' }
@@ -1292,7 +1508,7 @@ export const userAdminDashboardSurface = envelope(
         { targetId: 'unassigned-reference', decision: 'denied', reason: 'unassigned reference denied', trace: 'ReferenceLoadTrace' },
         { targetId: 'readReferenceDoc(referenceId)', decision: 'denied', reason: 'missing read_reference tool-boundary grant returns TOOL_BOUNDARY_DENIED', trace: 'AgentWorkTrace' }
       ],
-      authorityBoundary: 'SkillDocument and ReferenceDocument text cannot grant roles, tenant scope, tool access, approval rights, or backend capabilities.',
+      authorityBoundary: 'SkillDocument and ReferenceDocument text cannot grant roles, tenant scope, governed-tool access, approval rights, or backend capabilities.',
       traceRequirements: ['PromptAssemblyTrace', 'SkillLoadTrace', 'ReferenceLoadTrace', 'AgentWorkTrace', 'AdminAuditEvent']
     }
   },
@@ -1564,6 +1780,7 @@ export const userAdminAccessReviewSurface = envelope(
         { recommendationId: 'rec-review-admin-access', label: 'Review stale admin access', risk: 'medium', confidence: 'provider-blocked', summary: 'Recommendation content requires model-backed worker completion before human acceptance.' }
       ],
       providerFailures: ['blocked_provider_or_runtime'],
+      resultReviewStates: ['pending_worker_result', 'completed_review_required', 'result_accepted', 'result_rejected', 'cancelled'],
       resultReviewState: 'pending_worker_result',
       noDirectMutation: true,
       safety: 'Access-review output cannot directly mutate memberships, invitations, roles, capabilities, authorization state, or provider configuration.',
@@ -1833,9 +2050,9 @@ export const agentBehaviorProposalSurface = envelope(
       { actionId: 'action-rollback-behavior-change', reason: 'Rollback requires activated proposal metadata and backend command authority.' }
     ],
     allowedActions: [
-      { actionId: 'action-submit-behavior-change', label: 'Submit behavior change for review', capabilityId: agentSubmitReviewCapability },
-      { actionId: 'action-approve-skill-manifest', label: 'Approve reviewed change', capabilityId: agentSkillsCapability },
-      { actionId: 'action-reject-behavior-change', label: 'Reject behavior change', capabilityId: agentRejectCapability }
+      { actionId: 'action-submit-behavior-change', label: 'Submit behavior change for review', browserToolId: 'action-submit-behavior-change', governedToolId: agentSubmitReviewCapability, capabilityId: agentSubmitReviewCapability },
+      { actionId: 'action-approve-skill-manifest', label: 'Approve reviewed change', browserToolId: 'action-approve-skill-manifest', governedToolId: agentSkillsCapability, capabilityId: agentSkillsCapability },
+      { actionId: 'action-reject-behavior-change', label: 'Reject behavior change', browserToolId: 'action-reject-behavior-change', governedToolId: agentRejectCapability, capabilityId: agentRejectCapability }
     ],
     evidence: [
       { evidenceId: 'evidence-prompt-diff', label: 'Prompt diff', summary: 'Diff improves trace citation wording; redactedPreview omits raw hidden prompt text.' },
@@ -1846,6 +2063,51 @@ export const agentBehaviorProposalSurface = envelope(
     traceLinks: ['trace-agent-admin-behavior-draft', 'trace-agent-admin-behavior-review', 'trace-agent-admin-behavior-activation-blocked']
   },
   [agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.rejectBehaviorChange, agentAdminSurfaceActions.activateBehaviorChange, agentAdminSurfaceActions.cancelBehaviorChange, agentAdminSurfaceActions.rollbackBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentAdminPromptRiskReviewSurface = envelope(
+  'surface-agent-admin-prompt-risk-review',
+  'workflow-status',
+  'Agent Admin prompt-risk review',
+  'agent-agent-admin',
+  {
+    surfaceContract: 'agent_admin.prompt_risk_review_task.v1',
+    workflowId: 'workflow-agent-admin-prompt-risk-review-001',
+    taskId: 'prompt-risk-review-001',
+    autonomousAgentTaskId: 'akka-task-prompt-risk-review-001',
+    status: 'completed',
+    summary: 'Prompt-risk AutonomousAgent completed model-backed advisory review; activation remains blocked until human Agent Admin decision.',
+    initiatingCapabilityId: agentPromptRiskStartCapability,
+    requiredCapabilityId: agentPromptRiskReadCapability,
+    taskKind: 'autonomous-agent-analysis',
+    progress: { percent: 100, summary: 'completed_review_required' },
+    scope: { scopeType: 'CUSTOMER', tenantId: authContext.tenantId, customerId: authContext.customerId },
+    targetAgentDefinitionId: 'agent-agent-admin',
+    proposalId: 'proposal-agent-admin-prompt-risk-001',
+    proposalStatus: 'in_review',
+    artifactDeltas: [
+      { artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', changeSummary: 'Tighten governance prompt wording', redactedDiffRef: 'diff:proposal-agent-admin-prompt-risk-001:prompt' },
+      { artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', changeSummary: 'Requested side-effecting grant remains blocked', redactedDiffRef: 'diff:proposal-agent-admin-prompt-risk-001:tool-boundary' }
+    ],
+    riskSummary: 'High risk because the proposal touches prompt authority and ToolPermissionBoundary grants; No direct activation or mutation is allowed by this review.',
+    overallRisk: 'HIGH',
+    findings: [
+      { findingId: 'finding-prompt-hierarchy', riskLevel: 'HIGH', artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', category: 'prompt instruction hierarchy conflict', browserSafeDescription: 'Prompt wording could be read as authority expansion without explicit refusal behavior.', evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt-risk-review'], requiresHumanReview: true },
+      { findingId: 'finding-tool-boundary', riskLevel: 'CRITICAL', artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', category: 'side-effecting tool exposure', browserSafeDescription: 'Side-effecting tool exposure requires separate approval, idempotency, and activation checks.', evidenceRefs: ['readReferenceDoc:agent-admin-prompt-risk-review'], requiresHumanReview: true }
+    ],
+    recommendations: [
+      { recommendationId: 'rec-reject-tool-boundary', label: 'Reject tool-boundary expansion', risk: 'critical', confidence: 'high', summary: 'Do not activate side-effecting grants from prompt-risk acceptance; use a separate governed proposal path.' }
+    ],
+    requiredHumanReviewReasons: ['prompt authority change', 'ToolPermissionBoundary expansion', 'model-backed advisory result'],
+    evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt-risk-review', 'readReferenceDoc:agent-admin-prompt-risk-review', 'proposal:proposal-agent-admin-prompt-risk-001'],
+    providerFailures: [],
+    traceIds: ['trace-prompt-risk-assembly-001', 'trace-prompt-risk-skill-load-001', 'trace-prompt-risk-reference-load-001', 'trace-prompt-risk-model-call-001'],
+    resultReviewState: 'completed_review_required',
+    noDirectMutation: true,
+    activationBlockedUntilHumanDecision: true,
+    safety: 'Advisory-only prompt-risk result. Human Agent Admin review is required before any activation or behavior artifact mutation; accepting this result does not activate prompts, skills, references, models, or tool boundaries.'
+  },
+  [agentAdminSurfaceActions.readPromptRiskReview, agentAdminSurfaceActions.acceptPromptRiskReviewResult, agentAdminSurfaceActions.rejectPromptRiskReviewResult, agentAdminSurfaceActions.cancelPromptRiskReview, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentAdminAgentBlockedSystemMessageSurface = envelope(
@@ -1863,6 +2125,8 @@ export const agentAdminAgentBlockedSystemMessageSurface = envelope(
     workstreamEntryId: 'item-agent-admin-agent-provider-blocked',
     producingAgentId: 'agent-agent-admin',
     capabilityId: 'agent_admin.submit_turn',
+    governedToolId: 'agent_admin.submit_turn',
+    browserToolId: 'action-audit-trace-investigation-guide',
     sourceRefs: [{ refType: 'trace', refId: 'trace-agentadmin-agent-provider-blocked', label: 'Blocked AgentAdminAgent runtime trace' }, { refType: 'capability', refId: agentDefinitionsCapability, label: 'Scoped Agent Admin read capability' }],
     safety: { sanitized: true, redactionNote: 'Provider secrets, raw JWTs, hidden prompts, raw skill/reference bodies, and unauthorized tenant/customer evidence are omitted.' },
     trace: { correlationId: 'corr-agentadmin-agent-provider-blocked', traceIds: ['trace-agentadmin-agent-provider-blocked', 'trace-agentadmin-agent-work-blocked'] }
@@ -1896,8 +2160,12 @@ const governancePolicyCapabilities = {
   approveProposal: 'governance.policy.approve',
   activatePolicyChange: 'governance.policy.activate',
   rollbackPolicyChange: 'governance.policy.rollback',
-  startImpactAnalysis: 'governance.policy.analysis.start',
-  readImpactAnalysis: 'governance.policy.analysis.read',
+  startImpactAnalysis: 'governance.policy.impact_analysis.start',
+  readImpactAnalysis: 'governance.policy.impact_analysis.read',
+  cancelImpactAnalysis: 'governance.policy.impact_analysis.cancel',
+  acceptImpactResult: 'governance.policy.impact_analysis.accept_result',
+  rejectImpactResult: 'governance.policy.impact_analysis.reject_result',
+  requestImpactChanges: 'governance.policy.impact_analysis.request_changes',
   openTrace: 'audit.trace.read'
 } as const;
 
@@ -1907,6 +2175,8 @@ export const governancePolicySurfaceActions = {
     label: 'Refresh governance dashboard',
     intent: 'read',
     capabilityId: governancePolicyCapabilities.readDashboard,
+    governedToolId: governancePolicyCapabilities.readDashboard,
+    browserToolId: 'action-govpol-show-dashboard',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-governance-policy-dashboard', openPlacement: 'inline' },
     audit: { eventType: 'GovernancePolicyDashboardRead', traceRequired: true }
@@ -1916,6 +2186,8 @@ export const governancePolicySurfaceActions = {
     label: 'Show policy inventory',
     intent: 'read',
     capabilityId: governancePolicyCapabilities.readDashboard,
+    governedToolId: governancePolicyCapabilities.readDashboard,
+    browserToolId: 'action-govpol-show-policy-inventory',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-governance-policy-inventory', openPlacement: 'inline' },
     audit: { eventType: 'GovernancePolicyInventoryRead', traceRequired: true }
@@ -1925,6 +2197,8 @@ export const governancePolicySurfaceActions = {
     label: 'Draft policy proposal',
     intent: 'proposal',
     capabilityId: governancePolicyCapabilities.draftProposal,
+    governedToolId: governancePolicyCapabilities.draftProposal,
+    browserToolId: 'action-govpol-draft-proposal',
     inputSchemaRef: 'schema.governance-policy.proposal.draft.v1',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-governance-policy-proposal', openPlacement: 'inline' },
@@ -1935,6 +2209,8 @@ export const governancePolicySurfaceActions = {
     label: 'Run deterministic simulation',
     intent: 'governance',
     capabilityId: governancePolicyCapabilities.simulateProposal,
+    governedToolId: governancePolicyCapabilities.simulateProposal,
+    browserToolId: 'action-govpol-simulate-proposal',
     inputSchemaRef: 'schema.governance-policy.simulation.v1',
     idempotency: { required: true, keySource: 'surface-item' },
     resultSurface: { updateSurfaceId: 'surface-governance-policy-simulation', openPlacement: 'inline' },
@@ -1945,6 +2221,8 @@ export const governancePolicySurfaceActions = {
     label: 'Approve proposal',
     intent: 'approval',
     capabilityId: governancePolicyCapabilities.approveProposal,
+    governedToolId: governancePolicyCapabilities.approveProposal,
+    browserToolId: 'action-govpol-decide-proposal',
     inputSchemaRef: 'schema.governance-policy.decision.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -1957,6 +2235,8 @@ export const governancePolicySurfaceActions = {
     label: 'Activate approved change',
     intent: 'command',
     capabilityId: governancePolicyCapabilities.activatePolicyChange,
+    governedToolId: governancePolicyCapabilities.activatePolicyChange,
+    browserToolId: 'action-govpol-activate-policy-change',
     inputSchemaRef: 'schema.governance-policy.activation.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -1969,6 +2249,8 @@ export const governancePolicySurfaceActions = {
     label: 'Roll back change',
     intent: 'command',
     capabilityId: governancePolicyCapabilities.rollbackPolicyChange,
+    governedToolId: governancePolicyCapabilities.rollbackPolicyChange,
+    browserToolId: 'action-govpol-rollback-policy-change',
     inputSchemaRef: 'schema.governance-policy.rollback.v1',
     requiresConfirmation: true,
     requiresApproval: true,
@@ -1981,18 +2263,83 @@ export const governancePolicySurfaceActions = {
     label: 'Start policy impact analysis',
     intent: 'workflow',
     capabilityId: governancePolicyCapabilities.startImpactAnalysis,
+    governedToolId: governancePolicyCapabilities.startImpactAnalysis,
+    browserToolId: 'action-govpol-start-impact-analysis',
     inputSchemaRef: 'schema.governance-policy.impact-analysis.start.v1',
     requiresConfirmation: true,
-    disabled: { reasonCode: 'blocked_provider_or_runtime', message: 'Durable AutonomousAgent policy-impact analysis is unavailable in this starter slice; the UI must not fake task progress.' },
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-governance-policy-analysis-task', openPlacement: 'inline' },
-    audit: { eventType: 'GovernancePolicyImpactAnalysisStartBlocked', traceRequired: true }
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-task', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactAnalysisStartedOrBlocked', traceRequired: true }
+  },
+  readImpactAnalysis: {
+    actionId: 'action-govpol-read-impact-analysis',
+    label: 'Read policy impact task',
+    intent: 'read',
+    capabilityId: governancePolicyCapabilities.readImpactAnalysis,
+    governedToolId: governancePolicyCapabilities.readImpactAnalysis,
+    browserToolId: 'action-govpol-read-impact-analysis',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-task', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactAnalysisRead', traceRequired: true }
+  },
+  cancelImpactAnalysis: {
+    actionId: 'action-govpol-cancel-impact-analysis',
+    label: 'Cancel policy impact task',
+    intent: 'command',
+    capabilityId: governancePolicyCapabilities.cancelImpactAnalysis,
+    governedToolId: governancePolicyCapabilities.cancelImpactAnalysis,
+    browserToolId: 'action-govpol-cancel-impact-analysis',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-task', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactAnalysisCancelled', traceRequired: true }
+  },
+  acceptImpactResult: {
+    actionId: 'action-govpol-accept-impact-result',
+    label: 'Accept advisory impact result',
+    intent: 'approval',
+    capabilityId: governancePolicyCapabilities.acceptImpactResult,
+    governedToolId: governancePolicyCapabilities.acceptImpactResult,
+    browserToolId: 'action-govpol-accept-impact-result',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-result', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactResultAccepted', traceRequired: true }
+  },
+  rejectImpactResult: {
+    actionId: 'action-govpol-reject-impact-result',
+    label: 'Reject advisory impact result',
+    intent: 'approval',
+    capabilityId: governancePolicyCapabilities.rejectImpactResult,
+    governedToolId: governancePolicyCapabilities.rejectImpactResult,
+    browserToolId: 'action-govpol-reject-impact-result',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-result', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactResultRejected', traceRequired: true }
+  },
+  requestImpactChanges: {
+    actionId: 'action-govpol-request-impact-changes',
+    label: 'Request analysis changes',
+    intent: 'approval',
+    capabilityId: governancePolicyCapabilities.requestImpactChanges,
+    governedToolId: governancePolicyCapabilities.requestImpactChanges,
+    browserToolId: 'action-govpol-request-impact-changes',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-impact-analysis-result', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyImpactChangesRequested', traceRequired: true }
   },
   openTrace: {
     actionId: 'action-govpol-open-trace',
     label: 'Open governance trace',
     intent: 'trace',
     capabilityId: governancePolicyCapabilities.openTrace,
+    governedToolId: governancePolicyCapabilities.openTrace,
+    browserToolId: 'action-govpol-open-trace',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-governance-policy-decision-trace', openPlacement: 'deep-link' },
     audit: { eventType: 'GovernancePolicyTraceOpened', traceRequired: true }
@@ -2015,12 +2362,12 @@ export const governancePolicyDashboardSurface = envelope(
     sections: [
       { sectionId: 'posture', label: 'Governance posture', summary: 'Selected AuthContext has read and proposal authority; backend remains authoritative for approval, activation, and rollback.' },
       { sectionId: 'attention', label: 'Attention items', summary: 'One policy-boundary proposal requires human approval after deterministic simulation evidence is reviewed.' },
-      { sectionId: 'blocked-runtime', label: 'Blocked runtime', summary: 'AutonomousAgent impact analysis is visibly blocked until a real durable task path exists; no simulated progress is shown.' }
+      { sectionId: 'impact-worker', label: 'Impact worker', summary: 'AutonomousAgent impact analysis is backend-derived, emits workflow.governance_policy.impact_analysis.* and worker.task.* events, and fails closed when provider/runtime configuration is missing.' }
     ],
     nextSteps: [
       { workstreamId: 'agent-governance-policy', label: 'Review policy inventory', allowed: true, capabilityIds: [governancePolicyCapabilities.readDashboard], traceId: 'trace-govpol-inventory' },
       { workstreamId: 'agent-governance-policy', label: 'Simulate proposal impact', allowed: true, capabilityIds: [governancePolicyCapabilities.simulateProposal], traceId: 'trace-govpol-simulation' },
-      { workstreamId: 'agent-governance-policy-analysis', label: 'Start impact analysis', allowed: false, blockedReason: 'Durable AutonomousAgent runtime is not enabled; backend must fail closed.', capabilityIds: [governancePolicyCapabilities.startImpactAnalysis], traceId: 'trace-govpol-analysis-blocked' }
+      { workstreamId: 'agent-governance-policy', label: 'Start impact analysis', allowed: true, capabilityIds: [governancePolicyCapabilities.startImpactAnalysis], traceId: 'trace-govpol-impact-analysis-start' }
     ],
     blockedState: { reasonCode: 'FRONTEND_NOT_AUTHORITY', message: 'Launcher visibility and action buttons are convenience signals only.', recovery: 'Backend capability checks decide every protected action and return safe denial surfaces when authority is missing.' }
   },
@@ -2091,10 +2438,10 @@ export const governancePolicySimulationSurface = envelope(
     simulation: {
       affectedCapabilities: ['GOVPOL-SIMULATE-PROPOSAL', 'GOVPOL-DECIDE-PROPOSAL', 'GOVPOL-ACTIVATE-POLICY-CHANGE', 'GOVPOL-ROLLBACK-POLICY-CHANGE'],
       expectedAllows: ['governance.policy.read', 'governance.policy.simulate'],
-      expectedDenials: ['governance.policy.activate without approved proposal', 'governance.policy.analysis.start while runtime unavailable'],
+      expectedDenials: ['governance.policy.activate without approved proposal', 'governance.policy.impact_analysis.start when provider/runtime is missing'],
       warnings: ['Simulation is deterministic/advisory and never grants authority.', 'Unsupported evidence scopes are omitted with trace links.'],
       confidence: 'bounded fixture confidence based on scoped policy rows',
-      evidenceTraceIds: ['trace-govpol-simulation', 'trace-govpol-analysis-blocked']
+      evidenceTraceIds: ['trace-govpol-simulation', 'trace-govpol-impact-analysis-blocked']
     },
     traceLinks: ['trace-govpol-simulation']
   },
@@ -2117,12 +2464,12 @@ export const governancePolicyDecisionSurface = envelope(
       { evidenceId: 'evidence-redaction', label: 'Redaction', summary: 'Prompt text, backend secrets, and cross-tenant evidence remain omitted.' }
     ],
     allowedActions: [
-      { actionId: 'action-govpol-decide-proposal', label: 'Approve proposal', capabilityId: governancePolicyCapabilities.approveProposal },
-      { actionId: 'action-govpol-open-trace', label: 'Open decision trace', capabilityId: governancePolicyCapabilities.openTrace }
+      { actionId: 'action-govpol-decide-proposal', label: 'Approve proposal', browserToolId: 'action-govpol-decide-proposal', governedToolId: governancePolicyCapabilities.approveProposal, capabilityId: governancePolicyCapabilities.approveProposal },
+      { actionId: 'action-govpol-open-trace', label: 'Open decision trace', browserToolId: 'action-govpol-open-trace', governedToolId: governancePolicyCapabilities.openTrace, capabilityId: governancePolicyCapabilities.openTrace }
     ],
     disabledActions: [
       { actionId: 'action-govpol-activate-policy-change', reason: 'Activation stays blocked until backend confirms approved version and idempotency key.' },
-      { actionId: 'action-govpol-start-impact-analysis', reason: 'AutonomousAgent analysis runtime is not enabled; no fake progress is rendered.' }
+      { actionId: 'action-govpol-activate-policy-change', reason: 'Activation stays a separate backend-governed policy capability; impact analysis acceptance cannot activate policy state.' }
     ],
     risk: 'Authority-changing approval',
     traceLinks: ['trace-govpol-decision', 'trace-govpol-approval-basis']
@@ -2130,22 +2477,60 @@ export const governancePolicyDecisionSurface = envelope(
   [governancePolicySurfaceActions.decideProposal, governancePolicySurfaceActions.activateProposal, governancePolicySurfaceActions.rollbackProposal, governancePolicySurfaceActions.openTrace]
 );
 
-export const governancePolicyAnalysisTaskSurface = envelope(
-  'surface-governance-policy-analysis-task',
+export const governancePolicyImpactAnalysisTaskSurface = envelope(
+  'surface-governance-policy-impact-analysis-task',
   'workflow-status',
   'Policy impact analysis task',
   'agent-governance-policy',
   {
-    workflowId: 'govpol-analysis-task-blocked',
+    surfaceContract: 'governance.policy.impact_analysis.task.v1',
+    workflowId: 'govpol-impact-task-001',
+    taskId: 'governance-impact-fixture-001',
     taskKind: 'autonomous-agent-analysis',
     status: 'blocked_provider_or_runtime',
-    summary: 'Policy-impact analysis is a durable AutonomousAgent follow-up only; this fixture fails closed until the backend task lifecycle exists.',
-    requiredCapabilityId: governancePolicyCapabilities.startImpactAnalysis,
-    traceIds: ['trace-govpol-analysis-blocked'],
-    progress: [{ snapshotId: 'blocked-start', label: 'Start denied before task creation', status: 'blocked_provider_or_runtime', traceId: 'trace-govpol-analysis-blocked' }],
-    resultSummary: 'No model-less or deterministic fake analysis result is produced.'
+    summary: 'Policy-impact analysis is a durable AutonomousAgent task; backend projection emits worker.task.blocked_provider_or_runtime and workflow.governance_policy.impact_analysis.blocked_provider_or_runtime when provider/runtime config is missing.',
+    requiredCapabilityId: governancePolicyCapabilities.readImpactAnalysis,
+    initiatingCapabilityId: governancePolicyCapabilities.startImpactAnalysis,
+    traceIds: ['trace-govpol-impact-analysis-blocked', 'trace-govpol-impact-worker-event'],
+    progress: { percent: 0, summary: 'Blocked by provider/runtime readiness; no frontend-only or deterministic success is rendered.' },
+    blockers: [{ code: 'blocked_provider_or_runtime', message: 'Real Akka AutonomousAgent provider/runtime binding is required before impact findings can be marked impact_ready.' }],
+    evidenceRefs: ['governancePolicyEvidence.read', 'readSkill:governance-policy-impact-analysis', 'readReferenceDoc:governance-policy-impact-analysis', 'proposal:proposal-govpol-001'],
+    providerFailures: ['provider/model/governed runtime missing; fail-closed no fake success'],
+    resultReviewState: 'blocked_provider_or_runtime',
+    noDirectMutation: true,
+    safety: 'Frontend reloads this state from backend projections; raw prompts, JWTs, provider secrets, raw tool payloads, and cross-tenant evidence are redacted.',
+    resultSummary: 'No model-less, simulated, deterministic, or fake impact_ready result is produced.'
   },
-  [governancePolicySurfaceActions.openTrace]
+  [governancePolicySurfaceActions.readImpactAnalysis, governancePolicySurfaceActions.cancelImpactAnalysis, governancePolicySurfaceActions.openTrace]
+);
+
+export const governancePolicyImpactAnalysisResultSurface = envelope(
+  'surface-governance-policy-impact-analysis-result',
+  'decision',
+  'Policy impact result review',
+  'agent-governance-policy',
+  {
+    decisionId: 'governance-impact-fixture-001',
+    recommendation: 'Review advisory policy impact findings, accept or reject the analysis as evidence, then use separate proposal decision and activation capabilities if still authorized.',
+    riskScore: 'high',
+    confidenceScore: 'model-backed when runtime is available; blocked_provider_or_runtime otherwise',
+    evidence: [
+      { evidenceId: 'governancePolicyEvidence.read', label: 'Scoped policy evidence', summary: 'Proposal, affected capabilities, approval gate, ToolPermissionBoundary, and simulation refs are browser-safe and tenant-scoped.' },
+      { evidenceId: 'trace-govpol-impact-worker-event', label: 'v3 event linkage', summary: 'workflow.governance_policy.impact_analysis.completed_review_required and worker.task.completed_review_required drive attention.' },
+      { evidenceId: 'redaction', label: 'Redaction guardrail', summary: 'Raw prompts, hidden prompt text, provider credentials, JWTs, raw tool payloads, and cross-tenant/customer data are omitted.' }
+    ],
+    allowedActions: [
+      { actionId: 'action-govpol-accept-impact-result', label: 'Accept advisory result evidence', browserToolId: 'action-govpol-accept-impact-result', governedToolId: governancePolicyCapabilities.acceptImpactResult, capabilityId: governancePolicyCapabilities.acceptImpactResult },
+      { actionId: 'action-govpol-reject-impact-result', label: 'Reject advisory result evidence', browserToolId: 'action-govpol-reject-impact-result', governedToolId: governancePolicyCapabilities.rejectImpactResult, capabilityId: governancePolicyCapabilities.rejectImpactResult },
+      { actionId: 'action-govpol-request-impact-changes', label: 'Request analysis changes', browserToolId: 'action-govpol-request-impact-changes', governedToolId: governancePolicyCapabilities.requestImpactChanges, capabilityId: governancePolicyCapabilities.requestImpactChanges }
+    ],
+    disabledActions: [
+      { actionId: 'action-govpol-activate-policy-change', reason: 'Worker result acceptance never activates policy; activation remains a separate human-authorized backend capability.' }
+    ],
+    risk: 'Advisory-only policy impact; activationBlockedUntilHumanDecision=true; noDirectMutation=true',
+    traceLinks: ['trace-govpol-impact-result', 'trace-govpol-impact-worker-event']
+  },
+  [governancePolicySurfaceActions.acceptImpactResult, governancePolicySurfaceActions.rejectImpactResult, governancePolicySurfaceActions.requestImpactChanges, governancePolicySurfaceActions.openTrace]
 );
 
 export const governancePolicyDecisionTraceSurface = envelope(
@@ -2157,7 +2542,7 @@ export const governancePolicyDecisionTraceSurface = envelope(
     events: [
       { eventId: 'govpol-proposal-created', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'Draft proposal created with idempotency key and redacted diff summary', traceId: 'trace-govpol-proposal-created' },
       { eventId: 'govpol-simulation', occurredAt: generatedAt, actor: 'GovernancePolicyService', action: 'Deterministic simulation recorded expected allows, denials, warnings, and evidence refs', traceId: 'trace-govpol-simulation' },
-      { eventId: 'govpol-analysis-blocked', occurredAt: generatedAt, actor: 'Governance/Policy Agent', action: 'AutonomousAgent impact analysis failed closed because durable task runtime is unavailable', traceId: 'trace-govpol-analysis-blocked' }
+      { eventId: 'govpol-impact-analysis-blocked', occurredAt: generatedAt, actor: 'Governance/Policy Agent', action: 'AutonomousAgent impact analysis emitted workflow.governance_policy.impact_analysis.blocked_provider_or_runtime and worker.task.blocked_provider_or_runtime; attention points to surface-governance-policy-impact-analysis-task.', traceId: 'trace-govpol-impact-analysis-blocked' }
     ]
   },
   [governancePolicySurfaceActions.showDashboard]
@@ -2169,7 +2554,8 @@ export const governancePolicyStructuredSurfaces = [
   governancePolicyProposalSurface,
   governancePolicySimulationSurface,
   governancePolicyDecisionSurface,
-  governancePolicyAnalysisTaskSurface,
+  governancePolicyImpactAnalysisTaskSurface,
+  governancePolicyImpactAnalysisResultSurface,
   governancePolicyDecisionTraceSurface
 ];
 
@@ -2197,7 +2583,23 @@ export const displayGovernancePolicySimulationActionResult: CapabilityActionResu
   resultSurface: governancePolicySimulationSurface
 };
 
-export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-my-account', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }], scopeNote: 'Full-core/demo surface; the default five core v0 starter acceptance target is markdown_response.' }, [surfaceActionsByIntent.read]);
+export const displayGovernancePolicyImpactTaskActionResult: CapabilityActionResult = {
+  status: 'blocked_provider_or_runtime',
+  message: 'Displayed backend-derived governance.policy.impact_analysis task state with v3 worker.task.* / workflow.governance_policy.impact_analysis.* event and attention linkage; no fake success is rendered.',
+  correlationId: 'corr-display-governance-policy-impact-task',
+  traceIds: ['trace-govpol-impact-analysis-blocked', 'trace-govpol-impact-worker-event'],
+  resultSurface: governancePolicyImpactAnalysisTaskSurface
+};
+
+export const displayGovernancePolicyImpactResultActionResult: CapabilityActionResult = {
+  status: 'approval-required',
+  message: 'Displayed advisory Governance/Policy impact result review surface. Accept/reject/request-changes record worker-result disposition only and cannot activate policy state.',
+  correlationId: 'corr-display-governance-policy-impact-result',
+  traceIds: ['trace-govpol-impact-result', 'trace-govpol-impact-worker-event'],
+  resultSurface: governancePolicyImpactAnalysisResultSurface
+};
+
+export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-my-account', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }], attentionSource: 'attention.list_workstream_items', attentionItems: [{ itemId: 'attention-agent-admin-readiness', label: 'Agent Admin provider readiness is blocked', summary: 'Model/runtime provider readiness is blocked until governed provider configuration is available.', status: 'open', severity: 'blocked', category: 'provider_readiness', capabilityId: 'agent_admin.list_definitions', governedToolId: 'attention.open_attention_item', traceId: 'trace-agent-admin-provider-readiness', sourceWorkstreamId: 'agent-agent-admin', surfaceRef: { targetFunctionalAgentId: 'agent-agent-admin', targetSurfaceId: 'surface-agent-admin-catalog', targetSurfaceType: 'dashboard', targetItemId: 'attention-agent-admin-readiness', defaultActionId: 'attention.open_attention_item', requiredCapabilityId: 'agent_admin.list_definitions' }, redaction: 'full' }], scopeNote: 'Full-core/demo surface; actionable attention is backend-derived through attention.list_workstream_items and separate from transient unseen-response badges.' }, [surfaceActionsByIntent.read]);
 export const listSearchSurface = userAdminListSearchSurface;
 export const detailEditSurface = userAdminDetailEditSurface;
 export const decisionSurface = envelope('surface-decision-card', 'decision', 'Approve bounded outreach plan', 'agent-governance-policy', { decisionId: 'decision-1', recommendation: 'Approve after evidence review.', riskScore: 72, confidenceScore: 84, evidence: [{ evidenceId: 'evidence-1', label: 'Trace summary', summary: 'Agent stayed within tool boundary.' }] }, [surfaceActionsByIntent.approval, surfaceActionsByIntent.trace]);
@@ -2230,6 +2632,7 @@ export const fullCoreDemoSurfaceEnvelopes = [
   agentSeedMaterialSurface,
   agentTestConsoleSurface,
   agentBehaviorProposalSurface,
+  agentAdminPromptRiskReviewSurface,
   agentAdminAgentBlockedSystemMessageSurface,
   agentAdminTraceSurface,
   ...auditTraceStructuredSurfaces,
@@ -2348,6 +2751,14 @@ export const displayAgentBehaviorProposalActionResult: CapabilityActionResult = 
   correlationId: 'corr-display-agent-behavior-proposal',
   traceIds: ['trace-agent-admin-behavior-review', 'trace-agent-admin-behavior-activation-blocked'],
   resultSurface: agentBehaviorProposalSurface
+};
+
+export const displayAgentPromptRiskReviewActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Displayed Agent Admin prompt-risk AutonomousAgent review surface with v3 event, attention, no direct mutation, and human decision evidence.',
+  correlationId: 'corr-display-agent-prompt-risk-review',
+  traceIds: ['trace-prompt-risk-assembly-001', 'trace-prompt-risk-model-call-001'],
+  resultSurface: agentAdminPromptRiskReviewSurface
 };
 
 export const displayAgentAdminTraceActionResult: CapabilityActionResult = {

@@ -11,6 +11,30 @@ function formatStatus(value: string) {
   return value.replace(/[-_]/g, ' ');
 }
 
+function evidenceKey(evidence: string | { refId: string }) {
+  return typeof evidence === 'string' ? evidence : evidence.refId;
+}
+
+function evidenceLabel(evidence: string | { refId: string; label?: string }) {
+  return typeof evidence === 'string' ? evidence : (evidence.label ?? evidence.refId);
+}
+
+function evidenceSummary(evidence: string | { summary?: string }) {
+  return typeof evidence === 'string' ? undefined : evidence.summary;
+}
+
+function evidenceTraceId(evidence: string | { traceId?: string }) {
+  return typeof evidence === 'string' ? undefined : evidence.traceId;
+}
+
+function recommendationKey(recommendation: string | { recommendationId?: string; label?: string }) {
+  return typeof recommendation === 'string' ? recommendation : (recommendation.recommendationId ?? recommendation.label ?? 'recommendation');
+}
+
+function recommendationLabel(recommendation: string | { label?: string }) {
+  return typeof recommendation === 'string' ? recommendation : (recommendation.label ?? 'Recommendation');
+}
+
 export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurfaceProps) {
   const steps = envelope.data.steps ?? [];
   const statusText = formatStatus(envelope.data.status);
@@ -56,13 +80,13 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       {evidenceRefs.length > 0 && (
         <section className="evidence-ref-list" aria-label="Access review evidence references">
           <h4>Evidence references</h4>
-          <ul>{evidenceRefs.map((evidence) => <li key={evidence.refId}><span>{evidence.label ?? evidence.refId}</span>{evidence.summary && <span> — {evidence.summary}</span>}{evidence.traceId && <a href={`/ui?surfaceId=surface-audit-timeline#${evidence.traceId}`}>trace</a>}</li>)}</ul>
+          <ul>{evidenceRefs.map((evidence) => <li key={evidenceKey(evidence)}><span>{evidenceLabel(evidence)}</span>{evidenceSummary(evidence) && <span> — {evidenceSummary(evidence)}</span>}{evidenceTraceId(evidence) && <a href={`/ui?surfaceId=surface-audit-timeline#${evidenceTraceId(evidence)}`}>trace</a>}</li>)}</ul>
         </section>
       )}
       {recommendations.length > 0 && (
         <section className="recommendation-list" aria-label="Access review recommendations">
           <h4>Recommendations</h4>
-          <ul>{recommendations.map((recommendation) => <li key={recommendation.recommendationId ?? recommendation.label}><strong>{recommendation.label ?? 'Recommendation'}</strong>{recommendation.risk && <span> · risk {recommendation.risk}</span>}{recommendation.confidence && <span> · confidence {recommendation.confidence}</span>}{recommendation.summary && <p>{recommendation.summary}</p>}</li>)}</ul>
+          <ul>{recommendations.map((recommendation) => <li key={recommendationKey(recommendation)}><strong>{recommendationLabel(recommendation)}</strong>{typeof recommendation !== 'string' && recommendation.risk && <span> · risk {recommendation.risk}</span>}{typeof recommendation !== 'string' && recommendation.confidence && <span> · confidence {recommendation.confidence}</span>}{typeof recommendation !== 'string' && recommendation.summary && <p>{recommendation.summary}</p>}</li>)}</ul>
         </section>
       )}
       {taskTraceIds.length > 0 && (

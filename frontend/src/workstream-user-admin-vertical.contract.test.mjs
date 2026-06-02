@@ -108,6 +108,8 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /blocked_provider_or_runtime/);
   assert.match(surfaces, /providerFailures/);
   assert.match(surfaces, /noDirectMutation/);
+  assert.match(surfaces, /completed_review_required/);
+  assert.match(surfaces, /result_accepted/);
   assert.match(surfaces, /must not fake progress|not fake progress/);
   assert.match(surfaces, /displayUserListActionResult/);
   assert.match(surfaces, /action-display-user-detail/);

@@ -27,7 +27,12 @@ test('workstream types define /api/me, AuthContext, functional agents, workstrea
   assert.match(workstreamTypes, /export type WorkstreamItem/);
   assert.match(surfaceTypes, /export type SurfaceEnvelope/);
   assert.match(actionTypes, /export type CapabilityActionRequest/);
+  assert.match(actionTypes, /browserToolId: string/);
+  assert.match(actionTypes, /governedToolId: string/);
   assert.match(actionTypes, /export type CapabilityActionResult/);
+  assert.match(actionTypes, /export type WorkstreamShellRequest/);
+  assert.match(actionTypes, /refresh_surface/);
+  assert.match(actionTypes, /open_attention_item/);
   assert.match(eventTypes, /export type WorkstreamEvent/);
   assert.match(eventTypes, /export type RealtimeConnectionState/);
 });
@@ -53,7 +58,7 @@ test('functional agent fixtures expose the five core v0 workstreams while My Acc
   assert.match(agentFixtures, /not part of the default five core v0 rail/);
   assert.match(agentFixtures, /availability: 'hidden'/);
   assert.match(agentFixtures, /availability: 'disabled'/);
-  assert.match(agentFixtures, /attention: \{ count: 2, severity: 'warning' \}/);
+  assert.match(agentFixtures, /attention: \{ count: 2, severity: 'warning', source: 'attention\.list_rail_summaries' \}/);
 });
 
 test('functional agent fixtures carry typed workstream icon descriptors for core and fallback states', () => {

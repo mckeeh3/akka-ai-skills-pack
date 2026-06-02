@@ -6,7 +6,9 @@ import type {
   FunctionalAgentSummary,
   MeResponse,
   SurfaceEnvelope,
-  WorkstreamItem
+  WorkstreamItem,
+  WorkstreamShellRequest,
+  WorkstreamShellResponse
 } from '../workstream/types';
 import type { TokenProvider } from './HttpApiClient';
 
@@ -43,6 +45,11 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
   async runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>> {
     if (request.selectedContextId) this.selectedContextId = request.selectedContextId;
     return this.post('/api/workstream/actions', request);
+  }
+
+  async runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>> {
+    if (request.selectedContextId) this.selectedContextId = request.selectedContextId;
+    return this.post('/api/workstream/shell-requests', request);
   }
 
   async submitWorkstreamMessage(request: WorkstreamMessageRequest): Promise<ApiResult<WorkstreamMessageResponse>> {

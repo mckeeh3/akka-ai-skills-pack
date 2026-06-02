@@ -42,7 +42,7 @@
 
 ### TASK-PRP-01-001: Review package metadata and resources
 
-- status: pending
+- status: done
 - source: specs/pack-release-publication/backlog/01-pack-release-publication-backlog.md
 - task brief: specs/pack-release-publication/tasks/01-package/01-review-package-metadata-resources.md
 - depends on:
@@ -65,6 +65,8 @@
   - package/resource inclusion and leakage boundaries are assessed
   - task changes and queue update are committed
 - notes:
+  - package resource review artifact: `specs/pack-release-publication/package-resource-review.md`
+  - synchronized `frontend/src` with `templates/ai-first-saas-starter/frontend/src` so the package build resource guard passes
   - commit message: `pack-release: review package resources`
 
 ### TASK-PRP-02-001: Run package install scaffold smoke

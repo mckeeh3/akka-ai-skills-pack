@@ -60,6 +60,8 @@ export function resolveIdempotencyKey(action: SurfaceAction, options: Capability
 export function buildCapabilityActionRequest(action: SurfaceAction, options: CapabilityActionSubmitOptions): CapabilityActionRequest {
   return {
     actionId: action.actionId,
+    browserToolId: action.browserToolId,
+    governedToolId: action.governedToolId,
     capabilityId: action.capabilityId,
     input: options.input ?? {},
     idempotencyKey: resolveIdempotencyKey(action, options),

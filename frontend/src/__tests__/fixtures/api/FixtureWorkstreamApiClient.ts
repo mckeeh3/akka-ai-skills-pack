@@ -1,6 +1,6 @@
 import type { WorkstreamClient, WorkstreamBootstrapResponse, WorkstreamMessageRequest, WorkstreamMessageResponse } from '../../../api/WorkstreamApiClient';
 import type { ApiError, ApiResult } from '../../../api/types';
-import type { CapabilityActionRequest, CapabilityActionResult, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem } from '../../../workstream/types';
+import type { CapabilityActionRequest, CapabilityActionResult, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem, WorkstreamShellRequest, WorkstreamShellResponse } from '../../../workstream/types';
 import {
   actionResultsByStatus,
   allSurfaceActions,
@@ -12,6 +12,7 @@ import {
   displayAgentManifestActionResult,
   displayAgentModelRefsActionResult,
   displayAgentPromptGovernanceActionResult,
+  displayAgentPromptRiskReviewActionResult,
   displayAgentSeedMaterialActionResult,
   displayAgentTestConsoleActionResult,
   displayAgentToolBoundaryActionResult,
@@ -26,6 +27,8 @@ import {
   userAdminRoleChangePreviewSurface,
   displayGovernancePolicyDashboardActionResult,
   displayGovernancePolicyInventoryActionResult,
+  displayGovernancePolicyImpactResultActionResult,
+  displayGovernancePolicyImpactTaskActionResult,
   displayGovernancePolicySimulationActionResult,
   displayUserDetailActionResult,
   displayUserListActionResult,
@@ -135,6 +138,28 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     return delayedOk({ correlationId, idempotencyKey: request.idempotencyKey, userItem, agentItem, surface });
   }
 
+  runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>> {
+    const targetSurfaceId = request.targetSurfaceId ?? (request.targetFunctionalAgentId === 'agent-agent-admin' ? 'surface-agent-admin-catalog' : request.targetFunctionalAgentId === 'agent-my-account' ? 'surface-my-account-dashboard' : 'surface-user-admin-dashboard');
+    const surface = this.surfaces.find((candidate) => candidate.surfaceId === targetSurfaceId);
+    if (!surface) return delayedError('not_found', 'The requested shell surface is not available in this context.');
+    const now = new Date().toISOString();
+    const canonicalPrompt = request.canonicalPrompt ?? (request.requestType === 'open_workstream' ? `show workstream ${surface.ownerFunctionalAgentId}` : `${request.requestType.replace('_', ' ')} ${surface.surfaceId}`);
+    const requestItem: WorkstreamItem = {
+      itemId: `fixture-shell-${Math.abs(hashText(`${request.correlationId}:${canonicalPrompt}`)).toString(36)}`,
+      functionalAgentId: surface.ownerFunctionalAgentId,
+      kind: 'user-request',
+      createdAt: now,
+      correlationId: request.correlationId,
+      traceIds: [`trace-shell-${Math.abs(hashText(request.correlationId)).toString(36)}`],
+      surfaceId: surface.surfaceId,
+      title: canonicalPrompt,
+      body: request.displayText,
+      status: 'ready'
+    };
+    this.items = [...this.items, requestItem];
+    return delayedOk({ request: { ...request, canonicalPrompt, targetFunctionalAgentId: surface.ownerFunctionalAgentId, targetSurfaceId: surface.surfaceId }, status: 'accepted', message: 'Shell request resolved through fixture backend-equivalent surface path.', correlationId: request.correlationId, traceIds: surface.traceIds, requestItem, resultSurface: surface });
+  }
+
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>> {
     const action = allSurfaceActions.find((candidate) => candidate.actionId === request.actionId || candidate.capabilityId === request.capabilityId);
     if (!action) return delayedError('not_found', 'The requested capability action is not exposed by this surface.');
@@ -165,6 +190,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
                     ? displayAgentTestConsoleActionResult
                     : ['action-submit-behavior-change', 'action-reject-behavior-change', 'action-activate-behavior-change', 'action-cancel-behavior-change', 'action-rollback-behavior-change'].includes(request.actionId)
                       ? displayAgentBehaviorProposalActionResult
+                      : ['action-agentadmin-start-prompt-risk-review', 'action-agentadmin-read-prompt-risk-review', 'action-agentadmin-cancel-prompt-risk-review', 'action-agentadmin-accept-prompt-risk-review-result', 'action-agentadmin-reject-prompt-risk-review-result'].includes(request.actionId) || request.capabilityId?.startsWith('agent_admin.prompt_risk_review.')
+                        ? displayAgentPromptRiskReviewActionResult
                       : request.actionId === 'action-open-agent-trace'
                         ? displayAgentAdminTraceActionResult
         : request.actionId === 'action-govpol-show-dashboard' || request.capabilityId === 'governance.policy.read'
@@ -173,6 +200,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
             ? displayGovernancePolicyInventoryActionResult
             : request.actionId === 'action-govpol-simulate-proposal' || request.capabilityId === 'governance.policy.simulate'
               ? displayGovernancePolicySimulationActionResult
+              : ['action-govpol-start-impact-analysis', 'action-govpol-read-impact-analysis', 'action-govpol-cancel-impact-analysis'].includes(request.actionId) || request.capabilityId?.startsWith('governance.policy.impact_analysis.')
+                ? (['action-govpol-accept-impact-result', 'action-govpol-reject-impact-result', 'action-govpol-request-impact-changes'].includes(request.actionId) ? displayGovernancePolicyImpactResultActionResult : displayGovernancePolicyImpactTaskActionResult)
               : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent_admin.list_definitions'
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'

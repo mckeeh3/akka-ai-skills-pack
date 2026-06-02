@@ -1,7 +1,7 @@
 import type { AttentionSeverity, FunctionalAgentRailAttention, FunctionalAgentRailAttentionKind, FunctionalAgentRailAttentionStore } from '../types';
 
 export function strongerRailAttentionSeverity(current: AttentionSeverity | undefined, next: AttentionSeverity): AttentionSeverity {
-  const rank: Record<AttentionSeverity, number> = { info: 1, warning: 2, critical: 3 };
+  const rank: Record<AttentionSeverity, number> = { info: 1, warning: 2, urgent: 3, blocked: 4, critical: 4 };
   return !current || rank[next] > rank[current] ? next : current;
 }
 

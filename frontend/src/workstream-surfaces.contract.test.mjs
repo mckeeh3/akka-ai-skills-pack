@@ -15,6 +15,7 @@ const markdownResponse = read('./workstream/surfaces/MarkdownResponseSurface.tsx
 const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
+const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');
 const surfaceStyles = read('./styles/components.css');
 const packageJson = read('../package.json');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
@@ -32,7 +33,8 @@ const surfaceComponentFiles = [
   './workstream/surfaces/AuditTimelineSurface.tsx',
   './workstream/surfaces/WorkflowStatusSurface.tsx',
   './workstream/surfaces/GovernanceDiffSurface.tsx',
-  './workstream/surfaces/OutcomeSurface.tsx'
+  './workstream/surfaces/OutcomeSurface.tsx',
+  './workstream/surfaces/NotificationCenterSurface.tsx'
 ].map(read);
 
 const allSurfaceComponents = surfaceComponentFiles.join('\n');
@@ -53,7 +55,7 @@ test('workstream stream components cover canonical item kinds and action feedbac
 
 test('structured surface renderer routes every canonical surface type', () => {
   assert.match(renderer, /StructuredSurfaceRenderer/);
-  for (const surfaceType of ['markdown_response', 'system_message', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
+  for (const surfaceType of ['markdown_response', 'system_message', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome', 'notification-center']) {
     assert.match(renderer, new RegExp(`case '${surfaceType}'`));
   }
   assert.match(renderer, /MarkdownResponseSurface/);
@@ -128,7 +130,7 @@ test('base surface frame and action bar preserve envelope, stale, redaction, dis
 });
 
 test('canonical surface components include dashboard, list/search, detail/edit, decision, audit, workflow, governance diff, and outcome patterns', () => {
-  for (const componentName of ['MarkdownResponseSurface', 'SystemMessageSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface']) {
+  for (const componentName of ['MarkdownResponseSurface', 'SystemMessageSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface', 'NotificationCenterSurface']) {
     assert.match(surfaceIndex, new RegExp(componentName));
     assert.match(allSurfaceComponents, new RegExp(`function ${componentName}`));
   }
@@ -146,7 +148,18 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(allSurfaceComponents, /Access review evidence references/);
   assert.match(allSurfaceComponents, /Provider\/runtime blockers/);
   assert.match(allSurfaceComponents, /No direct mutation/);
+  assert.match(allSurfaceComponents, /evidenceKey\(evidence\)/);
+  assert.match(allSurfaceComponents, /recommendationKey\(recommendation\)/);
   assert.match(surfaceTypes, /user_admin\.access_review_task\.v1/);
+  assert.match(surfaceTypes, /evidenceRefs\?: Array<string \|/);
+  assert.match(surfaceTypes, /recommendations\?: Array<string \|/);
+  assert.match(surfaceTypes, /NotificationCenterSurfaceData/);
+  assert.match(notificationCenterSurface, /Backend-derived in-app notifications/);
+  assert.match(notificationCenterSurface, /notification\.list_my_account_center/);
+  assert.match(notificationCenterSurface, /notification\.email\.list_my_preferences/);
+  assert.match(notificationCenterSurface, /captured_outbox/);
+  assert.match(notificationCenterSurface, /SMS, push, and webhook controls are not rendered/);
+  assert.doesNotMatch(notificationCenterSurface, /emailEnabled|pushEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(allSurfaceComponents, /governance-diff-summary/);
   assert.match(allSurfaceComponents, /outcome-metrics/);
 });

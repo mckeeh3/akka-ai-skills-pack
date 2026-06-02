@@ -7,6 +7,7 @@ import { GovernanceDiffSurface } from './GovernanceDiffSurface';
 import { ListSearchSurface } from './ListSearchSurface';
 import { MarkdownResponseSurface } from './MarkdownResponseSurface';
 import { OutcomeSurface } from './OutcomeSurface';
+import { NotificationCenterSurface } from './NotificationCenterSurface';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 import { SystemMessageSurface } from './SystemMessageSurface';
@@ -47,6 +48,8 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
       return <GovernanceDiffSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'outcome':
       return <OutcomeSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+    case 'notification-center':
+      return <NotificationCenterSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     default:
       return (
         <SurfaceStateFrame envelope={selectedEnvelope}>

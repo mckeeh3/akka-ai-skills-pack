@@ -27,7 +27,8 @@ import {
   type SurfaceEnvelope,
   type WorkstreamEvent,
   type WorkstreamItem,
-  type WorkstreamSelection
+  type WorkstreamSelection,
+  type WorkstreamShellRequest
 } from './workstream';
 
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
@@ -68,7 +69,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       if (!active) return;
       setBootstrap(
         result.ok
-          ? { status: 'ready', me: result.value.me, items: result.value.items, surfaces: result.value.surfaces }
+          ? { status: 'ready', me: { ...result.value.me, functionalAgents: result.value.functionalAgents }, items: result.value.items, surfaces: result.value.surfaces }
           : { status: 'error', message: result.error.message }
       );
     });
@@ -139,6 +140,9 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     const stateSubscription = realtimeClient.onState((state) => setRealtimeConnection(state));
     const eventSubscription = realtimeClient.onEvent((event) => {
       markUnseenBackgroundActivity(event);
+      if (event.eventType === 'projection.refresh.available' || event.eventType === 'surface.stale') {
+        void refreshBackendDerivedAttentionDelivery({ functionalAgentId: event.functionalAgentId, surfaceId: event.surfaceId, reason: 'event-backed-projection-refresh' });
+      }
       setBootstrap((current) => {
         if (current.status !== 'ready') return current;
         const merged = applyWorkstreamRealtimeEvent(
@@ -240,10 +244,11 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   function selectAgent(functionalAgentId: string) {
     if (!ready) return;
     const restoredSession = sessionForAgent(functionalAgentId);
-    const restoredSurface = restoredSession.selectedSurfaceId ?? surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId;
+    const restoredSurface = restoredSession.selectedSurfaceId ?? surfaceForAgent(ready.surfaces, functionalAgentId)?.surfaceId ?? dashboardSurfaceIdForAgent(functionalAgentId);
     clearRailAttention(functionalAgentId);
     setVisualSessionsByKey((store) => saveVisualSession(store, restoredSession));
     updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: restoredSurface });
+    void refreshBackendDerivedAttentionDelivery({ functionalAgentId, surfaceId: restoredSurface, reason: 'workstream-open' });
     requestAnimationFrame(() => document.getElementById('workstream-panel-title')?.focus());
   }
 
@@ -342,13 +347,105 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     } else if (targetSurface) {
       markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem?.itemId ?? actionRequestItem.itemId, 'info');
     }
+    await refreshBackendDerivedAttentionDelivery({ functionalAgentId: targetSurface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId, surfaceId: targetSurface?.surfaceId ?? surfaceId, reason: 'producer-affecting-action-completion' });
+  }
+
+  async function runShellSurfaceRequest(shellRequest: WorkstreamShellRequest, fallbackFunctionalAgentId: string, itemPrefix: string) {
+    const shellResult = await workstreamClient.runShellRequest(shellRequest);
+    if (!shellResult.ok) {
+      const safeError = safeComposerErrorCopy(shellResult.error);
+      const errorItem: WorkstreamItem = {
+        itemId: `${itemPrefix}-shell-error-${Date.now()}`,
+        functionalAgentId: fallbackFunctionalAgentId,
+        kind: 'system-notification',
+        createdAt: new Date().toISOString(),
+        correlationId: shellRequest.correlationId,
+        traceIds: [],
+        title: safeError.title,
+        body: `${safeError.body} Correlation ${shellResult.error.correlationId}.`,
+        status: safeError.status
+      };
+      setBootstrap((current) => current.status === 'ready'
+        ? { ...current, items: pruneWorkstreamItems([...current.items, errorItem]) }
+        : current);
+      return false;
+    }
+    const targetSurface = shellResult.value.resultSurface;
+    const requestItem = shellResult.value.requestItem;
+    const surfaceResponseItem: WorkstreamItem = {
+      itemId: `${itemPrefix}-shell-response-${targetSurface.surfaceId}-${Date.now()}`,
+      functionalAgentId: targetSurface.ownerFunctionalAgentId,
+      kind: 'surface',
+      createdAt: new Date().toISOString(),
+      correlationId: shellResult.value.correlationId,
+      traceIds: targetSurface.traceIds,
+      surfaceId: targetSurface.surfaceId,
+      title: targetSurface.title,
+      status: 'ready'
+    };
+    setRequestScrollTargetForCurrentSession(requestItem.itemId, targetSurface.ownerFunctionalAgentId);
+    rememberVisualSession(sessionForAgent(targetSurface.ownerFunctionalAgentId), { anchorSurfaceId: requestItem.itemId, selectedSurfaceId: targetSurface.surfaceId, userHasManualScroll: false });
+    setBootstrap((current) => {
+      if (current.status !== 'ready') return current;
+      const nextSurfaces = current.surfaces.some((surface) => surface.surfaceId === targetSurface.surfaceId)
+        ? current.surfaces.map((surface) => surface.surfaceId === targetSurface.surfaceId ? targetSurface : surface)
+        : [...current.surfaces, targetSurface];
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, requestItem, surfaceResponseItem]) };
+    });
+    if (isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
+      updateSelection({ selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId, selectedSurfaceId: targetSurface.surfaceId, surfacePlacement: 'inline' });
+    } else {
+      markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem.itemId, 'info');
+    }
+    await refreshBackendDerivedAttentionDelivery({ functionalAgentId: targetSurface.ownerFunctionalAgentId, surfaceId: targetSurface.surfaceId, reason: 'shell-surface-refresh' });
+    return true;
+  }
+
+  async function handleShowDashboard(functionalAgentId: string) {
+    if (!ready || !me) return;
+    const correlationId = `corr-show-dashboard-${Date.now().toString(36)}`;
+    const shellRequest = buildShowDashboardShellRequest(functionalAgentId, me.selectedAuthContext.selectedContextId, correlationId, 'shell_button');
+    await runShellSurfaceRequest(shellRequest, functionalAgentId, 'show-dashboard');
+  }
+
+  async function refreshBackendDerivedAttentionDelivery(input: { functionalAgentId?: string; surfaceId?: string; reason: 'workstream-open' | 'producer-affecting-action-completion' | 'shell-surface-refresh' | 'event-backed-projection-refresh' }) {
+    // Backend attention remains authoritative: rail badges refresh from attention.list_rail_summaries via functional-agents,
+    // while dashboard/My Account attention items refresh from backend surfaces carrying attention.list_workstream_items
+    // or attention.list_my_account_items payloads. Transient railAttentionState remains only for unseen responses.
+    await refreshBackendAttentionSummaries(input.reason);
+    const surfaceId = input.surfaceId ?? (input.functionalAgentId ? dashboardSurfaceIdForAgent(input.functionalAgentId) : undefined);
+    if (surfaceId) await refreshBackendSurface(surfaceId);
+  }
+
+  async function refreshBackendAttentionSummaries(reason: string) {
+    const result = await workstreamClient.listFunctionalAgents();
+    if (!result.ok) return;
+    setBootstrap((current) => current.status === 'ready'
+      ? { ...current, me: { ...current.me, functionalAgents: result.value } }
+      : current);
+  }
+
+  async function refreshBackendSurface(surfaceId: string) {
+    const result = await workstreamClient.getSurface(surfaceId);
+    if (!result.ok) return;
+    setBootstrap((current) => {
+      if (current.status !== 'ready') return current;
+      const nextSurfaces = current.surfaces.some((surface) => surface.surfaceId === result.value.surfaceId)
+        ? current.surfaces.map((surface) => surface.surfaceId === result.value.surfaceId ? result.value : surface)
+        : [...current.surfaces, result.value];
+      return { ...current, surfaces: nextSurfaces };
+    });
   }
 
   async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
-    if (!ready) return false;
+    if (!ready || !me) return false;
     const submittedAt = Date.now();
     const pendingItemId = `composer-submitting-${submittedAt}`;
     const correlationId = `corr-composer-${submittedAt.toString(36)}`;
+    const shellRequest = buildComposerShellRequest(request.prompt, request.functionalAgentId, me.selectedAuthContext.selectedContextId, correlationId);
+    if (shellRequest) {
+      return runShellSurfaceRequest(shellRequest, request.functionalAgentId, 'composer');
+    }
     const userRequestItem: WorkstreamItem = {
       itemId: `composer-request-${submittedAt}`,
       functionalAgentId: request.functionalAgentId,
@@ -458,6 +555,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       appName="AI-first SaaS"
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
+      onShowDashboard={handleShowDashboard}
       submittingFunctionalAgentId={submittingFunctionalAgentId}
       railAttentionByAgentId={railAttentionByAgentId}
       onSignOut={onSignOut}
@@ -492,6 +590,38 @@ function isMaterialBackgroundEvent(eventType: WorkstreamEvent['eventType']): boo
     || eventType === 'surface.workflow.progressed'
     || eventType === 'surface.stale'
     || eventType === 'surface.reconnected';
+}
+
+function buildComposerShellRequest(prompt: string, functionalAgentId: string, selectedContextId: string, correlationId: string): WorkstreamShellRequest | undefined {
+  const normalized = prompt.trim().toLowerCase().replace(/[.!?]+$/g, '').replace(/\s+/g, ' ');
+  if (!['dashboard', 'show dashboard', 'open dashboard', 'refresh dashboard', 'show command center', 'open command center'].includes(normalized)) return undefined;
+  const shellRequest = buildShowDashboardShellRequest(functionalAgentId, selectedContextId, correlationId, 'user_prompt', prompt.trim());
+  return normalized.startsWith('refresh') ? { ...shellRequest, requestType: 'refresh_surface' } : shellRequest;
+}
+
+function buildShowDashboardShellRequest(functionalAgentId: string, selectedContextId: string, correlationId: string, origin: WorkstreamShellRequest['origin'], displayText = 'Show dashboard'): WorkstreamShellRequest {
+  return {
+    requestType: 'show_surface',
+    origin,
+    displayText,
+    canonicalPrompt: 'Show dashboard',
+    targetFunctionalAgentId: functionalAgentId,
+    targetSurfaceId: dashboardSurfaceIdForAgent(functionalAgentId),
+    sourceFunctionalAgentId: functionalAgentId,
+    scope: 'current_workstream',
+    correlationId,
+    selectedContextId
+  };
+}
+
+function dashboardSurfaceIdForAgent(functionalAgentId: string): string {
+  switch (functionalAgentId) {
+    case 'agent-my-account': return 'surface-my-account-dashboard';
+    case 'agent-agent-admin': return 'surface-agent-admin-catalog';
+    case 'agent-audit-trace': return 'surface-audit-trace-dashboard';
+    case 'agent-governance-policy': return 'surface-governance-policy-dashboard';
+    default: return 'surface-user-admin-dashboard';
+  }
 }
 
 function safeComposerErrorCopy(error: ApiError): { title: string; body: string; status: 'blocked' | 'failed' } {

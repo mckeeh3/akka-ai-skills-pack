@@ -79,12 +79,12 @@ test('User Admin expertise contract covers unassigned and tool-boundary denials'
     'unassigned-reference',
     'unassigned reference denied',
     'missing read_reference tool-boundary grant returns TOOL_BOUNDARY_DENIED',
-    'SkillDocument and ReferenceDocument text cannot grant roles, tenant scope, tool access, approval rights, or backend capabilities'
+    'SkillDocument and ReferenceDocument text cannot grant roles, tenant scope, governed-tool access, approval rights, or backend capabilities'
   ]) {
     assert.match(surfaces, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
   assert.match(seedResources, /missing read_skill or read_reference tool-boundary grant/);
-  assert.match(seedResources, /text claiming new roles, tenant scope, tool access, approval rights, or backend capabilities/);
+  assert.match(seedResources, /text claiming new roles, tenant scope, governed-tool access, approval rights, or backend capabilities/);
 });
 
 test('UserAdminAgent guidance fixtures cover read-only evidence and provider-blocked system_message recovery', () => {

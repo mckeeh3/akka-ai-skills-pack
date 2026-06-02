@@ -34,7 +34,7 @@ export function CapabilityActionButton({ action, surfaceId, selectedContextId, s
   }
 
   return (
-    <div className={`capability-action ${variant}`} data-capability-id={action.capabilityId} data-action-intent={action.intent}>
+    <div className={`capability-action ${variant}`} data-capability-id={action.capabilityId} data-browser-tool-id={action.browserToolId} data-governed-tool-id={action.governedToolId} data-action-intent={action.intent}>
       <button
         type="button"
         className={`capability-action-button ${variant}`}
@@ -48,6 +48,8 @@ export function CapabilityActionButton({ action, surfaceId, selectedContextId, s
         {submitting ? 'Submitting…' : action.label}
       </button>
       <div className="capability-action-affordances" aria-label={`${action.label} capability details`}>
+        <span className="capability-chip browser-tool-id">{action.browserToolId}</span>
+        <span className="capability-chip governed-tool-id">{action.governedToolId}</span>
         <span className="capability-chip capability-id">{action.capabilityId}</span>
         <span id={`${action.actionId}-idempotency`} className="capability-chip idempotency">{idempotencyLabel(action)}</span>
         <span id={`${action.actionId}-audit`} className="capability-chip audit-trace">{auditTraceLabel(action)}</span>

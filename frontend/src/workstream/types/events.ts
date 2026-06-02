@@ -6,6 +6,7 @@ export type WorkstreamEventType =
   | 'surface.action.accepted'
   | 'surface.action.denied'
   | 'surface.workflow.progressed'
+  | 'projection.refresh.available'
   | 'surface.stale'
   | 'surface.reconnected';
 
