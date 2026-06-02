@@ -29,6 +29,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Customer;
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
@@ -46,6 +47,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -77,6 +79,7 @@ public final class StarterSecurityComponents {
   private static volatile NotificationRepository notificationRepository = new UnboundNotificationRepository();
   private static volatile NotificationService notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
   private static volatile EmailNotificationService emailNotificationService = new EmailNotificationService(notificationRepository, authContextResolver, new ResendEmailService(), ResendEmailService.DeliveryMode.LOCAL_OR_TEST, CLOCK);
+  private static volatile DigestExportService digestExportService = new DigestExportService(notificationRepository, authContextResolver, CLOCK);
   private static volatile MyAccountPersonalAttentionDigestService personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(personalAttentionDigestTaskRepository, authContextResolver, attentionService, CLOCK);
   private static volatile AttentionProducerService attentionProducerService = new AttentionProducerService(attentionRepository, identityRepository, CLOCK);
   private static volatile WorkstreamEventRepository workstreamEventRepository = new UnboundWorkstreamEventRepository();
@@ -130,6 +133,7 @@ public final class StarterSecurityComponents {
     notificationRepository = new AkkaNotificationRepository(componentClient);
     notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
     emailNotificationService = new EmailNotificationService(notificationRepository, authContextResolver, new ResendEmailService(), ResendEmailService.DeliveryMode.LOCAL_OR_TEST, CLOCK);
+    digestExportService = new DigestExportService(notificationRepository, authContextResolver, CLOCK);
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     attentionProducerService = new AttentionProducerService(durableAttention, durableIdentity, CLOCK);
     workstreamEventRepository = durableWorkstreamEvents;
@@ -187,6 +191,7 @@ public final class StarterSecurityComponents {
     attentionProducerService = new AttentionProducerService(attentionRepository, testRepository, CLOCK);
     notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
     emailNotificationService = new EmailNotificationService(notificationRepository, authContextResolver, new ResendEmailService(), ResendEmailService.DeliveryMode.LOCAL_OR_TEST, CLOCK);
+    digestExportService = new DigestExportService(notificationRepository, authContextResolver, CLOCK);
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(attentionRepository, testRepository, attentionProducerService, CLOCK);
     workstreamEventPublisher = new WorkstreamEventPublisher(workstreamEventRepository, workstreamEventAttentionConsumer, CLOCK);
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK, attentionProducerService);
@@ -207,6 +212,7 @@ public final class StarterSecurityComponents {
     attentionService = new AttentionService(testRepository, authContextResolver, CLOCK);
     notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);
     emailNotificationService = new EmailNotificationService(notificationRepository, authContextResolver, new ResendEmailService(), ResendEmailService.DeliveryMode.LOCAL_OR_TEST, CLOCK);
+    digestExportService = new DigestExportService(notificationRepository, authContextResolver, CLOCK);
     personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(personalAttentionDigestTaskRepository, authContextResolver, attentionService, CLOCK);
     attentionProducerService = new AttentionProducerService(testRepository, identityRepository, CLOCK);
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(testRepository, identityRepository, attentionProducerService, CLOCK);
@@ -302,12 +308,17 @@ public final class StarterSecurityComponents {
     return emailNotificationService;
   }
 
+  public static DigestExportService digestExportService() {
+    return digestExportService;
+  }
+
   /** Test-only hook for unit tests that use explicit test-source notification adapters. */
   public static void bindTestNotificationRepository(NotificationRepository testRepository) {
     if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test notification repository binding");
     notificationRepository = testRepository;
     notificationService = new NotificationService(testRepository, authContextResolver, CLOCK);
     emailNotificationService = new EmailNotificationService(testRepository, authContextResolver, new ResendEmailService(), ResendEmailService.DeliveryMode.LOCAL_OR_TEST, CLOCK);
+    digestExportService = new DigestExportService(testRepository, authContextResolver, CLOCK);
   }
 
   public static WorkstreamEventRepository workstreamEventRepository() {
@@ -457,6 +468,11 @@ public final class StarterSecurityComponents {
     public List<NotificationDeliveryAttempt> listDeliveryAttempts(String tenantId, String accountId) { throw unavailable(); }
     public NotificationExternalOutboxMessage saveExternalOutbox(NotificationExternalOutboxMessage message) { throw unavailable(); }
     public List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId) { throw unavailable(); }
+    public DigestExportRequest saveDigestExportRequest(DigestExportRequest request) { throw unavailable(); }
+    public Optional<DigestExportRequest> findDigestExportRequest(String tenantId, String requestId) { throw unavailable(); }
+    public Optional<DigestExportRequest> findDigestExportRequestByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { throw unavailable(); }
+    public List<DigestExportRequest> listDigestExportRequests(String tenantId) { throw unavailable(); }
+    public List<DigestExportRequest> listDueDigestExportRequests(String tenantId, Instant dueAt) { throw unavailable(); }
   }
 
   private static final class UnboundGovernancePolicyRepository implements GovernancePolicyRepository {

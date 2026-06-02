@@ -15,11 +15,13 @@ import static akka.javasdk.http.HttpException.unauthorized;
 import {{JAVA_BASE_PACKAGE}}.application.security.AdminAuditView;
 import {{JAVA_BASE_PACKAGE}}.application.security.AdminAuditView.AdminAuditRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
+import {{JAVA_BASE_PACKAGE}}.application.security.DigestExportService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView.InvitationRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService.UserDirectoryRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
@@ -139,6 +141,57 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     });
   }
 
+  @Get("/digest-export/requests")
+  public HttpResponse digestExportRequests() {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var rows = StarterSecurityComponents.digestExportService().list(actor, correlationId).stream().map(DigestExportApiResponse::from).toList();
+      return HttpResponses.ok(new DigestExportApiResponses(rows, correlationId));
+    });
+  }
+
+  @Post("/digest-export/manual-digests")
+  public HttpResponse startManualDigest(DigestCommandApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().startManualDigest(actor, new DigestExportService.DigestCommand(stableIdempotencyKey, null, request == null ? null : request.redactionProfile(), request == null ? null : request.evidenceScope()), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
+  @Post("/digest-export/scheduled-digests")
+  public HttpResponse scheduleDigest(DigestCommandApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().scheduleDigest(actor, new DigestExportService.DigestCommand(stableIdempotencyKey, request == null || request.scheduledFor() == null ? null : Instant.parse(request.scheduledFor()), request == null ? null : request.redactionProfile(), request == null ? null : request.evidenceScope()), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
+  @Post("/digest-export/exports")
+  public HttpResponse requestExport(ExportCommandApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().requestExport(actor, new DigestExportService.ExportCommand(stableIdempotencyKey, request == null ? null : request.redactionProfile(), request == null ? null : request.exportFormat(), request != null && request.sensitiveApprovalRequired(), request == null ? null : request.evidenceScope()), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
+  @Post("/digest-export/exports/{requestId}/approve")
+  public HttpResponse approveExport(String requestId, ExportApprovalApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().approveExport(actor, requestId, request == null ? null : request.reason(), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
   @Get("/audit-events")
   public HttpResponse auditEvents() {
     var limit = requestContext().queryParams().getInteger("limit").orElse(50);
@@ -209,6 +262,15 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record InvitationActionApiRequest(String reason, String idempotencyKey) {}
   public record ChangeRolesApiRequest(List<String> roles, String reason, String idempotencyKey) {}
   public record ChangeMembershipStatusApiRequest(String status, String reason, String idempotencyKey) {}
+  public record DigestCommandApiRequest(String idempotencyKey, String scheduledFor, String redactionProfile, String evidenceScope) {}
+  public record ExportCommandApiRequest(String idempotencyKey, String redactionProfile, String exportFormat, boolean sensitiveApprovalRequired, String evidenceScope) {}
+  public record ExportApprovalApiRequest(String reason) {}
+  public record DigestExportApiResponses(List<DigestExportApiResponse> requests, String correlationId) {}
+  public record DigestExportApiResponse(String requestId, String requestType, String status, String redactionProfile, String exportFormat, boolean sensitiveApprovalRequired, String scheduledFor, String evidenceScope, String resultUri, String safeSummary, List<String> traceIds, String updatedAt) {
+    static DigestExportApiResponse from(DigestExportRequest request) {
+      return new DigestExportApiResponse(request.requestId(), request.requestType().name().toLowerCase(), request.status().name().toLowerCase(), request.redactionProfile().name().toLowerCase(), request.exportFormat().name().toLowerCase(), request.sensitiveApprovalRequired(), request.scheduledFor() == null ? null : request.scheduledFor().toString(), request.evidenceScope(), request.resultUri(), request.safeSummary(), request.traceIds(), request.updatedAt().toString());
+    }
+  }
   public record InvitationsApiResponse(List<InvitationApiResponse> invitations, String correlationId) {}
   public record InvitationHistoryApiResponses(List<InvitationHistoryApiResponse> history, String correlationId) {}
   public record InvitationHistoryApiResponse(String factId, String invitationId, String eventType, String email, String status, String deliveryStatus, int deliveryAttempts, int resendCount, String actorAccountId, String result, String reasonCode, String deliveryAttemptId, String occurredAt, String correlationId) {

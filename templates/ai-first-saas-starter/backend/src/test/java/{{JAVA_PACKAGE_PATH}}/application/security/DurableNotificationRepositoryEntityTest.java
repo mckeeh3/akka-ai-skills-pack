@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.KeyValueEntityTestKit;
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationChannel;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
@@ -84,6 +85,28 @@ class DurableNotificationRepositoryEntityTest {
         .getReply());
     assertEquals(List.of(outbox), testKit.method(DurableNotificationRepositoryEntity::listExternalOutbox)
         .invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery("tenant-1", "account-1"))
+        .getReply());
+  }
+
+  @Test
+  void persistsDigestExportRequestLifecycleAndDueScheduledQueries() {
+    var testKit = newTestKit();
+    var now = Instant.parse("2026-05-26T10:00:00Z");
+    var scheduled = new DigestExportRequest("scheduled-digest-1", DigestExportRequest.RequestType.SCHEDULED_DIGEST, "tenant-1", null, "account-1", "membership-1", "idem-scheduled", DigestExportRequest.Status.SCHEDULED, DigestExportRequest.RedactionProfile.AUDIT_SAFE, DigestExportRequest.ExportFormat.MARKDOWN, false, null, Instant.parse("2026-05-26T11:00:00Z"), "audit", null, "scheduled", null, List.of("trace-scheduled"), now, now);
+
+    testKit.method(DurableNotificationRepositoryEntity::saveDigestExportRequest).invoke(scheduled);
+
+    assertEquals(scheduled, testKit.method(DurableNotificationRepositoryEntity::findDigestExportRequest)
+        .invoke(new DurableNotificationRepositoryEntity.FindQuery("tenant-1", "scheduled-digest-1"))
+        .getReply().orElseThrow());
+    assertEquals(scheduled, testKit.method(DurableNotificationRepositoryEntity::findDigestExportRequestByIdempotencyKey)
+        .invoke(new DurableNotificationRepositoryEntity.FindDigestExportDedupeQuery("tenant-1", "account-1", "idem-scheduled"))
+        .getReply().orElseThrow());
+    assertTrue(testKit.method(DurableNotificationRepositoryEntity::listDueDigestExportRequests)
+        .invoke(new DurableNotificationRepositoryEntity.ListDueDigestExportQuery("tenant-1", Instant.parse("2026-05-26T10:59:59Z")))
+        .getReply().isEmpty());
+    assertEquals(List.of(scheduled), testKit.method(DurableNotificationRepositoryEntity::listDueDigestExportRequests)
+        .invoke(new DurableNotificationRepositoryEntity.ListDueDigestExportQuery("tenant-1", Instant.parse("2026-05-26T11:00:00Z")))
         .getReply());
   }
 

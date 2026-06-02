@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
@@ -7,6 +8,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ final class LocalDemoNotificationRepository implements NotificationRepository {
   private final Map<String, EmailOutboxMessage> emailOutbox = new LinkedHashMap<>();
   private final Map<String, NotificationDeliveryAttempt> deliveryAttempts = new LinkedHashMap<>();
   private final Map<String, NotificationExternalOutboxMessage> externalOutbox = new LinkedHashMap<>();
+  private final Map<String, DigestExportRequest> digestExportRequests = new LinkedHashMap<>();
 
   public NotificationItem upsert(NotificationItem item) {
     items.put(key(item.tenantId(), item.notificationId()), item);
@@ -116,6 +119,27 @@ final class LocalDemoNotificationRepository implements NotificationRepository {
 
   public List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId) {
     return externalOutbox.values().stream().filter(message -> tenantId.equals(message.tenantId()) && accountId.equals(message.accountId())).toList();
+  }
+
+  public DigestExportRequest saveDigestExportRequest(DigestExportRequest request) {
+    digestExportRequests.put(key(request.tenantId(), request.requestId()), request);
+    return request;
+  }
+
+  public Optional<DigestExportRequest> findDigestExportRequest(String tenantId, String requestId) {
+    return Optional.ofNullable(digestExportRequests.get(key(tenantId, requestId)));
+  }
+
+  public Optional<DigestExportRequest> findDigestExportRequestByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) {
+    return digestExportRequests.values().stream().filter(request -> tenantId.equals(request.tenantId()) && accountId.equals(request.accountId()) && idempotencyKey.equals(request.idempotencyKey())).findFirst();
+  }
+
+  public List<DigestExportRequest> listDigestExportRequests(String tenantId) {
+    return digestExportRequests.values().stream().filter(request -> tenantId.equals(request.tenantId())).sorted(Comparator.comparing(DigestExportRequest::updatedAt).reversed()).toList();
+  }
+
+  public List<DigestExportRequest> listDueDigestExportRequests(String tenantId, Instant dueAt) {
+    return digestExportRequests.values().stream().filter(request -> tenantId.equals(request.tenantId()) && request.requestType() == DigestExportRequest.RequestType.SCHEDULED_DIGEST && request.status() == DigestExportRequest.Status.SCHEDULED && request.scheduledFor() != null && !request.scheduledFor().isAfter(dueAt)).toList();
   }
 
   private String key(String tenantId, String id) {

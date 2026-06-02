@@ -1,5 +1,6 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
@@ -7,6 +8,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +23,8 @@ public record NotificationRepositoryState(
     Map<String, EmailNotificationDelivery> emailDeliveriesByKey,
     Map<String, EmailOutboxMessage> emailOutboxByKey,
     Map<String, NotificationDeliveryAttempt> deliveryAttemptsByKey,
-    Map<String, NotificationExternalOutboxMessage> externalOutboxByKey) {
+    Map<String, NotificationExternalOutboxMessage> externalOutboxByKey,
+    Map<String, DigestExportRequest> digestExportRequestsByKey) {
   public NotificationRepositoryState {
     itemsByKey = Map.copyOf(itemsByKey == null ? Map.of() : itemsByKey);
     preferencesByKey = Map.copyOf(preferencesByKey == null ? Map.of() : preferencesByKey);
@@ -30,10 +33,11 @@ public record NotificationRepositoryState(
     emailOutboxByKey = Map.copyOf(emailOutboxByKey == null ? Map.of() : emailOutboxByKey);
     deliveryAttemptsByKey = Map.copyOf(deliveryAttemptsByKey == null ? Map.of() : deliveryAttemptsByKey);
     externalOutboxByKey = Map.copyOf(externalOutboxByKey == null ? Map.of() : externalOutboxByKey);
+    digestExportRequestsByKey = Map.copyOf(digestExportRequestsByKey == null ? Map.of() : digestExportRequestsByKey);
   }
 
   public static NotificationRepositoryState empty() {
-    return new NotificationRepositoryState(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of());
+    return new NotificationRepositoryState(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of());
   }
 
   public Optional<NotificationItem> find(String tenantId, String notificationId) {
@@ -51,7 +55,7 @@ public record NotificationRepositoryState(
   public NotificationRepositoryState save(NotificationItem item) {
     var next = new LinkedHashMap<>(itemsByKey);
     next.put(itemKey(item.tenantId(), item.notificationId()), item);
-    return new NotificationRepositoryState(next, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey);
+    return new NotificationRepositoryState(next, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey, digestExportRequestsByKey);
   }
 
   public Optional<NotificationPreference> findPreference(String tenantId, String preferenceId) {
@@ -65,7 +69,7 @@ public record NotificationRepositoryState(
   public NotificationRepositoryState savePreference(NotificationPreference preference) {
     var next = new LinkedHashMap<>(preferencesByKey);
     next.put(prefKey(preference.tenantId(), preference.preferenceId()), preference);
-    return new NotificationRepositoryState(itemsByKey, next, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey);
+    return new NotificationRepositoryState(itemsByKey, next, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey, digestExportRequestsByKey);
   }
 
   public List<EmailNotificationPreference> listEmailPreferences(String tenantId, String accountId) {
@@ -75,7 +79,7 @@ public record NotificationRepositoryState(
   public NotificationRepositoryState saveEmailPreference(EmailNotificationPreference preference) {
     var next = new LinkedHashMap<>(emailPreferencesByKey);
     next.put(prefKey(preference.tenantId(), preference.preferenceId()), preference);
-    return new NotificationRepositoryState(itemsByKey, preferencesByKey, next, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey);
+    return new NotificationRepositoryState(itemsByKey, preferencesByKey, next, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey, digestExportRequestsByKey);
   }
 
   public Optional<EmailNotificationDelivery> findEmailDelivery(String tenantId, String deliveryId) {
@@ -89,7 +93,7 @@ public record NotificationRepositoryState(
   public NotificationRepositoryState saveEmailDelivery(EmailNotificationDelivery delivery) {
     var next = new LinkedHashMap<>(emailDeliveriesByKey);
     next.put(itemKey(delivery.tenantId(), delivery.deliveryId()), delivery);
-    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, next, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey);
+    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, next, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey, digestExportRequestsByKey);
   }
 
   public Optional<EmailOutboxMessage> findEmailOutbox(String tenantId, String outboxId) {
@@ -103,7 +107,7 @@ public record NotificationRepositoryState(
   public NotificationRepositoryState saveEmailOutbox(EmailOutboxMessage message) {
     var next = new LinkedHashMap<>(emailOutboxByKey);
     next.put(itemKey(message.tenantId(), message.outboxId()), message);
-    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, next, deliveryAttemptsByKey, externalOutboxByKey);
+    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, next, deliveryAttemptsByKey, externalOutboxByKey, digestExportRequestsByKey);
   }
 
   public Optional<NotificationDeliveryAttempt> findDeliveryAttempt(String tenantId, String attemptId) {
@@ -121,7 +125,7 @@ public record NotificationRepositoryState(
   public NotificationRepositoryState saveDeliveryAttempt(NotificationDeliveryAttempt attempt) {
     var next = new LinkedHashMap<>(deliveryAttemptsByKey);
     next.put(itemKey(attempt.tenantId(), attempt.attemptId()), attempt);
-    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, next, externalOutboxByKey);
+    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, next, externalOutboxByKey, digestExportRequestsByKey);
   }
 
   public List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId) {
@@ -131,7 +135,29 @@ public record NotificationRepositoryState(
   public NotificationRepositoryState saveExternalOutbox(NotificationExternalOutboxMessage message) {
     var next = new LinkedHashMap<>(externalOutboxByKey);
     next.put(itemKey(message.tenantId(), message.outboxId()), message);
-    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, next);
+    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, next, digestExportRequestsByKey);
+  }
+
+  public Optional<DigestExportRequest> findDigestExportRequest(String tenantId, String requestId) {
+    return Optional.ofNullable(digestExportRequestsByKey.get(itemKey(tenantId, requestId)));
+  }
+
+  public Optional<DigestExportRequest> findDigestExportRequestByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) {
+    return digestExportRequestsByKey.values().stream().filter(request -> tenantId.equals(request.tenantId()) && accountId.equals(request.accountId()) && idempotencyKey.equals(request.idempotencyKey())).findFirst();
+  }
+
+  public List<DigestExportRequest> listDigestExportRequests(String tenantId) {
+    return digestExportRequestsByKey.values().stream().filter(request -> tenantId.equals(request.tenantId())).sorted(Comparator.comparing(DigestExportRequest::updatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed()).toList();
+  }
+
+  public List<DigestExportRequest> listDueDigestExportRequests(String tenantId, Instant dueAt) {
+    return digestExportRequestsByKey.values().stream().filter(request -> tenantId.equals(request.tenantId()) && request.requestType() == DigestExportRequest.RequestType.SCHEDULED_DIGEST && request.status() == DigestExportRequest.Status.SCHEDULED && request.scheduledFor() != null && !request.scheduledFor().isAfter(dueAt)).toList();
+  }
+
+  public NotificationRepositoryState saveDigestExportRequest(DigestExportRequest request) {
+    var next = new LinkedHashMap<>(digestExportRequestsByKey);
+    next.put(itemKey(request.tenantId(), request.requestId()), request);
+    return new NotificationRepositoryState(itemsByKey, preferencesByKey, emailPreferencesByKey, emailDeliveriesByKey, emailOutboxByKey, deliveryAttemptsByKey, externalOutboxByKey, next);
   }
 
   private static String itemKey(String tenantId, String notificationId) {

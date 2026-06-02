@@ -304,7 +304,7 @@
 
 ### TASK-COREEXT-03-002: Implement digest and export platform extensions
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/03-workers-governance/02-digest-export-platform.md
 - depends on: [TASK-COREEXT-03-001]
@@ -335,6 +335,7 @@
   - digest/export platform paths work locally through backend capabilities with redaction/audit and without compliance-suite overclaiming
   - queue is updated and committed
 - notes:
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`
   - commit message: `coreext: add digest export platform`
 
 ### TASK-COREEXT-03-003: Implement policy simulation platform

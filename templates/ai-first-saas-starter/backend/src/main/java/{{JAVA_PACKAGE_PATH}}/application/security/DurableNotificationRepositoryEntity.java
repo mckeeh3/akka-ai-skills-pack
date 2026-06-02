@@ -2,6 +2,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
@@ -9,6 +10,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,9 +112,31 @@ public class DurableNotificationRepositoryEntity extends KeyValueEntity<Notifica
     return effects().reply(currentState().listExternalOutbox(query.tenantId(), query.accountId()));
   }
 
+  public Effect<DigestExportRequest> saveDigestExportRequest(DigestExportRequest request) {
+    return effects().updateState(currentState().saveDigestExportRequest(request)).thenReply(() -> request);
+  }
+
+  public ReadOnlyEffect<Optional<DigestExportRequest>> findDigestExportRequest(FindQuery query) {
+    return effects().reply(currentState().findDigestExportRequest(query.tenantId(), query.notificationId()));
+  }
+
+  public ReadOnlyEffect<Optional<DigestExportRequest>> findDigestExportRequestByIdempotencyKey(FindDigestExportDedupeQuery query) {
+    return effects().reply(currentState().findDigestExportRequestByIdempotencyKey(query.tenantId(), query.accountId(), query.idempotencyKey()));
+  }
+
+  public ReadOnlyEffect<List<DigestExportRequest>> listDigestExportRequests(ListTenantQuery query) {
+    return effects().reply(currentState().listDigestExportRequests(query.tenantId()));
+  }
+
+  public ReadOnlyEffect<List<DigestExportRequest>> listDueDigestExportRequests(ListDueDigestExportQuery query) {
+    return effects().reply(currentState().listDueDigestExportRequests(query.tenantId(), query.dueAt()));
+  }
+
   public record FindQuery(String tenantId, String notificationId) {}
   public record FindDedupeQuery(String tenantId, String dedupeKey) {}
   public record ListTenantQuery(String tenantId) {}
   public record FindPreferenceQuery(String tenantId, String preferenceId) {}
   public record ListPreferencesQuery(String tenantId, String accountId) {}
+  public record FindDigestExportDedupeQuery(String tenantId, String accountId, String idempotencyKey) {}
+  public record ListDueDigestExportQuery(String tenantId, Instant dueAt) {}
 }

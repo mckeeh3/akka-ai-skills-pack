@@ -1,6 +1,7 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import akka.javasdk.client.ComponentClient;
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
@@ -8,6 +9,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,5 +113,25 @@ public final class AkkaNotificationRepository implements NotificationRepository 
 
   public List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId) {
     return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listExternalOutbox).invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery(tenantId, accountId));
+  }
+
+  public DigestExportRequest saveDigestExportRequest(DigestExportRequest request) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::saveDigestExportRequest).invoke(request);
+  }
+
+  public Optional<DigestExportRequest> findDigestExportRequest(String tenantId, String requestId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::findDigestExportRequest).invoke(new DurableNotificationRepositoryEntity.FindQuery(tenantId, requestId));
+  }
+
+  public Optional<DigestExportRequest> findDigestExportRequestByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::findDigestExportRequestByIdempotencyKey).invoke(new DurableNotificationRepositoryEntity.FindDigestExportDedupeQuery(tenantId, accountId, idempotencyKey));
+  }
+
+  public List<DigestExportRequest> listDigestExportRequests(String tenantId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listDigestExportRequests).invoke(new DurableNotificationRepositoryEntity.ListTenantQuery(tenantId));
+  }
+
+  public List<DigestExportRequest> listDueDigestExportRequests(String tenantId, Instant dueAt) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listDueDigestExportRequests).invoke(new DurableNotificationRepositoryEntity.ListDueDigestExportQuery(tenantId, dueAt));
   }
 }

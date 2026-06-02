@@ -3,10 +3,12 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
+import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,4 +36,9 @@ public interface NotificationRepository {
   List<NotificationDeliveryAttempt> listDeliveryAttempts(String tenantId, String accountId);
   NotificationExternalOutboxMessage saveExternalOutbox(NotificationExternalOutboxMessage message);
   List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId);
+  DigestExportRequest saveDigestExportRequest(DigestExportRequest request);
+  Optional<DigestExportRequest> findDigestExportRequest(String tenantId, String requestId);
+  Optional<DigestExportRequest> findDigestExportRequestByIdempotencyKey(String tenantId, String accountId, String idempotencyKey);
+  List<DigestExportRequest> listDigestExportRequests(String tenantId);
+  List<DigestExportRequest> listDueDigestExportRequests(String tenantId, Instant dueAt);
 }
