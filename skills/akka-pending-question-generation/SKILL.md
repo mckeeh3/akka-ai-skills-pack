@@ -98,7 +98,7 @@ Create questions only when the answer can change one or more of:
 - backlog slicing, dependencies, or task generation
 - Java package namespace, group id, generated source paths, imports, and test package names
 
-For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `atlas-ops-supervisory-console` or `custom` with a user-supplied style brief. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
+For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with the four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
 
 For AI-first SaaS inputs, prefer a small number of actionable blocker questions over broad product interviews. Queue a blocking question only when the harness cannot safely choose a default for a concrete implementation area. Good AI-first blocker patterns include:
 - `category: behavior` — what work is delegated to agents versus retained by humans?

@@ -86,10 +86,10 @@ User settings store preferences that affect application behavior or presentation
 
 Base viewable and editable fields:
 - `accountId`
-- `uiMode`: `LIGHT` or `DARK`
+- `preferredThemeId`: one of the available named theme ids from the app UI style guide, initially `aurora-light`, `cobalt-light`, `obsidian-dark`, or `midnight-dark`
 
 Initial rule:
-- support a light/dark UI setting first; do not introduce broader style customization until the app explicitly requires it.
+- support named-theme selection first; users choose an available theme by name and the app stores/applies the selected theme id without treating theme choice as authorization, policy, audit, or capability state.
 
 Settings extension rules:
 - app-specific implementations may add settings such as notification preferences, default landing page, digest cadence, table density, locale, timezone, or AI-assistance preferences;
@@ -294,7 +294,7 @@ Use WorkOS/AuthKit as the supported user authentication service for authenticati
 - available roles and scopes;
 - selected/default context if the frontend uses context switching;
 - base profile fields needed by the app shell;
-- base settings, including `uiMode` (`LIGHT` or `DARK`);
+- base settings, including `preferredThemeId` for the selected named UI theme;
 - minimal browser-facing data only.
 
 First-login linking through `/api/me` must require a valid invitation, invite token/acceptance context, or explicit membership policy. It must not silently self-register privileged users from WorkOS claims alone.
@@ -320,7 +320,7 @@ GET /api/tenant/{tenantId}/customers/{customerId}/users/{accountId}/profile
 
 API rules:
 - profile update requests may edit only declared editable profile fields;
-- settings update requests initially support `uiMode: LIGHT | DARK`;
+- settings update requests initially support `preferredThemeId` constrained to the app's available named theme ids;
 - app-specific fields must declare whether they are account-wide, tenant-scoped, or customer-scoped;
 - tenant/customer administrators may view only the profile attributes needed for administration and collaboration;
 - administrators must not edit another user's personal settings unless the generated app explicitly adds delegated preference management.
@@ -387,7 +387,7 @@ Record audit events for:
 |---|---|
 | `AccountEntity` | Local account lifecycle and identity-link history. |
 | `UserProfileEntity` | Current profile attributes; use audit-grade history only when required by the app. |
-| `UserSettingsEntity` | Current user preferences, starting with `uiMode` light/dark. |
+| `UserSettingsEntity` | Current user preferences, starting with `preferredThemeId` named-theme selection. |
 | `MembershipEntity` or scoped membership state | Role/scope lifecycle with audit-grade changes. |
 | `TenantEntity` | Tenant organization lifecycle and status. |
 | `CustomerEntity` | Customer organization lifecycle under a Tenant. |
@@ -423,7 +423,7 @@ Record audit events for:
 - [ ] Same email can hold multiple memberships and must operate in an explicit context.
 - [ ] WorkOS authentication is separate from Akka-owned authorization state.
 - [ ] Base profile fields are viewable/editable according to scope rules and do not grant permissions.
-- [ ] Base user settings include editable `uiMode` with `LIGHT` and `DARK` values.
+- [ ] Base user settings include editable `preferredThemeId` constrained to available named themes, initially `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`.
 - [ ] Profile and settings models can be extended by app-specific requirements.
 - [ ] Admins can list/search users, view user detail, and manage users without already knowing internal user IDs.
 - [ ] Admins can assign/replace/remove roles and add/suspend/reactivate/remove memberships inside their authority boundary.

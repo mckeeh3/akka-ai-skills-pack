@@ -142,7 +142,9 @@ type MeResponse = {
     status: "active" | "disabled" | "pending";
   };
   profile: { displayName: string; locale?: string; timeZone?: string };
-  settings: { preferredColorMode?: "light" | "dark" | "system" };
+  settings: {
+    preferredThemeId?: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark";
+  };
   memberships: MembershipSummary[];
   selectedAuthContext: AuthContext;
   availableAuthContexts: AuthContext[];

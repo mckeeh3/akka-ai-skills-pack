@@ -61,7 +61,7 @@ Every generated SaaS application must model these foundation concepts before app
 - Customer — organization served by a Tenant; all Customer data remains inside the Tenant boundary.
 - Account — local Akka-owned authorization record linked to a WorkOS-authenticated human identity.
 - UserProfile — human-facing display/profile attributes; never grants authorization.
-- UserSettings — user preferences such as `uiMode`; never overrides authorization, policy, or audit.
+- UserSettings — user preferences such as `preferredThemeId` for named UI theme selection; never overrides authorization, policy, audit, or capability visibility.
 - Membership — scoped Account relationship to SaaS Owner, Tenant, or Customer with status and roles.
 - Role — named permission bundle within a scope. Canonical foundation roles are `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` (or an equivalent scoped auditor capability). App-specific roles extend these through permissions/capabilities; they do not replace foundation roles, membership status, or scope checks.
 - Permission/Capability — mechanically enforced action grants used by endpoints, component commands, queries, tools, workflows, consumers, timers, and UI capability display.

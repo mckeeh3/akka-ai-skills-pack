@@ -297,7 +297,7 @@
 
 ### TASK-WUTR-03-001: Align remaining foundation theme guidance
 
-- status: pending
+- status: done
 - source: TASK-WUTR-99-001 verification finding
 - task brief: specs/web-ui-style-theme-refresh/tasks/03-remaining-guidance/01-align-remaining-foundation-theme-guidance.md
 - depends on:
@@ -334,6 +334,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: align remaining foundation theme guidance`
+  - checks: `git diff --check`; `rg -n "atlas-ops-supervisory-console|preferredColorMode|uiMode|mode preference|light/dark/system|system with light|Color mode|ModePreference|MY_ACCOUNT_INVALID_COLOR_MODE" docs skills frontend templates specs/web-ui-style-theme-refresh web-ui-high-level-style-guide.md` (remaining hits are historical mini-project notes/task briefs, prior completed-task check logs, or current verification search instructions; no stale active docs/skills guidance found)
 
 ### TASK-WUTR-99-002: Verify web UI style theme refresh completion after follow-up
 
