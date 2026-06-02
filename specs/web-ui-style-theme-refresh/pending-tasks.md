@@ -338,7 +338,7 @@
 
 ### TASK-WUTR-99-002: Verify web UI style theme refresh completion after follow-up
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-WUTR-99-001 follow-up
 - task brief: specs/web-ui-style-theme-refresh/tasks/99-verification/02-verify-web-ui-style-theme-refresh.md
 - depends on:
@@ -373,3 +373,7 @@
   - verification changes and queue update are committed
 - notes:
   - commit message: `ui-theme: verify style theme refresh follow-up`
+  - outcome: complete; no further required follow-up tasks appended
+  - verification notes: specs/web-ui-style-theme-refresh/verification-notes.md
+  - checks: `git diff --check`; scoped stale-contradiction search from task brief over docs/skills/frontend/templates/specs/provenance (remaining hits historical mini-project notes, completed-task check logs, or verification instructions); repeated active-artifact search excluding specs returned no matches
+  - frontend checks not rerun because TASK-WUTR-03-001 and TASK-WUTR-99-002 changed only docs/skill guidance and queue/verification artifacts, not frontend assets

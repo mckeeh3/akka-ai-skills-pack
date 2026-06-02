@@ -43,3 +43,22 @@ Appended:
 
 - `TASK-WUTR-03-001: Align remaining foundation theme guidance`
 - `TASK-WUTR-99-002: Verify web UI style theme refresh completion after follow-up`
+
+## TASK-WUTR-99-002 outcome
+
+Status: complete; no further required follow-up tasks were appended.
+
+## Follow-up verification
+
+- Sprint 03 goals were met by TASK-WUTR-03-001: foundation `/api/me`, user-settings, and core foundation skill guidance now use `preferredThemeId` named-theme semantics; pending-question generation now offers `ai-first-workstream-enterprise` instead of the obsolete Atlas style id.
+- The mini-project done state is met: canonical docs, skills, seed app-description, reference/starter CSS, My Account theme selection, and remaining foundation guidance align on the replacement AI-first workstream enterprise style and four named themes.
+- No blocking unresolved questions remain. The prior raw template Maven blocker remains non-material to this mini-project because it concerns unrendered backend template placeholders and not changed frontend/style assets.
+- Search results for the full scoped pattern remain only in historical mini-project planning notes, completed-task check logs, and verification search instructions. A repeat search over active docs/skills/frontend/templates outside `specs/web-ui-style-theme-refresh` returned no matches.
+
+## Follow-up checks run
+
+- `git diff --check`
+- `rg -n "orange|coral|warm near-black|system with light|light/dark/system|mode preference|atlas-ops-supervisory-console|preferredColorMode|uiMode|ModePreference|MY_ACCOUNT_INVALID_COLOR_MODE" docs skills frontend templates specs/web-ui-style-theme-refresh web-ui-high-level-style-guide.md || true`
+- `rg -n "orange|coral|warm near-black|system with light|light/dark/system|mode preference|atlas-ops-supervisory-console|preferredColorMode|uiMode|ModePreference|MY_ACCOUNT_INVALID_COLOR_MODE" docs skills frontend templates web-ui-high-level-style-guide.md || true`
+
+Frontend checks were not rerun in TASK-WUTR-99-002 because the follow-up task changed only docs/skill guidance and queue/verification artifacts, not frontend assets.
