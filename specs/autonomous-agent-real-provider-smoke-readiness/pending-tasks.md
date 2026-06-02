@@ -71,7 +71,7 @@
 
 ### TASK-AARPS-02-001: Fix and run provider smoke readiness checks
 
-- status: pending
+- status: done
 - source: specs/autonomous-agent-real-provider-smoke-readiness/backlog/01-real-provider-smoke-backlog.md
 - task brief: specs/autonomous-agent-real-provider-smoke-readiness/tasks/02-smoke/01-fix-and-run-provider-smoke.md
 - depends on:
@@ -85,6 +85,8 @@
   - bounded fix or documented external provider/config blocker
   - validation artifact
   - updated pending-tasks.md
+- output artifact:
+  - specs/autonomous-agent-real-provider-smoke-readiness/02-fix-and-run-provider-smoke.md
 - required checks:
   - `git diff --check`
   - provider-skip fullstack validation
