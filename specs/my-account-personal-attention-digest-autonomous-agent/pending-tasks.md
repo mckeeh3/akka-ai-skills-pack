@@ -103,7 +103,7 @@
 
 ### TASK-MAPAD-03-001: Wire My Account digest events, attention, and surfaces
 
-- status: pending
+- status: done
 - source: specs/my-account-personal-attention-digest-autonomous-agent/backlog/01-personal-attention-digest-build-backlog.md
 - task brief: specs/my-account-personal-attention-digest-autonomous-agent/tasks/03-surfaces/01-wire-events-attention-surfaces.md
 - depends on:

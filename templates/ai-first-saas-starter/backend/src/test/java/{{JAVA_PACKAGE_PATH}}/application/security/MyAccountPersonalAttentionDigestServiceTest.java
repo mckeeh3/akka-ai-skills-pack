@@ -85,6 +85,36 @@ class MyAccountPersonalAttentionDigestServiceTest {
   }
 
   @Test
+  void lifecyclePublishesV3EventsAndDigestTaskAttentionWithoutMutatingSourceAttention() {
+    var repository = new LocalDemoMyAccountPersonalAttentionDigestTaskRepository();
+    var events = new LocalDemoWorkstreamEventRepository();
+    var producer = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producer, clock);
+    var publisher = new WorkstreamEventPublisher(events, consumer, clock);
+    var digests = new MyAccountPersonalAttentionDigestService(repository, resolver, new AttentionService(attentionRepository, resolver, clock), clock, new RecordingPersonalAttentionDigestRuntime(), producer, publisher);
+
+    var task = digests.start(owner, command("idem-events"), "corr-events-start");
+
+    var eventTypes = events.listTenant("tenant-1").stream().map(event -> event.eventType()).toList();
+    assertTrue(eventTypes.contains("workflow.my_account.personal_attention_digest.started"));
+    assertTrue(eventTypes.contains("worker.task.queued"));
+    var digestAttention = attentionRepository.find("tenant-1", "attention:worker-task:" + task.digestTaskId() + ":task-state").orElseThrow();
+    assertEquals("agent-my-account", digestAttention.owningWorkstreamId());
+    assertEquals(MyAccountPersonalAttentionDigestService.READ_CAPABILITY, digestAttention.requiredCapabilityId());
+    assertTrue(digestAttention.summary().contains("no source attention acknowledgement"));
+    assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", "attention-visible-audit").orElseThrow().status());
+
+    var completed = task.withWorkerUpdate(MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, 100, "Model-backed redacted digest ready for review; no direct mutation.", null, 2, task.evidenceRefs(), List.of("personal_attention_digest_section:agent-audit-trace"), List.of("trace-complete"), Instant.now(clock));
+    repository.save(completed);
+    var projected = digests.read(owner, completed.digestTaskId(), "corr-events-read");
+
+    assertEquals(MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, projected.status());
+    assertTrue(events.listTenant("tenant-1").stream().anyMatch(event -> "workflow.my_account.personal_attention_digest.completed_review_required".equals(event.eventType())));
+    assertTrue(events.listTenant("tenant-1").stream().anyMatch(event -> "worker.task.completed_review_required".equals(event.eventType())));
+    assertTrue(events.listTenant("tenant-1").stream().anyMatch(event -> "surface-my-account-personal-attention-digest-result".equals(event.surfaceId())));
+  }
+
+  @Test
   void componentClientBackedRuntimeStartIsQueuedAndProjectionCanCompleteReviewRequired() {
     var repository = new LocalDemoMyAccountPersonalAttentionDigestTaskRepository();
     var runtime = new RecordingPersonalAttentionDigestRuntime();

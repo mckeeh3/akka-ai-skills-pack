@@ -23,17 +23,25 @@ public final class MyAccountPersonalAttentionDigestService {
   private final AttentionService attentionService;
   private final Clock clock;
   private final MyAccountPersonalAttentionDigestAutonomousAgentRuntime autonomousAgentRuntime;
+  private final AttentionProducerService attentionProducerService;
+  private final WorkstreamEventPublisher workstreamEventPublisher;
 
   public MyAccountPersonalAttentionDigestService(MyAccountPersonalAttentionDigestTaskRepository repository, AuthContextResolver authContextResolver, AttentionService attentionService, Clock clock) {
     this(repository, authContextResolver, attentionService, clock, new FailClosedMyAccountPersonalAttentionDigestAutonomousAgentRuntime());
   }
 
   public MyAccountPersonalAttentionDigestService(MyAccountPersonalAttentionDigestTaskRepository repository, AuthContextResolver authContextResolver, AttentionService attentionService, Clock clock, MyAccountPersonalAttentionDigestAutonomousAgentRuntime autonomousAgentRuntime) {
+    this(repository, authContextResolver, attentionService, clock, autonomousAgentRuntime, null, null);
+  }
+
+  public MyAccountPersonalAttentionDigestService(MyAccountPersonalAttentionDigestTaskRepository repository, AuthContextResolver authContextResolver, AttentionService attentionService, Clock clock, MyAccountPersonalAttentionDigestAutonomousAgentRuntime autonomousAgentRuntime, AttentionProducerService attentionProducerService, WorkstreamEventPublisher workstreamEventPublisher) {
     this.repository = Objects.requireNonNull(repository);
     this.authContextResolver = Objects.requireNonNull(authContextResolver);
     this.attentionService = Objects.requireNonNull(attentionService);
     this.clock = Objects.requireNonNull(clock);
     this.autonomousAgentRuntime = Objects.requireNonNull(autonomousAgentRuntime);
+    this.attentionProducerService = attentionProducerService;
+    this.workstreamEventPublisher = workstreamEventPublisher;
   }
 
   public MyAccountPersonalAttentionDigestTask start(AuthContextResolver.ResolvedMe actor, StartPersonalAttentionDigestCommand command, String correlationId) {
@@ -76,6 +84,7 @@ public final class MyAccountPersonalAttentionDigestService {
     startTraceIds.addAll(start.traceIds());
     var started = task.withAutonomousAgentTaskId(start.autonomousAgentTaskId(), start.status(), start.progressPercent(), start.summary(), start.blockerCode(), startTraceIds, Instant.now(clock));
     repository.save(started);
+    publishLifecycle(started, start.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : "started", START_CAPABILITY, actor.account().accountId(), correlationId);
     authContextResolver.appendProtectedReadTrace(actor, START_CAPABILITY, start.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "provider-blocked-fail-closed:no fake success" : "autonomous-agent-task-started", correlationId);
     return started;
   }
@@ -84,6 +93,7 @@ public final class MyAccountPersonalAttentionDigestService {
     var task = task(actor, digestTaskId);
     require(actor, READ_CAPABILITY, correlationId);
     var projected = projectAutonomousAgentTask(task, correlationId);
+    publishLifecycle(projected, semanticTransition(projected), READ_CAPABILITY, actor.account().accountId(), correlationId);
     authContextResolver.appendProtectedReadTrace(actor, READ_CAPABILITY, "browser-safe-personal-attention-digest-read:redacted", correlationId);
     return projected;
   }
@@ -96,6 +106,7 @@ public final class MyAccountPersonalAttentionDigestService {
     var traceId = "trace-my-account-personal-attention-digest-cancel-" + stableSuffix(correlationId + ":" + task.digestTaskId());
     var cancelled = task.withStatus(MyAccountPersonalAttentionDigestTask.Status.CANCELLED, task.progressPercent(), firstNonBlank(reason, "My Account personal attention digest cancelled by authorized user; source attention and protected state unchanged."), null, List.of(traceId), Instant.now(clock));
     repository.save(cancelled);
+    publishLifecycle(cancelled, "cancelled", CANCEL_CAPABILITY, actor.account().accountId(), correlationId);
     authContextResolver.appendProtectedReadTrace(actor, CANCEL_CAPABILITY, "cancelled:no source attention mutation", correlationId);
     return cancelled;
   }
@@ -122,6 +133,7 @@ public final class MyAccountPersonalAttentionDigestService {
     var traceId = "trace-my-account-personal-attention-digest-" + decision + "-" + stableSuffix(correlationId + ":" + task.digestTaskId());
     var decided = task.withDecision(status, decision, firstNonBlank(reason, "Human personal attention digest decision recorded; source attention, workstreams, authorization, and provider config unchanged."), List.of(traceId), Instant.now(clock));
     repository.save(decided);
+    publishLifecycle(decided, status == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED ? "result_accepted" : "result_rejected", status == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, actor.account().accountId(), correlationId);
     authContextResolver.appendProtectedReadTrace(actor, status == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, decision + ":advisory-only:no source attention mutation", correlationId);
     return decided;
   }
@@ -133,6 +145,24 @@ public final class MyAccountPersonalAttentionDigestService {
     var updated = task.withWorkerUpdate(projection.status(), projection.progressPercent(), projection.summary(), projection.blockerCode(), projection.authorizedAttentionCount() == 0 ? task.authorizedAttentionCount() : projection.authorizedAttentionCount(), projection.evidenceRefs().isEmpty() ? task.evidenceRefs() : projection.evidenceRefs(), projection.sectionRefs().isEmpty() ? task.sectionRefs() : projection.sectionRefs(), projection.traceIds().isEmpty() ? task.traceIds() : projection.traceIds(), Instant.now(clock));
     repository.save(updated);
     return updated;
+  }
+
+  private void publishLifecycle(MyAccountPersonalAttentionDigestTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    if (attentionProducerService != null) attentionProducerService.upsertWorkerTaskState(task, null, correlationId);
+    if (workstreamEventPublisher != null) workstreamEventPublisher.publishMyAccountPersonalAttentionDigestLifecycle(task, semanticTransition, capabilityId, actorAccountId, correlationId);
+  }
+
+  private static String semanticTransition(MyAccountPersonalAttentionDigestTask task) {
+    return switch (task.status()) {
+      case QUEUED -> "queued";
+      case RUNNING -> "running";
+      case BLOCKED_PROVIDER_OR_RUNTIME -> "blocked_provider_or_runtime";
+      case FAILED -> "failed";
+      case CANCELLED -> "cancelled";
+      case COMPLETED_EMPTY, COMPLETED_REVIEW_REQUIRED -> "completed_review_required";
+      case ACCEPTED -> "result_accepted";
+      case REJECTED -> "result_rejected";
+    };
   }
 
   private MyAccountPersonalAttentionDigestTask task(AuthContextResolver.ResolvedMe actor, String digestTaskId) {

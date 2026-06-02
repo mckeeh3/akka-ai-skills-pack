@@ -17,6 +17,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSurfaceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserSettings;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
@@ -80,6 +81,11 @@ public final class WorkstreamService {
   private static final String MY_ACCOUNT_LIST_PERSONAL_ATTENTION_CAPABILITY = "my_account.list_personal_attention";
   private static final String MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY = "my_account.update_profile_settings";
   private static final String MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY = "my_account.open_authorized_workstream";
+  private static final String MY_ACCOUNT_DIGEST_START_CAPABILITY = MyAccountPersonalAttentionDigestService.START_CAPABILITY;
+  private static final String MY_ACCOUNT_DIGEST_READ_CAPABILITY = MyAccountPersonalAttentionDigestService.READ_CAPABILITY;
+  private static final String MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY = MyAccountPersonalAttentionDigestService.CANCEL_CAPABILITY;
+  private static final String MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY = MyAccountPersonalAttentionDigestService.ACCEPT_RESULT_CAPABILITY;
+  private static final String MY_ACCOUNT_DIGEST_REJECT_CAPABILITY = MyAccountPersonalAttentionDigestService.REJECT_RESULT_CAPABILITY;
   private static final String AUDIT_TRACE_READ_CAPABILITY = "audit.trace.read";
   private static final String AUDIT_TRACE_DASHBOARD_CAPABILITY = "audit.trace.dashboard.read";
   private static final String AUDIT_TRACE_SEARCH_CAPABILITY = "audit.trace.search";
@@ -98,6 +104,7 @@ public final class WorkstreamService {
   private final MeService meService;
   private final AuthContextResolver authContextResolver;
   private final MyAccountService myAccountService;
+  private final MyAccountPersonalAttentionDigestService personalAttentionDigestService;
   private final UserDirectoryView userDirectoryView;
   private final InvitationView invitationView;
   private final UserAdminService userAdminService;
@@ -178,6 +185,7 @@ public final class WorkstreamService {
     this.authContextResolver = authContextResolver;
     this.attentionService = Objects.requireNonNull(attentionService);
     this.myAccountService = new MyAccountService(authContextResolver, attentionService);
+    this.personalAttentionDigestService = StarterSecurityComponents.personalAttentionDigestService();
     this.userDirectoryView = userDirectoryView;
     this.invitationView = invitationView;
     this.userAdminService = userAdminService;
@@ -335,6 +343,21 @@ public final class WorkstreamService {
     } else if ("action-update-my-profile".equals(request.actionId()) || "action-update-my-settings".equals(request.actionId())) {
       var update = updateOwnProfileSettings(actor, request);
       result = new CapabilityActionResult(update.changed() ? "accepted" : "no-op", update.changed() ? "My Account profile/settings changes were persisted by the backend." : "My Account profile/settings update was a no-op.", request.correlationId(), List.of("trace-my-account-profile-settings-" + stableSuffix(request.idempotencyKey())), surfaceForAction(authContextResolver.resolveMe(identity, selectedContextId, request.correlationId()), request.actionId(), request.correlationId()));
+    } else if ("action-start-my-account-personal-attention-digest".equals(request.actionId())) {
+      var task = personalAttentionDigestService.start(actor, new MyAccountPersonalAttentionDigestService.StartPersonalAttentionDigestCommand(request.idempotencyKey()), request.correlationId());
+      result = personalAttentionDigestActionResult(task, task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : "accepted", "My Account personal attention digest task is backend-governed; results are advisory, redacted, and source attention is unchanged.", request.correlationId(), actor);
+    } else if ("action-read-my-account-personal-attention-digest".equals(request.actionId())) {
+      var task = personalAttentionDigestService.read(actor, stringInput(request.input(), "digestTaskId", ""), request.correlationId());
+      result = personalAttentionDigestActionResult(task, "accepted", "My Account personal attention digest state loaded from backend projection.", request.correlationId(), actor);
+    } else if ("action-cancel-my-account-personal-attention-digest".equals(request.actionId())) {
+      var task = personalAttentionDigestService.cancel(actor, stringInput(request.input(), "digestTaskId", ""), stringInput(request.input(), "reason", "workstream cancel"), request.correlationId());
+      result = personalAttentionDigestActionResult(task, "accepted", "My Account personal attention digest cancellation recorded; source attention unchanged.", request.correlationId(), actor);
+    } else if ("action-accept-my-account-personal-attention-digest".equals(request.actionId())) {
+      var task = personalAttentionDigestService.acceptResult(actor, stringInput(request.input(), "digestTaskId", ""), stringInput(request.input(), "reason", "accepted in My Account"), request.correlationId());
+      result = personalAttentionDigestActionResult(task, "accepted", "Advisory personal attention digest accepted; source attention lifecycle unchanged.", request.correlationId(), actor);
+    } else if ("action-reject-my-account-personal-attention-digest".equals(request.actionId())) {
+      var task = personalAttentionDigestService.rejectResult(actor, stringInput(request.input(), "digestTaskId", ""), stringInput(request.input(), "reason", "needs refresh"), request.correlationId());
+      result = personalAttentionDigestActionResult(task, "accepted", "Advisory personal attention digest rejected for follow-up; source attention lifecycle unchanged.", request.correlationId(), actor);
     } else if ("action-open-user-admin".equals(request.actionId()) || "action-open-agent-admin".equals(request.actionId()) || "action-open-audit-trace".equals(request.actionId()) || "action-open-governance-policy".equals(request.actionId())) {
       var open = myAccountService.openAuthorizedWorkstream(actor, request.actionId(), request.correlationId());
       result = "accepted".equals(open.status())
@@ -387,7 +410,12 @@ public final class WorkstreamService {
   }
 
   private boolean durableActionOwnsIdempotency(String actionId) {
-    return actionId != null && (actionId.startsWith("action-useradmin-start-access-review")
+    return actionId != null && (actionId.startsWith("action-start-my-account-personal-attention-digest")
+        || actionId.startsWith("action-read-my-account-personal-attention-digest")
+        || actionId.startsWith("action-cancel-my-account-personal-attention-digest")
+        || actionId.startsWith("action-accept-my-account-personal-attention-digest")
+        || actionId.startsWith("action-reject-my-account-personal-attention-digest")
+        || actionId.startsWith("action-useradmin-start-access-review")
         || actionId.startsWith("action-useradmin-read-access-review")
         || actionId.startsWith("action-useradmin-cancel-access-review")
         || actionId.startsWith("action-useradmin-accept-access-review")
@@ -495,8 +523,8 @@ public final class WorkstreamService {
     seedStarterCoreAttention(actor, correlationId);
     var dashboard = myAccountService.dashboardData(actor, correlationId);
     return envelope("surface-my-account-dashboard", "dashboard", "My Account", actor, correlationId,
-        mapOf("surfaceContract", dashboard.surfaceContract(), "cards", dashboard.cards(), "sections", dashboard.sections(), "attentionItems", dashboard.attentionItems(), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention only includes authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
-        List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), showContextAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
+        mapOf("surfaceContract", dashboard.surfaceContract(), "cards", dashboard.cards(), "sections", dashboard.sections(), "attentionItems", dashboard.attentionItems(), "personalAttentionDigest", mapOf("surfaceIds", List.of("surface-my-account-personal-attention-digest-progress", "surface-my-account-personal-attention-digest-result", "surface-my-account-personal-attention-digest-blocked"), "statusSource", "backend-projected MyAccountPersonalAttentionDigestTask", "noDirectMutation", true, "capabilityIds", List.of(MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, MY_ACCOUNT_DIGEST_REJECT_CAPABILITY)), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention only includes authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "personal attention digest", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
+        List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), showContextAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
   }
 
   private SurfaceEnvelope myProfileSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -521,6 +549,30 @@ public final class WorkstreamService {
     return envelope("surface-my-account-open-denied", "system_message", "Workstream unavailable", actor, correlationId,
         mapOf("status", "not_found_or_redacted", "severity", "warning", "title", "Workstream unavailable", "message", decision.message(), "capabilityId", MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "safeReasonCode", decision.safeReasonCode(), "recoverySteps", List.of("Review the selected context and authority basis in My Account.", "Ask an administrator for access if this workstream should be available."), "traceRefs", decision.traceIds(), "redaction", "target workstream details are redacted when unauthorized"),
         List.of(showProfileAction(), showSettingsAction(), openAuditAction()));
+  }
+
+  private CapabilityActionResult personalAttentionDigestActionResult(MyAccountPersonalAttentionDigestTask task, String status, String message, String correlationId, AuthContextResolver.ResolvedMe actor) {
+    return new CapabilityActionResult(status, message, correlationId, task.traceIds(), personalAttentionDigestSurface(actor, task, correlationId));
+  }
+
+  private SurfaceEnvelope personalAttentionDigestSurface(AuthContextResolver.ResolvedMe actor, MyAccountPersonalAttentionDigestTask task, String correlationId) {
+    if (task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME) return personalAttentionDigestBlockedSurface(actor, task, correlationId);
+    var completed = task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED || task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_EMPTY || task.status() == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED || task.status() == MyAccountPersonalAttentionDigestTask.Status.REJECTED;
+    return envelope(completed ? "surface-my-account-personal-attention-digest-result" : "surface-my-account-personal-attention-digest-progress", completed ? "dashboard" : "workflow-status", completed ? "Personal attention digest result" : "Personal attention digest progress", actor, correlationId,
+        mapOf("surfaceContract", completed ? "my_account.personal_attention_digest.result.v1" : "my_account.personal_attention_digest.progress.v1", "digestTaskId", task.digestTaskId(), "autonomousAgentTaskId", task.autonomousAgentTaskId(), "status", task.status().name().toLowerCase(Locale.ROOT), "progressPercent", task.progressPercent(), "summary", task.summary(), "authorizedAttentionCount", task.authorizedAttentionCount(), "sectionRefs", task.sectionRefs(), "evidenceRefs", task.evidenceRefs(), "traceRefs", task.traceIds(), "redaction", "Authorized personal attention evidence only; hidden workstreams/items are not counted or named.", "noDirectMutation", true, "safety", "This digest is advisory. Source attention remains authoritative and source item lifecycle changes require separate governed capabilities."),
+        completed ? List.of(readPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openAuditAction()) : List.of(readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), openAuditAction()));
+  }
+
+  private SurfaceEnvelope personalAttentionDigestBlockedSurface(AuthContextResolver.ResolvedMe actor, MyAccountPersonalAttentionDigestTask task, String correlationId) {
+    return envelope("surface-my-account-personal-attention-digest-blocked", "system_message", "Personal attention digest blocked", actor, correlationId,
+        mapOf("surfaceContract", "my_account.personal_attention_digest.blocked.v1", "digestTaskId", task == null ? "" : task.digestTaskId(), "autonomousAgentTaskId", task == null ? "" : task.autonomousAgentTaskId(), "status", "blocked_provider_or_runtime", "severity", "blocked", "title", "Provider/runtime configuration is required", "message", task == null ? "My Account personal attention digest fails closed until backend provider/runtime configuration is available." : task.summary(), "blockerCode", task == null ? "blocked_provider_or_runtime" : task.blockerCode(), "recoverySteps", List.of("Configure the Akka AutonomousAgent provider/runtime and governed tool grants.", "Retry from My Account after readiness is restored."), "traceRefs", task == null ? List.of("trace-my-account-personal-attention-digest-blocked") : task.traceIds(), "noFakeSuccess", true, "noDirectMutation", true, "redaction", "No deterministic, fake, fixture, simulated, or model-less personal attention digest success is returned."),
+        List.of(showDashboardAction(), readPersonalAttentionDigestAction(), openAuditAction()));
+  }
+
+  private SurfaceEnvelope personalAttentionDigestEmptyProgressSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return envelope("surface-my-account-personal-attention-digest-progress", "workflow-status", "Personal attention digest", actor, correlationId,
+        mapOf("surfaceContract", "my_account.personal_attention_digest.progress.v1", "status", "not_started", "summary", "Start a backend-governed My Account personal attention digest to summarize only authorized personal attention evidence.", "authorizedAttentionCount", 0, "traceRefs", List.of("trace-my-account-personal-attention-digest-not-started"), "redaction", "Hidden workstreams/items are not counted or named.", "noDirectMutation", true),
+        List.of(startPersonalAttentionDigestAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope dashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -853,6 +905,9 @@ public final class WorkstreamService {
       case "surface-my-profile" -> myProfileSurface(actor, correlationId);
       case "surface-my-settings" -> mySettingsSurface(actor, correlationId);
       case "surface-my-context" -> myContextSurface(actor, correlationId);
+      case "surface-my-account-personal-attention-digest-progress" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
+      case "surface-my-account-personal-attention-digest-result" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
+      case "surface-my-account-personal-attention-digest-blocked" -> personalAttentionDigestBlockedSurface(actor, null, correlationId);
       case "surface-user-admin-dashboard" -> dashboardSurface(actor, correlationId);
       case "surface-user-admin-list" -> listSurface(actor, correlationId);
       case "surface-user-admin-invitation-panel" -> invitationPanelSurface(actor, correlationId);
@@ -1043,6 +1098,11 @@ public final class WorkstreamService {
       case "action-show-my-settings", "action-update-my-settings" -> mySettingsSurface(actor, correlationId);
       case "action-show-my-context" -> myContextSurface(actor, correlationId);
       case "action-sign-out" -> myAccountDashboardSurface(actor, correlationId);
+      case "action-start-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
+      case "action-read-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
+      case "action-cancel-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
+      case "action-accept-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
+      case "action-reject-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "action-open-user-admin" -> dashboardSurface(actor, correlationId);
       case "action-open-agent-admin" -> agentAdminCatalogSurface(actor, correlationId);
       case "action-open-governance-policy", "action-governance-policy-dashboard" -> governancePolicySurface(actor, correlationId);
@@ -1072,7 +1132,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), showContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayListAction(), displayDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), showContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayListAction(), displayDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
@@ -1093,6 +1153,11 @@ public final class WorkstreamService {
   private SurfaceAction updateProfileAction() { return new SurfaceAction("action-update-my-profile", "Save profile changes", "command", browserToolId("action-update-my-profile"), governedToolId(MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "schema.my-account.profile.update.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-my-profile", "inline"), new Audit("UserProfileUpdateRequested", true)); }
   private SurfaceAction updateSettingsAction() { return new SurfaceAction("action-update-my-settings", "Save settings changes", "command", browserToolId("action-update-my-settings"), governedToolId(MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "schema.my-account.settings.update.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-my-settings", "inline"), new Audit("UserSettingsUpdateRequested", true)); }
   private SurfaceAction signOutAction() { return new SurfaceAction("action-sign-out", "Sign out", "command", browserToolId("action-sign-out"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-dashboard", "inline"), new Audit("SessionSignOutRequested", true)); }
+  private SurfaceAction startPersonalAttentionDigestAction() { return new SurfaceAction("action-start-my-account-personal-attention-digest", "Start personal attention digest", "command", browserToolId("action-start-my-account-personal-attention-digest"), governedToolId(MY_ACCOUNT_DIGEST_START_CAPABILITY), MY_ACCOUNT_DIGEST_START_CAPABILITY, "schema.my-account.personal-attention-digest.start.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-my-account-personal-attention-digest-progress", "inline"), new Audit("MyAccountPersonalAttentionDigestStarted", true)); }
+  private SurfaceAction readPersonalAttentionDigestAction() { return new SurfaceAction("action-read-my-account-personal-attention-digest", "Refresh digest state", "read", browserToolId("action-read-my-account-personal-attention-digest"), governedToolId(MY_ACCOUNT_DIGEST_READ_CAPABILITY), MY_ACCOUNT_DIGEST_READ_CAPABILITY, "schema.my-account.personal-attention-digest.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-personal-attention-digest-progress", "inline"), new Audit("MyAccountPersonalAttentionDigestRead", true)); }
+  private SurfaceAction cancelPersonalAttentionDigestAction() { return new SurfaceAction("action-cancel-my-account-personal-attention-digest", "Cancel digest", "command", browserToolId("action-cancel-my-account-personal-attention-digest"), governedToolId(MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY), MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, "schema.my-account.personal-attention-digest.cancel.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-personal-attention-digest-progress", "inline"), new Audit("MyAccountPersonalAttentionDigestCancelled", true)); }
+  private SurfaceAction acceptPersonalAttentionDigestAction() { return new SurfaceAction("action-accept-my-account-personal-attention-digest", "Accept advisory digest", "command", browserToolId("action-accept-my-account-personal-attention-digest"), governedToolId(MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY), MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, "schema.my-account.personal-attention-digest.accept.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-personal-attention-digest-result", "inline"), new Audit("MyAccountPersonalAttentionDigestAccepted", true)); }
+  private SurfaceAction rejectPersonalAttentionDigestAction() { return new SurfaceAction("action-reject-my-account-personal-attention-digest", "Reject advisory digest", "command", browserToolId("action-reject-my-account-personal-attention-digest"), governedToolId(MY_ACCOUNT_DIGEST_REJECT_CAPABILITY), MY_ACCOUNT_DIGEST_REJECT_CAPABILITY, "schema.my-account.personal-attention-digest.reject.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-personal-attention-digest-result", "inline"), new Audit("MyAccountPersonalAttentionDigestRejected", true)); }
   private SurfaceAction openUserAdminAction() { return new SurfaceAction("action-open-user-admin", "Open User Admin", "surface-request", browserToolId("action-open-user-admin"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-list", "deep-link"), new Audit("MyAccountOpenUserAdminRequested", true)); }
   private SurfaceAction openAgentAdminAction() { return new SurfaceAction("action-open-agent-admin", "Open Agent Admin", "surface-request", browserToolId("action-open-agent-admin"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-catalog", "deep-link"), new Audit("MyAccountOpenAgentAdminRequested", true)); }
   private SurfaceAction openGovernancePolicyAction() { return new SurfaceAction("action-open-governance-policy", "Open Governance/Policy", "surface-request", browserToolId("action-open-governance-policy"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-dashboard", "deep-link"), new Audit("MyAccountOpenGovernancePolicyRequested", true)); }

@@ -8,6 +8,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
+import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import java.time.Clock;
 import java.time.Instant;
@@ -145,6 +146,33 @@ public final class WorkstreamEventAttentionConsumer {
     });
   }
 
+  public AttentionItem project(WorkstreamEventEnvelope event, MyAccountPersonalAttentionDigestTask sourceTask) {
+    var workflowEvent = "workflow/process".equals(event.eventFamily()) && event.eventType().startsWith("workflow.my_account.personal_attention_digest.");
+    var taskEvent = "task/worker".equals(event.eventFamily()) && event.eventType().startsWith("worker.task.");
+    if (!workflowEvent && !taskEvent) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "unsupported-event-type");
+      return null;
+    }
+    if (!event.tenantId().equals(sourceTask.tenantId()) || !Objects.equals(event.customerId(), sourceTask.customerId())) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "scope-mismatch");
+      return null;
+    }
+    if (!event.capabilityRefs().stream().anyMatch(capability -> capability.startsWith("my_account.personal_attention_digest."))) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "missing-my-account-digest-capability-ref");
+      return null;
+    }
+    if (alreadyProjected(event)) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DUPLICATE", AdminAuditEvent.Result.NO_OP, event, event.idempotencyKey());
+      return currentItem(event);
+    }
+    return projectSupported(event, switch (event.eventType()) {
+      case "workflow.my_account.personal_attention_digest.started", "workflow.my_account.personal_attention_digest.blocked_provider_or_runtime", "workflow.my_account.personal_attention_digest.failed", "workflow.my_account.personal_attention_digest.completed_review_required", "workflow.my_account.personal_attention_digest.result_rejected",
+          "worker.task.queued", "worker.task.running", "worker.task.blocked_provider_or_runtime", "worker.task.failed", "worker.task.completed_review_required", "worker.task.rejected_result" -> attentionProducerService.upsertWorkerTaskState(sourceTask, null, event.correlationId());
+      case "workflow.my_account.personal_attention_digest.cancelled", "workflow.my_account.personal_attention_digest.result_accepted", "worker.task.cancelled", "worker.task.accepted" -> attentionProducerService.resolveWorkerTaskState(sourceTask, sourceTask.status().name().toLowerCase(java.util.Locale.ROOT), event.correlationId());
+      default -> null;
+    });
+  }
+
   public AttentionItem project(WorkstreamEventEnvelope event, AuditTraceSummaryTask sourceTask) {
     var workflowEvent = "workflow/process".equals(event.eventFamily()) && event.eventType().startsWith("workflow.audit_trace.summary_");
     var taskEvent = "task/worker".equals(event.eventFamily()) && event.eventType().startsWith("worker.task.");
@@ -197,6 +225,9 @@ public final class WorkstreamEventAttentionConsumer {
     }
     if (event.payload().containsKey("impactTaskId")) {
       return attentionRepository.find(event.tenantId(), workerTaskItemId(event.payload().get("impactTaskId"))).orElse(null);
+    }
+    if (event.payload().containsKey("digestTaskId")) {
+      return attentionRepository.find(event.tenantId(), workerTaskItemId(event.payload().get("digestTaskId"))).orElse(null);
     }
     return null;
   }

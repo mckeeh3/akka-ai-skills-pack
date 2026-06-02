@@ -5,6 +5,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
+import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventSourceRef;
 import java.time.Clock;
@@ -23,6 +24,7 @@ public final class WorkstreamEventPublisher {
   public static final String PAYLOAD_PROMPT_RISK_REVIEW_LIFECYCLE = "PromptRiskReviewLifecycleEventPayload";
   public static final String PAYLOAD_AUDIT_TRACE_SUMMARY_LIFECYCLE = "AuditTraceSummaryLifecycleEventPayload";
   public static final String PAYLOAD_GOVERNANCE_POLICY_IMPACT_LIFECYCLE = "GovernancePolicyImpactLifecycleEventPayload";
+  public static final String PAYLOAD_MY_ACCOUNT_PERSONAL_ATTENTION_DIGEST_LIFECYCLE = "MyAccountPersonalAttentionDigestLifecycleEventPayload";
 
   private final WorkstreamEventRepository repository;
   private final WorkstreamEventAttentionConsumer attentionConsumer;
@@ -95,6 +97,19 @@ public final class WorkstreamEventPublisher {
     var taskTransition = workerTaskTransition(task, semanticTransition);
     var eventType = "worker.task." + taskTransition;
     return publishGovernancePolicyImpactEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
+  }
+
+  public WorkstreamEventEnvelope publishMyAccountPersonalAttentionDigestLifecycle(MyAccountPersonalAttentionDigestTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var eventType = "workflow.my_account.personal_attention_digest." + semanticTransition;
+    var event = publishMyAccountPersonalAttentionDigestEvent(task, semanticTransition, eventType, EVENT_FAMILY_WORKFLOW_PROCESS, capabilityId, actorAccountId, correlationId);
+    publishMyAccountPersonalAttentionDigestTaskEvent(task, semanticTransition, capabilityId, actorAccountId, correlationId);
+    return event;
+  }
+
+  public WorkstreamEventEnvelope publishMyAccountPersonalAttentionDigestTaskEvent(MyAccountPersonalAttentionDigestTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
+    var taskTransition = workerTaskTransition(task, semanticTransition);
+    var eventType = "worker.task." + taskTransition;
+    return publishMyAccountPersonalAttentionDigestEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
   }
 
   private WorkstreamEventEnvelope publishAccessReviewEvent(AccessReviewTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
@@ -321,6 +336,16 @@ public final class WorkstreamEventPublisher {
         Map.of("attentionCategory", "WORKFLOW_BLOCKED", "attentionItemId", "attention:worker-task:" + task.taskId() + ":task-state"));
   }
 
+  private WorkstreamEventEnvelope publishMyAccountPersonalAttentionDigestEvent(MyAccountPersonalAttentionDigestTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
+    var idempotencyKey = idempotencyKey(eventFamily, eventType, task.tenantId(), task.customerId(), task.digestTaskId(), semanticTransition);
+    var existing = repository.findByIdempotencyKey(task.tenantId(), idempotencyKey).orElse(null);
+    var event = existing == null
+        ? repository.publish(myAccountPersonalAttentionDigestEnvelope(task, semanticTransition, eventType, eventFamily, capabilityId, actorAccountId, idempotencyKey, correlationId))
+        : existing;
+    attentionConsumer.project(event, task);
+    return event;
+  }
+
   private WorkstreamEventEnvelope publishGovernancePolicyImpactEvent(GovernancePolicyImpactTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
     var idempotencyKey = idempotencyKey(eventFamily, eventType, task.tenantId(), task.customerId(), task.impactTaskId(), semanticTransition);
     var existing = repository.findByIdempotencyKey(task.tenantId(), idempotencyKey).orElse(null);
@@ -329,6 +354,54 @@ public final class WorkstreamEventPublisher {
         : existing;
     attentionConsumer.project(event, task);
     return event;
+  }
+
+  private WorkstreamEventEnvelope myAccountPersonalAttentionDigestEnvelope(MyAccountPersonalAttentionDigestTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String idempotencyKey, String correlationId) {
+    var eventId = "evt-" + stableSuffix(idempotencyKey);
+    var traceId = firstTraceRef(task, "trace-" + stableSuffix(eventId + ":" + correlationId));
+    var now = Instant.now(clock);
+    var safeCapability = safe(capabilityId, MyAccountPersonalAttentionDigestService.READ_CAPABILITY);
+    var completed = task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED || task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_EMPTY;
+    return new WorkstreamEventEnvelope(
+        eventId,
+        eventType,
+        eventFamily,
+        1,
+        task.updatedAt() == null ? now : task.updatedAt(),
+        now,
+        task.tenantId(),
+        task.customerId(),
+        Map.of("scopeType", task.customerId() == null ? "TENANT" : "CUSTOMER", "tenantId", task.tenantId(), "customerId", safe(task.customerId(), ""), "capabilityIds", safeCapability + "," + MyAccountService.LIST_PERSONAL_ATTENTION_CAPABILITY + "," + AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL),
+        Map.of("actorType", actorAccountId == null || actorAccountId.isBlank() ? "worker" : "account", "accountId", safe(actorAccountId, "system"), "label", "My Account personal attention digest lifecycle"),
+        List.of(
+            new WorkstreamEventSourceRef("workflow", task.digestTaskId(), "My Account personal attention digest workflow " + semanticTransition, safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("autonomous_task", safe(task.autonomousAgentTaskId(), task.digestTaskId()), "My Account personal attention digest AutonomousAgent task state " + task.status().name().toLowerCase(java.util.Locale.ROOT), safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("attention_item", String.join(",", task.evidenceRefs().stream().filter(ref -> ref.startsWith("attention_item:")).toList()), "Authorized personal attention evidence refs only", MyAccountPersonalAttentionDigestService.OPEN_EVIDENCE_CAPABILITY, traceId, correlationId),
+            new WorkstreamEventSourceRef("capability", safeCapability, "My Account personal attention digest capability", safeCapability, "trace-capability-" + stableSuffix(safeCapability), correlationId)),
+        List.of(safeCapability, MyAccountService.LIST_PERSONAL_ATTENTION_CAPABILITY, AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL),
+        correlationId,
+        idempotencyKey,
+        task.idempotencyKey(),
+        List.of(traceId),
+        "agent-my-account",
+        completed ? "surface-my-account-personal-attention-digest-result" : (task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "surface-my-account-personal-attention-digest-blocked" : "surface-my-account-personal-attention-digest-progress"),
+        PAYLOAD_MY_ACCOUNT_PERSONAL_ATTENTION_DIGEST_LIFECYCLE,
+        Map.ofEntries(
+            Map.entry("digestTaskId", task.digestTaskId()),
+            Map.entry("autonomousAgentTaskId", safe(task.autonomousAgentTaskId(), "")),
+            Map.entry("status", task.status().name().toLowerCase(java.util.Locale.ROOT)),
+            Map.entry("semanticTransition", semanticTransition),
+            Map.entry("taskLifecycleEventType", eventType),
+            Map.entry("progressPercent", Integer.toString(task.progressPercent())),
+            Map.entry("authorizedAttentionCount", Integer.toString(task.authorizedAttentionCount())),
+            Map.entry("blockerCode", safe(task.blockerCode(), "")),
+            Map.entry("decision", safe(task.decision(), "")),
+            Map.entry("safeSummary", redact(safe(task.summary(), ""))),
+            Map.entry("providerOrRuntimeState", task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime:fail_closed:no_fake_success" : "state_recorded_without_source_attention_mutation"),
+            Map.entry("noDirectMutation", "true"),
+            Map.entry("redactionRequired", "true")),
+        Map.of("browserSafe", "true", "omitted", "rawPrompt,hiddenPromptText,rawToolPayload,providerSecret,providerCredential,rawJwt,invitationToken,crossTenantEvidence,hiddenWorkstreamIds", "minimumRedactionLevel", "FULL"),
+        Map.of("attentionCategory", "WORKFLOW_BLOCKED", "attentionItemId", "attention:worker-task:" + task.digestTaskId() + ":task-state"));
   }
 
   private WorkstreamEventEnvelope governancePolicyImpactLifecycleEnvelope(GovernancePolicyImpactTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String idempotencyKey, String correlationId) {
@@ -403,6 +476,11 @@ public final class WorkstreamEventPublisher {
     return normalizedWorkerTaskTransition(semanticTransition);
   }
 
+  private static String workerTaskTransition(MyAccountPersonalAttentionDigestTask task, String semanticTransition) {
+    if (task.status() == MyAccountPersonalAttentionDigestTask.Status.FAILED || "autonomous_agent_task_failed".equals(task.blockerCode())) return "failed";
+    return normalizedWorkerTaskTransition(semanticTransition);
+  }
+
   private static String normalizedWorkerTaskTransition(String semanticTransition) {
     return switch (safe(semanticTransition, "running")) {
       case "started", "queued" -> "queued";
@@ -429,6 +507,10 @@ public final class WorkstreamEventPublisher {
   }
 
   private static String firstTraceRef(GovernancePolicyImpactTask task, String fallback) {
+    return task.traceIds().isEmpty() ? fallback : task.traceIds().get(0);
+  }
+
+  private static String firstTraceRef(MyAccountPersonalAttentionDigestTask task, String fallback) {
     return task.traceIds().isEmpty() ? fallback : task.traceIds().get(0);
   }
 

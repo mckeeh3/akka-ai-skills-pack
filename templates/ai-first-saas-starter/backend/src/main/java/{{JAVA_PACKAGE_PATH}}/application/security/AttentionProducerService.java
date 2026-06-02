@@ -15,6 +15,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.InvitationStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -221,6 +222,35 @@ public final class AttentionProducerService {
     return resolve(task.tenantId(), workerTaskItemId(task.impactTaskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
   }
 
+  public AttentionItem upsertWorkerTaskState(MyAccountPersonalAttentionDigestTask task, String timerId, String correlationId) {
+    if (task.status() == MyAccountPersonalAttentionDigestTask.Status.CANCELLED || task.status() == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED) {
+      return resolveWorkerTaskState(task, task.status().name().toLowerCase(), correlationId);
+    }
+    var attention = switch (task.status()) {
+      case BLOCKED_PROVIDER_OR_RUNTIME -> myAccountDigestWorkerTaskItem(task, AttentionSeverity.BLOCKED, AttentionCategory.WORKFLOW_BLOCKED,
+          "My Account personal attention digest worker is blocked by provider/runtime readiness",
+          "Personal attention digest task " + task.digestTaskId() + " is blocked_provider_or_runtime; the starter fails closed instead of returning deterministic, fake, or model-less personal attention digest success.", timerId, correlationId);
+      case FAILED -> myAccountDigestWorkerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.AGENT_TASK_FAILED,
+          "My Account personal attention digest worker failed closed",
+          "Personal attention digest task " + task.digestTaskId() + " failed and needs authorized My Account follow-up.", timerId, correlationId);
+      case REJECTED -> myAccountDigestWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.AGENT_TASK_FAILED,
+          "My Account personal attention digest result was rejected",
+          "Personal attention digest task " + task.digestTaskId() + " was rejected and remains advisory; source attention was not mutated.", timerId, correlationId);
+      case COMPLETED_REVIEW_REQUIRED, COMPLETED_EMPTY -> myAccountDigestWorkerTaskItem(task, AttentionSeverity.URGENT, AttentionCategory.WORKFLOW_BLOCKED,
+          "My Account personal attention digest result awaits review",
+          "Personal attention digest task " + task.digestTaskId() + " completed through governed AutonomousAgent runtime and requires human accept/reject review; authorizedAttentionCount=" + task.authorizedAttentionCount() + ".", timerId, correlationId);
+      case RUNNING, QUEUED -> myAccountDigestWorkerTaskItem(task, AttentionSeverity.WARNING, AttentionCategory.WORKFLOW_BLOCKED,
+          "My Account personal attention digest task is waiting for worker progress",
+          "Personal attention digest task " + task.digestTaskId() + " is " + task.status().name().toLowerCase() + " and may need worker/runtime attention if stale.", timerId, correlationId);
+      case CANCELLED, ACCEPTED -> null;
+    };
+    return attention == null ? null : upsert(attention, WORKER_TASK_STATE_PRODUCER_ID, correlationId);
+  }
+
+  public AttentionItem resolveWorkerTaskState(MyAccountPersonalAttentionDigestTask task, String reason, String correlationId) {
+    return resolve(task.tenantId(), workerTaskItemId(task.digestTaskId()), WORKER_TASK_STATE_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
+  }
+
   private AttentionItem upsertTimedInvitationDelivery(Invitation invitation, String timerId, String correlationId) {
     var item = upsertInvitationDelivery(invitation, correlationId);
     var refs = new java.util.ArrayList<>(item.sourceRefs());
@@ -307,6 +337,26 @@ public final class AttentionProducerService {
         WORKER_TASK_STATE_PRODUCER_ID,
         timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
         "Governance/Policy impact task state " + task.status().name().toLowerCase(),
+        null,
+        correlationId);
+  }
+
+  private AttentionItem myAccountDigestWorkerTaskItem(MyAccountPersonalAttentionDigestTask task, AttentionSeverity severity, AttentionCategory category, String title, String summary, String timerId, String correlationId) {
+    return item(
+        workerTaskItemId(task.digestTaskId()),
+        task.tenantId(),
+        task.customerId(),
+        "agent-my-account",
+        title,
+        summary + " Evidence is limited to durable digest state, authorized/redacted personal attention refs, readSkill/readReferenceDoc traces, and AutonomousAgent work traces; no source attention acknowledgement, dismissal, resolution, workstream mutation, notification delivery, or fake model-backed success is introduced.",
+        category,
+        severity,
+        MyAccountPersonalAttentionDigestService.READ_CAPABILITY,
+        task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED || task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_EMPTY ? "surface-my-account-personal-attention-digest-result" : "surface-my-account-personal-attention-digest-progress",
+        task.digestTaskId(),
+        WORKER_TASK_STATE_PRODUCER_ID,
+        timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",
+        "My Account personal attention digest task state " + task.status().name().toLowerCase(),
         null,
         correlationId);
   }

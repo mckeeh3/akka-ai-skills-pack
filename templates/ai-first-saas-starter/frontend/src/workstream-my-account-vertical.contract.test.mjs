@@ -18,6 +18,8 @@ const backendWorkstreamService = readTemplateOrRenderedBackend('src/main/java/{{
 const backendMyAccountService = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountService.java');
 const backendWorkstreamEndpoint = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/api/workstream/WorkstreamEndpoint.java');
 const backendWorkstreamTest = readTemplateOrRenderedBackend('src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java');
+const backendPersonalAttentionDigestService = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountPersonalAttentionDigestService.java');
+const backendPersonalAttentionDigestTest = readTemplateOrRenderedBackend('src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountPersonalAttentionDigestServiceTest.java');
 const surfaceRenderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
@@ -32,6 +34,9 @@ const expectedMyAccountMarkers = [
   'surface-my-settings',
   'surface-my-context',
   'surface-my-account-open-denied',
+  'surface-my-account-personal-attention-digest-progress',
+  'surface-my-account-personal-attention-digest-result',
+  'surface-my-account-personal-attention-digest-blocked',
   'action-show-my-account-dashboard',
   'action-show-my-profile',
   'action-show-my-settings',
@@ -41,18 +46,33 @@ const expectedMyAccountMarkers = [
   'action-open-user-admin',
   'action-open-agent-admin',
   'action-open-audit-trace',
-  'action-open-governance-policy'
+  'action-open-governance-policy',
+  'action-start-my-account-personal-attention-digest',
+  'action-read-my-account-personal-attention-digest',
+  'action-cancel-my-account-personal-attention-digest',
+  'action-accept-my-account-personal-attention-digest',
+  'action-reject-my-account-personal-attention-digest'
 ];
 
 test('My Account full-core backend exposes dashboard, profile, settings, context, attention, and safe navigation surfaces', () => {
   for (const marker of expectedMyAccountMarkers) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   for (const capabilityId of ['my_account.view_summary', 'my_account.view_context', 'my_account.list_personal_attention', 'my_account.update_profile_settings', 'my_account.open_authorized_workstream', 'my_account.view_own_trace_refs']) {
-    assert.match(backendMyAccountService, new RegExp(capabilityId.replace('.', '\\.')));
-    assert.match(backendWorkstreamService, new RegExp(capabilityId.replace('.', '\\.')));
+    const matcher = new RegExp(capabilityId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    assert.match(backendMyAccountService, matcher);
+    assert.match(backendWorkstreamService, matcher);
+  }
+  for (const capabilityId of ['my_account.personal_attention_digest.start', 'my_account.personal_attention_digest.read', 'my_account.personal_attention_digest.cancel', 'my_account.personal_attention_digest.accept_result', 'my_account.personal_attention_digest.reject_result']) {
+    const matcher = new RegExp(capabilityId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    assert.match(backendPersonalAttentionDigestService, matcher);
+  }
+  for (const capabilityConstant of ['MY_ACCOUNT_DIGEST_START_CAPABILITY', 'MY_ACCOUNT_DIGEST_READ_CAPABILITY', 'MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY', 'MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY', 'MY_ACCOUNT_DIGEST_REJECT_CAPABILITY']) {
+    assert.match(backendWorkstreamService, new RegExp(capabilityConstant));
   }
   assert.match(backendMyAccountService, /personalAttention\(actor, correlationId\)/);
   assert.match(backendWorkstreamService, /not_found_or_redacted/);
   assert.match(backendWorkstreamService, /blocked_provider_or_runtime/);
+  assert.match(backendWorkstreamService, /noDirectMutation/);
+  assert.match(backendPersonalAttentionDigestService, /publishLifecycle/);
   assert.match(backendWorkstreamService, /\/api\/me\?selectedContextId=/);
   assert.match(backendWorkstreamEndpoint, /X-Selected-Context-Id/);
 });
@@ -71,6 +91,9 @@ test('My Account backend tests cover rich reads, update, idempotent duplicate, n
   assert.match(backendWorkstreamTest, /MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD/);
   assert.match(backendWorkstreamTest, /no-op/);
   assert.match(backendWorkstreamTest, /not_found_or_redacted/);
+  assert.match(backendPersonalAttentionDigestTest, /lifecyclePublishesV3EventsAndDigestTaskAttentionWithoutMutatingSourceAttention/);
+  assert.match(backendPersonalAttentionDigestTest, /workflow\.my_account\.personal_attention_digest\.started/);
+  assert.match(backendPersonalAttentionDigestTest, /worker\.task\.completed_review_required/);
 });
 
 test('My Account frontend path renders typed dashboard, detail-edit, system_message, and governed actions generically', () => {

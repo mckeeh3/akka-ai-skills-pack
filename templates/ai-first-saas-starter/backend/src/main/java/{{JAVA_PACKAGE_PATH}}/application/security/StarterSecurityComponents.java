@@ -118,12 +118,12 @@ public final class StarterSecurityComponents {
     attentionRepository = durableAttention;
     attentionService = new AttentionService(durableAttention, authContextResolver, CLOCK);
     personalAttentionDigestTaskRepository = durablePersonalAttentionDigests;
-    personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(durablePersonalAttentionDigests, authContextResolver, attentionService, CLOCK, new ComponentClientMyAccountPersonalAttentionDigestAutonomousAgentRuntime(componentClient, durableRuntime, agentRuntimeToolResolver, new MyAccountService(authContextResolver, attentionService)));
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     attentionProducerService = new AttentionProducerService(durableAttention, durableIdentity, CLOCK);
     workstreamEventRepository = durableWorkstreamEvents;
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(durableAttention, durableIdentity, attentionProducerService, CLOCK);
     workstreamEventPublisher = new WorkstreamEventPublisher(durableWorkstreamEvents, workstreamEventAttentionConsumer, CLOCK);
+    personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(durablePersonalAttentionDigests, authContextResolver, attentionService, CLOCK, new ComponentClientMyAccountPersonalAttentionDigestAutonomousAgentRuntime(componentClient, durableRuntime, agentRuntimeToolResolver, new MyAccountService(authContextResolver, attentionService)), attentionProducerService, workstreamEventPublisher);
     invitationService = new InvitationService(durableIdentity, durableInvitations, CLOCK, attentionProducerService, workstreamEventPublisher);
     invitationView = new InvitationView(invitationService);
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
