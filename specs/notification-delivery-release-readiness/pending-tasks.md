@@ -95,7 +95,7 @@
 
 ### TASK-NDRR-02-001: Update notification delivery handoff
 
-- status: pending
+- status: done
 - source: specs/notification-delivery-release-readiness/backlog/01-notification-delivery-readiness-backlog.md
 - task brief: specs/notification-delivery-release-readiness/tasks/02-review/01-update-notification-delivery-handoff.md
 - depends on:
