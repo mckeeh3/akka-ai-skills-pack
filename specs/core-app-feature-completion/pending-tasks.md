@@ -1,0 +1,557 @@
+# Pending Tasks: Core App Feature Completion
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `coreext: <short task title>`.
+- Runtime features are complete only when the rendered local Akka/API/UI path works at the stated scope; provider-dependent features must use real configured providers or fail closed without fake success.
+
+## Tasks
+
+### TASK-COREEXT-00-001: Create core feature completion planning scaffold
+
+- status: done
+- source: user asked to create a mini-project to implement the core-app features identified as not yet implemented
+- task brief: specs/core-app-feature-completion/tasks/00-planning/00-create-core-feature-completion-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/pending-task-queue.md
+  - docs/pending-question-queue.md
+  - specs/full-core-smb-polish-release-readiness/release-handoff.md
+  - templates/ai-first-saas-starter/README.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/conversation-capture.md
+  - specs/core-app-feature-completion/pending-questions.md
+  - specs/core-app-feature-completion/pending-tasks.md
+  - specs/core-app-feature-completion/sprints/*.md
+  - specs/core-app-feature-completion/backlog/*.md
+  - specs/core-app-feature-completion/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+  - `find specs/core-app-feature-completion -maxdepth 3 -type f -print | sort`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, pending questions, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `coreext: add core feature completion queue`
+
+### TASK-COREEXT-01-001: Implement invitation event-sourced lifecycle history
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/01-durable-core/01-invitation-event-history.md
+- depends on: [TASK-COREEXT-00-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/conversation-capture.md
+  - specs/core-app-feature-completion/sprints/01-durable-core-sprint.md
+  - specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+  - specs/core-app-feature-completion/tasks/01-durable-core/01-invitation-event-history.md
+  - templates/ai-first-saas-starter/README.md
+  - specs/core-app-full-stack-readiness/full-core-realization-map.md
+  - specs/core-app-full-stack-readiness/full-core-acceptance-test-matrix.md
+  - skills/akka-event-sourced-entities/SKILL.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-saas-invitation-onboarding/SKILL.md
+- skills:
+  - akka-event-sourced-entities
+  - akka-views
+  - akka-saas-invitation-onboarding
+- expected outputs:
+  - starter backend invitation lifecycle history components/events/tests
+  - projection/API updates if needed
+  - starter README/app-description updates if claims change
+- required checks:
+  - `git diff --check`
+  - focused rendered-scaffold Maven tests for invitation history and existing invitation service behavior
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - invitation event history persists/replays/idempotently handles lifecycle and denial/no-op facts through rendered local Akka paths
+  - no raw invite token leaks in DTOs, traces, logs, or static assets
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: add invitation lifecycle history`
+
+### TASK-COREEXT-01-002: Implement governed artifact lifecycle history
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/01-durable-core/02-governed-artifact-lifecycle-history.md
+- depends on: [TASK-COREEXT-01-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/01-durable-core-sprint.md
+  - specs/core-app-feature-completion/tasks/01-durable-core/02-governed-artifact-lifecycle-history.md
+  - templates/ai-first-saas-starter/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-skill-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/akka-event-sourced-entities/SKILL.md
+- skills:
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-event-sourced-entities
+- expected outputs:
+  - governed artifact lifecycle event/history components
+  - safe history/diff/runtime DTO updates
+  - focused tests for activation, rollback, tenant isolation, and authority-expansion denials
+- required checks:
+  - `git diff --check`
+  - focused rendered-scaffold governed-agent lifecycle tests
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - prompt/skill/reference/manifest/tool-boundary lifecycle history works through rendered Akka runtime and safe admin/audit DTOs
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: add governed artifact history`
+
+### TASK-COREEXT-01-003: Complete core projections and views
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/01-durable-core/03-core-projections-and-views.md
+- depends on: [TASK-COREEXT-01-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/01-durable-core-sprint.md
+  - specs/core-app-feature-completion/tasks/01-durable-core/03-core-projections-and-views.md
+  - specs/full-core-smb-user-admin/user-admin-vertical-contracts.md
+  - specs/full-core-smb-agent-admin/agent-admin-implementation-map.md
+  - specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+  - skills/akka-views/SKILL.md
+  - skills/akka-view-testing/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+- skills:
+  - akka-views
+  - akka-view-testing
+  - akka-http-endpoints
+- expected outputs:
+  - InvitationView/UserDirectoryView/AdminAuditView/governed-agent projections and tests
+  - scoped/redacted API and workstream payload updates
+- required checks:
+  - `git diff --check`
+  - focused rendered-scaffold view and endpoint tests
+  - frontend tests/typecheck/build when DTOs or surfaces change
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - projections are queryable through backend-authorized APIs/surfaces and covered by tenant-isolation, redaction, and ordering tests
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: complete core projections`
+
+### TASK-COREEXT-02-001: Broaden governed workstream event coverage
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/02-events-notifications/01-broaden-workstream-events.md
+- depends on: [TASK-COREEXT-01-003]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/02-events-notifications-sprint.md
+  - specs/core-app-feature-completion/tasks/02-events-notifications/01-broaden-workstream-events.md
+  - templates/ai-first-saas-starter/README.md
+  - docs/agent-workstream-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - skills/akka-consumers/SKILL.md
+  - skills/akka-views/SKILL.md
+- skills:
+  - akka-consumers
+  - akka-views
+- expected outputs:
+  - expanded event envelope catalog and event-to-attention/projection tests
+  - safe projection-refresh behavior for new event families
+- required checks:
+  - `git diff --check`
+  - focused backend event/consumer/projection tests
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - broader event families feed backend projections/attention safely without frontend-only or unauthorized attention state
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: broaden workstream events`
+
+### TASK-COREEXT-02-002: Implement notification delivery platform foundation
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/02-events-notifications/02-notification-delivery-platform.md
+- depends on: [TASK-COREEXT-02-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/pending-questions.md
+  - specs/core-app-feature-completion/sprints/02-events-notifications-sprint.md
+  - specs/core-app-feature-completion/tasks/02-events-notifications/02-notification-delivery-platform.md
+  - templates/ai-first-saas-starter/README.md
+  - docs/capability-first-backend-architecture.md
+  - skills/akka-consumers/SKILL.md
+  - skills/akka-timed-actions/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+- skills:
+  - akka-consumers
+  - akka-timed-actions
+  - akka-http-endpoints
+- expected outputs:
+  - notification channel registry/preferences/delivery attempts/analytics foundation
+  - provider-neutral webhook/SMS/push/Slack/Teams channel seams with captured local/test outboxes and fail-closed production state
+  - frontend/API updates where channel state is visible
+- required checks:
+  - `git diff --check`
+  - focused backend notification/channel tests
+  - frontend tests/typecheck/build if surfaces change
+  - provider-missing fail-closed checks
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - notification platform works locally at provider-neutral scope and unavailable production channels cannot report successful delivery
+  - queue is updated and committed
+- notes:
+  - Q-001 blocks only real provider-specific adapters, not provider-neutral fail-closed seams
+  - commit message: `coreext: add notification delivery platform`
+
+### TASK-COREEXT-02-003: Implement provider-specific delivery adapters
+
+- status: blocked
+- source: specs/core-app-feature-completion/pending-questions.md Q-001
+- task brief: specs/core-app-feature-completion/tasks/02-events-notifications/03-provider-specific-delivery-adapters.md
+- depends on: [TASK-COREEXT-02-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/pending-questions.md
+  - specs/core-app-feature-completion/tasks/02-events-notifications/03-provider-specific-delivery-adapters.md
+  - provider documentation selected by Q-001
+  - docs/capability-first-backend-architecture.md
+- skills:
+  - akka-consumers
+  - akka-http-endpoints
+  - akka-timed-actions
+- expected outputs:
+  - selected real production delivery adapter(s), tests, secret handling, and smoke validation
+- required checks:
+  - `git diff --check`
+  - provider-specific tests/smoke from selected provider scope
+  - static asset/provider-secret scan
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - named production channels are backed by real provider adapters and validation, or task is narrowed without claiming production delivery
+  - queue is updated and committed
+- notes:
+  - blocked: Q-001 must select production provider scope before this task is runnable
+  - commit message: `coreext: add delivery provider adapters`
+
+### TASK-COREEXT-03-001: Broaden task and AutonomousAgent notification coverage
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/03-workers-governance/01-broader-task-notification-coverage.md
+- depends on: [TASK-COREEXT-02-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/03-workers-governance-sprint.md
+  - specs/core-app-feature-completion/tasks/03-workers-governance/01-broader-task-notification-coverage.md
+  - templates/ai-first-saas-starter/README.md
+  - docs/autonomous-agent-worker-runtime-pattern.md
+  - docs/agent-component-selection-guide.md
+  - skills/akka-consumers/SKILL.md
+- skills:
+  - akka-consumers
+  - akka-views
+  - akka-web-ui-apps
+- expected outputs:
+  - generalized worker-task notification mapping and task surface tests
+- required checks:
+  - `git diff --check`
+  - focused backend worker notification tests
+  - frontend tests/typecheck/build for task surfaces
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - worker-task notifications are derived from governed task/runtime state and not simulated by frontend-only badges
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: broaden task notifications`
+
+### TASK-COREEXT-03-002: Implement digest and export platform extensions
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/03-workers-governance/02-digest-export-platform.md
+- depends on: [TASK-COREEXT-03-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/03-workers-governance-sprint.md
+  - specs/core-app-feature-completion/tasks/03-workers-governance/02-digest-export-platform.md
+  - templates/ai-first-saas-starter/README.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - skills/akka-workflows/SKILL.md
+  - skills/akka-timed-actions/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+- skills:
+  - akka-workflows
+  - akka-timed-actions
+  - akka-http-endpoints
+- expected outputs:
+  - scheduled/manual digest jobs, export request lifecycle, redaction profiles, audit, and result/status surfaces
+- required checks:
+  - `git diff --check`
+  - focused backend workflow/timer/export tests
+  - frontend tests/typecheck/build if surfaces change
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - digest/export platform paths work locally through backend capabilities with redaction/audit and without compliance-suite overclaiming
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: add digest export platform`
+
+### TASK-COREEXT-03-003: Implement policy simulation platform
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/03-workers-governance/03-policy-simulation-platform.md
+- depends on: [TASK-COREEXT-03-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/03-workers-governance-sprint.md
+  - specs/core-app-feature-completion/tasks/03-workers-governance/03-policy-simulation-platform.md
+  - specs/core-app-full-stack-readiness/governance-policy-core-module-slice.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - skills/ai-first-saas-policy-governance/SKILL.md
+  - skills/ai-first-saas-decision-cards/SKILL.md
+  - skills/akka-workflows/SKILL.md
+- skills:
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+  - akka-workflows
+- expected outputs:
+  - simulation request/result records, result-review surfaces, approval gates, tests
+- required checks:
+  - `git diff --check`
+  - focused backend governance/simulation tests
+  - frontend tests/typecheck/build for decision/simulation surfaces
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - policy simulation produces reviewable evidence/results and cannot activate or mutate authority without explicit backend approval paths
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: add policy simulation platform`
+
+### TASK-COREEXT-04-001: Implement IAM/SCIM/SSO administration foundation
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/04-enterprise-extensions/01-iam-scim-sso-foundation.md
+- depends on: [TASK-COREEXT-03-003]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/pending-questions.md
+  - specs/core-app-feature-completion/sprints/04-enterprise-extensions-sprint.md
+  - specs/core-app-feature-completion/tasks/04-enterprise-extensions/01-iam-scim-sso-foundation.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - docs/capability-first-backend-architecture.md
+  - skills/akka-http-endpoints/SKILL.md
+- skills:
+  - akka-http-endpoints
+  - akka-views
+  - akka-web-ui-apps
+- expected outputs:
+  - IAM/SCIM/SSO foundation contracts, admin surfaces, audit events, local validation, fail-closed provider seams
+- required checks:
+  - `git diff --check`
+  - focused backend identity/admin tests
+  - frontend tests/typecheck/build if surfaces change
+  - secret-boundary scans
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - IAM/SCIM/SSO foundation has safe local runtime behavior and docs accurately state provider-specific limits
+  - queue is updated and committed
+- notes:
+  - Q-002 may reprioritize enterprise task order before this task is selected
+  - commit message: `coreext: add iam scim sso foundation`
+
+### TASK-COREEXT-04-002: Implement SIEM/legal-hold/e-discovery/compliance foundation
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/04-enterprise-extensions/02-siem-legal-hold-compliance-foundation.md
+- depends on: [TASK-COREEXT-04-001]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/04-enterprise-extensions-sprint.md
+  - specs/core-app-feature-completion/tasks/04-enterprise-extensions/02-siem-legal-hold-compliance-foundation.md
+  - specs/full-core-smb-audit-trace/audit-trace-implementation-map.md
+  - docs/capability-first-backend-architecture.md
+  - skills/ai-first-saas-audit-trace/SKILL.md
+  - skills/akka-http-endpoints/SKILL.md
+- skills:
+  - ai-first-saas-audit-trace
+  - akka-http-endpoints
+  - akka-views
+- expected outputs:
+  - legal hold markers, retention/export capabilities, SIEM export seams, approval gates, audit tests
+- required checks:
+  - `git diff --check`
+  - focused backend audit/export tests
+  - frontend tests/typecheck/build if surfaces change
+  - static asset and export secret scans
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - enterprise audit/export foundations work locally and are documented without vendor/compliance overclaiming
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: add enterprise audit export foundation`
+
+### TASK-COREEXT-04-003: Implement marketplace prompt and tenant-managed tool-binding foundation
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/04-enterprise-extensions/03-marketplace-prompts-tool-binding-foundation.md
+- depends on: [TASK-COREEXT-04-002]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/04-enterprise-extensions-sprint.md
+  - specs/core-app-feature-completion/tasks/04-enterprise-extensions/03-marketplace-prompts-tool-binding-foundation.md
+  - docs/ai-first-saas-application-architecture.md
+  - docs/capability-first-backend-architecture.md
+  - skills/akka-agent-prompt-governance/SKILL.md
+  - skills/akka-agent-tool-boundaries/SKILL.md
+  - skills/ai-first-saas-policy-governance/SKILL.md
+- skills:
+  - akka-agent-prompt-governance
+  - akka-agent-tool-boundaries
+  - ai-first-saas-policy-governance
+- expected outputs:
+  - marketplace prompt proposal/import governance and stable-tool-id binding request lifecycle
+  - tests for authority expansion denial and tool-boundary enforcement
+- required checks:
+  - `git diff --check`
+  - focused backend governance/tool-boundary tests
+  - frontend tests/typecheck/build if surfaces change
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+- done criteria:
+  - marketplace/tool-binding foundations are governed, auditable, and cannot bypass backend `ToolPermissionBoundary` enforcement
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: add marketplace tool governance foundation`
+
+### TASK-COREEXT-05-001: Complete mobile, asset scan, and bundle polish
+
+- status: pending
+- source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
+- task brief: specs/core-app-feature-completion/tasks/05-polish-validation/01-mobile-asset-bundle-polish.md
+- depends on: [TASK-COREEXT-04-003]
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/sprints/05-polish-validation-sprint.md
+  - specs/core-app-feature-completion/tasks/05-polish-validation/01-mobile-asset-bundle-polish.md
+  - specs/full-core-smb-polish-release-readiness/release-handoff.md
+  - templates/ai-first-saas-starter/README.md
+  - templates/ai-first-saas-starter/frontend/package.json
+  - skills/akka-web-ui-accessibility-responsive/SKILL.md
+  - skills/akka-web-ui-testing/SKILL.md
+- skills:
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - mobile/off-canvas rail QA notes/fixes
+  - rendered production static asset scan automation
+  - bundle-size analysis/optimization or accepted residual
+  - README/readiness updates
+- required checks:
+  - `git diff --check`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - frontend `npm test -- --run`, `npm run typecheck`, `npm run build`
+  - rendered static asset secret scan
+- done criteria:
+  - polish findings are resolved or explicitly documented as non-blocking with validation evidence
+  - queue is updated and committed
+- notes:
+  - commit message: `coreext: polish mobile assets bundle`
+
+### TASK-COREEXT-99-001: Verify core feature completion
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/core-app-feature-completion/tasks/99-verification/01-verify-core-feature-completion.md
+- depends on:
+  - TASK-COREEXT-01-001
+  - TASK-COREEXT-01-002
+  - TASK-COREEXT-01-003
+  - TASK-COREEXT-02-001
+  - TASK-COREEXT-02-002
+  - TASK-COREEXT-03-001
+  - TASK-COREEXT-03-002
+  - TASK-COREEXT-03-003
+  - TASK-COREEXT-04-001
+  - TASK-COREEXT-04-002
+  - TASK-COREEXT-04-003
+  - TASK-COREEXT-05-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - docs/pending-task-queue.md
+  - specs/core-app-feature-completion/README.md
+  - specs/core-app-feature-completion/conversation-capture.md
+  - specs/core-app-feature-completion/pending-questions.md
+  - specs/core-app-feature-completion/pending-tasks.md
+  - specs/core-app-feature-completion/sprints/*.md
+  - specs/core-app-feature-completion/backlog/*.md
+  - specs/core-app-feature-completion/tasks/**/*.md
+  - templates/ai-first-saas-starter/README.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/core-app-feature-completion/pending-tasks.md
+  - completion summary, verification notes, or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `tools/validate-ai-first-saas-starter-fullstack.sh`
+  - focused scans/tests needed to verify completed slices
+- done criteria:
+  - task group/sprint goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - unresolved questions/blockers have been reviewed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - queue is updated and committed
+- notes:
+  - TASK-COREEXT-02-003 remains separately blocked on Q-001 and should be reconciled during verification or after Q-001 is answered
+  - commit message: `coreext: verify core feature completion`
