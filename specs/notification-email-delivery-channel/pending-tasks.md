@@ -124,7 +124,7 @@
 
 ### TASK-NEDC-04-001: Run email channel validation
 
-- status: pending
+- status: done
 - source: specs/notification-email-delivery-channel/backlog/01-email-delivery-channel-build-backlog.md
 - task brief: specs/notification-email-delivery-channel/tasks/04-validation/01-run-email-channel-validation.md
 - depends on:
@@ -148,6 +148,9 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `notification-email: validate channel`
+  - validation artifact: specs/notification-email-delivery-channel/email-channel-validation.md
+  - checks passed: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh --app-name "Email Channel Validation Starter" --app-slug "email-channel-validation-starter" --base-package "ai.emailvalidation" --maven-group-id "ai.emailvalidation"`; focused `rg` for captured outbox, Resend fail-closed, preferences, allowlist, redaction, idempotency, audit, and future channel boundary
+  - real Resend smoke was not run because explicit safe Resend smoke configuration was not provided
 
 ### TASK-NEDC-05-001: Update email notification channel docs
 
