@@ -287,6 +287,19 @@ public final class InvitationService {
   }
 
   public List<Invitation> listScoped(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
+    requireScopedRead(actor, scopeType, tenantId, customerId);
+    return invitationRepository.invitations().stream()
+        .filter(invite -> scopeType == invite.scopeType())
+        .filter(invite -> java.util.Objects.equals(tenantId, invite.tenantId()))
+        .filter(invite -> java.util.Objects.equals(customerId, invite.customerId()))
+        .toList();
+  }
+
+  InvitationRepository invitationRepository() {
+    return invitationRepository;
+  }
+
+  void requireScopedRead(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireScope(actor.selectedContext(), scopeType, tenantId, customerId);
     var capability = scopeType == ScopeType.CUSTOMER ? "customer.user.read" : "tenant.user.read";
     if (scopeType == ScopeType.SAAS_OWNER) {
@@ -295,11 +308,6 @@ public final class InvitationService {
     if (!actor.selectedContext().hasCapability(capability) && !actor.selectedContext().hasCapability("tenant.audit.read")) {
       throw deny(actor, null, "INVITATION_READ", "missing-capability", actor.correlationId());
     }
-    return invitationRepository.invitations().stream()
-        .filter(invite -> scopeType == invite.scopeType())
-        .filter(invite -> java.util.Objects.equals(tenantId, invite.tenantId()))
-        .filter(invite -> java.util.Objects.equals(customerId, invite.customerId()))
-        .toList();
   }
 
   private java.util.Optional<Invitation> resolveInvitationForAcceptance(AcceptInvitationRequest request) {
@@ -374,12 +382,20 @@ public final class InvitationService {
         actor.selectedContext().scopeType(), invite == null ? actor.selectedContext().tenantId() : invite.tenantId(),
         invite == null ? actor.selectedContext().customerId() : invite.customerId(), invite == null ? null : invite.accountId(),
         invite == null ? null : invite.membershipId(), action, result, reason, reason, "BROWSER_SAFE"));
+    recordLifecycleDecision(invite, action, result, reason, actor.account().accountId(), correlationId);
   }
 
   private void appendSystemAudit(Invitation invite, String action, AdminAuditEvent.Result result, String reason, String correlationId) {
     identityRepository.appendAudit(new AdminAuditEvent(
         UUID.randomUUID().toString(), clock.instant(), correlationId, "system", null, invite.scopeType(), invite.tenantId(), invite.customerId(),
         invite.accountId(), invite.membershipId(), action, result, reason, reason, "BROWSER_SAFE"));
+    recordLifecycleDecision(invite, action, result, reason, "system", correlationId);
+  }
+
+  private void recordLifecycleDecision(Invitation invite, String action, AdminAuditEvent.Result result, String reason, String actorAccountId, String correlationId) {
+    if (invite != null) {
+      invitationRepository.recordLifecycleDecision(new InvitationLifecycleHistoryEntity.DecisionFact(invite, action, result, reason, actorAccountId, correlationId));
+    }
   }
 
   private void putProfileIfSupported(UserProfile profile) {

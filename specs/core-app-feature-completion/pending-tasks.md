@@ -49,7 +49,7 @@
 
 ### TASK-COREEXT-01-001: Implement invitation event-sourced lifecycle history
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/01-durable-core/01-invitation-event-history.md
 - depends on: [TASK-COREEXT-00-001]
@@ -85,6 +85,7 @@
   - queue is updated and committed
 - notes:
   - commit message: `coreext: add invitation lifecycle history`
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`
 
 ### TASK-COREEXT-01-002: Implement governed artifact lifecycle history
 

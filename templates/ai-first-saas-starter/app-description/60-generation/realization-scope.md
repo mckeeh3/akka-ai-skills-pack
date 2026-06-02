@@ -3,7 +3,7 @@
 - phase-1 secure SaaS foundation:
   - runnable backend/frontend
   - WorkOS/AuthKit authentication, tenant context, users, memberships, roles, permissions/capabilities, support-access, `/api/me`, and context switching
-  - complete invitation lifecycle: invite, email delivery/outbox, resend, revoke, expire, accept, delivery status, delivery attempts, InvitationView, idempotency, and audit
+  - complete invitation lifecycle: invite, email delivery/outbox, resend, revoke, expire, accept, delivery status, delivery attempts, event-sourced lifecycle history, InvitationView, idempotency, and audit
   - admin management: UserDirectoryView list/search, user detail, MembershipView role/membership lifecycle, AdminAuditView search, AccessReviewQueueView, last-admin protection, support-access grant/revoke/expiry, and scoped backend authorization
   - mandatory AI admin offload: governed UserAdminAgent responsibilities or specialized AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards for risky admin actions, scoped tools, redaction, and audit/work traces
   - managed-agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, AgentSkillManifest, ToolPermissionBoundary, implementation-developed default behavior seed bundle loaded into governed storage on first install/tenant bootstrap, AgentBehaviorEditorAgent proposals, authorized readSkill(skillId), PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace

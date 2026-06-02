@@ -2,6 +2,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
+import {{JAVA_BASE_PACKAGE}}.domain.security.InvitationLifecycleFact;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import java.util.List;
 import java.util.Optional;
@@ -27,4 +28,12 @@ public interface InvitationRepository {
   List<EmailOutboxMessage> queuedEmails();
 
   List<Invitation> invitations();
+
+  default Optional<InvitationLifecycleFact> recordLifecycleDecision(InvitationLifecycleHistoryEntity.DecisionFact decision) {
+    return Optional.empty();
+  }
+
+  default List<InvitationLifecycleFact> lifecycleHistory(String invitationId) {
+    return List.of();
+  }
 }

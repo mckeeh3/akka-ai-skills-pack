@@ -3,6 +3,7 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import akka.javasdk.client.ComponentClient;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
+import {{JAVA_BASE_PACKAGE}}.domain.security.InvitationLifecycleFact;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import java.util.List;
 import java.util.Optional;
@@ -55,12 +56,19 @@ public final class AkkaInvitationRepository implements InvitationRepository {
 
   @Override
   public Invitation saveInvitation(Invitation invitation) {
-    return componentClient.forKeyValueEntity(entityId).method(DurableInvitationRepositoryEntity::saveInvitation).invoke(invitation);
+    var saved = componentClient.forKeyValueEntity(entityId).method(DurableInvitationRepositoryEntity::saveInvitation).invoke(invitation);
+    componentClient.forEventSourcedEntity(InvitationLifecycleHistoryEntity.entityId(invitation.invitationId()))
+        .method(InvitationLifecycleHistoryEntity::recordSnapshot)
+        .invoke(invitation);
+    return saved;
   }
 
   @Override
   public void enqueueEmail(EmailOutboxMessage message) {
     componentClient.forKeyValueEntity(entityId).method(DurableInvitationRepositoryEntity::enqueueEmail).invoke(message);
+    componentClient.forEventSourcedEntity(InvitationLifecycleHistoryEntity.entityId(message.invitationId()))
+        .method(InvitationLifecycleHistoryEntity::recordEmailQueued)
+        .invoke(message);
   }
 
   @Override
@@ -76,5 +84,19 @@ public final class AkkaInvitationRepository implements InvitationRepository {
   @Override
   public List<Invitation> invitations() {
     return componentClient.forKeyValueEntity(entityId).method(DurableInvitationRepositoryEntity::invitations).invoke();
+  }
+
+  @Override
+  public Optional<InvitationLifecycleFact> recordLifecycleDecision(InvitationLifecycleHistoryEntity.DecisionFact decision) {
+    return Optional.of(componentClient.forEventSourcedEntity(InvitationLifecycleHistoryEntity.entityId(decision.invitation().invitationId()))
+        .method(InvitationLifecycleHistoryEntity::recordDecision)
+        .invoke(decision));
+  }
+
+  @Override
+  public List<InvitationLifecycleFact> lifecycleHistory(String invitationId) {
+    return componentClient.forEventSourcedEntity(InvitationLifecycleHistoryEntity.entityId(invitationId))
+        .method(InvitationLifecycleHistoryEntity::history)
+        .invoke();
   }
 }

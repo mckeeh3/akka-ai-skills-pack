@@ -39,6 +39,31 @@ public final class InvitationView {
         .toList();
   }
 
+  public List<InvitationHistoryRow> history(AuthContextResolver.ResolvedMe actor, String invitationId) {
+    var invite = invitationService.invitationRepository().invitation(invitationId).orElseThrow(() -> new AuthorizationException(404, "invitation-not-found-or-forbidden"));
+    invitationService.requireScopedRead(actor, invite.scopeType(), invite.tenantId(), invite.customerId());
+    return invitationService.invitationRepository().lifecycleHistory(invitationId).stream()
+        .map(fact -> new InvitationHistoryRow(
+            fact.factId(),
+            fact.invitationId(),
+            fact.eventType(),
+            fact.scopeType(),
+            fact.tenantId(),
+            fact.customerId(),
+            fact.normalizedEmail(),
+            fact.invitationStatus(),
+            fact.deliveryStatus(),
+            fact.deliveryAttempts(),
+            fact.resendCount(),
+            fact.actorAccountId(),
+            fact.result(),
+            fact.reasonCode(),
+            fact.deliveryAttemptId(),
+            fact.correlationId(),
+            fact.occurredAt()))
+        .toList();
+  }
+
   public record InvitationRow(
       String invitationId,
       String targetEmail,
@@ -58,4 +83,23 @@ public final class InvitationView {
       String createdByAccountId,
       boolean canResend,
       boolean canRevoke) {}
+
+  public record InvitationHistoryRow(
+      String factId,
+      String invitationId,
+      String eventType,
+      ScopeType scopeType,
+      String tenantId,
+      String customerId,
+      String targetEmail,
+      InvitationStatus invitationStatus,
+      EmailDeliveryStatus deliveryStatus,
+      int deliveryAttempts,
+      int resendCount,
+      String actorAccountId,
+      String result,
+      String reasonCode,
+      String deliveryAttemptId,
+      String correlationId,
+      Instant occurredAt) {}
 }

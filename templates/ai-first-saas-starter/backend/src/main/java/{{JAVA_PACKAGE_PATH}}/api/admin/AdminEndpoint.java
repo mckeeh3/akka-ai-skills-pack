@@ -61,6 +61,17 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     });
   }
 
+  @Get("/invitations/{invitationId}/history")
+  public HttpResponse invitationHistory(String invitationId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var history = StarterSecurityComponents.invitationView().history(actor, invitationId).stream()
+          .map(InvitationHistoryApiResponse::from)
+          .toList();
+      return HttpResponses.ok(new InvitationHistoryApiResponses(history, correlationId));
+    });
+  }
+
   @Post("/invitations")
   public HttpResponse createInvitation(CreateInvitationApiRequest request) {
     var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
@@ -196,6 +207,12 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record ChangeRolesApiRequest(List<String> roles, String reason, String idempotencyKey) {}
   public record ChangeMembershipStatusApiRequest(String status, String reason, String idempotencyKey) {}
   public record InvitationsApiResponse(List<InvitationApiResponse> invitations, String correlationId) {}
+  public record InvitationHistoryApiResponses(List<InvitationHistoryApiResponse> history, String correlationId) {}
+  public record InvitationHistoryApiResponse(String factId, String invitationId, String eventType, String email, String status, String deliveryStatus, int deliveryAttempts, int resendCount, String actorAccountId, String result, String reasonCode, String deliveryAttemptId, String occurredAt, String correlationId) {
+    static InvitationHistoryApiResponse from({{JAVA_BASE_PACKAGE}}.application.security.InvitationView.InvitationHistoryRow row) {
+      return new InvitationHistoryApiResponse(row.factId(), row.invitationId(), row.eventType(), row.targetEmail(), row.invitationStatus().name().toLowerCase(), row.deliveryStatus().name().toLowerCase(), row.deliveryAttempts(), row.resendCount(), row.actorAccountId(), row.result(), row.reasonCode(), row.deliveryAttemptId(), row.occurredAt().toString(), row.correlationId());
+    }
+  }
   public record InvitationApiResponse(String invitationId, String email, String status, String deliveryStatus, int deliveryAttempts, int resendCount, boolean canResend, boolean canRevoke, String expiresAt, String correlationId) {
     static InvitationApiResponse from(InvitationRow invite) {
       return new InvitationApiResponse(invite.invitationId(), invite.targetEmail(), invite.status().name().toLowerCase(), invite.deliveryStatus().name().toLowerCase(), invite.deliveryAttempts(), invite.resendCount(), invite.canResend(), invite.canRevoke(), invite.expiresAt().toString(), null);
