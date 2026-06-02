@@ -35,7 +35,7 @@ This is a reference capability contract for the skills pack's scaffolded core ap
 ## Out-of-scope outcomes
 
 - Billing/subscription management in v1; only the subscription/billing boundary is modeled.
-- Enterprise identity-provider configuration UI in v1.
+- Provider-specific enterprise identity-provider production provisioning or activation in v1; the scaffold includes only provider-neutral IAM/SCIM/SSO validation/status seams that fail closed until backend WorkOS provider configuration is supplied and smoke-validated.
 - Cross-tenant impersonation without an explicit support-access grant and audit trail.
 - Prompt-only, frontend-only, or hidden-field authorization.
 - Raw state dumps to agents or browser clients when a scoped/redacted evidence response is required.
@@ -82,8 +82,8 @@ This is a reference capability contract for the skills pack's scaffolded core ap
   - AdminAuditEvent and work-trace records for protected reads, writes, denials, approvals, support access, and consequential AI/tool activity
   - PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace records for runtime agent prompt assembly, authorized or denied readSkill requests, and consequential agent work
 - exposure surfaces:
-  - browser UI actions for sign-in shell, context selection, profile/settings, admin users, invitations, roles/memberships, access review, support access, and admin audit
-  - HTTP APIs including `/api/me` and protected admin routes
+  - browser UI actions for sign-in shell, context selection, profile/settings, admin users, invitations, roles/memberships, access review, support access, enterprise identity status/validation, and admin audit
+  - HTTP APIs including `/api/me`, protected admin routes, and provider-neutral enterprise identity validation routes under `/api/admin/enterprise-identity/...`
   - workflow surface for invitation acceptance and delivery lifecycle
   - timer surface for expiry/reminders
   - consumer surface for Resend email delivery/outbox
@@ -169,7 +169,7 @@ All User Admin capability denials use the stable forbidden/hidden-not-found resp
 - approval:
   - support access, risky role escalation, account disable/reactivate, and agent-suggested role changes require human approval unless an explicit accepted policy grants a narrow autonomous path
 - audit/trace:
-  - success, denial, protected reads, approvals, support-access use, and consequential AI/tool activity create AdminAuditEvent/work-trace records
+  - success, denial, protected reads, approvals, support-access use, IAM/SCIM/SSO status or validation checks, and consequential AI/tool activity create AdminAuditEvent/work-trace records
 - surface-specific:
   - `/api/me` returns browser-safe capabilities only; UI hides unavailable actions but backend still denies; agent tools receive only scoped/redacted evidence; timers and consumers are retry-safe
   - disabled agents, unassigned skill reads, unauthorized prompt/skill/tool changes, and approval-required authority expansion are denied and traced

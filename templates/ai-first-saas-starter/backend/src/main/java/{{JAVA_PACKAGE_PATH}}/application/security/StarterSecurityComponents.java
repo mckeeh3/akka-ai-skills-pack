@@ -63,6 +63,7 @@ public final class StarterSecurityComponents {
   private static volatile AuthContextResolver authContextResolver = new AuthContextResolver(identityRepository);
   private static volatile MeService meService;
   private static volatile UserAdminService userAdminService = new UserAdminService(identityRepository, CLOCK);
+  private static volatile EnterpriseIdentityAdminService enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(identityRepository, CLOCK);
   private static volatile InvitationRepository invitationRepository = new UnboundInvitationRepository();
   private static volatile AgentBehaviorRepository agentBehaviorRepository = new UnboundAgentBehaviorRepository();
   private static volatile AgentBehaviorSeedLoader agentBehaviorSeedLoader = new AgentBehaviorSeedLoader(agentBehaviorRepository, CLOCK);
@@ -112,6 +113,7 @@ public final class StarterSecurityComponents {
     authContextResolver = new AuthContextResolver(durableIdentity);
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(durableIdentity, CLOCK);
+    enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(durableIdentity, CLOCK);
     BootstrapAdminSeeder.seedConfiguredAdmins(durableIdentity, System.getenv("ADMIN_USERS"));
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
     var durableAccessReviews = new AkkaAccessReviewTaskRepository(componentClient);
@@ -177,6 +179,10 @@ public final class StarterSecurityComponents {
     return userAdminService;
   }
 
+  public static EnterpriseIdentityAdminService enterpriseIdentityAdminService() {
+    return enterpriseIdentityAdminService;
+  }
+
   public static IdentityRepository identityRepository() {
     return identityRepository;
   }
@@ -188,6 +194,7 @@ public final class StarterSecurityComponents {
     authContextResolver = new AuthContextResolver(testRepository);
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(testRepository, CLOCK);
+    enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(testRepository, CLOCK);
     invitationRepository = new UnboundInvitationRepository();
     attentionProducerService = new AttentionProducerService(attentionRepository, testRepository, CLOCK);
     notificationService = new NotificationService(notificationRepository, authContextResolver, CLOCK);

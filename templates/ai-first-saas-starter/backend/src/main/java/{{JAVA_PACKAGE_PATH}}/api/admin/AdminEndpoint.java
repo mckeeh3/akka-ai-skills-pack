@@ -22,8 +22,13 @@ import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService.UserDirectoryRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
 import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EnterpriseIdentityProviderStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.ScimProvisioningRequest;
+import {{JAVA_BASE_PACKAGE}}.domain.security.ScimProvisioningResult;
+import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
+import {{JAVA_BASE_PACKAGE}}.domain.security.SsoConfigurationValidation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkosIdentity;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -138,6 +143,44 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
       var targetStatus = MembershipStatus.valueOf(requireText(request == null ? null : request.status(), "status").toUpperCase());
       var result = StarterSecurityComponents.userAdminService().updateMemberStatus(actor, membershipId, targetStatus, textOr(request == null ? null : request.reason(), "admin-api-status-change"), stableIdempotencyKey, correlationId);
       return HttpResponses.ok(new MembershipActionApiResponse(result.status(), result.message(), result.membership().membershipId(), result.membership().accountId(), result.membership().roles().stream().map(Enum::name).toList(), result.membership().status().name().toLowerCase(), result.traceId(), correlationId));
+    });
+  }
+
+  @Get("/enterprise-identity/status")
+  public HttpResponse enterpriseIdentityStatus() {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(EnterpriseIdentityStatusApiResponse.from(StarterSecurityComponents.enterpriseIdentityAdminService().status(actor, correlationId), correlationId));
+    });
+  }
+
+  @Post("/enterprise-identity/scim/validate")
+  public HttpResponse validateScimOperation(ScimProvisioningApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.enterpriseIdentityAdminService().validateScimOperation(actor, new ScimProvisioningRequest(
+          request == null ? null : request.operation(),
+          request == null ? null : request.externalId(),
+          request == null ? null : request.email(),
+          request == null ? null : request.displayName(),
+          request == null || request.scopeType() == null ? null : ScopeType.valueOf(request.scopeType().toUpperCase()),
+          request == null ? null : request.tenantId(),
+          request == null ? null : request.customerId(),
+          rolesOrDefault(request == null ? null : request.roles()),
+          request == null ? null : request.reason(),
+          stableIdempotencyKey), correlationId);
+      return HttpResponses.ok(ScimProvisioningApiResponse.from(result, correlationId));
+    });
+  }
+
+  @Post("/enterprise-identity/sso/validate")
+  public HttpResponse validateSsoConfiguration(SsoValidationApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.enterpriseIdentityAdminService().validateSsoConfiguration(actor, request == null ? null : request.domain(), request == null ? null : request.issuer(), request == null ? null : request.metadataUrl(), request != null && request.productionRequested(), correlationId);
+      return HttpResponses.ok(SsoValidationApiResponse.from(result, correlationId));
     });
   }
 
@@ -262,6 +305,23 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record InvitationActionApiRequest(String reason, String idempotencyKey) {}
   public record ChangeRolesApiRequest(List<String> roles, String reason, String idempotencyKey) {}
   public record ChangeMembershipStatusApiRequest(String status, String reason, String idempotencyKey) {}
+  public record ScimProvisioningApiRequest(String operation, String externalId, String email, String displayName, String scopeType, String tenantId, String customerId, List<String> roles, String reason, String idempotencyKey) {}
+  public record SsoValidationApiRequest(String domain, String issuer, String metadataUrl, boolean productionRequested) {}
+  public record EnterpriseIdentityStatusApiResponse(String tenantId, String customerId, boolean workosAuthKitBoundaryPreserved, boolean scimFoundationEnabled, boolean productionScimConfigured, boolean productionSsoConfigured, String productionReadiness, List<String> providerLimits, List<String> requiredSecretNames, String traceId, String correlationId) {
+    static EnterpriseIdentityStatusApiResponse from(EnterpriseIdentityProviderStatus status, String correlationId) {
+      return new EnterpriseIdentityStatusApiResponse(status.tenantId(), status.customerId(), status.workosAuthKitBoundaryPreserved(), status.scimFoundationEnabled(), status.productionScimConfigured(), status.productionSsoConfigured(), status.productionReadiness(), status.providerLimits(), status.requiredSecretNames(), status.traceId(), correlationId);
+    }
+  }
+  public record ScimProvisioningApiResponse(String status, String message, String operation, String externalId, String accountId, String scopeType, String tenantId, String customerId, List<String> roles, boolean wouldMutateLocalAuthorization, boolean productionProviderConfigured, String providerDeliveryState, String traceId, String correlationId) {
+    static ScimProvisioningApiResponse from(ScimProvisioningResult result, String correlationId) {
+      return new ScimProvisioningApiResponse(result.status(), result.message(), result.operation(), result.externalId(), result.accountId(), result.scopeType().name().toLowerCase(), result.tenantId(), result.customerId(), result.roles().stream().map(Enum::name).toList(), result.wouldMutateLocalAuthorization(), result.productionProviderConfigured(), result.providerDeliveryState(), result.traceId(), correlationId);
+    }
+  }
+  public record SsoValidationApiResponse(String status, String message, String tenantId, String domain, String issuer, boolean productionRequested, boolean productionProviderConfigured, List<String> missingSecretNames, String traceId, String correlationId) {
+    static SsoValidationApiResponse from(SsoConfigurationValidation result, String correlationId) {
+      return new SsoValidationApiResponse(result.status(), result.message(), result.tenantId(), result.domain(), result.issuer(), result.productionRequested(), result.productionProviderConfigured(), result.missingSecretNames(), result.traceId(), correlationId);
+    }
+  }
   public record DigestCommandApiRequest(String idempotencyKey, String scheduledFor, String redactionProfile, String evidenceScope) {}
   public record ExportCommandApiRequest(String idempotencyKey, String redactionProfile, String exportFormat, boolean sensitiveApprovalRequired, String evidenceScope) {}
   public record ExportApprovalApiRequest(String reason) {}

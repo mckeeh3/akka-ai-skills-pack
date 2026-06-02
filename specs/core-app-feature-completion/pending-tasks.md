@@ -376,7 +376,7 @@
 
 ### TASK-COREEXT-04-001: Implement IAM/SCIM/SSO administration foundation
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/04-enterprise-extensions/01-iam-scim-sso-foundation.md
 - depends on: [TASK-COREEXT-03-003]
@@ -406,7 +406,8 @@
   - IAM/SCIM/SSO foundation has safe local runtime behavior and docs accurately state provider-specific limits
   - queue is updated and committed
 - notes:
-  - Q-002 may reprioritize enterprise task order before this task is selected
+  - Q-002 defaulted to IAM/SCIM/SSO administration foundation ordering for this bounded provider-neutral slice; detailed provider integrations remain outside this task.
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`
   - commit message: `coreext: add iam scim sso foundation`
 
 ### TASK-COREEXT-04-002: Implement SIEM/legal-hold/e-discovery/compliance foundation
