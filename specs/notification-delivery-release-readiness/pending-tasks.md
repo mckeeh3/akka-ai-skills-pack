@@ -118,7 +118,7 @@
 
 ### TASK-NDRR-99-001: Verify notification delivery release readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/notification-delivery-release-readiness/tasks/99-verification/01-verify-notification-delivery-readiness.md
 - depends on:
@@ -141,4 +141,7 @@
   - if incomplete, bounded follow-up tasks and a new terminal verification task are appended
   - task changes and queue update are committed
 - notes:
+  - verified on 2026-06-02; checklist, validation artifact, and handoff are mutually consistent
+  - no release-readiness blockers or follow-up tasks were found for the implemented in-app + email notification delivery slice
+  - next runnable task: none; mini-project is complete at stated scope
   - commit message: `notification-readiness: verify completion`
