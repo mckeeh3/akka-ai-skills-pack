@@ -205,7 +205,7 @@
 
 ### TASK-WFTL-03-001: Sync Akka-hosted static frontend assets
 
-- status: pending
+- status: done
 - source: TASK-WFTL-99-001 verification finding
 - task brief: specs/workstream-form-theme-live-remediation/tasks/03-static-runtime-sync/01-sync-akka-hosted-static-assets.md
 - depends on:
@@ -243,6 +243,7 @@
   - changes and queue update are committed
 - notes:
   - commit message: `ui-theme: sync workstream static theme assets`
+  - checks: `git diff --check`; `cd frontend && npm test && npm run typecheck && npm run build`; `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`; targeted search found `.surface-detail-field`, `preferredThemeId`, and `onSurfaceFieldValueChange` evidence in committed reference and starter static assets
 
 ### TASK-WFTL-99-002: Verify workstream form theme static runtime completion
 
