@@ -85,6 +85,8 @@ Future task sessions should inspect the exact affected files before editing.
 1. `sprints/01-style-doctrine-sprint.md` — replace canonical style/theme doctrine and align web UI skills around named themes.
 2. `sprints/02-reference-runtime-sprint.md` — update seed app-description and starter/reference frontend assets to use the replacement style and named-theme selection.
 3. `sprints/99-verification-sprint.md` — verify consistency, checks, and mini-project done state; append follow-up tasks if gaps remain.
+4. `sprints/03-remaining-guidance-sprint.md` — align remaining foundation and pending-question guidance discovered by verification.
+5. `sprints/99-verification-sprint.md` — re-verify completion after the follow-up task group.
 
 ## Done state
 

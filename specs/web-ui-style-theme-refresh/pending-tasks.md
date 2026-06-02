@@ -251,7 +251,7 @@
 
 ### TASK-WUTR-99-001: Verify web UI style theme refresh completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/web-ui-style-theme-refresh/tasks/99-verification/01-verify-web-ui-style-theme-refresh.md
 - depends on:
@@ -291,3 +291,84 @@
   - verification changes and queue update are committed
 - notes:
   - commit message: `ui-theme: verify style theme refresh completion`
+  - outcome: incomplete; appended TASK-WUTR-03-001 and TASK-WUTR-99-002
+  - verification notes: specs/web-ui-style-theme-refresh/verification-notes.md
+  - checks: `git diff --check`; scoped stale-contradiction searches from task brief; `cd frontend && npm test && npm run typecheck && npm run build`; `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`
+
+### TASK-WUTR-03-001: Align remaining foundation theme guidance
+
+- status: pending
+- source: TASK-WUTR-99-001 verification finding
+- task brief: specs/web-ui-style-theme-refresh/tasks/03-remaining-guidance/01-align-remaining-foundation-theme-guidance.md
+- depends on:
+  - TASK-WUTR-99-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/03-remaining-guidance-sprint.md
+  - specs/web-ui-style-theme-refresh/backlog/03-remaining-guidance-build-backlog.md
+  - specs/web-ui-style-theme-refresh/tasks/03-remaining-guidance/01-align-remaining-foundation-theme-guidance.md
+  - docs/web-ui-style-guide.md
+  - docs/workstream-ui-reference-architecture.md
+  - docs/core-saas-identity-tenancy-admin.md
+  - skills/core-saas-foundation/SKILL.md
+  - skills/akka-pending-question-generation/SKILL.md
+- skills:
+  - none; repository docs/skill guidance alignment task
+- expected outputs:
+  - updated docs/workstream-ui-reference-architecture.md
+  - updated docs/core-saas-identity-tenancy-admin.md
+  - updated skills/core-saas-foundation/SKILL.md
+  - updated skills/akka-pending-question-generation/SKILL.md
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - focused stale-language search from task brief
+- done criteria:
+  - foundation UI settings guidance uses named theme selection rather than mode-first UI settings
+  - pending-question generation offers the canonical style option id, not the obsolete Atlas style id
+  - remaining search hits are either removed or documented as unrelated/non-contradictory
+  - task changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: align remaining foundation theme guidance`
+
+### TASK-WUTR-99-002: Verify web UI style theme refresh completion after follow-up
+
+- status: pending
+- source: mini-project verification loop after TASK-WUTR-99-001 follow-up
+- task brief: specs/web-ui-style-theme-refresh/tasks/99-verification/02-verify-web-ui-style-theme-refresh.md
+- depends on:
+  - TASK-WUTR-03-001
+- required reads:
+  - AGENTS.md
+  - skills/README.md
+  - specs/web-ui-style-theme-refresh/README.md
+  - specs/web-ui-style-theme-refresh/conversation-capture.md
+  - specs/web-ui-style-theme-refresh/pending-tasks.md
+  - specs/web-ui-style-theme-refresh/sprints/*.md
+  - specs/web-ui-style-theme-refresh/backlog/*.md
+  - specs/web-ui-style-theme-refresh/tasks/**/*.md
+  - docs/web-ui-style-guide.md
+  - affected docs/skills files from TASK-WUTR-03-001
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/web-ui-style-theme-refresh/pending-tasks.md
+  - optional verification notes file if useful
+  - follow-up task briefs if material gaps remain
+- required checks:
+  - `git diff --check`
+  - scoped stale-contradiction search from task brief
+  - frontend checks only if frontend assets changed in follow-up work
+- done criteria:
+  - Sprint 03 goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - unresolved questions/blockers have been reviewed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - verification changes and queue update are committed
+- notes:
+  - commit message: `ui-theme: verify style theme refresh follow-up`
