@@ -42,7 +42,7 @@
 
 ### TASK-AFSSR-01-001: Review pack and scaffold metadata
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-release-readiness/backlog/01-starter-release-readiness-backlog.md
 - task brief: specs/ai-first-saas-starter-release-readiness/tasks/01-package/01-review-pack-scaffold-metadata.md
 - depends on:
@@ -54,7 +54,7 @@
 - skills:
   - none; package/scaffold review task
 - expected outputs:
-  - release checklist artifact
+  - specs/ai-first-saas-starter-release-readiness/package-scaffold-release-checklist.md
   - updated pending-tasks.md
 - required checks:
   - `git diff --check`
