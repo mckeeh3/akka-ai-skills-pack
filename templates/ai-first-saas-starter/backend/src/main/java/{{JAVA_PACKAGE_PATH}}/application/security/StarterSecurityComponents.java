@@ -36,6 +36,8 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
@@ -449,6 +451,12 @@ public final class StarterSecurityComponents {
     public EmailOutboxMessage saveEmailOutbox(EmailOutboxMessage message) { throw unavailable(); }
     public Optional<EmailOutboxMessage> findEmailOutbox(String tenantId, String outboxId) { throw unavailable(); }
     public List<EmailOutboxMessage> listEmailOutbox(String tenantId) { throw unavailable(); }
+    public NotificationDeliveryAttempt saveDeliveryAttempt(NotificationDeliveryAttempt attempt) { throw unavailable(); }
+    public Optional<NotificationDeliveryAttempt> findDeliveryAttempt(String tenantId, String attemptId) { throw unavailable(); }
+    public Optional<NotificationDeliveryAttempt> findDeliveryAttemptByDedupeKey(String tenantId, String dedupeKey) { throw unavailable(); }
+    public List<NotificationDeliveryAttempt> listDeliveryAttempts(String tenantId, String accountId) { throw unavailable(); }
+    public NotificationExternalOutboxMessage saveExternalOutbox(NotificationExternalOutboxMessage message) { throw unavailable(); }
+    public List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId) { throw unavailable(); }
   }
 
   private static final class UnboundGovernancePolicyRepository implements GovernancePolicyRepository {

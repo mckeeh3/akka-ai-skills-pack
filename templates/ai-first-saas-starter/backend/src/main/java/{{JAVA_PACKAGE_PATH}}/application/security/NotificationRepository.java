@@ -3,6 +3,8 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import java.util.List;
@@ -26,4 +28,10 @@ public interface NotificationRepository {
   EmailOutboxMessage saveEmailOutbox(EmailOutboxMessage message);
   Optional<EmailOutboxMessage> findEmailOutbox(String tenantId, String outboxId);
   List<EmailOutboxMessage> listEmailOutbox(String tenantId);
+  NotificationDeliveryAttempt saveDeliveryAttempt(NotificationDeliveryAttempt attempt);
+  Optional<NotificationDeliveryAttempt> findDeliveryAttempt(String tenantId, String attemptId);
+  Optional<NotificationDeliveryAttempt> findDeliveryAttemptByDedupeKey(String tenantId, String dedupeKey);
+  List<NotificationDeliveryAttempt> listDeliveryAttempts(String tenantId, String accountId);
+  NotificationExternalOutboxMessage saveExternalOutbox(NotificationExternalOutboxMessage message);
+  List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId);
 }

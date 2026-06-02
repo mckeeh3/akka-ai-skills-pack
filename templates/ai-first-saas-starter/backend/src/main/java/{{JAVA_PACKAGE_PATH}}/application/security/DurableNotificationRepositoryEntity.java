@@ -5,6 +5,8 @@ import akka.javasdk.keyvalueentity.KeyValueEntity;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import java.util.List;
@@ -82,6 +84,30 @@ public class DurableNotificationRepositoryEntity extends KeyValueEntity<Notifica
 
   public ReadOnlyEffect<List<EmailOutboxMessage>> listEmailOutbox(ListTenantQuery query) {
     return effects().reply(currentState().listEmailOutbox(query.tenantId()));
+  }
+
+  public Effect<NotificationDeliveryAttempt> saveDeliveryAttempt(NotificationDeliveryAttempt attempt) {
+    return effects().updateState(currentState().saveDeliveryAttempt(attempt)).thenReply(() -> attempt);
+  }
+
+  public ReadOnlyEffect<Optional<NotificationDeliveryAttempt>> findDeliveryAttempt(FindQuery query) {
+    return effects().reply(currentState().findDeliveryAttempt(query.tenantId(), query.notificationId()));
+  }
+
+  public ReadOnlyEffect<Optional<NotificationDeliveryAttempt>> findDeliveryAttemptByDedupeKey(FindDedupeQuery query) {
+    return effects().reply(currentState().findDeliveryAttemptByDedupeKey(query.tenantId(), query.dedupeKey()));
+  }
+
+  public ReadOnlyEffect<List<NotificationDeliveryAttempt>> listDeliveryAttempts(ListPreferencesQuery query) {
+    return effects().reply(currentState().listDeliveryAttempts(query.tenantId(), query.accountId()));
+  }
+
+  public Effect<NotificationExternalOutboxMessage> saveExternalOutbox(NotificationExternalOutboxMessage message) {
+    return effects().updateState(currentState().saveExternalOutbox(message)).thenReply(() -> message);
+  }
+
+  public ReadOnlyEffect<List<NotificationExternalOutboxMessage>> listExternalOutbox(ListPreferencesQuery query) {
+    return effects().reply(currentState().listExternalOutbox(query.tenantId(), query.accountId()));
   }
 
   public record FindQuery(String tenantId, String notificationId) {}

@@ -18,6 +18,9 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MembershipStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationCategory;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationChannel;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationChannelStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttemptStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPriority;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationRedactionLevel;
@@ -143,6 +146,34 @@ class NotificationServiceTest {
     assertEquals(NotificationCategory.DIGEST_READY, ready.category());
     assertEquals(NotificationCategory.DIGEST_BLOCKED, blocked.category());
     assertEquals(2, service.listMyAccountCenter(actor, "corr-center").visibleCount());
+  }
+
+  @Test
+  void channelRegistryExposesProviderNeutralFailClosedExternalChannels() {
+    var actor = actor("admin@example.test", "membership-admin", "corr-registry");
+
+    var registry = service.listChannelRegistry(actor, "corr-registry");
+
+    assertTrue(registry.stream().anyMatch(entry -> entry.channel() == NotificationChannel.IN_APP && entry.status() == NotificationChannelStatus.ACTIVE));
+    assertTrue(registry.stream().anyMatch(entry -> entry.channel() == NotificationChannel.WEBHOOK && entry.status() == NotificationChannelStatus.PROVIDER_UNCONFIGURED && entry.localTestOutboxAvailable()));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("NOTIFICATION_DELIVERY_LIST_PLATFORM")));
+  }
+
+  @Test
+  void externalDeliveryAttemptFailsClosedAndCapturesLocalOutboxWithoutSuccess() {
+    var actor = actor("admin@example.test", "membership-admin", "corr-external");
+    var projected = service.projectFromAttention(actor, attention("attention-webhook", "tenant-1", "agent-agent-admin", "agent_admin.list_definitions", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.BLOCKED, "Provider api_key=secret is blocked"), "corr-project");
+
+    var attempt = service.evaluateExternalDelivery(actor, projected.notificationId(), NotificationChannel.WEBHOOK, "webhook https://hooks.example.test/redacted", "corr-webhook");
+    var duplicate = service.evaluateExternalDelivery(actor, projected.notificationId(), NotificationChannel.WEBHOOK, "webhook duplicate", "corr-webhook-dup");
+
+    assertEquals(NotificationDeliveryAttemptStatus.BLOCKED_PROVIDER_UNCONFIGURED, attempt.status());
+    assertEquals(attempt.attemptId(), duplicate.attemptId());
+    assertFalse(attempt.status().name().contains("SENT"));
+    assertEquals(1, service.listDeliveryAttempts(actor, "corr-list").size());
+    assertEquals(1, service.listExternalOutbox(actor, "corr-outbox").size());
+    assertTrue(attempt.safeErrorSummary().contains("not configured"));
+    assertFalse(attempt.toString().contains("api_key=secret"));
   }
 
   private AttentionItem attention(String itemId, String tenantId, String workstreamId, String capabilityId, AttentionCategory category, AttentionSeverity severity, String summary) {

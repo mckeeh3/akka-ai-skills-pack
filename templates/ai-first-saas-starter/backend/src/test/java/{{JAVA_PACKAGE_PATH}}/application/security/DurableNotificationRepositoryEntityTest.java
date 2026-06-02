@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import akka.javasdk.testkit.KeyValueEntityTestKit;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationChannel;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttemptStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
@@ -56,6 +59,30 @@ class DurableNotificationRepositoryEntityTest {
         .invoke(new DurableNotificationRepositoryEntity.FindPreferenceQuery("tenant-1", "pref-1"))
         .getReply().orElseThrow());
     assertEquals(List.of(preference), testKit.method(DurableNotificationRepositoryEntity::listPreferences)
+        .invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery("tenant-1", "account-1"))
+        .getReply());
+  }
+
+  @Test
+  void persistsProviderNeutralDeliveryAttemptsAndCapturedExternalOutbox() {
+    var testKit = newTestKit();
+    var now = Instant.parse("2026-05-26T10:00:00Z");
+    var attempt = new NotificationDeliveryAttempt("attempt-1", "tenant-1", null, "account-1", NotificationChannel.WEBHOOK, NotificationCategory.PROVIDER_READINESS, "notification-1", List.of(), List.of("trace-1"), "agent_admin.list_definitions", "agent-agent-admin", "webhook redacted", "provider_unconfigured", NotificationDeliveryAttemptStatus.BLOCKED_PROVIDER_UNCONFIGURED, "Production provider is not configured.", "dedupe-webhook-1", "outbox-1", "corr-webhook", now, now);
+    var outbox = new NotificationExternalOutboxMessage("outbox-1", "tenant-1", null, "account-1", NotificationChannel.WEBHOOK, "webhook redacted", "Provider readiness blocked", "Provider configuration needs attention.", java.util.Map.of("sourceNotificationId", "notification-1"), "corr-webhook", now);
+
+    testKit.method(DurableNotificationRepositoryEntity::saveDeliveryAttempt).invoke(attempt);
+    testKit.method(DurableNotificationRepositoryEntity::saveExternalOutbox).invoke(outbox);
+
+    assertEquals(attempt, testKit.method(DurableNotificationRepositoryEntity::findDeliveryAttempt)
+        .invoke(new DurableNotificationRepositoryEntity.FindQuery("tenant-1", "attempt-1"))
+        .getReply().orElseThrow());
+    assertEquals(attempt, testKit.method(DurableNotificationRepositoryEntity::findDeliveryAttemptByDedupeKey)
+        .invoke(new DurableNotificationRepositoryEntity.FindDedupeQuery("tenant-1", "dedupe-webhook-1"))
+        .getReply().orElseThrow());
+    assertEquals(List.of(attempt), testKit.method(DurableNotificationRepositoryEntity::listDeliveryAttempts)
+        .invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery("tenant-1", "account-1"))
+        .getReply());
+    assertEquals(List.of(outbox), testKit.method(DurableNotificationRepositoryEntity::listExternalOutbox)
         .invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery("tenant-1", "account-1"))
         .getReply());
   }

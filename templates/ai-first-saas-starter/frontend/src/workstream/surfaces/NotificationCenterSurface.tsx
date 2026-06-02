@@ -11,11 +11,14 @@ export function NotificationCenterSurface({ envelope, onAction }: NotificationCe
   const data = envelope.data;
   const items = data.items ?? [];
   const emailPreferences = data.emailPreferencesSummary ?? [];
+  const channelRegistry = data.channelRegistry ?? [];
+  const deliveryAttempts = data.deliveryAttempts ?? [];
+  const externalOutbox = data.externalOutbox ?? [];
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="notification-center-summary" aria-label="In-app notification center summary" data-count-source="notification.list_my_account_center">
         <p className="capability-basis">Surface contract: {data.surfaceContract}</p>
-        <p className="surface-state-inline partial">In-app notifications remain the source projection. Email is a separate governed delivery channel with backend-owned preferences; SMS, push, and webhooks are not active controls.</p>
+        <p className="surface-state-inline partial">In-app notifications remain the source projection. Email is a governed Resend/captured-outbox channel. Webhook, SMS, mobile push, Slack, and Teams are provider-neutral fail-closed seams until Q-001 selects real production providers.</p>
         <dl className="notification-center-counts">
           <div><dt>Channel</dt><dd>{data.channel}</dd></div>
           <div><dt>Unread</dt><dd>{data.unreadCount}</dd></div>
@@ -47,6 +50,41 @@ export function NotificationCenterSurface({ envelope, onAction }: NotificationCe
             <article key={pref.preferenceId} className="surface-section-card">
               <h4>{pref.category} · {pref.channel}</h4>
               <p>Enabled: {String(pref.enabled)} · Minimum priority: {pref.minimumPriority} · Include read: {String(pref.includeReadInCenter)}</p>
+            </article>
+          ))}
+        </section>
+      )}
+      {channelRegistry.length > 0 && (
+        <section className="surface-section-list notification-channel-registry" aria-label="Notification channel registry" data-governed-tool="notification.delivery.list_platform">
+          {channelRegistry.map((channel) => (
+            <article key={channel.channel} className="surface-section-card" data-channel-status={channel.status} data-production-configured={String(channel.productionConfigured)}>
+              <h4>{channel.channel}</h4>
+              <p>Status: {channel.status} · Provider: {channel.providerKind} · Local/test outbox: {String(channel.localTestOutboxAvailable)}</p>
+              <p className="capability-basis">Delivery capability: {channel.deliveryCapabilityId} · Preference capability: {channel.preferenceCapabilityId}</p>
+              <p>{channel.statusReason}</p>
+            </article>
+          ))}
+        </section>
+      )}
+      {deliveryAttempts.length > 0 && (
+        <section className="surface-section-list notification-delivery-attempts" aria-label="External notification delivery attempts">
+          {deliveryAttempts.map((attempt) => (
+            <article key={attempt.attemptId} className="surface-section-card" data-delivery-status={attempt.status}>
+              <h4>{attempt.channel} delivery attempt</h4>
+              <p>Status: {attempt.status} · Provider: {attempt.providerKind} · Destination: {attempt.destinationSummary ?? 'redacted'}</p>
+              {attempt.safeErrorSummary && <p className="surface-state-inline blocked">{attempt.safeErrorSummary}</p>}
+              <p className="capability-basis">Outbox: {attempt.outboxId ?? 'none'} · Correlation: {attempt.correlationId ?? 'backend-derived'}</p>
+            </article>
+          ))}
+        </section>
+      )}
+      {externalOutbox.length > 0 && (
+        <section className="surface-section-list notification-external-outbox" aria-label="Captured local test external notification outbox">
+          {externalOutbox.map((message) => (
+            <article key={message.outboxId} className="surface-section-card">
+              <h4>{message.channel} captured outbox</h4>
+              <p>{message.title ?? 'Notification'} · {message.previewText ?? 'Preview redacted'}</p>
+              <p className="capability-basis">Destination: {message.destinationSummary ?? 'redacted'} · Correlation: {message.correlationId ?? 'backend-derived'}</p>
             </article>
           ))}
         </section>

@@ -10,6 +10,11 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountNotificationCenter;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationChannel;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationChannelRegistryEntry;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationChannelStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttemptStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
@@ -42,6 +47,8 @@ public final class NotificationService {
   public static final String SNOOZE_TOOL = "notification.snooze";
   public static final String UPDATE_PREFERENCES_TOOL = "notification.update_preferences";
   public static final String PROJECT_FROM_SOURCE_TOOL = "notification.project_from_source";
+  public static final String LIST_DELIVERY_PLATFORM_TOOL = "notification.delivery.list_platform";
+  public static final String EVALUATE_EXTERNAL_DELIVERY_TOOL = "notification.delivery.evaluate_external";
 
   private final NotificationRepository repository;
   private final AuthContextResolver authContextResolver;
@@ -143,13 +150,66 @@ public final class NotificationService {
   }
 
   public NotificationPreference updatePreference(AuthContextResolver.ResolvedMe actor, NotificationCategory category, boolean enabled, NotificationPriority minimumPriority, Instant muteUntil, boolean includeReadInCenter, String correlationId) {
+    return updateChannelPreference(actor, NotificationChannel.IN_APP, category, enabled, minimumPriority, muteUntil, includeReadInCenter, correlationId);
+  }
+
+  public NotificationPreference updateChannelPreference(AuthContextResolver.ResolvedMe actor, NotificationChannel channel, NotificationCategory category, boolean enabled, NotificationPriority minimumPriority, Instant muteUntil, boolean includeReadInCenter, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), UPDATE_PREFERENCES_TOOL);
     var safeCategory = category == null ? NotificationCategory.ALL : category;
     var now = Instant.now(clock);
-    var pref = new NotificationPreference("notification-pref-" + actor.selectedContext().tenantId() + "-" + actor.account().accountId() + "-" + safeCategory.name().toLowerCase(Locale.ROOT), actor.selectedContext().tenantId(), actor.selectedContext().customerId(), actor.account().accountId(), NotificationChannel.IN_APP, safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, includeReadInCenter, now, actor.account().accountId(), correlationId);
+    var safeChannel = channel == null ? NotificationChannel.IN_APP : channel;
+    var pref = new NotificationPreference("notification-pref-" + actor.selectedContext().tenantId() + "-" + actor.account().accountId() + "-" + safeChannel.name().toLowerCase(Locale.ROOT) + "-" + safeCategory.name().toLowerCase(Locale.ROOT), actor.selectedContext().tenantId(), actor.selectedContext().customerId(), actor.account().accountId(), safeChannel, safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, includeReadInCenter, now, actor.account().accountId(), correlationId);
     var saved = repository.savePreference(pref);
-    appendAudit(actor, "NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.ALLOWED, safeCategory.name().toLowerCase(Locale.ROOT), correlationId);
+    appendAudit(actor, "NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.ALLOWED, safeChannel.name().toLowerCase(Locale.ROOT) + ":" + safeCategory.name().toLowerCase(Locale.ROOT), correlationId);
     return saved;
+  }
+
+  public List<NotificationChannelRegistryEntry> listChannelRegistry(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), LIST_DELIVERY_PLATFORM_TOOL);
+    appendAudit(actor, "NOTIFICATION_DELIVERY_LIST_PLATFORM", AdminAuditEvent.Result.ALLOWED, "provider-neutral registry", correlationId);
+    return List.of(
+        new NotificationChannelRegistryEntry(NotificationChannel.IN_APP, NotificationChannelStatus.ACTIVE, "backend_projection", true, false, LIST_MY_ACCOUNT_CENTER_TOOL, UPDATE_PREFERENCES_TOOL, "Akka-backed in-app notification center is active."),
+        new NotificationChannelRegistryEntry(NotificationChannel.EMAIL, NotificationChannelStatus.LOCAL_TEST_CAPTURED, "resend_or_captured_outbox", true, true, EmailNotificationService.ENQUEUE_TOOL, EmailNotificationService.UPDATE_PREFERENCES_TOOL, "Email uses the governed Resend/captured-outbox boundary."),
+        unconfigured(NotificationChannel.WEBHOOK),
+        unconfigured(NotificationChannel.SMS),
+        unconfigured(NotificationChannel.MOBILE_PUSH),
+        unconfigured(NotificationChannel.SLACK),
+        unconfigured(NotificationChannel.TEAMS));
+  }
+
+  public NotificationDeliveryAttempt evaluateExternalDelivery(AuthContextResolver.ResolvedMe actor, String notificationId, NotificationChannel channel, String destinationSummary, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), EVALUATE_EXTERNAL_DELIVERY_TOOL);
+    var safeChannel = channel == null ? NotificationChannel.WEBHOOK : channel;
+    if (safeChannel == NotificationChannel.IN_APP || safeChannel == NotificationChannel.EMAIL) throw new AuthorizationException(400, "use-specific-notification-channel-capability");
+    var item = authorizedItem(actor, notificationId, "NOTIFICATION_DELIVERY_EVALUATE_EXTERNAL", correlationId);
+    if (item == null) throw new AuthorizationException(404, "not_found_or_redacted");
+    var dedupeKey = "notification:delivery:" + safeChannel.name().toLowerCase(Locale.ROOT) + ":" + item.tenantId() + ":" + firstNonBlank(item.customerId(), "none") + ":" + item.accountId() + ":" + item.notificationId();
+    var existing = repository.findDeliveryAttemptByDedupeKey(item.tenantId(), dedupeKey).orElse(null);
+    if (existing != null) {
+      appendAudit(actor, "NOTIFICATION_DELIVERY_DUPLICATE", AdminAuditEvent.Result.NO_OP, existing.status().name().toLowerCase(Locale.ROOT), correlationId);
+      return existing;
+    }
+    var now = Instant.now(clock);
+    var outboxId = "notification-external-outbox-" + Math.abs(dedupeKey.hashCode());
+    var attemptId = "notification-delivery-" + Math.abs(dedupeKey.hashCode());
+    var outbox = new NotificationExternalOutboxMessage(outboxId, item.tenantId(), item.customerId(), item.accountId(), safeChannel, safe(firstNonBlank(destinationSummary, safeChannel.name().toLowerCase(Locale.ROOT) + " destination withheld")), safe(item.title()), safe(item.summary()), Map.of("sourceNotificationId", item.notificationId(), "channel", safeChannel.name()), correlationId, now);
+    repository.saveExternalOutbox(outbox);
+    var attempt = new NotificationDeliveryAttempt(attemptId, item.tenantId(), item.customerId(), item.accountId(), safeChannel, item.category(), item.notificationId(), item.sourceRefs(), item.traceRefs(), item.requiredCapabilityId(), item.owningWorkstreamId(), outbox.destinationSummary(), "provider_unconfigured", NotificationDeliveryAttemptStatus.BLOCKED_PROVIDER_UNCONFIGURED, "Production provider is not configured for " + safeChannel.name().toLowerCase(Locale.ROOT) + "; local/test outbox captured the intent without reporting delivery success.", dedupeKey, outboxId, correlationId, now, now);
+    var saved = repository.saveDeliveryAttempt(attempt);
+    appendAudit(actor, "NOTIFICATION_DELIVERY_PROVIDER_UNCONFIGURED", AdminAuditEvent.Result.DENIED, safeChannel.name().toLowerCase(Locale.ROOT), correlationId);
+    return saved;
+  }
+
+  public List<NotificationDeliveryAttempt> listDeliveryAttempts(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), LIST_DELIVERY_PLATFORM_TOOL);
+    appendAudit(actor, "NOTIFICATION_DELIVERY_LIST_ATTEMPTS", AdminAuditEvent.Result.ALLOWED, "redacted attempts", correlationId);
+    return repository.listDeliveryAttempts(actor.selectedContext().tenantId(), actor.account().accountId());
+  }
+
+  public List<NotificationExternalOutboxMessage> listExternalOutbox(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), LIST_DELIVERY_PLATFORM_TOOL);
+    appendAudit(actor, "NOTIFICATION_DELIVERY_LIST_EXTERNAL_OUTBOX", AdminAuditEvent.Result.ALLOWED, "captured local/test outbox", correlationId);
+    return repository.listExternalOutbox(actor.selectedContext().tenantId(), actor.account().accountId());
   }
 
   public List<EmailNotificationPreference> listEmailPreferences(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -205,7 +265,7 @@ public final class NotificationService {
   }
 
   private boolean preferenceAllows(List<NotificationPreference> prefs, NotificationItem item, Instant now) {
-    return prefs.stream().filter(pref -> pref.category() == item.category() || pref.category() == NotificationCategory.ALL).allMatch(pref -> pref.enabled() && rank(item.priority()) >= rank(pref.minimumPriority()) && (pref.muteUntil() == null || !pref.muteUntil().isAfter(now)));
+    return prefs.stream().filter(pref -> pref.channel() == item.channel()).filter(pref -> pref.category() == item.category() || pref.category() == NotificationCategory.ALL).allMatch(pref -> pref.enabled() && rank(item.priority()) >= rank(pref.minimumPriority()) && (pref.muteUntil() == null || !pref.muteUntil().isAfter(now)));
   }
 
   private NotificationItem redactIfNeeded(NotificationItem item) {
@@ -245,6 +305,10 @@ public final class NotificationService {
   private NotificationPriority priorityFromHint(String value) {
     if (value == null || value.isBlank()) return NotificationPriority.INFO;
     try { return NotificationPriority.valueOf(value.trim().toUpperCase(Locale.ROOT)); } catch (IllegalArgumentException ignored) { return NotificationPriority.INFO; }
+  }
+
+  private NotificationChannelRegistryEntry unconfigured(NotificationChannel channel) {
+    return new NotificationChannelRegistryEntry(channel, NotificationChannelStatus.PROVIDER_UNCONFIGURED, "provider_neutral_fail_closed", false, true, EVALUATE_EXTERNAL_DELIVERY_TOOL, UPDATE_PREFERENCES_TOOL, "Q-001 has not selected a production provider; delivery attempts are blocked and captured locally for tests only.");
   }
 
   private int rank(NotificationPriority priority) {

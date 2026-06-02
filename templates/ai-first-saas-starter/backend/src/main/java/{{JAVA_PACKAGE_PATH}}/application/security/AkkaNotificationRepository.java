@@ -4,6 +4,8 @@ import akka.javasdk.client.ComponentClient;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import java.util.List;
@@ -85,5 +87,29 @@ public final class AkkaNotificationRepository implements NotificationRepository 
 
   public List<EmailOutboxMessage> listEmailOutbox(String tenantId) {
     return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listEmailOutbox).invoke(new DurableNotificationRepositoryEntity.ListTenantQuery(tenantId));
+  }
+
+  public NotificationDeliveryAttempt saveDeliveryAttempt(NotificationDeliveryAttempt attempt) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::saveDeliveryAttempt).invoke(attempt);
+  }
+
+  public Optional<NotificationDeliveryAttempt> findDeliveryAttempt(String tenantId, String attemptId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::findDeliveryAttempt).invoke(new DurableNotificationRepositoryEntity.FindQuery(tenantId, attemptId));
+  }
+
+  public Optional<NotificationDeliveryAttempt> findDeliveryAttemptByDedupeKey(String tenantId, String dedupeKey) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::findDeliveryAttemptByDedupeKey).invoke(new DurableNotificationRepositoryEntity.FindDedupeQuery(tenantId, dedupeKey));
+  }
+
+  public List<NotificationDeliveryAttempt> listDeliveryAttempts(String tenantId, String accountId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listDeliveryAttempts).invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery(tenantId, accountId));
+  }
+
+  public NotificationExternalOutboxMessage saveExternalOutbox(NotificationExternalOutboxMessage message) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::saveExternalOutbox).invoke(message);
+  }
+
+  public List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listExternalOutbox).invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery(tenantId, accountId));
   }
 }

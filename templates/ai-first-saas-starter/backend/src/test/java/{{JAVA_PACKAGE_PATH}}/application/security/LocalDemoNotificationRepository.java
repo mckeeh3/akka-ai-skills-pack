@@ -3,6 +3,8 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationDeliveryAttempt;
+import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationExternalOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import java.util.Comparator;
@@ -18,6 +20,8 @@ final class LocalDemoNotificationRepository implements NotificationRepository {
   private final Map<String, EmailNotificationPreference> emailPreferences = new LinkedHashMap<>();
   private final Map<String, EmailNotificationDelivery> emailDeliveries = new LinkedHashMap<>();
   private final Map<String, EmailOutboxMessage> emailOutbox = new LinkedHashMap<>();
+  private final Map<String, NotificationDeliveryAttempt> deliveryAttempts = new LinkedHashMap<>();
+  private final Map<String, NotificationExternalOutboxMessage> externalOutbox = new LinkedHashMap<>();
 
   public NotificationItem upsert(NotificationItem item) {
     items.put(key(item.tenantId(), item.notificationId()), item);
@@ -86,6 +90,32 @@ final class LocalDemoNotificationRepository implements NotificationRepository {
 
   public List<EmailOutboxMessage> listEmailOutbox(String tenantId) {
     return emailOutbox.values().stream().filter(message -> tenantId.equals(message.tenantId())).toList();
+  }
+
+  public NotificationDeliveryAttempt saveDeliveryAttempt(NotificationDeliveryAttempt attempt) {
+    deliveryAttempts.put(key(attempt.tenantId(), attempt.attemptId()), attempt);
+    return attempt;
+  }
+
+  public Optional<NotificationDeliveryAttempt> findDeliveryAttempt(String tenantId, String attemptId) {
+    return Optional.ofNullable(deliveryAttempts.get(key(tenantId, attemptId)));
+  }
+
+  public Optional<NotificationDeliveryAttempt> findDeliveryAttemptByDedupeKey(String tenantId, String dedupeKey) {
+    return deliveryAttempts.values().stream().filter(attempt -> tenantId.equals(attempt.tenantId()) && dedupeKey.equals(attempt.dedupeKey())).findFirst();
+  }
+
+  public List<NotificationDeliveryAttempt> listDeliveryAttempts(String tenantId, String accountId) {
+    return deliveryAttempts.values().stream().filter(attempt -> tenantId.equals(attempt.tenantId()) && accountId.equals(attempt.accountId())).sorted(Comparator.comparing(NotificationDeliveryAttempt::updatedAt).reversed()).toList();
+  }
+
+  public NotificationExternalOutboxMessage saveExternalOutbox(NotificationExternalOutboxMessage message) {
+    externalOutbox.put(key(message.tenantId(), message.outboxId()), message);
+    return message;
+  }
+
+  public List<NotificationExternalOutboxMessage> listExternalOutbox(String tenantId, String accountId) {
+    return externalOutbox.values().stream().filter(message -> tenantId.equals(message.tenantId()) && accountId.equals(message.accountId())).toList();
   }
 
   private String key(String tenantId, String id) {

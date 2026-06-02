@@ -199,7 +199,7 @@
 
 ### TASK-COREEXT-02-002: Implement notification delivery platform foundation
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/02-events-notifications/02-notification-delivery-platform.md
 - depends on: [TASK-COREEXT-02-001]
@@ -234,6 +234,7 @@
   - queue is updated and committed
 - notes:
   - Q-001 blocks only real provider-specific adapters, not provider-neutral fail-closed seams
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`
   - commit message: `coreext: add notification delivery platform`
 
 ### TASK-COREEXT-02-003: Implement provider-specific delivery adapters
