@@ -144,7 +144,7 @@
 
 ### TASK-AFSSR-99-001: Verify starter release readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/ai-first-saas-starter-release-readiness/tasks/99-verification/01-verify-starter-release-readiness.md
 - depends on:
@@ -169,3 +169,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `starter-release: verify readiness`
+  - verification result: release-ready for validated scaffold/package scope; no bounded follow-up tasks required
+  - evidence: package/scaffold checklist, fresh scaffold validation, docs/handoff audit, release notes, queue state, `git diff --check`, and focused release-blocker/stale-overclaim scans reviewed
