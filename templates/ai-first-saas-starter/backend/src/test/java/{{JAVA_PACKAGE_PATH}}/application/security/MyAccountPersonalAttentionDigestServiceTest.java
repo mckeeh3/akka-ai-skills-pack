@@ -111,7 +111,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
     assertEquals(MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, projected.status());
     assertTrue(events.listTenant("tenant-1").stream().anyMatch(event -> "workflow.my_account.personal_attention_digest.completed_review_required".equals(event.eventType())));
     assertTrue(events.listTenant("tenant-1").stream().anyMatch(event -> "worker.task.completed_review_required".equals(event.eventType())));
-    assertTrue(events.listTenant("tenant-1").stream().anyMatch(event -> "surface-my-account-personal-attention-digest-result".equals(event.surfaceId())));
+    assertTrue(events.listTenant("tenant-1").stream().anyMatch(event -> "surface-my-account-personal-attention-digest-result".equals(event.targetSurfaceId())));
   }
 
   @Test

@@ -129,7 +129,7 @@
 
 ### TASK-MAPAD-04-001: Run personal attention digest validation
 
-- status: pending
+- status: done
 - source: specs/my-account-personal-attention-digest-autonomous-agent/backlog/01-personal-attention-digest-build-backlog.md
 - task brief: specs/my-account-personal-attention-digest-autonomous-agent/tasks/04-validation/01-run-personal-attention-digest-validation.md
 - depends on:
@@ -140,7 +140,7 @@
 - skills:
   - none; validation task
 - expected outputs:
-  - validation artifact
+  - specs/my-account-personal-attention-digest-autonomous-agent/validation/01-personal-attention-digest-validation.md
   - updated pending-tasks.md
 - required checks:
   - `git diff --check`
