@@ -156,8 +156,10 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(surfaceTypes, /NotificationCenterSurfaceData/);
   assert.match(notificationCenterSurface, /Backend-derived in-app notifications/);
   assert.match(notificationCenterSurface, /notification\.list_my_account_center/);
-  assert.match(notificationCenterSurface, /Email and push delivery are future governed-channel work/);
-  assert.doesNotMatch(notificationCenterSurface, /emailEnabled|pushEnabled/);
+  assert.match(notificationCenterSurface, /notification\.email\.list_my_preferences/);
+  assert.match(notificationCenterSurface, /captured_outbox/);
+  assert.match(notificationCenterSurface, /SMS, push, and webhook controls are not rendered/);
+  assert.doesNotMatch(notificationCenterSurface, /emailEnabled|pushEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(allSurfaceComponents, /governance-diff-summary/);
   assert.match(allSurfaceComponents, /outcome-metrics/);
 });

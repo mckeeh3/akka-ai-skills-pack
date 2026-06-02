@@ -112,9 +112,11 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(dashboardSurface, /nextSteps/);
   assert.match(surfaceRenderer, /case 'notification-center':\n      return <NotificationCenterSurface/);
   assert.match(notificationCenterSurface, /notification\.list_my_account_center/);
-  assert.match(notificationCenterSurface, /In-app only/);
-  assert.match(notificationCenterSurface, /Email and push delivery are future governed-channel work/);
-  assert.doesNotMatch(notificationCenterSurface, /pushEnabled|emailEnabled/);
+  assert.match(notificationCenterSurface, /notification\.email\.list_my_preferences/);
+  assert.match(notificationCenterSurface, /notification\.email\.update_preferences/);
+  assert.match(notificationCenterSurface, /Resend configuration/);
+  assert.match(notificationCenterSurface, /SMS, push, and webhook controls are not rendered/);
+  assert.doesNotMatch(notificationCenterSurface, /pushEnabled|emailEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(detailEditSurface, /surface-detail-edit-form/);
   assert.match(detailEditSurface, /permissionState/);
   assert.match(systemMessageSurface, /Recovery steps/);

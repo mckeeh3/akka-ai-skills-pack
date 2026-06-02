@@ -5,6 +5,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionRedactionLevel;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSeverity;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountNotificationCenter;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationCategory;
@@ -148,6 +149,22 @@ public final class NotificationService {
     var pref = new NotificationPreference("notification-pref-" + actor.selectedContext().tenantId() + "-" + actor.account().accountId() + "-" + safeCategory.name().toLowerCase(Locale.ROOT), actor.selectedContext().tenantId(), actor.selectedContext().customerId(), actor.account().accountId(), NotificationChannel.IN_APP, safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, includeReadInCenter, now, actor.account().accountId(), correlationId);
     var saved = repository.savePreference(pref);
     appendAudit(actor, "NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.ALLOWED, safeCategory.name().toLowerCase(Locale.ROOT), correlationId);
+    return saved;
+  }
+
+  public List<EmailNotificationPreference> listEmailPreferences(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), EmailNotificationService.LIST_PREFERENCES_TOOL);
+    appendAudit(actor, "EMAIL_NOTIFICATION_LIST_PREFERENCES", AdminAuditEvent.Result.ALLOWED, "email preference summary", correlationId);
+    return repository.listEmailPreferences(actor.selectedContext().tenantId(), actor.account().accountId());
+  }
+
+  public EmailNotificationPreference updateEmailPreference(AuthContextResolver.ResolvedMe actor, NotificationCategory category, boolean enabled, NotificationPriority minimumPriority, Instant muteUntil, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), EmailNotificationService.UPDATE_PREFERENCES_TOOL);
+    var safeCategory = category == null ? NotificationCategory.ALL : category;
+    var now = Instant.now(clock);
+    var pref = new EmailNotificationPreference("email-notification-pref-" + actor.selectedContext().tenantId() + "-" + actor.account().accountId() + "-" + safeCategory.name().toLowerCase(Locale.ROOT), actor.selectedContext().tenantId(), actor.selectedContext().customerId(), actor.account().accountId(), safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, now, actor.account().accountId(), correlationId);
+    var saved = repository.saveEmailPreference(pref);
+    appendAudit(actor, "EMAIL_NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.ALLOWED, safeCategory.name().toLowerCase(Locale.ROOT), correlationId);
     return saved;
   }
 

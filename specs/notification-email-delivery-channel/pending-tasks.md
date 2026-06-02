@@ -99,7 +99,7 @@
 
 ### TASK-NEDC-03-001: Wire email notification preference surfaces
 
-- status: pending
+- status: done
 - source: specs/notification-email-delivery-channel/backlog/01-email-delivery-channel-build-backlog.md
 - task brief: specs/notification-email-delivery-channel/tasks/03-surfaces/01-wire-email_preferences_surfaces.md
 - depends on:
