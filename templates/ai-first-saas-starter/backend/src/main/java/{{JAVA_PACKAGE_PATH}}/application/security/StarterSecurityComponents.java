@@ -19,6 +19,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AkkaAgentBehaviorRepository;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.AkkaAgentRuntimeTraceSink;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ComponentClientAccessReviewAutonomousAgentRuntime;
+import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ComponentClientMyAccountPersonalAttentionDigestAutonomousAgentRuntime;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.DefaultWorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.FailClosedWorkstreamAgentRuntimeInvoker;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
@@ -32,6 +33,7 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyProposal;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Membership;
+import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.ScopeType;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Tenant;
 import {{JAVA_BASE_PACKAGE}}.domain.security.UserProfile;
@@ -65,6 +67,8 @@ public final class StarterSecurityComponents {
   private static volatile GovernancePolicyService governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
   private static volatile AttentionRepository attentionRepository = new UnboundAttentionRepository();
   private static volatile AttentionService attentionService = new AttentionService(attentionRepository, authContextResolver, CLOCK);
+  private static volatile MyAccountPersonalAttentionDigestTaskRepository personalAttentionDigestTaskRepository = new UnboundMyAccountPersonalAttentionDigestTaskRepository();
+  private static volatile MyAccountPersonalAttentionDigestService personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(personalAttentionDigestTaskRepository, authContextResolver, attentionService, CLOCK);
   private static volatile AttentionProducerService attentionProducerService = new AttentionProducerService(attentionRepository, identityRepository, CLOCK);
   private static volatile WorkstreamEventRepository workstreamEventRepository = new UnboundWorkstreamEventRepository();
   private static volatile WorkstreamEventAttentionConsumer workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, attentionProducerService, CLOCK);
@@ -100,6 +104,7 @@ public final class StarterSecurityComponents {
     var durableAccessReviews = new AkkaAccessReviewTaskRepository(componentClient);
     var durableGovernancePolicy = new AkkaGovernancePolicyRepository(componentClient);
     var durableAttention = new AkkaAttentionRepository(componentClient);
+    var durablePersonalAttentionDigests = new AkkaMyAccountPersonalAttentionDigestTaskRepository(componentClient);
     var durableWorkstreamEvents = new AkkaWorkstreamEventRepository(componentClient);
     var durableRuntime = new AgentRuntimeService(durableAgentBehavior, authContextResolver, CLOCK, MODEL_PROVIDER_CLIENT, new AkkaAgentRuntimeTraceSink(componentClient));
     invitationRepository = durableInvitations;
@@ -112,6 +117,9 @@ public final class StarterSecurityComponents {
     governancePolicyRepository = durableGovernancePolicy;
     attentionRepository = durableAttention;
     attentionService = new AttentionService(durableAttention, authContextResolver, CLOCK);
+    personalAttentionDigestTaskRepository = durablePersonalAttentionDigests;
+    personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(durablePersonalAttentionDigests, authContextResolver, attentionService, CLOCK, new ComponentClientMyAccountPersonalAttentionDigestAutonomousAgentRuntime(componentClient, durableRuntime, agentRuntimeToolResolver, new MyAccountService(authContextResolver, attentionService)));
+    meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     attentionProducerService = new AttentionProducerService(durableAttention, durableIdentity, CLOCK);
     workstreamEventRepository = durableWorkstreamEvents;
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(durableAttention, durableIdentity, attentionProducerService, CLOCK);
@@ -183,6 +191,7 @@ public final class StarterSecurityComponents {
     if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test attention repository binding");
     attentionRepository = testRepository;
     attentionService = new AttentionService(testRepository, authContextResolver, CLOCK);
+    personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(personalAttentionDigestTaskRepository, authContextResolver, attentionService, CLOCK);
     attentionProducerService = new AttentionProducerService(testRepository, identityRepository, CLOCK);
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(testRepository, identityRepository, attentionProducerService, CLOCK);
     workstreamEventPublisher = new WorkstreamEventPublisher(workstreamEventRepository, workstreamEventAttentionConsumer, CLOCK);
@@ -263,6 +272,10 @@ public final class StarterSecurityComponents {
 
   public static AttentionService attentionService() {
     return attentionService;
+  }
+
+  public static MyAccountPersonalAttentionDigestService personalAttentionDigestService() {
+    return personalAttentionDigestService;
   }
 
   public static WorkstreamEventRepository workstreamEventRepository() {
@@ -373,6 +386,16 @@ public final class StarterSecurityComponents {
     public Optional<AccessReviewTask> find(String taskId) { throw unavailable(); }
     public Optional<AccessReviewTask> findByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { throw unavailable(); }
     public AccessReviewTask save(AccessReviewTask task) { throw unavailable(); }
+  }
+
+  private static final class UnboundMyAccountPersonalAttentionDigestTaskRepository implements MyAccountPersonalAttentionDigestTaskRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("MyAccountPersonalAttentionDigestTaskRepository");
+    }
+
+    public Optional<MyAccountPersonalAttentionDigestTask> find(String digestTaskId) { throw unavailable(); }
+    public Optional<MyAccountPersonalAttentionDigestTask> findByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { throw unavailable(); }
+    public MyAccountPersonalAttentionDigestTask save(MyAccountPersonalAttentionDigestTask task) { throw unavailable(); }
   }
 
   private static final class UnboundGovernancePolicyRepository implements GovernancePolicyRepository {

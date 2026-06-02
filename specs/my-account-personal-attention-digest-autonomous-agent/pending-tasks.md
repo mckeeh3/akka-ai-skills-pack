@@ -76,7 +76,7 @@
 
 ### TASK-MAPAD-02-001: Implement personal attention digest runtime
 
-- status: pending
+- status: done
 - source: specs/my-account-personal-attention-digest-autonomous-agent/backlog/01-personal-attention-digest-build-backlog.md
 - task brief: specs/my-account-personal-attention-digest-autonomous-agent/tasks/02-runtime/01-implement-personal-attention-digest-runtime.md
 - depends on:
