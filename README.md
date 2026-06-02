@@ -102,26 +102,26 @@ For global installs, dry runs, archive installs, and detailed usage, see the [Sk
 
 ## Getting started: scaffold and validate the AI-first SaaS starter
 
-The recommended first-user path is now direct: install the pack into a fresh Akka project, scaffold the packaged secure AI-first SaaS starter, configure local environment values, run the generated checks, smoke the runtime workstreams, then add product-specific capabilities. A separate “starter readiness triage” prompt is no longer a required step because the packaged starter now includes the five-core baseline and writes `specs/scaffold-report.md` as its own scaffold summary.
+This section is for skills pack users who want to start a new application from the packaged secure AI-first SaaS starter. The recommended path is: install the pack into a fresh Akka project, scaffold the starter, configure local environment values, run the generated checks, smoke-test the five core workstreams, then add your domain-specific capabilities.
 
-The starter is the working SMB-oriented baseline for the five mandatory core workstreams:
+For more background on the secure AI-first SMB SaaS starter and how to extend it for your own domain, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md), [Minimum AI-First SaaS App](docs/minimum-ai-first-saas-app.md), and [Core AI-first SaaS foundation](docs/core-ai-first-saas-foundation.md). SMB means small-to-medium business SaaS: the starter assumes a SaaS Owner, Tenant, Customer, account/membership/role model, and governed AI workstreams that can be specialized for your product domain.
 
-- **My Account** — opened from the signed-in user tile/email at the bottom of the rail; profile/settings, selected context, authority basis, personal attention, own trace refs, notifications, preferences, and MyAccountAgent guidance.
-- **User Admin** — left-rail workstream for invitations, members, roles/capabilities, access management, UserAdminAgent guidance, and access-review task surfaces.
-- **Agent Admin** — left-rail workstream for governed managed-agent definitions, prompts, skills, references, manifests, model refs, tool boundaries, seeds, behavior-change lifecycle, and AgentAdminAgent prompt-risk guidance.
-- **Audit/Trace** — left-rail workstream for trace dashboard/search/detail/timeline, redacted evidence cards, provider/tool/model/worker failure evidence, and AuditTraceAgent summaries/explanations.
-- **Governance/Policy** — left-rail workstream for policy posture, proposals, decisions, blocked analysis-task readiness, and GovernancePolicyAgent impact analysis.
+The starter provides the secure application foundation before your product-specific work is added. It includes identity and authorization boundaries, tenant/customer scope, backend-owned attention/events, in-app notifications, Resend-backed email delivery, invitation/onboarding flows, admin audit traces, governed managed-agent configuration, durable Akka-backed workstream state, and a React/Vite workstream UI served by the Akka application.
 
-The starter also includes backend-owned attention/events, in-app notifications, Resend-backed production email with captured local/test outbox behavior, invitation/onboarding flows, admin audit traces, and bounded AutonomousAgent worker verticals for the core workstreams.
+The first user-facing experience is organized around five mandatory core workstreams:
 
-The implementation pattern remains:
+- **My Account** — opened from the signed-in user tile/email at the bottom of the left nav; profile/settings, selected context, authority basis, personal attention, own trace refs, notifications, preferences, and MyAccountAgent guidance.
+- **User Admin** — left-nav workstream for invitations, members, roles/capabilities, access management, UserAdminAgent guidance, and access-review task surfaces.
+- **Agent Admin** — left-nav workstream for governed managed-agent definitions, prompts, skills, references, manifests, model refs, tool boundaries, seeds, behavior-change lifecycle, and AgentAdminAgent prompt-risk guidance.
+- **Audit/Trace** — left-nav workstream for trace dashboard/search/detail/timeline, redacted evidence cards, provider/tool/model/worker failure evidence, and AuditTraceAgent summaries/explanations.
+- **Governance/Policy** — left-nav workstream for policy posture, proposals, decisions, blocked analysis-task readiness, and GovernancePolicyAgent impact analysis.
+
+Domain-specific features grow from the same architecture rather than starting as isolated CRUD pages. Describe the product behavior in normal language, then let the harness map it through this pattern:
 
 ```text
 intent → functional agent/workstream → structured surface → governed backend capability
 → durable Akka/runtime component → tests → UI integration → audit/security review
 ```
-
-Normal completed runtime paths must be production-like for the stated starter scope. Model-backed workstream messages use the governed Akka `Agent` runtime path with active managed configuration, compact prompt/skill/reference manifests, `ToolPermissionBoundary`, governed loader/evidence tools, `effects().tools(runtimeTools)`, concrete Akka Agent invocation, provider-backed responses, and durable traces. Missing provider/security/email configuration must fail closed with actionable behavior. Test fakes and frontend fixture inspection modes may exist only as explicitly named test/local inspection paths; they are not the completed normal runtime substitute.
 
 ### Step 1 — Create a target app project and install the pack
 
@@ -215,20 +215,14 @@ npm --prefix frontend run typecheck
 npm --prefix frontend run build
 ```
 
-From this skills-pack source repository, maintainers can also validate the rendered starter with:
-
-```bash
-tools/validate-ai-first-saas-starter-fullstack.sh
-```
-
 ### Step 5 — Smoke the runtime baseline
 
 Before adding product-specific features, validate the starter as an AI-first runtime:
 
 1. Start the Akka app with backend-only WorkOS/AuthKit/JWT/admin, Resend/email mode, and model-provider variables loaded from `.env` as needed for the smoke scope.
 2. Sign in through AuthKit as an explicitly configured `ADMIN_USERS` account.
-3. Open My Account from the signed-in user tile at the bottom of the rail.
-4. Open User Admin, Agent Admin, Audit/Trace, and Governance/Policy from the left rail.
+3. Open My Account from the signed-in user tile at the bottom of the left nav.
+4. Open User Admin, Agent Admin, Audit/Trace, and Governance/Policy from the left nav.
 5. Check in-app notification center behavior and email/captured-outbox behavior for notification paths in scope.
 6. Submit a short prompt in each workstream and verify each normal response is generated through the governed Akka Agent runtime, not fixture copy or a service-only provider bypass.
 7. Inspect trace/correlation ids and verify provider metadata and unauthorized source details are redacted.
@@ -239,7 +233,7 @@ Prompt the harness:
 ```text
 Validate the scaffolded five-core AI-first SaaS starter end to end.
 Use the normal authenticated shell and backend workstream APIs.
-Verify My Account from the signed-in user tile and the four left-rail workstreams:
+Verify My Account from the signed-in user tile and the four left-nav workstreams:
 User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 Also verify backend-owned attention/events, in-app notifications, Resend email or captured
 local/test outbox behavior, preferences/category allowlist behavior, redaction, idempotency,
