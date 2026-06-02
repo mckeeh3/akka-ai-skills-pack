@@ -723,7 +723,7 @@ Use when validating projections with mocked incoming messages.
 Start with:
 - `akka-web-ui-apps`
 
-Use when the browser UI is a real frontend application, not just asset-route wiring. For generated full-stack AI-first SaaS apps, the default UI architecture is the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream, persistent composer, context/authority indicators, and structured surfaces. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: surface intent, information hierarchy, UX copy, feedback/recovery states, deep-link navigation, selected style guide, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
+Use when the browser UI is a real frontend application, not just asset-route wiring. For generated full-stack AI-first SaaS apps, the default UI architecture is the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream, persistent composer, context/authority indicators, and structured surfaces. This family focuses on full web apps built as standard frontend projects such as React/Vite, while requiring excellent frontend behavior: surface intent, information hierarchy, UX copy, feedback/recovery states, deep-link navigation, selected style guide, named-theme contract, state, forms, typed API clients, realtime behavior, accessibility, responsive layout, and tests.
 
 Then load the focused skill that matches the current task:
 
@@ -1176,7 +1176,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository, use `../docs/workstream-ui-reference-architecture.md`, reusable modules under `../frontend/src/workstream/**`, and the User Admin vertical test `../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference; in an installed pack, use the exported frontend reference under `../resources/examples/frontend/**`. If no style guide is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository, use `../docs/workstream-ui-reference-architecture.md`, reusable modules under `../frontend/src/workstream/**`, and the User Admin vertical test `../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference; in an installed pack, use the exported frontend reference under `../resources/examples/frontend/**`. If no style guide or named-theme contract is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`

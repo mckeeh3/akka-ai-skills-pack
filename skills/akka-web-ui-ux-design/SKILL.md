@@ -17,7 +17,7 @@ For generated full-stack AI-first SaaS UX work, produce an implementation-ready 
 - functional agents, workstream regions, role-specific dashboard attention sources, structured surface ids/types/versions, human surface graph edges, surface actions/events, and deep-link intent;
 - browser-tool exposure names, governed-tool ids, governed capability ids/classes behind consequential actions/queries, and selected frontend/API/realtime exposure;
 - `AuthContext`, tenant/customer scope, roles/capabilities, authority indicators, disabled/forbidden states, and retained-human-authority rules;
-- DTO/error states, redaction, idempotency/correlation, policy/approval/escalation states, audit/work trace links, style guide, accessibility, and required rendering/API/realtime tests.
+- DTO/error states, redaction, idempotency/correlation, policy/approval/escalation states, audit/work trace links, selected style guide, named-theme contract, accessibility, and required rendering/API/realtime tests.
 
 If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of designing page-first UX.
 
@@ -73,7 +73,7 @@ For each workstream shell region, structured surface, or major region, define:
 12. **Responsive behavior** — how the primary task survives on narrow screens.
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
 14. **UX copy** — labels, button text, helper text, empty/error/success messages.
-15. **Style guide application** — how selected tokens support hierarchy and feedback.
+15. **Style guide application** — how selected style tokens and named themes support hierarchy, feedback, and My Account preference behavior when in scope.
 16. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown.
 
 ## UX copy rules
@@ -161,7 +161,7 @@ Before coding or accepting UI work, verify:
 - destructive actions are hard to trigger accidentally
 - mobile layout preserves the main task
 - keyboard-only flow reaches and completes primary actions
-- selected style guide tokens are used to reinforce hierarchy, focus, and status
+- selected style guide tokens and named-theme bundles are used to reinforce hierarchy, focus, and status without relying on color alone
 - left rail, workstream panel, composer, and surface actions remain usable by keyboard and at narrow widths
 - AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope
 - consequential surface actions map to browser-tool exposures backed by governed-tools and backend capabilities; UI gating is not treated as authorization

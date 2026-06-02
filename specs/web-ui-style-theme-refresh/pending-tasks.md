@@ -84,7 +84,7 @@
 
 ### TASK-WUTR-01-002: Align web UI skills with named theme guidance
 
-- status: pending
+- status: done
 - source: specs/web-ui-style-theme-refresh/backlog/01-style-doctrine-build-backlog.md
 - task brief: specs/web-ui-style-theme-refresh/tasks/01-style-doctrine/02-align-web-ui-skills-theme-guidance.md
 - depends on:
@@ -122,6 +122,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: align web ui skills with named themes`
+  - checks: `git diff --check`; `rg -n "mode policy|system with light|light/dark/system|orange|coral|warm near-black|style-gallery|style gallery" skills docs/web-ui-style-guide.md docs/web-ui-quality-checklist.md docs/web-ui-ux-patterns.md` (no stale contradictions found)
 
 ### TASK-WUTR-02-001: Update seed app-description theme contract
 

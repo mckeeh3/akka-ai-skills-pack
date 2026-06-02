@@ -15,7 +15,7 @@ For generated full-stack AI-first SaaS web-UI endpoint work, implement only afte
 - functional-agent shell, workstream deep-link routes, structured surface ids/actions/events, and browser API/realtime route families;
 - governed capability ids/classes behind protected JSON/SSE/WebSocket routes and selected Akka substrates;
 - `AuthContext`, tenant/customer scope, `/api/me` context selection, roles/capabilities, disabled/forbidden behavior, and static/protected route separation;
-- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation, audit/work trace fields, rendering/API/realtime tests, and selected style guide.
+- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation, audit/work trace fields, rendering/API/realtime tests, selected style guide, and named-theme contract.
 
 If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of serving a page-first shell.
 
@@ -183,6 +183,6 @@ Before finishing, verify:
 - SSE and WebSocket routes remain explicit and separate
 - frontend source paths and served JavaScript/CSS asset paths are easy to correlate
 - integration tests fetch the generated app shell and CSS/JS asset routes through `httpClient`
-- non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md` and the selected style guide
+- non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md`, the selected style guide, and the named-theme contract
 - protected API, SSE, or WebSocket routes called by workstream surfaces, composer actions, or realtime subscriptions carry AuthContext, tenant/customer filtering, and forbidden-access tests
 - public static asset exposure has been reviewed so it cannot leak backend secrets or protected data

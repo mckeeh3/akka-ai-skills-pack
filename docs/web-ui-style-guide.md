@@ -427,6 +427,6 @@ Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashbo
 5. If users request custom styling later, update the authoritative style guide first, then regenerate affected web UI assets.
 6. If theme persistence is not implemented at the expected runtime scope, record the limitation and queue follow-up work rather than claiming durable My Account theme selection is complete.
 
-## Removed generic style-gallery choices
+## Removed generic visual catalog choices
 
-The skills pack no longer exposes multiple generic dashboard/CRM/admin style choices for generated AI-first SaaS apps. Treat any old gallery-style id as obsolete source history, not as an available planning option. When encountered in an existing artifact, migrate the authoritative style guide to `ai-first-workstream-enterprise` or a user-supplied `custom` style guide that preserves the required AI-first component anatomy and named-theme contract.
+The skills pack no longer exposes multiple generic dashboard/CRM/admin visual catalog choices for generated AI-first SaaS apps. Treat any old gallery-style id as obsolete source history, not as an available planning option. When encountered in an existing artifact, migrate the authoritative style guide to `ai-first-workstream-enterprise` or a user-supplied `custom` style guide that preserves the required AI-first component anatomy and named-theme contract.

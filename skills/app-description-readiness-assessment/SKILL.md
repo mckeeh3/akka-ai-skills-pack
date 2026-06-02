@@ -198,7 +198,7 @@ Check this for generated full-stack AI-first SaaS apps:
 - test expectations for shell, rail, composer, structured surfaces, capability actions, deep links, realtime/stale behavior, and User Admin vertical coverage; route/page tests alone are not sufficient
 - User Admin fullstack acceptance expectations cover selecting User Admin, loading `user-admin-dashboard`, opening `user-admin-user-list`, searching/filtering users, opening `user-admin-user-account`, invoking a safe mutation or decision-card-producing action, observing audit/trace output, and negative checks for disabled actor, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner without support access, role escalation, and last-admin loss
 - accessibility and responsive expectations
-- selected web UI style guide, mode policy, core CSS tokens, component styling, and brand adaptation rules
+- selected web UI style guide, named-theme contract, available/default theme ids, core CSS tokens, component styling, My Account preference behavior when in scope, and brand adaptation rules
 - for AI-first apps, supervision, decision-card, governance, digest, goal-to-execution, audit/trace, and outcome surfaces instead of only CRUD navigation
 
 ### 11. Generation stability

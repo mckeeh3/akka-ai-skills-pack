@@ -276,7 +276,7 @@ Separate concerns that should not be duplicated across modules, sprints, or slic
 - evaluation, replay, simulation, feedback, and outcome-metric conventions when agentic behavior or policy evolution is in scope
 - ERP integration model
 - notification delivery model
-- mandatory web UI style guide, design tokens, mode policy, and brand adaptation for generated full-stack AI-first SaaS
+- mandatory web UI style guide, named-theme contract, design tokens, My Account preference behavior when in scope, and brand adaptation for generated full-stack AI-first SaaS
 - mandatory supervision, decision-card, governance-center, digest, audit, and outcome UI-surface conventions for generated AI-first SaaS apps
 - export/reporting conventions
 
@@ -381,7 +381,7 @@ The queue must:
 
 If no Java base package exists in project configuration, `specs/cross-cutting/00-common-domain-and-conventions.md`, app-description system artifacts, or equivalent project convention, create a `category: generation` question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`. This blocks only Java source generation/scaffolding tasks. Never use `com.example` as the generated package unless the user explicitly selects it.
 
-If no selected style guide exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `atlas-ops-supervisory-console` or `custom` with a user-supplied style brief. This blocks web UI implementation/generation tasks until style is selected.
+If no selected style guide or named-theme contract exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. This blocks web UI implementation/generation tasks until style and named themes are selected.
 
 If unresolved `blocking` questions affect planned implementation work, either:
 - stop before creating blocked implementation tasks and recommend `akka-do-next-pending-question`, or

@@ -79,7 +79,7 @@ Do not use this as the main skill for generated API documentation assets or raw 
 
 ## Planning output before coding
 
-Before implementing generated AI-first SaaS UI, verify that a selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. If style is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
+Before implementing generated AI-first SaaS UI, verify that a selected style and named-theme contract exist in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. The contract must record available theme ids/names, default theme id, My Account selection behavior when in scope, and persistence scope. If style or named-theme selection is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
 
 Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and produce a frontend plan with:
 1. User goals and personas
@@ -94,7 +94,7 @@ Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and pr
 10. Frontend state model, including loading/empty/error/success/forbidden/stale states
 11. Real-time behavior, if any
 12. Frontend implementation shape: standard frontend project (for example React/Vite)
-13. Selected web UI style guide, mode policy, CSS tokens, layout density, component styling, and brand adaptations
+13. Selected web UI style guide, named-theme contract, default/available theme ids, CSS tokens, layout density, component styling, and brand adaptations
 14. Accessibility and responsive requirements for left rail, workstream, composer, and surfaces
 15. Akka HTTP endpoint route plan, including generated frontend asset and API route separation
 16. Auth/session/security UI contract: WorkOS/AuthKit entry, `/api/me` bootstrap, context selection, capability-gated functional agents/actions, disabled-user state, forbidden recovery, and tenant/customer isolation expectations
@@ -144,7 +144,7 @@ Always pair with Akka hosting/API skills as needed:
 
 ## Quality bar
 
-A complete web UI must apply the selected style guide without copying demo content from the reference images.
+A complete web UI must apply the selected style guide and named-theme tokens without copying demo content from the reference images. User-facing theme selection must be by available theme name/id, not by a primary `system`, `light`, or `dark` mode selector.
 
 For AI-first surfaces, a complete UI must make human authority obvious: what the system is doing, why it recommends or waits, what evidence and policy triggered the state, what the human can approve/reject/defer/escalate, and where the trace/outcome can be reviewed.
 
@@ -177,5 +177,5 @@ Avoid:
 - mixing static asset wildcards and backend API routes under ambiguous catch-all paths
 - treating auth/session/security as deferrable for generated SaaS UI; only public static assets are outside authenticated API authorization
 - treating left-rail visibility, hidden buttons, icons, prompt text, route names, or frontend state as authorization controls; backend capabilities remain authoritative
-- silently choosing colors or visual styling when app-description/specs have not selected a style guide
+- silently choosing colors, visual styling, or theme ids when app-description/specs have not selected a style guide and named-theme contract
 - skipping accessible labels, focus behavior, or responsive layout

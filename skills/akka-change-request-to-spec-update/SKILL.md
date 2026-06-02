@@ -115,7 +115,7 @@ If `app-description/` exists, update it before implementation specs:
 5. auth/security when identity, authorization, trust, authority boundaries, tenant/customer scope, data access, or sensitive data changed
 6. observability when logs, metrics, traces, audit, health, alerts, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, or `AgentWorkTrace` changed
 7. AI-first operating model when delegated work, retained authority, agent/team boundaries, policy gates, decision cards, work traces, or outcome loops changed
-8. UI style guide or UI/governance surfaces when a browser frontend style system, mode policy, density, brand treatment, component styling, supervision surface, decision card, governance center, manifest/reference/skill display, denied-load recovery, digest, or audit view changes
+8. UI style guide or UI/governance surfaces when a browser frontend style system, named-theme contract, My Account theme preference behavior, density, brand treatment, component styling, supervision surface, decision card, governance center, manifest/reference/skill display, denied-load recovery, digest, or audit view changes
 9. traceability, generation maps, and readiness as needed
 
 Do not bury new governance, audit, policy, approval, or outcome semantics only in backlog text or generated code.
