@@ -1,5 +1,8 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import java.util.Comparator;
@@ -12,6 +15,9 @@ import java.util.Optional;
 final class LocalDemoNotificationRepository implements NotificationRepository {
   private final Map<String, NotificationItem> items = new LinkedHashMap<>();
   private final Map<String, NotificationPreference> preferences = new LinkedHashMap<>();
+  private final Map<String, EmailNotificationPreference> emailPreferences = new LinkedHashMap<>();
+  private final Map<String, EmailNotificationDelivery> emailDeliveries = new LinkedHashMap<>();
+  private final Map<String, EmailOutboxMessage> emailOutbox = new LinkedHashMap<>();
 
   public NotificationItem upsert(NotificationItem item) {
     items.put(key(item.tenantId(), item.notificationId()), item);
@@ -45,6 +51,41 @@ final class LocalDemoNotificationRepository implements NotificationRepository {
 
   public List<NotificationPreference> listPreferences(String tenantId, String accountId) {
     return preferences.values().stream().filter(pref -> tenantId.equals(pref.tenantId()) && accountId.equals(pref.accountId())).toList();
+  }
+
+  public EmailNotificationPreference saveEmailPreference(EmailNotificationPreference preference) {
+    emailPreferences.put(key(preference.tenantId(), preference.preferenceId()), preference);
+    return preference;
+  }
+
+  public List<EmailNotificationPreference> listEmailPreferences(String tenantId, String accountId) {
+    return emailPreferences.values().stream().filter(pref -> tenantId.equals(pref.tenantId()) && accountId.equals(pref.accountId())).toList();
+  }
+
+  public EmailNotificationDelivery saveEmailDelivery(EmailNotificationDelivery delivery) {
+    emailDeliveries.put(key(delivery.tenantId(), delivery.deliveryId()), delivery);
+    return delivery;
+  }
+
+  public Optional<EmailNotificationDelivery> findEmailDelivery(String tenantId, String deliveryId) {
+    return Optional.ofNullable(emailDeliveries.get(key(tenantId, deliveryId)));
+  }
+
+  public Optional<EmailNotificationDelivery> findEmailDeliveryByDedupeKey(String tenantId, String dedupeKey) {
+    return emailDeliveries.values().stream().filter(delivery -> tenantId.equals(delivery.tenantId()) && dedupeKey.equals(delivery.dedupeKey())).findFirst();
+  }
+
+  public EmailOutboxMessage saveEmailOutbox(EmailOutboxMessage message) {
+    emailOutbox.put(key(message.tenantId(), message.outboxId()), message);
+    return message;
+  }
+
+  public Optional<EmailOutboxMessage> findEmailOutbox(String tenantId, String outboxId) {
+    return Optional.ofNullable(emailOutbox.get(key(tenantId, outboxId)));
+  }
+
+  public List<EmailOutboxMessage> listEmailOutbox(String tenantId) {
+    return emailOutbox.values().stream().filter(message -> tenantId.equals(message.tenantId())).toList();
   }
 
   private String key(String tenantId, String id) {

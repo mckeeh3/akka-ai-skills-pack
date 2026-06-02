@@ -2,6 +2,9 @@ package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import java.util.List;
@@ -47,6 +50,38 @@ public class DurableNotificationRepositoryEntity extends KeyValueEntity<Notifica
 
   public ReadOnlyEffect<List<NotificationPreference>> listPreferences(ListPreferencesQuery query) {
     return effects().reply(currentState().listPreferences(query.tenantId(), query.accountId()));
+  }
+
+  public Effect<EmailNotificationPreference> saveEmailPreference(EmailNotificationPreference preference) {
+    return effects().updateState(currentState().saveEmailPreference(preference)).thenReply(() -> preference);
+  }
+
+  public ReadOnlyEffect<List<EmailNotificationPreference>> listEmailPreferences(ListPreferencesQuery query) {
+    return effects().reply(currentState().listEmailPreferences(query.tenantId(), query.accountId()));
+  }
+
+  public Effect<EmailNotificationDelivery> saveEmailDelivery(EmailNotificationDelivery delivery) {
+    return effects().updateState(currentState().saveEmailDelivery(delivery)).thenReply(() -> delivery);
+  }
+
+  public ReadOnlyEffect<Optional<EmailNotificationDelivery>> findEmailDelivery(FindQuery query) {
+    return effects().reply(currentState().findEmailDelivery(query.tenantId(), query.notificationId()));
+  }
+
+  public ReadOnlyEffect<Optional<EmailNotificationDelivery>> findEmailDeliveryByDedupeKey(FindDedupeQuery query) {
+    return effects().reply(currentState().findEmailDeliveryByDedupeKey(query.tenantId(), query.dedupeKey()));
+  }
+
+  public Effect<EmailOutboxMessage> saveEmailOutbox(EmailOutboxMessage message) {
+    return effects().updateState(currentState().saveEmailOutbox(message)).thenReply(() -> message);
+  }
+
+  public ReadOnlyEffect<Optional<EmailOutboxMessage>> findEmailOutbox(FindQuery query) {
+    return effects().reply(currentState().findEmailOutbox(query.tenantId(), query.notificationId()));
+  }
+
+  public ReadOnlyEffect<List<EmailOutboxMessage>> listEmailOutbox(ListTenantQuery query) {
+    return effects().reply(currentState().listEmailOutbox(query.tenantId()));
   }
 
   public record FindQuery(String tenantId, String notificationId) {}

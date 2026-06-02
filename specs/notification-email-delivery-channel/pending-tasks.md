@@ -71,7 +71,7 @@
 
 ### TASK-NEDC-02-001: Implement Resend email notification channel
 
-- status: pending
+- status: done
 - source: specs/notification-email-delivery-channel/backlog/01-email-delivery-channel-build-backlog.md
 - task brief: specs/notification-email-delivery-channel/tasks/02-backend/01-implement-resend-email-channel.md
 - depends on:

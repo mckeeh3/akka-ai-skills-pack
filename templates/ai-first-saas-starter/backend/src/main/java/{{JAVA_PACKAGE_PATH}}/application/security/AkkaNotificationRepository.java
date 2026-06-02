@@ -1,6 +1,9 @@
 package {{JAVA_BASE_PACKAGE}}.application.security;
 
 import akka.javasdk.client.ComponentClient;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationDelivery;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailNotificationPreference;
+import {{JAVA_BASE_PACKAGE}}.domain.security.EmailOutboxMessage;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationItem;
 import {{JAVA_BASE_PACKAGE}}.domain.security.NotificationPreference;
 import java.util.List;
@@ -50,5 +53,37 @@ public final class AkkaNotificationRepository implements NotificationRepository 
 
   public List<NotificationPreference> listPreferences(String tenantId, String accountId) {
     return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listPreferences).invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery(tenantId, accountId));
+  }
+
+  public EmailNotificationPreference saveEmailPreference(EmailNotificationPreference preference) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::saveEmailPreference).invoke(preference);
+  }
+
+  public List<EmailNotificationPreference> listEmailPreferences(String tenantId, String accountId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listEmailPreferences).invoke(new DurableNotificationRepositoryEntity.ListPreferencesQuery(tenantId, accountId));
+  }
+
+  public EmailNotificationDelivery saveEmailDelivery(EmailNotificationDelivery delivery) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::saveEmailDelivery).invoke(delivery);
+  }
+
+  public Optional<EmailNotificationDelivery> findEmailDelivery(String tenantId, String deliveryId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::findEmailDelivery).invoke(new DurableNotificationRepositoryEntity.FindQuery(tenantId, deliveryId));
+  }
+
+  public Optional<EmailNotificationDelivery> findEmailDeliveryByDedupeKey(String tenantId, String dedupeKey) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::findEmailDeliveryByDedupeKey).invoke(new DurableNotificationRepositoryEntity.FindDedupeQuery(tenantId, dedupeKey));
+  }
+
+  public EmailOutboxMessage saveEmailOutbox(EmailOutboxMessage message) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::saveEmailOutbox).invoke(message);
+  }
+
+  public Optional<EmailOutboxMessage> findEmailOutbox(String tenantId, String outboxId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::findEmailOutbox).invoke(new DurableNotificationRepositoryEntity.FindQuery(tenantId, outboxId));
+  }
+
+  public List<EmailOutboxMessage> listEmailOutbox(String tenantId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableNotificationRepositoryEntity::listEmailOutbox).invoke(new DurableNotificationRepositoryEntity.ListTenantQuery(tenantId));
   }
 }
