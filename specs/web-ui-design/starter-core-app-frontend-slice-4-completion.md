@@ -1,8 +1,8 @@
-# Seed App Frontend Slice 4 Completion
+# Starter Core App Frontend Slice 4 Completion
 
 ## Slice
 
-Slice 4 from `seed-app-localized-frontend-implementation-plan.md`:
+Slice 4 from `starter-core-app-localized-frontend-implementation-plan.md`:
 
 - reusable UI primitives;
 - buttons, cards, badges/status pills, command strip, KPI cards, forms, data-state wrappers, modal/drawer;

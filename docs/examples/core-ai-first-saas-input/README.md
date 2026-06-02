@@ -2,7 +2,7 @@
 
 This directory contains older module-sequenced example **input documents** for planning and generating a progressive secure AI-first SaaS core app with the Akka skills pack.
 
-These files are source assets for the skills pack. They are intended to be used as realistic PRD/spec inputs that can be fed into the pack to produce solution plans, module specs, sprint specs, backlogs, and implementation tasks. They remain useful as full-core/detail provenance and broader release-test input, but they are not the preferred current v0/starter rollout path. For the current workstream-oriented core-app domain input, use `../ai-first-saas-core-app-domain/README.md`; for the maintained app-description seed structure, use `../ai-first-saas-seed-app-description/README.md`.
+These files are source assets for the skills pack. They are intended to be used as realistic PRD/spec inputs that can be fed into the pack to produce solution plans, module specs, sprint specs, backlogs, and implementation tasks. They remain useful as full-core/detail provenance and broader release-test input, but they are not the preferred current v0/starter rollout path. For the current workstream-oriented core-app domain input, use `../ai-first-saas-core-app-domain/README.md`; for the maintained starter core app-description structure, use `../../templates/ai-first-saas-starter/app-description/README.md`.
 
 Process rule: feed these PRDs through the requirements-to-workstream chain before implementation planning: workstreams → attention categories → dashboard contracts → structured surfaces/actions → governed capabilities/APIs → Akka substrate → request-based workstream Agents and durable AutonomousAgent candidates where appropriate → events/notifications/projections → audit/work traces. For the compact pattern, read `../requirements-to-workstream-mini-example.md`.
 
@@ -16,7 +16,7 @@ Within this older module-sequenced sample, `10-canonical-core-app-prd.md` is the
 
 Then create and refine the module PRDs one document at a time.
 
-The seed app is delivered progressively. Because the core UI is workstream-agent-backed, a narrow agent runtime bootstrap follows basic auth before full User Admin:
+The starter core app is delivered progressively. Because the core UI is workstream-agent-backed, a narrow agent runtime bootstrap follows basic auth before full User Admin:
 
 1. minimal auth and app access MVP;
 2. agent workstream runtime bootstrap;

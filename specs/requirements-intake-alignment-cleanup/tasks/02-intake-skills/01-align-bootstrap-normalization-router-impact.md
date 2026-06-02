@@ -13,7 +13,7 @@ Rewrite the core app-description intake skills so broad user input is normalized
 - specs/requirements-intake-alignment-cleanup/sprints/02-description-intake-skills-sprint.md
 - specs/requirements-intake-alignment-cleanup/backlog/02-description-intake-skills-build-backlog.md
 - docs/minimum-ai-first-saas-app.md
-- docs/examples/ai-first-saas-seed-app-description/README.md
+- templates/ai-first-saas-starter/app-description/README.md
 - skills/app-description-bootstrap/SKILL.md
 - skills/app-description-input-normalization/SKILL.md
 - skills/app-description-intake-router/SKILL.md

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make the description-first path and preferred seed app-description explicitly describe the fully backed governed runtime agent foundation.
+Make the description-first path and preferred starter core app-description explicitly describe the fully backed governed runtime agent foundation.
 
 ## Scope
 
@@ -17,7 +17,7 @@ This sprint updates app-description bootstrap/readiness/generation guidance and 
 ## Acceptance
 
 - Bootstrapped app descriptions include the governed agent substrate before app-specific domain work.
-- Seed app-description visibly models the core managed-agent platform.
+- Starter core app-description visibly models the core managed-agent platform.
 - Readiness/generation guidance blocks core generation when agent behavior governance is missing.
 
 ## Related backlog

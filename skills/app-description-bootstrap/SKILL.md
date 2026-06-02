@@ -36,12 +36,12 @@ Read these first if present:
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- `../../docs/examples/ai-first-saas-seed-app-description/README.md` for the preferred secure AI-first SaaS seed shape
+- `../../templates/ai-first-saas-starter/app-description/README.md` for the preferred starter core app-description shape
 - `../../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
 
 Prefer these example references for generated SaaS foundation bootstraps:
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- `../../templates/ai-first-saas-starter/app-description/00-system/app-manifest.md`
+- `../../templates/ai-first-saas-starter/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 
 Use purchase-request mechanics references only when the task is specifically about cross-linked description mechanics:
 - `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
@@ -173,7 +173,7 @@ app-description/
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
-This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS seed reference. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
+This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS starter core template. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
 ## Scope gates
 

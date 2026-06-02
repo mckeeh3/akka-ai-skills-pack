@@ -6,7 +6,7 @@ The canonical User Admin functional agent demonstrates workstream expertise thro
 
 ## Backlog items
 
-1. **Model User Admin expertise in the seed app-description**
+1. **Model User Admin expertise in the starter core app-description**
    - Create/update User Admin workstream expertise artifact.
    - Link skills, references, surfaces, capabilities, tool boundaries, denials, traces, and tests.
 

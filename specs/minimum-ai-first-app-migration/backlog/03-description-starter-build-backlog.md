@@ -8,7 +8,7 @@ Allow a minimal app-description tree with User Admin workstream v0, `markdown_re
 
 ### 3.2 Update seed example references
 
-Revise the secure AI-first SaaS seed app-description reference to show the minimum starter path before full-core expansion.
+Revise the starter core app-description reference to show the minimum starter path before full-core expansion.
 
 ### 3.3 Update starter/scaffold docs and queues
 

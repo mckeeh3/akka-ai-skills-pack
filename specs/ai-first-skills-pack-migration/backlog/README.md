@@ -9,7 +9,7 @@ This directory contains sprint-aligned build backlogs for the AI-first skills pa
 - Each task must make a git commit containing only that task's intended changes and its queue-status update before it is marked `done`.
 - Each backlog item should be small enough for one focused session or point to a task brief.
 - Sprint 1 has physical task briefs under `../tasks/01-architectural-pivot-and-doctrine/`.
-- Domain-specific worked-example and supplies-reference backlogs were removed after the starter, seed app-description, and focused Akka examples superseded their reusable skills-pack value.
+- Domain-specific worked-example and supplies-reference backlogs were removed after the starter, starter core app-description, and focused Akka examples superseded their reusable skills-pack value.
 - Sprint 9 finalizes high-level packaging, release metadata, and AI-first terminology consistency before later component-skill revisions.
 
 ## Backlog files

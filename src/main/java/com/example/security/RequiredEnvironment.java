@@ -6,7 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Startup validation for backend-only environment variables required by the authenticated seed app. */
+/** Startup validation for backend-only environment variables required by the authenticated starter app. */
 public final class RequiredEnvironment {
 
   private static final Logger logger = LoggerFactory.getLogger(RequiredEnvironment.class);

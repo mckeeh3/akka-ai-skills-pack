@@ -31,7 +31,7 @@ Status: current inventory after removing the legacy PoC, the unused `BootstrapAd
 | --- | --- |
 | `examples/poc-user-auth-onboarding/**` | Legacy portable PoC superseded by `templates/ai-first-saas-starter/**` and current root security/admin reference code. |
 | `src/main/java/com/example/domain/security/BootstrapAdmin.java` | Unused record; active bootstrap code uses `AdminUserBootstrap.BootstrapAdminSpec`. |
-| `docs/examples/ai-first-dca-app-description/**` | Domain-specific app-description vertical superseded by the canonical seed app-description and starter template guidance. |
+| `docs/examples/ai-first-dca-app-description/**` | Domain-specific app-description vertical superseded by the canonical starter core app-description and starter template guidance. |
 | `src/main/java/com/example/api/supplies/**`, `src/main/java/com/example/application/supplies/**`, `src/main/java/com/example/domain/supplies/**` | Domain-specific supplies/DCA vertical no longer provides unique reusable skills-pack value. |
 | `src/test/java/com/example/application/supplies/**`, `src/test/java/com/example/domain/supplies/**` | Tests covered removed DCA/supplies vertical only. |
 | `src/main/resources/static-resources/supplies/**` | Static domain-specific supplies UI superseded by workstream UI reference and starter guidance. |

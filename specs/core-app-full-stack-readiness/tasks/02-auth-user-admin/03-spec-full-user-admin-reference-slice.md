@@ -11,7 +11,7 @@ Create an implementation-ready slice for full user, membership, role, support-ac
 - `skills/akka-basic-user-admin/SKILL.md`
 - `docs/core-saas-identity-tenancy-admin.md`
 - `docs/core-ai-first-saas-foundation.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- `templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 
 ## Expected outputs
 

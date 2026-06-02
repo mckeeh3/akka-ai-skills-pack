@@ -48,12 +48,12 @@ This plan is complete when:
 - App-description guidance has a durable place for per-workstream expertise contracts, skill/reference manifests, capability mappings, authority, traces, and tests.
 - Agent governance skills distinguish procedural skills from reference documents, or explicitly define how references are represented until a separate document model exists.
 - Runtime invocation guidance covers compact expertise manifests, authorized `readSkill(skillId)`, authorized reference-document loading, denied loads, and trace records.
-- The secure AI-first SaaS seed app-description makes `user-admin-agent` a concrete expert with seed skills/reference docs, tool boundary, traces, and tests.
+- The starter core app-description makes `user-admin-agent` a concrete expert with seed skills/reference docs, tool boundary, traces, and tests.
 - Starter/template seed resources and/or examples include enough packaged default content to demonstrate first-install workstream expertise.
 - PRD/spec/backlog guidance generates self-contained workstream expertise tasks for every new functional agent.
 - Final review finds no major path where a functional agent can be declared ready while lacking assigned expertise documents, runtime load controls, boundaries, and tests.
 - Starter backend/runtime code has executable first-class coverage for reference documents, reference manifests, `readReferenceDoc`, reference-load denials, and reference-load traces.
-- Every foundation functional agent in the seed app-description has a workstream expert bundle or an explicit readiness-impacting deferral.
+- Every foundation functional agent in the starter core app-description has a workstream expert bundle or an explicit readiness-impacting deferral.
 - Every LLM-backed generated workstream agent has a specific approved `ModelConfigRef`/`ModelPolicy` or an explicit inherited default model binding, with runtime validation, provider secret boundaries, model-use traces, and tests.
 
 ## Open suggestions / decisions for sprint reviews

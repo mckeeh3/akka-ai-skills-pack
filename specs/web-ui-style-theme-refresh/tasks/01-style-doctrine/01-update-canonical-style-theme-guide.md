@@ -29,7 +29,7 @@ Replace the canonical generated AI-first SaaS web UI visual direction in `docs/w
 ## Out of scope
 
 - Editing skills; that is TASK-WUTR-01-002.
-- Editing seed app-description or frontend CSS; those are Sprint 02 tasks.
+- Editing starter core app-description or frontend CSS; those are Sprint 02 tasks.
 - Creating generic style-gallery choices.
 
 ## Expected outputs

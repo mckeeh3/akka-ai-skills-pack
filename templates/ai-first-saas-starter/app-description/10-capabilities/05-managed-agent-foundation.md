@@ -22,7 +22,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 - Governed prompt lifecycle: `PromptDocument`, `PromptVersion`, draft/proposed diff, review, approval, activation, rollback, checksum, status, and assembly preview.
 - Governed skill lifecycle: `SkillDocument`, `SkillVersion`, compact manifest hint, full skill text, review, approval, activation/deprecation, and tenant/customer visibility.
 - Governed reference lifecycle: `ReferenceDocument`, `ReferenceVersion`, compact manifest hint, full reference text, review, approval, activation/deprecation, and tenant/customer visibility.
-- First-install/tenant-bootstrap default document loading: implementation-developed default `AgentDefinition`, prompt, skill, reference, manifest, and tool-boundary seed resources are validated and imported into governed storage as the initial approved/active versions with checksums, provenance, idempotency, and audit.
+- First-install/tenant-bootstrap default document loading: implementation-developed default `AgentDefinition`, prompt, skill, reference, manifest, and tool-boundary starter resources are validated and imported into governed storage as the initial approved/active versions with checksums, provenance, idempotency, and audit.
 - `AgentSkillManifest` and `AgentReferenceManifest` assignments that expose only approved compact skill/reference metadata to an agent until `readSkill(skillId)` or `readReferenceDoc(referenceId)` is authorized.
 - `ToolPermissionBoundary` lifecycle for scoped tool/data permissions, policy citations, denial reasons, and approval-required authority expansion.
 - Runtime assembly contract: resolve active `AgentDefinition`, assemble active governed prompt, include compact skill and reference manifests, authorize every `readSkill(skillId)` and `readReferenceDoc(referenceId)`, and create `PromptAssemblyTrace`, `SkillLoadTrace`, and `ReferenceLoadTrace` records.
@@ -97,7 +97,7 @@ This capability makes runtime agent behavior governable as first-class tenant-sc
 - success:
   - first tenant bootstrap imports implementation-developed default AgentDefinition, prompt v1, skill v1 records, reference v1 records, AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary into governed storage; authorized steward can create draft prompt/skill/reference versions, assign approved skill/reference manifests, set a `ToolPermissionBoundary`, activate approved versions, invoke an active agent, and find `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace`
 - validation:
-  - stale versions, seed checksum mismatch, missing seed resources, missing references, invalid manifest entries, unknown skill/reference ids, and missing idempotency keys are rejected safely
+  - stale versions, seed checksum mismatch, missing starter resources, missing references, invalid manifest entries, unknown skill/reference ids, and missing idempotency keys are rejected safely
 - forbidden and tenant isolation:
   - cross-tenant artifact reads, unauthorized prompt/skill/reference/tool changes, disabled-agent invocation, unassigned skill/reference reads, and tool-boundary violations are denied without leaking artifact existence
 - approval:

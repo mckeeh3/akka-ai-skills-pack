@@ -15,7 +15,7 @@ Likely source files:
 - `skills/app-description-functional-agent-modeling/SKILL.md`
 - `skills/app-description-surface-modeling/SKILL.md` only if surface/action references need clarification
 - `skills/app-description-readiness-assessment/SKILL.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md`
 
 ## Deliverables
 

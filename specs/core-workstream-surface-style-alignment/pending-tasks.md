@@ -173,8 +173,8 @@
   - specs/core-workstream-surface-style-alignment/backlog/02-seed-surface-style-build-backlog.md
   - specs/core-workstream-surface-style-alignment/tasks/02-seed-surface-style/01-review-seed-surface-style-alignment.md
   - docs/web-ui-style-guide.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/*.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/*.md
 - skills:
   - app-description-ui
   - app-description-surface-modeling
@@ -214,8 +214,8 @@
   - specs/core-workstream-surface-style-alignment/tasks/**/*.md
   - docs/web-ui-style-guide.md
   - docs/examples/ai-first-saas-core-app-domain/**/*.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/*.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/*.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md
 - skills:
   - none; repository verification task
 - expected outputs:

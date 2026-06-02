@@ -43,13 +43,13 @@ Read these first if present:
 - `../ai-first-saas/SKILL.md` when the change involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 
 Prefer these current generated-SaaS references when present:
-- `../../docs/examples/ai-first-saas-seed-app-description/README.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/regeneration-map.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-behavior-map.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/behavior-to-tests-map.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/change-impact-map.md`
+- `../../templates/ai-first-saas-starter/app-description/README.md`
+- `../../templates/ai-first-saas-starter/app-description/60-generation/regeneration-map.md`
+- `../../templates/ai-first-saas-starter/app-description/70-traceability/functional-agent-to-capability-map.md`
+- `../../templates/ai-first-saas-starter/app-description/70-traceability/surface-to-capability-map.md`
+- `../../templates/ai-first-saas-starter/app-description/70-traceability/capability-to-behavior-map.md`
+- `../../templates/ai-first-saas-starter/app-description/70-traceability/behavior-to-tests-map.md`
+- `../../templates/ai-first-saas-starter/app-description/70-traceability/change-impact-map.md`
 
 Use purchase-request traceability examples only as conventional mechanics references when the task specifically needs legacy cross-linking mechanics; they are not the canonical generated-SaaS target architecture.
 

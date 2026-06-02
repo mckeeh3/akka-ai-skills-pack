@@ -20,4 +20,4 @@ Deferred to later full-core follow-up:
 - evaluator-driven improvement loops and durable prompt-risk workers;
 - provider configuration management UI.
 
-Security boundary: provider secrets and raw model credentials must never appear in prompt text, traces, frontend payloads, seed references, or agentAdminEvidence.read output.
+Security boundary: provider secrets and raw model credentials must never appear in prompt text, traces, frontend payloads, starter core templates, or agentAdminEvidence.read output.

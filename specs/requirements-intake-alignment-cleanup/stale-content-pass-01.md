@@ -15,7 +15,7 @@ rg -n "User Admin workstream v0|User Admin-only|generic chatbot|chatbot shell|pa
 Initial result: 322 hits. Major classes were:
 
 - canonical/guardrail anti-pattern wording in active doctrine and skills;
-- AI-first seed app surface ids such as `user-admin-user-list`, which are current structured-surface identifiers;
+- AI-first starter core app surface ids such as `user-admin-user-list`, which are current structured-surface identifiers;
 - explicit mechanics-only purchase-request references;
 - ShoppingCart component mechanics examples;
 - stale minimum-starter wording that still said `User Admin workstream v0` or User-Admin-only.
@@ -81,7 +81,7 @@ No follow-up task was appended from this pass because the resolved batch removed
 
 Remaining broad stale-term hits appear to fall into these categories for the terminal verification/pass-02 review:
 
-- current seed-app structured surface ids and User Admin vertical references, especially `user-admin-user-list`;
+- current starter-core-app structured surface ids and User Admin vertical references, especially `user-admin-user-list`;
 - explicit anti-pattern/guardrail wording such as `page-first`, `CRUD-first`, or `generic chatbot`;
 - mechanics-only purchase-request planning/example links;
 - Akka substrate examples and starter-template test fixture names;

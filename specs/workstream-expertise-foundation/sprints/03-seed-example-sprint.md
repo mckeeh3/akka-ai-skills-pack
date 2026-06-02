@@ -8,11 +8,11 @@ Make `user-admin-agent` the canonical proof that a workstream can be backed by r
 
 Likely source files:
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/05-managed-agent-foundation.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/prompt-and-skill-governance.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/**`
+- `templates/ai-first-saas-starter/app-description/app-description/10-capabilities/05-managed-agent-foundation.md`
+- `templates/ai-first-saas-starter/app-description/app-description/30-tests/test-index.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/prompt-and-skill-governance.md`
 - `templates/ai-first-saas-starter/**` seed resources, backend fixtures, frontend fixtures, and contract tests where applicable
 - `src/main/resources/agent-behavior-seeds/**` or reference examples if this repo's executable examples are the better canonical target
 

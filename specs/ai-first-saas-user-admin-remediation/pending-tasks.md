@@ -105,9 +105,9 @@
   - skills/akka-saas-invitation-onboarding/SKILL.md
   - docs/core-saas-identity-tenancy-admin.md
   - docs/security-workos-auth-and-admin.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md
 - skills:
   - core-saas-foundation
   - akka-basic-user-admin
@@ -143,7 +143,7 @@
   - docs/security-workos-auth-and-admin.md
   - skills/core-saas-foundation/SKILL.md
   - skills/akka-basic-user-admin/SKILL.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/authorization-rules.md
+  - templates/ai-first-saas-starter/app-description/app-description/40-auth-security/authorization-rules.md
   - docs/examples/ai-first-dca-app-description/app-description/40-auth-security/authorization-rules.md
   - src/main/java/com/example/domain/security/SecurityRole.java
   - src/main/java/com/example/domain/security/RoleAssignment.java
@@ -227,7 +227,7 @@
   - skills/akka-web-ui-apps/SKILL.md
   - docs/core-saas-identity-tenancy-admin.md
   - docs/security-review-checklist.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md
 - skills:
   - core-saas-foundation
   - akka-basic-user-admin
@@ -242,7 +242,7 @@
   - Define admin UI expectations for audit search, invitation queue, access review queue, stale/dormant access warnings, and agent-generated admin recommendations.
   - Update tests guidance to include query authorization, cross-scope filtering, redaction, pagination, stale invite/access review queue correctness, and audit trace completeness.
 - required checks:
-  - `rg -n "AdminAuditView|MembershipView|InvitationView|UserDirectoryView|AccessReviewQueueView" skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md skills/akka-views/SKILL.md docs/core-saas-identity-tenancy-admin.md docs/security-review-checklist.md docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md`
+  - `rg -n "AdminAuditView|MembershipView|InvitationView|UserDirectoryView|AccessReviewQueueView" skills/core-saas-foundation/SKILL.md skills/akka-basic-user-admin/SKILL.md skills/akka-views/SKILL.md docs/core-saas-identity-tenancy-admin.md docs/security-review-checklist.md templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md`
   - `rg -n "actor|target user|invitation status|delivery status|membership status|redaction|cross-scope filtering|access review" skills docs/core-saas-identity-tenancy-admin.md docs/security-review-checklist.md`
   - `git diff --check`
 - done criteria:
@@ -257,15 +257,15 @@
 - task brief: none
 - depends on: [TASK-001, TASK-003, TASK-005, TASK-006]
 - required reads:
-  - docs/examples/ai-first-saas-seed-app-description/README.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/negative/01-forbidden-actions.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/realization-scope.md
+  - templates/ai-first-saas-starter/app-description/README.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
+  - templates/ai-first-saas-starter/app-description/app-description/20-behavior/state-models/01-tenant-user-access-model.md
+  - templates/ai-first-saas-starter/app-description/30-tests/acceptance/01-core-app-acceptance.md
+  - templates/ai-first-saas-starter/app-description/app-description/30-tests/negative/01-forbidden-actions.md
+  - templates/ai-first-saas-starter/app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md
+  - templates/ai-first-saas-starter/app-description/app-description/60-generation/realization-scope.md
   - skills/app-description-readiness-assessment/SKILL.md
   - skills/app-generate-app/SKILL.md
 - skills:
@@ -278,12 +278,12 @@
   - core-saas-foundation
   - ai-first-saas-admin-agents
 - expected outputs:
-  - Update the AI-first SaaS seed app-description so full invitation onboarding, complete admin user management, and AI-assisted admin offload are explicit in capabilities, behavior, state models, tests, UI, and generation scope.
+  - Update the starter core app-description so full invitation onboarding, complete admin user management, and AI-assisted admin offload are explicit in capabilities, behavior, state models, tests, UI, and generation scope.
   - Add/expand files where useful for invitation lifecycle, admin management, access review, and admin-agent behavior.
   - Update readiness and generation skills so missing full onboarding/admin/admin-agent surfaces block initial app generation.
   - Ensure the seed example includes acceptance/negative/regression tests for invite send/resend/revoke/expire/accept, admin list/search, membership lifecycle, last-admin protection, AI access review recommendations, decision cards for risky admin actions, and audit/search views.
 - required checks:
-  - `rg -n "resend|revoke|expire|accept|InvitationView|UserDirectoryView|AccessReviewQueueView|AdminRiskAgent|AccessReviewAgent|last-admin|delivery status" docs/examples/ai-first-saas-seed-app-description skills/app-description-readiness-assessment/SKILL.md skills/app-generate-app/SKILL.md`
+  - `rg -n "resend|revoke|expire|accept|InvitationView|UserDirectoryView|AccessReviewQueueView|AdminRiskAgent|AccessReviewAgent|last-admin|delivery status" templates/ai-first-saas-starter/app-description skills/app-description-readiness-assessment/SKILL.md skills/app-generate-app/SKILL.md`
   - `git diff --check`
 - done criteria:
   - The preferred seed example describes a fully operational user onboarding/admin baseline.
@@ -342,7 +342,7 @@
   - skills/ai-first-saas-admin-agents/SKILL.md
   - docs/core-saas-identity-tenancy-admin.md
   - docs/security-workos-auth-and-admin.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
 - skills:
   - core-saas-foundation
   - akka-saas-invitation-onboarding

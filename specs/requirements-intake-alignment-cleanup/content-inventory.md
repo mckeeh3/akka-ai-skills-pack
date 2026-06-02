@@ -97,7 +97,7 @@ Inventory active intake, planning, app-description, web UI, and example guidance
 | File | Classification | Rationale | Follow-up sprint |
 |---|---:|---|---|
 | `docs/examples/README.md` | focused rewrite | Already labels purchase-request as mechanics-only and AI-first seed as preferred. Verify all example pointers match later removals/renames. | Sprint 04, task 04 |
-| `docs/examples/ai-first-saas-seed-app-description/README.md` | keep | Preferred secure AI-first SaaS seed app-description reference. Keep as canonical description-layer example. | Reference only |
+| `templates/ai-first-saas-starter/app-description/README.md` | keep | Preferred starter core app-description reference. Keep as canonical description-layer example. | Reference only |
 | `docs/examples/requirements-to-workstream-mini-example.md` | keep | Compact current process example; use as quick PRD/intake mechanics pattern. | Reference only |
 | `docs/examples/ai-first-saas-core-app-domain/README.md` | keep | Current core domain reference; useful for generated SaaS core/domain semantics. | Reference only |
 | `docs/examples/core-ai-first-saas-input/README.md` and `docs/examples/core-ai-first-saas-input/*.md` | keep | Current canonical source input set for core AI-first SaaS seed progression and modules. | Reference only |

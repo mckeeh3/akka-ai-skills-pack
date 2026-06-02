@@ -1,8 +1,8 @@
-# Seed App Frontend Slice 5 Completion
+# Starter Core App Frontend Slice 5 Completion
 
 ## Slice
 
-Slice 5 from `seed-app-localized-frontend-implementation-plan.md`:
+Slice 5 from `starter-core-app-localized-frontend-implementation-plan.md`:
 
 - Briefing / Mission Control screen and panels;
 - command strip interactions stubbed to safe fixture responses;

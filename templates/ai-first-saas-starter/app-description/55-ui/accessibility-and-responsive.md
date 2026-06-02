@@ -57,7 +57,7 @@ On governance-policy and decision surfaces, a user should immediately understand
 
 ## Named-theme validation
 
-- all core seed UI surfaces must be reviewed in the four initial named themes:
+- all core starter UI surfaces must be reviewed in the four initial named themes:
   - app shell
   - mission control / briefing
   - decision queue

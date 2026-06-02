@@ -52,4 +52,4 @@ The scaffolded core app description materializes expertise examples for every fo
 - `governance-policy-agent.md` — policy clauses, approval gates, proposals, simulations, replay evidence, activation/rollback, authority-expansion denials, traces, seed policy, and tests.
 - `audit-trace-agent.md` — Audit/Trace search and explanation behavior, redaction-preserving evidence summaries, support-access audit, export limits, denied loader/tool traces, decision-card escalation, and tests.
 
-Later seed-resource and test tasks should realize the governed records described in these bundles without bypassing app-managed governed storage.
+Later starter-resource and test tasks should realize the governed records described in these bundles without bypassing app-managed governed storage.

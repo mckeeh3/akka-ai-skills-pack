@@ -128,27 +128,28 @@ require_rg "too broad|split" skills/akka-backlog-to-pending-tasks/SKILL.md skill
 require_rg "agent catalog" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
 require_rg "agent detail" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
 
-log "checking governed runtime agent foundation seed app-description assets"
-require_rg "AgentDefinition" docs/examples/ai-first-saas-seed-app-description
-require_rg "PromptDocument" docs/examples/ai-first-saas-seed-app-description
-require_rg "SkillDocument" docs/examples/ai-first-saas-seed-app-description
-require_rg "AgentSkillManifest" docs/examples/ai-first-saas-seed-app-description
-require_rg "ToolPermissionBoundary|tool permission" docs/examples/ai-first-saas-seed-app-description
-require_rg "readSkill" docs/examples/ai-first-saas-seed-app-description
-require_rg "PromptAssemblyTrace" docs/examples/ai-first-saas-seed-app-description
-require_rg "SkillLoadTrace" docs/examples/ai-first-saas-seed-app-description
-require_rg "AgentWorkTrace" docs/examples/ai-first-saas-seed-app-description
-require_rg "AgentBehaviorEditorAgent|editing-agent" docs/examples/ai-first-saas-seed-app-description
-require_rg "agent catalog" docs/examples/ai-first-saas-seed-app-description
-require_rg "agent detail" docs/examples/ai-first-saas-seed-app-description
-require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent denial|authority expansion" docs/examples/ai-first-saas-seed-app-description
+log "checking governed runtime agent foundation starter core app-description assets"
+require_rg "AgentDefinition" templates/ai-first-saas-starter/app-description
+require_rg "PromptDocument" templates/ai-first-saas-starter/app-description
+require_rg "SkillDocument" templates/ai-first-saas-starter/app-description
+require_rg "AgentSkillManifest" templates/ai-first-saas-starter/app-description
+require_rg "ToolPermissionBoundary|tool permission" templates/ai-first-saas-starter/app-description
+require_rg "readSkill" templates/ai-first-saas-starter/app-description
+require_rg "PromptAssemblyTrace" templates/ai-first-saas-starter/app-description
+require_rg "SkillLoadTrace" templates/ai-first-saas-starter/app-description
+require_rg "AgentWorkTrace" templates/ai-first-saas-starter/app-description
+require_rg "AgentBehaviorEditorAgent|editing-agent" templates/ai-first-saas-starter/app-description
+require_rg "agent catalog" templates/ai-first-saas-starter/app-description
+require_rg "agent detail" templates/ai-first-saas-starter/app-description
+require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent denial|authority expansion" templates/ai-first-saas-starter/app-description
 
-log "checking packaged docs and seed app-description assets"
+log "checking packaged docs and starter core app-description assets"
 require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml tools/build-pack.sh install.sh
 require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml tools/build-pack.sh install.sh
 require_rg "docs/core-saas-owner-tenant-billing.md" pack/manifest.yaml tools/build-pack.sh install.sh
-require_rg "docs/examples/ai-first-saas-seed-app-description/README.md" pack/manifest.yaml tools/build-pack.sh install.sh
-require_rg "docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md" pack/manifest.yaml tools/build-pack.sh install.sh
+require_rg "templates/ai-first-saas-starter/app-description/README.md" pack/manifest.yaml
+require_rg "templates/ai-first-saas-starter/app-description/00-system/app-manifest.md" pack/manifest.yaml
+require_rg "templates/ai-first-saas-starter" tools/build-pack.sh install.sh
 require_rg "docs/workstream-ui-reference-architecture.md" pack/manifest.yaml tools/build-pack.sh
 require_rg "docs/agent-workstream-design-review-checklist.md" pack/manifest.yaml tools/build-pack.sh
 require_rg "docs/examples/README.md" pack/manifest.yaml tools/build-pack.sh

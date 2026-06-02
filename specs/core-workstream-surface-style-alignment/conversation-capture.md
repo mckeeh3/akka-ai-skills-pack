@@ -42,7 +42,7 @@ Newly established for this follow-up:
 
 - Core domain docs may use generic surface type names such as `dashboard`, `data_table`, and `detail_card`; these are acceptable if paired with AI-first workstream surface style and capability semantics, but risky if left as generic CRUD/dashboard guidance.
 - Over-editing could duplicate canonical style docs and make future maintenance harder.
-- Seed app-description surface contracts may also have small gaps beyond My Account; verification should check but keep follow-up bounded.
+- Starter core app-description surface contracts may also have small gaps beyond My Account; verification should check but keep follow-up bounded.
 
 ## Unresolved questions
 

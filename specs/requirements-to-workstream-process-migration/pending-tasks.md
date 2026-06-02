@@ -585,7 +585,7 @@
   - AGENTS.md
   - skills/README.md
   - canonical process doc from TASK-REQWS-02-001
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - docs/prd-to-akka-flow.md
   - pack/AGENTS.md
   - pack/README.md
@@ -624,7 +624,7 @@
   - specs/requirements-to-workstream-process-migration/pending-tasks.md
   - specs/requirements-to-workstream-process-migration/sprints/06-examples-packaging-sprint.md
   - specs/requirements-to-workstream-process-migration/backlog/06-examples-packaging-backlog.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - docs/prd-to-akka-flow.md
   - pack/AGENTS.md
   - pack/README.md

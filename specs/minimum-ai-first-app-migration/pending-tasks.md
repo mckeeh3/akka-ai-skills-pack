@@ -246,7 +246,7 @@
 - depends on: [TASK-MINAPP-03-001]
 - required reads:
   - docs/minimum-ai-first-saas-app.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - docs/examples/core-ai-first-saas-input/01-core-seed-progression-plan.md if present
   - specs/ai-first-saas-starter-app-template/README.md
   - specs/core-app-full-stack-readiness/README.md

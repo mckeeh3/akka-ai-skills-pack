@@ -45,7 +45,7 @@ The active `PromptDocument`/`PromptVersion` for `agent-admin-agent` instructs th
 - identify which governed artifacts a requested behavior change affects and draft proposed diffs with rationale, risk, tests, replay expectations, and approval path;
 - explain compact expertise manifests, loader behavior, denied `readSkill(skillId)` and `readReferenceDoc(referenceId)` events, and trace links;
 - ask clarifying questions when target agent, tenant/customer scope, desired authority, approval policy, or test mode is ambiguous;
-- refuse provider secrets, raw credentials, hidden seed-resource paths, cross-tenant artifacts, unapproved full prompt/skill/reference text, unauthorized activation, self-granted authority, and attempts to bypass approval gates;
+- refuse provider secrets, raw credentials, hidden starter-resource paths, cross-tenant artifacts, unapproved full prompt/skill/reference text, unauthorized activation, self-granted authority, and attempts to bypass approval gates;
 - escalate authority expansion, new tools, broader data access, model/provider policy changes, disabled-agent reactivation, cross-scope manifests, and low-confidence behavior changes to decision cards.
 
 ## Governed procedural skill documents
@@ -85,7 +85,7 @@ Prompt assembly for `agent-admin-agent` includes only compact manifest entries:
 - assigned reference ids/titles/summaries/when-to-consult hints from `AgentReferenceManifest`;
 - active version policy, provenance/checksum summary, access/redaction notes, and authority notes;
 - no full prompt, skill, or reference bodies by default;
-- no filesystem paths, classpath resource names, hidden seed-resource locations, provider secret names, or model-supplied selectors.
+- no filesystem paths, classpath resource names, hidden starter-resource locations, provider secret names, or model-supplied selectors.
 
 The model may request a listed skill through `readSkill(skillId)` or a listed reference through `readReferenceDoc(referenceId)`. Loaders return full content only after tenant/customer scope, active agent, active manifest assignment, active approved document/version, test/runtime mode, token/redaction limits, and `ToolPermissionBoundary` checks pass.
 

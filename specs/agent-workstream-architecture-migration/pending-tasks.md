@@ -297,14 +297,14 @@
 - depends on: [TASK-AW-02-004]
 - required reads:
   - AGENTS.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - docs/examples/purchase-request-app-description/README.md
   - docs/agent-workstream-application-architecture.md
 - skills:
   - app-descriptions
   - agent-workstream-apps
 - expected outputs:
-  - refreshed seed app-description example files
+  - refreshed starter core app-description example files
   - purchase-request example notes revised or marked mechanics-only where needed
 - required checks:
   - examples do not teach page-first primary structure
@@ -313,8 +313,8 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Refresh app-description examples for workstreams`
-  - completed: refreshed the AI-first SaaS seed app-description example with `12-workstreams/`, functional-agent/internal-agent guidance, structured surface contracts, workstream shell UI files, route/deep-link subordinate guidance, traceability maps, and a horizontal implementation map; marked the purchase-request example as mechanics-only.
-  - checks: verified examples demonstrate functional agents, surfaces, capabilities, and horizontal maps; ran `rg -n "page-first|CRUD-first|chatbot|primary screen|primary screens|screens-and-navigation|functional agent|structured surface|horizontal" docs/examples/ai-first-saas-seed-app-description docs/examples/purchase-request-app-description` and confirmed page/screen references are compatibility or anti-primary notes rather than primary structure guidance.
+  - completed: refreshed the starter core app-description example with `12-workstreams/`, functional-agent/internal-agent guidance, structured surface contracts, workstream shell UI files, route/deep-link subordinate guidance, traceability maps, and a horizontal implementation map; marked the purchase-request example as mechanics-only.
+  - checks: verified examples demonstrate functional agents, surfaces, capabilities, and horizontal maps; ran `rg -n "page-first|CRUD-first|chatbot|primary screen|primary screens|screens-and-navigation|functional agent|structured surface|horizontal" templates/ai-first-saas-starter/app-description docs/examples/purchase-request-app-description` and confirmed page/screen references are compatibility or anti-primary notes rather than primary structure guidance.
 
 ### TASK-AW-03-001: Revise web UI skills for workstream shell
 

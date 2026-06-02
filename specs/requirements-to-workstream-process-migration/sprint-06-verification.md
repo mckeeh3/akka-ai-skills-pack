@@ -28,7 +28,7 @@ input / PRD
 
 - `docs/examples/README.md`
 - `docs/examples/requirements-to-workstream-mini-example.md`
-- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `templates/ai-first-saas-starter/app-description/README.md`
 - `docs/examples/purchase-request-app-description/README.md`
 - `docs/prd-to-akka-flow.md`
 - `templates/ai-first-saas-starter/README.md`
@@ -44,15 +44,15 @@ Pass.
 
 - `pack/AGENTS.md` names the requirements-to-workstream process as the normal path for broad product input or PRDs and links both the canonical process doc and compact mini-example.
 - `pack/README.md` includes `docs/requirements-to-workstream-development-process.md` and `docs/examples/requirements-to-workstream-mini-example.md` in the installed layout and calls them the compact target architecture path.
-- `pack/manifest.yaml` packages the canonical process doc, mini-example, examples index, and AI-first SaaS seed app-description references.
+- `pack/manifest.yaml` packages the canonical process doc, mini-example, examples index, and starter core app-description references.
 
 ### Examples reinforce workstream-attention-dashboard-surface-capability-autonomous-task planning
 
 Pass.
 
 - `docs/examples/requirements-to-workstream-mini-example.md` demonstrates a PRD fragment flowing through workstream inventory, attention/dashboard breakdown, surfaces/actions, governed capabilities, substrate selection, request-based Agent semantics, AutonomousAgent task candidates, events/notifications/projections, traces, and implementation-task shape.
-- `docs/examples/ai-first-saas-seed-app-description/README.md` anchors the seed app-description as the target architecture reference and directs agents to the mini-example before conventional mechanics examples.
-- `docs/examples/README.md` labels the mini-example and seed app-description as preferred generated-SaaS references.
+- `templates/ai-first-saas-starter/app-description/README.md` anchors the starter core app-description as the target architecture reference and directs agents to the mini-example before conventional mechanics examples.
+- `docs/examples/README.md` labels the mini-example and starter core app-description as preferred generated-SaaS references.
 - `templates/ai-first-saas-starter/README.md` preserves the distinction between description-layer meaning and runnable scaffold realization, and keeps request-based workstream Agents separate from durable internal/background AutonomousAgent extensions.
 
 ### Legacy examples are demoted to mechanics references
@@ -71,7 +71,7 @@ No bounded Sprint 06 follow-up tasks are required. Remaining validation is the f
 
 - `git diff --check`
 - `rg -n "requirements-to-workstream|attention|dashboard|AutonomousAgent|mechanics reference|target architecture|prescriptive" docs/examples docs/prd-to-akka-flow.md pack/manifest.yaml pack/README.md pack/AGENTS.md`
-- `rg -n "requirements-to-workstream-development-process|requirements-to-workstream-mini-example|ai-first-saas-seed-app-description|purchase-request" pack/manifest.yaml pack/README.md docs/examples/README.md templates/ai-first-saas-starter -g '*.md' -g '*.yaml'`
+- `rg -n "requirements-to-workstream-development-process|requirements-to-workstream-mini-example|ai-first-saas-starter-app-description|purchase-request" pack/manifest.yaml pack/README.md docs/examples/README.md templates/ai-first-saas-starter -g '*.md' -g '*.yaml'`
 
 ## Result
 

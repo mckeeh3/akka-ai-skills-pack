@@ -2,7 +2,7 @@
 
 ## Status
 
-Detailed PRD for the Skill Governance module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the Skill Governance module in the progressive core AI-first SaaS starter core app.
 
 Read first:
 

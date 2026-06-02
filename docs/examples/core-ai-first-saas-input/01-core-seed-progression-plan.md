@@ -1,12 +1,12 @@
-# Core AI-First SaaS Seed Progression Plan
+# Core AI-First SaaS Starter Core Progression Plan
 
 ## Purpose
 
-This document captures the recommended progressive module sequence for the core AI-first SaaS seed app. It is the implementation progression that future PRD/spec input documents should support.
+This document captures the recommended progressive module sequence for the core AI-first SaaS starter core app. It is the implementation progression that future PRD/spec input documents should support.
 
 Use `10-canonical-core-app-prd.md` as the full-core PRD target. Full core scope requires the agent workstream shell plus Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents. If User Admin or Agent Admin are deferred, the selected scope is explicitly a narrower non-full-core scope rather than full core.
 
-The seed app is not implemented all at once. It is planned and delivered as a sequence of modules, each broken into sprints and harness-sized tasks. Each sprint should produce demonstrable behavior through the live app UI and/or APIs, with tests.
+The starter core app is not implemented all at once. It is planned and delivered as a sequence of modules, each broken into sprints and harness-sized tasks. Each sprint should produce demonstrable behavior through the live app UI and/or APIs, with tests.
 
 For minimum/starter/basic/chatbot-like generated SaaS requests, the first implementation slice is not the full-core module sequence below. It is the `docs/minimum-ai-first-saas-app.md` minimum starter: **five core workstream v0** with My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, bootstrap authorization, selected `AuthContext`, bounded governed agent behavior, durable request/response timelines, `markdown_response` surfaces, backend capability boundaries, and audit/work trace substrate. Full-core expansion remains explicit and non-optional for full readiness.
 
@@ -280,7 +280,7 @@ new product module input
 → audit/governance integration
 ```
 
-The seed app establishes the secure, governed, AI-first substrate that later modules reuse.
+The starter core app establishes the secure, governed, AI-first substrate that later modules reuse.
 
 ## Cross-cutting requirements across all modules
 

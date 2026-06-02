@@ -213,7 +213,7 @@ scaffold starter
 
 - Backend starter implementation should migrate only the security/admin and agent-governance semantics inventoried as `migrate`; it should not copy `com.example` packages verbatim.
 - Frontend starter implementation should reuse `frontend/src/workstream/**`, workstream API/realtime clients, design-system primitives, and workstream contract tests as the canonical UI source reference.
-- `docs/examples/ai-first-saas-seed-app-description/**` remains the primary description contract to align with the starter.
+- `templates/ai-first-saas-starter/app-description/**` remains the primary description contract to align with the starter.
 - DCA/supplies assets stay quarantined as domain-rich vertical examples until the starter full-core path replaces them in canonical guidance.
 - Static-resource frontend outputs are build artifacts or endpoint mechanics references, not starter source.
 

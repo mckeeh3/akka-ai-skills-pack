@@ -28,7 +28,7 @@ Known remaining source edits are already represented by later bounded tasks:
 - Sprint 03 updates intake and description-first skills.
 - Sprint 04 updates solution, PRD, change, and backlog planning skills/docs.
 - Sprint 05 updates queue and pending-question/task execution contracts.
-- Sprint 06 updates examples, seed references, and packaging.
+- Sprint 06 updates examples, starter core references, and packaging.
 
 ## Verification commands
 

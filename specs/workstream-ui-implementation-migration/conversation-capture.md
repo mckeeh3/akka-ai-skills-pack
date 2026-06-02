@@ -2,7 +2,7 @@
 
 ## User request
 
-The user asked for a code migration because stale frontend code, including the seed app reference, should be retired or significantly revised. The migration should create a reusable reference component set and be organized like `specs/agent-workstream-architecture-migration/`: a durable task queue where each task finishes with a git commit.
+The user asked for a code migration because stale frontend code, including the starter core app reference, should be retired or significantly revised. The migration should create a reusable reference component set and be organized like `specs/agent-workstream-architecture-migration/`: a durable task queue where each task finishes with a git commit.
 
 ## Prior assessment
 

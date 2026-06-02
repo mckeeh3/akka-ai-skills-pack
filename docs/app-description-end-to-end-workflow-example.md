@@ -17,14 +17,14 @@ Use this together with:
 - `docs/description-first-application-doctrine.md`
 - `docs/internal-app-description-architecture.md`
 - `docs/app-description-maintenance-flow.md`
-- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `templates/ai-first-saas-starter/app-description/README.md`
 - `docs/requirements-to-workstream-development-process.md`
 
 Purchase-request app-description files are mechanics-only references for older cross-linking patterns; they are not the target architecture for this workflow.
 
 ## Example context
 
-Assume the maintained `app-description/` already follows the secure AI-first SaaS seed shape and includes the five core workstream v0 starter:
+Assume the maintained `app-description/` already follows the starter core app-description shape and includes the five core workstream v0 starter:
 
 - `my_account` — current user's profile, context, settings, and cross-workstream attention.
 - `user_admin` — users, memberships, invitations, access review, support access, and admin audit.

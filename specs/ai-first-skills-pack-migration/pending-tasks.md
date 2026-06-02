@@ -1438,8 +1438,8 @@
 ### TASK-10-001: Update DCA auth/security app-description
 
 - status: done
-- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/01-update-dca-auth-security-description.md
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/01-update-dca-auth-security-description.md
 - depends on: [TASK-09-006]
 - required reads:
   - AGENTS.md
@@ -1451,7 +1451,7 @@
   - examples/poc-user-auth-onboarding/docs/frontend-with-akka-backend.md
   - examples/poc-user-auth-onboarding/docs/AI_AGENT_FIRST_APP_SECURITY.md
   - docs/security-workos-auth-and-admin.md
-  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/01-update-dca-auth-security-description.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/01-update-dca-auth-security-description.md
 - skills:
   - app-descriptions
   - app-description-auth-security
@@ -1464,7 +1464,7 @@
   - verify frontend navigation is not treated as authorization
   - verify backend secrets are forbidden in frontend env/build assets
 - done criteria:
-  - DCA seed app auth/security meaning is concrete enough for implementation
+  - DCA starter core app auth/security meaning is concrete enough for implementation
   - git commit created for this task
 - notes:
   - completed: tightened DCA auth/security app-description semantics for WorkOS/local account linking, backend authorization matrix, admin/security audit facts, agent/tool authority boundaries, frontend/backend secret separation, and linked UI/observability/generation/test layers
@@ -1474,15 +1474,15 @@
 ### TASK-10-002: Implement local account, tenant, customer, role, and audit domain
 
 - status: done
-- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/02-local-account-domain-and-audit.md
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/02-local-account-domain-and-audit.md
 - depends on: [TASK-10-001]
 - required reads:
   - AGENTS.md
   - docs/security-workos-auth-and-admin.md
-  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
-  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/02-local-account-domain-and-audit.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-starter-core-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/02-local-account-domain-and-audit.md
   - examples/poc-user-auth-onboarding/src/main/java/com/example/domain/Role.java
   - examples/poc-user-auth-onboarding/src/main/java/com/example/domain/RoleAssignment.java
   - examples/poc-user-auth-onboarding/src/main/java/com/example/domain/UserAccount.java
@@ -1509,15 +1509,15 @@
 ### TASK-10-003: Implement WorkOS/JWT `/api/me` and backend authorization helper
 
 - status: done
-- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/03-workos-me-and-authorization.md
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/03-workos-me-and-authorization.md
 - depends on: [TASK-10-002]
 - required reads:
   - AGENTS.md
   - docs/security-workos-auth-and-admin.md
-  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
-  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/03-workos-me-and-authorization.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-starter-core-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/03-workos-me-and-authorization.md
   - examples/poc-user-auth-onboarding/src/main/java/com/example/api/MeEndpoint.java
   - examples/poc-user-auth-onboarding/src/main/java/com/example/security/AuthorizationService.java
   - examples/poc-user-auth-onboarding/src/main/java/com/example/security/AuthContext.java
@@ -1544,15 +1544,15 @@
 ### TASK-10-004: Implement admin APIs and bootstrap lifecycle
 
 - status: done
-- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/04-admin-apis-and-bootstrap.md
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/04-admin-apis-and-bootstrap.md
 - depends on: [TASK-10-003]
 - required reads:
   - AGENTS.md
   - docs/security-workos-auth-and-admin.md
-  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
-  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/04-admin-apis-and-bootstrap.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-starter-core-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/04-admin-apis-and-bootstrap.md
   - examples/poc-user-auth-onboarding/src/main/java/com/example/api/AdminUsersEndpoint.java
   - examples/poc-user-auth-onboarding/src/main/java/com/example/api/TenantAdminEndpoint.java
   - examples/poc-user-auth-onboarding/src/main/java/com/example/api/CustomerAdminEndpoint.java
@@ -1569,7 +1569,7 @@
 - required checks:
   - run focused admin endpoint tests
 - done criteria:
-  - seed app administrators can manage local accounts and scopes with auditable backend enforcement
+  - starter core app administrators can manage local accounts and scopes with auditable backend enforcement
   - git commit created for this task
 - notes:
   - completed: added JWT-protected admin user, tenant, and customer APIs; idempotent backend-only admin bootstrap from `ADMIN_USERS`; centralized scoped role-management checks; audit IDs on privileged operations; and focused integration tests for app admin, scoped admin, privilege-escalation denial, cross-scope denial, disabled-user denial, missing JWT rejection, bootstrap idempotency, and audit creation
@@ -1579,17 +1579,17 @@
 ### TASK-10-005: Implement authenticated React/Vite shell and Akka hosting
 
 - status: done
-- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/05-authenticated-react-shell.md
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/05-authenticated-react-shell.md
 - depends on: [TASK-10-004]
 - required reads:
   - AGENTS.md
   - docs/web-ui-style-guide.md
   - docs/security-workos-auth-and-admin.md
   - docs/examples/ai-first-dca-app-description/app-description/55-ui/style-guide.md
-  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
-  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/05-authenticated-react-shell.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-starter-core-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/05-authenticated-react-shell.md
   - examples/poc-user-auth-onboarding/docs/frontend-with-akka-backend.md
   - examples/poc-user-auth-onboarding/frontend/package.json
   - examples/poc-user-auth-onboarding/frontend/src/main.tsx
@@ -1612,7 +1612,7 @@
   - run static route/asset tests
   - verify backend secrets are absent from frontend env examples and build output
 - done criteria:
-  - DCA seed app has an authenticated shell whose UX reflects roles/scopes but never replaces backend authorization
+  - DCA starter core app has an authenticated shell whose UX reflects roles/scopes but never replaces backend authorization
   - git commit created for this task
 - notes:
   - completed: added React/Vite/AuthKit frontend project, same-origin bearer-token `/api/me` client behavior, role/capability-aware DCA navigation, supplies autopilot entry point, loading/signed-out/access-problem states, Atlas Ops supervisory console style tokens, Akka static hosting routes for `/`, `/assets/**`, and `/favicon.ico`, and focused frontend/route smoke tests
@@ -1622,15 +1622,15 @@
 ### TASK-10-006: Add seed security acceptance tests and PoC alignment notes
 
 - status: done
-- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/06-seed-security-acceptance-tests.md
+- source: specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+- task brief: specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/06-seed-security-acceptance-tests.md
 - depends on: [TASK-10-005]
 - required reads:
   - AGENTS.md
   - docs/security-workos-auth-and-admin.md
-  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-seed-app-foundation-sprint.md
-  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-seed-app-foundation-build-backlog.md
-  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-seed-app-foundation/06-seed-security-acceptance-tests.md
+  - specs/ai-first-skills-pack-migration/sprints/10-authenticated-starter-core-app-foundation-sprint.md
+  - specs/ai-first-skills-pack-migration/backlog/10-authenticated-starter-core-app-foundation-build-backlog.md
+  - specs/ai-first-skills-pack-migration/tasks/10-authenticated-starter-core-app-foundation/06-seed-security-acceptance-tests.md
   - examples/poc-user-auth-onboarding/AI_REVIEW_NOTES.md
   - examples/poc-user-auth-onboarding/docs/frontend-with-akka-backend.md
 - skills:

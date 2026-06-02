@@ -14,7 +14,7 @@ Implement or align the scoped reference/starter My Account theme selection path 
 - `specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md`
 - `specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/03-align-my-account-theme-selection.md`
 - `docs/web-ui-style-guide.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
 - `frontend/src/main.tsx`
 - `templates/ai-first-saas-starter/frontend/src/main.tsx`
 - My Account/settings frontend/API files identified by search

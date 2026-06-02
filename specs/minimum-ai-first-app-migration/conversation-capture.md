@@ -64,7 +64,7 @@ bootstrap-authenticated user
 5. Update `skills/core-saas-foundation/SKILL.md` to distinguish minimum starter foundation from full-core SaaS foundation.
 6. Update `skills/agent-workstream-apps/SKILL.md` so “minimum app,” “starter,” or “chatbot” routes to User Admin workstream v0.
 7. Update `skills/README.md` with the minimum app rule.
-8. Update app-description bootstrap/functional-agent/surface guidance and seed app-description examples.
+8. Update app-description bootstrap/functional-agent/surface guidance and starter core app-description examples.
 9. Update starter template/scaffold expectations to generate User Admin v0 first.
 10. Add readiness language distinguishing minimum starter, full core SaaS, and app-specific readiness.
 

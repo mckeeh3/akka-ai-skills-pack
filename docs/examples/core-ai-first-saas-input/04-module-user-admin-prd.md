@@ -2,7 +2,7 @@
 
 ## Status
 
-Detailed PRD for the User Administration module in the progressive core AI-first SaaS seed app. This module follows the agent workstream runtime bootstrap even though the stable file name is retained for input-document continuity.
+Detailed PRD for the User Administration module in the progressive core AI-first SaaS starter core app. This module follows the agent workstream runtime bootstrap even though the stable file name is retained for input-document continuity.
 
 Read first:
 
@@ -62,7 +62,7 @@ At completion, an authorized tenant admin can:
 - Enterprise SSO/domain administration, SCIM, MFA policy administration, and identity-provider configuration UI.
 - Full SaaS Owner console across all tenants, unless required for seed bootstrap.
 - Billing/subscription enforcement beyond preserving the boundary.
-- Customer-level administration unless the seed app chooses to introduce Customers in this module.
+- Customer-level administration unless the starter core app chooses to introduce Customers in this module.
 - Support-access grant workflow beyond a placeholder or explicitly deferred UI card.
 - Advanced policy governance, risk scoring, and AI-drafted admin recommendations beyond simple orientation/status behavior provided by the Module 2 bootstrap runtime.
 - Agent definitions, prompt governance, skill governance, work trace timelines, evaluator agents, and closed-loop improvement.

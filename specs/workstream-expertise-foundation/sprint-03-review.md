@@ -27,8 +27,8 @@ Sprint 04 may proceed.
 
 ### App-description evidence
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md` makes `workstream-expertise/user-admin-agent.md` authoritative for `user-admin-agent` and summarizes its responsibilities, three canonical surfaces, callable capabilities, denial obligations, and trace/test coverage.
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md` concretely defines `user-admin-agent.expertise` with:
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md` makes `workstream-expertise/user-admin-agent.md` authoritative for `user-admin-agent` and summarizes its responsibilities, three canonical surfaces, callable capabilities, denial obligations, and trace/test coverage.
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md` concretely defines `user-admin-agent.expertise` with:
   - prompt intent;
   - six procedural `SkillDocument` entries;
   - six governed `ReferenceDocument` entries;
@@ -40,9 +40,9 @@ Sprint 04 may proceed.
   - `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, and `AdminAuditEvent` requirements;
   - seed/upgrade policy;
   - test obligations.
-- `docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/05-managed-agent-foundation.md` owns the managed runtime capability for `AgentDefinition`, prompts, skills, references, skill/reference manifests, boundaries, loaders, traces, seed imports, approval gates, and tests.
-- `docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md` links User Admin expertise to its surfaces and capability families.
-- `docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md` requires compact manifests, assigned skill/reference loads, denied loads, boundary denials, no authority expansion, capability authorization, surface rendering, and trace emission.
+- `templates/ai-first-saas-starter/app-description/app-description/10-capabilities/05-managed-agent-foundation.md` owns the managed runtime capability for `AgentDefinition`, prompts, skills, references, skill/reference manifests, boundaries, loaders, traces, seed imports, approval gates, and tests.
+- `templates/ai-first-saas-starter/app-description/app-description/70-traceability/functional-agent-to-capability-map.md` links User Admin expertise to its surfaces and capability families.
+- `templates/ai-first-saas-starter/app-description/app-description/30-tests/test-index.md` requires compact manifests, assigned skill/reference loads, denied loads, boundary denials, no authority expansion, capability authorization, surface rendering, and trace emission.
 
 ### Seed and starter evidence
 

@@ -935,10 +935,10 @@
   - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
   - specs/core-app-full-stack-readiness/invitation-onboarding-reference-slice.md
   - specs/user-admin-workstream-functionalization/gap-inventory.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md
   - docs/agent-workstream-application-architecture.md
   - docs/structured-surface-contracts.md
   - skills/akka-saas-invitation-onboarding/SKILL.md
@@ -989,12 +989,12 @@
   - specs/ai-first-saas-starter-app-template/starter-workstream-api-contracts.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
   - specs/user-admin-workstream-functionalization/readiness-review.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
   - skills/ai-first-saas-admin-agents/SKILL.md
   - skills/akka-agent-seed-documents/SKILL.md
   - docs/agent-workstream-application-architecture.md
@@ -1236,9 +1236,9 @@
   - templates/ai-first-saas-starter/TEMPLATE-MANIFEST.md
   - tools/validate-ai-first-saas-starter-fullstack.sh
   - specs/user-admin-workstream-functionalization/readiness-review.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
   - docs/agent-workstream-application-architecture.md
   - docs/structured-surface-contracts.md
   - skills/akka-web-ui-apps/SKILL.md

@@ -33,7 +33,7 @@ The review checked whether the completed minimum AI-first app migration met the 
 - `skills/app-description-bootstrap/SKILL.md`
 - `skills/app-description-functional-agent-modeling/SKILL.md`
 - `skills/app-description-surface-modeling/SKILL.md`
-- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `templates/ai-first-saas-starter/app-description/README.md`
 - `docs/examples/core-ai-first-saas-input/01-core-seed-progression-plan.md`
 - `templates/ai-first-saas-starter/specs/README.md`
 - `pack/manifest.yaml`

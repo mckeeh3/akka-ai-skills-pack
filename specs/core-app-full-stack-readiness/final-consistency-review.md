@@ -2,7 +2,7 @@
 
 ## Review scope
 
-Reviewed the migration queue and completed migration outputs under `specs/core-app-full-stack-readiness/`, the canonical full-core PRD, the seed app-description README, `skills/README.md`, and the frontend workstream reference artifacts produced during the migration.
+Reviewed the migration queue and completed migration outputs under `specs/core-app-full-stack-readiness/`, the canonical full-core PRD, the starter core app-description README, `skills/README.md`, and the frontend workstream reference artifacts produced during the migration.
 
 Primary reviewed outputs:
 

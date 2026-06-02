@@ -1,8 +1,8 @@
-# Seed App Frontend Slice 3 Completion
+# Starter Core App Frontend Slice 3 Completion
 
 ## Slice
 
-Slice 3 from `seed-app-localized-frontend-implementation-plan.md`:
+Slice 3 from `starter-core-app-localized-frontend-implementation-plan.md`:
 
 - typed DTOs from `frontend-api-contracts.md`;
 - API client interfaces;

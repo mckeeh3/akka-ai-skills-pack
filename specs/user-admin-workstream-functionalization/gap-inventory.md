@@ -6,11 +6,11 @@ Reviewed the current User Admin workstream definition across:
 
 - app-description workstream doctrine and contracts:
   - `docs/agent-workstream-application-architecture.md`
-  - `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
-  - `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md`
-  - `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md`
+  - `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md`
+  - `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md`
+  - `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md`
 - browser/API contract layer:
-  - `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md`
+  - `templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md`
 - backend reference slice:
   - `specs/core-app-full-stack-readiness/user-admin-reference-slice.md`
 - frontend reference assets/tests:
@@ -89,9 +89,9 @@ Gap:
 
 Needed files:
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md`
 
 Each must define:
 
@@ -108,7 +108,7 @@ Each must define:
 
 ### 2. Frontend API and payload schemas
 
-Needed updates in `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md`:
+Needed updates in `templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md`:
 
 - `UserAdminDashboardPayload`
 - `UserAdminUserListPayload`
@@ -168,31 +168,31 @@ Needed readiness/test updates:
 
 Primary app-description files:
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/structured-surface-rendering.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ui-index.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md`
+- `templates/ai-first-saas-starter/app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/structured-surface-rendering.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/ui-index.md`
 
 Capability and traceability files:
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-horizontal-map.md`
+- `templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- `templates/ai-first-saas-starter/app-description/app-description/70-traceability/surface-to-capability-map.md`
+- `templates/ai-first-saas-starter/app-description/app-description/70-traceability/functional-agent-to-capability-map.md`
+- `templates/ai-first-saas-starter/app-description/app-description/70-traceability/capability-to-horizontal-map.md`
 
 Realization/readiness files:
 
 - `specs/core-app-full-stack-readiness/user-admin-reference-slice.md`
 - `specs/core-app-full-stack-readiness/full-core-realization-map.md`
 - `specs/core-app-full-stack-readiness/full-core-acceptance-test-matrix.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/horizontal-implementation-map.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md`
+- `templates/ai-first-saas-starter/app-description/app-description/60-generation/horizontal-implementation-map.md`
+- `templates/ai-first-saas-starter/app-description/app-description/30-tests/test-index.md`
+- `templates/ai-first-saas-starter/app-description/30-tests/acceptance/01-core-app-acceptance.md`
 - `skills/app-description-readiness-assessment/SKILL.md`
 - `skills/app-generate-app/SKILL.md`
 - `skills/akka-prd-to-specs-backlog/SKILL.md`

@@ -2,7 +2,7 @@
 
 Routes support implementation, browser history, bookmarks, and direct links to functional agents or surfaces. They are not the primary application architecture.
 
-Implementation reference: `../../../../../frontend/src/workstream/shell/WorkstreamDeepLinks.ts` parses and serializes selected functional-agent, stream-item, and surface links for the reusable shell and turns direct entry into the same typed shell request pipeline used by prompts and surface actions. Do not rebuild the seed UI as a primary page-route tree.
+Implementation reference: `../../../../../frontend/src/workstream/shell/WorkstreamDeepLinks.ts` parses and serializes selected functional-agent, stream-item, and surface links for the reusable shell and turns direct entry into the same typed shell request pipeline used by prompts and surface actions. Do not rebuild the starter UI as a primary page-route tree.
 
 | Route family | Deep-links to | Notes |
 |---|---|---|

@@ -11,7 +11,7 @@ Review the migration outputs and source guidance for contradictions, stale terms
 - all files produced by completed tasks in this migration
 - `skills/README.md`
 - `docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md`
-- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `templates/ai-first-saas-starter/app-description/README.md`
 
 ## Expected outputs
 

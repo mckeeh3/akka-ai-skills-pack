@@ -35,7 +35,7 @@ Known remaining source edits are already represented by later bounded tasks:
 - Sprint 03 updates input normalization, intake routing, app-description modeling, UI, and readiness skills.
 - Sprint 04 updates solution decomposition, PRD/spec/backlog, revised-PRD, change-request, backlog, task-brief, and question-generation flows.
 - Sprint 05 updates pending queue and pending question/task execution contracts.
-- Sprint 06 updates examples, seed references, installed-pack guidance, and packaging alignment.
+- Sprint 06 updates examples, starter core references, installed-pack guidance, and packaging alignment.
 
 ## Verification commands
 

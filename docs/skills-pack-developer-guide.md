@@ -127,7 +127,7 @@ Run the opinionated AI-first SaaS pack guardrail before changing core routing, d
 npm run verify:opinionated-ai-first-saas
 ```
 
-## Local environment for the seed app
+## Local environment for the starter core app
 
 The repository provides a root environment template:
 
@@ -158,9 +158,9 @@ Common variables include:
 
 Only `VITE_` variables are public and may be embedded into the frontend bundle. Java code that validates or reads required backend variables must log an error for each missing or blank variable with the exact env var name and without logging secret values.
 
-## Running the seed app locally
+## Running the starter core app locally
 
-The seed app declares topic components. Local Akka broker support is disabled by default, so start a local Kafka broker on `localhost:9092` or use another Akka-supported local broker configuration.
+The starter core app declares topic components. Local Akka broker support is disabled by default, so start a local Kafka broker on `localhost:9092` or use another Akka-supported local broker configuration.
 
 One Docker option:
 
@@ -170,7 +170,7 @@ docker run --rm --name akka-seed-kafka \
   apache/kafka:3.9.1
 ```
 
-Start the seed app with Kafka dev-mode eventing support:
+Start the starter core app with Kafka dev-mode eventing support:
 
 ```bash
 mvn compile exec:java -Dakka.javasdk.dev-mode.eventing.support=kafka

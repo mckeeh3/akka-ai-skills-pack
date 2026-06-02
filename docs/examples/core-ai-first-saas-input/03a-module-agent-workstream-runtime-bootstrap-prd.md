@@ -2,7 +2,7 @@
 
 ## Status
 
-Bridge PRD for the progressive core AI-first SaaS seed app. This module intentionally runs after minimal auth/app access and before full User Administration.
+Bridge PRD for the progressive core AI-first SaaS starter core app. This module intentionally runs after minimal auth/app access and before full User Administration.
 
 Read first:
 

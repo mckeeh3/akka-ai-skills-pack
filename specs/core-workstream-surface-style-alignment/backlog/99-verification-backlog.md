@@ -7,7 +7,7 @@ Verify the mini-project done state and queue follow-up work if needed.
 ## Required checks
 
 - `git diff --check`
-- Stale contradiction search over core domain docs, seed app-description surface contracts, and canonical style guide.
+- Stale contradiction search over core domain docs, starter core app-description surface contracts, and canonical style guide.
 
 ## Acceptance criteria
 

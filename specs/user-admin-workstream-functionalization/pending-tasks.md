@@ -34,10 +34,10 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - AGENTS.md
   - skills/README.md
   - docs/agent-workstream-application-architecture.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
   - frontend/src/workstream/fixtures/surfaces.ts
   - frontend/src/workstream-user-admin-vertical.contract.test.mjs
@@ -65,11 +65,11 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - depends on: [TASK-UA-001]
 - required reads:
   - specs/user-admin-workstream-functionalization/gap-inventory.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
 - expected outputs:
-  - Replace or decompose the broad `user-admin-command-center` contract into three required contracts under `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/`:
+  - Replace or decompose the broad `user-admin-command-center` contract into three required contracts under `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/`:
     - `02-user-admin-dashboard.md`
     - `03-user-admin-user-list.md`
     - `04-user-admin-user-account.md`
@@ -77,11 +77,11 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - Preserve links to reusable decision-card and audit-trace surfaces rather than duplicating them.
   - Each surface contract must define type/version, owner functional agent, payload summary, allowed actions, states, auth/security, rendering tests, trace ids, and scope-aware variant notes for SaaS Owner Admin, Tenant Admin, and Customer Admin.
 - required checks:
-  - `test -f docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md`
-  - `test -f docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md`
-  - `test -f docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md`
-  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account" docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md`
-  - `rg -n "SaaS Owner Admin|Tenant Admin|Customer Admin|loading|empty|error|forbidden|stale" docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/0*-user-admin-*.md`
+  - `test -f templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md`
+  - `test -f templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md`
+  - `test -f templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md`
+  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account" templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md`
+  - `rg -n "SaaS Owner Admin|Tenant Admin|Customer Admin|loading|empty|error|forbidden|stale" templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/0*-user-admin-*.md`
   - `git diff --check`
 - done criteria:
   - User Admin has three explicit canonical surface contracts.
@@ -96,10 +96,10 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - task brief: none
 - depends on: [TASK-UA-002]
 - required reads:
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
 - expected outputs:
   - Update `55-ui/frontend-api-contracts.md` with complete TypeScript DTOs for:
@@ -111,8 +111,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - Include pagination, filters, row actions, detail action availability, correlation ids, trace ids, redaction markers, loading/error/forbidden semantics, and idempotency keys for mutations.
   - Ensure contracts are scope-aware without creating three separate unrelated frontend APIs.
 - required checks:
-  - `rg -n "UserAdminDashboardPayload|UserAdminUserListPayload|UserAdminUserAccountPayload" docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md`
-  - `rg -n "/api/admin/users|/api/admin/users/\{.*\}|dashboard|pageToken|correlationId|trace" docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md`
+  - `rg -n "UserAdminDashboardPayload|UserAdminUserListPayload|UserAdminUserAccountPayload" templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md`
+  - `rg -n "/api/admin/users|/api/admin/users/\{.*\}|dashboard|pageToken|correlationId|trace" templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md`
   - `git diff --check`
 - done criteria:
   - A frontend implementer can build the three surfaces from typed contracts without relying on fixtures.
@@ -127,9 +127,9 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - task brief: none
 - depends on: [TASK-UA-002]
 - required reads:
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/surface-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/functional-agent-to-capability-map.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
 - expected outputs:
   - Update capability and traceability docs so every action on the three User Admin surfaces maps to a named backend capability.
@@ -137,8 +137,8 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - Define how SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and support-access actors differ for each capability.
   - Explicitly state denial behavior for cross-tenant, Customer Admin attempting Tenant action, SaaS Owner without support access, disabled actor, missing role/capability, role escalation, and last-admin loss.
 - required checks:
-  - `rg -n "admin\.users|admin\.memberships|admin\.roles|admin\.invitations|admin\.audit|admin\.access_review|support" docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md`
-  - `rg -n "SaaS Owner Admin|Tenant Admin|Customer Admin|last-admin|role escalation|support access" docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+  - `rg -n "admin\.users|admin\.memberships|admin\.roles|admin\.invitations|admin\.audit|admin\.access_review|support" templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md templates/ai-first-saas-starter/app-description/app-description/70-traceability/surface-to-capability-map.md`
+  - `rg -n "SaaS Owner Admin|Tenant Admin|Customer Admin|last-admin|role escalation|support access" templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
   - `git diff --check`
 - done criteria:
   - Surface actions are not UI-only affordances; every action has a governed backend capability and denial semantics.
@@ -152,9 +152,9 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - task brief: none
 - depends on: [TASK-UA-002, TASK-UA-004]
 - required reads:
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/internal-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/internal-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
   - skills/ai-first-saas-admin-agents/SKILL.md
   - skills/akka-agent-seed-documents/SKILL.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
@@ -165,7 +165,7 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - Define default tool boundaries: read/list/detail/summarize allowed within AuthContext; consequential mutations default to human-confirmed capability calls or decision-card flows.
   - Define trace/test obligations for prompt assembly, skill load, tool allow/deny, and surface/action outcomes.
 - required checks:
-  - `rg -n "open dashboard|search.*users|open.*user account|allowed|denied|InvitationDraft|RoleRecommendation|AdminAuditSummary|AgentDefinition|ToolPermissionBoundary|AgentWorkTrace" docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md`
+  - `rg -n "open dashboard|search.*users|open.*user account|allowed|denied|InvitationDraft|RoleRecommendation|AdminAuditSummary|AgentDefinition|ToolPermissionBoundary|AgentWorkTrace" templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md templates/ai-first-saas-starter/app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md`
   - `git diff --check`
 - done criteria:
   - The User Admin agent is specified as functional within the three-surface vertical, not just named as a left-rail item.
@@ -181,15 +181,15 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - required reads:
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
   - specs/core-app-full-stack-readiness/full-core-realization-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/horizontal-implementation-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-horizontal-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/60-generation/horizontal-implementation-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/capability-to-horizontal-map.md
 - expected outputs:
   - Update realization/horizontal maps so the three User Admin surfaces identify their required Akka substrates.
   - Minimum functional backing must include Account/Profile/Settings, Membership/Role, Invitation integration, AdminAuditEvent, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and selected AccessReviewQueueView behavior.
   - Define which APIs can be read-only first and which mutations are required for the first functional completion milestone.
   - Ensure the dashboard/list/detail flow is backed by view queries rather than requiring caller-supplied known user ids.
 - required checks:
-  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account|UserDirectoryView|MembershipView|InvitationView|AdminAuditView|AccessReviewQueueView|Account|Membership" specs/core-app-full-stack-readiness/full-core-realization-map.md docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/horizontal-implementation-map.md docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-horizontal-map.md`
+  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account|UserDirectoryView|MembershipView|InvitationView|AdminAuditView|AccessReviewQueueView|Account|Membership" specs/core-app-full-stack-readiness/full-core-realization-map.md templates/ai-first-saas-starter/app-description/app-description/60-generation/horizontal-implementation-map.md templates/ai-first-saas-starter/app-description/app-description/70-traceability/capability-to-horizontal-map.md`
   - `git diff --check`
 - done criteria:
   - Backend implementation tasks can be derived from the three surfaces without re-deciding Akka components.
@@ -207,15 +207,15 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - frontend/src/workstream/fixtures/agents.ts
   - frontend/src/workstream/fixtures/workstream.ts
   - frontend/src/workstream-user-admin-vertical.contract.test.mjs
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/structured-surface-rendering.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ui-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/structured-surface-rendering.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/ui-index.md
 - expected outputs:
   - Align frontend reference fixtures with canonical User Admin surface ids from the docs.
   - Keep fixtures as reference/demo data, but ensure they model dashboard → user list → user account with capability-backed action metadata and trace ids.
   - Update contract tests to check scope-aware variants, action-to-capability ids, forbidden/empty/error state fixtures, and no page-first route dependency.
   - Update UI docs to cite the three-surface User Admin vertical as the canonical reference.
 - required checks:
-  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account|SaaS Owner|Tenant Admin|Customer Admin|forbidden|empty|error" frontend/src/workstream/fixtures frontend/src/workstream-user-admin-vertical.contract.test.mjs docs/examples/ai-first-saas-seed-app-description/app-description/55-ui`
+  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account|SaaS Owner|Tenant Admin|Customer Admin|forbidden|empty|error" frontend/src/workstream/fixtures frontend/src/workstream-user-admin-vertical.contract.test.mjs templates/ai-first-saas-starter/app-description/app-description/55-ui`
   - `npm --prefix frontend test -- --runInBand` if supported by the frontend package; otherwise run the existing frontend test command documented in `frontend/README.md` and record the actual command in the completion note.
   - `git diff --check`
 - done criteria:
@@ -235,15 +235,15 @@ The workstream must be one shared User Admin functional-agent family with scope-
   - skills/akka-prd-to-specs-backlog/SKILL.md
   - specs/core-app-full-stack-readiness/full-core-acceptance-test-matrix.md
   - specs/core-app-full-stack-readiness/user-admin-reference-slice.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md
+  - templates/ai-first-saas-starter/app-description/app-description/30-tests/test-index.md
+  - templates/ai-first-saas-starter/app-description/30-tests/acceptance/01-core-app-acceptance.md
 - expected outputs:
   - Update readiness/generation/test guidance so User Admin is not considered functional unless the three-surface vertical is fullstack working.
   - Define acceptance checks for selecting User Admin, loading dashboard, opening user list, searching/filtering, opening user account, invoking at least one safe mutation or decision-card-producing action, and observing audit/trace output.
   - Define negative checks for disabled actor, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner no-support-access denial, role escalation, and last-admin loss.
   - Ensure full-core readiness blocks User Admin if it is fixture-only, API-only, or UI-only.
 - required checks:
-  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account|fixture-only|UI-only|API-only|fullstack|last-admin|cross-tenant" skills/app-description-readiness-assessment/SKILL.md skills/app-generate-app/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md specs/core-app-full-stack-readiness/full-core-acceptance-test-matrix.md docs/examples/ai-first-saas-seed-app-description/app-description/30-tests`
+  - `rg -n "user-admin-dashboard|user-admin-user-list|user-admin-user-account|fixture-only|UI-only|API-only|fullstack|last-admin|cross-tenant" skills/app-description-readiness-assessment/SKILL.md skills/app-generate-app/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md specs/core-app-full-stack-readiness/full-core-acceptance-test-matrix.md templates/ai-first-saas-starter/app-description/app-description/30-tests`
   - `git diff --check`
 - done criteria:
   - Generation/readiness cannot claim User Admin functional completion without fullstack dashboard/list/detail behavior and tests.
@@ -259,14 +259,14 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - required reads:
   - specs/user-admin-workstream-functionalization/pending-tasks.md
   - specs/user-admin-workstream-functionalization/gap-inventory.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/capability-to-horizontal-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/surface-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/capability-to-horizontal-map.md
   - specs/core-app-full-stack-readiness/full-core-acceptance-test-matrix.md
   - frontend/src/workstream-user-admin-vertical.contract.test.mjs
 - expected outputs:
@@ -320,11 +320,11 @@ The workstream must be one shared User Admin functional-agent family with scope-
 - depends on: [TASK-UA-009]
 - required reads:
   - specs/user-admin-workstream-functionalization/readiness-review.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/frontend-api-contracts.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
   - frontend/src/workstream/fixtures/surfaces.ts
   - frontend/src/workstream-user-admin-vertical.contract.test.mjs
 - expected outputs:

@@ -9,7 +9,7 @@ Two material gaps remain worth planning as follow-up work:
 1. **Executable first-class reference governance is still incomplete in the starter backend.**
    The docs and seed fixtures describe `ReferenceDocument`, `AgentReferenceManifest`, `readReferenceDoc(referenceId)`, and `ReferenceLoadTrace`, but the starter backend runtime still stores only `SkillDocument` and `AgentSkillManifest` records and implements only `readSkill(skillId)`. The frontend contract test checks fixture text for reference behavior, but backend runtime tests do not yet prove assigned reference loads, unassigned reference denials, missing `read_reference` boundary denial, redaction/oversize denial, or reference load traces.
 2. **Only User Admin has a concrete workstream expert bundle.**
-   The seed app-description lists multiple foundation functional agents (`my-account-agent`, `agent-admin-agent`, `mission-control-agent`, `governance-policy-agent`, `audit-trace-agent`), but `12-workstreams/workstream-expertise/` currently has only `user-admin-agent.md`. For LLM-backed foundation agents, each should either have a bundle or an explicit readiness-impacting deferral. Agent Admin and Audit/Trace are especially important because they govern and investigate the expertise system itself.
+   The starter core app-description lists multiple foundation functional agents (`my-account-agent`, `agent-admin-agent`, `mission-control-agent`, `governance-policy-agent`, `audit-trace-agent`), but `12-workstreams/workstream-expertise/` currently has only `user-admin-agent.md`. For LLM-backed foundation agents, each should either have a bundle or an explicit readiness-impacting deferral. Agent Admin and Audit/Trace are especially important because they govern and investigate the expertise system itself.
 
 ## Evidence
 
@@ -19,8 +19,8 @@ Reviewed files included:
 - `docs/agent-runtime-invocation-pattern.md`
 - `skills/akka-agent-reference-governance/SKILL.md`
 - `docs/agent-coverage-matrix.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/AgentDefinition.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/AgentBehaviorRepositoryState.java`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/SkillDocument.java`

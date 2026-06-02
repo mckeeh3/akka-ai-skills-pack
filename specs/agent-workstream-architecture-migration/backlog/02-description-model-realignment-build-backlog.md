@@ -7,5 +7,5 @@
 3. Add or revise app-description skill guidance for functional-agent modeling.
 4. Add or revise app-description skill guidance for surface modeling.
 5. Update readiness checks and review summaries for agent-backed consequential work areas.
-6. Refresh seed app-description examples.
+6. Refresh starter core app-description examples.
 7. Run Sprint 2 consistency review.

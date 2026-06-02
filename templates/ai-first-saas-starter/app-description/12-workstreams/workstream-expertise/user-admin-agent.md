@@ -82,7 +82,7 @@ Prompt assembly for `user-admin-agent` includes only compact manifest entries:
 - assigned skill ids/titles/summaries/when-to-use hints from `AgentSkillManifest`;
 - assigned reference ids/titles/summaries/when-to-consult hints from `AgentReferenceManifest`;
 - active version policy, provenance/checksum summary, and authority notes;
-- no full skill/reference bodies, no filesystem paths, no hidden seed-resource locations, and no model-supplied resource selectors.
+- no full skill/reference bodies, no filesystem paths, no hidden starter-resource locations, and no model-supplied resource selectors.
 
 The model may request a listed id through `readSkill(skillId)` or `readReferenceDoc(referenceId)`. The loader returns full content only after tenant/customer scope, active agent, active manifest assignment, document status, token/redaction limits, and `ToolPermissionBoundary` checks pass.
 

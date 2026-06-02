@@ -23,7 +23,7 @@ The repository frontend now has a canonical workstream-first implementation refe
 Searches performed:
 
 ```bash
-rg -n "page-first|route-first|Seed Console|seed frontend|supervisory console|screens/|RouteId|RouteShell|PageHeader|Mission Control|canonical.*page|primary.*route|dashboard-with-chat|chatbot" docs skills frontend src/main/resources/static-resources specs/workstream-ui-implementation-migration -g '!src/main/resources/static-resources/assets/*.js' -g '!src/main/resources/static-resources/assets/*.css'
+rg -n "page-first|route-first|Seed Console|starter frontend|supervisory console|screens/|RouteId|RouteShell|PageHeader|Mission Control|canonical.*page|primary.*route|dashboard-with-chat|chatbot" docs skills frontend src/main/resources/static-resources specs/workstream-ui-implementation-migration -g '!src/main/resources/static-resources/assets/*.js' -g '!src/main/resources/static-resources/assets/*.css'
 rg -n "workstream-ui-reference-architecture|frontend/src/workstream|User Admin|workstream shell|structured surfaces" docs skills frontend/src/*.test.mjs specs/workstream-ui-implementation-migration -g '!src/main/resources/static-resources/assets/*.js'
 ```
 

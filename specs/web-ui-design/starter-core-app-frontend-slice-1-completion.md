@@ -1,10 +1,10 @@
-# Seed App Frontend Slice 1 Completion
+# Starter Core App Frontend Slice 1 Completion
 
 ## Slice
 
-Recommended execution task from `seed-app-localized-frontend-implementation-plan.md`:
+Recommended execution task from `starter-core-app-localized-frontend-implementation-plan.md`:
 
-> Create the seed frontend React/Vite/TypeScript foundation with tokenized `atlas-ops-supervisory-console` light/dark/system mode CSS, base app mount, and a minimal page proving mode switching and focus visibility. Do not implement app screens yet.
+> Create the starter frontend React/Vite/TypeScript foundation with tokenized `atlas-ops-supervisory-console` light/dark/system mode CSS, base app mount, and a minimal page proving mode switching and focus visibility. Do not implement app screens yet.
 
 ## Status
 
@@ -58,7 +58,7 @@ Built assets:
 - Backend endpoint integration.
 - Production identity-provider flow.
 
-These remain for later slices in `seed-app-localized-frontend-implementation-plan.md`.
+These remain for later slices in `starter-core-app-localized-frontend-implementation-plan.md`.
 
 ## Verification
 

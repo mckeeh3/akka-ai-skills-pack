@@ -6,7 +6,7 @@ Use this document as the persistent process context when creating the PRD/spec i
 
 The input document set is a source asset for the skills pack. It is intended to:
 
-1. define the canonical progressive core AI-first SaaS seed app;
+1. define the canonical progressive core AI-first SaaS starter core app;
 2. provide realistic example input documents for skills pack users;
 3. feed the skills pack planning flow to produce `specs/`, module/sprint plans, build backlogs, and tasks;
 4. support incremental implementation of visible, demonstrable full-stack functionality.
@@ -33,7 +33,7 @@ Each implementation sprint must produce visible behavior through UI and/or APIs,
 
 ## Core idea captured from planning discussion
 
-The core seed app is built progressively:
+The core starter core app is built progressively:
 
 1. start with minimal user authentication and app access;
 2. add user administration;
@@ -43,7 +43,7 @@ The core seed app is built progressively:
 6. add audit/work trace and explainability;
 7. add evaluation and closed-loop improvement.
 
-This progression continues beyond the seed app as skills pack users add real application modules.
+This progression continues beyond the starter core app as skills pack users add real application modules.
 
 ## MVP definition
 

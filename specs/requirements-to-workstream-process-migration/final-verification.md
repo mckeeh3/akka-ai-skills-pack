@@ -65,7 +65,7 @@ Pass.
 Pass.
 
 - `docs/examples/requirements-to-workstream-mini-example.md` demonstrates the compact target process.
-- AI-first SaaS seed references anchor target architecture while purchase-request examples are marked as mechanics references.
+- AI-first SaaS starter core references anchor target architecture while purchase-request examples are marked as mechanics references.
 - `pack/README.md`, `pack/AGENTS.md`, and `pack/manifest.yaml` include the canonical process doc and mini-example for installed-pack users.
 
 ### Drift search assessment

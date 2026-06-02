@@ -19,7 +19,7 @@ The current pack is clear at the doctrine/routing/app-description level, especia
 
 - `docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md`
 - `docs/examples/core-ai-first-saas-input/01-core-seed-progression-plan.md`
-- `docs/examples/ai-first-saas-seed-app-description/`
+- `templates/ai-first-saas-starter/app-description/`
 - `docs/core-ai-first-saas-foundation.md`
 - `docs/core-saas-identity-tenancy-admin.md`
 - `docs/agent-runtime-invocation-pattern.md`

@@ -1,8 +1,8 @@
-# Seed App Frontend Slice 8 Quality Handoff
+# Starter Core App Frontend Slice 8 Quality Handoff
 
 ## Scope
 
-Slice 8 closes the localized seed frontend implementation with quality checks, route smoke coverage, build/package handoff notes, and manual light/dark/system accessibility-responsive review notes.
+Slice 8 closes the localized starter frontend implementation with quality checks, route smoke coverage, build/package handoff notes, and manual light/dark/system accessibility-responsive review notes.
 
 ## Automated checks added
 
@@ -49,7 +49,7 @@ Status: completed for localized fixture frontend source and generated bundle.
 - Backend admin authorization and tenant-scope enforcement.
 - Real policy simulation or authorized policy commit endpoint.
 - Real trace export.
-- Durable Akka state and workflow/entity implementation for seed app business objects.
+- Durable Akka state and workflow/entity implementation for starter core app business objects.
 
 ## Final handoff note
 

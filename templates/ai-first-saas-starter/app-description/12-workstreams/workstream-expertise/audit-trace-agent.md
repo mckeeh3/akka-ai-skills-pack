@@ -82,7 +82,7 @@ Prompt assembly for `audit-trace-agent` includes only compact manifest entries:
 - assigned skill ids/titles/summaries/when-to-use hints from `AgentSkillManifest`;
 - assigned reference ids/titles/summaries/when-to-consult hints from `AgentReferenceManifest`;
 - active version policy, provenance/checksum summary, access/redaction notes, permitted use mode, and authority notes;
-- no full trace payloads, prompt bodies, skill bodies, reference bodies, provider secrets, hidden seed-resource locations, filesystem paths, broad document searches, or model-supplied selectors.
+- no full trace payloads, prompt bodies, skill bodies, reference bodies, provider secrets, hidden starter-resource locations, filesystem paths, broad document searches, or model-supplied selectors.
 
 The model may request listed procedural skills through `readSkill(skillId)` and listed references through `readReferenceDoc(referenceId)`. Loaders return full content only after tenant/customer scope, active agent, active manifest assignment, active approved document/version, test/runtime mode, token/redaction limits, use-mode checks, and `ToolPermissionBoundary` checks pass.
 

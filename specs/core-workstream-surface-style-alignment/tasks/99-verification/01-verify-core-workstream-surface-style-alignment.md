@@ -16,8 +16,8 @@ Verify this mini-project against its done state and append bounded follow-up tas
 - `specs/core-workstream-surface-style-alignment/tasks/**/*.md`
 - `docs/web-ui-style-guide.md`
 - `docs/examples/ai-first-saas-core-app-domain/**/*.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/*.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/*.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
 
 ## In scope
 
@@ -43,8 +43,8 @@ Verify this mini-project against its done state and append bounded follow-up tas
 ## Required checks
 
 - `git diff --check`
-- `rg -n "preferredColorMode|uiMode|light/dark/system|system mode|atlas-ops-supervisory-console|orange|coral|warm near-black" docs/examples/ai-first-saas-core-app-domain docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md specs/core-workstream-surface-style-alignment || true`
-- `rg -n "ai-first-workstream-enterprise|preferredThemeId|aurora-light|cobalt-light|obsidian-dark|midnight-dark" docs/examples/ai-first-saas-core-app-domain docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md`
+- `rg -n "preferredColorMode|uiMode|light/dark/system|system mode|atlas-ops-supervisory-console|orange|coral|warm near-black" docs/examples/ai-first-saas-core-app-domain templates/ai-first-saas-starter/app-description/app-description/12-workstreams templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md specs/core-workstream-surface-style-alignment || true`
+- `rg -n "ai-first-workstream-enterprise|preferredThemeId|aurora-light|cobalt-light|obsidian-dark|midnight-dark" docs/examples/ai-first-saas-core-app-domain templates/ai-first-saas-starter/app-description/app-description/12-workstreams templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
 
 ## Done criteria
 

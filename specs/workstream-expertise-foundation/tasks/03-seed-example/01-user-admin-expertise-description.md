@@ -1,4 +1,4 @@
-# Model User Admin expertise in seed app-description
+# Model User Admin expertise in starter core app-description
 
 ## Objective
 
@@ -10,7 +10,7 @@ Use the matching entry in `specs/workstream-expertise-foundation/pending-tasks.m
 
 ## Scope
 
-Add/update seed app-description artifacts linking User Admin skills, references, capabilities, surfaces, denials, tool boundaries, traces, and tests.
+Add/update starter core app-description artifacts linking User Admin skills, references, capabilities, surfaces, denials, tool boundaries, traces, and tests.
 
 ## Non-goals
 

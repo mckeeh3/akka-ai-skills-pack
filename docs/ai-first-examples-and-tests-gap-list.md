@@ -17,7 +17,7 @@ The repository already has strong focused examples for individual Akka substrate
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
 - a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/` for description/planning mechanics only.
 
-The starter scaffold is the canonical end-to-end implementation baseline. Former DCA/supplies domain-specific assets were removed because the starter, seed app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples now cover the reusable skills-pack value without carrying a domain-specific vertical app.
+The starter scaffold is the canonical end-to-end implementation baseline. Former DCA/supplies domain-specific assets were removed because the starter, starter core app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples now cover the reusable skills-pack value without carrying a domain-specific vertical app.
 
 ## Priority key
 
@@ -52,11 +52,11 @@ Canonical routing rule: for new full-core generated apps, scaffold and extend th
 
 ## Completed app-description coverage
 
-### Secure AI-first SaaS seed app-description
+### Secure AI-first SaaS starter core app-description
 
-Status: **canonical app-description seed reference**.
+Status: **canonical app-description starter core template**.
 
-Reference: `docs/examples/ai-first-saas-seed-app-description/`.
+Reference: `templates/ai-first-saas-starter/app-description/`.
 
 Distinction: this seed is a description/reference contract for generated-app meaning, structure, UI style, readiness, and review. The canonical runnable implementation baseline is the scaffold template under `templates/ai-first-saas-starter/` after placeholders are rendered.
 

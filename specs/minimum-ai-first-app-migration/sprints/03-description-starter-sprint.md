@@ -2,12 +2,12 @@
 
 ## Goal
 
-Make app-description guidance, seed references, starter/scaffold docs, and planning outputs represent the minimum first slice as User Admin workstream v0.
+Make app-description guidance, starter core references, starter/scaffold docs, and planning outputs represent the minimum first slice as User Admin workstream v0.
 
 ## Scope
 
 - Update app-description bootstrap and modeling guidance.
-- Update the secure AI-first SaaS seed app-description reference where applicable.
+- Update the starter core app-description reference where applicable.
 - Update starter template/scaffold docs and/or task queues to reflect User Admin v0 first.
 - Update PRD/spec/backlog planning guidance so initial tasks can target minimum starter readiness without claiming full-core readiness.
 

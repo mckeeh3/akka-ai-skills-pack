@@ -2,14 +2,14 @@
 
 ## Objective
 
-Update examples, seed references, starter guidance, and packaging so installed-pack users encounter the requirements-to-workstream process as the normal development path.
+Update examples, starter core references, starter guidance, and packaging so installed-pack users encounter the requirements-to-workstream process as the normal development path.
 
 ## Required reads
 
 - `AGENTS.md`
 - `skills/README.md`
 - canonical process doc from `TASK-REQWS-02-001`
-- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `templates/ai-first-saas-starter/app-description/README.md`
 - `docs/prd-to-akka-flow.md`
 - `pack/AGENTS.md`
 - `pack/README.md`

@@ -21,7 +21,7 @@ However, final inspection found a small active-guidance drift batch that should 
 The mini-project done state is not yet fully achieved because final verification found active guidance that can still mislead future agents:
 
 1. `skills/app-description-capability-modeling/SKILL.md` says `Prefer these example references when present:` and lists purchase-request capability files. This violates the mechanics-only rule for legacy examples. It should prefer AI-first seed capability references and label purchase-request links as conventional mechanics only.
-2. `docs/examples/ai-first-saas-seed-app-description/README.md` contains `before the User Admin v0 minimum slice`, which can reintroduce User-Admin-only starter drift. It should say five-core workstream v0 starter/minimum scope.
+2. `templates/ai-first-saas-starter/app-description/README.md` contains `before the User Admin v0 minimum slice`, which can reintroduce User-Admin-only starter drift. It should say five-core workstream v0 starter/minimum scope.
 3. `skills/README.md` lists `../docs/examples/purchase-request-pending-tasks.md` under pending-task execution references without a local mechanics-only label. Broader README context demotes purchase-request examples, but this local reference should be explicit.
 
 No unresolved user question blocks this repair. The required work is bounded enough for one fresh harness task.

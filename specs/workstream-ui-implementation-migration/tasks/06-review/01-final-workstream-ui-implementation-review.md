@@ -13,7 +13,7 @@ Perform a final repository consistency review for the workstream UI implementati
 
 ## Required checks
 
-- Search for stale page-first/frontend seed references.
+- Search for stale page-first/frontend starter core references.
 - Verify `frontend/` is the canonical workstream UI reference.
 - Verify tests and docs point to the reusable component set.
 

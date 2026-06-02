@@ -15,7 +15,7 @@ const fixtureWorkstreamRealtime = readFileSync(new URL('./__tests__/fixtures/api
 const httpWorkstreamApi = readFileSync(new URL('./api/HttpWorkstreamApiClient.ts', import.meta.url), 'utf8');
 const httpWorkstreamRealtime = readFileSync(new URL('./api/HttpWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 
-test('DTOs include seed frontend API contract families', () => {
+test('DTOs include starter frontend API contract families', () => {
   assert.match(types, /export type MeResponse/);
   assert.match(types, /export type GoalDetailResponse/);
   assert.match(types, /export type DecisionDetailResponse/);

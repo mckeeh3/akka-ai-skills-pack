@@ -2,11 +2,11 @@
 
 ## Objective
 
-Align seed references and starter progression docs with the accepted growth path: User Admin v0, User Admin structured capabilities, Agent Admin, Audit/Trace, then app-specific workstreams.
+Align starter core references and starter progression docs with the accepted growth path: User Admin v0, User Admin structured capabilities, Agent Admin, Audit/Trace, then app-specific workstreams.
 
 ## Scope
 
-- Update secure AI-first SaaS seed app-description README where applicable.
+- Update starter core app-description README where applicable.
 - Update core seed progression or starter planning docs where applicable.
 - Avoid broad domain-example rewrites.
 

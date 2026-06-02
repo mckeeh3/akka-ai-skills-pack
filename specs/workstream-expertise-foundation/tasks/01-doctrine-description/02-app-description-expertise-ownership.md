@@ -10,7 +10,7 @@ Use the matching entry in `specs/workstream-expertise-foundation/pending-tasks.m
 
 ## Scope
 
-Update app-description architecture/flow and functional-agent modeling guidance. Add a seed-app `12-workstreams/workstream-expertise/README.md` only if useful as a contract stub.
+Update app-description architecture/flow and functional-agent modeling guidance. Add a starter-core-app `12-workstreams/workstream-expertise/README.md` only if useful as a contract stub.
 
 ## Non-goals
 

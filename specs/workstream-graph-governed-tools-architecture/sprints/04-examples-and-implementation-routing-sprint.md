@@ -9,7 +9,7 @@ Update canonical examples and implementation-routing guidance so agents can see 
 Primary files:
 
 - `docs/examples/requirements-to-workstream-mini-example.md`
-- `docs/examples/ai-first-saas-seed-app-description/**`
+- `templates/ai-first-saas-starter/app-description/**`
 - `docs/examples/ai-first-saas-core-app-domain/**`
 - `docs/web-ui-api-contract-patterns.md`
 - `docs/web-ui-frontend-decomposition.md`

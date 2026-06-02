@@ -516,9 +516,9 @@ content:
     - docs/examples/requirements-to-workstream-mini-example.md
     - docs/examples/core-ai-first-saas-input/README.md
     - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
-    - docs/examples/ai-first-saas-seed-app-description/README.md
+    - templates/ai-first-saas-starter/app-description/README.md
     - docs/workstream-ui-reference-architecture.md
-    - docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
+    - templates/ai-first-saas-starter/app-description/00-system/app-manifest.md
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
   examples:

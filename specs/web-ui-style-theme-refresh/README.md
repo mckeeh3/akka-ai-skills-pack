@@ -8,7 +8,7 @@ The refresh is focused on **workstream surface style and appearance**: functiona
 
 ## Background and trigger
 
-The current default style in `docs/web-ui-style-guide.md`, the seed app-description style guide, and the starter/frontend tokens still leans toward a warm orange/coral operational cockpit. The reviewed high-level guide describes a calmer enterprise data-product UI with neutral layered surfaces, sparse functional color, blue/indigo accent, semantic status colors, strong numerical hierarchy, and reusable workstream-surface patterns.
+The current default style in `docs/web-ui-style-guide.md`, the starter core app-description style guide, and the starter/frontend tokens still leans toward a warm orange/coral operational cockpit. The reviewed high-level guide describes a calmer enterprise data-product UI with neutral layered surfaces, sparse functional color, blue/indigo accent, semantic status colors, strong numerical hierarchy, and reusable workstream-surface patterns.
 
 The user confirmed:
 
@@ -27,7 +27,7 @@ In scope:
 - Define a named-theme model suitable for future theme additions.
 - Start with four named themes: two light and two dark.
 - Update docs and skills so generated UI work reads style/theme guidance before implementation.
-- Update seed app-description UI artifacts to reference named themes and the replacement style.
+- Update starter core app-description UI artifacts to reference named themes and the replacement style.
 - Update reference/starter frontend theme tokens and theme application behavior where appropriate.
 - Add or update checks/review guidance to prevent regressions to generic dashboard, orange/coral old-default, or page-first UI styling.
 
@@ -50,8 +50,8 @@ Likely affected:
 - `skills/app-description-ui/SKILL.md`
 - `skills/akka-web-ui-apps/SKILL.md`
 - focused web UI skills that mention mode/style selection
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md`
-- seed app-description My Account/settings references where theme selection is described
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
+- starter core app-description My Account/settings references where theme selection is described
 - `frontend/src/styles/*.css`
 - `templates/ai-first-saas-starter/frontend/src/styles/*.css`
 - reference/starter frontend theme preference logic if present
@@ -83,7 +83,7 @@ Future task sessions should inspect the exact affected files before editing.
 ## Sprint sequence
 
 1. `sprints/01-style-doctrine-sprint.md` — replace canonical style/theme doctrine and align web UI skills around named themes.
-2. `sprints/02-reference-runtime-sprint.md` — update seed app-description and starter/reference frontend assets to use the replacement style and named-theme selection.
+2. `sprints/02-reference-runtime-sprint.md` — update starter core app-description and starter/reference frontend assets to use the replacement style and named-theme selection.
 3. `sprints/99-verification-sprint.md` — verify consistency, checks, and mini-project done state; append follow-up tasks if gaps remain.
 4. `sprints/03-remaining-guidance-sprint.md` — align remaining foundation and pending-question guidance discovered by verification.
 5. `sprints/99-verification-sprint.md` — re-verify completion after the follow-up task group.
@@ -96,7 +96,7 @@ This mini-project is complete when:
 - The canonical style uses a named-theme model with four initial themes, two light and two dark.
 - Theme guidance makes user selection simple: choose one available named theme in My Account and apply it to the UI.
 - Theme variation guidance is token-based and future-extensible without requiring a new style system.
-- Seed app-description UI artifacts use the replacement style and named-theme model.
+- Starter core app-description UI artifacts use the replacement style and named-theme model.
 - Relevant web UI skills and quality checks prevent implicit style invention, generic dashboard/gallery fallback, and stale old-default orange/coral assumptions.
 - Starter/reference frontend tokens and theme application behavior are aligned with the replacement style at the scoped runtime/reference level.
 - Verification finds no material stale guidance that would cause generated workstream surfaces to revert to the old default or to mode-first theme selection.

@@ -6,7 +6,7 @@ Is the workstream expertise foundation fully ready for skills-pack use such that
 
 ## Short answer
 
-Not fully yet. The workstream expertise layer is ready for workstream-specific agents, expert bundles, governed skills, governed reference documents, manifests, boundaries, loaders, traces, and seed app-description coverage. The remaining gap is the **specific AI model binding** part.
+Not fully yet. The workstream expertise layer is ready for workstream-specific agents, expert bundles, governed skills, governed reference documents, manifests, boundaries, loaders, traces, and starter core app-description coverage. The remaining gap is the **specific AI model binding** part.
 
 The pack already has the right conceptual model:
 
@@ -26,7 +26,7 @@ But the executable/reference coverage still shows model governance as partial:
 
 | Requirement | Status | Evidence / gap |
 |---|---|---|
-| Every workstream has a functional agent concept | Ready | Agent workstream architecture and seed app-description functional-agent catalog. |
+| Every workstream has a functional agent concept | Ready | Agent workstream architecture and starter core app-description functional-agent catalog. |
 | Every foundation workstream has an expert bundle | Ready at app-description level | Sprint 07 review confirms bundles for My Account, User Admin, Agent Admin, Mission Control, Governance/Policy, and Audit/Trace. |
 | Workstream expert bundles include skills/references/manifests/loaders/boundaries/traces | Ready | `docs/workstream-expertise-model.md`, `skills/akka-agent-skill-governance`, `skills/akka-agent-reference-governance`, Sprint 06 executable reference coverage. |
 | Starter proves User Admin skill/reference runtime loading | Ready | Sprint 06 completed executable first-class reference-governance coverage. |

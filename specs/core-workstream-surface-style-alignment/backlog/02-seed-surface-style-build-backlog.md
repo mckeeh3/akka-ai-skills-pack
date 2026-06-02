@@ -2,7 +2,7 @@
 
 ## Goal
 
-Check seed app-description surface contracts for consistency after core domain surface style alignment.
+Check starter core app-description surface contracts for consistency after core domain surface style alignment.
 
 ## Implementation notes
 
@@ -12,7 +12,7 @@ Check seed app-description surface contracts for consistency after core domain s
 
 ## Suggested harness task breakdown
 
-1. Review and patch seed app-description surface contracts.
+1. Review and patch starter core app-description surface contracts.
 
 ## Dependencies
 
@@ -21,9 +21,9 @@ Check seed app-description surface contracts for consistency after core domain s
 ## Required checks
 
 - `git diff --check`
-- Focused stale style/theme search over seed app-description `12-workstreams` and `55-ui` files.
+- Focused stale style/theme search over starter core app-description `12-workstreams` and `55-ui` files.
 
 ## Acceptance criteria
 
-- Seed app-description surfaces and core domain workstream docs do not contradict each other on style/theme semantics.
+- Starter core app-description surfaces and core domain workstream docs do not contradict each other on style/theme semantics.
 - No stale active mode-first or old-style guidance remains in the checked seed surface docs.

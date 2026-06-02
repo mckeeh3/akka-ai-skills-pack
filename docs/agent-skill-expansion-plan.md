@@ -2,7 +2,7 @@
 
 ## Status
 
-Initial routing/design skill expansion is complete as of this update. The remaining work is executable reference examples, tests, and any later refinements discovered while generating the core AI-first SaaS seed app.
+Initial routing/design skill expansion is complete as of this update. The remaining work is executable reference examples, tests, and any later refinements discovered while generating the core AI-first SaaS starter core app.
 
 ## Purpose
 

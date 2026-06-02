@@ -1,8 +1,8 @@
-# Seed App Frontend Slice 7 Completion
+# Starter Core App Frontend Slice 7 Completion
 
 ## Slice
 
-Slice 7 from `specs/web-ui-design/seed-app-localized-frontend-implementation-plan.md`:
+Slice 7 from `specs/web-ui-design/starter-core-app-localized-frontend-implementation-plan.md`:
 
 - Governance Center;
 - Audit Trace Explorer;
@@ -75,16 +75,16 @@ Proceed to Slice 8 from the localized frontend implementation plan:
 Use this prompt to continue in a fresh harness session:
 
 ```text
-Read AGENTS.md, skills/README.md, docs/web-ui-quality-checklist.md, docs/web-ui-frontend-decomposition.md, skills/akka-web-ui-accessibility-responsive/SKILL.md, and skills/akka-web-ui-testing/SKILL.md. Then implement Slice 8 from specs/web-ui-design/seed-app-localized-frontend-implementation-plan.md for the seed frontend.
+Read AGENTS.md, skills/README.md, docs/web-ui-quality-checklist.md, docs/web-ui-frontend-decomposition.md, skills/akka-web-ui-accessibility-responsive/SKILL.md, and skills/akka-web-ui-testing/SKILL.md. Then implement Slice 8 from specs/web-ui-design/starter-core-app-localized-frontend-implementation-plan.md for the starter frontend.
 
 Context: Slice 1-7 are complete. Do not redo them. Use existing frontend conventions under frontend/src/** and the current built static output under src/main/resources/static-resources/**.
 
 Implement Slice 8 only:
 - add/adjust focused quality or smoke checks for design-specific acceptance items that remain uncovered;
 - document the frontend checks/build command and Akka static build output path;
-- complete a light/dark/system mode and accessibility/responsive manual checklist note for the localized seed frontend;
+- complete a light/dark/system mode and accessibility/responsive manual checklist note for the localized starter frontend;
 - verify route shell smoke coverage for Mission Control, Goal Workbench, Decision Queue, Governance Center, Audit Trace Explorer, Admin Users, and Profile Preferences;
 - preserve hard defers for real authenticated backend integration, admin authorization, policy commit, trace export, and durable Akka state.
 
-Run cd frontend && npm run typecheck, cd frontend && npm test, and cd frontend && npm run build. Create specs/web-ui-design/seed-app-frontend-slice-8-completion.md with implemented files, verification, explicit defers, and any final handoff notes. Commit all Slice 8 changes at the end.
+Run cd frontend && npm run typecheck, cd frontend && npm test, and cd frontend && npm run build. Create specs/web-ui-design/starter-core-app-frontend-slice-8-completion.md with implemented files, verification, explicit defers, and any final handoff notes. Commit all Slice 8 changes at the end.
 ```

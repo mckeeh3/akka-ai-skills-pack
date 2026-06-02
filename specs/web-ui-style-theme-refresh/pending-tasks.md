@@ -124,11 +124,11 @@
   - commit message: `ui-theme: align web ui skills with named themes`
   - checks: `git diff --check`; `rg -n "mode policy|system with light|light/dark/system|orange|coral|warm near-black|style-gallery|style gallery" skills docs/web-ui-style-guide.md docs/web-ui-quality-checklist.md docs/web-ui-ux-patterns.md` (no stale contradictions found)
 
-### TASK-WUTR-02-001: Update seed app-description theme contract
+### TASK-WUTR-02-001: Update starter core app-description theme contract
 
 - status: done
 - source: specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
-- task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/01-update-seed-app-description-theme-contract.md
+- task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/01-update-starter-core-app-description-theme-contract.md
 - depends on:
   - TASK-WUTR-01-002
 - required reads:
@@ -139,27 +139,27 @@
   - specs/web-ui-style-theme-refresh/pending-tasks.md
   - specs/web-ui-style-theme-refresh/sprints/02-reference-runtime-sprint.md
   - specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
-  - specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/01-update-seed-app-description-theme-contract.md
+  - specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/01-update-starter-core-app-description-theme-contract.md
   - docs/web-ui-style-guide.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
-  - seed app-description My Account/settings files identified by search
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md
+  - starter core app-description My Account/settings files identified by search
 - skills:
   - app-description-ui
   - app-description-surface-modeling if My Account surface contracts need focused updates
 - expected outputs:
-  - updated seed app-description UI files
+  - updated starter core app-description UI files
   - updated specs/web-ui-style-theme-refresh/pending-tasks.md
 - required checks:
   - `git diff --check`
   - targeted stale-language search from task brief
 - done criteria:
-  - seed app-description uses the replacement style as selected default
-  - seed app-description records named themes with two light and two dark initial options
+  - starter core app-description uses the replacement style as selected default
+  - starter core app-description records named themes with two light and two dark initial options
   - My Account theme selection is described as selecting one available theme and applying it to the UI
   - task changes and queue update are committed
 - notes:
-  - commit message: `ui-theme: update seed app theme contract`
-  - checks: `git diff --check`; `rg -n "orange|coral|system with light|system mode|light/dark/system|warm near-black" docs/examples/ai-first-saas-seed-app-description/app-description/55-ui docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams` (no stale contradictions found)
+  - commit message: `ui-theme: update starter core app theme contract`
+  - checks: `git diff --check`; `rg -n "orange|coral|system with light|system mode|light/dark/system|warm near-black" templates/ai-first-saas-starter/app-description/app-description/55-ui templates/ai-first-saas-starter/app-description/app-description/12-workstreams` (no stale contradictions found)
 
 ### TASK-WUTR-02-002: Refresh starter/reference theme tokens
 
@@ -222,7 +222,7 @@
   - specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
   - specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/03-align-my-account-theme-selection.md
   - docs/web-ui-style-guide.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md
   - frontend/src/main.tsx
   - templates/ai-first-saas-starter/frontend/src/main.tsx
   - My Account/settings frontend/API files identified by search

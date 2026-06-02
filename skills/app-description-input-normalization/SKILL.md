@@ -38,11 +38,11 @@ Read these first if present:
 - `../app-description-intake-router/SKILL.md`
 
 Prefer these current generated-SaaS references when present:
-- `../../docs/examples/ai-first-saas-seed-app-description/README.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
-- `../../docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/ui-index.md`
+- `../../templates/ai-first-saas-starter/app-description/README.md`
+- `../../templates/ai-first-saas-starter/app-description/12-workstreams/functional-agents.md`
+- `../../templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md`
+- `../../templates/ai-first-saas-starter/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- `../../templates/ai-first-saas-starter/app-description/55-ui/ui-index.md`
 
 Use these conventional mechanics references only when the task is specifically about normalization or cross-linking mechanics, not as the target generated-SaaS architecture:
 - `../../docs/examples/purchase-request-app-description/normalized-input-example.md`

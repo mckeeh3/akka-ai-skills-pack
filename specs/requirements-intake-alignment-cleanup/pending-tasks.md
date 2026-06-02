@@ -119,7 +119,7 @@
   - specs/requirements-intake-alignment-cleanup/backlog/02-description-intake-skills-build-backlog.md
   - specs/requirements-intake-alignment-cleanup/tasks/02-intake-skills/01-align-bootstrap-normalization-router-impact.md
   - docs/minimum-ai-first-saas-app.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - skills/app-description-bootstrap/SKILL.md
   - skills/app-description-input-normalization/SKILL.md
   - skills/app-description-intake-router/SKILL.md
@@ -531,18 +531,18 @@
   - specs/requirements-intake-alignment-cleanup/README.md
   - specs/requirements-intake-alignment-cleanup/final-verification.md
   - specs/requirements-intake-alignment-cleanup/prune-and-rewrite-criteria.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - skills/app-description-capability-modeling/SKILL.md
 - skills:
   - none; bounded repository cleanup task
 - expected outputs:
-  - updated docs/examples/ai-first-saas-seed-app-description/README.md
+  - updated templates/ai-first-saas-starter/app-description/README.md
   - updated skills/app-description-capability-modeling/SKILL.md
   - updated skills/README.md if the pending-task mechanics reference remains
   - updated specs/requirements-intake-alignment-cleanup/pending-tasks.md
 - required checks:
   - `git diff --check`
-  - `rg -n "User Admin v0 minimum slice|Prefer these example references when present:|purchase-request-pending-tasks.md" docs/examples/ai-first-saas-seed-app-description/README.md skills/app-description-capability-modeling/SKILL.md skills/README.md`
+  - `rg -n "User Admin v0 minimum slice|Prefer these example references when present:|purchase-request-pending-tasks.md" templates/ai-first-saas-starter/app-description/README.md skills/app-description-capability-modeling/SKILL.md skills/README.md`
 - done criteria:
   - three final-verification drift findings are repaired or explicitly justified as no longer material
   - task changes and queue update are committed

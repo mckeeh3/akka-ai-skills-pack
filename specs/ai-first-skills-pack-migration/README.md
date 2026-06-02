@@ -32,7 +32,7 @@ The migration is planning-only until individual pending tasks are executed in fr
 3. `sprints/03-app-description-ai-first-refactor-sprint.md` — refactor app-description intake and maintained description layers around the agentic operating model.
 4. `sprints/04-prd-spec-backlog-intake-refactor-sprint.md` — refactor PRD/spec/change-request planning around AI-first interpretation before Akka component selection.
 5. `sprints/05-substrate-implementation-skill-reframing-sprint.md` — reframe existing Akka component implementation skills as the AI-first runtime substrate.
-6. Former domain-specific worked-example sprints were removed after the starter template, seed app-description, and focused Akka examples superseded their reusable skills-pack value.
+6. Former domain-specific worked-example sprints were removed after the starter template, starter core app-description, and focused Akka examples superseded their reusable skills-pack value.
 7. `sprints/07-ai-first-alignment-hardening-sprint.md` — close post-migration alignment gaps across packaging, paths, flow docs, lifecycle skills, examples, and future executable reference planning.
 8. `sprints/09-ai-first-packaging-and-terminology-finalization-sprint.md` — finalize high-level packaging, release, doctrine, and AI-first terminology consistency before component-skill revisions.
 

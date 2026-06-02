@@ -55,13 +55,13 @@
   - skills/app-description-functional-agent-modeling/SKILL.md
   - skills/app-description-surface-modeling/SKILL.md
   - skills/app-description-capability-modeling/SKILL.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
 - skills:
   - app-descriptions
   - app-description-functional-agent-modeling
 - expected outputs:
   - updated app-description architecture/guidance
-  - optional example `12-workstreams/workstream-expertise/README.md` contract in seed app-description
+  - optional example `12-workstreams/workstream-expertise/README.md` contract in starter core app-description
 - required checks:
   - git diff --check
 - done criteria:
@@ -80,9 +80,9 @@
   - docs/workstream-expertise-model.md
   - skills/app-description-readiness-assessment/SKILL.md
   - skills/app-description-change-impact/SKILL.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/functional-agent-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/surface-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/30-tests/test-index.md
 - skills:
   - app-description-readiness-assessment
   - app-description-change-impact
@@ -263,7 +263,7 @@
   - commit message: Review runtime expertise sprint
   - checks: `git diff --check` passed; text-search proof covered compact expertise manifest, `readReferenceDoc`, denied reference loads, `ReferenceLoadTrace`, separate `read_reference` grants, seed import, and no authority expansion from expertise text
 
-### TASK-WEF-03-001: Model User Admin workstream expertise in seed app-description
+### TASK-WEF-03-001: Model User Admin workstream expertise in starter core app-description
 
 - status: done
 - source: specs/workstream-expertise-foundation/backlog/03-seed-example-build-backlog.md
@@ -272,20 +272,20 @@
 - required reads:
   - specs/workstream-expertise-foundation/sprint-02-review.md
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/05-managed-agent-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/05-managed-agent-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/functional-agent-to-capability-map.md
 - skills:
   - app-description-functional-agent-modeling
   - app-description-capability-modeling
 - expected outputs:
-  - User Admin workstream expertise artifact under seed app-description
+  - User Admin workstream expertise artifact under starter core app-description
   - updated links from functional agent/capability/traceability files
 - required checks:
   - git diff --check
 - done criteria:
-  - seed app-description makes User Admin expertise concrete with skills, references, capabilities, denials, traces, and tests
+  - starter core app-description makes User Admin expertise concrete with skills, references, capabilities, denials, traces, and tests
   - task changes and queue update are committed
 - notes:
   - commit message: Model User Admin workstream expertise
@@ -299,7 +299,7 @@
 - depends on: [TASK-WEF-03-001]
 - required reads:
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md if present
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md if present
   - templates/ai-first-saas-starter/README.md
   - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/AgentBehaviorRepositoryState.java
   - templates/ai-first-saas-starter/frontend/src/workstream/fixtures/surfaces.ts
@@ -356,8 +356,8 @@
 - required reads:
   - specs/workstream-expertise-foundation/sprints/03-seed-example-sprint.md
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md if present
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md if present
   - docs/agent-coverage-matrix.md
 - skills:
   - app-description-readiness-assessment
@@ -670,9 +670,9 @@
   - specs/workstream-expertise-foundation/post-completion-expertise-review.md
   - specs/workstream-expertise-foundation/sprints/07-foundation-expertise-expansion-sprint.md
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/README.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/README.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md
 - skills:
   - app-description-functional-agent-modeling
   - app-description-readiness-assessment
@@ -697,9 +697,9 @@
 - required reads:
   - specs/workstream-expertise-foundation/foundation-expertise-coverage-audit.md
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/05-managed-agent-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/05-managed-agent-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md
   - skills/akka-agent-reference-governance/SKILL.md
   - skills/akka-agent-skill-governance/SKILL.md
 - skills:
@@ -728,9 +728,9 @@
 - required reads:
   - specs/workstream-expertise-foundation/foundation-expertise-coverage-audit.md
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/03-governance-decisions-and-audit.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/03-governance-decisions-and-audit.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md
   - skills/ai-first-saas-audit-trace/SKILL.md
   - skills/akka-agent-reference-governance/SKILL.md
 - skills:
@@ -759,10 +759,10 @@
 - required reads:
   - specs/workstream-expertise-foundation/foundation-expertise-coverage-audit.md
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/policies-and-approval-gates.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/goals-and-objectives.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/15-operating-model/policies-and-approval-gates.md
+  - templates/ai-first-saas-starter/app-description/app-description/15-operating-model/goals-and-objectives.md
 - skills:
   - app-description-functional-agent-modeling
   - app-description-readiness-assessment
@@ -787,9 +787,9 @@
 - required reads:
   - specs/workstream-expertise-foundation/foundation-expertise-coverage-audit.md
   - docs/workstream-expertise-model.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/functional-agent-to-capability-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/surface-to-capability-map.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/functional-agent-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/70-traceability/surface-to-capability-map.md
+  - templates/ai-first-saas-starter/app-description/app-description/30-tests/test-index.md
   - skills/app-description-readiness-assessment/SKILL.md
 - skills:
   - app-description-readiness-assessment
@@ -823,7 +823,7 @@
   - docs/agent-coverage-matrix.md
   - skills/akka-agent-model-governance/SKILL.md
   - skills/akka-agent-behavior-profiles/SKILL.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/README.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/README.md
   - templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/AgentRuntimeService.java
 - skills:
   - akka-agent-model-governance
@@ -833,7 +833,7 @@
 - required checks:
   - git diff --check
 - done criteria:
-  - gap matrix identifies model-binding gaps across doctrine, skills, seed app-description, starter runtime, tests, planning/generation, and coverage matrix
+  - gap matrix identifies model-binding gaps across doctrine, skills, starter core app-description, starter runtime, tests, planning/generation, and coverage matrix
   - task changes and queue update are committed
 - notes:
   - commit message: Audit workstream model binding readiness
@@ -852,7 +852,7 @@
   - skills/app-description-functional-agent-modeling/SKILL.md
   - skills/app-description-readiness-assessment/SKILL.md
   - skills/akka-agent-model-governance/SKILL.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/*.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/*.md
 - skills:
   - akka-agent-model-governance
   - app-description-functional-agent-modeling

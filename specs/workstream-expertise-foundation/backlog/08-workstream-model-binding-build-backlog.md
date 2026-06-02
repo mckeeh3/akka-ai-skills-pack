@@ -17,7 +17,7 @@ Every generated workstream agent has a specific governed model binding: either a
 
 3. **Add executable starter model-governance state and runtime checks**
    - Add `ModelConfigRef` and `ModelPolicy` records or starter-appropriate equivalents.
-   - Seed approved default model refs.
+   - Starter core approved default model refs.
    - Resolve and validate model refs before runtime invocation.
    - Emit model-use trace facts without provider secrets.
 

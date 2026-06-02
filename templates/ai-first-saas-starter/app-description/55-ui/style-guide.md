@@ -32,7 +32,7 @@
 - app/product name: {{APP_NAME}}
 - logo/icon treatment: simple generated product mark; do not copy demo product names, logos, user names, account names, or metrics from reference material
 - copied-demo-content rule: do not copy product names, people, account names, metrics, fleet/customer examples, logos, or screenshots from reference material
-- custom brand overrides: none for the seed validation pass
+- custom brand overrides: none for the starter validation pass
 
 ## Visual intent
 

@@ -34,7 +34,7 @@ Read these first if present:
 - `../../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
 
 Prefer these local examples and references:
-- `../../docs/examples/ai-first-saas-seed-app-description/README.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
+- `../../templates/ai-first-saas-starter/app-description/README.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
 - `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope
 - Purchase-request description examples only for description-layer mechanics, never target architecture doctrine:
   - `../../docs/examples/purchase-request-app-description/README.md`

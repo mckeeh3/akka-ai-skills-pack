@@ -2,7 +2,7 @@
 
 ## Status
 
-Detailed PRD for the first MVP module in the progressive core AI-first SaaS seed app.
+Detailed PRD for the first MVP module in the progressive core AI-first SaaS starter core app.
 
 Read first:
 

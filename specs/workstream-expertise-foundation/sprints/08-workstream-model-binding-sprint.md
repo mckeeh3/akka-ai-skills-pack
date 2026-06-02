@@ -19,7 +19,7 @@ Likely source files:
 - `skills/app-description-readiness-assessment/SKILL.md`
 - `skills/akka-prd-to-specs-backlog/SKILL.md`
 - `skills/app-generate-app/SKILL.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/**`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/**`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/domain/agentfoundation/**`
 - `templates/ai-first-saas-starter/backend/src/main/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/**`
 - `templates/ai-first-saas-starter/backend/src/test/java/{{JAVA_PACKAGE_PATH}}/application/agentfoundation/**`
@@ -27,7 +27,7 @@ Likely source files:
 ## Deliverables
 
 - Per-workstream expert bundle contract includes model binding: `ModelConfigRef`, `ModelPolicy`, allowed modes, fallback policy, provider secret boundary, and model-use trace requirements.
-- Seed app-description bundles either name a model binding or explicitly inherit a governed foundation default model binding.
+- Starter core app-description bundles either name a model binding or explicitly inherit a governed foundation default model binding.
 - Starter backend includes executable governed `ModelConfigRef` / `ModelPolicy` seed state and runtime validation before agent invocation.
 - Tests cover active model success, disabled/unknown model denial, policy-denied model/provider, no provider secret leakage, fallback/no-fallback behavior where in scope, and model refs in traces.
 - Planning/readiness/generation guidance requires each generated workstream agent to have a specific approved model binding or explicit inherited default.

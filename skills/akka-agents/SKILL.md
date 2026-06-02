@@ -220,7 +220,7 @@ Rules:
 8. For deploy-time harness-like skills, expose only whitelisted packaged resources through focused `@FunctionTool` methods or MCP; do not read `.agents/skills` from the Akka runtime.
 9. For tenant-managed runtime skills, use governed SkillDocument/SkillVersion and AgentSkillManifest checks before `readSkill(skillId)` returns content.
 10. Keep agents stateless; use memory or Akka components for context instead of mutable fields.
-11. For managed runtime agents, package implementation-developed default prompts, skills, manifests, tool boundaries, and AgentDefinitions as seed resources and import them into governed storage during install or tenant bootstrap; runtime agents must not read those seed files directly.
+11. For managed runtime agents, package implementation-developed default prompts, skills, manifests, tool boundaries, and AgentDefinitions as starter resources and import them into governed storage during install or tenant bootstrap; runtime agents must not read those seed files directly.
 12. Use workflows to orchestrate multiple agents or to add retries, timeouts, and durable progress.
 13. Use `TestModelProvider` for deterministic tests.
 

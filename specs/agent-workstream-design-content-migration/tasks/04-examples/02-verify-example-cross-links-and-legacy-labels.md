@@ -11,7 +11,7 @@ Review example READMEs and cross-links so examples consistently distinguish cano
 
 ## Checks
 
-- `docs/examples/ai-first-saas-seed-app-description/README.md` is clearly the preferred current generated SaaS seed reference.
+- `templates/ai-first-saas-starter/app-description/README.md` is clearly the preferred current generated SaaS starter core reference.
 - `docs/examples/purchase-request-app-description/README.md` remains mechanics-only and not target architecture doctrine.
 - Any consolidated or conventional examples have explicit labels.
 - Links point to canonical doctrine and the design review checklist where useful.

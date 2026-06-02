@@ -1,8 +1,8 @@
-# Seed App Frontend Slice 2 Completion
+# Starter Core App Frontend Slice 2 Completion
 
 ## Slice
 
-Slice 2 from `seed-app-localized-frontend-implementation-plan.md`:
+Slice 2 from `starter-core-app-localized-frontend-implementation-plan.md`:
 
 - app shell and routing;
 - `AppShell`, sidebar nav, user region, notifications placeholder, tenant switcher placeholder;

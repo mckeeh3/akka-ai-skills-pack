@@ -2,18 +2,18 @@
 
 ## Objective
 
-Move beyond the single User Admin example by ensuring every foundation functional agent in the seed app-description has either a workstream expert bundle or an explicit readiness-impacting deferral. Prioritize Agent Admin and Audit/Trace because they govern and investigate the workstream expertise system itself.
+Move beyond the single User Admin example by ensuring every foundation functional agent in the starter core app-description has either a workstream expert bundle or an explicit readiness-impacting deferral. Prioritize Agent Admin and Audit/Trace because they govern and investigate the workstream expertise system itself.
 
 ## Scope
 
 Likely source files:
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/05-managed-agent-foundation.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/03-governance-decisions-and-audit.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/test-index.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/70-traceability/**`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/**`
+- `templates/ai-first-saas-starter/app-description/app-description/10-capabilities/05-managed-agent-foundation.md`
+- `templates/ai-first-saas-starter/app-description/app-description/10-capabilities/03-governance-decisions-and-audit.md`
+- `templates/ai-first-saas-starter/app-description/app-description/30-tests/test-index.md`
+- `templates/ai-first-saas-starter/app-description/app-description/70-traceability/**`
 - `docs/agent-coverage-matrix.md` only if coverage status changes
 
 ## Deliverables
@@ -27,4 +27,4 @@ Likely source files:
 ## Checks
 
 - `git diff --check`
-- Text search proving every functional agent in the seed app-description has a matching expertise artifact or explicit deferral.
+- Text search proving every functional agent in the starter core app-description has a matching expertise artifact or explicit deferral.

@@ -289,7 +289,7 @@
 - required reads:
   - AGENTS.md
   - docs/capability-first-backend-architecture.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - specs/capability-first-backend-migration/sprints/02-description-and-decomposition-integration-sprint.md
 - skills:
   - app-descriptions
@@ -301,7 +301,7 @@
 - done criteria:
   - future agents have one capability-description example to follow
 - notes:
-  - completed: revised the seed app-description capability index and expanded `01-secure-tenant-user-foundation.md` into a capability-first reference contract with AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure surfaces, tests, and linked layers
+  - completed: revised the starter core app-description capability index and expanded `01-secure-tenant-user-foundation.md` into a capability-first reference contract with AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, exposure surfaces, tests, and linked layers
   - checks: verified updated markdown file references resolve; `rg` verified required capability contract fields and explicit reference-material language
   - commit hash: not embedded because this queue update is included in the same task commit; see commit `Add app-description capability example`
 

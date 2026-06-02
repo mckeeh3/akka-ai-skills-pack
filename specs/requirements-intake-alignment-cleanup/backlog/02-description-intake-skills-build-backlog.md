@@ -6,7 +6,7 @@ Make app-description intake and generation-adjacent skills enforce the current r
 
 ## Suggested harness task breakdown
 
-1. Rewrite bootstrap/input/router/change-impact skills for five-core starter, AI-first seed references, starter routing, and surface/workstream impact.
+1. Rewrite bootstrap/input/router/change-impact skills for five-core starter, AI-first starter core references, starter routing, and surface/workstream impact.
 2. Rewrite readiness/generation/app-descriptions orchestration and focused companion references discovered by the first task.
 3. Run a focused consistency pass across app-description skills and update the queue with any remaining bounded follow-ups.
 

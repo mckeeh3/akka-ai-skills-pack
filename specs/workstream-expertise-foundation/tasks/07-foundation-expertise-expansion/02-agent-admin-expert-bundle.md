@@ -2,7 +2,7 @@
 
 ## Objective
 
-Make Agent Admin a concrete workstream expert in the seed app-description.
+Make Agent Admin a concrete workstream expert in the starter core app-description.
 
 ## Required reads
 

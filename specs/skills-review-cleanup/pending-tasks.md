@@ -167,7 +167,7 @@
   - docs/app-description-maintenance-flow.md
   - docs/ai-first-saas-application-architecture.md
   - docs/capability-first-backend-architecture.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - specs/skills-review-cleanup/README.md
   - specs/skills-review-cleanup/pending-tasks.md
   - skills/app-descriptions/SKILL.md
@@ -205,7 +205,7 @@
   - app-description skills present a coherent maintenance workflow with clear layer ownership
 - commit message suggestion: `Clarify app-description skill boundaries`
 - notes:
-  - reviewed app-description doctrine, architecture, maintenance flow, AI-first and capability-first doctrine, seed app-description reference, cleanup plan, and app-description companion skills listed in required reads.
+  - reviewed app-description doctrine, architecture, maintenance flow, AI-first and capability-first doctrine, starter core app-description reference, cleanup plan, and app-description companion skills listed in required reads.
   - finding: minor-alignment-edit; app-description family was broadly coherent, with remaining risk around agents treating routing/readiness/summary notes as authoritative or burying capability-boundary changes in behavior artifacts.
   - edits: added a companion boundary matrix to `app-descriptions`; clarified `app-description-intake-router` as routing-only; clarified that `app-description-behavior-specification` must route capability-contract changes to capability modeling.
   - checks: description-first path preserves functional agents, structured surfaces, capabilities, auth/security, tests, observability, readiness, and generation policy; readiness/generation gates still block guessed secure SaaS security or workstream semantics; git diff --check passed.

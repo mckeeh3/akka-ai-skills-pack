@@ -129,7 +129,7 @@
   - skills/app-description-ui/SKILL.md
   - docs/internal-app-description-architecture.md
   - docs/app-description-maintenance-flow.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
 - skills:
   - app-description-bootstrap
   - app-description-readiness-assessment
@@ -149,23 +149,23 @@
   - A git commit exists for the changes.
 - notes: Completed in task commit; commit hash reported in harness response.
 
-### TASK-005: Update AI-first SaaS seed app-description for managed agents
+### TASK-005: Update starter core app-description for managed agents
 
 - status: done
 - source: specs/governed-runtime-agent-foundation/backlog/02-app-description-and-seed-build-backlog.md
 - task brief: none
 - depends on: [TASK-004]
 - required reads:
-  - docs/examples/ai-first-saas-seed-app-description/README.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/agent-roles-and-authority.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/authorization-rules.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/50-observability/logs-and-audit.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/60-generation/realization-scope.md
+  - templates/ai-first-saas-starter/app-description/README.md
+  - templates/ai-first-saas-starter/app-description/app-description/00-system/app-manifest.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/15-operating-model/agent-roles-and-authority.md
+  - templates/ai-first-saas-starter/app-description/app-description/20-behavior/flows/01-onboarding-and-access-flow.md
+  - templates/ai-first-saas-starter/app-description/30-tests/acceptance/01-core-app-acceptance.md
+  - templates/ai-first-saas-starter/app-description/app-description/40-auth-security/authorization-rules.md
+  - templates/ai-first-saas-starter/app-description/app-description/50-observability/logs-and-audit.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md
+  - templates/ai-first-saas-starter/app-description/app-description/60-generation/realization-scope.md
 - skills:
   - app-descriptions
   - app-description-capability-modeling
@@ -175,11 +175,11 @@
   - app-description-observability
   - app-description-ui
 - expected outputs:
-  - Update or add seed app-description files for AgentDefinition, governed prompts, governed skills, skill manifests, tool boundaries, behavior editing agents, prompt assembly traces, skill load traces, and agent work traces.
+  - Update or add starter core app-description files for AgentDefinition, governed prompts, governed skills, skill manifests, tool boundaries, behavior editing agents, prompt assembly traces, skill load traces, and agent work traces.
   - Add UI expectations for agent catalog/detail, prompt/skill governance, manifest management, tool permission management, edit-agent proposal review, and traces.
   - Add acceptance/negative/regression expectations for tenant isolation, unauthorized prompt/skill/tool changes, disabled-agent denial, unassigned skill denial, trace creation, and approval-required authority expansion.
 - required checks:
-  - `rg -n "AgentDefinition|PromptDocument|PromptVersion|SkillDocument|SkillVersion|AgentSkillManifest|readSkill|SkillLoadTrace|PromptAssemblyTrace|AgentBehaviorEditorAgent|agent catalog|agent detail" docs/examples/ai-first-saas-seed-app-description`
+  - `rg -n "AgentDefinition|PromptDocument|PromptVersion|SkillDocument|SkillVersion|AgentSkillManifest|readSkill|SkillLoadTrace|PromptAssemblyTrace|AgentBehaviorEditorAgent|agent catalog|agent detail" templates/ai-first-saas-starter/app-description`
   - `git diff --check`
 - done criteria:
   - Preferred seed example visibly includes the fully backed governed runtime agent foundation.
@@ -266,7 +266,7 @@
   - skills/akka-agent-prompt-governance/SKILL.md
   - skills/akka-agent-skill-governance/SKILL.md
   - docs/core-ai-first-saas-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
 - skills:
   - core-saas-foundation
   - akka-agent-behavior-profiles
@@ -423,7 +423,7 @@
   - skills/akka-agent-skill-governance/SKILL.md
   - skills/akka-agent-work-trace/SKILL.md
   - docs/capability-first-backend-architecture.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md
   - pack/manifest.yaml
 - skills:
   - akka-agent-tools

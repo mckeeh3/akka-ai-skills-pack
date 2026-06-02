@@ -21,7 +21,7 @@ The doctrine and description layers now define workstream expertise as a require
 - `skills/app-description-functional-agent-modeling/SKILL.md` now requires each LLM-enabled functional agent to identify prompt intent, governed skills, reference documents, compact expertise manifests, loader/tool boundaries, capabilities, traces, and tests.
 - `skills/app-description-readiness-assessment/SKILL.md` blocks or narrows readiness when in-scope functional agents lack expertise artifacts, manifests, boundaries, traces, or tests.
 - `skills/app-description-change-impact/SKILL.md` treats expertise changes as cross-layer changes affecting traceability, readiness, capabilities, auth/security, observability, UI, and tests.
-- The seed app-description now has `12-workstreams/workstream-expertise/README.md`, plus traceability/test notes that keep User Admin expertise visible until the concrete bundle file is added in Sprint 03.
+- The starter core app-description now has `12-workstreams/workstream-expertise/README.md`, plus traceability/test notes that keep User Admin expertise visible until the concrete bundle file is added in Sprint 03.
 
 ## Reference-document governance decision / concern
 

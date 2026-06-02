@@ -15,7 +15,7 @@ Status: incomplete; one bounded follow-up task group was appended.
 
 - `docs/web-ui-style-guide.md` now defines the replacement `ai-first-workstream-enterprise` style and four initial named themes: `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`.
 - Web UI UX/checklist and web UI/app-description skills require named theme selection, style-guide authority, My Account selection behavior, and tokenized implementation.
-- Seed app-description UI and My Account surface contracts use named themes and document theme preference as non-authorization behavior.
+- Starter core app-description UI and My Account surface contracts use named themes and document theme preference as non-authorization behavior.
 - Reference and starter frontend source expose four named theme token bundles, set root `data-theme`, consume `preferredThemeId` from backend settings, and update the selected theme after successful profile/settings actions.
 - Frontend test/type/build checks passed for both the repository reference frontend and starter template frontend.
 
@@ -51,7 +51,7 @@ Status: complete; no further required follow-up tasks were appended.
 ## Follow-up verification
 
 - Sprint 03 goals were met by TASK-WUTR-03-001: foundation `/api/me`, user-settings, and core foundation skill guidance now use `preferredThemeId` named-theme semantics; pending-question generation now offers `ai-first-workstream-enterprise` instead of the obsolete Atlas style id.
-- The mini-project done state is met: canonical docs, skills, seed app-description, reference/starter CSS, My Account theme selection, and remaining foundation guidance align on the replacement AI-first workstream enterprise style and four named themes.
+- The mini-project done state is met: canonical docs, skills, starter core app-description, reference/starter CSS, My Account theme selection, and remaining foundation guidance align on the replacement AI-first workstream enterprise style and four named themes.
 - No blocking unresolved questions remain. The prior raw template Maven blocker remains non-material to this mini-project because it concerns unrendered backend template placeholders and not changed frontend/style assets.
 - Search results for the full scoped pattern remain only in historical mini-project planning notes, completed-task check logs, and verification search instructions. A repeat search over active docs/skills/frontend/templates outside `specs/web-ui-style-theme-refresh` returned no matches.
 

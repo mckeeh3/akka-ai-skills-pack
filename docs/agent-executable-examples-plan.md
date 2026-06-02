@@ -4,7 +4,7 @@
 
 This plan defines how to add executable reference examples and tests for the governed-agent skills added in `docs/agent-skill-expansion-plan.md`.
 
-The examples should prove the new guidance with small, focused Akka components rather than attempting to implement the entire core AI-first SaaS seed app. They are source assets for this skills pack and should remain easy for future harness runs to load, inspect, and extend.
+The examples should prove the new guidance with small, focused Akka components rather than attempting to implement the entire core AI-first SaaS starter core app. They are source assets for this skills pack and should remain easy for future harness runs to load, inspect, and extend.
 
 ## Source references
 
@@ -45,7 +45,7 @@ Do not create a separate exported example tree for the first pass. Consider expo
 
 ## Scope boundary
 
-The examples should demonstrate a minimal governed-agent substrate, not the full core seed app.
+The examples should demonstrate a minimal governed-agent substrate, not the full core starter core app.
 
 Include:
 

@@ -10,18 +10,18 @@ Sprint 07 is complete. Every seed foundation functional agent now has an authori
 
 | Functional agent | Expertise status | Evidence |
 |---|---|---|
-| `my-account-agent` | Bundle present | `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/my-account-agent.md` |
-| `user-admin-agent` | Bundle present | `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md` |
-| `agent-admin-agent` | Bundle present | `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/agent-admin-agent.md` |
-| `mission-control-agent` | Bundle present | `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/mission-control-agent.md` |
-| `governance-policy-agent` | Bundle present | `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/governance-policy-agent.md` |
-| `audit-trace-agent` | Bundle present | `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/audit-trace-agent.md` |
+| `my-account-agent` | Bundle present | `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/my-account-agent.md` |
+| `user-admin-agent` | Bundle present | `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md` |
+| `agent-admin-agent` | Bundle present | `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/agent-admin-agent.md` |
+| `mission-control-agent` | Bundle present | `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/mission-control-agent.md` |
+| `governance-policy-agent` | Bundle present | `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/governance-policy-agent.md` |
+| `audit-trace-agent` | Bundle present | `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/audit-trace-agent.md` |
 
 No foundation functional agent requires a readiness-impacting deferral for missing expertise at the app-description level.
 
 ## Traceability and readiness updates
 
-Updated seed app-description traceability and readiness references so the foundation expertise model is explicit across derived layers:
+Updated starter core app-description traceability and readiness references so the foundation expertise model is explicit across derived layers:
 
 - `70-traceability/functional-agent-to-capability-map.md` now maps My Account, Mission Control, and Governance/Policy to their concrete bundle files, surfaces, capabilities, loader boundaries, traces, seed policy, and tests instead of generic bundle-required language.
 - `70-traceability/surface-to-capability-map.md` now links the affected surfaces to the owning expertise contracts and replaces stale Access/Profile naming with My Account.
@@ -47,4 +47,4 @@ Updated seed app-description traceability and readiness references so the founda
 
 ## Pending task adjustments
 
-No additional Sprint 07 follow-up tasks are required. The workstream expertise foundation now has complete seed app-description coverage for the foundation functional-agent set. Future work should focus on realization/runtime coverage only if a later review identifies executable starter gaps for the newly described bundles.
+No additional Sprint 07 follow-up tasks are required. The workstream expertise foundation now has complete starter core app-description coverage for the foundation functional-agent set. Future work should focus on realization/runtime coverage only if a later review identifies executable starter gaps for the newly described bundles.

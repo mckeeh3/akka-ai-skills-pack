@@ -28,7 +28,7 @@ Update web UI planning, app-description, generation, and testing skills so futur
 ## Out of scope
 
 - Updating canonical docs already handled by TASK-WUTR-01-001.
-- Updating seed app-description and frontend assets; those are Sprint 02 tasks.
+- Updating starter core app-description and frontend assets; those are Sprint 02 tasks.
 - Adding this project-only skill to installable pack assets.
 
 ## Expected outputs

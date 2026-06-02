@@ -2,7 +2,7 @@
 
 ## Status
 
-Detailed PRD for the Agent Definition Foundation module in the progressive core AI-first SaaS seed app. This module follows the agent workstream runtime bootstrap and full User Administration modules.
+Detailed PRD for the Agent Definition Foundation module in the progressive core AI-first SaaS starter core app. This module follows the agent workstream runtime bootstrap and full User Administration modules.
 
 Read first:
 

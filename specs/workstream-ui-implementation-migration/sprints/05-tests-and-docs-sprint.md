@@ -9,7 +9,7 @@ Make the implementation reference reliable enough for future agents to copy safe
 - Add or revise frontend contract tests for shell regions, functional-agent rail, surface rendering, capability actions, composer commands, deep links, and realtime/stale states.
 - Add quality checks for accessibility, responsive markers, frontend secret boundary, and forbidden/disabled state behavior.
 - Update docs/skills references so web UI implementation guidance points to the reusable component set and User Admin reference vertical.
-- Update or remove stale seed-app documentation that no longer matches the executable reference.
+- Update or remove stale starter-core-app documentation that no longer matches the executable reference.
 
 ## Out of scope
 

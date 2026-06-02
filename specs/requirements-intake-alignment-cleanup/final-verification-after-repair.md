@@ -7,7 +7,7 @@ Status: complete. No material active-guidance drift remains in the bounded final
 `TASK-RIAC-06-001` repaired the three findings from `final-verification.md`:
 
 1. `skills/app-description-capability-modeling/SKILL.md` no longer uses `Prefer these example references when present:` for purchase-request capability examples; AI-first seed capability references are preferred and purchase-request examples are labeled conventional mechanics-only.
-2. `docs/examples/ai-first-saas-seed-app-description/README.md` no longer contains `User Admin v0 minimum slice`; the seed README uses five-core workstream v0 starter/minimum scope language.
+2. `templates/ai-first-saas-starter/app-description/README.md` no longer contains `User Admin v0 minimum slice`; the seed README uses five-core workstream v0 starter/minimum scope language.
 3. `skills/README.md` labels `../docs/examples/purchase-request-pending-tasks.md` as a conventional mechanics-only queue-format reference, not canonical generated AI-first SaaS target architecture.
 
 No new bounded repair tasks are required.
@@ -34,7 +34,7 @@ The mini-project done state is now achieved:
 Focused final repair drift check:
 
 ```bash
-rg -n "User Admin v0 minimum slice|Prefer these example references when present:|purchase-request-pending-tasks.md" docs/examples/ai-first-saas-seed-app-description/README.md skills/app-description-capability-modeling/SKILL.md skills/README.md
+rg -n "User Admin v0 minimum slice|Prefer these example references when present:|purchase-request-pending-tasks.md" templates/ai-first-saas-starter/app-description/README.md skills/app-description-capability-modeling/SKILL.md skills/README.md
 ```
 
 Result: only `skills/README.md` matched, and the line explicitly says `conventional mechanics-only queue-format reference; not the canonical generated AI-first SaaS target architecture`.

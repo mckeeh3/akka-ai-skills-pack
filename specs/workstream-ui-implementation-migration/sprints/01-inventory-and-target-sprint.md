@@ -2,7 +2,7 @@
 
 ## Goal
 
-Inventory stale frontend and seed-app implementation drift, then define the target reusable workstream UI component architecture before code migration begins.
+Inventory stale frontend and starter-core-app implementation drift, then define the target reusable workstream UI component architecture before code migration begins.
 
 ## Scope
 

@@ -8,7 +8,7 @@
 4. Add deep-link and composer command tests.
 5. Add realtime/stale-state tests where fixture behavior exists.
 6. Update docs/skills references to the frontend workstream reference.
-7. Remove or revise stale seed-app docs.
+7. Remove or revise stale starter-core-app docs.
 
 ## Acceptance
 

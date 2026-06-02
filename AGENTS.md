@@ -274,7 +274,7 @@ At the start of a new session:
    - `docs/description-first-application-doctrine.md`
    - `docs/internal-app-description-architecture.md`
    - `docs/app-description-maintenance-flow.md`
-   - `docs/examples/ai-first-saas-seed-app-description/README.md` for the secure AI-first SaaS seed reference
+   - `templates/ai-first-saas-starter/app-description/README.md` for the secure AI-first SaaS starter core template
    - the smallest relevant example under `docs/examples/purchase-request-app-description/` only for description-layer mechanics
 7. classify the task before choosing files:
    - AI-first SaaS doctrine / operating model / governance / routing

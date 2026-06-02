@@ -2,10 +2,10 @@
 
 ## Scope
 
-This audit inventories the foundation functional agents in the secure AI-first SaaS seed app-description and records whether each has an authoritative workstream expert bundle under:
+This audit inventories the foundation functional agents in the starter core app-description and records whether each has an authoritative workstream expert bundle under:
 
 ```text
-docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/
+templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/
 ```
 
 The audit is intentionally limited to coverage status. It does not author new bundles.
@@ -15,9 +15,9 @@ The audit is intentionally limited to coverage status. It does not author new bu
 Reviewed sources:
 
 - `docs/workstream-expertise-model.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/README.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/README.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/workstream-expertise/user-admin-agent.md`
 - `specs/workstream-expertise-foundation/post-completion-expertise-review.md`
 - `specs/workstream-expertise-foundation/sprints/07-foundation-expertise-expansion-sprint.md`
 

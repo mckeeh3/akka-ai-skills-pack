@@ -42,7 +42,7 @@ app-description/
 The exact root name may vary by project, but the harness should prefer one stable root rather than scattering description artifacts arbitrarily.
 
 Reference examples:
-- canonical generated SaaS seed: `docs/examples/ai-first-saas-seed-app-description/README.md`
+- canonical starter core app-description template: `templates/ai-first-saas-starter/app-description/README.md`
 - mechanics-only cross-linking example: `docs/examples/purchase-request-app-description/app-description/`
 
 ## Architecture goals
@@ -353,7 +353,7 @@ This layer answers:
 - what accessibility and responsive behavior is required
 - which visual style guide is selected, including light/dark policy, CSS tokens, layout density, component styling, and brand adaptations for generated HTML/CSS/TypeScript
 
-Canonical generated SaaS `55-ui/` files are the file set shown in the default directory layout above. They mirror the current seed reference and the `app-description-ui` skill. `12-workstreams/` remains authoritative for functional agents, internal agents, durable workstreams, surface contracts, placement, capability mappings, traces, and tests; `55-ui/` must link to those artifacts rather than redefining them. Managed-agent browser files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`) are mandatory for `full core` generated SaaS scope. They may be omitted or marked deferred only when `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` explicitly label a narrower scope such as `Module 1-only / not full core`.
+Canonical generated SaaS `55-ui/` files are the file set shown in the default directory layout above. They mirror the current starter core template and the `app-description-ui` skill. `12-workstreams/` remains authoritative for functional agents, internal agents, durable workstreams, surface contracts, placement, capability mappings, traces, and tests; `55-ui/` must link to those artifacts rather than redefining them. Managed-agent browser files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`) are mandatory for `full core` generated SaaS scope. They may be omitted or marked deferred only when `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` explicitly label a narrower scope such as `Module 1-only / not full core`.
 
 ## `60-generation/`
 Realization policy and output mapping.

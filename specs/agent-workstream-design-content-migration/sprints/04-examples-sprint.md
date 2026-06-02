@@ -7,7 +7,7 @@ Refresh or clearly label example app descriptions so they reinforce the current 
 ## Scope
 
 - Refresh or explicitly label the DCA app-description UI example.
-- Verify the seed app remains the preferred current reference.
+- Verify the starter core app remains the preferred current reference.
 - Verify purchase-request and other conventional examples are clearly marked mechanics-only or legacy where needed.
 - Update cross-links from examples to canonical doctrine and review checklist.
 

@@ -1,8 +1,8 @@
-# Seed App Frontend Slice 6 Completion
+# Starter Core App Frontend Slice 6 Completion
 
 ## Slice
 
-Slice 6 from `specs/web-ui-design/seed-app-localized-frontend-implementation-plan.md`:
+Slice 6 from `specs/web-ui-design/starter-core-app-localized-frontend-implementation-plan.md`:
 
 - Goal Workbench and Goal Detail;
 - Decision Queue and Decision Detail;
@@ -80,7 +80,7 @@ Proceed to Slice 7 from the localized frontend implementation plan:
 Use this prompt to continue in a fresh harness session:
 
 ```text
-Read AGENTS.md, skills/README.md, docs/web-ui-quality-checklist.md, docs/web-ui-frontend-decomposition.md, skills/akka-web-ui-state-rendering/SKILL.md, skills/akka-web-ui-forms-validation/SKILL.md, skills/akka-web-ui-accessibility-responsive/SKILL.md, and skills/akka-web-ui-testing/SKILL.md. Then implement Slice 7 from specs/web-ui-design/seed-app-localized-frontend-implementation-plan.md for the seed frontend.
+Read AGENTS.md, skills/README.md, docs/web-ui-quality-checklist.md, docs/web-ui-frontend-decomposition.md, skills/akka-web-ui-state-rendering/SKILL.md, skills/akka-web-ui-forms-validation/SKILL.md, skills/akka-web-ui-accessibility-responsive/SKILL.md, and skills/akka-web-ui-testing/SKILL.md. Then implement Slice 7 from specs/web-ui-design/starter-core-app-localized-frontend-implementation-plan.md for the starter frontend.
 
 Context: Slice 1-6 are complete. Do not redo them. Use existing frontend conventions under frontend/src/**, especially main.tsx, api/FixtureApiClient.ts, design-system components, styles/components.css, screens/briefing/BriefingPage.tsx, screens/goals/GoalWorkbenchPage.tsx, and screens/decisions/DecisionQueuePage.tsx.
 
@@ -92,5 +92,5 @@ Implement Slice 7 only:
 
 Keep auth/admin user invitation as a hard later requirement after Slices 6-8: Slice 7 may remain fixture-backed, but it must preserve API seams and UX contracts for real authenticated backend connection later.
 
-Add or update focused frontend contract tests for Slice 7. Run cd frontend && npm run typecheck, cd frontend && npm test && npm run build. Create specs/web-ui-design/seed-app-frontend-slice-7-completion.md with implemented files, verification, explicit defers, and a prompt for Slice 8. Commit all Slice 7 changes at the end.
+Add or update focused frontend contract tests for Slice 7. Run cd frontend && npm run typecheck, cd frontend && npm test && npm run build. Create specs/web-ui-design/starter-core-app-frontend-slice-7-completion.md with implemented files, verification, explicit defers, and a prompt for Slice 8. Commit all Slice 7 changes at the end.
 ```

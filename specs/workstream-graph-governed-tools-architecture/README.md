@@ -127,7 +127,7 @@ Complete means active pack guidance consistently treats the workstream graph and
 - governed-tools live inside capability files and surface/action maps and are mapped to browser-tools, agent-tools, internal-tools, workflow/timer/consumer/MCP exposures, and Akka substrate;
 - active skills avoid ambiguous bare `tool` language in architecture contexts where qualified terms are needed;
 - planning queues carry workstream graph, governed-tool, workstream-expertise, AuthContext, audit/trace, and runtime validation context;
-- canonical examples and seed app-description illustrate the model.
+- canonical examples and starter core app-description illustrate the model.
 
 ## Open concerns
 

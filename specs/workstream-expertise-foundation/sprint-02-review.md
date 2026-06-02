@@ -28,7 +28,7 @@ The runtime guidance now treats a workstream expert bundle as an enforceable run
 
 Sprint 03 can proceed with the User Admin seed/app-description example using the following runtime contract:
 
-1. Define a concrete `user-admin-agent` workstream expert bundle under the seed app-description.
+1. Define a concrete `user-admin-agent` workstream expert bundle under the starter core app-description.
 2. List separate User Admin procedural skills and factual/process references.
 3. Include compact manifest entries only: ids, titles/summaries, when-to-use or when-to-consult hints, version policy, and authority notes.
 4. Map assigned capabilities and surfaces without granting authority through the expertise text.
@@ -48,7 +48,7 @@ Sprint 03 can proceed with the User Admin seed/app-description example using the
 
 No task reordering is required.
 
-`TASK-WEF-03-001` is unblocked by Sprint 02 completion and should model the User Admin workstream expertise bundle in the seed app-description before seed resources or tests are added.
+`TASK-WEF-03-001` is unblocked by Sprint 02 completion and should model the User Admin workstream expertise bundle in the starter core app-description before seed resources or tests are added.
 
 ## Review checks
 

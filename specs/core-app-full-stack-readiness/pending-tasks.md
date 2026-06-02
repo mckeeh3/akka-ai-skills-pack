@@ -56,7 +56,7 @@
   - specs/core-app-full-stack-readiness/backlog/01-scope-and-generation-build-backlog.md
   - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
   - docs/examples/core-ai-first-saas-input/01-core-seed-progression-plan.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - docs/capability-first-backend-architecture.md
   - skills/core-saas-foundation/SKILL.md
   - skills/akka-solution-decomposition/SKILL.md
@@ -199,7 +199,7 @@
   - skills/akka-basic-user-admin/SKILL.md
   - docs/core-saas-identity-tenancy-admin.md
   - docs/core-ai-first-saas-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
 - skills:
   - akka-basic-user-admin
   - core-saas-foundation
@@ -346,9 +346,9 @@
 - required reads:
   - specs/core-app-full-stack-readiness/core-workstream-api-contracts.md
   - docs/workstream-ui-reference-architecture.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/agent-catalog-and-detail.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/prompt-and-skill-governance.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/agent-catalog-and-detail.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/prompt-and-skill-governance.md
+  - templates/ai-first-saas-starter/app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md
   - frontend/src/workstream/**
 - skills:
   - akka-web-ui-apps
@@ -455,7 +455,7 @@
   - all files produced by completed tasks in this migration
   - skills/README.md
   - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
 - skills:
   - none; repository review task
 - expected outputs:

@@ -10,7 +10,7 @@ Replace weak getting-started behavior with a canonical core app PRD that require
 - Define required foundation agents: Access/Profile, User Admin, Agent Admin, Audit/Trace, Governance/Policy, and optional Billing/Subscription where relevant.
 - Define module/sprint progression around adding functional agents and surfaces.
 - Update getting-started prompt/docs to launch from the canonical PRD and require scope selection.
-- Update seed app-description references to match workstream architecture.
+- Update starter core app-description references to match workstream architecture.
 
 ## Out of scope
 

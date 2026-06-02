@@ -2,7 +2,7 @@
 
 ## Objective
 
-Review seed app-description surface contracts against the updated core domain workstream surface style guidance and patch small style/theme gaps if found.
+Review starter core app-description surface contracts against the updated core domain workstream surface style guidance and patch small style/theme gaps if found.
 
 ## Required reads
 
@@ -15,8 +15,8 @@ Review seed app-description surface contracts against the updated core domain wo
 - `specs/core-workstream-surface-style-alignment/backlog/02-seed-surface-style-build-backlog.md`
 - `specs/core-workstream-surface-style-alignment/tasks/02-seed-surface-style/01-review-seed-surface-style-alignment.md`
 - `docs/web-ui-style-guide.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/*.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/*.md`
 
 ## In scope
 
@@ -26,7 +26,7 @@ Review seed app-description surface contracts against the updated core domain wo
 
 ## Out of scope
 
-- Broad seed app-description redesign.
+- Broad starter core app-description redesign.
 - Frontend/backend implementation.
 
 ## Expected outputs

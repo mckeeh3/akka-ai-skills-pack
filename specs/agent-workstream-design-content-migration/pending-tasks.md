@@ -136,7 +136,7 @@
   - docs/internal-app-description-architecture.md
   - skills/app-description-bootstrap/SKILL.md
   - skills/app-description-ui/SKILL.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
 - skills:
   - app-description-ui
   - app-description-functional-agent-modeling
@@ -247,7 +247,7 @@
   - docs/examples/ai-first-dca-app-description/README.md
   - docs/examples/ai-first-dca-app-description/app-description/55-ui/README.md
   - docs/examples/ai-first-dca-app-description/app-description/55-ui/ui-surfaces.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
 - skills:
   - app-description-ui
   - app-description-functional-agent-modeling
@@ -272,7 +272,7 @@
 - depends on: [TASK-AWDD-04-001]
 - required reads:
   - docs/agent-workstream-design-review-checklist.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - docs/examples/purchase-request-app-description/README.md
   - docs/examples/ai-first-app-description-gaps.md
   - docs/examples/**/README.md
@@ -281,14 +281,14 @@
 - expected outputs:
   - updated example README/cross-link guidance as needed
 - required checks:
-  - seed app is identified as preferred current reference
+  - starter core app is identified as preferred current reference
   - purchase-request and conventional examples remain mechanics-only/non-target where appropriate
 - done criteria:
   - example set has no ambiguous generated SaaS target architecture cues
   - task changes and queue update are committed
 - notes:
   - commit message: `Clarify example reference labels`
-  - completed: added an examples index, labeled the seed app-description as the preferred current generated-SaaS reference, clarified core PRD inputs versus app-description structure, reinforced purchase-request as mechanics-only, and marked DCA as a domain-rich non-canonical structural reference.
+  - completed: added an examples index, labeled the starter core app-description as the preferred current generated-SaaS reference, clarified core PRD inputs versus app-description structure, reinforced purchase-request as mechanics-only, and marked DCA as a domain-rich non-canonical structural reference.
 
 ### TASK-AWDD-05-001: Run final design-content consistency review
 

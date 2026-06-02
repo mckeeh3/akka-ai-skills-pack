@@ -43,7 +43,7 @@ The reusable design review checklist exists at `docs/agent-workstream-design-rev
 
 - `docs/examples/README.md`
 - `docs/examples/core-ai-first-saas-input/README.md`
-- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `templates/ai-first-saas-starter/app-description/README.md`
 - `docs/examples/purchase-request-app-description/README.md`
 - `specs/agent-workstream-design-content-migration/canonical-content-targets.md`
 - `specs/agent-workstream-design-content-migration/design-content-drift-inventory.md`

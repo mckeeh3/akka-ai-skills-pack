@@ -7,7 +7,7 @@ Update repository guidance so future agents know to use the reusable workstream 
 ## Expected outputs
 
 - docs and skill references to the canonical frontend workstream reference
-- stale seed-app UI documentation revised or marked legacy
+- stale starter-core-app UI documentation revised or marked legacy
 - implementation routing points to reusable components and User Admin vertical example
 - queue status update and git commit
 

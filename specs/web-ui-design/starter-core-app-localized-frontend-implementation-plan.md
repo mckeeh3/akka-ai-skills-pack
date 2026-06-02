@@ -1,18 +1,18 @@
-# Seed App Localized Frontend Implementation Plan
+# Starter Core App Localized Frontend Implementation Plan
 
 ## Purpose
 
-Plan a bounded frontend implementation for the AI-first SaaS seed app that validates the mockup-derived design system without requiring complete backend generation.
+Plan a bounded frontend implementation for the AI-first SaaS starter core app that validates the mockup-derived design system without requiring complete backend generation.
 
 This plan is a frontend implementation contract, not a full app build plan.
 
 ## Inputs
 
 - `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
-- `specs/web-ui-design/seed-app-design-validation.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/acceptance/01-seed-app-acceptance.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/**`
+- `specs/web-ui-design/starter-core-app-design-validation.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/**`
+- `templates/ai-first-saas-starter/app-description/30-tests/acceptance/01-core-app-acceptance.md`
+- `templates/ai-first-saas-starter/app-description/app-description/40-auth-security/**`
 
 ## Scope
 
@@ -32,10 +32,10 @@ This plan is a frontend implementation contract, not a full app build plan.
   - Audit Trace Explorer;
   - Admin Users and Invitations;
   - Profile / Preferences.
-- Typed client interfaces matching seed frontend API contracts.
+- Typed client interfaces matching starter frontend API contracts.
 - Fixture-backed client adapter for design validation.
 - SSE client lifecycle abstraction plus fixture event simulator.
-- Reusable UI primitives needed by the seed app surfaces.
+- Reusable UI primitives needed by the starter core app surfaces.
 - Accessibility/responsive implementation checks.
 
 ### Out of scope
@@ -354,7 +354,7 @@ frontend/
 
 ### Slice 1: Frontend foundation and design tokens
 
-Status: complete. See `seed-app-frontend-slice-1-completion.md`.
+Status: complete. See `starter-core-app-frontend-slice-1-completion.md`.
 
 Outputs:
 
@@ -371,7 +371,7 @@ Validation:
 
 ### Slice 2: App shell and routing
 
-Status: complete. See `seed-app-frontend-slice-2-completion.md`.
+Status: complete. See `starter-core-app-frontend-slice-2-completion.md`.
 
 Outputs:
 
@@ -387,7 +387,7 @@ Validation:
 
 ### Slice 3: Typed clients and fixtures
 
-Status: complete. See `seed-app-frontend-slice-3-completion.md`.
+Status: complete. See `starter-core-app-frontend-slice-3-completion.md`.
 
 Outputs:
 
@@ -403,7 +403,7 @@ Validation:
 
 ### Slice 4: Reusable UI primitives
 
-Status: complete. See `seed-app-frontend-slice-4-completion.md`.
+Status: complete. See `starter-core-app-frontend-slice-4-completion.md`.
 
 Outputs:
 
@@ -431,7 +431,7 @@ Validation:
 
 ### Slice 6: Goal and decision flows
 
-Status: complete. See `seed-app-frontend-slice-6-completion.md`.
+Status: complete. See `starter-core-app-frontend-slice-6-completion.md`.
 
 Outputs:
 
@@ -447,7 +447,7 @@ Validation:
 
 ### Slice 7: Governance, audit, admin, profile screens
 
-Status: complete. See `seed-app-frontend-slice-7-completion.md`.
+Status: complete. See `starter-core-app-frontend-slice-7-completion.md`.
 
 Outputs:
 
@@ -502,7 +502,7 @@ Localized frontend implementation is complete when:
 - all screens render with fixture data through typed client interfaces;
 - core forms and action states are represented;
 - realtime stale/reconnect behavior is demonstrable;
-- acceptance checks from `30-tests/acceptance/01-seed-app-acceptance.md` are represented in tests or manual validation notes;
+- acceptance checks from `30-tests/acceptance/01-starter-core-app-acceptance.md` are represented in tests or manual validation notes;
 - generated frontend avoids copied mockup content;
 - implementation can later swap fixture clients for real Akka HTTP APIs without screen rewrites.
 
@@ -510,4 +510,4 @@ Localized frontend implementation is complete when:
 
 Start with Slice 1 only:
 
-> Create the seed frontend React/Vite/TypeScript foundation with tokenized `atlas-ops-supervisory-console` light/dark/system mode CSS, base app mount, and a minimal page proving mode switching and focus visibility. Do not implement app screens yet.
+> Create the starter frontend React/Vite/TypeScript foundation with tokenized `atlas-ops-supervisory-console` light/dark/system mode CSS, base app mount, and a minimal page proving mode switching and focus visibility. Do not implement app screens yet.

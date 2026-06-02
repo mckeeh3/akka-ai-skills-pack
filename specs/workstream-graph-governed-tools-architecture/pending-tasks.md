@@ -397,14 +397,14 @@
   - specs/workstream-graph-governed-tools-architecture/README.md
   - specs/workstream-graph-governed-tools-architecture/tasks/04-examples-implementation/01-update-canonical-examples.md
   - docs/examples/requirements-to-workstream-mini-example.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/functional-agents.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surfaces-index.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/capabilities-index.md
+  - templates/ai-first-saas-starter/app-description/README.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/functional-agents.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surfaces-index.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/capabilities-index.md
 - skills:
   - none; example/docs task
 - expected outputs:
-  - updated canonical examples and seed app-description references
+  - updated canonical examples and starter core app-description references
 - required checks:
   - `git diff --check`
   - focused term search over updated examples
@@ -413,7 +413,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `wggt: update graph examples`
-  - completed: updated the requirements-to-workstream mini example and secure AI-first SaaS seed app-description examples to show User Admin role-specific dashboard trunk behavior, human surface graph branches, governed-tool exposure, internal workstream agent graph delegation, workstream expertise, and expired-invitation attention/resend semantics; checks: `git diff --check`; focused term search over updated examples
+  - completed: updated the requirements-to-workstream mini example and starter core app-description examples to show User Admin role-specific dashboard trunk behavior, human surface graph branches, governed-tool exposure, internal workstream agent graph delegation, workstream expertise, and expired-invitation attention/resend semantics; checks: `git diff --check`; focused term search over updated examples
 
 ### TASK-WGGT-04-002: Update UI/API and browser-tool routing
 

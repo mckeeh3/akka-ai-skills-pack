@@ -272,7 +272,7 @@
 - required reads:
   - docs/workstream-ui-reference-architecture.md
   - docs/structured-surface-contracts.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md
+  - templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/02-user-admin-command-center.md
   - frontend/src/workstream/**
 - skills:
   - akka-web-ui-state-rendering
@@ -356,13 +356,13 @@
   - skills/akka-web-ui-apps/SKILL.md
   - docs/web-ui-frontend-decomposition.md
   - docs/web-ui-quality-checklist.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
 - skills:
   - akka-web-ui-apps
   - app-description-ui
 - expected outputs:
   - docs/skills updates pointing to reusable frontend reference
-  - stale seed-app UI docs revised or marked legacy
+  - stale starter-core-app UI docs revised or marked legacy
 - required checks:
   - guidance points to workstream components and User Admin vertical reference
   - no page-first frontend reference is promoted as canonical
@@ -371,7 +371,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `Align docs and skills with workstream UI reference`
-  - completed: updated web UI docs, routing skills, seed app UI guidance, and endpoint mechanics notes to point future agents at `docs/workstream-ui-reference-architecture.md`, reusable `frontend/src/workstream/**` modules, fixture clients, and the User Admin vertical contract reference while marking legacy screen/page/static examples as non-canonical.
+  - completed: updated web UI docs, routing skills, starter core app UI guidance, and endpoint mechanics notes to point future agents at `docs/workstream-ui-reference-architecture.md`, reusable `frontend/src/workstream/**` modules, fixture clients, and the User Admin vertical contract reference while marking legacy screen/page/static examples as non-canonical.
 
 ### TASK-WUI-06-001: Final workstream UI implementation review
 
@@ -393,7 +393,7 @@
   - specs/workstream-ui-implementation-migration/migration-completion-summary.md
   - small final fixes or follow-up task notes if needed
 - required checks:
-  - drift searches for stale page-first/frontend seed references
+  - drift searches for stale page-first/frontend starter core references
   - frontend checks/build pass
   - docs/skills/tests point to the canonical workstream reference
 - done criteria:

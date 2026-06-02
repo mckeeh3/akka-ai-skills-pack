@@ -7,7 +7,7 @@ Verify the mini-project done state and append follow-up tasks if material gaps r
 ## Scope
 
 - Compare completed work against this mini-project's README done state.
-- Check canonical docs, skills, seed app-description, starter/reference CSS, and theme selection behavior for consistency.
+- Check canonical docs, skills, starter core app-description, starter/reference CSS, and theme selection behavior for consistency.
 - Run appropriate validation checks for changed docs/frontend assets.
 - Append new bounded tasks plus a new terminal verification task if gaps remain.
 

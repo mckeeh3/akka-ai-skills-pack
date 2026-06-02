@@ -102,10 +102,10 @@
   - skills/app-generate-app/SKILL.md
   - docs/internal-app-description-architecture.md
   - docs/app-description-maintenance-flow.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/identity-and-trust.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
+  - templates/ai-first-saas-starter/app-description/README.md
+  - templates/ai-first-saas-starter/app-description/app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - templates/ai-first-saas-starter/app-description/app-description/40-auth-security/identity-and-trust.md
+  - templates/ai-first-saas-starter/app-description/app-description/30-tests/regression/01-tenant-isolation-and-idempotency.md
 - skills:
   - app-descriptions
   - app-description-bootstrap
@@ -237,7 +237,7 @@
   - skills/README.md
   - docs/ai-first-saas-application-architecture.md
   - docs/core-ai-first-saas-foundation.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
+  - templates/ai-first-saas-starter/app-description/README.md
   - pack/manifest.yaml
   - tools/build-pack.sh
   - install.sh
@@ -274,23 +274,23 @@
   - docs/core-ai-first-saas-foundation.md
   - docs/core-saas-identity-tenancy-admin.md
   - docs/core-saas-owner-tenant-billing.md
-  - docs/examples/ai-first-saas-seed-app-description/README.md
-  - docs/examples/ai-first-saas-seed-app-description/app-description/00-system/app-manifest.md
+  - templates/ai-first-saas-starter/app-description/README.md
+  - templates/ai-first-saas-starter/app-description/app-description/00-system/app-manifest.md
 - skills:
   - core-saas-foundation
 - expected outputs:
   - Ensure the new `core-saas-foundation` skill is included in all installable bundles.
   - Add core SaaS docs to packaged docs.
-  - Add the AI-first SaaS seed app-description reference tree to packaged docs, or add a deliberate minimal subset with README explaining why only that subset is packaged.
+  - Add the starter core app-description reference tree to packaged docs, or add a deliberate minimal subset with README explaining why only that subset is packaged.
   - Remove/demote packaged docs that conflict with the AI-first SaaS target or route users toward generic app design.
   - Update installed-pack docs/readmes if needed so installed users can find the core foundation assets.
 - required checks:
-  - `rg -n "core-ai-first-saas-foundation|core-saas-identity-tenancy-admin|core-saas-owner-tenant-billing|ai-first-saas-seed-app-description|core-saas-foundation" pack/manifest.yaml tools/build-pack.sh install.sh skills/README.md pack/AGENTS.md`
+  - `rg -n "core-ai-first-saas-foundation|core-saas-identity-tenancy-admin|core-saas-owner-tenant-billing|ai-first-saas-starter-app-description|core-saas-foundation" pack/manifest.yaml tools/build-pack.sh install.sh skills/README.md pack/AGENTS.md`
   - Run the pack build command if documented and available; otherwise inspect `tools/build-pack.sh` for syntax/array consistency.
   - `bash -n tools/build-pack.sh install.sh`
   - `git diff --check`
 - done criteria:
-  - Installed-pack users receive the core secure SaaS foundation guidance and seed reference assets.
+  - Installed-pack users receive the core secure SaaS foundation guidance and starter core reference assets.
   - The new skill is packaged.
   - Build/install scripts pass shell syntax checks.
   - A git commit exists for the changes.
@@ -315,7 +315,7 @@
 - expected outputs:
   - Add a lightweight repository verification script, for example `tools/verify-opinionated-ai-first-saas-pack.sh`.
   - The script must fail when required routing/docs/packaging references are missing.
-  - Checks should cover: `core-saas-foundation` skill exists and is manifest-listed; top-level docs say security is mandatory; primary routing skills reference core foundation; pack scripts include core docs and seed app assets; forbidden optional-security phrases are absent from top-level routing files.
+  - Checks should cover: `core-saas-foundation` skill exists and is manifest-listed; top-level docs say security is mandatory; primary routing skills reference core foundation; pack scripts include core docs and starter core app assets; forbidden optional-security phrases are absent from top-level routing files.
   - Add a package script if appropriate, e.g. `npm run verify:opinionated-ai-first-saas`.
   - Update README or relevant docs with the verification command if project convention supports it.
 - required checks:

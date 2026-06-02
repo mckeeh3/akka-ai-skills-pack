@@ -143,7 +143,7 @@ Default description-first flow:
 15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 Reference docs:
-- `../docs/examples/ai-first-saas-seed-app-description/README.md` — preferred secure AI-first SaaS seed app-description reference
+- `../templates/ai-first-saas-starter/app-description/README.md` — preferred starter core app-description template
 - `../docs/description-first-application-doctrine.md`
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
@@ -415,7 +415,7 @@ Stage 3 family orchestrators are the capability handoff point. Focused companion
 For durable multi-session execution, materialize the work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
 
 Decomposition is complete only when it enables focused implementation work with low ambiguity.
-Use `../docs/examples/ai-first-saas-seed-app-description/README.md` and `../docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Purchase-request examples are conventional planning/queue mechanics references only.
+Use `../templates/ai-first-saas-starter/app-description/README.md` and `../docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Purchase-request examples are conventional planning/queue mechanics references only.
 For a lightweight template, see `../docs/solution-plan-to-implementation-queue.md`.
 For the durable queue contract, see `../docs/pending-task-queue.md`.
 

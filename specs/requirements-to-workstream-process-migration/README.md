@@ -47,7 +47,7 @@ Affected repository areas likely include:
 - app-description skills: bootstrap, functional-agent modeling, surface modeling, capability modeling, UI, readiness, generation;
 - direct planning skills: `akka-solution-decomposition`, `akka-prd-to-specs-backlog`, revised PRD/change request/spec backlog skills, pending question/task generation;
 - planning docs: `prd-to-akka-flow.md`, `module-sprint-planning.md`, `solution-plan-to-implementation-queue.md`, `pending-task-queue.md`, `pending-question-queue.md`;
-- examples and seed descriptions, especially AI-first SaaS seed app-description and starter planning references;
+- examples and seed descriptions, especially starter core app-description and starter planning references;
 - packaging/export lists if new docs or skills become installable assets.
 
 ## Non-goals
@@ -79,7 +79,7 @@ Then read only the focused skills/docs listed by the selected task.
 3. **Intake and description-first realignment** — update normalization, intake routing, app-description bootstrap/modeling/readiness to use workstream → attention → dashboard → surfaces → capabilities → autonomous tasks.
 4. **PRD/spec/backlog planning realignment** — update solution decomposition, PRD-to-specs, revised/change flows, and planning docs to produce vertical workstream/attention/surface/capability/autonomous-task plans.
 5. **Queue and task contract realignment** — ensure generated pending tasks carry the new vertical contract and autonomous task lifecycle/surface expectations.
-6. **Examples, seed, and packaging alignment** — update examples, seed app-description references, starter guidance, and packaged docs/manifest as needed.
+6. **Examples, seed, and packaging alignment** — update examples, starter core app-description references, starter guidance, and packaged docs/manifest as needed.
 7. **Verification loop** — verify no major stale process path remains; append follow-up tasks for any gaps.
 
 ## Done state

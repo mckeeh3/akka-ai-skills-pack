@@ -10,7 +10,7 @@ Use the matching entry in `specs/workstream-expertise-foundation/pending-tasks.m
 
 ## Scope
 
-Create initial expert bundles or explicit readiness-impacting deferrals/non-LLM notes for governance-policy-agent, mission-control-agent, and my-account-agent. Keep the level of detail proportional to current seed app-description scope.
+Create initial expert bundles or explicit readiness-impacting deferrals/non-LLM notes for governance-policy-agent, mission-control-agent, and my-account-agent. Keep the level of detail proportional to current starter core app-description scope.
 
 ## Non-goals
 

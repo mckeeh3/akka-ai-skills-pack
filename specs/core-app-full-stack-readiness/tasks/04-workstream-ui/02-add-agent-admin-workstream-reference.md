@@ -8,9 +8,9 @@ Add or strengthen frontend reference fixtures/surfaces for Agent Admin: definiti
 
 - `specs/core-app-full-stack-readiness/core-workstream-api-contracts.md` if present
 - `docs/workstream-ui-reference-architecture.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/agent-catalog-and-detail.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/prompt-and-skill-governance.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/agent-catalog-and-detail.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/prompt-and-skill-governance.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/skill-manifests-and-tool-permissions.md`
 - `frontend/src/workstream/**`
 
 ## Expected outputs

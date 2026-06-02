@@ -16,7 +16,7 @@ role-authorized functional agents
 → horizontal Akka implementation
 ```
 
-The current `frontend/` reference still contains stale route/page-oriented seed app code and supervisory-console patterns. Those examples risk teaching future agents to generate page-first UIs even though the pack now requires workstream-first implementation.
+The current `frontend/` reference still contains stale route/page-oriented starter core app code and supervisory-console patterns. Those examples risk teaching future agents to generate page-first UIs even though the pack now requires workstream-first implementation.
 
 ## Target implementation model
 

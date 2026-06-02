@@ -2,7 +2,7 @@
 
 ## First install and tenant-bootstrap seed loading
 
-1. App implementation packages default agent behavior seed resources: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, and required model/policy references.
+1. App implementation packages default agent behavior starter resources: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, and required model/policy references.
 2. Install or tenant-bootstrap workflow validates the seed manifest, resource checksums, references, token limits, secret-like content, idempotency key, tenant scope, and correlation id before creating records.
 3. For missing tenant-scoped artifacts, workflow creates governed records and initial version `1` snapshots with seed provenance, approved/active status under accepted deployment policy, and AdminAuditEvent/work trace facts.
 4. Re-running bootstrap with the same tenant, seed bundle id, artifact ids, and content version is a no-op except for audit/status facts; it does not duplicate versions.
@@ -11,7 +11,7 @@
 
 ## Agent definition lifecycle
 
-1. Authorized Agent Steward or Tenant Admin creates an `AgentDefinition` in draft state with owner/steward, model reference, prompt reference, `AgentSkillManifest` reference, `ToolPermissionBoundary` reference, tenant/customer scope, and authority level, or the tenant-bootstrap seed workflow creates the initial default definition from implementation seed resources.
+1. Authorized Agent Steward or Tenant Admin creates an `AgentDefinition` in draft state with owner/steward, model reference, prompt reference, `AgentSkillManifest` reference, `ToolPermissionBoundary` reference, tenant/customer scope, and authority level, or the tenant-bootstrap seed workflow creates the initial default definition from implementation starter resources.
 2. System validates scope, steward authority, referenced prompt/skill/manifest/tool-boundary status, disabled-agent state, expected version, idempotency key, and correlation id.
 3. Activation requires approved prompt and skill versions, approved manifest assignment, approved tool boundary, no unresolved authority-expansion decision, and an AdminAuditEvent.
 4. Disabled or archived agents cannot be invoked, cannot call tools, and cannot load skills; denial creates audit/trace evidence without leaking cross-tenant artifact existence.

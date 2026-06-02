@@ -6,7 +6,7 @@ Update description-first assets so generated core apps describe and assess gover
 
 ## Delivery goal
 
-Bootstrapped and seed app descriptions include managed-agent capabilities, behavior, tests, auth/security, observability, UI, readiness, and generation scope.
+Bootstrapped and starter core app descriptions include managed-agent capabilities, behavior, tests, auth/security, observability, UI, readiness, and generation scope.
 
 ## Capability contracts
 
@@ -16,9 +16,9 @@ Bootstrapped and seed app descriptions include managed-agent capabilities, behav
 ## Suggested harness task breakdown
 
 1. Update app-description bootstrap/readiness/generation guidance.
-2. Update AI-first SaaS seed app-description capability, operating-model, behavior, tests, auth/security, observability, UI, and generation files.
+2. Update starter core app-description capability, operating-model, behavior, tests, auth/security, observability, UI, and generation files.
 
 ## Done criteria
 
-- Seed app-description makes the managed-agent core visible and cross-linked.
+- Starter core app-description makes the managed-agent core visible and cross-linked.
 - Readiness/generation guidance blocks missing agent catalog/detail, prompt governance, skill governance, manifest, tool-boundary, edit-agent, and trace surfaces.

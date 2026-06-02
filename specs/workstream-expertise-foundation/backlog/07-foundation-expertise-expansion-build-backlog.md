@@ -2,7 +2,7 @@
 
 ## Outcome
 
-The seed app-description demonstrates that the workstream expertise model applies to all foundation functional agents, not only User Admin.
+The starter core app-description demonstrates that the workstream expertise model applies to all foundation functional agents, not only User Admin.
 
 ## Backlog items
 

@@ -96,7 +96,7 @@ Use direct language. A demoted artifact or link should say all relevant points:
 
 - `Mechanics-only reference` or `Conventional mechanics reference`.
 - `Not the canonical generated AI-first SaaS target architecture`.
-- `For secure AI-first SaaS foundation shape, prefer docs/examples/ai-first-saas-seed-app-description/README.md` when app-description structure is in scope.
+- `For secure AI-first SaaS foundation shape, prefer templates/ai-first-saas-starter/app-description/README.md` when app-description structure is in scope.
 - `For broad requirements-to-workstream planning, prefer docs/requirements-to-workstream-development-process.md and docs/examples/requirements-to-workstream-mini-example.md` when PRD/intake planning is in scope.
 - `Do not copy its page/resource/CRUD decomposition as the primary generated-app model` when the artifact contains conventional UI/API shapes.
 

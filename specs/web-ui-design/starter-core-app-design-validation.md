@@ -1,26 +1,26 @@
-# Seed App Design Validation
+# Starter Core App Design Validation
 
 ## Scope
 
-Validated the seed app app-description against the mockup-derived design system.
+Validated the starter core app app-description against the mockup-derived design system.
 
 Inputs:
 
 - `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
 - `specs/web-ui-design/images/ai-first-saas-web-ui-01.png` through `ai-first-saas-web-ui-08.png`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/15-operating-model/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/20-behavior/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/30-tests/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/40-auth-security/**`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/**`
+- `templates/ai-first-saas-starter/app-description/app-description/15-operating-model/**`
+- `templates/ai-first-saas-starter/app-description/app-description/20-behavior/**`
+- `templates/ai-first-saas-starter/app-description/app-description/30-tests/**`
+- `templates/ai-first-saas-starter/app-description/app-description/40-auth-security/**`
 
 ## Validation result
 
-- status: validated for seed-app UI design direction
+- status: validated for starter-core-app UI design direction
 - frontend planning readiness: ready for localized frontend implementation planning
 - full app generation readiness: not validated for one-shot all-phases generation
 
-The seed app description now supports the design system well enough to plan a bounded frontend implementation slice. Remaining open backend/cross-cutting decisions should not block frontend shell and UI-contract planning, as long as implementation uses typed client seams and fixture-backed states until backend routes are available.
+The starter core app description now supports the design system well enough to plan a bounded frontend implementation slice. Remaining open backend/cross-cutting decisions should not block frontend shell and UI-contract planning, as long as implementation uses typed client seams and fixture-backed states until backend routes are available.
 
 ## Validated design contract
 
@@ -49,7 +49,7 @@ Evidence:
 
 Pass.
 
-The seed app maps the mockups' layout and hierarchy without copying demo content:
+The starter core app maps the mockups' layout and hierarchy without copying demo content:
 
 - persistent left nav and authenticated SaaS shell;
 - page title/subtitle and operational framing;
@@ -109,7 +109,7 @@ Validation note: route-level detail is sufficient for planning. Per-component vi
 
 Pass for planning.
 
-The seed app now defines fields, validation, idempotency, success behavior, and failure recovery for:
+The starter core app now defines fields, validation, idempotency, success behavior, and failure recovery for:
 
 - create goal;
 - request draft plan;
@@ -126,7 +126,7 @@ Validation note: backend validation and command idempotency must be implemented 
 
 Pass for frontend seam planning.
 
-The seed app now defines browser-facing DTO sketches for:
+The starter core app now defines browser-facing DTO sketches for:
 
 - session/user/tenant context;
 - preferences and mode selection;
@@ -216,4 +216,4 @@ A localized frontend implementation plan may proceed under these constraints:
 
 ## Validation conclusion
 
-The seed app design is validated for the intended purpose: testing the mockup-derived AI-first SaaS UI design before integrating it into the skills pack. The next step is a localized frontend implementation plan that creates reusable frontend structure, tokens, route shells, typed clients, fixture-backed state, and acceptance checks without depending on complete backend generation.
+The starter core app design is validated for the intended purpose: testing the mockup-derived AI-first SaaS UI design before integrating it into the skills pack. The next step is a localized frontend implementation plan that creates reusable frontend structure, tokens, route shells, typed clients, fixture-backed state, and acceptance checks without depending on complete backend generation.

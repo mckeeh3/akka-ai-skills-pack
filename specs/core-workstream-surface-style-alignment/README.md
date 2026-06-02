@@ -43,8 +43,8 @@ Primary:
 
 Secondary verification targets:
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams/surface-contracts/**`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md`
+- `templates/ai-first-saas-starter/app-description/app-description/12-workstreams/surface-contracts/**`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
 - `specs/web-ui-style-theme-refresh/verification-notes.md`
 
 ## Execution model
@@ -73,7 +73,7 @@ Secondary verification targets:
 ## Sprint sequence
 
 1. `sprints/01-core-domain-surfaces-sprint.md` — update core app domain overview and five workstream README surface/style contracts.
-2. `sprints/02-seed-surface-style-sprint.md` — review seed app-description surface contracts against the same surface-style expectations and patch any gaps found.
+2. `sprints/02-seed-surface-style-sprint.md` — review starter core app-description surface contracts against the same surface-style expectations and patch any gaps found.
 3. `sprints/99-verification-sprint.md` — verify completion and append follow-up tasks if material gaps remain.
 
 ## Done state
@@ -85,9 +85,9 @@ This mini-project is complete when:
 - User Admin, Agent Admin, Audit/Trace, and Governance/Policy surface docs include concise appearance/style expectations tied to the canonical style guide;
 - dashboard, list/search, detail/edit, decision, audit timeline, governance diff, outcome, notification, and system-message surface families are described as enterprise workstream surfaces, not generic dashboards/tables/mockups;
 - no active core app domain doc still implies mode-first `light/dark/system`, `uiMode`, `preferredColorMode`, obsolete Atlas style ids, or old orange/coral style defaults;
-- verification records no material mismatch between core domain surface docs, seed app-description surface contracts, and `docs/web-ui-style-guide.md`.
+- verification records no material mismatch between core domain surface docs, starter core app-description surface contracts, and `docs/web-ui-style-guide.md`.
 
 ## Open concerns and recommendations
 
 - The first sprint should keep edits concise. The canonical style guide owns full token/component rules; core workstream docs should add surface-specific style expectations and references.
-- If verification finds substantial seed app-description gaps, append bounded follow-up tasks rather than widening an active task.
+- If verification finds substantial starter core app-description gaps, append bounded follow-up tasks rather than widening an active task.

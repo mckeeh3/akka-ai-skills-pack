@@ -9,7 +9,7 @@ Create a concrete map from the canonical core PRD to app-description layers, cap
 - `specs/core-app-full-stack-readiness/README.md`
 - `docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md`
 - `docs/examples/core-ai-first-saas-input/01-core-seed-progression-plan.md`
-- `docs/examples/ai-first-saas-seed-app-description/README.md`
+- `templates/ai-first-saas-starter/app-description/README.md`
 - `docs/capability-first-backend-architecture.md`
 - `skills/core-saas-foundation/SKILL.md`
 - `skills/akka-solution-decomposition/SKILL.md`

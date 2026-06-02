@@ -2,9 +2,9 @@
 
 ## Status
 
-- status: draft for seed app validation
+- status: draft for starter core app validation
 - source mockups: `specs/web-ui-design/images/ai-first-saas-web-ui-01.png` through `ai-first-saas-web-ui-08.png`
-- first target: `docs/examples/ai-first-saas-seed-app-description/`
+- first target: `templates/ai-first-saas-starter/app-description/`
 - later target: integrate the validated design system into skills-pack guidance and generation assets
 
 ## Design intent
@@ -81,7 +81,7 @@ Themes and lightweight style variants must not change:
 
 ## Seed theme: Atlas Ops supervisory console
 
-This is the initial AI-first theme to test against the seed app. It is the default theme and must be implemented as one named theme with both light and dark token sets. The visual tuning should use a warm near-black operational console in dark mode: green-black/charcoal page background, slightly separated layered cards, subtle warm borders/component glow, orange primary action/icon treatments, and muted coral AI/highlight accents. Keep the Atlas Ops information architecture and component anatomy, but prefer the warmer dashboard atmosphere shown in `dashboard-example.png` over the cooler blue-black reference image. Background texture should be a very subtle dotted field or near-invisible texture, not prominent diagonal striping or page-corner gradient washes; glow should stay component-local.
+This is the initial AI-first theme to test against the starter core app. It is the default theme and must be implemented as one named theme with both light and dark token sets. The visual tuning should use a warm near-black operational console in dark mode: green-black/charcoal page background, slightly separated layered cards, subtle warm borders/component glow, orange primary action/icon treatments, and muted coral AI/highlight accents. Keep the Atlas Ops information architecture and component anatomy, but prefer the warmer dashboard atmosphere shown in `dashboard-example.png` over the cooler blue-black reference image. Background texture should be a very subtle dotted field or near-invisible texture, not prominent diagonal striping or page-corner gradient washes; glow should stay component-local.
 
 ### Font tokens
 
@@ -349,7 +349,7 @@ Rules:
 
 ## Screen patterns for seed validation
 
-Map the mockup system onto the seed app screens as follows.
+Map the mockup system onto the starter core app screens as follows.
 
 ### Mission Control / Briefing
 
@@ -428,14 +428,14 @@ Required regions:
 - Form validation errors identify the field and how to fix it.
 - Action confirmations name the object and consequence.
 
-## Implementation expectations for seed app test
+## Implementation expectations for starter core app test
 
-Authoritative seed app UI files to update during validation:
+Authoritative starter core app UI files to update during validation:
 
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/style-guide.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/screens-and-navigation.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/states-and-realtime.md`
-- `docs/examples/ai-first-saas-seed-app-description/app-description/55-ui/accessibility-and-responsive.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/states-and-realtime.md`
+- `templates/ai-first-saas-starter/app-description/app-description/55-ui/accessibility-and-responsive.md`
 
 Expected generated frontend shape when realization is requested:
 
@@ -444,7 +444,7 @@ Expected generated frontend shape when realization is requested:
 - documented root attributes for selected theme and resolved mode, such as `data-theme` and `data-mode`;
 - user settings seam for persisting selected theme and preferred mode;
 - no copied demo names, users, logos, or metrics from mockups;
-- app-specific names and data from the seed app description;
+- app-specific names and data from the starter core app description;
 - components consume tokens and semantic props rather than hard-coded colors;
 - tests or checks verify each supported theme renders in both light and dark mode without inaccessible contrast regressions where practical.
 
@@ -458,4 +458,4 @@ Expected generated frontend shape when realization is requested:
 - [ ] AI-first surfaces expose human authority, agent activity, evidence/risk/policy, trace links, and outcome context.
 - [ ] Responsive behavior preserves the primary decision/action on narrow screens.
 - [ ] Accessibility rules cover contrast, focus, keyboard, color-not-alone semantics, and reduced motion across every theme/mode combination.
-- [ ] Seed app UI description can reference this spec without copying mockup demo content.
+- [ ] Starter core app UI description can reference this spec without copying mockup demo content.
