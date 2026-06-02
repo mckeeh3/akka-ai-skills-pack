@@ -6,6 +6,7 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 type DetailEditSurfaceProps = {
   envelope: SurfaceEnvelope<DetailEditSurfaceData>;
   onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
+  onFieldValueChange?: (fieldId: string, value: string, surfaceId: string) => void;
 };
 
 function stringifySafe(value: unknown): string {
@@ -14,7 +15,7 @@ function stringifySafe(value: unknown): string {
   return String(value ?? '');
 }
 
-export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps) {
+export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: DetailEditSurfaceProps) {
   const permissionState = envelope.data.permissionState;
   const fields = envelope.data.fields ?? [];
   const recordId = envelope.data.recordId ?? envelope.data.traceId ?? envelope.data.category ?? envelope.surfaceId;
@@ -30,6 +31,7 @@ export function DetailEditSurface({ envelope, onAction }: DetailEditSurfaceProps
 
   function updateFieldValue(fieldId: string, value: string) {
     setFieldValues((current) => ({ ...current, [fieldId]: value }));
+    onFieldValueChange?.(fieldId, value, envelope.surfaceId);
   }
 
   return (

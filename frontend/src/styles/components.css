@@ -752,6 +752,98 @@
 .field-helper { margin: 0; font-size: 0.875rem; }
 .field-error { margin: 0; color: var(--color-danger); font-weight: 800; }
 
+.surface-detail-edit-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-surface-glass) 88%, var(--color-surface-soft));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2);
+}
+
+.surface-detail-field {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.surface-detail-field label {
+  color: var(--color-text-soft);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.025em;
+}
+
+.surface-detail-field input,
+.surface-detail-field textarea,
+.surface-detail-field select {
+  width: 100%;
+  min-height: var(--control-height);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 16%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--color-surface-raised), color-mix(in srgb, var(--color-surface-raised) 88%, var(--color-surface-soft)));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.18), 0 10px 24px rgb(15 23 42 / 0.045);
+  color: var(--color-text);
+  padding: 0 var(--space-3);
+  font: inherit;
+}
+
+.surface-detail-field select {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-primary-strong) 50%),
+    linear-gradient(135deg, var(--color-primary-strong) 50%, transparent 50%),
+    linear-gradient(180deg, var(--color-surface-raised), color-mix(in srgb, var(--color-surface-raised) 88%, var(--color-surface-soft)));
+  background-position:
+    calc(100% - 1.15rem) 50%,
+    calc(100% - 0.85rem) 50%,
+    0 0;
+  background-size: 0.32rem 0.32rem, 0.32rem 0.32rem, 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.surface-detail-field textarea {
+  min-height: 7rem;
+  padding-top: var(--space-3);
+  resize: vertical;
+}
+
+.surface-detail-field input:focus-visible,
+.surface-detail-field textarea:focus-visible,
+.surface-detail-field select:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 14px 32px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.surface-detail-field input[readonly],
+.surface-detail-field textarea[readonly],
+.surface-detail-field select:disabled {
+  cursor: not-allowed;
+  border-style: dashed;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.surface-detail-field .denied-reason {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.surface-detail-field:has([name="preferredThemeId"]) {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary-soft) 34%, transparent);
+  padding: var(--space-3);
+}
+
 .data-state {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);

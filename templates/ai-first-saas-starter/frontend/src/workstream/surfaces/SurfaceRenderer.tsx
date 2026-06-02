@@ -18,9 +18,10 @@ type StructuredSurfaceRendererProps = {
   envelopes?: SurfaceEnvelope<unknown>[];
   selectedSurfaceId?: string;
   onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
+  onFieldValueChange?: (fieldId: string, value: string, surfaceId: string) => void;
 };
 
-export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSurfaceId, onAction }: StructuredSurfaceRendererProps) {
+export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSurfaceId, onAction, onFieldValueChange }: StructuredSurfaceRendererProps) {
   const selectedEnvelope = envelope ?? envelopes.find((candidate) => candidate.surfaceId === selectedSurfaceId) ?? envelopes[0];
 
   if (!selectedEnvelope) {
@@ -37,7 +38,7 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
     case 'list-search':
       return <ListSearchSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'detail-edit':
-      return <DetailEditSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+      return <DetailEditSurface envelope={selectedEnvelope as never} onAction={onAction} onFieldValueChange={onFieldValueChange} />;
     case 'decision':
       return <DecisionSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'audit-timeline':

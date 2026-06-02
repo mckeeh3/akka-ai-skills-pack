@@ -294,6 +294,12 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       : current);
   }
 
+  function handleSurfaceFieldValueChange(fieldId: string, value: string) {
+    if (fieldId !== 'preferredThemeId') return;
+    const previewThemeId = normalizeThemeId(value);
+    if (previewThemeId) setThemeId(previewThemeId);
+  }
+
   async function handleSurfaceAction(action: SurfaceAction, surfaceId: string, input: unknown = {}) {
     if (!ready || !me) return;
     const request = buildCapabilityActionRequest(action, {
@@ -567,6 +573,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         autoAnchorPaused={currentVisualSession?.userHasManualScroll}
         onOpenSurface={openSurface}
         onSurfaceAction={handleSurfaceAction}
+        onSurfaceFieldValueChange={handleSurfaceFieldValueChange}
         onAutoAnchorPaused={() => {
           if (currentVisualSession) rememberVisualSession(currentVisualSession, { userHasManualScroll: true });
         }}

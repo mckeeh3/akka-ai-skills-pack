@@ -46,7 +46,7 @@
 
 ### TASK-WFTL-01-001: Fix detail-edit form styling and live theme preview
 
-- status: pending
+- status: done
 - source: specs/workstream-form-theme-live-remediation/backlog/01-runtime-remediation-build-backlog.md
 - task brief: specs/workstream-form-theme-live-remediation/tasks/01-runtime-remediation/01-fix-detail-edit-form-and-live-theme-preview.md
 - depends on:
@@ -84,6 +84,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: fix workstream form styling and theme preview`
+  - checks: `git diff --check`; `cd frontend && npm test && npm run typecheck && npm run build`; `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`
 
 ### TASK-WFTL-01-002: Add form styling and theme preview regression tests
 
