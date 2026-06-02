@@ -89,7 +89,7 @@
 
 ### TASK-COREEXT-01-002: Implement governed artifact lifecycle history
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/01-durable-core/02-governed-artifact-lifecycle-history.md
 - depends on: [TASK-COREEXT-01-001]
@@ -124,6 +124,7 @@
   - queue is updated and committed
 - notes:
   - commit message: `coreext: add governed artifact history`
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`
 
 ### TASK-COREEXT-01-003: Complete core projections and views
 

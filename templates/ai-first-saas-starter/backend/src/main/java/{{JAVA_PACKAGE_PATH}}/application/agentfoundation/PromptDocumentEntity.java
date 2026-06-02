@@ -4,8 +4,10 @@ import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.TypeName;
 import akka.javasdk.eventsourcedentity.EventSourcedEntity;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.GovernedArtifactLifecycleFact;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.PromptVersion;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,6 +36,10 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
     return effects().reply(currentState().versionForTenant(query.tenantId(), query.version()));
   }
 
+  public ReadOnlyEffect<List<GovernedArtifactLifecycleFact>> history(DocumentQuery query) {
+    return effects().reply(currentState().historyForTenant(query.tenantId()));
+  }
+
   /** Compatibility write path for seed import and repository adapters. */
   public Effect<PromptDocument> save(PromptDocument document) {
     var validation = validate(document);
@@ -41,18 +47,39 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
       return effects().error(validation.get());
     }
     if (document.equals(currentState().document())) {
-      return effects().reply(document);
+      return effects().persist(new Event.LifecycleFactAppended(noOpFact(document))).thenReply(State::document);
     }
     return effects()
-        .persist(new Event.PromptDocumentSaved(document, toVersion(document)))
+        .persist(new Event.PromptDocumentSaved(document, toVersion(document), lifecycleFact(document)))
         .thenReply(State::document);
   }
 
   @Override
   public State applyEvent(Event event) {
     return switch (event) {
-      case Event.PromptDocumentSaved saved -> currentState().save(saved.document(), saved.activeVersion());
+      case Event.PromptDocumentSaved saved -> currentState().save(saved.document(), saved.activeVersion(), saved.lifecycleFact());
+      case Event.LifecycleFactAppended appended -> currentState().appendHistory(appended.lifecycleFact());
     };
+  }
+
+  public Effect<List<GovernedArtifactLifecycleFact>> appendLifecycleFact(GovernedArtifactLifecycleFact fact) {
+    var validation = validateLifecycleFact(fact);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    return effects().persist(new Event.LifecycleFactAppended(fact)).thenReply(State::history);
+  }
+
+  private Optional<String> validateLifecycleFact(GovernedArtifactLifecycleFact fact) {
+    if (fact == null) return Optional.of("lifecycle-fact-required");
+    if (blank(fact.tenantId())) return Optional.of("tenant-required");
+    if (fact.artifactType() != GovernedArtifactLifecycleFact.ArtifactType.PROMPT_DOCUMENT) return Optional.of("artifact-type-mismatch");
+    if (!currentState().documentForTenant(fact.tenantId()).map(document -> document.promptDocumentId().equals(fact.artifactId())).orElse(false)) {
+      return Optional.of("artifact-not-found-for-tenant");
+    }
+    if (fact.transition() == null) return Optional.of("transition-required");
+    if (fact.occurredAt() == null) return Optional.of("occurred-at-required");
+    return Optional.empty();
   }
 
   private Optional<String> validate(PromptDocument document) {
@@ -65,6 +92,56 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
     if (blank(document.contentBody())) return Optional.of("prompt-content-required");
     if (containsSecretLikeContent(document.contentBody())) return Optional.of("prompt-content-contains-secret-like-value");
     return Optional.empty();
+  }
+
+  private GovernedArtifactLifecycleFact lifecycleFact(PromptDocument document) {
+    var previous = currentState().document();
+    return GovernedArtifactLifecycleFact.of(
+        document.tenantId(),
+        GovernedArtifactLifecycleFact.ArtifactType.PROMPT_DOCUMENT,
+        document.promptDocumentId(),
+        document.agentDefinitionId(),
+        transition(previous == null ? null : previous.status(), document.status(), document.seedProvenance() != null),
+        previous == null ? null : previous.status(),
+        document.status(),
+        previous == null ? 0 : previous.activeVersion(),
+        document.activeVersion(),
+        document.promptDocumentId() + ":v" + document.activeVersion(),
+        document.contentChecksum(),
+        "system",
+        document.seedProvenance() == null ? null : document.seedProvenance().correlationId(),
+        document.changeSummary(),
+        false,
+        document.updatedAt());
+  }
+
+  private GovernedArtifactLifecycleFact noOpFact(PromptDocument document) {
+    return GovernedArtifactLifecycleFact.of(
+        document.tenantId(),
+        GovernedArtifactLifecycleFact.ArtifactType.PROMPT_DOCUMENT,
+        document.promptDocumentId(),
+        document.agentDefinitionId(),
+        GovernedArtifactLifecycleFact.Transition.NO_OP,
+        document.status(),
+        document.status(),
+        document.activeVersion(),
+        document.activeVersion(),
+        document.promptDocumentId() + ":v" + document.activeVersion(),
+        document.contentChecksum(),
+        "system",
+        document.seedProvenance() == null ? null : document.seedProvenance().correlationId(),
+        "duplicate-save-no-op",
+        false,
+        document.updatedAt());
+  }
+
+  private static GovernedArtifactLifecycleFact.Transition transition(AgentLifecycleStatus previous, AgentLifecycleStatus next, boolean seeded) {
+    if (previous == null && seeded) return GovernedArtifactLifecycleFact.Transition.SEED_IMPORTED;
+    if (next == AgentLifecycleStatus.ACTIVE) return GovernedArtifactLifecycleFact.Transition.ACTIVATED;
+    if (previous == null || next == AgentLifecycleStatus.DRAFT) return GovernedArtifactLifecycleFact.Transition.DRAFTED;
+    if (next == AgentLifecycleStatus.DISABLED) return GovernedArtifactLifecycleFact.Transition.DEPRECATED;
+    if (next == AgentLifecycleStatus.ARCHIVED) return GovernedArtifactLifecycleFact.Transition.ARCHIVED;
+    return GovernedArtifactLifecycleFact.Transition.REVIEWED;
   }
 
   private static PromptVersion toVersion(PromptDocument document) {
@@ -93,19 +170,32 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
     return content != null && content.matches("(?is).*(api[_-]?key|secret|token|password)\\s*[:=]\\s*[^\\s]+.*");
   }
 
-  public record State(PromptDocument document, Map<Integer, PromptVersion> versions) {
+  public record State(PromptDocument document, Map<Integer, PromptVersion> versions, List<GovernedArtifactLifecycleFact> history) {
     static State empty() {
-      return new State(null, Map.of());
+      return new State(null, Map.of(), List.of());
     }
 
     public State {
       versions = Map.copyOf(versions == null ? Map.of() : versions);
+      history = List.copyOf(history == null ? List.of() : history);
     }
 
-    State save(PromptDocument document, PromptVersion version) {
+    State save(PromptDocument document, PromptVersion version, GovernedArtifactLifecycleFact lifecycleFact) {
       var updatedVersions = new java.util.LinkedHashMap<>(versions);
       updatedVersions.put(version.version(), version);
-      return new State(document, updatedVersions);
+      var updatedHistory = new java.util.ArrayList<>(history);
+      updatedHistory.add(lifecycleFact);
+      return new State(document, updatedVersions, updatedHistory);
+    }
+
+    State appendHistory(GovernedArtifactLifecycleFact lifecycleFact) {
+      var updatedHistory = new java.util.ArrayList<>(history);
+      updatedHistory.add(lifecycleFact);
+      return new State(document, versions, updatedHistory);
+    }
+
+    List<GovernedArtifactLifecycleFact> historyForTenant(String tenantId) {
+      return history.stream().filter(fact -> fact.tenantId().equals(tenantId)).toList();
     }
 
     Optional<PromptDocument> documentForTenant(String tenantId) {
@@ -120,9 +210,15 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
   public sealed interface Event {
     PromptDocument document();
     PromptVersion activeVersion();
+    default GovernedArtifactLifecycleFact lifecycleFact() { return null; }
 
     @TypeName("prompt-document-saved")
-    record PromptDocumentSaved(PromptDocument document, PromptVersion activeVersion) implements Event {}
+    record PromptDocumentSaved(PromptDocument document, PromptVersion activeVersion, GovernedArtifactLifecycleFact lifecycleFact) implements Event {}
+    @TypeName("prompt-document-lifecycle-fact-appended")
+    record LifecycleFactAppended(GovernedArtifactLifecycleFact lifecycleFact) implements Event {
+      @Override public PromptDocument document() { return null; }
+      @Override public PromptVersion activeVersion() { return null; }
+    }
   }
 
   public record DocumentQuery(String tenantId, String documentId) {}

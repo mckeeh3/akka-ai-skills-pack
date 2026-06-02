@@ -4,8 +4,10 @@ import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.TypeName;
 import akka.javasdk.eventsourcedentity.EventSourcedEntity;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.GovernedArtifactLifecycleFact;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillDocument;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.SkillVersion;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,6 +36,10 @@ public class SkillDocumentEntity extends EventSourcedEntity<SkillDocumentEntity.
     return effects().reply(currentState().versionForTenant(query.tenantId(), query.version()));
   }
 
+  public ReadOnlyEffect<List<GovernedArtifactLifecycleFact>> history(DocumentQuery query) {
+    return effects().reply(currentState().historyForTenant(query.tenantId()));
+  }
+
   /** Compatibility write path for seed import and repository adapters. */
   public Effect<SkillDocument> save(SkillDocument document) {
     var validation = validate(document);
@@ -41,18 +47,39 @@ public class SkillDocumentEntity extends EventSourcedEntity<SkillDocumentEntity.
       return effects().error(validation.get());
     }
     if (document.equals(currentState().document())) {
-      return effects().reply(document);
+      return effects().persist(new Event.LifecycleFactAppended(noOpFact(document))).thenReply(State::document);
     }
     return effects()
-        .persist(new Event.SkillDocumentSaved(document, toVersion(document)))
+        .persist(new Event.SkillDocumentSaved(document, toVersion(document), lifecycleFact(document)))
         .thenReply(State::document);
   }
 
   @Override
   public State applyEvent(Event event) {
     return switch (event) {
-      case Event.SkillDocumentSaved saved -> currentState().save(saved.document(), saved.activeVersion());
+      case Event.SkillDocumentSaved saved -> currentState().save(saved.document(), saved.activeVersion(), saved.lifecycleFact());
+      case Event.LifecycleFactAppended appended -> currentState().appendHistory(appended.lifecycleFact());
     };
+  }
+
+  public Effect<List<GovernedArtifactLifecycleFact>> appendLifecycleFact(GovernedArtifactLifecycleFact fact) {
+    var validation = validateLifecycleFact(fact);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    return effects().persist(new Event.LifecycleFactAppended(fact)).thenReply(State::history);
+  }
+
+  private Optional<String> validateLifecycleFact(GovernedArtifactLifecycleFact fact) {
+    if (fact == null) return Optional.of("lifecycle-fact-required");
+    if (blank(fact.tenantId())) return Optional.of("tenant-required");
+    if (fact.artifactType() != GovernedArtifactLifecycleFact.ArtifactType.SKILL_DOCUMENT) return Optional.of("artifact-type-mismatch");
+    if (!currentState().documentForTenant(fact.tenantId()).map(document -> document.skillDocumentId().equals(fact.artifactId())).orElse(false)) {
+      return Optional.of("artifact-not-found-for-tenant");
+    }
+    if (fact.transition() == null) return Optional.of("transition-required");
+    if (fact.occurredAt() == null) return Optional.of("occurred-at-required");
+    return Optional.empty();
   }
 
   private Optional<String> validate(SkillDocument document) {
@@ -65,6 +92,56 @@ public class SkillDocumentEntity extends EventSourcedEntity<SkillDocumentEntity.
     if (blank(document.contentBody())) return Optional.of("skill-content-required");
     if (PromptDocumentEntity.containsSecretLikeContent(document.contentBody())) return Optional.of("skill-content-contains-secret-like-value");
     return Optional.empty();
+  }
+
+  private GovernedArtifactLifecycleFact lifecycleFact(SkillDocument document) {
+    var previous = currentState().document();
+    return GovernedArtifactLifecycleFact.of(
+        document.tenantId(),
+        GovernedArtifactLifecycleFact.ArtifactType.SKILL_DOCUMENT,
+        document.skillDocumentId(),
+        null,
+        transition(previous == null ? null : previous.status(), document.status(), document.seedProvenance() != null),
+        previous == null ? null : previous.status(),
+        document.status(),
+        previous == null ? 0 : previous.activeVersion(),
+        document.activeVersion(),
+        document.skillDocumentId() + ":v" + document.activeVersion(),
+        document.contentChecksum(),
+        "system",
+        document.seedProvenance() == null ? null : document.seedProvenance().correlationId(),
+        document.purpose(),
+        false,
+        document.updatedAt());
+  }
+
+  private GovernedArtifactLifecycleFact noOpFact(SkillDocument document) {
+    return GovernedArtifactLifecycleFact.of(
+        document.tenantId(),
+        GovernedArtifactLifecycleFact.ArtifactType.SKILL_DOCUMENT,
+        document.skillDocumentId(),
+        null,
+        GovernedArtifactLifecycleFact.Transition.NO_OP,
+        document.status(),
+        document.status(),
+        document.activeVersion(),
+        document.activeVersion(),
+        document.skillDocumentId() + ":v" + document.activeVersion(),
+        document.contentChecksum(),
+        "system",
+        document.seedProvenance() == null ? null : document.seedProvenance().correlationId(),
+        "duplicate-save-no-op",
+        false,
+        document.updatedAt());
+  }
+
+  private static GovernedArtifactLifecycleFact.Transition transition(AgentLifecycleStatus previous, AgentLifecycleStatus next, boolean seeded) {
+    if (previous == null && seeded) return GovernedArtifactLifecycleFact.Transition.SEED_IMPORTED;
+    if (next == AgentLifecycleStatus.ACTIVE) return GovernedArtifactLifecycleFact.Transition.ACTIVATED;
+    if (previous == null || next == AgentLifecycleStatus.DRAFT) return GovernedArtifactLifecycleFact.Transition.DRAFTED;
+    if (next == AgentLifecycleStatus.DISABLED) return GovernedArtifactLifecycleFact.Transition.DEPRECATED;
+    if (next == AgentLifecycleStatus.ARCHIVED) return GovernedArtifactLifecycleFact.Transition.ARCHIVED;
+    return GovernedArtifactLifecycleFact.Transition.REVIEWED;
   }
 
   private static SkillVersion toVersion(SkillDocument document) {
@@ -90,19 +167,32 @@ public class SkillDocumentEntity extends EventSourcedEntity<SkillDocumentEntity.
     return value == null || value.isBlank();
   }
 
-  public record State(SkillDocument document, Map<Integer, SkillVersion> versions) {
+  public record State(SkillDocument document, Map<Integer, SkillVersion> versions, List<GovernedArtifactLifecycleFact> history) {
     static State empty() {
-      return new State(null, Map.of());
+      return new State(null, Map.of(), List.of());
     }
 
     public State {
       versions = Map.copyOf(versions == null ? Map.of() : versions);
+      history = List.copyOf(history == null ? List.of() : history);
     }
 
-    State save(SkillDocument document, SkillVersion version) {
+    State save(SkillDocument document, SkillVersion version, GovernedArtifactLifecycleFact lifecycleFact) {
       var updatedVersions = new java.util.LinkedHashMap<>(versions);
       updatedVersions.put(version.version(), version);
-      return new State(document, updatedVersions);
+      var updatedHistory = new java.util.ArrayList<>(history);
+      updatedHistory.add(lifecycleFact);
+      return new State(document, updatedVersions, updatedHistory);
+    }
+
+    State appendHistory(GovernedArtifactLifecycleFact lifecycleFact) {
+      var updatedHistory = new java.util.ArrayList<>(history);
+      updatedHistory.add(lifecycleFact);
+      return new State(document, versions, updatedHistory);
+    }
+
+    List<GovernedArtifactLifecycleFact> historyForTenant(String tenantId) {
+      return history.stream().filter(fact -> fact.tenantId().equals(tenantId)).toList();
     }
 
     Optional<SkillDocument> documentForTenant(String tenantId) {
@@ -117,9 +207,15 @@ public class SkillDocumentEntity extends EventSourcedEntity<SkillDocumentEntity.
   public sealed interface Event {
     SkillDocument document();
     SkillVersion activeVersion();
+    default GovernedArtifactLifecycleFact lifecycleFact() { return null; }
 
     @TypeName("skill-document-saved")
-    record SkillDocumentSaved(SkillDocument document, SkillVersion activeVersion) implements Event {}
+    record SkillDocumentSaved(SkillDocument document, SkillVersion activeVersion, GovernedArtifactLifecycleFact lifecycleFact) implements Event {}
+    @TypeName("skill-document-lifecycle-fact-appended")
+    record LifecycleFactAppended(GovernedArtifactLifecycleFact lifecycleFact) implements Event {
+      @Override public SkillDocument document() { return null; }
+      @Override public SkillVersion activeVersion() { return null; }
+    }
   }
 
   public record DocumentQuery(String tenantId, String documentId) {}

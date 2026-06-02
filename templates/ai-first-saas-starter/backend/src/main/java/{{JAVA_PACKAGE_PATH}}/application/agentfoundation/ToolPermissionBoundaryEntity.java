@@ -4,7 +4,9 @@ import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.TypeName;
 import akka.javasdk.eventsourcedentity.EventSourcedEntity;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.GovernedArtifactLifecycleFact;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
+import java.util.List;
 import java.util.Optional;
 
 /** First-class tenant-scoped Event Sourced Entity for managed-agent ToolPermissionBoundary state. */
@@ -28,6 +30,10 @@ public class ToolPermissionBoundaryEntity extends EventSourcedEntity<ToolPermiss
         .filter(boundary -> boundary.status() == AgentLifecycleStatus.ACTIVE));
   }
 
+  public ReadOnlyEffect<List<GovernedArtifactLifecycleFact>> history(BoundaryQuery query) {
+    return effects().reply(currentState().historyForTenant(query.tenantId()));
+  }
+
   /** Compatibility write path for seed import and repository adapters. */
   public Effect<ToolPermissionBoundary> save(ToolPermissionBoundary boundary) {
     var validation = validate(boundary);
@@ -35,16 +41,37 @@ public class ToolPermissionBoundaryEntity extends EventSourcedEntity<ToolPermiss
       return effects().error(validation.get());
     }
     if (boundary.equals(currentState().boundary())) {
-      return effects().reply(boundary);
+      return effects().persist(new Event.LifecycleFactAppended(noOpFact(boundary))).thenReply(State::boundary);
     }
-    return effects().persist(new Event.ToolBoundarySaved(boundary)).thenReply(State::boundary);
+    return effects().persist(new Event.ToolBoundarySaved(boundary, lifecycleFact(boundary))).thenReply(State::boundary);
   }
 
   @Override
   public State applyEvent(Event event) {
     return switch (event) {
-      case Event.ToolBoundarySaved saved -> new State(saved.boundary());
+      case Event.ToolBoundarySaved saved -> currentState().save(saved.boundary(), saved.lifecycleFact());
+      case Event.LifecycleFactAppended appended -> currentState().appendHistory(appended.lifecycleFact());
     };
+  }
+
+  public Effect<List<GovernedArtifactLifecycleFact>> appendLifecycleFact(GovernedArtifactLifecycleFact fact) {
+    var validation = validateLifecycleFact(fact);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    return effects().persist(new Event.LifecycleFactAppended(fact)).thenReply(State::history);
+  }
+
+  private Optional<String> validateLifecycleFact(GovernedArtifactLifecycleFact fact) {
+    if (fact == null) return Optional.of("lifecycle-fact-required");
+    if (blank(fact.tenantId())) return Optional.of("tenant-required");
+    if (fact.artifactType() != GovernedArtifactLifecycleFact.ArtifactType.TOOL_PERMISSION_BOUNDARY) return Optional.of("artifact-type-mismatch");
+    if (!currentState().boundaryForTenant(fact.tenantId()).map(boundary -> boundary.boundaryId().equals(fact.artifactId())).orElse(false)) {
+      return Optional.of("artifact-not-found-for-tenant");
+    }
+    if (fact.transition() == null) return Optional.of("transition-required");
+    if (fact.occurredAt() == null) return Optional.of("occurred-at-required");
+    return Optional.empty();
   }
 
   private Optional<String> validate(ToolPermissionBoundary boundary) {
@@ -73,13 +100,85 @@ public class ToolPermissionBoundaryEntity extends EventSourcedEntity<ToolPermiss
     return Optional.empty();
   }
 
+  private GovernedArtifactLifecycleFact lifecycleFact(ToolPermissionBoundary boundary) {
+    var previous = currentState().boundary();
+    return GovernedArtifactLifecycleFact.of(
+        boundary.tenantId(),
+        GovernedArtifactLifecycleFact.ArtifactType.TOOL_PERMISSION_BOUNDARY,
+        boundary.boundaryId(),
+        boundary.agentDefinitionId(),
+        transition(previous == null ? null : previous.status(), boundary.status(), boundary.seedProvenance() != null),
+        previous == null ? null : previous.status(),
+        boundary.status(),
+        previous == null ? 0 : previous.boundaryVersion(),
+        boundary.boundaryVersion(),
+        boundary.boundaryId() + ":v" + boundary.boundaryVersion(),
+        boundary.checksum(),
+        "system",
+        boundary.seedProvenance() == null ? null : boundary.seedProvenance().correlationId(),
+        previous == null ? "initial lifecycle import" : "lifecycle update",
+        false,
+        boundary.updatedAt());
+  }
+
+  private GovernedArtifactLifecycleFact noOpFact(ToolPermissionBoundary boundary) {
+    return GovernedArtifactLifecycleFact.of(
+        boundary.tenantId(),
+        GovernedArtifactLifecycleFact.ArtifactType.TOOL_PERMISSION_BOUNDARY,
+        boundary.boundaryId(),
+        boundary.agentDefinitionId(),
+        GovernedArtifactLifecycleFact.Transition.NO_OP,
+        boundary.status(),
+        boundary.status(),
+        boundary.boundaryVersion(),
+        boundary.boundaryVersion(),
+        boundary.boundaryId() + ":v" + boundary.boundaryVersion(),
+        boundary.checksum(),
+        "system",
+        boundary.seedProvenance() == null ? null : boundary.seedProvenance().correlationId(),
+        "duplicate-save-no-op",
+        false,
+        boundary.updatedAt());
+  }
+
+  private static GovernedArtifactLifecycleFact.Transition transition(AgentLifecycleStatus previous, AgentLifecycleStatus next, boolean seeded) {
+    if (previous == null && seeded) return GovernedArtifactLifecycleFact.Transition.SEED_IMPORTED;
+    if (next == AgentLifecycleStatus.ACTIVE) return GovernedArtifactLifecycleFact.Transition.ACTIVATED;
+    if (previous == null || next == AgentLifecycleStatus.DRAFT) return GovernedArtifactLifecycleFact.Transition.DRAFTED;
+    if (next == AgentLifecycleStatus.DISABLED || next == AgentLifecycleStatus.DEPRECATED) return GovernedArtifactLifecycleFact.Transition.DEPRECATED;
+    if (next == AgentLifecycleStatus.ARCHIVED) return GovernedArtifactLifecycleFact.Transition.ARCHIVED;
+    if (next == AgentLifecycleStatus.APPROVED) return GovernedArtifactLifecycleFact.Transition.APPROVED;
+    if (next == AgentLifecycleStatus.IN_REVIEW) return GovernedArtifactLifecycleFact.Transition.SUBMITTED;
+    return GovernedArtifactLifecycleFact.Transition.REVIEWED;
+  }
+
   private static boolean blank(String value) {
     return value == null || value.isBlank();
   }
 
-  public record State(ToolPermissionBoundary boundary) {
+  public record State(ToolPermissionBoundary boundary, List<GovernedArtifactLifecycleFact> history) {
     static State empty() {
-      return new State(null);
+      return new State(null, List.of());
+    }
+
+    public State {
+      history = List.copyOf(history == null ? List.of() : history);
+    }
+
+    State save(ToolPermissionBoundary boundary, GovernedArtifactLifecycleFact lifecycleFact) {
+      var updatedHistory = new java.util.ArrayList<>(history);
+      updatedHistory.add(lifecycleFact);
+      return new State(boundary, updatedHistory);
+    }
+
+    State appendHistory(GovernedArtifactLifecycleFact lifecycleFact) {
+      var updatedHistory = new java.util.ArrayList<>(history);
+      updatedHistory.add(lifecycleFact);
+      return new State(boundary, updatedHistory);
+    }
+
+    List<GovernedArtifactLifecycleFact> historyForTenant(String tenantId) {
+      return history.stream().filter(fact -> fact.tenantId().equals(tenantId)).toList();
     }
 
     Optional<ToolPermissionBoundary> boundaryForTenant(String tenantId) {
@@ -89,9 +188,14 @@ public class ToolPermissionBoundaryEntity extends EventSourcedEntity<ToolPermiss
 
   public sealed interface Event {
     ToolPermissionBoundary boundary();
+    default GovernedArtifactLifecycleFact lifecycleFact() { return null; }
 
     @TypeName("tool-permission-boundary-saved")
-    record ToolBoundarySaved(ToolPermissionBoundary boundary) implements Event {}
+    record ToolBoundarySaved(ToolPermissionBoundary boundary, GovernedArtifactLifecycleFact lifecycleFact) implements Event {}
+    @TypeName("tool-permission-boundary-lifecycle-fact-appended")
+    record LifecycleFactAppended(GovernedArtifactLifecycleFact lifecycleFact) implements Event {
+      @Override public ToolPermissionBoundary boundary() { return null; }
+    }
   }
 
   public record BoundaryQuery(String tenantId, String boundaryId) {}

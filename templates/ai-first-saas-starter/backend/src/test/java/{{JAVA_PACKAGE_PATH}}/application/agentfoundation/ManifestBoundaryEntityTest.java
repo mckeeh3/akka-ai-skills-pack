@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.EventSourcedTestKit;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.GovernedArtifactLifecycleFact;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentReferenceManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentSkillManifest;
 import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.ToolPermissionBoundary;
@@ -82,6 +83,77 @@ class ManifestBoundaryEntityTest {
         .anyMatch(grant -> grant.category() == ToolPermissionBoundary.Category.READ_SKILL));
     assertTrue(active.getReply().orElseThrow().allowedToolGrants().stream()
         .anyMatch(grant -> grant.category() == ToolPermissionBoundary.Category.READ_REFERENCE));
+  }
+
+  @Test
+  void manifestAndToolBoundaryHistoryCarriesRollbackAndAuthorityExpansionDenialFacts() {
+    var manifestV1 = skillManifest("tenant-1", "manifest-user-admin-skills", AgentLifecycleStatus.ACTIVE);
+    var manifestV2 = new AgentSkillManifest(
+        manifestV1.tenantId(),
+        manifestV1.manifestId(),
+        manifestV1.agentDefinitionId(),
+        AgentLifecycleStatus.ACTIVE,
+        2,
+        manifestV1.entries(),
+        "skill-manifest-checksum-v2",
+        null,
+        NOW,
+        NOW);
+    var manifestKit = EventSourcedTestKit.of(
+        AgentSkillManifestEntity.entityId(manifestV1.tenantId(), manifestV1.manifestId()),
+        AgentSkillManifestEntity::new);
+    manifestKit.method(AgentSkillManifestEntity::save).invoke(manifestV1);
+    manifestKit.method(AgentSkillManifestEntity::save).invoke(manifestV2);
+    manifestKit.method(AgentSkillManifestEntity::appendLifecycleFact).invoke(GovernedArtifactLifecycleFact.of(
+        "tenant-1",
+        GovernedArtifactLifecycleFact.ArtifactType.AGENT_SKILL_MANIFEST,
+        manifestV1.manifestId(),
+        manifestV1.agentDefinitionId(),
+        GovernedArtifactLifecycleFact.Transition.ROLLED_BACK,
+        AgentLifecycleStatus.ACTIVE,
+        AgentLifecycleStatus.ACTIVE,
+        2,
+        1,
+        manifestV1.manifestId() + ":v1",
+        manifestV1.compactManifestChecksum(),
+        "admin-1",
+        "corr-manifest-rollback",
+        "rollback manifest assignment after review",
+        false,
+        NOW));
+
+    var boundary = boundary("tenant-1", "boundary-user-admin", List.of(readSkillGrant()), AgentLifecycleStatus.ACTIVE);
+    var boundaryKit = EventSourcedTestKit.of(
+        ToolPermissionBoundaryEntity.entityId(boundary.tenantId(), boundary.boundaryId()),
+        ToolPermissionBoundaryEntity::new);
+    boundaryKit.method(ToolPermissionBoundaryEntity::save).invoke(boundary);
+    boundaryKit.method(ToolPermissionBoundaryEntity::appendLifecycleFact).invoke(GovernedArtifactLifecycleFact.of(
+        "tenant-1",
+        GovernedArtifactLifecycleFact.ArtifactType.TOOL_PERMISSION_BOUNDARY,
+        boundary.boundaryId(),
+        boundary.agentDefinitionId(),
+        GovernedArtifactLifecycleFact.Transition.DENIED,
+        AgentLifecycleStatus.ACTIVE,
+        AgentLifecycleStatus.ACTIVE,
+        1,
+        1,
+        boundary.boundaryId() + ":v1",
+        boundary.checksum(),
+        "admin-1",
+        "corr-boundary-denial",
+        "request attempted external-call authority expansion",
+        true,
+        NOW));
+
+    var manifestHistory = manifestKit.method(AgentSkillManifestEntity::history)
+        .invoke(new AgentSkillManifestEntity.ManifestQuery("tenant-1", manifestV1.manifestId()));
+    var boundaryHistory = boundaryKit.method(ToolPermissionBoundaryEntity::history)
+        .invoke(new ToolPermissionBoundaryEntity.BoundaryQuery("tenant-1", boundary.boundaryId()));
+
+    assertEquals(GovernedArtifactLifecycleFact.Transition.ROLLED_BACK, manifestHistory.getReply().get(2).transition());
+    assertEquals("skill-manifest-checksum-v2", manifestHistory.getReply().get(1).checksum());
+    assertEquals(GovernedArtifactLifecycleFact.Transition.DENIED, boundaryHistory.getReply().get(1).transition());
+    assertTrue(boundaryHistory.getReply().get(1).authorityExpansionDenied());
   }
 
   @Test
