@@ -120,7 +120,7 @@
 
 ### TASK-AFSSR-03-002: Create starter release notes
 
-- status: pending
+- status: done
 - source: specs/ai-first-saas-starter-release-readiness/backlog/01-starter-release-readiness-backlog.md
 - task brief: specs/ai-first-saas-starter-release-readiness/tasks/03-docs/02-create-release-notes.md
 - depends on:
