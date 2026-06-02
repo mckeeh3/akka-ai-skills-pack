@@ -125,7 +125,7 @@
 
 ### TASK-AARPS-99-001: Verify real-provider smoke readiness
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/autonomous-agent-real-provider-smoke-readiness/tasks/99-verification/01-verify-real-provider-smoke-readiness.md
 - depends on:
@@ -139,6 +139,8 @@
 - expected outputs:
   - updated pending-tasks.md
   - optional follow-up tasks if gaps remain
+- output artifact:
+  - specs/autonomous-agent-real-provider-smoke-readiness/99-verify-real-provider-smoke-readiness.md
 - required checks:
   - `git diff --check`
   - review diagnosis/fix/docs evidence
@@ -151,3 +153,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `autonomous-agent-smoke: verify readiness`
+  - completion note: Verified provider-skip validation, configured real-provider smoke, docs/handoff evidence, and fail-closed/no-fake-success guardrail scans. No follow-up tasks are required.
+  - checks: `git diff --check`; `env -u OPENAI_API_KEY tools/smoke-ai-first-saas-starter-real-model.sh --keep --base-package ai.first --maven-group-id ai.first`; `tools/smoke-ai-first-saas-starter-real-model.sh --keep --base-package ai.first --maven-group-id ai.first`; focused guardrail/doc `rg` scans.
