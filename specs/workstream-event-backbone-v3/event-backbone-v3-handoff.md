@@ -9,7 +9,7 @@ Relationship to previous increments:
 - **v1 attention backbone** (`specs/workstream-attention-backbone-v1/`): implemented shared backend-owned `AttentionItem` lifecycle state, scoped workstream/My Account/rail reads, redaction, and audit/work traces.
 - **v2 attention producers and update delivery** (`specs/workstream-attention-event-producers-v2/`): implemented bounded producer paths for invitation delivery, governance approval, timed checks, worker/task blocked or review-needed states, and backend-derived refresh delivery.
 - **v3 governed event backbone** (this mini-project): adds a typed `WorkstreamEventEnvelope`/`WorkstreamEventSourceRef` contract, Akka-backed `WorkstreamEventRepository` seam, event publication for bounded starter invitation and access-review lifecycle states, an idempotent `WorkstreamEventAttentionConsumer`, and backend-derived `projection.refresh.available` hints that point clients back to backend-owned attention/dashboard projections.
-- **Future AutonomousAgent runtime integration**: remains the recommended next initiative. It should emit real durable task lifecycle events into the v3 backbone only after task start/query/result/cancel/notification capabilities, provider/model fail-closed behavior, tool boundaries, and traces are implemented through the governed Akka `AutonomousAgent` runtime path.
+- **AutonomousAgent runtime integration**: later increments implemented selected durable task lifecycle events over this v3 backbone for bounded starter workers. New worker families should emit real durable task lifecycle events only after task start/query/result/cancel/notification capabilities, provider/model fail-closed behavior, tool boundaries, and traces are implemented through the governed Akka `AutonomousAgent` runtime path.
 
 ## Implemented v3 starter scope
 
@@ -34,10 +34,10 @@ The starter template now includes:
 
 v3 is intentionally bounded. It does not implement:
 
-- broad AutonomousAgent durable task runtime integration;
+- broad/generated-app-wide AutonomousAgent durable task runtime integration beyond the selected implemented starter worker verticals;
 - enterprise notification centers, preferences, or digest infrastructure;
 - events for every possible domain/workflow state in generated apps;
 - provider readiness restored/ready events without a real backend readiness source;
 - frontend-authoritative event state or push-only correctness.
 
-Recommended next mini-project: **AutonomousAgent runtime integration over the v3 event backbone**. It should add governed capabilities and tests for durable task lifecycle, task notifications, progress/result surfaces, cancellation/failure attention, provider fail-closed behavior, and event emission into `WorkstreamEventEnvelope` without bypassing auth, policy, audit, or tool boundaries.
+For future worker mini-projects, follow the implemented AutonomousAgent worker pattern: add governed capabilities and tests for durable task lifecycle, task notifications, progress/result surfaces, cancellation/failure attention, provider fail-closed behavior, and event emission into `WorkstreamEventEnvelope` without bypassing auth, policy, audit, or tool boundaries. Do not treat this v3 handoff's original next-step language as evidence that all later implemented worker verticals are still missing.
