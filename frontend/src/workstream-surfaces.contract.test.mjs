@@ -16,6 +16,7 @@ const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');
+const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const surfaceStyles = read('./styles/components.css');
 const packageJson = read('../package.json');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
@@ -162,6 +163,21 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.doesNotMatch(notificationCenterSurface, /emailEnabled|pushEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(allSurfaceComponents, /governance-diff-summary/);
   assert.match(allSurfaceComponents, /outcome-metrics/);
+});
+
+test('detail-edit structured surface form controls use enterprise styling hooks', () => {
+  assert.match(detailEditSurface, /<form className="surface-detail-edit-form"/);
+  assert.match(detailEditSurface, /<div key=\{field\.fieldId\} className="surface-detail-field">/);
+  assert.match(detailEditSurface, /<label htmlFor=\{inputId\}>\{field\.label\}<\/label>/);
+  assert.match(detailEditSurface, /name=\{field\.fieldId\}/);
+  assert.match(surfaceStyles, /\.surface-detail-edit-form \{/);
+  assert.match(surfaceStyles, /grid-template-columns: repeat\(auto-fit, minmax\(min\(18rem, 100%\), 1fr\)\)/);
+  assert.match(surfaceStyles, /\.surface-detail-field input,\n\.surface-detail-field textarea,\n\.surface-detail-field select \{/);
+  assert.match(surfaceStyles, /border: 1px solid color-mix\(in srgb, var\(--color-primary\) 16%, var\(--color-border\)\)/);
+  assert.match(surfaceStyles, /background: linear-gradient\(180deg, var\(--color-surface-raised\)/);
+  assert.match(surfaceStyles, /\.surface-detail-field select \{\n  appearance: none;/);
+  assert.match(surfaceStyles, /\.surface-detail-field input:focus-visible,\n\.surface-detail-field textarea:focus-visible,\n\.surface-detail-field select:focus-visible \{/);
+  assert.match(surfaceStyles, /\.surface-detail-field:has\(\[name="preferredThemeId"\]\)/);
 });
 
 test('workstream barrel exports stream and surface component library', () => {

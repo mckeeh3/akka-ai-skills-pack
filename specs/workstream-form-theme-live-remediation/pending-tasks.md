@@ -88,7 +88,7 @@
 
 ### TASK-WFTL-01-002: Add form styling and theme preview regression tests
 
-- status: pending
+- status: done
 - source: specs/workstream-form-theme-live-remediation/backlog/01-runtime-remediation-build-backlog.md
 - task brief: specs/workstream-form-theme-live-remediation/tasks/01-runtime-remediation/02-add-form-theme-regression-tests.md
 - depends on:
@@ -121,6 +121,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: add workstream form theme regression tests`
+  - checks: `git diff --check`; `cd frontend && npm test && npm run typecheck && npm run build`; `cd templates/ai-first-saas-starter/frontend && npm test && npm run typecheck && npm run build`
 
 ### TASK-WFTL-02-001: Harden form and theme style guidance
 

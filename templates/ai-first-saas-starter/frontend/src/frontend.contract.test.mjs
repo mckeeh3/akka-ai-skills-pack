@@ -7,6 +7,8 @@ const tokens = readFileSync(new URL('./styles/tokens.css', import.meta.url), 'ut
 const base = readFileSync(new URL('./styles/base.css', import.meta.url), 'utf8');
 const layout = readFileSync(new URL('./styles/layout.css', import.meta.url), 'utf8');
 const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
+const surfaceRenderer = readFileSync(new URL('./workstream/surfaces/SurfaceRenderer.tsx', import.meta.url), 'utf8');
+const detailEditSurface = readFileSync(new URL('./workstream/surfaces/DetailEditSurface.tsx', import.meta.url), 'utf8');
 
 test('frontend entry composes the canonical workstream shell instead of route pages', () => {
   assert.match(main, /<WorkstreamShell/);
@@ -53,11 +55,17 @@ test('workstream entry gates fixture realtime client and wires stream state', ()
   assert.match(main, /selectedContextId: bootstrap\.me\.selectedAuthContext\.selectedContextId/);
 });
 
-test('named theme selection uses root data-theme and persists preference', () => {
+test('named theme selection uses root data-theme, live detail-edit preview, and backend persistence', () => {
   assert.match(main, /type ThemePreference = 'aurora-light' \| 'cobalt-light' \| 'obsidian-dark' \| 'midnight-dark'/);
   assert.match(main, /root\.dataset\.theme = themeId/);
   assert.match(main, /window\.localStorage\.setItem\(themeStorageKey, themeId\)/);
   assert.match(main, /bootstrap\.me\.settings\.preferredThemeId/);
+  assert.match(main, /function handleSurfaceFieldValueChange\(fieldId: string, value: string\)/);
+  assert.match(main, /if \(fieldId !== 'preferredThemeId'\) return;\n    const previewThemeId = normalizeThemeId\(value\);\n    if \(previewThemeId\) setThemeId\(previewThemeId\);/);
+  assert.match(surfaceRenderer, /onFieldValueChange=\{onFieldValueChange\}/);
+  assert.match(detailEditSurface, /onFieldValueChange\?: \(fieldId: string, value: string, surfaceId: string\) => void;/);
+  assert.match(detailEditSurface, /onChange=\{\(event\) => updateFieldValue\(field\.fieldId, event\.currentTarget\.value\)\}/);
+  assert.match(main, /const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input/);
   assert.doesNotMatch(main, /prefers-color-scheme: dark/);
 });
 
