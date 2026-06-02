@@ -50,6 +50,18 @@ The agent may draft and analyze governance changes but cannot activate high-impa
 | `surface.governance_policy.learning_center.v1` | dashboard/list | feedback, learned rules, examples, proposed durable changes | `governance_policy.learning.view` | draft policy/skill proposal, dismiss, simulate |
 | `surface.governance_policy.system_message.v1` | system_message | approval-required, denial, simulation started, activation result | capability-specific | retry, open trace, request approval |
 
+## Surface style expectations
+
+These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent governance, authority, evidence, simulation, and decision cues. Style is a UI realization layer only; it must not change policy semantics, approval authority, capability mappings, activation/rollback rules, routes, simulations, or audit behavior.
+
+- Dashboard: render as a governance command center with KPI cards for pending proposals, active policies, exceptions, simulations, risky changes, and approval SLA; place proposal/exception attention queues and high-impact change alerts above routine catalog summaries.
+- Policy list and detail: use dense catalog rows/cards and layered version detail panels showing scope, owner, clauses, authority boundary, active/draft status, history, simulation readiness, and audit links with explicit read-only or unauthorized states.
+- Policy diff and proposal queue: use enterprise diff-review and decision-queue layouts with version metadata, clause-level changes, risk/impact, required approvers, conflict-of-interest warnings, approval eligibility, and approve/reject/request-changes actions tied to traceable capabilities.
+- Decision cards and exception reviews: render recommendation/evidence/risk/confidence/impact/alternatives as decision-card anatomy, with policy trigger badges, human-authority controls, learning options, escalation actions, and trace/outcome links.
+- Simulation results: use metric/evidence panels with before/after impact summaries, replay scope, affected policies/prompts/tools, failures/uncertainty, trace links, rerun controls, and clear distinction between simulated evidence and activated policy state.
+- Learning center: render feedback, examples, learned-rule candidates, and proposed durable changes as governed queues/cards with provenance, evidence, dismissal/proposal actions, and simulation-required status.
+- System-message surfaces: use typed cards for approval required, denied authority, simulation started/complete, activation success/failure, rollback result, stale/reconnect, and trace-unavailable states with semantic icon/color plus text, recovery actions, and request-approval/open-trace affordances when authorized.
+
 ## Capability inventory and exposure channels
 
 A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.

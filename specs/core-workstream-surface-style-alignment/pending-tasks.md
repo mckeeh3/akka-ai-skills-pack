@@ -119,7 +119,7 @@
 
 ### TASK-CWSS-01-003: Align Audit/Trace and Governance/Policy surface style
 
-- status: pending
+- status: done
 - source: specs/core-workstream-surface-style-alignment/backlog/01-core-domain-surfaces-build-backlog.md
 - task brief: specs/core-workstream-surface-style-alignment/tasks/01-core-domain-surfaces/03-align-audit-governance-surfaces.md
 - depends on:
@@ -154,6 +154,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: align audit governance surface style`
+  - checks: `git diff --check`; focused stale style/theme search over touched files passed
 
 ### TASK-CWSS-02-001: Review seed surface style alignment
 

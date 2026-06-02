@@ -49,6 +49,18 @@ The agent summarizes and explains evidence but cannot hide, alter, or delete aud
 | `surface.audit_trace.export_request.v1` | form/workflow_status | request/export audit evidence with approval/redaction | `audit_trace.exports.form` | request export, check status, download approved export |
 | `surface.audit_trace.system_message.v1` | system_message | denial, redaction, approval-required, export status, no results | capability-specific | retry, request approval, open trace |
 
+## Surface style expectations
+
+These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong numerical/table hierarchy, and prominent evidence, redaction, authorization, and trace cues. Style is a UI realization layer only; it must not change audit sensitivity, redaction, scoped capability mappings, approval policy, routes, export behavior, or trace immutability.
+
+- Dashboard: render as an audit mission-control briefing with KPI cards for denials, high-risk activity, trace volume, pending exports, support-access reads, and redaction pressure; put suspicious-activity and export attention queues above routine volume summaries.
+- Search and data-access surfaces: use dense enterprise search/table layouts with filter chips, saved-query controls, scoped tenant/customer context, redaction badges, actor/tool/workflow columns, monotonic timestamps, trace/correlation ids in monospace, and empty/no-results states that do not leak hidden records.
+- Record detail and evidence panels: use layered detail cards that foreground actor, target, action, decision, authorization basis, policy clause/version, redaction status, and citation/copy affordances; link related traces without exposing unauthorized facts.
+- Audit timelines and agent work traces: render chronological timelines with semantic icons, ordered events, prompt/skill/reference/tool/data-access segments, automation/review/escalation badges, correlation/causation ids, evidence expansion, and clear redacted/unavailable states.
+- Prompt/skill/reference trace surfaces: use version-aware trace panels with document/version ids, manifest and boundary references, allowed/denied load outcomes, redaction notes, source links, and auditor-only detail affordances where authorized.
+- Export request surfaces: render as approval-aware workflow forms/status cards showing requested scope, sensitivity, redaction plan, approvers, status, expiry/download eligibility, denial reasons, and immutable export audit links.
+- System-message surfaces: use typed cards for denied access, redaction, approval required, export status, stale/reconnect, no-results, and trace-unavailable states with semantic icon/color plus text, recovery actions, and request-approval/open-trace affordances when authorized.
+
 ## Capability inventory and exposure channels
 
 A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, redaction, idempotency, side effects, audit, approval, or denial behavior.
