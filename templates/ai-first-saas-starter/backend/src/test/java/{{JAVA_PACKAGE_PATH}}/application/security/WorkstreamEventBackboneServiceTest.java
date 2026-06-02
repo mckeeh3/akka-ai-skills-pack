@@ -396,6 +396,112 @@ class WorkstreamEventBackboneServiceTest {
   }
 
   @Test
+  void broaderGovernedLifecycleFamiliesPublishRefreshAndAttentionSafely() {
+    var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
+    var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
+
+    var membershipEvent = publisher.publishGovernedLifecycle(
+        "tenant-1",
+        null,
+        WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN,
+        "membership.role.changed",
+        "membership",
+        "membership-admin",
+        "Tenant Admin membership role changed token=secret",
+        "secure-tenant-user-foundation",
+        tenantAdmin.account().accountId(),
+        "agent-user-admin",
+        "surface-user-admin-list",
+        "changed",
+        Map.of("safeTitle", "Membership role change needs review", "safeSummary", "Role membership changed through backend-governed command."),
+        Map.of(),
+        "corr-membership-role");
+    var supportEvent = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "support_access.granted", "membership", "membership-admin", "Support access grant", "tenant.support_access.manage", tenantAdmin.account().accountId(), "agent-user-admin", "surface-user-admin-detail-admin", "granted", Map.of("safeSummary", "Support access grant is visible for audit review."), Map.of(), "corr-support-access");
+    var artifactEvent = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "governed_artifact.tool_boundary.activated", "tool_boundary", "agent-admin-tool-boundary", "Tool boundary activation providerCredential=secret", "agent_admin.activate_behavior_change", tenantAdmin.account().accountId(), "agent-agent-admin", "surface-agent-admin-detail", "activated", Map.of("artifactKind", "tool_boundary", "safeSummary", "Tool boundary activation metadata only."), Map.of(), "corr-artifact");
+    var simulationEvent = publisher.publishGovernedLifecycle("tenant-1", null, "governance/simulation", "policy.simulation.completed", "policy_simulation", "simulation-1", "Policy simulation", "governance.policy.simulate", tenantAdmin.account().accountId(), "agent-governance-policy", "surface-governance-policy-dashboard", "completed", Map.of("safeSummary", "Simulation evidence is ready; no policy was activated."), Map.of("attentionAction", "open"), "corr-policy-simulation");
+    var exportEvent = publisher.publishGovernedLifecycle("tenant-1", null, "audit/export", "export.failed", "export_request", "export-1", "Audit export", "audit.trace.export", tenantAdmin.account().accountId(), "agent-audit-trace", "surface-audit-trace-dashboard", "failed", Map.of("safeSummary", "Export failed closed without leaking delivery credentials."), Map.of(), "corr-export");
+    var notificationEvent = publisher.publishGovernedLifecycle("tenant-1", null, "notification/lifecycle", "notification.lifecycle.failed", "notification", "notification-1", "Notification delivery", "notification.delivery", tenantAdmin.account().accountId(), "agent-my-account", "surface-my-account-notification-center", "failed", Map.of("safeSummary", "Notification channel delivery failed closed."), Map.of(), "corr-notification");
+
+    assertEquals(6, eventRepository.listTenant("tenant-1").size());
+    assertEquals("GovernedLifecycleEventPayload", artifactEvent.payloadClass());
+    assertFalse(artifactEvent.toString().contains("providerCredential=secret"));
+    assertFalse(membershipEvent.toString().contains("token=secret"));
+    assertTrue(eventRepository.listTenant("tenant-1").stream().allMatch(event -> event.sourceRefs().stream().anyMatch(ref -> ref.refType().equals("capability"))));
+    assertTrue(attentionRepository.find("tenant-1", membershipEvent.projectionHints().get("attentionItemId")).orElseThrow().sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event")));
+    assertEquals(AttentionCategory.SECURITY_REVIEW, attentionRepository.find("tenant-1", supportEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
+    assertEquals(AttentionCategory.SECURITY_REVIEW, attentionRepository.find("tenant-1", artifactEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
+    assertEquals(AttentionCategory.GOVERNANCE_APPROVAL, attentionRepository.find("tenant-1", simulationEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
+    assertEquals(AttentionCategory.AUDIT_FAILURE_EVIDENCE, attentionRepository.find("tenant-1", exportEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
+    assertEquals(AttentionCategory.PROVIDER_READINESS, attentionRepository.find("tenant-1", notificationEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
+
+    var replay = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "membership.role.changed", "membership", "membership-admin", "Tenant Admin membership role changed", "secure-tenant-user-foundation", tenantAdmin.account().accountId(), "agent-user-admin", "surface-user-admin-list", "changed", Map.of(), Map.of(), "corr-membership-role-replay");
+    assertEquals(membershipEvent.eventId(), replay.eventId());
+    assertEquals(6, eventRepository.listTenant("tenant-1").size());
+    assertEquals(1, attentionRepository.find("tenant-1", membershipEvent.projectionHints().get("attentionItemId")).orElseThrow().sourceRefs().stream().filter(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(membershipEvent.eventId())).count());
+  }
+
+  @Test
+  void genericLifecycleConsumerRejectsMalformedScopeAndMissingCapabilityWithoutAttention() {
+    var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, new AttentionProducerService(attentionRepository, identityRepository, clock), clock);
+    var event = new {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope(
+        "evt-generic-cross-tenant",
+        "membership.role.changed",
+        WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN,
+        1,
+        clock.instant(),
+        clock.instant(),
+        "tenant-1",
+        null,
+        Map.of("tenantId", "tenant-1", "capabilityIds", "secure-tenant-user-foundation"),
+        Map.of("actorType", "account", "accountId", tenantAdmin.account().accountId()),
+        List.of(new {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventSourceRef("membership", "membership-admin", "Membership", "secure-tenant-user-foundation", "trace-generic-cross-tenant", "corr-generic-cross-tenant")),
+        List.of("secure-tenant-user-foundation"),
+        "corr-generic-cross-tenant",
+        "workstream-event:domain:membership.role.changed:tenant-1:none:membership-admin:changed",
+        "membership-admin",
+        List.of("trace-generic-cross-tenant"),
+        "agent-user-admin",
+        "surface-user-admin-list",
+        "GovernedLifecycleEventPayload",
+        Map.of("tenantId", "tenant-2", "sourceId", "membership-admin"),
+        Map.of("browserSafe", "true"),
+        Map.of("attentionItemId", "attention:workstream-event:membership-admin"));
+
+    assertEquals(null, consumer.projectGovernedLifecycle(event));
+    assertFalse(attentionRepository.find("tenant-1", "attention:workstream-event:membership-admin").isPresent());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DENIED") && audit.reasonCode().equals("scope-mismatch")));
+
+    var missingCapability = new {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope(
+        "evt-generic-missing-capability",
+        "notification.lifecycle.failed",
+        "notification/lifecycle",
+        1,
+        clock.instant(),
+        clock.instant(),
+        "tenant-1",
+        null,
+        Map.of("tenantId", "tenant-1", "capabilityIds", "audit.trace.read"),
+        Map.of("actorType", "system", "accountId", "system"),
+        List.of(new {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventSourceRef("notification", "notification-1", "Notification", "audit.trace.read", "trace-generic-missing-capability", "corr-generic-missing-capability")),
+        List.of("audit.trace.read"),
+        "corr-generic-missing-capability",
+        "workstream-event:notification/lifecycle:notification.lifecycle.failed:tenant-1:none:notification-1:failed",
+        "notification-1",
+        List.of("trace-generic-missing-capability"),
+        "agent-my-account",
+        "surface-my-account-notification-center",
+        "GovernedLifecycleEventPayload",
+        Map.of("tenantId", "tenant-1", "sourceId", "notification-1"),
+        Map.of("browserSafe", "true"),
+        Map.of("attentionItemId", "attention:workstream-event:notification-1"));
+
+    assertEquals(null, consumer.projectGovernedLifecycle(missingCapability));
+    assertFalse(attentionRepository.find("tenant-1", "attention:workstream-event:notification-1").isPresent());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DENIED") && audit.reasonCode().equals("missing-capability-ref")));
+  }
+
+  @Test
   void consumerRejectsCrossTenantSourceMismatchWithoutProjectingAttention() {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("invite-cross-tenant", "cross@example.test"));
     var event = new WorkstreamEventPublisher(eventRepository, new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, new AttentionProducerService(attentionRepository, identityRepository, clock), clock), clock)

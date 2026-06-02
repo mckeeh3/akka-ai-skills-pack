@@ -25,6 +25,7 @@ public final class WorkstreamEventPublisher {
   public static final String PAYLOAD_AUDIT_TRACE_SUMMARY_LIFECYCLE = "AuditTraceSummaryLifecycleEventPayload";
   public static final String PAYLOAD_GOVERNANCE_POLICY_IMPACT_LIFECYCLE = "GovernancePolicyImpactLifecycleEventPayload";
   public static final String PAYLOAD_MY_ACCOUNT_PERSONAL_ATTENTION_DIGEST_LIFECYCLE = "MyAccountPersonalAttentionDigestLifecycleEventPayload";
+  public static final String PAYLOAD_GOVERNED_LIFECYCLE = "GovernedLifecycleEventPayload";
 
   private final WorkstreamEventRepository repository;
   private final WorkstreamEventAttentionConsumer attentionConsumer;
@@ -112,6 +113,33 @@ public final class WorkstreamEventPublisher {
     return publishMyAccountPersonalAttentionDigestEvent(task, taskTransition, eventType, EVENT_FAMILY_TASK_WORKER, capabilityId, actorAccountId, correlationId);
   }
 
+  public WorkstreamEventEnvelope publishGovernedLifecycle(
+      String tenantId,
+      String customerId,
+      String eventFamily,
+      String eventType,
+      String sourceRefType,
+      String sourceId,
+      String sourceLabel,
+      String capabilityId,
+      String actorAccountId,
+      String owningWorkstreamId,
+      String targetSurfaceId,
+      String semanticTransition,
+      Map<String, String> safePayload,
+      Map<String, String> projectionHints,
+      String correlationId) {
+    var safeFamily = safe(eventFamily, EVENT_FAMILY_DOMAIN);
+    var safeSourceId = safe(sourceId, eventType);
+    var idempotencyKey = idempotencyKey(safeFamily, eventType, tenantId, customerId, safeSourceId, safe(semanticTransition, "changed"));
+    var existing = repository.findByIdempotencyKey(tenantId, idempotencyKey).orElse(null);
+    var event = existing == null
+        ? repository.publish(governedLifecycleEnvelope(tenantId, customerId, safeFamily, eventType, sourceRefType, safeSourceId, sourceLabel, capabilityId, actorAccountId, owningWorkstreamId, targetSurfaceId, semanticTransition, safePayload, projectionHints, idempotencyKey, correlationId))
+        : existing;
+    attentionConsumer.projectGovernedLifecycle(event);
+    return event;
+  }
+
   private WorkstreamEventEnvelope publishAccessReviewEvent(AccessReviewTask task, String semanticTransition, String eventType, String eventFamily, String capabilityId, String actorAccountId, String correlationId) {
     var idempotencyKey = idempotencyKey(eventFamily, eventType, task.tenantId(), task.customerId(), task.taskId(), semanticTransition);
     var existing = repository.findByIdempotencyKey(task.tenantId(), idempotencyKey).orElse(null);
@@ -120,6 +148,64 @@ public final class WorkstreamEventPublisher {
         : existing;
     attentionConsumer.project(event, task);
     return event;
+  }
+
+  private WorkstreamEventEnvelope governedLifecycleEnvelope(
+      String tenantId,
+      String customerId,
+      String eventFamily,
+      String eventType,
+      String sourceRefType,
+      String sourceId,
+      String sourceLabel,
+      String capabilityId,
+      String actorAccountId,
+      String owningWorkstreamId,
+      String targetSurfaceId,
+      String semanticTransition,
+      Map<String, String> safePayload,
+      Map<String, String> projectionHints,
+      String idempotencyKey,
+      String correlationId) {
+    var eventId = "evt-" + stableSuffix(idempotencyKey);
+    var traceId = "trace-" + stableSuffix(eventId + ":" + correlationId);
+    var now = Instant.now(clock);
+    var safeCapability = safe(capabilityId, "workstream.event.read");
+    var payload = new java.util.LinkedHashMap<String, String>();
+    payload.put("tenantId", tenantId);
+    payload.put("customerId", safe(customerId, ""));
+    payload.put("sourceId", sourceId);
+    payload.put("semanticTransition", safe(semanticTransition, "changed"));
+    payload.putAll(safePayload == null ? Map.of() : safePayload);
+    var hints = new java.util.LinkedHashMap<String, String>();
+    hints.put("attentionItemId", "attention:workstream-event:" + stableSuffix(eventFamily) + ":" + stableSuffix(sourceId));
+    hints.put("attentionAction", terminalLifecycleEvent(eventType) ? "resolve" : "open");
+    if (projectionHints != null) hints.putAll(projectionHints);
+    return new WorkstreamEventEnvelope(
+        eventId,
+        eventType,
+        eventFamily,
+        1,
+        now,
+        now,
+        tenantId,
+        customerId,
+        Map.of("scopeType", customerId == null || customerId.isBlank() ? "TENANT" : "CUSTOMER", "tenantId", tenantId, "customerId", safe(customerId, ""), "capabilityIds", safeCapability),
+        Map.of("actorType", actorAccountId == null || actorAccountId.isBlank() ? "system" : "account", "accountId", safe(actorAccountId, "system"), "label", "Governed lifecycle event publisher"),
+        List.of(
+            new WorkstreamEventSourceRef(safe(sourceRefType, "governed_lifecycle"), sourceId, redact(safe(sourceLabel, "Governed lifecycle " + eventType)), safeCapability, traceId, correlationId),
+            new WorkstreamEventSourceRef("capability", safeCapability, "Governed lifecycle capability", safeCapability, "trace-capability-" + stableSuffix(safeCapability), correlationId)),
+        List.of(safeCapability),
+        correlationId,
+        idempotencyKey,
+        sourceId,
+        List.of(traceId),
+        safe(owningWorkstreamId, "agent-my-account"),
+        safe(targetSurfaceId, "surface-my-account-dashboard"),
+        PAYLOAD_GOVERNED_LIFECYCLE,
+        Map.copyOf(payload),
+        Map.of("browserSafe", "true", "omitted", "rawPrompt,hiddenPromptText,rawToolPayload,rawJwt,invitationToken,providerSecret,providerCredential,crossTenantEvidence", "minimumRedactionLevel", "FULL"),
+        Map.copyOf(hints));
   }
 
   private WorkstreamEventEnvelope invitationDeliveryEnvelope(Invitation invitation, String semanticTransition, String deliveryAttemptId, String safeErrorSummary, String idempotencyKey, String correlationId) {
@@ -488,6 +574,11 @@ public final class WorkstreamEventPublisher {
       case "result_rejected" -> "rejected_result";
       default -> semanticTransition;
     };
+  }
+
+  private static boolean terminalLifecycleEvent(String eventType) {
+    var type = safe(eventType, "");
+    return type.endsWith(".resolved") || type.endsWith(".completed") || type.endsWith(".delivered") || type.endsWith(".archived") || type.endsWith(".revoked") || type.endsWith(".expired") || type.endsWith(".rolled_back") || type.endsWith(".accepted") || type.endsWith(".rejected");
   }
 
   private static String redact(String value) {

@@ -165,7 +165,7 @@
 
 ### TASK-COREEXT-02-001: Broaden governed workstream event coverage
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/02-events-notifications/01-broaden-workstream-events.md
 - depends on: [TASK-COREEXT-01-003]
@@ -195,6 +195,7 @@
   - queue is updated and committed
 - notes:
   - commit message: `coreext: broaden workstream events`
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`
 
 ### TASK-COREEXT-02-002: Implement notification delivery platform foundation
 

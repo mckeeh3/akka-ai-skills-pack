@@ -973,8 +973,9 @@ public final class WorkstreamService {
 
   private String surfaceTypeForEventBackedRefresh(String surfaceId) {
     if (surfaceId == null || surfaceId.isBlank()) return "dashboard";
-    if (surfaceId.contains("invitation-panel")) return "list-search";
-    if (surfaceId.contains("access-review")) return "workflow-status";
+    if (surfaceId.contains("invitation-panel") || surfaceId.contains("user-admin-list") || surfaceId.contains("notification-center")) return "list-search";
+    if (surfaceId.contains("access-review") || surfaceId.contains("digest") || surfaceId.contains("summary") || surfaceId.contains("impact-analysis")) return "workflow-status";
+    if (surfaceId.contains("agent-admin") || surfaceId.contains("governance-policy") || surfaceId.contains("audit-trace")) return "dashboard";
     return "dashboard";
   }
 

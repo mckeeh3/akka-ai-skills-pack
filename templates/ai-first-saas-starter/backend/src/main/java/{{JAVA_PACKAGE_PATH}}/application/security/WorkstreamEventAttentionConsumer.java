@@ -5,8 +5,13 @@ import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AdminAuditEvent;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AuditTraceSummaryTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.GovernancePolicyImpactTask;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionCategory;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItem;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionItemStatus;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionRedactionLevel;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSeverity;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSourceRef;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AttentionSurfaceRef;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Invitation;
 import {{JAVA_BASE_PACKAGE}}.domain.security.MyAccountPersonalAttentionDigestTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.WorkstreamEventEnvelope;
@@ -173,6 +178,59 @@ public final class WorkstreamEventAttentionConsumer {
     });
   }
 
+  public AttentionItem projectGovernedLifecycle(WorkstreamEventEnvelope event) {
+    var metadata = governedLifecycleMetadata(event);
+    if (metadata == null) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "unsupported-event-type");
+      return null;
+    }
+    if (event.payload().containsKey("tenantId") && !event.tenantId().equals(event.payload().get("tenantId"))) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "scope-mismatch");
+      return null;
+    }
+    if (event.payload().containsKey("customerId") && !Objects.equals(event.customerId(), blankToNull(event.payload().get("customerId")))) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "scope-mismatch");
+      return null;
+    }
+    if (event.capabilityRefs().stream().noneMatch(capability -> capability.startsWith(metadata.capabilityPrefix()))) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "missing-capability-ref");
+      return null;
+    }
+    if (alreadyProjected(event)) {
+      appendAudit("WORKSTREAM_EVENT_CONSUMER_DUPLICATE", AdminAuditEvent.Result.NO_OP, event, event.idempotencyKey());
+      return currentItem(event);
+    }
+    var itemId = event.projectionHints().getOrDefault("attentionItemId", metadata.attentionItemId(event));
+    var now = Instant.now(clock);
+    var status = "resolve".equals(event.projectionHints().get("attentionAction")) ? AttentionItemStatus.RESOLVED : AttentionItemStatus.OPEN;
+    var resolvedAt = status == AttentionItemStatus.RESOLVED ? now : null;
+    var item = new AttentionItem(
+        itemId,
+        event.tenantId(),
+        event.customerId(),
+        event.owningWorkstreamId(),
+        metadata.title(event),
+        metadata.summary(event),
+        metadata.category(),
+        metadata.severity(),
+        status,
+        AttentionItem.AssigneeKind.ROLE,
+        metadata.assigneeRole(),
+        metadata.requiredCapability(),
+        new AttentionSurfaceRef(event.owningWorkstreamId(), event.targetSurfaceId(), metadata.surfaceType(), event.payload().getOrDefault("sourceId", event.eventId()), metadata.surfaceAction(), metadata.requiredCapability()),
+        List.of(),
+        AttentionRedactionLevel.FULL,
+        event.occurredAt() == null ? now : event.occurredAt(),
+        now,
+        now,
+        null,
+        null,
+        resolvedAt,
+        null,
+        event.correlationId());
+    return projectSupported(event, item);
+  }
+
   public AttentionItem project(WorkstreamEventEnvelope event, AuditTraceSummaryTask sourceTask) {
     var workflowEvent = "workflow/process".equals(event.eventFamily()) && event.eventType().startsWith("workflow.audit_trace.summary_");
     var taskEvent = "task/worker".equals(event.eventFamily()) && event.eventType().startsWith("worker.task.");
@@ -229,6 +287,12 @@ public final class WorkstreamEventAttentionConsumer {
     if (event.payload().containsKey("digestTaskId")) {
       return attentionRepository.find(event.tenantId(), workerTaskItemId(event.payload().get("digestTaskId"))).orElse(null);
     }
+    if (event.projectionHints().containsKey("attentionItemId")) {
+      return attentionRepository.find(event.tenantId(), event.projectionHints().get("attentionItemId")).orElse(null);
+    }
+    if (event.payload().containsKey("sourceId")) {
+      return attentionRepository.find(event.tenantId(), genericLifecycleItemId(event.eventFamily(), event.payload().get("sourceId"))).orElse(null);
+    }
     return null;
   }
 
@@ -272,7 +336,44 @@ public final class WorkstreamEventAttentionConsumer {
     return "attention:worker-task:" + taskId + ":task-state";
   }
 
+  private static GovernedLifecycleMetadata governedLifecycleMetadata(WorkstreamEventEnvelope event) {
+    var type = event.eventType();
+    if (type.startsWith("membership.role.") || type.startsWith("membership.status.")) return new GovernedLifecycleMetadata("secure-tenant-user-foundation", AttentionCategory.SECURITY_REVIEW, AttentionSeverity.WARNING, "TENANT_ADMIN", "surface-user-admin-list", "list-search", "open_membership", "Membership lifecycle requires review", "Membership or role state changed through a backend-governed event.");
+    if (type.startsWith("support_access.")) return new GovernedLifecycleMetadata("tenant.support_access.", AttentionCategory.SECURITY_REVIEW, AttentionSeverity.URGENT, "TENANT_ADMIN", "surface-user-admin-detail-admin", "detail-edit", "open_support_access", "Support access lifecycle requires review", "Support access changed; review expiry, scope, and audit evidence.");
+    if (type.startsWith("governed_artifact.")) return new GovernedLifecycleMetadata("agent_admin.", AttentionCategory.SECURITY_REVIEW, AttentionSeverity.URGENT, "TENANT_ADMIN", "surface-agent-admin-detail", "dashboard", "open_governed_artifact", "Governed artifact lifecycle requires review", "Prompt, skill, reference, manifest, model, or tool-boundary artifact lifecycle changed without exposing raw content.");
+    if (type.startsWith("policy.simulation.")) return new GovernedLifecycleMetadata("governance.policy.simulate", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.WARNING, "TENANT_ADMIN", "surface-governance-policy-dashboard", "dashboard", "open_policy_simulation", "Policy simulation result needs review", "Policy simulation evidence is available; activation still requires explicit backend approval.");
+    if (type.startsWith("export.")) return new GovernedLifecycleMetadata("audit.trace.export", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "AUDITOR", "surface-audit-trace-dashboard", "dashboard", "open_export", "Export lifecycle requires audit review", "Audit/export lifecycle changed; review redaction, approval, and delivery status.");
+    if (type.startsWith("notification.lifecycle.")) return new GovernedLifecycleMetadata("notification.", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.INFO, "TENANT_ADMIN", "surface-my-account-notification-center", "list-search", "open_notification", "Notification lifecycle changed", "Notification delivery or preference lifecycle changed through backend-owned state.");
+    return null;
+  }
+
+  private static String genericLifecycleItemId(String eventFamily, String sourceId) {
+    return "attention:workstream-event:" + stableSuffix(eventFamily) + ":" + stableSuffix(sourceId);
+  }
+
+  private static String blankToNull(String value) {
+    return value == null || value.isBlank() ? null : value;
+  }
+
   private static String stableSuffix(String value) {
     return Integer.toUnsignedString(Objects.requireNonNullElse(value, "workstream-event").hashCode(), 36);
+  }
+
+  private record GovernedLifecycleMetadata(String capabilityPrefix, AttentionCategory category, AttentionSeverity severity, String assigneeRole, String defaultSurfaceId, String surfaceType, String surfaceAction, String defaultTitle, String defaultSummary) {
+    String requiredCapability() {
+      return capabilityPrefix.endsWith(".") ? capabilityPrefix.substring(0, capabilityPrefix.length() - 1) : capabilityPrefix;
+    }
+
+    String attentionItemId(WorkstreamEventEnvelope event) {
+      return genericLifecycleItemId(event.eventFamily(), event.payload().getOrDefault("sourceId", event.eventId()));
+    }
+
+    String title(WorkstreamEventEnvelope event) {
+      return event.payload().getOrDefault("safeTitle", defaultTitle);
+    }
+
+    String summary(WorkstreamEventEnvelope event) {
+      return event.payload().getOrDefault("safeSummary", defaultSummary);
+    }
   }
 }
