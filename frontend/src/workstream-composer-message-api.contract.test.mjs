@@ -143,11 +143,12 @@ test('surface and action request acknowledgement surfaces match compact request 
   assert.match(itemCard, /action-request-surface/);
   assert.match(itemCard, /Surface request received/);
   assert.match(itemCard, /Action request received/);
-  assert.match(itemCard, /item\.title \?\? item\.body/);
+  assert.match(itemCard, /<p>\{item\.title \?\? ''\}<\/p>/);
+  assert.doesNotMatch(itemCard, /item\.body && item\.body !== item\.title/);
   assert.match(componentStyles, /\.workstream-item\.surface-request\.request-surface/);
   assert.match(componentStyles, /max-width: min\(46rem, 62%\)/);
   assert.match(componentStyles, /\.workstream-item\.surface-request\.action-request-surface/);
-  assert.match(componentStyles, /\.request-surface small/);
+  assert.doesNotMatch(componentStyles, /\.request-surface small/);
 });
 
 test('background composer responses update their originating workstream without stealing selected workstream focus', () => {

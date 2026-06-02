@@ -313,7 +313,6 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       correlationId: result.ok ? result.value.correlationId : result.error.correlationId,
       traceIds: result.ok ? result.value.traceIds : [],
       title: action.label,
-      body: result.ok ? result.value.message : result.error.message,
       status: result.ok && result.value.status === 'accepted' ? 'ready' : 'blocked'
     };
     const surfaceResponseItem: WorkstreamItem | undefined = targetSurface ? {
