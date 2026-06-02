@@ -1,0 +1,35 @@
+# Capability: Frontend Shell and Integration Patterns
+
+- capability-id: frontend-shell-integration-patterns
+- purpose:
+  - provide the authenticated agent workstream shell and reference frontend/backend integration patterns for generated full-stack AI-first SaaS apps
+- in scope:
+  - role-authorized functional-agent rail populated from `/api/me` and backend capability grants
+  - selected tenant/customer context and authority indicators
+  - continuous workstream panel and persistent composer
+  - typed structured surfaces for dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, prompt/skill cards, and outcome panels
+  - route and deep-link support for opening functional agents, surfaces, and records without making pages the primary decomposition
+  - typed API client, validation errors, loading/empty/error/forbidden/submitting/success/stale/reconnect states, and realtime updates
+  - frontend secret-boundary and backend-denial recovery behavior
+- out of scope:
+  - page-first or CRUD-first navigation as the primary application architecture
+  - a bespoke design system beyond core-app primitives
+- implementation reference:
+  - `../../../../../docs/workstream-ui-reference-architecture.md`
+  - `../../../../../frontend/src/workstream/**`
+  - `../../../../../frontend/src/api/WorkstreamApiClient.ts`
+  - `../../../../../frontend/src/api/WorkstreamRealtimeClient.ts`
+  - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- surface/workstream links:
+  - `../12-workstreams/functional-agents.md`
+  - `../12-workstreams/surfaces-index.md`
+  - `../55-ui/workstream-shell.md`
+  - `../55-ui/functional-agent-rail.md`
+  - `../55-ui/workstream-panel-and-composer.md`
+  - `../55-ui/structured-surface-rendering.md`
+  - `../55-ui/routes-and-deep-links.md`
+  - `../55-ui/frontend-api-contracts.md`
+- authority rules:
+  - frontend controls only indicate likely availability; every protected action, stream, query, and agent invocation rechecks backend authorization
+  - route guards are UX aids only and must not be treated as security boundaries
+  - every surface action includes a capability id and correlation/idempotency context where needed

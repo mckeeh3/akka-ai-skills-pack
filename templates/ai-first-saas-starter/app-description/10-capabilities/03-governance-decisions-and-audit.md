@@ -1,0 +1,23 @@
+# Capability: Governance, Decisions, and Audit
+
+- capability-id: governance-decisions-audit
+- purpose:
+  - make agentic work reviewable, governable, and auditable
+- in scope:
+  - policy documents and clauses
+  - permission and approval gates
+  - decision cards
+  - approval, rejection, override, and exception outcomes
+  - work traces, decision traces, data-access/tool-use events
+  - outcome links and feedback
+- out of scope:
+  - autonomous policy expansion without human authorization
+- primary actors:
+  - policy owner
+  - reviewer/approver
+  - auditor
+  - outcome owner
+- operating-model links:
+  - `../15-operating-model/policies-and-approval-gates.md`
+  - `../15-operating-model/decisions-exceptions-and-evidence.md`
+  - `../15-operating-model/audit-trace-and-outcomes.md`

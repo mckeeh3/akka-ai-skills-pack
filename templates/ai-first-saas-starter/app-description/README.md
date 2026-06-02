@@ -1,15 +1,41 @@
-# Starter App Description Seed
+# {{APP_NAME}} App Description
 
-This directory is reserved for the scaffolded app's maintained description-first source of truth.
+This scaffolded `app-description/` tree is the project-owned source of truth for the core AI-first SaaS starter app created by the scaffold flow.
 
-Minimum/starter/basic generated SaaS descriptions start with the five core v0 workstreams: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. Each v0 workstream should record bootstrap authorization, selected `AuthContext`, a bounded functional agent, durable workstream log behavior, `markdown_response` v1 as the initial structured surface, backend capability boundaries, and audit/work trace substrate.
+It is created in the target project workspace, not inside `.agents/`, so future harness sessions can evolve the application by updating this tree before implementation changes.
 
-Maintain this seed as a workstream graph, not as a page list:
+## Current core scope
 
-- identify the role-specific dashboard for each core workstream and the attention items it owns;
-- describe the human surface graph from dashboard to response, system-message, list/detail, decision, audit, workflow, and governance surfaces;
-- map every protected surface action to a governed-tool in a capability file or surface/action map, with qualified browser-tool, agent-tool, or internal-tool exposure;
-- record any internal workstream agent graph worker/delegation as explicit follow-up unless the starter implements the governed runtime, authorization, audit, and trace path;
-- keep workstream expertise prompt/skill/reference/manifest/boundary records aligned with dashboard purpose, surface graph behavior, governed-tools, denials, and user-help copy.
+The initial scaffold describes the five core v0 workstreams:
 
-Follow-up description work must distinguish five-core-v0 readiness from full-core readiness. Keep richer structured surfaces, complete invitation onboarding, support access, full governed agent document lifecycle, searchable audit/trace views, policy/governance workflows, security hardening, and app-specific domain workstreams explicit as follow-up until implemented and tested.
+1. My Account
+2. User Admin
+3. Agent Admin
+4. Audit/Trace
+5. Governance/Policy
+
+The core app description captures:
+
+- secure SaaS identity, tenancy, membership, role, permission, and `/api/me` foundation;
+- governed runtime agent foundation with managed prompts, skills, references, manifests, tool permission boundaries, and traces;
+- functional-agent workstreams, structured surfaces, dashboards, composer behavior, and workstream expertise;
+- capability-first backend contracts and governed-tools;
+- behavior, tests, auth/security, observability, UI, generation, and traceability maps;
+- explicit readiness distinction between the five-core starter, full-core SaaS readiness, and later domain-specific expansion.
+
+## Growth model
+
+Domain-specific features are added as new slices under the same tree:
+
+```text
+new domain request
+→ affected functional agent/workstream or new domain functional agent
+→ surfaces and actions
+→ governed capabilities and governed-tools
+→ behavior/rules/state
+→ tests/security/observability/UI
+→ traceability maps
+→ implementation/regeneration plan
+```
+
+Do not create a separate app-description root per domain. Use this root as the single authoritative application description.

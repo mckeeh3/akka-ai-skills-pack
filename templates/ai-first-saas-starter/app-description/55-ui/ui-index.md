@@ -1,0 +1,35 @@
+# UI Index
+
+- design reference: `../../../../../docs/web-ui-style-guide.md` canonical `ai-first-workstream-enterprise` AI-first style system with four initial named themes
+- primary model: agent workstream shell with role-authorized functional-agent rail, continuous workstream panel, persistent composer, structured surfaces, context/authority indicators, and route/deep-link support
+- authoritative workstream layer:
+  - `../12-workstreams/functional-agents.md`
+  - `../12-workstreams/internal-agents.md`
+  - `../12-workstreams/workstreams-and-retention.md`
+  - `../12-workstreams/surfaces-index.md`
+  - `../12-workstreams/surface-contracts/`
+- UI shell and rendering:
+  - `workstream-shell.md`
+  - `functional-agent-rail.md`
+  - `workstream-panel-and-composer.md`
+  - `structured-surface-rendering.md`
+  - `routes-and-deep-links.md`
+- supporting UI semantics:
+  - `personas-and-journeys.md`
+  - `ai-first-surfaces.md`
+  - `agent-catalog-and-detail.md`
+  - `prompt-and-skill-governance.md`
+  - `skill-manifests-and-tool-permissions.md`
+  - `edit-agent-proposals-and-traces.md`
+  - `interactions-and-forms.md`
+  - `frontend-api-contracts.md`
+  - `states-and-realtime.md`
+  - `accessibility-and-responsive.md`
+  - `style-guide.md`
+- route/deep-link realization detail:
+  - `routes-and-deep-links.md` opens functional-agent workstreams and structured surfaces; routes/pages are subordinate implementation details
+- implementation reference:
+  - `../../../../../docs/workstream-ui-reference-architecture.md`
+  - `../../../../../frontend/src/workstream/**` reusable shell, rail, composer, stream, surface, action, realtime, type, and fixture modules
+  - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` for the canonical User Admin `user-admin-dashboard` → `user-admin-user-list` → `user-admin-user-account` vertical
+  - legacy `frontend/src/screens/**` and standalone static UI examples are not canonical core-app structure
