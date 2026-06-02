@@ -71,7 +71,7 @@
 
 ### TASK-PRP-02-001: Run package install scaffold smoke
 
-- status: pending
+- status: done
 - source: specs/pack-release-publication/backlog/01-pack-release-publication-backlog.md
 - task brief: specs/pack-release-publication/tasks/02-validation/01-run-package-install-scaffold-smoke.md
 - depends on:
@@ -93,6 +93,8 @@
   - package/install/scaffold smoke evidence is captured or blockers appended
   - task changes and queue update are committed
 - notes:
+  - package smoke validation artifact: `specs/pack-release-publication/package-smoke-validation.md`
+  - package build, project install, installed-pack scaffold, scaffold backend tests, frontend dependency install, frontend typecheck, and frontend contract tests passed
   - commit message: `pack-release: run package smoke`
 
 ### TASK-PRP-03-001: Create release changelog and handoff
