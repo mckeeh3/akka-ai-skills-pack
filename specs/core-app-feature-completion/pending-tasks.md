@@ -448,7 +448,7 @@
 
 ### TASK-COREEXT-04-003: Implement marketplace prompt and tenant-managed tool-binding foundation
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/04-enterprise-extensions/03-marketplace-prompts-tool-binding-foundation.md
 - depends on: [TASK-COREEXT-04-002]
@@ -479,6 +479,7 @@
   - marketplace/tool-binding foundations are governed, auditable, and cannot bypass backend `ToolPermissionBoundary` enforcement
   - queue is updated and committed
 - notes:
+  - validation: `git diff --check`; rendered scaffold `mvn test -Dtest=AgentMarketplaceGovernanceServiceTest,AgentRuntimeServiceTest`; `tools/validate-ai-first-saas-starter-fullstack.sh`
   - commit message: `coreext: add marketplace tool governance foundation`
 
 ### TASK-COREEXT-05-001: Complete mobile, asset scan, and bundle polish

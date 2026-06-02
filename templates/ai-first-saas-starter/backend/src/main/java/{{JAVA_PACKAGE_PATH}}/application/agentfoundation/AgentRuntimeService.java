@@ -419,9 +419,16 @@ public final class AgentRuntimeService {
     if (request.targetArtifact() == BehaviorChangeProposal.TargetArtifact.TOOL_BOUNDARY) {
       var existing = repository.toolBoundary(request.tenantId(), agent.toolBoundaryId()).orElseThrow();
       var existingIds = existing.allowedToolGrants().stream().map(ToolPermissionBoundary.ToolGrant::toolId).toList();
-      var newGrant = request.proposedToolGrants().stream().anyMatch(grant -> !existingIds.contains(grant.toolId()));
-      var approvalBypass = request.proposedToolGrants().stream().anyMatch(grant -> "AUTONOMOUS".equalsIgnoreCase(grant.autonomy()) && "HIGH".equalsIgnoreCase(grant.sideEffectLevel()));
-      if (newGrant || approvalBypass) {
+      var unsafeExpansion = request.proposedToolGrants().stream()
+          .filter(grant -> !existingIds.contains(grant.toolId()))
+          .anyMatch(grant -> "bounded_autonomous".equalsIgnoreCase(grant.autonomy())
+              || "AUTONOMOUS".equalsIgnoreCase(grant.autonomy())
+              || "external_call".equalsIgnoreCase(grant.sideEffectLevel())
+              || "billing".equalsIgnoreCase(grant.sideEffectLevel())
+              || "security".equalsIgnoreCase(grant.sideEffectLevel())
+              || "irreversible".equalsIgnoreCase(grant.sideEffectLevel())
+              || "HIGH".equalsIgnoreCase(grant.sideEffectLevel()));
+      if (unsafeExpansion) {
         return Optional.of("tool-boundary-authority-expansion-requires-separate-policy-approval");
       }
     }
