@@ -15,6 +15,10 @@ public final class DigestExportService {
   public static final String APPROVE_EXPORT_CAPABILITY = "export.platform.approve";
   public static final String READ_CAPABILITY = "digest_export.platform.read";
   public static final String RUN_DUE_SCHEDULED_CAPABILITY = "digest.platform.run_due_scheduled";
+  public static final String REQUEST_LEGAL_HOLD_CAPABILITY = "enterprise.audit.legal_hold.request";
+  public static final String REQUEST_EDISCOVERY_EXPORT_CAPABILITY = "enterprise.audit.ediscovery_export.request";
+  public static final String REQUEST_SIEM_EXPORT_CAPABILITY = "enterprise.audit.siem_export.request";
+  public static final String REQUEST_COMPLIANCE_REPORT_CAPABILITY = "enterprise.audit.compliance_report.request";
 
   private final NotificationRepository repository;
   private final AuthContextResolver authContextResolver;
@@ -77,14 +81,67 @@ public final class DigestExportService {
   public DigestExportRequest approveExport(AuthContextResolver.ResolvedMe actor, String requestId, String reason, String correlationId) {
     require(actor, APPROVE_EXPORT_CAPABILITY, correlationId);
     var request = read(actor, requestId, correlationId);
-    if (request.requestType() != DigestExportRequest.RequestType.EXPORT) throw new AuthorizationException(400, "export-request-required");
+    if (!approvable(request.requestType())) throw new AuthorizationException(400, "export-or-enterprise-audit-request-required");
     if (request.status() != DigestExportRequest.Status.PENDING_APPROVAL) return request;
     if (reason == null || reason.isBlank()) throw new AuthorizationException(400, "export-approval-reason-required");
     var trace = "trace-export-approval-" + stableSuffix(correlationId + requestId);
-    var approved = new DigestExportRequest(request.requestId(), request.requestType(), request.tenantId(), request.customerId(), request.accountId(), request.membershipId(), request.idempotencyKey(), DigestExportRequest.Status.READY, request.redactionProfile(), request.exportFormat(), true, actor.account().accountId(), request.scheduledFor(), request.evidenceScope(), "local://export/" + request.requestId(), "Export approved by authorized reviewer and ready with " + request.redactionProfile().name().toLowerCase() + " redaction; compliance-suite/legal-hold behavior is not implied.", null, append(request.traceIds(), trace), request.createdAt(), Instant.now(clock));
+    var resultUri = switch (request.requestType()) {
+      case LEGAL_HOLD -> "local://legal-hold/" + request.requestId();
+      case EDISCOVERY_EXPORT -> "local://ediscovery-export/" + request.requestId();
+      default -> "local://export/" + request.requestId();
+    };
+    var summary = switch (request.requestType()) {
+      case LEGAL_HOLD -> "Legal-hold marker approved by authorized reviewer; local marker preserves selected evidence scope without deleting, mutating, or widening retention outside this bounded request.";
+      case EDISCOVERY_EXPORT -> "E-discovery export approved by authorized reviewer and ready as a redacted local evidence bundle; provider delivery and formal legal certification are not implied.";
+      default -> "Export approved by authorized reviewer and ready with " + request.redactionProfile().name().toLowerCase() + " redaction; compliance-suite/legal-hold behavior is not implied.";
+    };
+    var approved = new DigestExportRequest(request.requestId(), request.requestType(), request.tenantId(), request.customerId(), request.accountId(), request.membershipId(), request.idempotencyKey(), DigestExportRequest.Status.READY, request.redactionProfile(), request.exportFormat(), true, actor.account().accountId(), request.scheduledFor(), request.evidenceScope(), resultUri, summary, null, append(request.traceIds(), trace), request.createdAt(), Instant.now(clock));
     repository.saveDigestExportRequest(approved);
     authContextResolver.appendProtectedReadTrace(actor, APPROVE_EXPORT_CAPABILITY, "export-approved:redacted", correlationId);
     return approved;
+  }
+
+  public DigestExportRequest requestLegalHold(AuthContextResolver.ResolvedMe actor, LegalHoldCommand command, String correlationId) {
+    require(actor, REQUEST_LEGAL_HOLD_CAPABILITY, correlationId);
+    var duplicate = duplicate(actor, command.idempotencyKey());
+    if (duplicate != null) return duplicate;
+    if (command.retentionUntil() == null || !command.retentionUntil().isAfter(Instant.now(clock))) throw new AuthorizationException(400, "legal-hold-retention-must-be-future");
+    var scope = "legal_hold:" + scope(command.evidenceScope()) + ":retention_until=" + command.retentionUntil();
+    var request = base(actor, DigestExportRequest.RequestType.LEGAL_HOLD, command.idempotencyKey(), DigestExportRequest.Status.PENDING_APPROVAL, DigestExportRequest.RedactionProfile.AUDIT_SAFE, DigestExportRequest.ExportFormat.JSON, true, command.retentionUntil(), scope, null, "Legal-hold marker request captured for human approval; no deletion, retention widening, provider delivery, or compliance certification is performed before approval.", null, correlationId, Instant.now(clock));
+    repository.saveDigestExportRequest(request);
+    authContextResolver.appendProtectedReadTrace(actor, REQUEST_LEGAL_HOLD_CAPABILITY, "legal-hold-pending-approval", correlationId);
+    return request;
+  }
+
+  public DigestExportRequest requestEdiscoveryExport(AuthContextResolver.ResolvedMe actor, EnterpriseExportCommand command, String correlationId) {
+    require(actor, REQUEST_EDISCOVERY_EXPORT_CAPABILITY, correlationId);
+    var duplicate = duplicate(actor, command.idempotencyKey());
+    if (duplicate != null) return duplicate;
+    var request = base(actor, DigestExportRequest.RequestType.EDISCOVERY_EXPORT, command.idempotencyKey(), DigestExportRequest.Status.PENDING_APPROVAL, profile(command.redactionProfile()), format(command.exportFormat()), true, null, "ediscovery:" + scope(command.evidenceScope()), null, "E-discovery export request captured and paused for human approval; bundle output is redacted local evidence only, not provider delivery or legal certification.", null, correlationId, Instant.now(clock));
+    repository.saveDigestExportRequest(request);
+    authContextResolver.appendProtectedReadTrace(actor, REQUEST_EDISCOVERY_EXPORT_CAPABILITY, "ediscovery-export-pending-approval", correlationId);
+    return request;
+  }
+
+  public DigestExportRequest requestSiemExport(AuthContextResolver.ResolvedMe actor, SiemExportCommand command, String correlationId) {
+    require(actor, REQUEST_SIEM_EXPORT_CAPABILITY, correlationId);
+    var duplicate = duplicate(actor, command.idempotencyKey());
+    if (duplicate != null) return duplicate;
+    var providerRequested = command.productionDeliveryRequested();
+    var request = base(actor, DigestExportRequest.RequestType.SIEM_EXPORT, command.idempotencyKey(), providerRequested ? DigestExportRequest.Status.BLOCKED_PROVIDER_OR_RUNTIME : DigestExportRequest.Status.READY, DigestExportRequest.RedactionProfile.STRICT, DigestExportRequest.ExportFormat.JSON, false, null, "siem:" + scope(command.evidenceScope()), providerRequested ? null : "local://siem-export/" + stableSuffix(actor.account().accountId() + command.idempotencyKey()), providerRequested ? "SIEM provider delivery failed closed because no production SIEM webhook/provider is configured; no secret or outbound delivery is stored." : "Provider-neutral SIEM export prepared as a strict redacted local JSON handle; no vendor delivery is claimed.", providerRequested ? "siem-provider-not-configured" : null, correlationId, Instant.now(clock));
+    repository.saveDigestExportRequest(request);
+    authContextResolver.appendProtectedReadTrace(actor, REQUEST_SIEM_EXPORT_CAPABILITY, providerRequested ? "siem-export-provider-blocked" : "siem-export-local-ready", correlationId);
+    return request;
+  }
+
+  public DigestExportRequest requestComplianceReport(AuthContextResolver.ResolvedMe actor, EnterpriseExportCommand command, String correlationId) {
+    require(actor, REQUEST_COMPLIANCE_REPORT_CAPABILITY, correlationId);
+    var duplicate = duplicate(actor, command.idempotencyKey());
+    if (duplicate != null) return duplicate;
+    var request = base(actor, DigestExportRequest.RequestType.COMPLIANCE_REPORT, command.idempotencyKey(), DigestExportRequest.Status.READY, DigestExportRequest.RedactionProfile.AUDIT_SAFE, DigestExportRequest.ExportFormat.MARKDOWN, false, null, "compliance_report:" + scope(command.evidenceScope()), "local://compliance-report/" + stableSuffix(actor.account().accountId() + command.idempotencyKey()), "Compliance report prepared from authorized audit/export evidence with audit-safe redaction; this is not a compliance-suite certification or vendor attestation.", null, correlationId, Instant.now(clock));
+    repository.saveDigestExportRequest(request);
+    authContextResolver.appendProtectedReadTrace(actor, REQUEST_COMPLIANCE_REPORT_CAPABILITY, "compliance-report-local-ready", correlationId);
+    return request;
   }
 
   public DigestExportRequest read(AuthContextResolver.ResolvedMe actor, String requestId, String correlationId) {
@@ -126,6 +183,10 @@ public final class DigestExportService {
     return DigestExportRequest.RedactionProfile.valueOf(requested.trim().toUpperCase());
   }
 
+  private static boolean approvable(DigestExportRequest.RequestType type) {
+    return type == DigestExportRequest.RequestType.EXPORT || type == DigestExportRequest.RequestType.LEGAL_HOLD || type == DigestExportRequest.RequestType.EDISCOVERY_EXPORT;
+  }
+
   private static DigestExportRequest.ExportFormat format(String requested) {
     if (requested == null || requested.isBlank()) return DigestExportRequest.ExportFormat.MARKDOWN;
     return DigestExportRequest.ExportFormat.valueOf(requested.trim().toUpperCase());
@@ -152,4 +213,7 @@ public final class DigestExportService {
 
   public record DigestCommand(String idempotencyKey, Instant scheduledFor, String redactionProfile, String evidenceScope) {}
   public record ExportCommand(String idempotencyKey, String redactionProfile, String exportFormat, boolean sensitiveApprovalRequired, String evidenceScope) {}
+  public record LegalHoldCommand(String idempotencyKey, Instant retentionUntil, String evidenceScope, String reason) {}
+  public record EnterpriseExportCommand(String idempotencyKey, String redactionProfile, String exportFormat, String evidenceScope, String reason) {}
+  public record SiemExportCommand(String idempotencyKey, String evidenceScope, boolean productionDeliveryRequested) {}
 }

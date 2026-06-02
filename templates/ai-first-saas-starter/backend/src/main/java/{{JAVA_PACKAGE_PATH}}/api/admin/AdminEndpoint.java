@@ -235,6 +235,50 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     });
   }
 
+  @Post("/digest-export/legal-holds")
+  public HttpResponse requestLegalHold(LegalHoldApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().requestLegalHold(actor, new DigestExportService.LegalHoldCommand(stableIdempotencyKey, request == null || request.retentionUntil() == null ? null : Instant.parse(request.retentionUntil()), request == null ? null : request.evidenceScope(), request == null ? null : request.reason()), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
+  @Post("/digest-export/ediscovery-exports")
+  public HttpResponse requestEdiscoveryExport(EnterpriseExportApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().requestEdiscoveryExport(actor, new DigestExportService.EnterpriseExportCommand(stableIdempotencyKey, request == null ? null : request.redactionProfile(), request == null ? null : request.exportFormat(), request == null ? null : request.evidenceScope(), request == null ? null : request.reason()), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
+  @Post("/digest-export/siem-exports")
+  public HttpResponse requestSiemExport(SiemExportApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().requestSiemExport(actor, new DigestExportService.SiemExportCommand(stableIdempotencyKey, request == null ? null : request.evidenceScope(), request != null && request.productionDeliveryRequested()), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
+  @Post("/digest-export/compliance-reports")
+  public HttpResponse requestComplianceReport(EnterpriseExportApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.digestExportService().requestComplianceReport(actor, new DigestExportService.EnterpriseExportCommand(stableIdempotencyKey, request == null ? null : request.redactionProfile(), request == null ? null : request.exportFormat(), request == null ? null : request.evidenceScope(), request == null ? null : request.reason()), correlationId);
+      return HttpResponses.ok(DigestExportApiResponse.from(result));
+    });
+  }
+
   @Get("/audit-events")
   public HttpResponse auditEvents() {
     var limit = requestContext().queryParams().getInteger("limit").orElse(50);
@@ -325,10 +369,13 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record DigestCommandApiRequest(String idempotencyKey, String scheduledFor, String redactionProfile, String evidenceScope) {}
   public record ExportCommandApiRequest(String idempotencyKey, String redactionProfile, String exportFormat, boolean sensitiveApprovalRequired, String evidenceScope) {}
   public record ExportApprovalApiRequest(String reason) {}
+  public record LegalHoldApiRequest(String idempotencyKey, String retentionUntil, String evidenceScope, String reason) {}
+  public record EnterpriseExportApiRequest(String idempotencyKey, String redactionProfile, String exportFormat, String evidenceScope, String reason) {}
+  public record SiemExportApiRequest(String idempotencyKey, String evidenceScope, boolean productionDeliveryRequested) {}
   public record DigestExportApiResponses(List<DigestExportApiResponse> requests, String correlationId) {}
-  public record DigestExportApiResponse(String requestId, String requestType, String status, String redactionProfile, String exportFormat, boolean sensitiveApprovalRequired, String scheduledFor, String evidenceScope, String resultUri, String safeSummary, List<String> traceIds, String updatedAt) {
+  public record DigestExportApiResponse(String requestId, String requestType, String status, String redactionProfile, String exportFormat, boolean sensitiveApprovalRequired, String scheduledFor, String evidenceScope, String resultUri, String safeSummary, String blockerCode, List<String> traceIds, String updatedAt) {
     static DigestExportApiResponse from(DigestExportRequest request) {
-      return new DigestExportApiResponse(request.requestId(), request.requestType().name().toLowerCase(), request.status().name().toLowerCase(), request.redactionProfile().name().toLowerCase(), request.exportFormat().name().toLowerCase(), request.sensitiveApprovalRequired(), request.scheduledFor() == null ? null : request.scheduledFor().toString(), request.evidenceScope(), request.resultUri(), request.safeSummary(), request.traceIds(), request.updatedAt().toString());
+      return new DigestExportApiResponse(request.requestId(), request.requestType().name().toLowerCase(), request.status().name().toLowerCase(), request.redactionProfile().name().toLowerCase(), request.exportFormat().name().toLowerCase(), request.sensitiveApprovalRequired(), request.scheduledFor() == null ? null : request.scheduledFor().toString(), request.evidenceScope(), request.resultUri(), request.safeSummary(), request.blockerCode(), request.traceIds(), request.updatedAt().toString());
     }
   }
   public record InvitationsApiResponse(List<InvitationApiResponse> invitations, String correlationId) {}

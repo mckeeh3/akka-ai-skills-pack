@@ -45,7 +45,7 @@ public record DigestExportRequest(
     return status == Status.READY || status == Status.REJECTED || status == Status.CANCELLED || status == Status.BLOCKED_PROVIDER_OR_RUNTIME;
   }
 
-  public enum RequestType { MANUAL_DIGEST, SCHEDULED_DIGEST, EXPORT }
+  public enum RequestType { MANUAL_DIGEST, SCHEDULED_DIGEST, EXPORT, LEGAL_HOLD, EDISCOVERY_EXPORT, SIEM_EXPORT, COMPLIANCE_REPORT }
   public enum Status { SCHEDULED, QUEUED, PENDING_APPROVAL, READY, REJECTED, CANCELLED, BLOCKED_PROVIDER_OR_RUNTIME }
   public enum RedactionProfile { STANDARD, STRICT, AUDIT_SAFE }
   public enum ExportFormat { MARKDOWN, CSV, JSON }

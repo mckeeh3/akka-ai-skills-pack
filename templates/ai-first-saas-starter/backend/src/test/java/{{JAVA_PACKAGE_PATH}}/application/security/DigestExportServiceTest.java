@@ -98,6 +98,53 @@ class DigestExportServiceTest {
   }
 
   @Test
+  void legalHoldRequiresApprovalAndStoresOnlyRedactedScopedMarker() {
+    var actor = actor("admin@example.test", "membership-admin", "corr-legal-hold");
+    var hold = service.requestLegalHold(actor, new DigestExportService.LegalHoldCommand("idem-legal", Instant.parse("2026-06-26T10:00:00Z"), "trace token=secret", "pending litigation"), "corr-legal-hold");
+
+    assertEquals(DigestExportRequest.RequestType.LEGAL_HOLD, hold.requestType());
+    assertEquals(DigestExportRequest.Status.PENDING_APPROVAL, hold.status());
+    assertEquals(null, hold.resultUri());
+    assertFalse(hold.toString().contains("token=secret"));
+
+    var approved = service.approveExport(actor, hold.requestId(), "Approved legal hold", "corr-legal-approve");
+
+    assertEquals(DigestExportRequest.Status.READY, approved.status());
+    assertTrue(approved.resultUri().startsWith("local://legal-hold/"));
+    assertTrue(approved.safeSummary().contains("without deleting, mutating, or widening retention"));
+  }
+
+  @Test
+  void ediscoverySiemAndComplianceFoundationsDoNotClaimVendorCertificationOrProviderDelivery() {
+    var actor = actor("admin@example.test", "membership-admin", "corr-enterprise-export");
+    var ediscovery = service.requestEdiscoveryExport(actor, new DigestExportService.EnterpriseExportCommand("idem-ediscovery", "audit_safe", "json", "audit secret=value", "case review"), "corr-ediscovery");
+    var siem = service.requestSiemExport(actor, new DigestExportService.SiemExportCommand("idem-siem", "audit", true), "corr-siem");
+    var compliance = service.requestComplianceReport(actor, new DigestExportService.EnterpriseExportCommand("idem-compliance", "audit_safe", "markdown", "audit", "SOC review"), "corr-compliance");
+
+    assertEquals(DigestExportRequest.Status.PENDING_APPROVAL, ediscovery.status());
+    assertFalse(ediscovery.toString().contains("secret=value"));
+    assertEquals(DigestExportRequest.Status.BLOCKED_PROVIDER_OR_RUNTIME, siem.status());
+    assertEquals("siem-provider-not-configured", siem.blockerCode());
+    assertEquals(null, siem.resultUri());
+    assertTrue(siem.safeSummary().contains("failed closed"));
+    assertEquals(DigestExportRequest.Status.READY, compliance.status());
+    assertTrue(compliance.safeSummary().contains("not a compliance-suite certification"));
+  }
+
+  @Test
+  void enterpriseAuditExportsAreTenantScopedIdempotentAndCapabilityProtected() {
+    var admin = actor("admin@example.test", "membership-admin", "corr-enterprise");
+    var other = actor("other@example.test", "membership-other", "corr-other");
+    var member = actor("member@example.test", "membership-member", "corr-member");
+    var first = service.requestComplianceReport(admin, new DigestExportService.EnterpriseExportCommand("idem-compliance-idem", "strict", "json", "audit", "review"), "corr-enterprise");
+    var duplicate = service.requestComplianceReport(admin, new DigestExportService.EnterpriseExportCommand("idem-compliance-idem", "strict", "json", "ignored", "review"), "corr-enterprise-dup");
+
+    assertEquals(first.requestId(), duplicate.requestId());
+    assertThrows(AuthorizationException.class, () -> service.read(other, first.requestId(), "corr-cross-enterprise"));
+    assertThrows(AuthorizationException.class, () -> service.requestLegalHold(member, new DigestExportService.LegalHoldCommand("idem-denied-legal", Instant.parse("2026-06-26T10:00:00Z"), "audit", "denied"), "corr-member"));
+  }
+
+  @Test
   void missingCapabilityCannotStartDigestOrExport() {
     var member = actor("member@example.test", "membership-member", "corr-member");
     assertThrows(AuthorizationException.class, () -> service.startManualDigest(member, new DigestExportService.DigestCommand("idem-denied", null, "strict", "attention"), "corr-member"));

@@ -412,7 +412,7 @@
 
 ### TASK-COREEXT-04-002: Implement SIEM/legal-hold/e-discovery/compliance foundation
 
-- status: pending
+- status: done
 - source: specs/core-app-feature-completion/backlog/01-core-feature-completion-build-backlog.md
 - task brief: specs/core-app-feature-completion/tasks/04-enterprise-extensions/02-siem-legal-hold-compliance-foundation.md
 - depends on: [TASK-COREEXT-04-001]
@@ -442,6 +442,8 @@
   - enterprise audit/export foundations work locally and are documented without vendor/compliance overclaiming
   - queue is updated and committed
 - notes:
+  - validation: `git diff --check`; `tools/validate-ai-first-saas-starter-fullstack.sh`; rendered backend `DigestExportServiceTest`; rendered frontend tests/typecheck/build; rendered static asset secret scan
+  - direct template Maven note: `cd templates/ai-first-saas-starter/backend && mvn test -Dtest=DigestExportServiceTest` cannot run before scaffold rendering because the template POM intentionally contains `{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}` placeholders
   - commit message: `coreext: add enterprise audit export foundation`
 
 ### TASK-COREEXT-04-003: Implement marketplace prompt and tenant-managed tool-binding foundation
