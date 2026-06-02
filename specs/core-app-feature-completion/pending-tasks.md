@@ -523,7 +523,7 @@
 
 ### TASK-COREEXT-99-001: Verify core feature completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/core-app-feature-completion/tasks/99-verification/01-verify-core-feature-completion.md
 - depends on:
@@ -568,5 +568,8 @@
   - if incomplete, new bounded tasks are appended before a new terminal verification task
   - queue is updated and committed
 - notes:
-  - TASK-COREEXT-02-003 remains separately blocked on Q-001 and should be reconciled during verification or after Q-001 is answered
+  - TASK-COREEXT-02-003 remains blocked on Q-001 for provider-specific SMS/mobile-push/webhook/Slack/Teams production adapters; this is an external provider decision and does not block the completed provider-neutral starter scope.
+  - Q-002 remains pending for detailed provider-specific enterprise integration priority; completed foundation tasks documented provider-specific limits and do not claim production SCIM/SSO provisioning, SIEM delivery, compliance-suite certification, marketplace publication/distribution, or provider-backed executable tool marketplaces.
+  - verification summary: sprint/backlog goals were compared against completed task notes, starter README scope, unresolved questions, and runtime completion doctrine; no material unqueued gaps were found for the current provider-neutral mini-project scope.
+  - validation: `tools/validate-ai-first-saas-starter-fullstack.sh` passed, including rendered backend Maven tests, frontend tests/typecheck/build, static asset scan, bundle analysis, and real provider Akka Agent smoke.
   - commit message: `coreext: verify core feature completion`
