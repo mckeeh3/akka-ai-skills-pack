@@ -178,7 +178,7 @@
 
 ### TASK-MAPAD-99-001: Verify My Account personal attention digest AutonomousAgent
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/my-account-personal-attention-digest-autonomous-agent/tasks/99-verification/01-verify-personal-attention-digest-agent.md
 - depends on:
