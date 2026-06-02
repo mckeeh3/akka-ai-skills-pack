@@ -7,20 +7,24 @@
   - the signed-in user tile at the bottom of the left rail opens the My Account workstream
   - Profile and Settings are surface actions, not a separate shell menu
 - payload schema:
-  - current account summary, selected/default AuthContext, browser-safe capabilities, and dashboard actions for Profile, Settings, and Sign out
+  - current account summary, selected/default AuthContext, browser-safe capabilities, selected theme id, available named themes, and dashboard actions for Profile, Settings, Theme, and Sign out
 - default dashboard actions:
   - show user profile → appends request `Show user profile` and response `user-profile` surface
   - show user settings → appends request `Show user settings` and response `user-settings` surface
+  - change theme → appends request `Change theme` and response `user-theme-settings` surface listing available named themes
   - sign out → shell/session action with backend/session trace where available
-- profile/settings surfaces:
+- profile/settings/theme surfaces:
   - current user's editable profile fields and preferences only
+  - theme preference is a named-theme selection from the available list, with initial theme ids `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`
+  - selecting a theme stores/applies the selected theme id at the documented settings scope and must not be treated as authorization
   - administrative roles, memberships, support access, and tenant/customer authority changes remain in User Admin/Governance surfaces
 - states:
   - loading `/api/me`, no memberships, forbidden/disabled account, stale settings save, successful context switch or save
 - auth/security:
   - backend scopes every context; frontend never trusts stored context without `/api/me` refresh
-  - profile/settings edits map to governed backend capabilities and audit profile/settings changes where consequential
+  - profile/settings/theme edits map to governed backend capabilities and audit profile/settings changes where consequential
 - rendering tests:
   - active member sees My Account from the bottom rail user tile
-  - Profile and Settings actions append both request and response entries in the My Account flow
+  - Profile, Settings, and Theme actions append both request and response entries in the My Account flow
+  - selecting an available named theme applies the selected theme id to the UI without changing authority or capability visibility
   - disabled user gets safe denial; narrow layout preserves context and action affordances.

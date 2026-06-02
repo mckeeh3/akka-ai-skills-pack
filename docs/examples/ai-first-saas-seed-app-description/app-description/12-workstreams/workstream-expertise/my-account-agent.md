@@ -4,7 +4,7 @@
 
 - bundle-id: `my-account-agent.expertise`
 - owning functional agent: `my-account-agent`
-- scope: foundation SaaS My Account workstream for own-account profile, settings, selected context, sign-out guidance, and safe self-service in the selected `AuthContext`
+- scope: foundation SaaS My Account workstream for own-account profile, settings, named theme selection, selected context, sign-out guidance, and safe self-service in the selected `AuthContext`
 - authoritative catalog link: `../functional-agents.md`
 - primary surfaces: `my-account-dashboard`
 - capability families:
@@ -19,7 +19,7 @@ The bundle guides own-account self-service. It does not grant authority. Backend
 
 | Actor/context | Allowed agent posture | Required boundary |
 |---|---|---|
-| Active signed-in member | Explain current account, selected context, available memberships, browser-safe capabilities, profile fields, and settings; draft own profile/settings changes. | Own-account only; no role, membership, support-access, tenant/customer admin, or cross-account changes. |
+| Active signed-in member | Explain current account, selected context, available memberships, browser-safe capabilities, profile fields, settings, and named theme choices; draft own profile/settings/theme changes. | Own-account only; theme preference is not authorization; no role, membership, support-access, tenant/customer admin, or cross-account changes. |
 | Member with multiple contexts | Explain context choices and safe switching behavior. | Context switch must refresh `/api/me`; frontend stored context is not trusted. |
 | Disabled account, inactive membership, or forbidden context | Safe denial and recovery guidance only. | No protected data beyond permitted denial metadata. |
 | Auditor or Admin | May review consequential profile/settings audit only through Audit/Trace or User Admin scope. | My Account agent remains own-account scoped. |
@@ -40,7 +40,7 @@ This LLM-backed bundle uses an inherited governed default model binding unless a
 
 The active `PromptDocument`/`PromptVersion` for `my-account-agent` instructs the model to:
 
-- help the signed-in user understand `/api/me`, selected `AuthContext`, profile, settings, and visible browser-safe capabilities;
+- help the signed-in user understand `/api/me`, selected `AuthContext`, profile, settings, selected named theme, available theme choices, and visible browser-safe capabilities;
 - ask clarifying questions before drafting profile/settings changes when the target field, context, or consequence is ambiguous;
 - explain sign-out and context-switch behavior without exposing tokens, provider internals, or hidden membership data;
 - refuse administrative role/membership changes, cross-account reads, support-access operations, provider secrets, raw JWT/session data, and attempts to use profile/settings text to grant authority;
@@ -53,7 +53,7 @@ These `SkillDocument` records are assigned through `AgentSkillManifest`. The com
 | skillId | Title | When to use | Authority note |
 |---|---|---|---|
 | `ma.context-selection-help.v1` | Context Selection Help | Explain available tenant/customer contexts, current selection, disabled/inactive states, and refresh requirements. | Guidance only; `/api/me` and backend context checks decide access. |
-| `ma.profile-settings-draft.v1` | Profile and Settings Drafting | Help draft own display/profile/preference changes and identify fields requiring confirmation or audit. | Cannot edit roles, memberships, permissions, or other users. |
+| `ma.profile-settings-draft.v1` | Profile and Settings Drafting | Help draft own display/profile/preference changes, including selected named theme, and identify fields requiring confirmation or audit. | Cannot edit roles, memberships, permissions, or other users; theme does not grant authority. |
 | `ma.session-safety.v1` | Session and Sign-Out Safety | Explain sign-out, stale session, token-boundary, and frontend secret rules. | No raw token/session inspection or provider-secret access. |
 | `ma.safe-self-service-denials.v1` | Safe Self-Service Denials | Explain disabled-user, inactive-membership, forbidden-context, and unsupported-admin-action denials. | Denials must not reveal hidden cross-scope resource existence. |
 
@@ -65,7 +65,7 @@ These `ReferenceDocument` records are assigned through `AgentReferenceManifest`.
 |---|---|---|---|
 | `ma.profile-fields-policy.v1` | Profile Fields Policy | Determine editable own-account fields, display-name rules, and audit-triggering changes. | Policy evidence only; update capability enforces allowed fields. |
 | `ma.context-switching-guide.v1` | Context Switching Guide | Explain selected-context behavior, membership status, and `/api/me` refresh expectations. | Does not grant tenant/customer access. |
-| `ma.settings-privacy-guide.v1` | Settings and Privacy Guide | Explain preference visibility, notification settings, and browser-safe payload limits. | Cannot expose provider secrets, raw JWTs, or unrelated account data. |
+| `ma.settings-privacy-guide.v1` | Settings and Privacy Guide | Explain preference visibility, notification settings, named theme selection, and browser-safe payload limits. | Cannot expose provider secrets, raw JWTs, unrelated account data, or imply theme changes alter permissions. |
 
 ## Compact expertise manifest
 
@@ -76,7 +76,7 @@ Prompt assembly for `my-account-agent` includes only compact skill/reference ent
 | Capability/tool group | Agent use | Boundary |
 |---|---|---|
 | `/api/me` and selected-context reads | Explain signed-in account, memberships, selected context, and browser-safe capabilities. | Own account only; stale or forbidden context requires refresh/denial. |
-| profile/settings reads and updates | Draft and explain own profile/settings changes; request human-confirmed save. | Editable fields only; consequential changes audited. |
+| profile/settings/theme reads and updates | Draft and explain own profile/settings/theme changes; request human-confirmed save. | Editable fields and available named themes only; consequential changes audited; theme preference is not authorization. |
 | sign-out/session actions | Explain and invoke shell/session sign-out affordance where available. | No raw token/JWT/provider-secret access. |
 | `readSkill(skillId)` | Load assigned My Account procedural skill text. | Requires `read_skill`, manifest assignment, active version, token/redaction checks, and `SkillLoadTrace`. |
 | `readReferenceDoc(referenceId)` | Load assigned My Account reference text. | Requires `read_reference`, manifest assignment, active version, token/redaction checks, and `ReferenceLoadTrace`. |
@@ -87,7 +87,7 @@ Deny safely for unassigned/inactive/cross-tenant/oversized/redaction-failed skil
 
 ## Surfaces, traces, seed, and tests
 
-- `my-account-dashboard`: shows current account summary, selected/default AuthContext, browser-safe capabilities, Profile, Settings, Sign out, context-switch states, and denial/recovery messages.
+- `my-account-dashboard`: shows current account summary, selected/default AuthContext, browser-safe capabilities, Profile, Settings, named Theme selection, Sign out, context-switch states, and denial/recovery messages.
 - Required traces: safe model binding/model-use facts, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, data-access trace for `/api/me`, selected-context changes, profile/settings update audit where consequential, and denial traces.
 - Seed policy: tenant bootstrap creates default `AgentDefinition`, inherited governed default `ModelConfigRef`/`ModelPolicy` binding, prompt, four skills, three references, compact skill/reference manifests, and `ToolPermissionBoundary` with read-only self-service loaders. Imports record provenance, checksums, idempotency, and customization-preserving upgrade behavior.
-- Test obligations: compact manifest without full bodies; assigned and denied skill/reference loads; missing loader-boundary denial; own-account capability authorization; disabled-user/forbidden-context denials; no authority expansion from profile/settings/prompt/reference text; `my-account-dashboard` rendering; trace emission.
+- Test obligations: compact manifest without full bodies; assigned and denied skill/reference loads; missing loader-boundary denial; own-account capability authorization; disabled-user/forbidden-context denials; no authority expansion from profile/settings/theme/prompt/reference text; named theme selection applies only available theme ids; `my-account-dashboard` rendering; trace emission.

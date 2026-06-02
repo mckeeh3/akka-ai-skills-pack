@@ -1,6 +1,6 @@
 # UI Index
 
-- design reference: `../../../../../docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` AI-first style system
+- design reference: `../../../../../docs/web-ui-style-guide.md` canonical `ai-first-workstream-enterprise` AI-first style system with four initial named themes
 - primary model: agent workstream shell with role-authorized functional-agent rail, continuous workstream panel, persistent composer, structured surfaces, context/authority indicators, and route/deep-link support
 - authoritative workstream layer:
   - `../12-workstreams/functional-agents.md`

@@ -126,7 +126,7 @@
 
 ### TASK-WUTR-02-001: Update seed app-description theme contract
 
-- status: pending
+- status: done
 - source: specs/web-ui-style-theme-refresh/backlog/02-reference-runtime-build-backlog.md
 - task brief: specs/web-ui-style-theme-refresh/tasks/02-reference-runtime/01-update-seed-app-description-theme-contract.md
 - depends on:
@@ -159,6 +159,7 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `ui-theme: update seed app theme contract`
+  - checks: `git diff --check`; `rg -n "orange|coral|system with light|system mode|light/dark/system|warm near-black" docs/examples/ai-first-saas-seed-app-description/app-description/55-ui docs/examples/ai-first-saas-seed-app-description/app-description/12-workstreams` (no stale contradictions found)
 
 ### TASK-WUTR-02-002: Refresh starter/reference theme tokens
 

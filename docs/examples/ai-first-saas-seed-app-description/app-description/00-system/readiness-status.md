@@ -5,16 +5,16 @@
   - implementation planning
   - backlog/sprint decomposition
   - phase-1 scaffold design
-  - UI design validation against `docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` AI-first style system
+  - UI design validation against `docs/web-ui-style-guide.md` canonical `ai-first-workstream-enterprise` AI-first style system
   - localized frontend implementation planning for the seed app shell, mission control, goal workbench, decision review, governance, audit, and admin surfaces
-  - first frontend execution slice planning: React/Vite/TypeScript foundation with tokenized light/dark/system mode, provided the slice is wired to real or fail-closed local backend contracts before any feature is called runtime-complete
+  - first frontend execution slice planning: React/Vite/TypeScript foundation with four tokenized named themes, provided the slice is wired to real or fail-closed local backend contracts before any feature is called runtime-complete
 - not yet fully ready for:
   - complete code generation of all phases at once
   - production WorkOS authentication setup values and Resend invite-email setup values
 - decisive reasons:
   - app class, SaaS foundation, complete invitation onboarding, full admin user management, AI-assisted admin offload, agent workstream model, functional agents, structured surfaces, security posture, and horizontal Akka component mapping are defined
   - every seed foundation functional agent has an authoritative workstream expert bundle under `12-workstreams/workstream-expertise/`: My Account, User Admin, Agent Admin, Mission Control, Governance/Policy, and Audit/Trace
-  - selected UI design, light/dark/system mode, lightweight style constraints, workstream shell semantics, surface contracts, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
+  - selected UI design, named-theme model, lightweight style constraints, workstream shell semantics, surface contracts, admin UI/action requirements, frontend API DTO sketches, realtime expectations, and UI acceptance checks are defined
   - enough structure exists to plan implementation phases and generate initial scaffolding
 - blocking gaps before full code generation:
   - choose concrete WorkOS/JWT mode for runnable local development and cloud deployment
@@ -27,6 +27,6 @@
   - v1 may use WorkOS-compatible local test tokens for developer execution while preserving production WorkOS/AuthKit semantics and fail-closed behavior when required provider configuration is absent
   - seed app prioritizes HTTP/browser integration first; gRPC/MCP may be optional modules
   - tenant isolation is mandatory in local developer execution and generated-app runtime
-  - UI design validation uses the `atlas-ops-supervisory-console` style system with no copied mockup content
+  - UI design validation uses the `ai-first-workstream-enterprise` style system with no copied mockup content
 - last readiness update basis:
   - seed app UI design review and next-step UI description updates

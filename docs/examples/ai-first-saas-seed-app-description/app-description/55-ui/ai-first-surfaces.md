@@ -6,7 +6,7 @@ This file defines the seed app's AI-first browser surfaces as typed workstream a
 
 Design reference:
 
-- `../../../../../docs/web-ui-style-guide.md` canonical `atlas-ops-supervisory-console` AI-first style system
+- `../../../../../docs/web-ui-style-guide.md` canonical `ai-first-workstream-enterprise` AI-first style system
 
 ## Cross-surface rules
 

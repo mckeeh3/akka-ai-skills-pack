@@ -65,8 +65,9 @@
 - backend authorization remains authoritative even if a UI stream shows an action affordance
 - rejected or expired actions must return explicit authorization or stale-state errors
 
-## Mode and style state
+## Theme and style state
 
-- user preference supports light, dark, and system mode
-- mode changes are applied by documented CSS class or `data-mode` token switching
-- style overrides are limited to color and font tokens
+- user preference supports named theme selection with initial ids `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`
+- theme changes are applied by documented CSS class or `data-theme` token switching
+- My Account settings selects one available theme by name and applies the stored theme id to the UI
+- style overrides are limited to named theme tokens, color tokens, font-family tokens, product name, logo/icon treatment, and safe brand accents

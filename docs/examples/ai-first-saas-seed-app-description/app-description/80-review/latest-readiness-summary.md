@@ -5,17 +5,17 @@
   - implementation planning
   - backlog/sprint decomposition
   - phase-1 scaffold design
-  - UI design validation against the selected `atlas-ops-supervisory-console` style guide
+  - UI design validation against the selected `ai-first-workstream-enterprise` style guide
   - localized frontend implementation planning for the workstream shell, functional-agent rail, persistent composer, Mission Control, Goal Workbench, decision review, governance, audit, and admin surfaces
-  - first frontend execution slice: React/Vite/TypeScript foundation with tokenized light/dark/system mode
+  - first frontend execution slice: React/Vite/TypeScript foundation with four tokenized named themes
 - not yet fully ready for:
   - complete code generation of all phases at once
   - production WorkOS authentication setup values and Resend invite-email setup values
 - workstream/UI readiness notes:
   - functional agents, internal agents, workstream retention, surface index, and representative surface contracts are defined
   - authoritative workstream expert bundles exist for all seed foundation functional agents: My Account, User Admin, Agent Admin, Mission Control, Governance/Policy, and Audit/Trace
-  - selected `atlas-ops-supervisory-console` style guide is recorded
-  - light/dark/system mode and lightweight style constraints are defined
+  - selected `ai-first-workstream-enterprise` style guide is recorded
+  - named-theme model and lightweight style constraints are defined
   - structured surface contracts, form/action behavior, frontend API DTO sketches, realtime behavior, and design-specific acceptance checks are defined
   - route/deep-link support is subordinate to functional-agent workstreams and structured surfaces
 - main remaining decisions:

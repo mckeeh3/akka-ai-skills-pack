@@ -13,8 +13,8 @@
   - audit trace filters and results
 - decision cards must preserve semantic headings and readable evidence/risk/policy sections
 - color must not be the only risk/status indicator; pair status color with label text and/or icon
-- focus ring must be visible in light and dark mode using the selected style-guide focus token
-- text and meaningful controls must meet WCAG AA contrast in light and dark modes
+- focus ring must be visible in every named theme using the selected style-guide focus token
+- text and meaningful controls must meet WCAG AA contrast in all available named themes
 - form validation errors must be programmatically associated with fields where applicable
 - destructive or high-impact actions must name the object and consequence before confirmation
 - decorative motion must respect `prefers-reduced-motion`
@@ -55,13 +55,13 @@ On mission-control and decision surfaces, a user should immediately understand:
 - after closing a modal/drawer, focus returns to the invoking control
 - after approving/rejecting a decision, focus moves to the next actionable item or a confirmation region
 
-## Light/dark validation
+## Named-theme validation
 
-- all core seed UI surfaces must be reviewed in light and dark mode:
+- all core seed UI surfaces must be reviewed in the four initial named themes:
   - app shell
   - mission control / briefing
   - decision queue
   - decision card detail
   - governance center
   - audit trace explorer
-- mode switching must not remove focus visibility, status labels, or action affordances
+- theme switching must not remove focus visibility, status labels, or action affordances
