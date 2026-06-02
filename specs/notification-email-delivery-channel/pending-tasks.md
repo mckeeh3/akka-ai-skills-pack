@@ -179,7 +179,7 @@
 
 ### TASK-NEDC-99-001: Verify notification email delivery channel
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/notification-email-delivery-channel/tasks/99-verification/01-verify-email-channel.md
 - depends on:
@@ -206,3 +206,5 @@
   - task changes and queue update are committed
 - notes:
   - commit message: `notification-email: verify completion`
+  - checks passed: `git diff --check`; scaffolded targeted backend test `mvn -q -Dtest=EmailNotificationServiceTest test` in `/tmp/nedc-verify.J714Tl`; focused `rg` scan for Resend, captured outbox, email preferences, redaction, audit, idempotency, fail-closed, and future channel boundary
+  - mini-project assessed complete; no bounded follow-up tasks were required
