@@ -2,8 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
-DIST_DIR="$REPO_ROOT/dist"
+PACK_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+APP_ROOT="$(cd -- "$PACK_ROOT/.." && pwd)"
+DIST_DIR="$PACK_ROOT/dist"
 CLEAN=false
 NO_ARCHIVE=false
 OUTPUT_DIR=""
@@ -43,7 +44,7 @@ fail() {
 
 infer_github_repo() {
   local remote_url
-  remote_url="$(git -C "$REPO_ROOT" config --get remote.origin.url 2>/dev/null || true)"
+  remote_url="$(git -C "$APP_ROOT" config --get remote.origin.url 2>/dev/null || true)"
   [[ -n "$remote_url" ]] || return 1
 
   case "$remote_url" in
@@ -137,7 +138,8 @@ pack_version=${PACK_VERSION}
 release_tag=${RELEASE_TAG}
 github_repo=${GITHUB_REPO}
 built_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-source_repo=${REPO_ROOT}
+source_repo=${APP_ROOT}
+pack_source=${PACK_ROOT}
 archive_path=${ARCHIVE_PATH}
 installer_path=${INSTALLER_PATH}
 external_docs_bundled=false
@@ -170,16 +172,16 @@ PY
 # added docs are included automatically instead of requiring a hardcoded list.
 validate_source_tree() {
   local required_paths=(
-    "$REPO_ROOT/skills/README.md"
-    "$REPO_ROOT/skills/references/akka-entity-comparison.md"
-    "$REPO_ROOT/pom.xml"
-    "$REPO_ROOT/README.md"
-    "$REPO_ROOT/LICENSE"
-    "$REPO_ROOT/pack/README.md"
-    "$REPO_ROOT/pack/AGENTS.md"
-    "$REPO_ROOT/pack/EXAMPLES-README.md"
-    "$REPO_ROOT/pack/manifest.schema.yaml"
-    "$REPO_ROOT/frontend"
+    "$PACK_ROOT/skills/README.md"
+    "$PACK_ROOT/skills/references/akka-entity-comparison.md"
+    "$APP_ROOT/pom.xml"
+    "$APP_ROOT/README.md"
+    "$APP_ROOT/LICENSE"
+    "$PACK_ROOT/pack/README.md"
+    "$PACK_ROOT/pack/AGENTS.md"
+    "$PACK_ROOT/pack/EXAMPLES-README.md"
+    "$PACK_ROOT/pack/manifest.schema.yaml"
+    "$APP_ROOT/frontend"
     "$INSTALLER_TEMPLATE"
   )
 
@@ -190,7 +192,7 @@ validate_source_tree() {
   while IFS= read -r skill_dir; do
     [[ -n "$skill_dir" ]] || continue
     [[ -f "$skill_dir/SKILL.md" ]] || fail "Skill directory missing SKILL.md: $skill_dir"
-  done < <(find "$REPO_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
+  done < <(find "$PACK_ROOT/skills" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
 }
 
 copy_tree() {
@@ -245,10 +247,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -f "$REPO_ROOT/pack/manifest.yaml" ]] || fail "Missing pack/manifest.yaml"
-[[ -f "$REPO_ROOT/install.sh" ]] || fail "Missing install.sh"
-[[ -d "$REPO_ROOT/skills" ]] || fail "Missing skills"
-[[ -d "$REPO_ROOT/src" ]] || fail "Missing src"
+[[ -f "$PACK_ROOT/pack/manifest.yaml" ]] || fail "Missing pack/manifest.yaml"
+[[ -f "$PACK_ROOT/install.sh" ]] || fail "Missing skills-pack/install.sh"
+[[ -d "$PACK_ROOT/skills" ]] || fail "Missing skills"
+[[ -d "$APP_ROOT/src" ]] || fail "Missing src"
 
 if [[ -z "$GITHUB_REPO" ]]; then
   GITHUB_REPO="$(infer_github_repo || true)"
@@ -264,12 +266,12 @@ mkdir -p "$DIST_DIR"
 PACK_NAME="$(awk '
   $0 ~ /^metadata:/ { in_metadata=1; next }
   in_metadata && $0 ~ /^  name:/ { print $2; exit }
-' "$REPO_ROOT/pack/manifest.yaml")"
+' "$PACK_ROOT/pack/manifest.yaml")"
 
 PACK_VERSION="$(awk '
   $0 ~ /^metadata:/ { in_metadata=1; next }
   in_metadata && $0 ~ /^  version:/ { print $2; exit }
-' "$REPO_ROOT/pack/manifest.yaml")"
+' "$PACK_ROOT/pack/manifest.yaml")"
 
 [[ -n "$PACK_NAME" ]] || fail "Could not read metadata.name from pack/manifest.yaml"
 [[ -n "$PACK_VERSION" ]] || fail "Could not read metadata.version from pack/manifest.yaml"
@@ -278,7 +280,7 @@ RELEASE_TAG="v${PACK_VERSION}"
 BUNDLE_DIR_NAME="${PACK_NAME}-${PACK_VERSION}"
 STAGE_DIR="$DIST_DIR/$BUNDLE_DIR_NAME"
 ARCHIVE_PATH="$DIST_DIR/${BUNDLE_DIR_NAME}.tar.gz"
-INSTALLER_TEMPLATE="$REPO_ROOT/tools/install-release-template.sh"
+INSTALLER_TEMPLATE="$PACK_ROOT/tools/install-release-template.sh"
 INSTALLER_PATH="$DIST_DIR/install-${PACK_NAME}-${PACK_VERSION}.sh"
 
 if [[ "$CLEAN" == true ]]; then
@@ -296,17 +298,17 @@ log "Building $BUNDLE_DIR_NAME"
 log "GitHub repo: $GITHUB_REPO"
 mkdir -p "$STAGE_DIR"
 
-copy_tree "$REPO_ROOT/skills" "$STAGE_DIR/skills"
-copy_tree "$REPO_ROOT/pack" "$STAGE_DIR/pack"
-copy_tree "$REPO_ROOT/src" "$STAGE_DIR/src"
-copy_frontend_reference "$REPO_ROOT/frontend" "$STAGE_DIR/frontend"
+copy_tree "$PACK_ROOT/skills" "$STAGE_DIR/skills"
+copy_tree "$PACK_ROOT/pack" "$STAGE_DIR/pack"
+copy_tree "$APP_ROOT/src" "$STAGE_DIR/src"
+copy_frontend_reference "$APP_ROOT/frontend" "$STAGE_DIR/frontend"
 mkdir -p "$STAGE_DIR/tools"
-cp "$REPO_ROOT/install.sh" "$STAGE_DIR/install.sh"
-cp "$REPO_ROOT/pom.xml" "$STAGE_DIR/pom.xml"
-cp "$REPO_ROOT/README.md" "$STAGE_DIR/README.md"
-cp "$REPO_ROOT/LICENSE" "$STAGE_DIR/LICENSE"
+cp "$PACK_ROOT/install.sh" "$STAGE_DIR/install.sh"
+cp "$APP_ROOT/pom.xml" "$STAGE_DIR/pom.xml"
+cp "$APP_ROOT/README.md" "$STAGE_DIR/README.md"
+cp "$APP_ROOT/LICENSE" "$STAGE_DIR/LICENSE"
 
-copy_tree "$REPO_ROOT/docs" "$STAGE_DIR/docs"
+copy_tree "$PACK_ROOT/docs" "$STAGE_DIR/docs"
 
 rm -rf "$STAGE_DIR/akka-context"
 

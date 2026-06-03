@@ -2,9 +2,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
-MANIFEST_PATH="$REPO_ROOT/pack/manifest.yaml"
-DIST_DIR="$REPO_ROOT/dist"
+PACK_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+APP_ROOT="$(cd -- "$PACK_ROOT/.." && pwd)"
+MANIFEST_PATH="$PACK_ROOT/pack/manifest.yaml"
+DIST_DIR="$PACK_ROOT/dist"
 
 log() {
   printf '[release] %s\n' "$*"
@@ -64,7 +65,7 @@ confirm() {
 
 require_clean_tree() {
   local status
-  status="$(git -C "$REPO_ROOT" status --porcelain)"
+  status="$(git -C "$APP_ROOT" status --porcelain)"
   [[ -z "$status" ]] || fail "Working tree is not clean. Commit or stash changes before cutting a release."
 }
 
@@ -93,7 +94,7 @@ replace_version_references() {
 
   log "Replacing tracked text references: $current_version -> $next_version"
 
-  python3 - "$REPO_ROOT" "$current_version" "$next_version" <<'PY'
+  python3 - "$APP_ROOT" "$current_version" "$next_version" <<'PY'
 from pathlib import Path
 import subprocess
 import sys
@@ -133,7 +134,7 @@ PY
 }
 
 current_branch() {
-  git -C "$REPO_ROOT" symbolic-ref --quiet --short HEAD || true
+  git -C "$APP_ROOT" symbolic-ref --quiet --short HEAD || true
 }
 
 ensure_tag_available() {
@@ -141,14 +142,14 @@ ensure_tag_available() {
   local status
 
   log "Checking local tag availability: $tag"
-  git -C "$REPO_ROOT" rev-parse "refs/tags/$tag" >/dev/null 2>&1 && fail "Local tag already exists: $tag"
+  git -C "$APP_ROOT" rev-parse "refs/tags/$tag" >/dev/null 2>&1 && fail "Local tag already exists: $tag"
 
   log "Checking origin tag availability: $tag"
   set +e
   if command -v timeout >/dev/null 2>&1; then
-    GIT_TERMINAL_PROMPT=0 timeout 20 git -C "$REPO_ROOT" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1
+    GIT_TERMINAL_PROMPT=0 timeout 20 git -C "$APP_ROOT" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1
   else
-    GIT_TERMINAL_PROMPT=0 git -C "$REPO_ROOT" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1
+    GIT_TERMINAL_PROMPT=0 git -C "$APP_ROOT" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1
   fi
   status=$?
   set -e
@@ -225,7 +226,7 @@ main() {
   command -v mvn >/dev/null 2>&1 || fail "mvn is required"
   [[ -f "$MANIFEST_PATH" ]] || fail "Missing pack/manifest.yaml"
 
-  cd "$REPO_ROOT"
+  cd "$APP_ROOT"
   require_clean_tree
 
   local pack_name current_version current_tag latest_tag default_next next_version next_tag branch
@@ -236,7 +237,7 @@ main() {
   validate_semver "$current_version"
 
   current_tag="v$current_version"
-  latest_tag="$(git -C "$REPO_ROOT" describe --tags --abbrev=0 2>/dev/null || true)"
+  latest_tag="$(git -C "$APP_ROOT" describe --tags --abbrev=0 2>/dev/null || true)"
   default_next="$(next_patch_version "$current_version")"
 
   cat <<EOF
@@ -275,21 +276,21 @@ EOF
 
   replace_version_references "$current_version" "$next_version"
 
-  if git -C "$REPO_ROOT" diff --quiet; then
+  if git -C "$APP_ROOT" diff --quiet; then
     fail "No version references changed. Refusing to continue."
   fi
 
   log "Changed files:"
-  git -C "$REPO_ROOT" diff --name-only | sed 's/^/[release] - /'
+  git -C "$APP_ROOT" diff --name-only | sed 's/^/[release] - /'
 
   log "Checking version consistency"
-  bash "$REPO_ROOT/tools/check-version-consistency.sh"
+  bash "$PACK_ROOT/tools/check-version-consistency.sh"
 
   log "Running Maven verification"
   mvn verify --no-transfer-progress
 
   log "Building release assets"
-  bash "$REPO_ROOT/tools/build-pack.sh" --clean
+  bash "$PACK_ROOT/tools/build-pack.sh" --clean
 
   local archive_path installer_path pushed=false
   archive_path="$DIST_DIR/${pack_name}-${next_version}.tar.gz"
@@ -299,19 +300,19 @@ EOF
   [[ -f "$installer_path" ]] || fail "Expected installer was not built: $installer_path"
 
   log "Committing version changes"
-  git -C "$REPO_ROOT" add -u
-  git -C "$REPO_ROOT" commit -m "Release $next_tag"
+  git -C "$APP_ROOT" add -u
+  git -C "$APP_ROOT" commit -m "Release $next_tag"
 
   log "Creating annotated tag $next_tag"
-  git -C "$REPO_ROOT" tag -a "$next_tag" -m "Release $next_tag"
+  git -C "$APP_ROOT" tag -a "$next_tag" -m "Release $next_tag"
 
   branch="$(current_branch)"
   if confirm "Push release commit and tag to origin?" no; then
     [[ -n "$branch" ]] || fail "Cannot push automatically from a detached HEAD"
     log "Pushing branch $branch"
-    git -C "$REPO_ROOT" push origin "$branch"
+    git -C "$APP_ROOT" push origin "$branch"
     log "Pushing tag $next_tag"
-    git -C "$REPO_ROOT" push origin "refs/tags/$next_tag"
+    git -C "$APP_ROOT" push origin "refs/tags/$next_tag"
     pushed=true
   else
     warn "Release commit and tag were created locally but not pushed."

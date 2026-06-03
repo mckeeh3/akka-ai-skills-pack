@@ -2,10 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
-README_PATH="$REPO_ROOT/README.md"
-PACK_README_PATH="$REPO_ROOT/pack/README.md"
-MANIFEST_PATH="$REPO_ROOT/pack/manifest.yaml"
+PACK_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+APP_ROOT="$(cd -- "$PACK_ROOT/.." && pwd)"
+README_PATH="$APP_ROOT/README.md"
+PACK_README_PATH="$PACK_ROOT/pack/README.md"
+MANIFEST_PATH="$PACK_ROOT/pack/manifest.yaml"
 
 fail() {
   printf '[check-version][error] %s\n' "$*" >&2

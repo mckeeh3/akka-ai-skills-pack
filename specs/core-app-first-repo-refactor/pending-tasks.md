@@ -171,18 +171,18 @@
 
 ### TASK-LAYOUT-03-001: Move skills-pack assets under top-level skills-pack
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/03-skills-pack-isolation/01-move-skills-pack-assets.md
 - depends on: [TASK-LAYOUT-02-002]
 - required reads:
   - AGENTS.md
-  - skills/README.md
+  - skills-pack/skills/README.md
   - specs/core-app-first-repo-refactor/target-layout-and-path-map.md
   - specs/core-app-first-repo-refactor/asset-migration-inventory.md
   - specs/core-app-first-repo-refactor/tasks/03-skills-pack-isolation/01-move-skills-pack-assets.md
-  - install.sh
-  - pack/AGENTS.md
+  - skills-pack/install.sh
+  - skills-pack/pack/AGENTS.md
 - skills:
   - none; repository source-layout refactor task
 - expected outputs:
@@ -196,6 +196,11 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: isolate skills pack assets`
+  - moved installable pack source under `skills-pack/`, including `skills/**`, `pack/**`, `docs/**`, `akka-context/**`, generated `dist/**`, pack installer, and pack tooling
+  - kept root `install.sh` as a wrapper to `skills-pack/install.sh` so local install commands continue to work
+  - added `skills-pack/AGENTS.md` and `skills-pack/README.md` as pack-maintenance entry points
+  - updated installer/build/release/version tooling to resolve pack assets from `skills-pack/` and root app examples from the repository root or release bundle
+  - checks passed: `git diff --check`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; bundled installer dry-run from `/tmp/akka-pack-build-check/akka-ai-skills-pack-0.2.12/install.sh`
 
 ### TASK-LAYOUT-03-002: Relocate focused Akka component examples
 
@@ -205,7 +210,7 @@
 - depends on: [TASK-LAYOUT-03-001]
 - required reads:
   - AGENTS.md
-  - skills/README.md
+  - skills-pack/skills/README.md
   - specs/core-app-first-repo-refactor/target-layout-and-path-map.md
   - specs/core-app-first-repo-refactor/asset-migration-inventory.md
   - specs/core-app-first-repo-refactor/tasks/03-skills-pack-isolation/02-relocate-focused-akka-examples.md
