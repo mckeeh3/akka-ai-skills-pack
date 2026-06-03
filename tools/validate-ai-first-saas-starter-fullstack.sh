@@ -131,6 +131,57 @@ require_grep() {
   fi
 }
 
+validate_named_surface_and_shell_contracts() {
+  local backend_src="$TARGET_DIR/src/main/java/${BASE_PACKAGE//.//}"
+  local backend_test="$TARGET_DIR/src/test/java/${BASE_PACKAGE//.//}"
+  local frontend_src="$TARGET_DIR/frontend/src"
+
+  log "Verifying named shell, surface, API, realtime, and static-hosting proof markers"
+
+  require_grep '@Get\("ui"\)' "$backend_src/api/workstream/StarterFrontendEndpoint.java" "Akka-hosted /ui frontend entry"
+  require_grep '@Get\("workstream"\)' "$backend_src/api/workstream/StarterFrontendEndpoint.java" "Akka-hosted /workstream frontend entry"
+  require_grep '@Get\("assets/\*\*"\)' "$backend_src/api/workstream/StarterFrontendEndpoint.java" "Akka-hosted static asset route"
+  require_grep '@Get\("/users/dashboard"\)' "$backend_src/api/admin/AdminEndpoint.java" "User Admin dashboard protected API"
+  require_grep '@Get\("/users"\)' "$backend_src/api/admin/AdminEndpoint.java" "User Admin list protected API"
+  require_grep '@Get\("/users/\{accountId\}"\)' "$backend_src/api/admin/AdminEndpoint.java" "User Admin account protected API"
+  require_grep '@Post\("/invitations/\{invitationId\}/resend"\)' "$backend_src/api/admin/AdminEndpoint.java" "User Admin safe invitation mutation API"
+  require_grep '@Get\("/audit-events"\)' "$backend_src/api/admin/AdminEndpoint.java" "User Admin audit trace protected API"
+  require_grep 'StarterSecurityComponents\.userAdminService\(\)' "$backend_src/api/admin/AdminEndpoint.java" "protected APIs use backend User Admin service rather than frontend fixtures"
+  require_grep 'StarterSecurityComponents\.invitationService\(\)\.resend' "$backend_src/api/admin/AdminEndpoint.java" "protected mutation invokes backend invitation component/service path"
+
+  require_grep 'userAdminDashboardAndAccountPayloadsExposeInvitationLifecycleWithoutRawTokens' "$backend_test/application/security/AdminEndpointIntegrationTest.java" "dashboard/list/detail protected API payload test"
+  require_grep 'adminCanUseConcreteMembershipRoleAndStatusApiActions' "$backend_test/application/security/AdminEndpointIntegrationTest.java" "safe User Admin mutation API test"
+  require_grep 'AdminAuditEventsResponse' "$backend_test/application/security/AdminEndpointIntegrationTest.java" "audit output API test"
+  require_grep 'protectedAdminApisDenyMissingForbiddenAndCrossContextAccess' "$backend_test/application/security/AdminEndpointIntegrationTest.java" "protected API denial and tenant boundary test"
+
+  require_grep 'runShellRequest' "$backend_test/application/security/WorkstreamServiceTest.java" "backend shell request pipeline test"
+  require_grep 'surface-user-admin-dashboard' "$backend_test/application/security/WorkstreamServiceTest.java" "User Admin dashboard surface backend test"
+  require_grep 'surface-user-admin-list' "$backend_test/application/security/WorkstreamServiceTest.java" "User Admin list surface backend test"
+  require_grep 'surface-user-admin-detail-admin' "$backend_test/application/security/WorkstreamServiceTest.java" "User Admin detail surface backend test"
+  require_grep 'USERADMIN_UPDATE_MEMBER_STATUS' "$backend_test/application/security/WorkstreamServiceTest.java" "safe mutation action emits backend result surface"
+  require_grep 'auditEvents\(\)' "$backend_test/application/security/WorkstreamServiceTest.java" "safe mutation emits audit evidence"
+  require_grep 'submitMessageSupportsEveryFiveCoreV0FunctionalAgent' "$backend_test/application/security/WorkstreamServiceTest.java" "five core workstream runtime coverage"
+
+  for surface in surface-my-account-dashboard surface-user-admin-dashboard surface-agent-admin-catalog surface-audit-trace-dashboard surface-governance-policy-dashboard; do
+    require_grep "$surface" "$frontend_src/__tests__/fixtures/workstream/surfaces.ts" "frontend fixture for $surface"
+  done
+  for capability in admin.users.dashboard.read admin.users.search admin.users.detail.read agent.definitions.manage audit.trace.search governance.proposals.review; do
+    require_grep "$capability" "$frontend_src/__tests__/fixtures/workstream/surfaces.ts" "frontend named capability $capability"
+  done
+  require_grep 'core\.access\.me' "$frontend_src/workstream-my-account-vertical.contract.test.mjs" "Access/Profile core.access.me contract coverage"
+  require_grep '<FunctionalAgentRail' "$frontend_src/workstream-shell.contract.test.mjs" "frontend.workstream.shell rail coverage"
+  require_grep '<WorkstreamPanel' "$frontend_src/workstream-shell.contract.test.mjs" "frontend.workstream.shell main panel coverage"
+  require_grep '<WorkstreamComposer' "$frontend_src/workstream-shell.contract.test.mjs" "frontend.workstream.shell persistent composer coverage"
+  require_grep 'HttpWorkstreamApiClient' "$frontend_src/main.tsx" "production frontend API client"
+  require_grep 'runCapabilityAction' "$frontend_src/main.tsx" "surface actions use backend API client"
+  require_grep 'HttpWorkstreamRealtimeClient' "$frontend_src/main.tsx" "production frontend realtime client"
+  require_grep '/api/workstream/events' "$frontend_src/api/HttpWorkstreamRealtimeClient.ts" "workstream SSE route"
+  require_grep 'surface\.stale' "$frontend_src/api/HttpWorkstreamRealtimeClient.ts" "stale surface realtime handling"
+  require_grep 'surface\.reconnected' "$frontend_src/api/HttpWorkstreamRealtimeClient.ts" "reconnected surface realtime handling"
+  require_grep 'FixtureWorkstreamApiClient' "$frontend_src/__tests__/fixtures/api/FixtureWorkstreamApiClient.ts" "test-only fixture client remains isolated"
+  require_grep 'doesNotMatch\(main, /fixtureWorkstream/' "$frontend_src/workstream-user-admin-vertical.contract.test.mjs" "production main rejects fixture workstream client"
+}
+
 scan_forbidden_runtime_substitutes() {
   local adapter_matches
   adapter_matches="$(find "$TARGET_DIR/src/main/java" -type f | rg -i 'LocalDemo|FailClosed.*Repository|FailClosed.*Sink' || true)"
@@ -197,6 +248,8 @@ require_path "$WORKSTREAM_AGENT_PATH"
 require_grep '\.tools\(runtimeTools\.runtimeTools\(\)\)' "$TARGET_DIR/$WORKSTREAM_AGENT_PATH" "WorkstreamRuntimeAgent effects().tools(runtimeTools) registration"
 require_grep 'AgentRuntimeToolResolver' "$TARGET_DIR/$WORKSTREAM_AGENT_PATH" "governed runtime tool resolver use"
 require_grep 'readSkill|readReferenceDoc' "$TARGET_DIR/src/main/java/${BASE_PACKAGE//.//}/application/agentfoundation/AgentRuntimeLoaderTools.java" "governed loader tool methods"
+
+validate_named_surface_and_shell_contracts
 
 log "Scanning rendered starter for forbidden substitute-runtime markers"
 scan_forbidden_runtime_substitutes

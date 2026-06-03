@@ -1247,7 +1247,7 @@
 
 ### TASK-STARTER-08-008: Shell, realtime, static hosting, and named-surface fullstack validation
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future validation shape for TASK-STARTER-03-003, TASK-STARTER-07-002, TASK-STARTER-07-003, and TASK-STARTER-07-010
 - task brief: none
 - depends on: [TASK-STARTER-08-007]
@@ -1298,3 +1298,8 @@
   - Akka substrate/exposure: HTTP static hosting, protected workstream APIs, SSE/realtime where present, React/Vite build/static-resource handoff
   - audit/trace/tests: smoke plus named-surface contract tests, no frontend secrets, forbidden/disabled/no-access rendering, stale/reconnect no-crash, route/static asset assertions
   - supersedes future task shape for: TASK-STARTER-03-003, TASK-STARTER-07-002, TASK-STARTER-07-003, TASK-STARTER-07-010
+  - added validation evidence doc: `specs/ai-first-saas-starter-app-template/fullstack-named-surface-validation.md`
+  - strengthened `tools/validate-ai-first-saas-starter-fullstack.sh` with named shell/surface/API/realtime/static-hosting proof markers before full Maven/frontend execution
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered scaffold, named proof markers, backend Maven tests, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
+  - commit message: `Add starter named surface fullstack validation`
