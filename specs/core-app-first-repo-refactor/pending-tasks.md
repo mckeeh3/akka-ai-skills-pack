@@ -48,7 +48,7 @@
 
 ### TASK-LAYOUT-01-001: Define target repository layout and path map
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/01-architecture-inventory/01-target-layout-and-path-map.md
 - depends on: [TASK-LAYOUT-00-001]
@@ -73,6 +73,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: define core app first path map`
+  - documented target root app layout, `skills-pack/` layout, fixed `ai.first` package policy, old-to-new path map, full-app template dissolution policy, and domain extension boundaries
+  - `git diff --check` passed
 
 ### TASK-LAYOUT-01-002: Inventory migration assets and classify actions
 
