@@ -62,9 +62,11 @@ test('workstream accessibility and quality checklist markers have source evidenc
   assert.match(base, /prefers-reduced-motion/);
   assert.match(layout + components, /@media \(max-width: 640px\)/);
   assert.match(shell, /data-mobile-rail-open=\{mobileRailOpen \? 'true' : 'false'\}/);
-  assert.match(shell, /className="mobile-menu-button"/);
+  assert.match(shell, /className=\{`mobile-menu-button/);
   assert.match(shell, /className="nav-backdrop"/);
-  assert.match(layout, /\.workstream-shell\[data-mobile-rail-open="true"\] \.mobile-menu-button/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button,[\s\S]*?\.nav-backdrop\.nav-backdrop \{ display: none; \}/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button \{[\s\S]*?display: inline-flex;/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button\.hidden/);
   assert.match(layout, /env\(safe-area-inset-top/);
 });
 

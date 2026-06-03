@@ -20,6 +20,7 @@ const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
 const agentTypes = read('./workstream/types/agents.ts');
 const agentFixtures = read('./__tests__/fixtures/workstream/agents.ts');
 const componentsCss = read('./styles/components.css');
+const layoutCss = read('./styles/layout.css');
 
 function loadTypeScriptExports(source) {
   const transpiled = ts.transpileModule(source, {
@@ -194,7 +195,12 @@ test('workstream shell composes left rail, continuous flow, and floating persist
   assert.match(shell, /submittingFunctionalAgentId === selectedFunctionalAgentId/);
   assert.match(shell, /useEffect\(\(\) => \{/);
   assert.match(shell, /setSelectedFunctionalAgentId\(initialFunctionalAgentId \?\? initialAgentId\)/);
+  assert.match(shell, /<a className="skip-link" href="#main-content">Skip to main workstream<\/a>\s*<div className="app-shell workstream-shell"/);
+  assert.doesNotMatch(shell, /<div className="app-shell workstream-shell"[\s\S]*?<a className="skip-link"/);
   assert.match(shell, /aria-label="Persistent composer region"/);
+  assert.match(layoutCss, /\.sidebar \{[\s\S]*?grid-column: 1;/);
+  assert.match(layoutCss, /\.main-column \{[\s\S]*?grid-column: 2;/);
+  assert.match(layoutCss, /@media \(max-width: 960px\) \{[\s\S]*?\.sidebar,\s*\.main-column \{ grid-column: 1; \}/);
   assert.match(panel, /<main id="main-content" className="content workstream-panel"/);
   assert.match(panel, /workstream-flow/);
   assert.match(panel, /aria-labelledby="workstream-panel-title"/);
