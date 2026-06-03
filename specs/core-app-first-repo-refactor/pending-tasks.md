@@ -297,7 +297,7 @@
 
 ### TASK-LAYOUT-99-001: Verify core app first refactor completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/core-app-first-repo-refactor/tasks/05-validation/01-validate-refactor-completion.md
 - depends on:
@@ -332,3 +332,111 @@
   - if incomplete, new bounded tasks are appended before a new terminal verification task
 - notes:
   - commit message: `layout: verify core app first refactor`
+  - verification notes: `specs/core-app-first-repo-refactor/verification-notes-2026-06-03.md`
+  - checks passed: `mvn test`; `npm --prefix frontend test -- --run && npm --prefix frontend run typecheck && npm --prefix frontend run build`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; `bash skills-pack/tools/verify-opinionated-ai-first-saas-pack.sh`; `test ! -d templates/ai-first-saas-starter`; `git diff --check`
+  - terminal verification found material stale full-app-template references in root tests/comments and active specs; appended `TASK-LAYOUT-05-001`, `TASK-LAYOUT-05-002`, and new terminal `TASK-LAYOUT-99-002`
+
+### TASK-LAYOUT-05-001: Repair root app stale starter-template references
+
+- status: pending
+- source: TASK-LAYOUT-99-001 terminal verification
+- task brief: specs/core-app-first-repo-refactor/tasks/05-validation/02-repair-root-starter-template-references.md
+- depends on:
+  - TASK-LAYOUT-99-001
+- required reads:
+  - AGENTS.md
+  - specs/core-app-first-repo-refactor/README.md
+  - specs/core-app-first-repo-refactor/target-layout-and-path-map.md
+  - specs/core-app-first-repo-refactor/verification-notes-2026-06-03.md
+  - specs/core-app-first-repo-refactor/tasks/05-validation/02-repair-root-starter-template-references.md
+  - root stale-reference search output listed in the task brief
+- skills:
+  - none; repository cleanup task
+- expected outputs:
+  - updated root frontend tests/source references as needed
+  - updated root Java comments as needed
+  - updated specs/core-app-first-repo-refactor/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - focused backend tests if Java source/test files are changed, or `mvn test` if practical
+  - search proof that stale template/scaffold patterns no longer match outside allowed historical/generated paths
+- done criteria:
+  - root app source/tests no longer point to `templates/ai-first-saas-starter/**` or call the root app a starter template
+  - queue is updated and committed
+- notes:
+  - commit message: `layout: repair root starter references`
+
+### TASK-LAYOUT-05-002: Classify and repair active spec stale template references
+
+- status: pending
+- source: TASK-LAYOUT-99-001 terminal verification
+- task brief: specs/core-app-first-repo-refactor/tasks/05-validation/03-classify-active-spec-template-references.md
+- depends on:
+  - TASK-LAYOUT-05-001
+- required reads:
+  - AGENTS.md
+  - specs/core-app-first-repo-refactor/README.md
+  - specs/core-app-first-repo-refactor/target-layout-and-path-map.md
+  - specs/core-app-first-repo-refactor/asset-migration-inventory.md
+  - specs/core-app-first-repo-refactor/verification-notes-2026-06-03.md
+  - specs/core-app-first-repo-refactor/tasks/05-validation/03-classify-active-spec-template-references.md
+  - active spec stale-reference search output listed in the task brief
+- skills:
+  - none; repository specs cleanup task
+- expected outputs:
+  - specs/core-app-first-repo-refactor/stale-template-reference-classification.md or updated equivalent
+  - updated active spec queue/task references where safely bounded
+  - updated specs/core-app-first-repo-refactor/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - search proof for remaining stale template/scaffold references, with remaining matches classified in the note
+- done criteria:
+  - active runnable stale references are updated, superseded, or split into newly appended bounded tasks
+  - historical/provenance references are explicitly classified for terminal verification
+  - queue is updated and committed
+- notes:
+  - commit message: `layout: classify active template references`
+
+### TASK-LAYOUT-99-002: Verify core app first refactor completion after follow-ups
+
+- status: pending
+- source: mini-project verification loop after TASK-LAYOUT-99-001 follow-ups
+- task brief: specs/core-app-first-repo-refactor/tasks/05-validation/04-verify-refactor-completion-after-followups.md
+- depends on:
+  - TASK-LAYOUT-05-002
+- required reads:
+  - AGENTS.md
+  - skills-pack/skills/README.md
+  - specs/core-app-first-repo-refactor/README.md
+  - specs/core-app-first-repo-refactor/conversation-capture.md
+  - specs/core-app-first-repo-refactor/pending-tasks.md
+  - specs/core-app-first-repo-refactor/sprints/*.md
+  - specs/core-app-first-repo-refactor/backlog/*.md
+  - specs/core-app-first-repo-refactor/tasks/**/*.md
+  - specs/core-app-first-repo-refactor/target-layout-and-path-map.md
+  - specs/core-app-first-repo-refactor/asset-migration-inventory.md
+  - latest stale-reference classification/verification notes under specs/core-app-first-repo-refactor/
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/core-app-first-repo-refactor/pending-tasks.md
+  - completion summary, verification notes, or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+  - `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`
+  - `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`
+  - `bash skills-pack/tools/verify-opinionated-ai-first-saas-pack.sh`
+  - stale-reference search proof for `templates/ai-first-saas-starter`, scaffold-first claims, and full-app template claims
+- done criteria:
+  - current task group and overall mini-project done state are checked
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before another terminal verification task
+  - queue is updated and committed
+- notes:
+  - commit message: `layout: verify core app first refactor followups`
