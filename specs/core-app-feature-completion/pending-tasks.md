@@ -239,7 +239,7 @@
 
 ### TASK-COREEXT-02-003: Implement provider-specific delivery adapters
 
-- status: blocked
+- status: deferred
 - source: specs/core-app-feature-completion/pending-questions.md Q-001
 - task brief: specs/core-app-feature-completion/tasks/02-events-notifications/03-provider-specific-delivery-adapters.md
 - depends on: [TASK-COREEXT-02-002]
@@ -265,8 +265,9 @@
   - named production channels are backed by real provider adapters and validation, or task is narrowed without claiming production delivery
   - queue is updated and committed
 - notes:
-  - blocked: Q-001 must select production provider scope before this task is runnable
-  - commit message: `coreext: add delivery provider adapters`
+  - deferred: Q-001 was answered with option A; the current core feature completion scope keeps provider-neutral fail-closed seams and captured local/test outboxes only, with no production SMS/mobile-push/Slack/Teams adapters.
+  - future provider-specific adapter work requires a new initiative or queue entry after concrete providers are selected.
+  - commit message: `coreext: defer delivery provider adapters`
 
 ### TASK-COREEXT-03-001: Broaden task and AutonomousAgent notification coverage
 

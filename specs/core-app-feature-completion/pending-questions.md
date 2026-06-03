@@ -11,7 +11,7 @@
 
 ### Q-001: Production notification providers
 
-- status: pending
+- status: answered
 - priority: blocking
 - category: integration
 - depends on: []
@@ -28,11 +28,12 @@
   - B: Implement webhook production delivery first; defer SMS/push/Slack/Teams provider choices.
   - C: Select concrete providers for each channel before implementing production adapters.
 - default if deferred: A
-- answer: none
-- decision: pending
-- decision impact: pending
+- answer: A: Provider-neutral seams only for now; no production SMS/push/Slack/Teams adapters.
+- decision: Production SMS, mobile push, Slack, and Teams adapters are not part of the current core feature completion scope; keep provider-neutral fail-closed seams and captured local/test outboxes only.
+- decision impact: Provider-specific production delivery adapter work is deferred and must not be treated as a runnable core-completion task unless a later initiative selects concrete providers.
 - reconciled into:
-  - none
+  - specs/core-app-feature-completion/pending-tasks.md TASK-COREEXT-02-003
+  - templates/ai-first-saas-starter/README.md
 
 ### Q-002: Enterprise scope priority
 
