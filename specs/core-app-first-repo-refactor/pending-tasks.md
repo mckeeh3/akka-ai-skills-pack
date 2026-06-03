@@ -78,7 +78,7 @@
 
 ### TASK-LAYOUT-01-002: Inventory migration assets and classify actions
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/01-architecture-inventory/02-asset-inventory.md
 - depends on: [TASK-LAYOUT-01-001]
@@ -98,6 +98,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: inventory refactor assets`
+  - classified app, template, skills-pack, examples, docs, tools, packaging, generated/local artifacts, and active-spec reference areas in `asset-migration-inventory.md`
+  - `git diff --check` passed
 
 ### TASK-LAYOUT-02-001: Promote core app source to repository root
 
