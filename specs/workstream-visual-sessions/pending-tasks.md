@@ -594,7 +594,7 @@
 ### TASK-WVS-04-004: Reverify runtime UX with manual steps
 
 - status: pending
-- source: phase 1.1 runtime remediation closure after user-reported failure
+- source: phase 1.1 runtime remediation closure after user-reported failure; core-app-first refactor removed the duplicate generated-app source copy as a maintained source
 - task brief: specs/workstream-visual-sessions/tasks/04-phase-1-1-remediation/04-reverify-runtime-ux-with-manual-steps.md
 - depends on: [TASK-WVS-04-003]
 - required reads:
@@ -602,21 +602,18 @@
   - docs/workstream-visual-sessions.md
   - specs/workstream-visual-sessions/pending-tasks.md
   - frontend/README.md
-  - templates/ai-first-saas-starter/frontend/README.md
-  - changed source and starter frontend files from this remediation
+  - changed root frontend files from this remediation
 - skills:
   - none; repository verification/docs task
 - expected outputs:
-  - explicit manual/smoke verification steps and results recorded
+  - explicit manual/smoke verification steps and results recorded against the canonical root frontend
   - phase 1.1 readiness notes updated only if runtime scenario is verified
 - required checks:
   - `cd frontend && npm run typecheck`
   - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
   - `cd frontend && node --test src/workstream-shell.contract.test.mjs`
-  - `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
-  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
-  - `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`
 - done criteria:
-  - reported runtime scenario is verified fixed in source and starter or remaining limitation is explicitly documented
+  - reported runtime scenario is verified fixed in the canonical root frontend or remaining limitation is explicitly documented
   - task changes and queue update are committed
-- notes: []
+- notes:
+  - core-app-first repair: removed obsolete generated-app source-copy reads/checks because the repository root frontend is now the only maintained app frontend

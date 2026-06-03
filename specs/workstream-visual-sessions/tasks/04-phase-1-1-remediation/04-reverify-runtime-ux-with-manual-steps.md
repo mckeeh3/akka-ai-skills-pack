@@ -10,8 +10,7 @@ Reverify the runtime workstream visual-session UX after remediation using explic
 - `docs/workstream-visual-sessions.md`
 - `specs/workstream-visual-sessions/pending-tasks.md`
 - `frontend/README.md`
-- `templates/ai-first-saas-starter/frontend/README.md`
-- changed source and starter frontend files from this remediation
+- changed root frontend files from this remediation
 
 ## Expected outputs
 
@@ -31,9 +30,6 @@ Reverify the runtime workstream visual-session UX after remediation using explic
 - `cd frontend && npm run typecheck`
 - `cd frontend && node --test src/workstream-visual-session.contract.test.mjs`
 - `cd frontend && node --test src/workstream-shell.contract.test.mjs`
-- `cd templates/ai-first-saas-starter/frontend && npm run typecheck`
-- `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-visual-session.contract.test.mjs`
-- `cd templates/ai-first-saas-starter/frontend && node --test src/workstream-shell.contract.test.mjs`
 
 ## Constraints
 
@@ -43,3 +39,7 @@ Reverify the runtime workstream visual-session UX after remediation using explic
 ## Completion
 
 Mark `TASK-WVS-04-004` done after commit.
+
+## Core-app-first compatibility note
+
+The dissolved duplicate generated-app source copy is no longer maintained. Run this task against the canonical root frontend only; do not recreate or read the removed generated-app source-copy frontend.

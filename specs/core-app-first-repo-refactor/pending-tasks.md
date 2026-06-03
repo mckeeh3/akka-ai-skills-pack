@@ -374,7 +374,7 @@
 
 ### TASK-LAYOUT-05-002: Classify and repair active spec stale template references
 
-- status: pending
+- status: done
 - source: TASK-LAYOUT-99-001 terminal verification
 - task brief: specs/core-app-first-repo-refactor/tasks/05-validation/03-classify-active-spec-template-references.md
 - depends on:
@@ -402,6 +402,10 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: classify active template references`
+  - classification notes: `specs/core-app-first-repo-refactor/stale-template-reference-classification.md`
+  - repaired the only pending task block with stale removed-template reads/checks: `specs/workstream-visual-sessions/pending-tasks.md` / `tasks/04-phase-1-1-remediation/04-reverify-runtime-ux-with-manual-steps.md`
+  - checks passed: `git diff --check`; stale-reference queue-block proof found 389 remaining matching files but 0 pending/in-progress task blocks with stale matches
+  - remaining matches are classified as completed historical/provenance records unless terminal verification finds current user guidance or scripts requiring removed template paths
 
 ### TASK-LAYOUT-99-002: Verify core app first refactor completion after follow-ups
 
