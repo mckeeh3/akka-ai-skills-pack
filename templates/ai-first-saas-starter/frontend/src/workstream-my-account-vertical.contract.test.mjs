@@ -34,6 +34,7 @@ const expectedMyAccountMarkers = [
   'surface-my-profile',
   'surface-my-settings',
   'surface-my-context',
+  'surface.access.profile.context.v1',
   'surface-my-account-open-denied',
   'surface-my-account-notification-center',
   'surface-my-account-personal-attention-digest-progress',
@@ -43,6 +44,7 @@ const expectedMyAccountMarkers = [
   'action-show-my-profile',
   'action-show-my-settings',
   'action-show-my-context',
+  'action-select-my-context',
   'action-show-my-account-notification-center',
   'action-notification-mark-read',
   'action-notification-dismiss',
@@ -64,7 +66,7 @@ const expectedMyAccountMarkers = [
 
 test('My Account full-core backend exposes dashboard, profile, settings, context, attention, and safe navigation surfaces', () => {
   for (const marker of expectedMyAccountMarkers) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  for (const capabilityId of ['my_account.view_summary', 'my_account.view_context', 'my_account.list_personal_attention', 'my_account.update_profile_settings', 'my_account.open_authorized_workstream', 'my_account.view_own_trace_refs']) {
+  for (const capabilityId of ['my_account.view_summary', 'my_account.view_context', 'my_account.list_personal_attention', 'my_account.update_profile_settings', 'my_account.open_authorized_workstream', 'my_account.view_own_trace_refs', 'core.access.me', 'core.profile.update', 'core.access.context.select']) {
     const matcher = new RegExp(capabilityId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     assert.match(backendMyAccountService, matcher);
     assert.match(backendWorkstreamService, matcher);

@@ -31,7 +31,7 @@ public record MeResponse(
       MyAccountService.Summary myAccountSummary,
       String auditCorrelationId) {
     var contexts = memberships.stream().filter(Membership::active).map(AuthContextSummary::from).toList();
-    var capabilities = selectedContext.capabilities();
+    var capabilities = browserCapabilityAliases(selectedContext.capabilities(), contexts.size());
     return new MeResponse(
         AccountSummary.from(account),
         ProfileSummary.from(profile),
@@ -45,6 +45,24 @@ public record MeResponse(
         myAccountSummary.capabilityGroups(),
         myAccountSummary.traceRefs(),
         auditCorrelationId);
+  }
+
+  private static List<String> browserCapabilityAliases(List<String> capabilities, int availableContextCount) {
+    var browserCapabilities = new java.util.ArrayList<>(capabilities);
+    addIfMissing(browserCapabilities, "core.access.me");
+    if (capabilities.contains("profile.update") || capabilities.contains("my_account.update_profile_settings")) {
+      addIfMissing(browserCapabilities, "core.profile.update");
+    }
+    if (capabilities.contains("my_account.view_context") && availableContextCount > 0) {
+      addIfMissing(browserCapabilities, "core.access.context.select");
+    }
+    return List.copyOf(browserCapabilities);
+  }
+
+  private static void addIfMissing(List<String> capabilities, String capability) {
+    if (!capabilities.contains(capability)) {
+      capabilities.add(capability);
+    }
   }
 
   public record AccountSummary(String accountId, String email, String displayName, String status) {

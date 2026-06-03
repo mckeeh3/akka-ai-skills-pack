@@ -46,9 +46,13 @@ class MeServiceTest {
     assertEquals("active membership in selected context", response.authorityBasis().primaryRoleBasis());
     assertTrue(response.authorityBasis().myAccountCapabilityIds().contains("my_account.view_context"));
     assertTrue(response.contextCapabilityGroups().stream().anyMatch(group -> group.groupId().equals("my_account")));
-    assertTrue(response.traceRefs().stream().anyMatch(trace -> trace.capabilityId().equals("my_account.view_context") && trace.correlationId().equals("corr-1")));
+    assertTrue(response.traceRefs().stream().anyMatch(trace -> trace.capabilityId().equals("core.access.me") && trace.correlationId().equals("corr-1")));
+    assertTrue(response.traceRefs().stream().anyMatch(trace -> trace.capabilityId().equals("core.access.context.select") && trace.correlationId().equals("corr-1")));
     assertTrue(response.visibleCapabilityIds().contains("profile.read"));
     assertTrue(response.visibleCapabilityIds().contains("profile.update"));
+    assertTrue(response.visibleCapabilityIds().contains("core.access.me"));
+    assertTrue(response.visibleCapabilityIds().contains("core.profile.update"));
+    assertTrue(response.visibleCapabilityIds().contains("core.access.context.select"));
     assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
     assertTrue(response.visibleCapabilityIds().contains("secure-tenant-user-foundation"));
     assertEquals(

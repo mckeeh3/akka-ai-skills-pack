@@ -15,6 +15,9 @@ import java.util.Map;
 
 /** Deterministic My Account boundary for browser-safe account, context, settings, trace, and navigation data. */
 public final class MyAccountService {
+  public static final String CORE_ACCESS_ME_CAPABILITY = "core.access.me";
+  public static final String CORE_PROFILE_UPDATE_CAPABILITY = "core.profile.update";
+  public static final String CORE_ACCESS_CONTEXT_SELECT_CAPABILITY = "core.access.context.select";
   public static final String VIEW_SUMMARY_CAPABILITY = "my_account.view_summary";
   public static final String VIEW_CONTEXT_CAPABILITY = "my_account.view_context";
   public static final String UPDATE_PROFILE_SETTINGS_CAPABILITY = "my_account.update_profile_settings";
@@ -154,8 +157,9 @@ public final class MyAccountService {
   public List<TraceRef> traceRefs(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), VIEW_OWN_TRACE_REFS_CAPABILITY);
     return List.of(
-        new TraceRef("trace-my-account-context-" + actor.selectedContext().membershipId(), "AuthContext", "Selected context resolved", "my_account.view_context", correlationId),
-        new TraceRef("trace-my-account-profile-" + actor.account().accountId().hashCode(), "ProfileSettings", "Profile/settings browser-safe read", "my_account.view_summary", correlationId),
+        new TraceRef("trace-my-account-context-" + actor.selectedContext().membershipId(), "AuthContext", "Selected context resolved", CORE_ACCESS_ME_CAPABILITY, correlationId),
+        new TraceRef("trace-my-account-context-select-" + actor.selectedContext().membershipId(), "AuthContext", "Selected context switch targets resolved", CORE_ACCESS_CONTEXT_SELECT_CAPABILITY, correlationId),
+        new TraceRef("trace-my-account-profile-" + actor.account().accountId().hashCode(), "ProfileSettings", "Profile/settings browser-safe read", CORE_PROFILE_UPDATE_CAPABILITY, correlationId),
         new TraceRef("trace-my-account-personal-attention-" + actor.selectedContext().membershipId(), "PersonalAttention", "Authorized personal attention aggregation", "my_account.list_personal_attention", correlationId));
   }
 
@@ -166,14 +170,23 @@ public final class MyAccountService {
         actor.selectedContext().customerId(),
         actor.selectedContext().roles().stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList(),
         "active membership in selected context",
-        actor.selectedContext().capabilities().stream().filter(capability -> capability.startsWith("my_account.")).sorted().toList());
+        myAccountAndCoreCapabilities(actor));
   }
 
   private List<CapabilityGroupSummary> capabilityGroups(AuthContextResolver.ResolvedMe actor) {
     var capabilities = actor.selectedContext().capabilities();
     return List.of(
         new CapabilityGroupSummary("my_account", "My Account", capabilities.stream().filter(capability -> capability.startsWith("my_account.")).sorted().toList()),
+        new CapabilityGroupSummary("core_access_profile", "Core access/profile aliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_PROFILE_UPDATE_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY)),
         new CapabilityGroupSummary("workstreams", "Authorized workstream navigation", capabilities.stream().filter(capability -> capability.startsWith("agent_admin.") || capability.startsWith("audit.trace") || capability.startsWith("governance.") || capability.equals("secure-tenant-user-foundation")).sorted().toList()));
+  }
+
+  private List<String> myAccountAndCoreCapabilities(AuthContextResolver.ResolvedMe actor) {
+    var ids = new java.util.ArrayList<>(actor.selectedContext().capabilities().stream().filter(capability -> capability.startsWith("my_account.")).sorted().toList());
+    ids.add(CORE_ACCESS_ME_CAPABILITY);
+    ids.add(CORE_PROFILE_UPDATE_CAPABILITY);
+    ids.add(CORE_ACCESS_CONTEXT_SELECT_CAPABILITY);
+    return List.copyOf(ids);
   }
 
   private Target target(String functionalAgentId, String label, String requiredCapabilityId, String surfaceId) {

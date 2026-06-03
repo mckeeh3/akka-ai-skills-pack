@@ -880,7 +880,7 @@
 
 ### TASK-STARTER-08-001: Access/Profile context and authority surface vertical
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-07-004 and part of TASK-STARTER-07-007
 - task brief: none
 - depends on: [TASK-STARTER-07-010]
@@ -922,6 +922,9 @@
   - Akka substrate/exposure: KVE current state or durable seam; HTTP `/api/me` and profile/context endpoints; workstream bootstrap payload; frontend structured surface
   - audit/trace/tests: denial audit, profile update audit, tenant isolation, forbidden disabled/no-membership paths, rendering states, frontend secret-boundary scan
   - supersedes future task shape for: TASK-STARTER-07-004, TASK-STARTER-07-007
+  - commit message: `Add starter access profile context surface`
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered backend tests, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
 
 ### TASK-STARTER-08-002: User Admin invitation lifecycle surfaces and actions
 

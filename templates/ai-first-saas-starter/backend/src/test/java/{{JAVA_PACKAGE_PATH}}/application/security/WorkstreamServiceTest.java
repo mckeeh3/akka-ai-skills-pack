@@ -439,6 +439,7 @@ class WorkstreamServiceTest {
     var profile = service.surface(identity(), "membership-admin", "surface-my-profile", "corr-my-account-profile");
     var settings = service.surface(identity(), "membership-admin", "surface-my-settings", "corr-my-account-settings");
     var context = service.surface(identity(), "membership-admin", "surface-my-context", "corr-my-account-context");
+    var accessProfileContext = service.surface(identity(), "membership-admin", "surface.access.profile.context.v1", "corr-access-profile-context");
 
     assertEquals("dashboard", dashboard.surfaceType());
     assertEquals("my_account.dashboard.v1", dashboard.data().get("surfaceContract"));
@@ -455,12 +456,23 @@ class WorkstreamServiceTest {
     assertEquals("detail-edit", settings.surfaceType());
     assertEquals("detail-edit", context.surfaceType());
     assertEquals("surface-my-context", context.surfaceId());
+    assertEquals("surface.access.profile.context.v1", accessProfileContext.surfaceId());
+    assertEquals("agent-my-account", accessProfileContext.ownerFunctionalAgentId());
+    assertTrue(accessProfileContext.toString().contains("core.access.me"));
+    assertTrue(accessProfileContext.toString().contains("core.access.context.select"));
     assertTrue(profile.toString().contains("my_account.update_profile_settings"));
+    assertTrue(profile.toString().contains("core.profile.update"));
     assertTrue(settings.toString().contains("preferredThemeId"));
     assertTrue(context.toString().contains("/api/me?selectedContextId=membership-admin"));
     assertTrue(context.toString().contains("my_account.view_context"));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-show-my-account-dashboard")));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-show-my-context") && action.capabilityId().equals("my_account.view_context")));
+    assertTrue(context.actions().stream().anyMatch(action -> action.actionId().equals("action-select-my-context") && action.capabilityId().equals("core.access.context.select")));
+
+    var selectContext = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-select-my-context", "action-select-my-context", "core.access.context.select", "core.access.context.select", null, null, "membership-admin", "surface-my-context", "corr-select-context"));
+    assertEquals("accepted", selectContext.status());
+    assertEquals("surface.access.profile.context.v1", selectContext.resultSurface().surfaceId());
   }
 
   @Test
