@@ -115,9 +115,15 @@ public final class BootstrapAdminSeeder {
       String email,
       String workosSubject,
       Membership membership) {
-    repository.saveAccount(new Account(email, workosSubject, email, email, AccountStatus.ACTIVE, workosSubject == null ? "UNLINKED" : "LINKED"));
-    repository.saveProfile(new UserProfile(email, email, displayName(email), null, null, null));
-    repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
+    var existingAccount = repository.findAccountByEmail(email).orElse(null);
+    var nextWorkosSubject = workosSubject != null ? workosSubject : existingAccount == null ? null : existingAccount.workosUserId();
+    repository.saveAccount(new Account(email, nextWorkosSubject, email, email, AccountStatus.ACTIVE, nextWorkosSubject == null ? "UNLINKED" : "LINKED"));
+    if (repository.profile(email) == null) {
+      repository.saveProfile(new UserProfile(email, email, displayName(email), null, null, null));
+    }
+    if (repository.settings(email) == null) {
+      repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
+    }
     repository.saveMembership(membership);
   }
 

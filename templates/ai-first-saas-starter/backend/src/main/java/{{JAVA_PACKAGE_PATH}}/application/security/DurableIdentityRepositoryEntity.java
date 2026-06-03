@@ -35,16 +35,16 @@ public class DurableIdentityRepositoryEntity extends KeyValueEntity<IdentityRepo
     return effects().updateState(currentState().saveAccount(account)).thenReply(() -> account);
   }
 
-  public ReadOnlyEffect<UserProfile> profile(String accountId) {
-    return effects().reply(currentState().profile(accountId));
+  public ReadOnlyEffect<Optional<UserProfile>> profile(String accountId) {
+    return effects().reply(Optional.ofNullable(currentState().profile(accountId)));
   }
 
   public Effect<UserProfile> saveProfile(UserProfile profile) {
     return effects().updateState(currentState().saveProfile(profile)).thenReply(() -> profile);
   }
 
-  public ReadOnlyEffect<UserSettings> settings(String accountId) {
-    return effects().reply(currentState().settings(accountId));
+  public ReadOnlyEffect<Optional<UserSettings>> settings(String accountId) {
+    return effects().reply(Optional.ofNullable(currentState().settings(accountId)));
   }
 
   public Effect<UserSettings> saveSettings(UserSettings settings) {

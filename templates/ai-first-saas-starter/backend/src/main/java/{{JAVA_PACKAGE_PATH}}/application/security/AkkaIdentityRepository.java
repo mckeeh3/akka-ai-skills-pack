@@ -42,7 +42,8 @@ public final class AkkaIdentityRepository implements IdentityRepository {
 
   @Override
   public UserProfile profile(String accountId) {
-    return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::profile).invoke(accountId);
+    Optional<UserProfile> profile = componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::profile).invoke(accountId);
+    return profile.orElse(null);
   }
 
   @Override
@@ -52,7 +53,8 @@ public final class AkkaIdentityRepository implements IdentityRepository {
 
   @Override
   public UserSettings settings(String accountId) {
-    return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::settings).invoke(accountId);
+    Optional<UserSettings> settings = componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::settings).invoke(accountId);
+    return settings.orElse(null);
   }
 
   @Override

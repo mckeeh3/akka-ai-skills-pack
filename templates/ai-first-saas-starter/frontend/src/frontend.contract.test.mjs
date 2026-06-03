@@ -66,7 +66,13 @@ test('named theme selection uses root data-theme, live detail-edit preview, and 
   assert.match(surfaceRenderer, /onFieldValueChange=\{onFieldValueChange\}/);
   assert.match(detailEditSurface, /onFieldValueChange\?: \(fieldId: string, value: string, surfaceId: string\) => void;/);
   assert.match(detailEditSurface, /onChange=\{\(event\) => updateFieldValue\(field\.fieldId, event\.currentTarget\.value\)\}/);
+  assert.match(detailEditSurface, /fields\.filter\(\(field\) => field\.editable\)/);
+  assert.match(detailEditSurface, /actionInput=\{editableActionInput\}/);
   assert.match(main, /const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input/);
+  assert.match(main, /const actionCorrelationId = `corr-\$\{action\.actionId\}-\$\{Date\.now\(\)\.toString\(36\)\}`;/);
+  assert.match(main, /current\.surfaces\.map\(\(surface\) => surface\.surfaceId === result\.value\.resultSurface\?\.surfaceId \? result\.value\.resultSurface : surface\)/);
+  assert.match(main, /settings: \{ \.\.\.current\.me\.settings, preferredThemeId: selectedThemeId \}/);
+  assert.doesNotMatch(main, /surfaceCorrelationId: `corr-\$\{action\.actionId\}`/);
   assert.doesNotMatch(main, /prefers-color-scheme: dark/);
 });
 

@@ -49,8 +49,8 @@ class DurableIdentityRepositoryEntityTest {
 
     assertEquals(linked, testKit.method(DurableIdentityRepositoryEntity::findAccountByEmail).invoke("admin@example.com").getReply().orElseThrow());
     assertEquals(linked, testKit.method(DurableIdentityRepositoryEntity::findAccountByWorkosSubject).invoke("workos-admin").getReply().orElseThrow());
-    assertEquals(profile, testKit.method(DurableIdentityRepositoryEntity::profile).invoke("admin@example.com").getReply());
-    assertEquals(settings, testKit.method(DurableIdentityRepositoryEntity::settings).invoke("admin@example.com").getReply());
+    assertEquals(profile, testKit.method(DurableIdentityRepositoryEntity::profile).invoke("admin@example.com").getReply().orElseThrow());
+    assertEquals(settings, testKit.method(DurableIdentityRepositoryEntity::settings).invoke("admin@example.com").getReply().orElseThrow());
     assertEquals(tenant, testKit.method(DurableIdentityRepositoryEntity::tenant).invoke("tenant-1").getReply().orElseThrow());
     assertEquals(List.of(membership), testKit.method(DurableIdentityRepositoryEntity::membershipsByAccount).invoke("admin@example.com").getReply());
     assertEquals(membership, testKit.method(DurableIdentityRepositoryEntity::membership).invoke("membership-admin").getReply().orElseThrow());

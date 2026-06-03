@@ -109,6 +109,18 @@ class MeServiceTest {
   }
 
   @Test
+  void configuredBootstrapAdminDoesNotOverwriteExistingProfileOrSettings() {
+    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "tenant-admin@example.com:TENANT_ADMIN:tenant-starter");
+    repository.saveProfile(new UserProfile("tenant-admin@example.com", "tenant-admin@example.com", "Renamed Admin", null, null, null));
+    repository.saveSettings(new UserSettings("tenant-admin@example.com", UserSettings.ThemeId.OBSIDIAN_DARK));
+
+    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "tenant-admin@example.com:TENANT_ADMIN:tenant-starter");
+
+    assertEquals("Renamed Admin", repository.profile("tenant-admin@example.com").displayName());
+    assertEquals(UserSettings.ThemeId.OBSIDIAN_DARK, repository.settings("tenant-admin@example.com").themeId());
+  }
+
+  @Test
   void bootstrapConfigRejectsInvalidScopes() {
     assertThrows(
         IllegalArgumentException.class,

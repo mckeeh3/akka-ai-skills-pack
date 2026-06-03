@@ -121,7 +121,8 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.doesNotMatch(notificationCenterSurface, /pushEnabled|emailEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(detailEditSurface, /surface-detail-edit-form/);
   assert.match(detailEditSurface, /fieldValues/);
-  assert.match(detailEditSurface, /actionInput=\{fieldValues\}/);
+  assert.match(detailEditSurface, /fields\.filter\(\(field\) => field\.editable\)/);
+  assert.match(detailEditSurface, /actionInput=\{editableActionInput\}/);
   assert.match(detailEditSurface, /onChange=\{\(event\) => updateFieldValue/);
   assert.match(detailEditSurface, /permissionState/);
   assert.match(systemMessageSurface, /Recovery steps/);
