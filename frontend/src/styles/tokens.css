@@ -271,3 +271,64 @@
   --color-primary-strong: var(--color-accent-strong);
   --color-primary-soft: var(--color-accent-soft);
 }
+
+[data-theme="dark-night"] {
+  color-scheme: dark;
+  --color-canvas: #000000;
+  --color-canvas-subtle: #050505;
+  --color-sidebar: #070707;
+  --color-surface: #0d0d0d;
+  --color-surface-raised: #111111;
+  --color-surface-soft: #080808;
+  --color-surface-nested: #151515;
+  --color-surface-accent: #180b0d;
+  --color-surface-glass: rgb(13 13 13 / 0.88);
+  --color-grid-line: rgb(255 48 69 / 0.055);
+  --color-glow-primary: rgb(255 48 69 / 0.16);
+  --color-glow-ai: rgb(0 214 163 / 0.11);
+
+  --color-text: #ffffff;
+  --color-text-soft: #d1d5db;
+  --color-muted: #9ca3af;
+  --color-disabled: #5f6670;
+  --color-inverse-text: #050505;
+
+  --color-border: #27272a;
+  --color-border-strong: #3f3f46;
+
+  --color-accent: #ff3045;
+  --color-accent-strong: #ff5a6d;
+  --color-accent-soft: rgb(255 48 69 / 0.17);
+  --color-ai: #00d6a3;
+  --color-ai-soft: rgb(0 214 163 / 0.13);
+  --color-request-surface: #161012;
+
+  --color-success: #00d6a3;
+  --color-success-soft: rgb(0 214 163 / 0.13);
+  --color-warning: #facc15;
+  --color-warning-soft: rgb(250 204 21 / 0.16);
+  --color-danger: #ff5a6d;
+  --color-danger-soft: rgb(255 90 109 / 0.16);
+  --color-info: #2f9bff;
+  --color-info-soft: rgb(47 155 255 / 0.15);
+
+  --color-chart-blue: #2f9bff;
+  --color-chart-violet: #a78bfa;
+  --color-chart-green: #00d6a3;
+  --color-chart-amber: #facc15;
+  --color-chart-red: #ff3045;
+  --color-chart-cyan: #22d3ee;
+
+  --color-focus: #ff5a6d;
+  --shadow-card: 0 18px 52px rgb(0 0 0 / 0.50), 0 1px 0 rgb(255 255 255 / 0.045) inset;
+  --shadow-panel: 0 30px 90px rgb(0 0 0 / 0.58);
+  --shadow-command: 0 22px 72px rgb(255 48 69 / 0.16), 0 0 0 1px rgb(255 48 69 / 0.16);
+  --shadow-attention: 0 20px 60px rgb(250 204 21 / 0.14);
+  --shadow-glow-ai: 0 0 0 1px rgb(0 214 163 / 0.24), 0 22px 76px rgb(0 214 163 / 0.13);
+
+  --color-bg: var(--color-canvas);
+  --color-bg-subtle: var(--color-canvas-subtle);
+  --color-primary: var(--color-accent);
+  --color-primary-strong: var(--color-accent-strong);
+  --color-primary-soft: var(--color-accent-soft);
+}

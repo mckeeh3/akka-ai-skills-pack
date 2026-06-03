@@ -38,7 +38,7 @@
 
 - frontend applies the selected `ai-first-workstream-enterprise` style guide without copying mockup product names, people, account names, logos, or metrics
 - app shell renders persistent functional-agent rail, active workstream/surface state, notification/user region, and collapsed/mobile rail behavior
-- named themes `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark` are available through token-driven styling; core shell and governance-policy surfaces preserve readable contrast and visible focus in each theme tone; My Account theme selection applies only an available named theme id
+- named themes `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night` are available through token-driven styling; core shell and governance-policy surfaces preserve readable contrast and visible focus in each theme tone; My Account theme selection applies only an available named theme id
 - Governance/Policy Briefing shows workstream context, composer, KPI summary band, agent execution timeline, needs-your-attention queue, trust controls, and upcoming autonomous actions
 - AI command strip exposes suggested operational prompts and does not directly execute high-impact work without creating or routing to durable goals, decisions, approvals, or policy proposals
 - decision cards show recommendation, evidence summary, risk, confidence or impact where available, policy trigger, allowed actions, and trace/detail links

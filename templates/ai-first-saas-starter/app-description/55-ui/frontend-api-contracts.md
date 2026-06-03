@@ -56,9 +56,9 @@ type MeResponse = {
   }>;
   activeTenantId?: string;
   preferences: {
-    themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark";
+    themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark" | "dark-night";
     availableThemes: Array<{
-      themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark";
+      themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark" | "dark-night";
       name: string;
       tone: "light" | "dark";
     }>;
@@ -72,7 +72,7 @@ Request:
 
 ```ts
 type UpdatePreferencesRequest = {
-  themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark";
+  themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark" | "dark-night";
 };
 ```
 
@@ -81,7 +81,7 @@ Response:
 ```ts
 type UpdatePreferencesResponse = {
   preferences: {
-    themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark";
+    themeId: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark" | "dark-night";
   };
   correlationId: string;
 };

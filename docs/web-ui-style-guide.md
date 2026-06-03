@@ -169,7 +169,7 @@ Use this as the default style system for generated AI-first SaaS apps. It is a r
 
 ### Named-theme contract
 
-Generated AI-first SaaS apps start with these four named themes unless the authoritative style guide records a custom equivalent with two light and two dark themes:
+Generated AI-first SaaS apps start with these five named themes unless the authoritative style guide records a custom equivalent with two light and at least two dark themes:
 
 | Theme id | Name | Tone | Intended use |
 | --- | --- | --- | --- |
@@ -177,6 +177,7 @@ Generated AI-first SaaS apps start with these four named themes unless the autho
 | `cobalt-light` | Cobalt Light | light | cooler pale-blue light workspace with stronger blue accent |
 | `obsidian-dark` | Obsidian Dark | dark | default deep neutral dark workspace with indigo/violet accent |
 | `midnight-dark` | Midnight Dark | dark | darker blue-black workspace with crisp cyan-blue accent |
+| `dark-night` | Dark Night | dark | near-black benchmark-style workspace with charcoal cards, hot red primary accents, gold ranking/warning cues, and teal success/AI accents |
 
 Theme ids are stable implementation values. Theme names are user-facing labels. My Account settings should expose available theme names, store/apply the selected theme id at the documented scope, and avoid presenting `system`, `light`, or `dark` as the primary choice. A theme may record `tone: light` or `tone: dark` for contrast testing, but users choose by name.
 
@@ -311,6 +312,7 @@ Required aliases may be added for existing starter code, but the authoritative t
 - `cobalt-light`: cool pale-blue canvas, white/blue-tinted cards, stronger blue accent, slightly cooler status tints.
 - `obsidian-dark`: near-black charcoal canvas, subtle slate cards, indigo/violet accent, status colors tuned for dark contrast.
 - `midnight-dark`: deeper blue-black canvas, navy/slate cards, cyan-blue accent, status colors tuned for dark contrast.
+- `dark-night`: pure black canvas, charcoal layered cards, fine gray borders, hot red primary/action accents, gold warning/rank cues, teal success/AI accents, and blue info links.
 
 Theme variation should mainly cover canvas/surface/background colors plus accent and semantic color tuning. Typography, spacing, radii, component anatomy, and UX behavior stay shared.
 

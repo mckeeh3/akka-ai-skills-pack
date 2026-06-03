@@ -81,6 +81,7 @@ test('named themes and tokenized semantic states remain available', () => {
   assert.match(tokens, /\[data-theme="cobalt-light"\]/);
   assert.match(tokens, /\[data-theme="obsidian-dark"\]/);
   assert.match(tokens, /\[data-theme="midnight-dark"\]/);
+  assert.match(tokens, /\[data-theme="dark-night"\]/);
   assert.match(tokens, /--color-success-soft/);
   assert.match(tokens, /--color-warning-soft/);
   assert.match(tokens, /--color-danger-soft/);

@@ -75,7 +75,7 @@ export function ProfilePreferencesPage({ apiClient, themeId, onThemeChange }: { 
           <form className="stacked-form" onSubmit={savePreferences}>
             <fieldset className="preference-theme-group">
               <legend>Theme</legend>
-              {(['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark'] as const).map((option) => (
+              {(['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark', 'dark-night'] as const).map((option) => (
                 <label key={option} className={draftThemeId === option ? 'theme-choice selected' : 'theme-choice'}>
                   <input type="radio" name="profile-theme" value={option} checked={draftThemeId === option} onChange={() => setDraftThemeId(option)} />
                   <span>{option}</span>

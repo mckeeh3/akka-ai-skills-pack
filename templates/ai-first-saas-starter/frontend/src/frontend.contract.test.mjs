@@ -57,7 +57,7 @@ test('workstream entry gates fixture realtime client and wires stream state', ()
 });
 
 test('named theme selection uses root data-theme, live detail-edit preview, and backend persistence', () => {
-  assert.match(main, /type ThemePreference = 'aurora-light' \| 'cobalt-light' \| 'obsidian-dark' \| 'midnight-dark'/);
+  assert.match(main, /type ThemePreference = 'aurora-light' \| 'cobalt-light' \| 'obsidian-dark' \| 'midnight-dark' \| 'dark-night'/);
   assert.match(main, /root\.dataset\.theme = themeId/);
   assert.match(main, /window\.localStorage\.setItem\(themeStorageKey, themeId\)/);
   assert.match(main, /bootstrap\.me\.settings\.preferredThemeId/);
@@ -77,9 +77,11 @@ test('AI-first workstream enterprise tokens include named themes and semantic al
   assert.match(tokens, /\[data-theme="cobalt-light"\]/);
   assert.match(tokens, /\[data-theme="obsidian-dark"\]/);
   assert.match(tokens, /\[data-theme="midnight-dark"\]/);
+  assert.match(tokens, /\[data-theme="dark-night"\]/);
   assert.match(tokens, /--color-canvas: #f7f8fb/);
   assert.match(tokens, /--color-accent: #4f46e5/);
   assert.match(tokens, /--color-accent: #38bdf8/);
+  assert.match(tokens, /--color-accent: #ff3045/);
   assert.match(tokens, /--color-primary: var\(--color-accent\)/);
 });
 

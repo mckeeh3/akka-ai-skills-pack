@@ -1326,7 +1326,8 @@ public final class WorkstreamService {
         mapOf("value", "aurora-light", "label", "Aurora Light"),
         mapOf("value", "cobalt-light", "label", "Cobalt Light"),
         mapOf("value", "obsidian-dark", "label", "Obsidian Dark"),
-        mapOf("value", "midnight-dark", "label", "Midnight Dark"));
+        mapOf("value", "midnight-dark", "label", "Midnight Dark"),
+        mapOf("value", "dark-night", "label", "Dark Night"));
   }
 
   private SurfaceAction showContextAction() { return new SurfaceAction("action-show-my-context", "Show selected context", "read", browserToolId("action-show-my-context"), governedToolId(MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY), MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-context", "inline"), new Audit("AuthContextDisplayed", true)); }

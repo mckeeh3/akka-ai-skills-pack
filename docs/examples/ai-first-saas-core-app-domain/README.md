@@ -22,7 +22,7 @@ Core workstream surfaces inherit the canonical style contract from `docs/web-ui-
 
 - **Selected style:** `ai-first-workstream-enterprise` — a calm enterprise workstream interface for delegated agent work, evidence, decisions, governance, audit, and outcomes.
 - **Theme model:** named-theme selection, not mode-first `light`/`dark`/`system` preferences.
-- **Initial named themes:** `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`.
+- **Initial named themes:** `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night`.
 - **My Account settings:** expose available theme names and persist/apply the selected theme id as `preferredThemeId`; theme choice is not authorization.
 
 Surface PRDs should keep capability/action semantics authoritative and add only surface-specific appearance expectations. Generated UI should render dashboards, lists, detail cards, decision cards, diff reviews, audit timelines, governance controls, and system-message surfaces as enterprise workstream surfaces rather than generic dashboard or CRUD mockups.

@@ -16,6 +16,7 @@
   - `cobalt-light`: Cobalt Light; light; cool pale-blue workspace with stronger blue accent
   - `obsidian-dark`: Obsidian Dark; dark; deep neutral dark workspace with indigo/violet accent
   - `midnight-dark`: Midnight Dark; dark; darker blue-black workspace with crisp cyan-blue accent
+  - `dark-night`: Dark Night; dark; near-black benchmark-style workspace with charcoal cards, hot red primary accents, gold ranking/warning cues, and teal success/AI accents
 - My Account behavior: users select one available named theme and the UI applies that theme
 - persistence scope: backend user settings for generated-app runtime; local browser storage is acceptable only for pre-runtime visual prototypes and must be labeled as such
 - future theme rule: add token bundles and available-theme metadata without changing workstream shell anatomy, surface contracts, component structure, route behavior, capability mapping, authorization, audit, or tests
@@ -57,6 +58,7 @@
   - `cobalt-light`: cool pale-blue canvas, white or blue-tinted cards, stronger blue accent, slightly cooler status tints
   - `obsidian-dark`: near-black charcoal canvas, subtle slate cards, indigo/violet accent, status colors tuned for dark contrast
   - `midnight-dark`: deeper blue-black canvas, navy/slate cards, cyan-blue accent, status colors tuned for dark contrast
+  - `dark-night`: pure black canvas, charcoal layered cards, fine gray borders, hot red primary/action accents, gold warning/rank cues, teal success/AI accents, and blue info links
   - color tokens cover canvas, surfaces, text, borders, primary/accent, AI accent, status, chart palette, focus, shadows, and subtle texture
   - components consume semantic CSS variables only; TypeScript may toggle documented named theme ids and must not hard-code visual values
   - lightweight style overrides may change only named theme tokens, color tokens, font-family tokens, product name, logo/icon treatment, and safe brand accents
@@ -114,4 +116,4 @@
 
 - CSS variable prefix: use semantic CSS variables matching the design spec
 - files expected to apply this guide: generated React/Vite frontend CSS, workstream shell components, structured surface components, decision-card components, governance surfaces, audit trace surfaces, and My Account settings surfaces
-- tests/manual checks: render core shell and primary Governance/Policy surface in `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`; verify My Account named-theme selection applies the selected theme id; verify keyboard focus and status labels in each theme tone
+- tests/manual checks: render core shell and primary Governance/Policy surface in `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night`; verify My Account named-theme selection applies the selected theme id; verify keyboard focus and status labels in each theme tone

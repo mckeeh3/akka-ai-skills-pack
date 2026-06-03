@@ -5,7 +5,8 @@ public record UserSettings(String accountId, ThemeId themeId) {
     AURORA_LIGHT("aurora-light"),
     COBALT_LIGHT("cobalt-light"),
     OBSIDIAN_DARK("obsidian-dark"),
-    MIDNIGHT_DARK("midnight-dark");
+    MIDNIGHT_DARK("midnight-dark"),
+    DARK_NIGHT("dark-night");
 
     private final String id;
 
@@ -23,6 +24,7 @@ public record UserSettings(String accountId, ThemeId themeId) {
         case "cobalt-light" -> COBALT_LIGHT;
         case "obsidian-dark" -> OBSIDIAN_DARK;
         case "midnight-dark" -> MIDNIGHT_DARK;
+        case "dark-night" -> DARK_NIGHT;
         default -> throw new IllegalArgumentException("unknown theme id: " + id);
       };
     }

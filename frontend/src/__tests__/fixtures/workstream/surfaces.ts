@@ -1051,7 +1051,7 @@ export const myAccountSettingsSurface = envelope(
     recordKind: 'settings',
     summary: 'Personal settings for the workstream shell. Backend persistence, no-op, idempotency, and validation errors are reflected as capability action results.',
     fields: [
-      { fieldId: 'preferredThemeId', label: 'Theme', value: 'aurora-light', editable: true, inputType: 'select', options: [{ value: 'aurora-light', label: 'Aurora Light' }, { value: 'cobalt-light', label: 'Cobalt Light' }, { value: 'obsidian-dark', label: 'Obsidian Dark' }, { value: 'midnight-dark', label: 'Midnight Dark' }] },
+      { fieldId: 'preferredThemeId', label: 'Theme', value: 'aurora-light', editable: true, inputType: 'select', options: [{ value: 'aurora-light', label: 'Aurora Light' }, { value: 'cobalt-light', label: 'Cobalt Light' }, { value: 'obsidian-dark', label: 'Obsidian Dark' }, { value: 'midnight-dark', label: 'Midnight Dark' }, { value: 'dark-night', label: 'Dark Night' }] },
       { fieldId: 'notificationDigest', label: 'Notification digest', value: 'daily', editable: false, inputType: 'select', disabledReason: 'Notification digest is deferred beyond My Account v0.' },
       { fieldId: 'composerDensity', label: 'Composer density', value: 'comfortable', editable: false, inputType: 'select', disabledReason: 'Composer density is deferred beyond My Account v0.' }
     ],

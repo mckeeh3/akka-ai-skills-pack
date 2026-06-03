@@ -34,7 +34,7 @@ import {
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
 const hasConfiguredWorkosClient = typeof workosClientId === 'string' && workosClientId.startsWith('client_') && !workosClientId.includes('your_workos');
 
-type ThemePreference = 'aurora-light' | 'cobalt-light' | 'obsidian-dark' | 'midnight-dark';
+type ThemePreference = 'aurora-light' | 'cobalt-light' | 'obsidian-dark' | 'midnight-dark' | 'dark-night';
 type BootstrapState =
   | { status: 'loading' }
   | { status: 'ready'; me: MeResponse; items: WorkstreamItem[]; surfaces: SurfaceEnvelope<unknown>[] }
@@ -42,7 +42,7 @@ type BootstrapState =
 
 const themeStorageKey = 'seed-ui-theme';
 const defaultThemeId: ThemePreference = 'aurora-light';
-const availableThemeIds: readonly ThemePreference[] = ['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark'];
+const availableThemeIds: readonly ThemePreference[] = ['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark', 'dark-night'];
 // Contract markers preserved for frontend slice tests: data-theme; named theme selection; Ready · workstream shell; Pending · backend configuration; Guarded · backend authority; runtime path uses HttpWorkstreamApiClient, HttpWorkstreamRealtimeClient, and WorkOS AuthKit getAccessToken.
 
 type WorkstreamAppProps = {

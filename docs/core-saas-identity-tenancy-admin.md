@@ -86,7 +86,7 @@ User settings store preferences that affect application behavior or presentation
 
 Base viewable and editable fields:
 - `accountId`
-- `preferredThemeId`: one of the available named theme ids from the app UI style guide, initially `aurora-light`, `cobalt-light`, `obsidian-dark`, or `midnight-dark`
+- `preferredThemeId`: one of the available named theme ids from the app UI style guide, initially `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, or `dark-night`
 
 Initial rule:
 - support named-theme selection first; users choose an available theme by name and the app stores/applies the selected theme id without treating theme choice as authorization, policy, audit, or capability state.
@@ -423,7 +423,7 @@ Record audit events for:
 - [ ] Same email can hold multiple memberships and must operate in an explicit context.
 - [ ] WorkOS authentication is separate from Akka-owned authorization state.
 - [ ] Base profile fields are viewable/editable according to scope rules and do not grant permissions.
-- [ ] Base user settings include editable `preferredThemeId` constrained to available named themes, initially `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`.
+- [ ] Base user settings include editable `preferredThemeId` constrained to available named themes, initially `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night`.
 - [ ] Profile and settings models can be extended by app-specific requirements.
 - [ ] Admins can list/search users, view user detail, and manage users without already knowing internal user IDs.
 - [ ] Admins can assign/replace/remove roles and add/suspend/reactivate/remove memberships inside their authority boundary.

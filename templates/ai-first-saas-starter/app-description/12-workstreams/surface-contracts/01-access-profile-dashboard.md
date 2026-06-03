@@ -15,7 +15,7 @@
   - sign out → shell/session action with backend/session trace where available
 - profile/settings/theme surfaces:
   - current user's editable profile fields and preferences only
-  - theme preference is a named-theme selection from the available list, with initial theme ids `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`
+  - theme preference is a named-theme selection from the available list, with initial theme ids `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night`
   - selecting a theme stores/applies the selected theme id at the documented settings scope and must not be treated as authorization
   - administrative roles, memberships, support access, and tenant/customer authority changes remain in User Admin/Governance surfaces
 - UI style notes:

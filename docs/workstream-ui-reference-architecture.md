@@ -143,7 +143,7 @@ type MeResponse = {
   };
   profile: { displayName: string; locale?: string; timeZone?: string };
   settings: {
-    preferredThemeId?: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark";
+    preferredThemeId?: "aurora-light" | "cobalt-light" | "obsidian-dark" | "midnight-dark" | "dark-night";
   };
   memberships: MembershipSummary[];
   selectedAuthContext: AuthContext;

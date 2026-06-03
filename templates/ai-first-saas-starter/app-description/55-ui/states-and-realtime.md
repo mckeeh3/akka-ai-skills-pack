@@ -68,7 +68,7 @@
 
 ## Theme and style state
 
-- user preference supports named theme selection with initial ids `aurora-light`, `cobalt-light`, `obsidian-dark`, and `midnight-dark`
+- user preference supports named theme selection with initial ids `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night`
 - theme changes are applied by documented CSS class or `data-theme` token switching
 - My Account settings selects one available theme by name and applies the stored theme id to the UI
 - style overrides are limited to named theme tokens, color tokens, font-family tokens, product name, logo/icon treatment, and safe brand accents
