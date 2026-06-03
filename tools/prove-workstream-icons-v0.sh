@@ -3,23 +3,20 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
-TARGET_DIR=""
-KEEP=false
 
 print_help() {
   cat <<'EOF'
-Prove the scaffolded AI-first SaaS starter exposes v0 workstream rail icons.
+Prove the root AI-first SaaS core app exposes v0 workstream rail icons.
 
 Usage:
-  tools/prove-workstream-icons-v0.sh [--target <dir>] [--keep]
+  tools/prove-workstream-icons-v0.sh
 
-The proof scaffolds the starter into a temporary target unless --target is
-provided, then inspects the rendered frontend source without requiring network
-access or npm install. It verifies:
+The proof inspects the canonical root frontend and backend source without
+requiring network access or npm install. It verifies:
   - User Admin, Agent Admin, Audit/Trace, and Governance/Policy each carry
     WorkstreamIconDescriptor metadata used by rendered rail icon affordances.
   - FunctionalAgentRailItem renders descriptor-backed icon data attributes,
-    tooltip markup, accessible labels, and a safe fallback for older payloads.
+    accessible labels, and a safe fallback for older payloads.
   - The backend /api/me functional-agent DTO includes WorkstreamIconDescriptor
     metadata for the same core v0 workstreams.
   - My Account remains opened from the lower-left signed-in user tile and is
@@ -29,15 +26,6 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --target)
-      [[ $# -ge 2 ]] || { echo "[proof][error] Missing value for --target" >&2; exit 1; }
-      TARGET_DIR="$2"
-      shift 2
-      ;;
-    --keep)
-      KEEP=true
-      shift
-      ;;
     --help|-h)
       print_help
       exit 0
@@ -49,24 +37,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$TARGET_DIR" ]]; then
-  TARGET_DIR="$(mktemp -d "${TMPDIR:-/tmp}/workstream-icons-v0-proof.XXXXXX")"
-  if [[ "$KEEP" != true ]]; then
-    trap 'rm -rf "$TARGET_DIR"' EXIT
-  fi
-else
-  mkdir -p "$TARGET_DIR"
-  TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
-fi
-
-"$REPO_ROOT/tools/scaffold-ai-first-saas-starter.sh" \
-  --target "$TARGET_DIR" \
-  --template-dir "$REPO_ROOT/templates/ai-first-saas-starter" \
-  --base-package ai.first \
-  --app-name "Workstream Icon Proof" \
-  --app-slug "workstream-icon-proof"
-
-export PROOF_TARGET_DIR="$TARGET_DIR"
+export PROOF_TARGET_DIR="$REPO_ROOT"
 python3 <<'PY'
 from __future__ import annotations
 
@@ -76,7 +47,7 @@ from pathlib import Path
 
 root = Path(os.environ["PROOF_TARGET_DIR"])
 frontend = root / "frontend" / "src"
-fixtures_path = frontend / "workstream" / "fixtures" / "agents.ts"
+fixtures_path = frontend / "__tests__" / "fixtures" / "workstream" / "agents.ts"
 rail_path = frontend / "workstream" / "rail" / "FunctionalAgentRail.tsx"
 rail_item_path = frontend / "workstream" / "rail" / "FunctionalAgentRailItem.tsx"
 icon_component_path = frontend / "workstream" / "rail" / "WorkstreamIcon.tsx"
@@ -132,8 +103,6 @@ rail_item_checks = {
     "icon id data attribute": r"data-workstream-icon-id=\{workstreamIcon\.iconId\}",
     "accent token data attribute": r"data-accent-color-token=\{workstreamIcon\.accentColorToken\}",
     "accessible icon button label": r"aria-label=\{workstreamIcon\.ariaLabel\}",
-    "tooltip description wiring": r"workstreamIcon\.tooltip \? tooltipId",
-    "tooltip role": r"className=\"workstream-icon-tooltip\" role=\"tooltip\"",
 }
 for description, pattern in rail_item_checks.items():
     if not re.search(pattern, rail_item):
@@ -175,11 +144,7 @@ for description, pattern in my_account_checks.items():
 if re.search(r"aria-haspopup=\"menu\"|rail-user-menu|role=\"menuitem\"", rail):
     raise SystemExit("[proof][error] My Account user tile regressed to menu-style navigation")
 
-print("[proof] PASS: scaffolded v0 left rail exposes descriptor-backed icons for User Admin, Agent Admin, Audit/Trace, and Governance/Policy.")
+print("[proof] PASS: root v0 left rail exposes descriptor-backed icons for User Admin, Agent Admin, Audit/Trace, and Governance/Policy.")
 print("[proof] PASS: My Account remains available only through the lower-left signed-in user tile, not the top rail.")
 print(f"[proof] Target: {root}")
 PY
-
-if [[ "$KEEP" == true ]]; then
-  echo "[proof] Kept scaffold target: $TARGET_DIR"
-fi

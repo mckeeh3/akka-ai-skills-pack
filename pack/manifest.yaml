@@ -516,9 +516,9 @@ content:
     - docs/examples/requirements-to-workstream-mini-example.md
     - docs/examples/core-ai-first-saas-input/README.md
     - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
-    - templates/ai-first-saas-starter/app-description/README.md
+    - app-description/README.md
     - docs/workstream-ui-reference-architecture.md
-    - templates/ai-first-saas-starter/app-description/00-system/app-manifest.md
+    - app-description/00-system/app-manifest.md
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
   examples:
@@ -545,13 +545,6 @@ content:
     exclude:
       - frontend/node_modules
       - frontend/.env.local
-  templates:
-    - id: ai-first-saas-starter
-      exportFrom: templates/ai-first-saas-starter
-      installAs: '{agentsRoot}/resources/templates/ai-first-saas-starter'
-      scaffoldCommand: '{agentsRoot}/bin/scaffold-ai-first-saas-starter.sh'
-      defaultInstallMaterializesAppCode: false
-
 bundles:
   - id: all
     description: Install the full packaged skill library, references, and examples.

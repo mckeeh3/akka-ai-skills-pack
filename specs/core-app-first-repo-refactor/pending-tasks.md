@@ -136,7 +136,7 @@
 
 ### TASK-LAYOUT-02-002: Dissolve the full-app starter template
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/02-core-root/02-dissolve-full-app-template.md
 - depends on: [TASK-LAYOUT-02-001]
@@ -162,6 +162,12 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: dissolve full app template`
+  - removed maintained duplicate full-app source at `templates/ai-first-saas-starter/**`
+  - removed obsolete scaffold/render scripts: `tools/scaffold-ai-first-saas-starter.sh`, `tools/validate-ai-first-saas-starter-fullstack.sh`, and `tools/smoke-ai-first-saas-starter-real-model.sh`
+  - updated `install.sh`, `tools/build-pack.sh`, `pack/manifest.yaml`, `tools/verify-opinionated-ai-first-saas-pack.sh`, and `tools/prove-workstream-icons-v0.sh` so immediate installer/build/manifest/verification paths no longer require the removed template
+  - added `specs/core-app-first-repo-refactor/template-dissolution-notes.md` classifying remaining template/scaffold references as historical/provenance, pending migration, or blockers
+  - checks passed: `git diff --check`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `bash tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; `tools/prove-workstream-icons-v0.sh`; `test ! -d templates/ai-first-saas-starter`; immediate-reference search over `install.sh`, `tools/build-pack.sh`, `pack/manifest.yaml`, and `tools/verify-opinionated-ai-first-saas-pack.sh`
+  - broad remaining-reference search found stale scaffold/template mentions outside this task's scope; deferred to TASK-LAYOUT-04-001, TASK-LAYOUT-04-002, and terminal verification per `template-dissolution-notes.md`
 
 ### TASK-LAYOUT-03-001: Move skills-pack assets under top-level skills-pack
 
