@@ -50,6 +50,7 @@ test('standard Show dashboard button is shell-handled and appends request plus d
   assert.match(main, /kind: 'user-request'/);
   assert.match(main, /kind: 'surface'/);
   assert.match(componentStyles, /\.show-dashboard-button/);
+  assert.match(componentStyles, /\.send-prompt-button,\n\.show-dashboard-button \{[\s\S]*?background: var\(--color-primary\);[\s\S]*?color: var\(--color-inverse-text\);/);
   assert.match(componentStyles, /\.dashboard-button-icon/);
   assert.match(componentStyles, /\.workstream-show-dashboard-tooltip/);
 });

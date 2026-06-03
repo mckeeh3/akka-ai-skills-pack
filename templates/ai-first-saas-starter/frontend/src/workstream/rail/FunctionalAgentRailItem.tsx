@@ -16,7 +16,6 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
   const disabledReason = agentDisabledReason(entry);
   const labelId = `rail-agent-${entry.functionalAgentId}-label`;
   const reasonId = `rail-agent-${entry.functionalAgentId}-reason`;
-  const tooltipId = `rail-agent-${entry.functionalAgentId}-tooltip`;
   const fallbackIcon: WorkstreamIconDescriptor = {
     workstreamId: entry.functionalAgentId,
     displayName: entry.label,
@@ -27,7 +26,7 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
     ariaLabel: `Open ${entry.label} workstream`
   };
   const workstreamIcon = entry.workstreamIcon ?? fallbackIcon;
-  const describedBy = [workstreamIcon.tooltip ? tooltipId : undefined, disabledReason ? reasonId : undefined].filter(Boolean).join(' ') || undefined;
+  const describedBy = disabledReason ? reasonId : undefined;
   const unseenResponseCount = entry.railAttention?.unseenResponseCount ?? 0;
   const unseenResponseLabel = unseenResponseCount === 1 ? '1 unseen response' : `${unseenResponseCount} unseen responses`;
 
@@ -50,7 +49,6 @@ export function FunctionalAgentRailItem({ entry, collapsed = false, onSelect }: 
         >
           <WorkstreamIcon descriptor={workstreamIcon} />
         </span>
-        <span id={tooltipId} className="workstream-icon-tooltip" role="tooltip">{workstreamIcon.tooltip}</span>
         <span className="workstream-rail-copy">
           <span id={labelId}>{entry.label}</span>
         </span>

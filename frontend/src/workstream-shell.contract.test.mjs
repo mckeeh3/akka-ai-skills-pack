@@ -40,10 +40,11 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(railItem, /const workstreamIcon = entry\.workstreamIcon \?\? fallbackIcon/);
   assert.match(railItem, /<WorkstreamIcon descriptor=\{workstreamIcon\}/);
   assert.match(railItem, /aria-label=\{workstreamIcon\.ariaLabel\}/);
+  assert.match(railItem, /const describedBy = disabledReason \? reasonId : undefined/);
   assert.match(railItem, /aria-describedby=\{describedBy\}/);
   assert.match(railItem, /data-workstream-icon-id=\{workstreamIcon\.iconId\}/);
   assert.match(railItem, /data-accent-color-token=\{workstreamIcon\.accentColorToken\}/);
-  assert.match(railItem, /className="workstream-icon-tooltip" role="tooltip"/);
+  assert.doesNotMatch(railItem, /workstream-icon-tooltip/);
   assert.match(railItem, /rail-unseen-response-badge/);
   assert.match(railItem, /aria-label=\{unseenResponseLabel\}/);
   assert.match(railItem, /data-attention-kind=\{entry\.railAttention\.kind\}/);
@@ -79,8 +80,8 @@ test('left rail renders descriptor-backed workstream icons for core v0 workstrea
     assert.match(agentFixtures, new RegExp(`tooltip: '${tooltip.replace('/', '\\/')}'`));
     assert.match(agentFixtures, new RegExp(`ariaLabel: '${tooltip.replace('/', '\\/')}'`));
   }
-  assert.match(railItem, /workstreamIcon\.tooltip \? tooltipId/);
-  assert.match(railItem, /role="tooltip">\{workstreamIcon\.tooltip\}/);
+  assert.doesNotMatch(railItem, /workstreamIcon\.tooltip \? tooltipId/);
+  assert.doesNotMatch(railItem, /role="tooltip">\{workstreamIcon\.tooltip\}/);
   assert.match(railItem, /fallbackIcon: WorkstreamIconDescriptor/);
   assert.match(workstreamIcon, /export function deriveWorkstreamIconArtwork/);
   assert.match(workstreamIcon, /<svg viewBox="0 0 24 24"/);
@@ -91,7 +92,8 @@ test('left rail renders descriptor-backed workstream icons for core v0 workstrea
   assert.doesNotMatch(workstreamIcon, /slice\(0, 1\)|toUpperCase\(\)/);
   assert.match(componentsCss, /\.workstream-icon svg/);
   assert.match(componentsCss, /\.workstream-icon\[data-accent-color-token="accent-users"\]/);
-  assert.match(componentsCss, /\.workstream-agent-button:focus-visible \.workstream-icon-tooltip/);
+  assert.doesNotMatch(componentsCss, /\.workstream-agent-button:focus-visible \.workstream-icon-tooltip/);
+  assert.doesNotMatch(componentsCss, /\.workstream-icon-tooltip/);
   assert.doesNotMatch(railItem, /title=/);
 });
 
