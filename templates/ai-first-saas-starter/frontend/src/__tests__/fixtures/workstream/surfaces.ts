@@ -1257,6 +1257,18 @@ export const auditTraceSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-audit-trace-investigation-guide', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceInvestigationGuideRequested', traceRequired: true }
   },
+  appendInvestigationNote: {
+    actionId: 'action-audit-trace-append-investigation-note',
+    label: 'Append investigation note',
+    intent: 'command',
+    capabilityId: 'audit.trace.investigation_note.append',
+    governedToolId: 'audit.trace.investigation_note.append',
+    browserToolId: 'action-audit-trace-append-investigation-note',
+    inputSchemaRef: 'schema.audit-trace.investigation-note.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-investigation-note', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceInvestigationNoteAppended', traceRequired: true }
+  },
   startSummaryTask: {
     actionId: 'action-audit-trace-summary-task-start',
     label: 'Start audit summary task',
@@ -1443,7 +1455,23 @@ export const auditTraceInvestigationGuideSurface = envelope(
     risk: 'low',
     traceLinks: ['corr-provider-blocked-002']
   },
-  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence]
+  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.appendInvestigationNote]
+);
+
+export const auditTraceInvestigationNoteSurface = envelope(
+  'surface-audit-trace-investigation-note',
+  'system-message',
+  'Investigation note recorded',
+  'agent-audit-trace',
+  {
+    surfaceContract: 'audit.trace.investigationNote.v1',
+    status: 'recorded',
+    traceId: 'trace-provider-blocked-002',
+    noteSummary: 'Human reviewer noted that provider failure evidence is redacted and tenant-scoped.',
+    retainedAuthority: 'Human-authored investigation notes annotate traces only; they do not mutate source traces, policy, authorization, or retained evidence.',
+    redactionMetadata: { omittedFieldKeys: ['rawJwt', 'rawProviderCredential', 'hiddenPromptText', 'rawToolPayload'], nonEnumerating: false }
+  },
+  [auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.showInvestigationGuide]
 );
 
 export const auditTraceSummaryProgressSurface = envelope(
@@ -1497,7 +1525,7 @@ export const auditTraceSummaryReviewSurface = envelope(
   [auditTraceSurfaceActions.acceptSummaryResult, auditTraceSurfaceActions.rejectSummaryResult, auditTraceSurfaceActions.openSummaryEvidence]
 );
 
-export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];
+export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceInvestigationNoteSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];
 
 export const userAdminDashboardSurface = envelope(
   'surface-user-admin-dashboard',

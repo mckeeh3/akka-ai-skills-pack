@@ -17,6 +17,7 @@ public final class AuditTraceService {
   public static final String TIMELINE_CAPABILITY = "audit.trace.timeline.read";
   public static final String FAILURE_EVIDENCE_CAPABILITY = "audit.trace.failureEvidence.read";
   public static final String INVESTIGATION_GUIDE_CAPABILITY = "audit.trace.investigationGuide.read";
+  public static final String INVESTIGATION_NOTE_CAPABILITY = "audit.trace.investigation_note.append";
   private static final List<String> DEFAULT_OMITTED_FIELDS = List.of("rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload", "invitationToken", "providerCredentialValue");
 
   private final AuthContextResolver authContextResolver;
@@ -41,7 +42,7 @@ public final class AuditTraceService {
             mapOf("cardId", "card-redaction", "label", "Redaction", "value", "browser-safe", "severity", "info")),
         "attentionItems", List.of(mapOf("itemId", "warnings", "label", "Warnings and denials", "status", warningCount == 0 ? "clear" : "needs_review")),
         "readiness", "Trace search, details, timeline, failure evidence, and guidance are backend-scoped and redacted for the selected AuthContext.",
-        "capabilityIds", List.of(DASHBOARD_CAPABILITY, SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, AuditTraceSummaryService.START_CAPABILITY, AuditTraceSummaryService.READ_CAPABILITY),
+        "capabilityIds", List.of(DASHBOARD_CAPABILITY, SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, AuditTraceSummaryService.START_CAPABILITY, AuditTraceSummaryService.READ_CAPABILITY),
         "redaction", "redacted browser-safe evidence; provider credentials, raw tokens, hidden prompts, and raw tool payloads omitted"));
   }
 
@@ -137,6 +138,22 @@ public final class AuditTraceService {
         "risk", "low",
         "traceLinks", List.of(correlationId),
         "redaction", "no secrets, hidden prompts, raw payloads, or cross-tenant evidence"));
+  }
+
+  public SurfaceData appendInvestigationNote(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
+    validateScope(actor, input, correlationId);
+    var note = stringInput(input, "note", "Investigation note recorded without sensitive evidence.");
+    if (note == null || note.isBlank() || note.length() > 500) return validation(actor, correlationId, "note", "Investigation note is required and must be at most 500 characters.");
+    var traceId = stringInput(input, "traceId", "trace-auth-context-" + stableSuffix(correlationId));
+    authContextResolver.appendProtectedReadTrace(actor, INVESTIGATION_NOTE_CAPABILITY, "append investigation note trace:" + traceId, correlationId);
+    return new SurfaceData("surface-audit-trace-investigation-note", "system-message", "Investigation note recorded", List.of("trace-audit-note-" + stableSuffix(Objects.toString(idempotencyKey, correlationId))), mapOf(
+        "surfaceContract", "audit.trace.investigationNote.v1",
+        "status", "recorded",
+        "traceId", traceId,
+        "noteSummary", redacted(note),
+        "idempotencyKey", idempotencyKey,
+        "retainedAuthority", "Human-authored investigation notes annotate traces only; they do not mutate source traces, policy, authorization, or retained evidence.",
+        "redactionMetadata", mapOf("omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "nonEnumerating", false)));
   }
 
   private SurfaceData validation(AuthContextResolver.ResolvedMe actor, String correlationId, String field, String message) {

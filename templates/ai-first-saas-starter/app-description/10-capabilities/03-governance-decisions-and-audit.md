@@ -9,6 +9,8 @@
   - decision cards
   - approval, rejection, override, and exception outcomes
   - work traces, decision traces, data-access/tool-use events
+  - tenant-scoped trace search/detail/timeline, redaction, and sensitive-read audit
+  - human-authored investigation notes through `audit.trace.investigation_note.append`; notes annotate investigation context only and do not mutate source traces, policy, authorization, or retained evidence
   - outcome links and feedback
 - out of scope:
   - autonomous policy expansion without human authorization

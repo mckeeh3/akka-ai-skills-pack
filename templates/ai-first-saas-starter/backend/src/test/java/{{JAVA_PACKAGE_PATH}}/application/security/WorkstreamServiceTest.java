@@ -785,6 +785,17 @@ class WorkstreamServiceTest {
     assertEquals("audit.trace.investigationGuide.v1", guide.resultSurface().data().get("surfaceContract"));
     assertTrue(guide.resultSurface().toString().contains("audit.trace.summary_task.start"));
     assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-start")));
+    assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-append-investigation-note")));
+
+    var note = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-append-investigation-note", "action-audit-trace-append-investigation-note", "audit.trace.investigation_note.append", "audit.trace.investigation_note.append", Map.of("traceId", "trace-provider-blocked-002", "note", "Follow up without sk-test-secret or bearer hidden-token"), "idem-audit-note", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-note"));
+    assertEquals("recorded", note.status());
+    assertEquals("surface-audit-trace-investigation-note", note.resultSurface().surfaceId());
+    assertEquals("audit.trace.investigationNote.v1", note.resultSurface().data().get("surfaceContract"));
+    assertTrue(note.resultSurface().toString().contains("do not mutate source traces"));
+    assertFalse(note.resultSurface().toString().contains("sk-test-secret"));
+    assertFalse(note.resultSurface().toString().contains("hidden-token"));
+    assertTrue(service.items(identity(), "membership-admin", "agent-audit-trace", "corr-audit-note-read").stream().anyMatch(item -> "surface-audit-trace-investigation-note".equals(item.surfaceId()) && "recorded".equals(item.status())));
   }
 
   @Test

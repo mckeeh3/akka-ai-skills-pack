@@ -1198,7 +1198,7 @@
 
 ### TASK-STARTER-08-007: Audit/Trace investigation workstream vertical
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-07-007 and TASK-STARTER-07-009
 - task brief: none
 - depends on: [TASK-STARTER-08-006]
@@ -1240,6 +1240,10 @@
   - Akka substrate/exposure: ESE audit/trace appenders as needed; AdminAuditView/TraceSearchView; HTTP/workstream APIs; optional SSE for trace stream; frontend timelines/tables
   - audit/trace/tests: search access itself audited for sensitive reads, redaction profiles, ordering/pagination, tenant isolation, stale/reconnect if streamed, frontend secret-boundary scan
   - supersedes future task shape for: TASK-STARTER-07-007, TASK-STARTER-07-009
+  - commit message: `Add starter audit trace investigation vertical`
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered backend tests, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
+  - note: direct Maven test in template source is not valid before scaffold token rendering (`{{MAVEN_GROUP_ID}}`/`{{APP_SLUG}}` placeholders); fullstack validation renders the scaffold before running Maven.
 
 ### TASK-STARTER-08-008: Shell, realtime, static hosting, and named-surface fullstack validation
 
