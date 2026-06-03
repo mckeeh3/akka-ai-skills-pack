@@ -338,7 +338,7 @@
 
 ### TASK-LAYOUT-05-001: Repair root app stale starter-template references
 
-- status: pending
+- status: done
 - source: TASK-LAYOUT-99-001 terminal verification
 - task brief: specs/core-app-first-repo-refactor/tasks/05-validation/02-repair-root-starter-template-references.md
 - depends on:
@@ -367,6 +367,10 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: repair root starter references`
+  - updated root frontend contract tests to read canonical root backend/resources paths instead of removed full-app template fallbacks
+  - updated root Java comments to describe the core app rather than a starter template
+  - checks passed: `git diff --check`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `mvn test`
+  - stale reference proof: root/source search excluding `specs/**`, `.agents/**`, generated/build output, node modules, and `.git/**` returned no matches for removed starter-template/scaffold patterns
 
 ### TASK-LAYOUT-05-002: Classify and repair active spec stale template references
 

@@ -3,24 +3,15 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const readTemplateOrRenderedResource = (path) => {
-  for (const root of ['../../src/main/resources', '../../backend/src/main/resources', '../../templates/ai-first-saas-starter/backend/src/main/resources']) {
-    try {
-      return read(`${root}/${path}`);
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-    }
-  }
-  return read(`../../templates/ai-first-saas-starter/backend/src/main/resources/${path}`);
-};
+const readCoreResource = (path) => read(`../../src/main/resources/${path}`);
 
 const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
-const seedManifest = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/manifest.properties');
-const expertiseBundle = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/user-admin-agent-expertise.yaml');
-const accessReviewSkill = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/access-review-triage.md');
-const lastAdminReference = readTemplateOrRenderedResource('agent-behavior-seeds/starter-v1/last-admin-protection-reference.md');
+const seedManifest = readCoreResource('agent-behavior-seeds/starter-v1/manifest.properties');
+const expertiseBundle = readCoreResource('agent-behavior-seeds/starter-v1/user-admin-agent-expertise.yaml');
+const accessReviewSkill = readCoreResource('agent-behavior-seeds/starter-v1/access-review-triage.md');
+const lastAdminReference = readCoreResource('agent-behavior-seeds/starter-v1/last-admin-protection-reference.md');
 
 const seedResources = `${seedManifest}\n${expertiseBundle}`;
 

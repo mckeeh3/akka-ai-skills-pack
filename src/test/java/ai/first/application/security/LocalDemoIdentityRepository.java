@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Test/local adapter for the starter template. */
+/** Test/local adapter for the core app. */
 public final class LocalDemoIdentityRepository implements IdentityRepository {
   private final Map<String, Account> accounts = new ConcurrentHashMap<>();
   private final Map<String, UserProfile> profiles = new ConcurrentHashMap<>();

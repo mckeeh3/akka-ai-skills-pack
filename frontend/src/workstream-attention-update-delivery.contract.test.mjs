@@ -1,16 +1,10 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const resolve = (path) => new URL(path, import.meta.url);
 const read = (path) => readFileSync(resolve(path), 'utf8');
-const readBackend = (path) => {
-  const scaffoldRootPath = `../../${path}`;
-  if (existsSync(resolve(scaffoldRootPath))) return read(scaffoldRootPath);
-  const sourceRepoTemplatePath = `../../templates/ai-first-saas-starter/backend/${path}`;
-  if (existsSync(resolve(sourceRepoTemplatePath))) return read(sourceRepoTemplatePath);
-  return read(`../../${path}`);
-};
+const readBackend = (path) => read(`../../${path}`);
 
 const main = read('./main.tsx');
 const apiClient = read('./api/WorkstreamApiClient.ts');

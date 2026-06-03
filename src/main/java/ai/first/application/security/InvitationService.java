@@ -26,11 +26,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Invitation workflow seam for the starter template.
+ * Invitation workflow seam for the core app.
  *
- * <p>The starter keeps this as an application service so the template remains easy to scaffold. Generated apps can
- * replace the repository ports with Akka Event Sourced Entities, Workflow, Consumer, TimedAction, and Views without
- * changing the capability contract or tests.
+ * <p>The core app keeps this as an application service so downstream forks can replace the repository ports with Akka
+ * Event Sourced Entities, Workflow, Consumer, TimedAction, and Views without changing the capability contract or tests.
  */
 public final class InvitationService {
   private final IdentityRepository identityRepository;

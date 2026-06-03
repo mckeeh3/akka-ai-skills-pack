@@ -3,23 +3,14 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const readTemplateOrRenderedBackend = (path) => {
-  for (const root of ['../..', '../../backend', '../../templates/ai-first-saas-starter/backend']) {
-    try {
-      return read(`${root}/${path}`);
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-    }
-  }
-  return read(`../../${path}`);
-};
+const readBackend = (path) => read(`../../${path}`);
 
-const backendWorkstreamService = readTemplateOrRenderedBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
-const backendMyAccountService = readTemplateOrRenderedBackend('src/main/java/ai/first/application/security/MyAccountService.java');
-const backendWorkstreamEndpoint = readTemplateOrRenderedBackend('src/main/java/ai/first/api/workstream/WorkstreamEndpoint.java');
-const backendWorkstreamTest = readTemplateOrRenderedBackend('src/test/java/ai/first/application/security/WorkstreamServiceTest.java');
-const backendPersonalAttentionDigestService = readTemplateOrRenderedBackend('src/main/java/ai/first/application/security/MyAccountPersonalAttentionDigestService.java');
-const backendPersonalAttentionDigestTest = readTemplateOrRenderedBackend('src/test/java/ai/first/application/security/MyAccountPersonalAttentionDigestServiceTest.java');
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
+const backendMyAccountService = readBackend('src/main/java/ai/first/application/security/MyAccountService.java');
+const backendWorkstreamEndpoint = readBackend('src/main/java/ai/first/api/workstream/WorkstreamEndpoint.java');
+const backendWorkstreamTest = readBackend('src/test/java/ai/first/application/security/WorkstreamServiceTest.java');
+const backendPersonalAttentionDigestService = readBackend('src/main/java/ai/first/application/security/MyAccountPersonalAttentionDigestService.java');
+const backendPersonalAttentionDigestTest = readBackend('src/test/java/ai/first/application/security/MyAccountPersonalAttentionDigestServiceTest.java');
 const surfaceRenderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');

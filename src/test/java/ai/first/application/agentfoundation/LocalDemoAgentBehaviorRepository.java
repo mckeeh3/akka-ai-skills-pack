@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Test/local governed-agent store for the starter template. */
+/** Test/local governed-agent store for the core app. */
 public final class LocalDemoAgentBehaviorRepository implements AgentBehaviorRepository {
   private final Map<String, AgentDefinition> agents = new ConcurrentHashMap<>();
   private final Map<String, PromptDocument> prompts = new ConcurrentHashMap<>();
