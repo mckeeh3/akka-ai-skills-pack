@@ -119,6 +119,7 @@ class DurableGovernancePolicyRepositoryEntityTest {
         null,
         null,
         null,
+        List.of(),
         Instant.parse("2026-05-30T00:00:00Z"),
         Instant.parse("2026-05-30T00:00:00Z"));
   }

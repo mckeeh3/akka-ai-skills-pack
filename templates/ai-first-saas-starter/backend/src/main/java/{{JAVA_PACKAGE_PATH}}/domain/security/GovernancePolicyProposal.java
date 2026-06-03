@@ -29,6 +29,7 @@ public record GovernancePolicyProposal(
     String activationCorrelationId,
     String rollbackReference,
     String rollbackCorrelationId,
+    List<String> outcomeNotes,
     Instant createdAt,
     Instant updatedAt) {
   public enum Status {
@@ -36,6 +37,7 @@ public record GovernancePolicyProposal(
     IN_REVIEW,
     APPROVED,
     REJECTED,
+    CHANGES_REQUESTED,
     ACTIVATED,
     ROLLED_BACK,
     BLOCKED
@@ -52,6 +54,7 @@ public record GovernancePolicyProposal(
     Objects.requireNonNull(riskClassification);
     affectedCapabilityIds = List.copyOf(affectedCapabilityIds == null ? List.of() : affectedCapabilityIds);
     affectedArtifactRefs = List.copyOf(affectedArtifactRefs == null ? List.of() : affectedArtifactRefs);
+    outcomeNotes = List.copyOf(outcomeNotes == null ? List.of() : outcomeNotes);
     Objects.requireNonNull(requiredApprovalCapabilityId);
     Objects.requireNonNull(rollbackRequirement);
     Objects.requireNonNull(createdAt);
@@ -61,38 +64,50 @@ public record GovernancePolicyProposal(
   public GovernancePolicyProposal submitted(String correlationId, Instant now) {
     if (status == Status.IN_REVIEW) return this;
     if (status != Status.DRAFT) return blocked(correlationId, now);
-    return copy(Status.IN_REVIEW, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, now);
+    return copy(Status.IN_REVIEW, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
   }
 
   public GovernancePolicyProposal approved(String rationale, String correlationId, Instant now) {
     if (status == Status.APPROVED) return this;
     if (status != Status.IN_REVIEW) return blocked(correlationId, now);
-    return copy(Status.APPROVED, submittedCorrelationId, "approve", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, now);
+    return copy(Status.APPROVED, submittedCorrelationId, "approve", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
   }
 
   public GovernancePolicyProposal rejected(String rationale, String correlationId, Instant now) {
     if (status == Status.REJECTED) return this;
     if (status != Status.IN_REVIEW) return blocked(correlationId, now);
-    return copy(Status.REJECTED, submittedCorrelationId, "reject", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, now);
+    return copy(Status.REJECTED, submittedCorrelationId, "reject", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
+  }
+
+  public GovernancePolicyProposal changesRequested(String rationale, String correlationId, Instant now) {
+    if (status == Status.CHANGES_REQUESTED) return this;
+    if (status != Status.IN_REVIEW) return blocked(correlationId, now);
+    return copy(Status.CHANGES_REQUESTED, submittedCorrelationId, "request_changes", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
+  }
+
+  public GovernancePolicyProposal withOutcomeNote(String note, String correlationId, Instant now) {
+    var nextNotes = new java.util.ArrayList<>(outcomeNotes);
+    nextNotes.add(note == null || note.isBlank() ? "Outcome note recorded." : note);
+    return copy(status, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId == null ? correlationId : rollbackCorrelationId, List.copyOf(nextNotes), now);
   }
 
   public GovernancePolicyProposal activated(String rollbackReference, String correlationId, Instant now) {
     if (status == Status.ACTIVATED) return this;
     if (status != Status.APPROVED || rollbackReference == null || rollbackReference.isBlank()) return blocked(correlationId, now);
-    return copy(Status.ACTIVATED, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, correlationId, rollbackReference, rollbackCorrelationId, now);
+    return copy(Status.ACTIVATED, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, correlationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
   }
 
   public GovernancePolicyProposal rolledBack(String correlationId, Instant now) {
     if (status == Status.ROLLED_BACK) return this;
     if (status != Status.ACTIVATED || rollbackReference == null || rollbackReference.isBlank()) return blocked(correlationId, now);
-    return copy(Status.ROLLED_BACK, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, correlationId, now);
+    return copy(Status.ROLLED_BACK, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, correlationId, outcomeNotes, now);
   }
 
   public GovernancePolicyProposal blocked(String correlationId, Instant now) {
-    return copy(Status.BLOCKED, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId == null ? correlationId : rollbackCorrelationId, now);
+    return copy(Status.BLOCKED, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId == null ? correlationId : rollbackCorrelationId, outcomeNotes, now);
   }
 
-  private GovernancePolicyProposal copy(Status nextStatus, String nextSubmittedCorrelationId, String nextDecision, String nextDecisionRationale, String nextDecisionCorrelationId, String nextActivationCorrelationId, String nextRollbackReference, String nextRollbackCorrelationId, Instant now) {
-    return new GovernancePolicyProposal(proposalId, tenantId, customerId, createdByAccountId, nextStatus, targetPolicyId, title, rationale, proposedContent, riskClassification, affectedCapabilityIds, affectedArtifactRefs, requiredApprovalCapabilityId, rollbackRequirement, idempotencyKey, createdCorrelationId, nextSubmittedCorrelationId, nextDecision, nextDecisionRationale, nextDecisionCorrelationId, nextActivationCorrelationId, nextRollbackReference, nextRollbackCorrelationId, createdAt, now);
+  private GovernancePolicyProposal copy(Status nextStatus, String nextSubmittedCorrelationId, String nextDecision, String nextDecisionRationale, String nextDecisionCorrelationId, String nextActivationCorrelationId, String nextRollbackReference, String nextRollbackCorrelationId, List<String> nextOutcomeNotes, Instant now) {
+    return new GovernancePolicyProposal(proposalId, tenantId, customerId, createdByAccountId, nextStatus, targetPolicyId, title, rationale, proposedContent, riskClassification, affectedCapabilityIds, affectedArtifactRefs, requiredApprovalCapabilityId, rollbackRequirement, idempotencyKey, createdCorrelationId, nextSubmittedCorrelationId, nextDecision, nextDecisionRationale, nextDecisionCorrelationId, nextActivationCorrelationId, nextRollbackReference, nextRollbackCorrelationId, nextOutcomeNotes, createdAt, now);
   }
 }

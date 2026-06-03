@@ -1148,7 +1148,7 @@
 
 ### TASK-STARTER-08-006: Governance/Policy proposal review and retained-authority vertical
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-04-003 and TASK-STARTER-07-009
 - task brief: none
 - depends on: [TASK-STARTER-08-005]
@@ -1192,6 +1192,9 @@
   - Akka substrate/exposure: ESE proposal/decision records; approval workflow; GovernanceProposalView; HTTP/workstream APIs; optional bounded internal proposal-drafting/evaluation agents
   - audit/trace/tests: evidence/risk/confidence/alternatives captured, decision history, approval/denial/activation audit, rollback path, retained-human-authority tests
   - supersedes future task shape for: TASK-STARTER-04-003, TASK-STARTER-07-009
+  - commit message: `Add starter governance policy retained authority vertical`
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered backend tests, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
 
 ### TASK-STARTER-08-007: Audit/Trace investigation workstream vertical
 

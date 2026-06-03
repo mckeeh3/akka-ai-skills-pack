@@ -53,6 +53,8 @@ class GovernancePolicyServiceTest {
     assertEquals("governance.policy.dashboard.v1", dashboard.data().get("surfaceContract"));
     assertTrue(dashboard.toString().contains("GovernancePolicyService"));
     assertTrue(dashboard.toString().contains("governance.policy.proposal.draft"));
+    assertTrue(dashboard.toString().contains("governance.proposals.review"));
+    assertTrue(dashboard.toString().contains("governance.outcomes.record"));
     assertFalse(dashboard.toString().contains("api_key="));
 
     var inventory = service.inventory(actor, "corr-gov-inventory");
@@ -120,7 +122,8 @@ class GovernancePolicyServiceTest {
     var decision = service.decideProposal(actor, Map.of("proposalId", proposalId, "decision", "approve", "rationale", "bounded human approval"), "idem-gov-decision", "corr-gov-decision");
     assertEquals("accepted", decision.status());
     assertEquals("approved", decision.surface().data().get("status"));
-    assertTrue(decision.surface().toString().contains("governance.policy.approve"));
+    assertTrue(decision.surface().toString().contains("governance.proposals.review"));
+    assertTrue(decision.surface().toString().contains("governance.proposals.activate"));
 
     var duplicateDecision = service.decideProposal(actor, Map.of("proposalId", proposalId, "decision", "reject", "rationale", "ignored replay"), "idem-gov-decision-2", "corr-gov-decision-replay");
     assertEquals("no-op", duplicateDecision.status());
@@ -137,6 +140,24 @@ class GovernancePolicyServiceTest {
     var rollback = service.rollbackProposal(actor, Map.of("proposalId", proposalId), "idem-gov-rollback", "corr-gov-rollback");
     assertEquals("accepted", rollback.status());
     assertEquals("rolled_back", rollback.surface().data().get("status"));
+  }
+
+  @Test
+  void requestChangesAndOutcomeNotesAreExplicitRetainedAuthorityActions() {
+    var actor = resolver.resolveMe(identity(), "membership-admin", "corr-gov-request-changes");
+    var draft = service.draftProposal(actor, Map.of("rationale", "tighten approval copy", "proposedContent", "request evidence before activation"), "idem-gov-request-changes-draft", "corr-gov-request-changes-draft");
+    var proposalId = draft.surface().data().get("proposalId").toString();
+    service.submitProposal(actor, Map.of("proposalId", proposalId), "idem-gov-request-changes-submit", "corr-gov-request-changes-submit");
+
+    var decision = service.decideProposal(actor, Map.of("proposalId", proposalId, "decision", "request_changes", "rationale", "need more simulation evidence"), "idem-gov-request-changes", "corr-gov-request-changes");
+    assertEquals("accepted", decision.status());
+    assertEquals("changes_requested", decision.surface().data().get("status"));
+    assertTrue(decision.surface().toString().contains("surface.governance.decision_card.v1"));
+
+    var note = service.recordOutcomeNote(actor, Map.of("proposalId", proposalId, "note", "Reviewer requested safer rollout evidence."), "idem-gov-outcome-note", "corr-gov-outcome-note");
+    assertEquals("accepted", note.status());
+    assertTrue(note.surface().toString().contains("governance.outcomes.record"));
+    assertTrue(note.surface().toString().contains("Reviewer requested safer rollout evidence"));
   }
 
   @Test

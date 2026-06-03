@@ -2201,9 +2201,12 @@ const governancePolicyCapabilities = {
   readDashboard: 'governance.policy.read',
   simulateProposal: 'governance.policy.simulate',
   draftProposal: 'governance.policy.propose',
+  reviewProposal: 'governance.proposals.review',
   approveProposal: 'governance.policy.approve',
+  activateProposal: 'governance.proposals.activate',
   activatePolicyChange: 'governance.policy.activate',
   rollbackPolicyChange: 'governance.policy.rollback',
+  recordOutcome: 'governance.outcomes.record',
   startImpactAnalysis: 'governance.policy.impact_analysis.start',
   readImpactAnalysis: 'governance.policy.impact_analysis.read',
   cancelImpactAnalysis: 'governance.policy.impact_analysis.cancel',
@@ -2262,10 +2265,10 @@ export const governancePolicySurfaceActions = {
   },
   decideProposal: {
     actionId: 'action-govpol-decide-proposal',
-    label: 'Approve proposal',
+    label: 'Approve / reject / request changes',
     intent: 'approval',
     capabilityId: governancePolicyCapabilities.approveProposal,
-    governedToolId: governancePolicyCapabilities.approveProposal,
+    governedToolId: governancePolicyCapabilities.reviewProposal,
     browserToolId: 'action-govpol-decide-proposal',
     inputSchemaRef: 'schema.governance-policy.decision.v1',
     requiresConfirmation: true,
@@ -2279,7 +2282,7 @@ export const governancePolicySurfaceActions = {
     label: 'Activate approved change',
     intent: 'command',
     capabilityId: governancePolicyCapabilities.activatePolicyChange,
-    governedToolId: governancePolicyCapabilities.activatePolicyChange,
+    governedToolId: governancePolicyCapabilities.activateProposal,
     browserToolId: 'action-govpol-activate-policy-change',
     inputSchemaRef: 'schema.governance-policy.activation.v1',
     requiresConfirmation: true,
@@ -2288,12 +2291,24 @@ export const governancePolicySurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-governance-policy-decision', openPlacement: 'inline' },
     audit: { eventType: 'GovernancePolicyChangeActivated', traceRequired: true }
   },
+  outcomeNote: {
+    actionId: 'action-govpol-add-outcome-note',
+    label: 'Add outcome note',
+    intent: 'command',
+    capabilityId: governancePolicyCapabilities.recordOutcome,
+    governedToolId: governancePolicyCapabilities.recordOutcome,
+    browserToolId: 'action-govpol-add-outcome-note',
+    inputSchemaRef: 'schema.governance-policy.outcome-note.v1',
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-decision', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyOutcomeNoteRecorded', traceRequired: true }
+  },
   rollbackProposal: {
     actionId: 'action-govpol-rollback-policy-change',
     label: 'Roll back change',
     intent: 'command',
     capabilityId: governancePolicyCapabilities.rollbackPolicyChange,
-    governedToolId: governancePolicyCapabilities.rollbackPolicyChange,
+    governedToolId: governancePolicyCapabilities.activateProposal,
     browserToolId: 'action-govpol-rollback-policy-change',
     inputSchemaRef: 'schema.governance-policy.rollback.v1',
     requiresConfirmation: true,
@@ -2396,6 +2411,8 @@ export const governancePolicyDashboardSurface = envelope(
   'Governance/Policy dashboard',
   'agent-governance-policy',
   {
+    canonicalSurfaceId: 'surface.governance.proposal_queue.v1',
+    governedCapabilityIds: ['governance.proposals.review', 'governance.proposals.activate', 'governance.outcomes.record'],
     cards: [
       { cardId: 'card-pending-proposals', label: 'Pending proposals', value: 1, severity: 'warning' },
       { cardId: 'card-active-policies', label: 'Active policy concepts', value: 4, severity: 'info' },
@@ -2443,6 +2460,7 @@ export const governancePolicyProposalSurface = envelope(
   'Policy proposal review',
   'agent-governance-policy',
   {
+    canonicalSurfaceId: 'surface.governance.proposal_queue.v1',
     proposalId: 'proposal-govpol-001',
     lifecycleState: 'in_review',
     source: 'Governance/Policy Agent drafted text; human submitted for review',
@@ -2498,6 +2516,8 @@ export const governancePolicyDecisionSurface = envelope(
   'Governance decision',
   'agent-governance-policy',
   {
+    canonicalSurfaceId: 'surface.governance.decision_card.v1',
+    activationStatusSurfaceId: 'surface.governance.activation_status.v1',
     decisionId: 'decision-govpol-001',
     recommendation: 'Approve the stricter threshold only after reviewing simulation evidence; keep activation as a separate human action.',
     riskScore: 82,
@@ -2508,7 +2528,8 @@ export const governancePolicyDecisionSurface = envelope(
       { evidenceId: 'evidence-redaction', label: 'Redaction', summary: 'Prompt text, backend secrets, and cross-tenant evidence remain omitted.' }
     ],
     allowedActions: [
-      { actionId: 'action-govpol-decide-proposal', label: 'Approve proposal', browserToolId: 'action-govpol-decide-proposal', governedToolId: governancePolicyCapabilities.approveProposal, capabilityId: governancePolicyCapabilities.approveProposal },
+      { actionId: 'action-govpol-decide-proposal', label: 'Approve / reject / request changes', browserToolId: 'action-govpol-decide-proposal', governedToolId: governancePolicyCapabilities.reviewProposal, capabilityId: governancePolicyCapabilities.approveProposal },
+      { actionId: 'action-govpol-add-outcome-note', label: 'Add outcome note', browserToolId: 'action-govpol-add-outcome-note', governedToolId: governancePolicyCapabilities.recordOutcome, capabilityId: governancePolicyCapabilities.recordOutcome },
       { actionId: 'action-govpol-open-trace', label: 'Open decision trace', browserToolId: 'action-govpol-open-trace', governedToolId: governancePolicyCapabilities.openTrace, capabilityId: governancePolicyCapabilities.openTrace }
     ],
     disabledActions: [
@@ -2518,7 +2539,7 @@ export const governancePolicyDecisionSurface = envelope(
     risk: 'Authority-changing approval',
     traceLinks: ['trace-govpol-decision', 'trace-govpol-approval-basis']
   },
-  [governancePolicySurfaceActions.decideProposal, governancePolicySurfaceActions.activateProposal, governancePolicySurfaceActions.rollbackProposal, governancePolicySurfaceActions.openTrace]
+  [governancePolicySurfaceActions.decideProposal, governancePolicySurfaceActions.activateProposal, governancePolicySurfaceActions.rollbackProposal, governancePolicySurfaceActions.outcomeNote, governancePolicySurfaceActions.openTrace]
 );
 
 export const governancePolicyImpactAnalysisTaskSurface = envelope(
