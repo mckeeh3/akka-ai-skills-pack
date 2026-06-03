@@ -83,7 +83,7 @@ Agents often generate valid entities, workflows, and endpoints, but make mistake
 - `skills/akka-service-setup/SKILL.md`
 - `skills/akka-configuration/SKILL.md`
 - `docs/service-setup-pattern-selection.md`
-- focused example and test files under `src/main/java/com/example/...`
+- focused example and test files under `../examples/akka-components/src/main/java/com/example/...`
 
 ### Exit criteria
 

@@ -45,21 +45,21 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../../src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../../src/main/java/com/example/application/DraftCartLifecycleView.java`
-- `../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../../src/main/java/com/example/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
-- `../../src/main/java/com/example/application/ShoppingCartTopicView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartAuditView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/DraftCartLifecycleView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartTopicView.java`
 - `../../docs/service-to-service-views.md`
-- `../../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
-- `../../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
-- `../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
-- `../../src/test/java/com/example/application/SupervisedExportEvidenceViewIntegrationTest.java`
-- `../../src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SupervisedExportEvidenceViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ## Companion skills
 

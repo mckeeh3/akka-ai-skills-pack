@@ -179,7 +179,7 @@ The executable-example plan has been created:
 
 - `docs/agent-executable-examples-plan.md`
 
-It decides that the first examples should live in the existing reference app under `src/main/java/com/example/...`, with focused packages for governed-agent examples, and defines five implementation slices:
+It decides that the first examples should live in the existing reference app under `../examples/akka-components/src/main/java/com/example/...`, with focused packages for governed-agent examples, and defines five implementation slices:
 
 1. AgentDefinition behavior profile.
 2. Governed PromptDocument and version snapshots.

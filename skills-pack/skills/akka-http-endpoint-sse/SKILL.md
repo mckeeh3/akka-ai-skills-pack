@@ -29,13 +29,13 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../../src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../../src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
-- `../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../../src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

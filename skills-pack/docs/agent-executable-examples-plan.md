@@ -28,10 +28,10 @@ Read before implementing examples:
 Place the first executable examples in the existing reference app under:
 
 ```text
-src/main/java/com/example/domain/agents/
-src/main/java/com/example/application/agents/
-src/main/java/com/example/api/agents/
-src/test/java/com/example/application/agents/
+../examples/akka-components/src/main/java/com/example/domain/agents/
+../examples/akka-components/src/main/java/com/example/application/agents/
+../examples/akka-components/src/main/java/com/example/api/agents/
+../examples/akka-components/src/test/java/com/example/application/agents/
 ```
 
 Rationale:
@@ -96,12 +96,12 @@ Goal: establish durable managed-agent identity and lifecycle.
 Add:
 
 ```text
-src/main/java/com/example/domain/agents/AgentDefinition.java
-src/main/java/com/example/domain/agents/AgentDefinitionCommandHandler.java
-src/main/java/com/example/domain/agents/AgentDefinitionValidator.java
-src/main/java/com/example/application/agents/AgentDefinitionEntity.java
-src/main/java/com/example/application/agents/AgentDefinitionByTenantView.java
-src/main/java/com/example/api/agents/AgentDefinitionEndpoint.java
+../examples/akka-components/src/main/java/com/example/domain/agents/AgentDefinition.java
+../examples/akka-components/src/main/java/com/example/domain/agents/AgentDefinitionCommandHandler.java
+../examples/akka-components/src/main/java/com/example/domain/agents/AgentDefinitionValidator.java
+../examples/akka-components/src/main/java/com/example/application/agents/AgentDefinitionEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/AgentDefinitionByTenantView.java
+../examples/akka-components/src/main/java/com/example/api/agents/AgentDefinitionEndpoint.java
 ```
 
 Minimum behavior:
@@ -118,9 +118,9 @@ Minimum behavior:
 Tests:
 
 ```text
-src/test/java/com/example/application/agents/AgentDefinitionEntityTest.java
-src/test/java/com/example/application/agents/AgentDefinitionEndpointIntegrationTest.java
-src/test/java/com/example/application/agents/AgentDefinitionByTenantViewIntegrationTest.java
+../examples/akka-components/src/test/java/com/example/application/agents/AgentDefinitionEntityTest.java
+../examples/akka-components/src/test/java/com/example/application/agents/AgentDefinitionEndpointIntegrationTest.java
+../examples/akka-components/src/test/java/com/example/application/agents/AgentDefinitionByTenantViewIntegrationTest.java
 ```
 
 Cover:
@@ -139,12 +139,12 @@ Goal: demonstrate governed prompt lifecycle and immutable versions.
 Add:
 
 ```text
-src/main/java/com/example/domain/agents/PromptDocument.java
-src/main/java/com/example/application/agents/PromptDocumentEntity.java
-src/main/java/com/example/application/agents/PromptVersionEntity.java
-src/main/java/com/example/application/agents/PromptVersionSnapshotConsumer.java
-src/main/java/com/example/application/agents/PromptHistoryView.java
-src/main/java/com/example/api/agents/PromptGovernanceEndpoint.java
+../examples/akka-components/src/main/java/com/example/domain/agents/PromptDocument.java
+../examples/akka-components/src/main/java/com/example/application/agents/PromptDocumentEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/PromptVersionEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/PromptVersionSnapshotConsumer.java
+../examples/akka-components/src/main/java/com/example/application/agents/PromptHistoryView.java
+../examples/akka-components/src/main/java/com/example/api/agents/PromptGovernanceEndpoint.java
 ```
 
 Minimum behavior:
@@ -183,15 +183,15 @@ Goal: demonstrate governed runtime skills and manifest-authorized loading.
 Add:
 
 ```text
-src/main/java/com/example/domain/agents/SkillDocument.java
-src/main/java/com/example/domain/agents/AgentSkillManifest.java
-src/main/java/com/example/application/agents/SkillDocumentEntity.java
-src/main/java/com/example/application/agents/SkillVersionEntity.java
-src/main/java/com/example/application/agents/SkillVersionSnapshotConsumer.java
-src/main/java/com/example/application/agents/AgentSkillManifestEntity.java
-src/main/java/com/example/application/agents/GovernedAgentSkillTools.java
-src/main/java/com/example/application/agents/GovernedSkillDemoAgent.java
-src/main/java/com/example/api/agents/SkillGovernanceEndpoint.java
+../examples/akka-components/src/main/java/com/example/domain/agents/SkillDocument.java
+../examples/akka-components/src/main/java/com/example/domain/agents/AgentSkillManifest.java
+../examples/akka-components/src/main/java/com/example/application/agents/SkillDocumentEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/SkillVersionEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/SkillVersionSnapshotConsumer.java
+../examples/akka-components/src/main/java/com/example/application/agents/AgentSkillManifestEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/GovernedAgentSkillTools.java
+../examples/akka-components/src/main/java/com/example/application/agents/GovernedSkillDemoAgent.java
+../examples/akka-components/src/main/java/com/example/api/agents/SkillGovernanceEndpoint.java
 ```
 
 Minimum behavior:
@@ -231,12 +231,12 @@ Goal: demonstrate normalized trace facts and queryable timelines.
 Add:
 
 ```text
-src/main/java/com/example/domain/agents/AuditTraceEvent.java
-src/main/java/com/example/domain/agents/WorkTrace.java
-src/main/java/com/example/application/agents/AuditTraceEventEntity.java
-src/main/java/com/example/application/agents/AgentWorkTraceView.java
-src/main/java/com/example/application/agents/AgentTraceIngestionConsumer.java
-src/main/java/com/example/api/agents/AgentTraceEndpoint.java
+../examples/akka-components/src/main/java/com/example/domain/agents/AuditTraceEvent.java
+../examples/akka-components/src/main/java/com/example/domain/agents/WorkTrace.java
+../examples/akka-components/src/main/java/com/example/application/agents/AuditTraceEventEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/AgentWorkTraceView.java
+../examples/akka-components/src/main/java/com/example/application/agents/AgentTraceIngestionConsumer.java
+../examples/akka-components/src/main/java/com/example/api/agents/AgentTraceEndpoint.java
 ```
 
 Minimum behavior:
@@ -269,13 +269,13 @@ Goal: demonstrate governed improvement loop without full autonomous self-modific
 Add:
 
 ```text
-src/main/java/com/example/domain/agents/EvaluationRun.java
-src/main/java/com/example/domain/agents/ImprovementProposal.java
-src/main/java/com/example/application/agents/GovernedOutputEvaluatorAgent.java
-src/main/java/com/example/application/agents/EvaluationRunWorkflow.java
-src/main/java/com/example/application/agents/ImprovementProposalEntity.java
-src/main/java/com/example/application/agents/EvaluationQueueView.java
-src/main/java/com/example/api/agents/EvaluationImprovementEndpoint.java
+../examples/akka-components/src/main/java/com/example/domain/agents/EvaluationRun.java
+../examples/akka-components/src/main/java/com/example/domain/agents/ImprovementProposal.java
+../examples/akka-components/src/main/java/com/example/application/agents/GovernedOutputEvaluatorAgent.java
+../examples/akka-components/src/main/java/com/example/application/agents/EvaluationRunWorkflow.java
+../examples/akka-components/src/main/java/com/example/application/agents/ImprovementProposalEntity.java
+../examples/akka-components/src/main/java/com/example/application/agents/EvaluationQueueView.java
+../examples/akka-components/src/main/java/com/example/api/agents/EvaluationImprovementEndpoint.java
 ```
 
 Minimum behavior:

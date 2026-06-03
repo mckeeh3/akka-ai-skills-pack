@@ -181,6 +181,9 @@ validate_source_tree() {
     "$PACK_ROOT/pack/AGENTS.md"
     "$PACK_ROOT/pack/EXAMPLES-README.md"
     "$PACK_ROOT/pack/manifest.schema.yaml"
+    "$PACK_ROOT/examples/akka-components/README.md"
+    "$PACK_ROOT/examples/akka-components/src/main"
+    "$PACK_ROOT/examples/akka-components/src/test"
     "$APP_ROOT/frontend"
     "$INSTALLER_TEMPLATE"
   )
@@ -250,7 +253,7 @@ done
 [[ -f "$PACK_ROOT/pack/manifest.yaml" ]] || fail "Missing pack/manifest.yaml"
 [[ -f "$PACK_ROOT/install.sh" ]] || fail "Missing skills-pack/install.sh"
 [[ -d "$PACK_ROOT/skills" ]] || fail "Missing skills"
-[[ -d "$APP_ROOT/src" ]] || fail "Missing src"
+[[ -d "$PACK_ROOT/examples/akka-components/src" ]] || fail "Missing examples/akka-components/src"
 
 if [[ -z "$GITHUB_REPO" ]]; then
   GITHUB_REPO="$(infer_github_repo || true)"
@@ -300,7 +303,7 @@ mkdir -p "$STAGE_DIR"
 
 copy_tree "$PACK_ROOT/skills" "$STAGE_DIR/skills"
 copy_tree "$PACK_ROOT/pack" "$STAGE_DIR/pack"
-copy_tree "$APP_ROOT/src" "$STAGE_DIR/src"
+copy_tree "$PACK_ROOT/examples" "$STAGE_DIR/examples"
 copy_frontend_reference "$APP_ROOT/frontend" "$STAGE_DIR/frontend"
 mkdir -p "$STAGE_DIR/tools"
 cp "$PACK_ROOT/install.sh" "$STAGE_DIR/install.sh"

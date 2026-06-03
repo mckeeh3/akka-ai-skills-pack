@@ -7,14 +7,14 @@ Primary official semantics:
 - `akka-context/sdk/workflows.html.md`
 
 Local executable examples:
-- `src/main/java/com/example/application/ApprovalWorkflow.java`
-- `src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
 
 ## Quick choice
 
@@ -37,7 +37,7 @@ Official pattern:
 - `akka-context/sdk/workflows.html.md` section on pausing workflows
 
 Repository reference:
-- `src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
 
 Mental model:
 - pause step owns the wait
@@ -55,9 +55,9 @@ Use when:
 Prefer this when the workflow owns a timer as a first-class integration concern.
 
 Repository reference:
-- `src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
 
 Mental model:
 - workflow schedules timer
@@ -76,9 +76,9 @@ Use when:
 Prefer this when the timer itself is the loop controller.
 
 Repository reference:
-- `src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `src/main/java/com/example/application/ReminderJobEntity.java`
-- `src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
 
 Mental model:
 - timed action does one unit of work

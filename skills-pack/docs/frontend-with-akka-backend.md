@@ -83,7 +83,7 @@ During packaging/deployment, the files under `src/main/resources/static-resource
 The Akka endpoint responsible for serving the frontend is:
 
 ```text
-src/main/java/com/example/api/StaticFrontendEndpoint.java
+../examples/akka-components/src/main/java/com/example/api/StaticFrontendEndpoint.java
 ```
 
 It exposes public static routes such as:

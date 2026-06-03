@@ -37,16 +37,16 @@ Read these first if present:
 - `../../docs/web-ui-style-guide.md`
 - `../../docs/web-ui-frontend-project-integration.md`
 - `../../docs/web-ui-quality-checklist.md`
-- `../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../../src/main/java/com/example/api/WebUiDataEndpoint.java`
-- `../../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
-- `../../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../../src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../../src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../../src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
+- `../../examples/akka-components/src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
 
 The `WebUi*PageEndpoint` examples are endpoint delivery mechanics references. They do not replace the canonical generated SaaS app structure under `frontend/src/workstream/**` or the User Admin workstream vertical reference.
 
@@ -85,22 +85,22 @@ Use this when the browser UI has real user journeys, multiple states, forms, str
 
 ### UI + JSON API
 Read first:
-- `../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../../src/main/java/com/example/api/WebUiDataEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
 
 Use this when a browser surface should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**` and keep generated SaaS structure workstream-first.
 
 ### UI + SSE
 Read first:
-- `../../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
-- `../../src/main/java/com/example/api/CounterStreamEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
 
 Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**` and model updates as workstream/surface events where generated SaaS semantics apply.
 
 ### UI + WebSocket
 Read first:
-- `../../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../../src/main/java/com/example/api/PingWebSocketEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
 
 Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid treating socket demo pages as generated SaaS UI structure.
 
@@ -110,7 +110,7 @@ Read next as needed:
 - `../akka-http-endpoint-jwt/SKILL.md`
 - `../akka-http-endpoint-request-context/SKILL.md`
 - `../akka-http-endpoint-acl-internal/SKILL.md`
-- `../../src/main/java/com/example/api/InternalStatusEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/InternalStatusEndpoint.java`
 
 Default generated SaaS route boundary:
 - public: static app shell/assets only, such as `/`, `/ui...`, `/assets/**`, and explicit deep-link entry routes that return the same static shell without embedding protected data

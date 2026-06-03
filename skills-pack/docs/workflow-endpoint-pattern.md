@@ -7,10 +7,10 @@ Primary official semantics:
 - `akka-context/sdk/http-endpoints.html.md`
 
 Local executable examples:
-- `src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

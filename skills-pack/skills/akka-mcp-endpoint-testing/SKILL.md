@@ -31,10 +31,10 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
-- `../../src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
-- `../../src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
-- `../../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../../src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
 
 ## Default test harness rules
 

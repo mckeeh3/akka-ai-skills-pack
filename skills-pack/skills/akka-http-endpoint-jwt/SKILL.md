@@ -34,8 +34,8 @@ Read these first if present:
 - `../../docs/security-pattern-selection.md`
 - `../../docs/security-workos-auth-and-admin.md`
 - `../../docs/security-review-checklist.md`
-- `../../src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/api/SecureGreetingEndpoint.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

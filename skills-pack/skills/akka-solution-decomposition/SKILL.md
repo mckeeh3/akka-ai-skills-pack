@@ -75,19 +75,19 @@ When requirements already suggest a likely component, also read the official Akk
 - `../../akka-context/sdk/agents.html.md`
 
 In this repository, prefer these cross-component examples:
-- `../../src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../src/main/java/com/example/application/DraftCartEntity.java`
-- `../../src/main/java/com/example/application/TransferWorkflow.java`
-- `../../src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../../src/main/java/com/example/application/ActivityAgent.java`
-- `../../src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `../../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
 
 ## What this skill must produce
 

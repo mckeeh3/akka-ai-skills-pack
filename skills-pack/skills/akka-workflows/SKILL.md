@@ -38,25 +38,25 @@ Read these first if present:
 - matching workflow tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../src/main/java/com/example/application/TransferWorkflow.java`
-- `../../src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../src/main/java/com/example/application/RefundApprovalWorkflow.java`
-- `../../src/main/java/com/example/application/SupervisedExportWorkflow.java`
-- `../../src/main/java/com/example/application/ReviewWorkflow.java`
-- `../../src/main/java/com/example/application/WalletEntity.java`
-- `../../src/main/java/com/example/domain/TransferState.java`
-- `../../src/main/java/com/example/domain/ApprovalState.java`
-- `../../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/RefundApprovalWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/SupervisedExportWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ReviewWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
+- `../../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
+- `../../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
+- `../../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
 - `../../docs/workflow-endpoint-pattern.md`
-- `../../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
-- `../../src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
-- `../../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `../../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills
 

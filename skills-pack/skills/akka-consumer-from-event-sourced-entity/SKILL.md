@@ -24,11 +24,11 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../../src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../../src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 

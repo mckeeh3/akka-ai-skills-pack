@@ -178,7 +178,7 @@ mvn compile exec:java -Dakka.javasdk.dev-mode.eventing.support=kafka
 
 ## Frontend reference checks
 
-Build/check TypeScript web UI reference files under `src/main/web-ui`:
+Build/check TypeScript web UI reference files under `../examples/akka-components/src/main/web-ui`:
 
 ```bash
 npm install

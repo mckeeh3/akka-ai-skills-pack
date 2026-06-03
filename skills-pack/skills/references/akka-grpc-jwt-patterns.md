@@ -26,9 +26,9 @@ Use this reference when implementing or reviewing Akka Java SDK gRPC endpoints s
 
 ### 1. Fixed-value JWT validation
 Reference files:
-- `src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
-- `src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
+- `../../examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
 
 Use when:
 - issuer list is known
@@ -45,9 +45,9 @@ Pattern shape:
 
 ### 2. Regex-based JWT validation
 Reference files:
-- `src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
-- `src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
+- `../../examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
+- `../../examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 Use when:
 - claim value is not fully known in advance

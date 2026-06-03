@@ -23,9 +23,9 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../src/test/java/com/example/application/DraftCartIntegrationTest.java`
-- `../../src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Test harness rules
 

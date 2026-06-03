@@ -23,8 +23,8 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../../src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
-- `../../src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 

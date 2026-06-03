@@ -31,9 +31,9 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
-- `../../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../../src/main/resources/mcp/checkout-guidelines.md`
-- `../../src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../../examples/akka-components/src/main/resources/mcp/checkout-guidelines.md`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
 
 ## Resource patterns
 

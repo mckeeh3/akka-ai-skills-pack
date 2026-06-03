@@ -21,9 +21,9 @@ The frontend build owns generated files under `static-resources/`. Edit `fronten
 | Need | Use | First example |
 | --- | --- | --- |
 | Full React/Vite/TypeScript agent workstream app with functional-agent rail, stream panel, composer, structured surfaces, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/workstream-user-admin-vertical.contract.test.mjs`, `skills/akka-web-ui-apps/SKILL.md`, and `skills/akka-web-ui-frontend-project/SKILL.md` |
-| Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `src/main/java/com/example/api/WebUiHomeEndpoint.java` and `src/main/java/com/example/api/WebUiDataEndpoint.java` |
-| Frontend app consuming live one-way updates | UI + SSE pattern | `src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `src/main/java/com/example/api/CounterStreamEndpoint.java` |
-| Frontend app needing two-way communication | UI + WebSocket pattern | `src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `src/main/java/com/example/api/PingWebSocketEndpoint.java` |
+| Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java` and `../examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java` |
+| Frontend app consuming live one-way updates | UI + SSE pattern | `../examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java` plus `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java` |
+| Frontend app needing two-way communication | UI + WebSocket pattern | `../examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java` plus `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java` |
 | Route exposure and backend access boundaries | Apply the mandatory secure SaaS foundation for protected APIs; public static asset routes are the exception | `skills/core-saas-foundation/SKILL.md`, `skills/akka-http-endpoint-jwt/SKILL.md`, and `skills/akka-http-endpoint-acl-internal/SKILL.md` |
 
 ## Frontend project requirement for workstream web apps

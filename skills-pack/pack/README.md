@@ -194,7 +194,7 @@ Installed skills must be rewritten so they do not point back to maintainer-repo-
 Rewrite references like:
 
 ```text
-../../../src/main/java/com/example/application/ShoppingCartEntity.java
+../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java
 ```
 
 to:

@@ -13,11 +13,11 @@ Capability-first framing: a streaming View query is a live read/evidence capabil
 
 Read these first if present:
 - `akka-context/sdk/views.html.md`
-- `../../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../../src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../../src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
-- `../../src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartAuditView.java`
+- `../../examples/akka-components/src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
 - `../../docs/capability-first-backend-architecture.md`
 
 ## Two streaming modes

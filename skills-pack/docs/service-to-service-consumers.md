@@ -8,7 +8,7 @@ Primary official semantics:
 - `akka-context/sdk/running-locally.html.md`
 
 Local producer-side executable example:
-- `src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
 
 ## Related references
 

@@ -24,8 +24,8 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../../src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
 
 ## Source-specific semantics
 

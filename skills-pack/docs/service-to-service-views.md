@@ -9,9 +9,9 @@ Primary official semantics:
 - `akka-context/sdk/running-locally.html.md`
 
 Local related examples:
-- `src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `src/main/java/com/example/application/ShoppingCartTopicView.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartTopicView.java`
 
 ## Related references
 

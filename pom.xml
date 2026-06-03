@@ -23,15 +23,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!-- Focused com.example reference examples remain in the tree until the example-relocation task. -->
-            <exclude>com/example/**</exclude>
-          </excludes>
-          <testExcludes>
-            <testExclude>com/example/**</testExclude>
-          </testExcludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>

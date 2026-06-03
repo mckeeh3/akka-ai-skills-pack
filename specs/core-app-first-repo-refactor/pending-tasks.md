@@ -204,7 +204,7 @@
 
 ### TASK-LAYOUT-03-002: Relocate focused Akka component examples
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/03-skills-pack-isolation/02-relocate-focused-akka-examples.md
 - depends on: [TASK-LAYOUT-03-001]
@@ -228,6 +228,11 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: relocate akka reference examples`
+  - moved focused `com.example` Java, test, proto, MCP, and static/web UI reference examples from root `src/**` into `skills-pack/examples/akka-components/**`
+  - updated installable skill/reference/doc paths to point at the skills-pack examples source and installed `resources/examples/java` paths
+  - updated pack install/build tooling to copy Java examples from `skills-pack/examples/akka-components` rather than root app `src/**`
+  - removed root Maven `com/example/**` compile/test exclusions now that root `src/` no longer contains those reference examples
+  - checks passed: `git diff --check`; root `src` contains no `com/example` paths; installable guidance search found no bare root `src/main/java/com/example` or `src/test/java/com/example` references; `mvn test`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `./install.sh --location project --project /tmp/akka-install-real-check`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; staged bundle installer check from `/tmp/akka-pack-build-check/akka-ai-skills-pack-0.2.12/install.sh`
 
 ### TASK-LAYOUT-04-001: Update root app docs and domain extension guidance
 

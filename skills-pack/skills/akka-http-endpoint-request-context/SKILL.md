@@ -20,12 +20,12 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../../src/main/java/com/example/api/GreetingEndpoint.java`
-- `../../src/main/java/com/example/api/RequestHeadersEndpoint.java`
-- `../../src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/api/GreetingEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/RequestHeadersEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/api/SecureGreetingEndpoint.java`
+- `../../examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

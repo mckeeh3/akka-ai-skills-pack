@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PACK_ROOT="$SCRIPT_DIR"
-if [[ -d "$PACK_ROOT/src" && -d "$PACK_ROOT/frontend" ]]; then
+if [[ -d "$PACK_ROOT/frontend" ]] && { [[ -d "$PACK_ROOT/src" ]] || [[ -d "$PACK_ROOT/examples/akka-components/src" ]]; }; then
   APP_ROOT="$PACK_ROOT"
 else
   APP_ROOT="$(cd -- "$PACK_ROOT/.." && pwd)"
@@ -89,7 +89,7 @@ done
 [[ -f "$PACK_ROOT/pack/AGENTS.md" ]] || fail "Expected pack-facing AGENTS at $PACK_ROOT/pack/AGENTS.md"
 [[ -f "$PACK_ROOT/pack/EXAMPLES-README.md" ]] || fail "Expected examples README at $PACK_ROOT/pack/EXAMPLES-README.md"
 [[ -d "$PACK_ROOT/docs" ]] || fail "Expected docs at $PACK_ROOT/docs"
-[[ -d "$APP_ROOT/src" ]] || fail "Expected Java examples under $APP_ROOT/src"
+[[ -d "$PACK_ROOT/examples/akka-components/src" ]] || fail "Expected Java examples under $PACK_ROOT/examples/akka-components/src"
 [[ -d "$APP_ROOT/frontend" ]] || fail "Expected frontend examples under $APP_ROOT/frontend"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required"
 
@@ -318,6 +318,7 @@ for doc_file in docs_dir.rglob('*.md'):
                 line = f"{indent}Official Akka SDK docs for this topic (not bundled with this pack)"
 
         line = re.sub(r'`(?:\.\./)?docs/([^`]+)`', replace_doc_backtick, line)
+        line = line.replace('../examples/akka-components/src/', f'{examples_prefix}src/')
         line = line.replace('`src/', f'`{examples_prefix}src/')
         line = line.replace(' src/', f' {examples_prefix}src/')
         line = re.sub(r'`(?:\.\./)+frontend/([^`]+)`', lambda m: f'`{frontend_prefix}{m.group(1)}`', line)
@@ -343,6 +344,8 @@ import sys
 
 skills_dir = Path(sys.argv[1])
 example_rewrites = [
+    ("../../../examples/akka-components/src/", "../../resources/examples/java/src/"),
+    ("../../examples/akka-components/src/", "../../resources/examples/java/src/"),
     ("../../../src/", "../../resources/examples/java/src/"),
     ("../../src/", "../../resources/examples/java/src/"),
     ("../../../frontend/", "../../resources/examples/frontend/"),
@@ -393,6 +396,9 @@ def rewrite_skill_text(path: Path, frontend_prefix: str) -> None:
 
 for skill_file in skills_dir.glob("*/SKILL.md"):
     rewrite_skill_text(skill_file, '../../resources/examples/frontend/')
+
+for reference_file in (skills_dir / 'references').glob('*.md'):
+    rewrite_skill_text(reference_file, '../../resources/examples/frontend/')
 
 readme = skills_dir / 'README.md'
 if readme.exists():
@@ -446,8 +452,8 @@ copy_dir_replace "$PACK_ROOT/docs" "$DOCS_DIR"
 
 copy_file "$APP_ROOT/pom.xml" "$JAVA_EXAMPLES_DIR/pom.xml"
 copy_file "$PACK_ROOT/pack/EXAMPLES-README.md" "$JAVA_EXAMPLES_DIR/README.md"
-copy_dir_replace "$APP_ROOT/src/main" "$JAVA_EXAMPLES_DIR/src/main"
-copy_dir_replace "$APP_ROOT/src/test" "$JAVA_EXAMPLES_DIR/src/test"
+copy_dir_replace "$PACK_ROOT/examples/akka-components/src/main" "$JAVA_EXAMPLES_DIR/src/main"
+copy_dir_replace "$PACK_ROOT/examples/akka-components/src/test" "$JAVA_EXAMPLES_DIR/src/test"
 copy_frontend_reference "$APP_ROOT/frontend" "$FRONTEND_EXAMPLES_DIR"
 
 rewrite_installed_docs

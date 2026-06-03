@@ -25,9 +25,9 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/testing.html.md`
 - `akka-context/sdk/agents/llm_eval.html.md`
-- `../../src/test/java/com/example/application/ActivityAgentTest.java`
-- `../../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
-- `../../src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ActivityAgentTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

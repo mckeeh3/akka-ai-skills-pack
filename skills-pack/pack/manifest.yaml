@@ -525,8 +525,8 @@ content:
     exportFrom:
       - pom.xml
       - README.md
-      - src/main
-      - src/test
+      - examples/akka-components/src/main
+      - examples/akka-components/src/test
     installAs: '{agentsRoot}/resources/examples/java'
     includePom: true
     includeReadme: true
@@ -711,6 +711,10 @@ transforms:
   rewriteExamplePaths: true
   rewriteAkkaContextReferences: true
   examplePathRules:
+    - from: ../../../examples/akka-components/src/
+      to: ../../resources/examples/java/src/
+    - from: ../../examples/akka-components/src/
+      to: ../../resources/examples/java/src/
     - from: ../../../src/
       to: ../../resources/examples/java/src/
   akkaContextRewriteMessage: Official Akka SDK docs for this topic (not bundled with this pack)
